@@ -1,0 +1,150 @@
+import { getBreakdown, getDailySummary, getProjectSummary, getSummary } from "@/server/summaries";
+import { formatDateTime, formatFullNumber, formatPercent, formatTokens } from "@/shared/format";
+
+export const dynamic = "force-dynamic";
+
+type BreakdownRow = {
+  name: string;
+  totalTokens: number;
+  events: number;
+  avgTokensPerEvent: number;
+};
+
+function TokenCard({ label, value, helper }: { label: string; value: number; helper: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 shadow-lg shadow-slate-950/20" title={`${formatFullNumber(value)} tokens`}>
+      <div className="text-sm text-slate-400">{label}</div>
+      <div className="mt-2 text-3xl font-semibold">{formatTokens(value)}</div>
+      <div className="mt-2 text-xs text-slate-500">{helper}</div>
+    </div>
+  );
+}
+
+export default async function HomePage() {
+  const [summary, projects, daily, sources, models] = await Promise.all([
+    getSummary(),
+    getProjectSummary(),
+    getDailySummary(),
+    getBreakdown("source"),
+    getBreakdown("model")
+  ]);
+
+  const maxDailyTokens = Math.max(...daily.map((day) => day.totalTokens), 1);
+
+  return (
+    <div className="space-y-8">
+      <section>
+        <h1 className="text-4xl font-semibold">Coding Token Usage</h1>
+        <p className="mt-2 text-slate-400">Aggregated token usage from Claude Code, Codex, and OpenCode adapters.</p>
+        <p className="mt-3 text-sm text-slate-500">
+          Events: {formatFullNumber(summary.eventCount)} · Projects: {formatFullNumber(summary.projectCount)} · Last event: {formatDateTime(summary.lastEventAt)}
+        </p>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-4">
+        <TokenCard label="Total tokens" value={summary.totalTokens} helper="All collected usage" />
+        <TokenCard label="Input tokens" value={summary.inputTokens} helper={`${formatPercent(summary.inputTokens, summary.totalTokens)} of total`} />
+        <TokenCard label="Output tokens" value={summary.outputTokens} helper={`${formatPercent(summary.outputTokens, summary.totalTokens)} of total`} />
+        <TokenCard label="Cached input tokens" value={summary.cachedInputTokens} helper={`${formatPercent(summary.cachedInputTokens, summary.inputTokens)} of input`} />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold">Project Ranking</h2>
+              <p className="mt-1 text-sm text-slate-500">Where token usage is concentrated.</p>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="text-slate-400">
+                <tr><th className="py-2">Project</th><th>Tokens</th><th>Share</th><th>Events</th><th>Avg / event</th><th>Last active</th></tr>
+              </thead>
+              <tbody>
+                {projects.map((project) => (
+                  <tr key={project.projectId ?? project.name} className="border-t border-slate-800">
+                    <td className="py-3 pr-4"><a className="hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>{project.name}</a></td>
+                    <td className="pr-4" title={`${formatFullNumber(project.totalTokens)} tokens`}>{formatTokens(project.totalTokens)}</td>
+                    <td className="pr-4">{formatPercent(project.totalTokens, summary.totalTokens)}</td>
+                    <td className="pr-4">{formatFullNumber(project.events)}</td>
+                    <td className="pr-4" title={`${formatFullNumber(project.avgTokensPerEvent)} tokens`}>{formatTokens(project.avgTokensPerEvent)}</td>
+                    <td className="whitespace-nowrap text-slate-400">{formatDateTime(project.lastActiveAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+          <h2 className="text-xl font-semibold">Daily Usage</h2>
+          <p className="mt-1 text-sm text-slate-500">Last 180 days, latest 30 active days.</p>
+          <div className="mt-5 space-y-3">
+            {daily.slice(-30).map((day) => {
+              const width = Math.max(4, Math.round((day.totalTokens / maxDailyTokens) * 100));
+              return (
+                <div key={day.date}>
+                  <div className="mb-1 flex justify-between gap-4 text-sm text-slate-400">
+                    <span>{day.date}</span>
+                    <span title={`${formatFullNumber(day.totalTokens)} tokens`}>{formatTokens(day.totalTokens)}</span>
+                  </div>
+                  <div className="h-2 rounded bg-slate-800"><div className="h-2 rounded bg-cyan-400" style={{ width: `${width}%` }} /></div>
+                  <div className="mt-1 text-xs text-slate-600">Input {formatTokens(day.inputTokens)} · Output {formatTokens(day.outputTokens)}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Breakdown title="Sources" rows={sources} totalTokens={summary.totalTokens} />
+        <Breakdown title="Models" rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? "Unknown model" : row.name }))} totalTokens={summary.totalTokens} />
+      </section>
+
+      <section className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+        <h2 className="text-xl font-semibold">Data Quality</h2>
+        <p className="mt-1 text-sm text-slate-500">Signals that affect analysis accuracy.</p>
+        <div className="mt-5 grid gap-4 md:grid-cols-4">
+          <QualityMetric label="Unknown Project" value={formatTokens(summary.unknownProjectTokens)} title={`${formatFullNumber(summary.unknownProjectTokens)} tokens`} helper={formatPercent(summary.unknownProjectTokens, summary.totalTokens)} />
+          <QualityMetric label="Unknown Model" value={formatTokens(summary.unknownModelTokens)} title={`${formatFullNumber(summary.unknownModelTokens)} tokens`} helper={formatPercent(summary.unknownModelTokens, summary.totalTokens)} />
+          <QualityMetric label="OpenCode" value="Pending" helper="Parser not implemented" />
+          <QualityMetric label="Last Event" value={formatDateTime(summary.lastEventAt)} helper="Based on occurredAt" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function Breakdown({ title, rows, totalTokens }: { title: string; rows: BreakdownRow[]; totalTokens: number }) {
+  return (
+    <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+      <h2 className="mb-4 text-xl font-semibold">{title}</h2>
+      <table className="w-full text-left text-sm">
+        <thead className="text-slate-400"><tr><th className="py-2">Name</th><th>Tokens</th><th>Share</th><th>Events</th><th>Avg / event</th></tr></thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.name} className="border-t border-slate-800">
+              <td className="py-3 pr-4">{row.name}</td>
+              <td className="pr-4" title={`${formatFullNumber(row.totalTokens)} tokens`}>{formatTokens(row.totalTokens)}</td>
+              <td className="pr-4">{formatPercent(row.totalTokens, totalTokens)}</td>
+              <td className="pr-4">{formatFullNumber(row.events)}</td>
+              <td title={`${formatFullNumber(row.avgTokensPerEvent)} tokens`}>{formatTokens(row.avgTokensPerEvent)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function QualityMetric({ label, value, helper, title }: { label: string; value: string; helper: string; title?: string }) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" title={title}>
+      <div className="text-sm text-slate-400">{label}</div>
+      <div className="mt-2 truncate text-2xl font-semibold">{value}</div>
+      <div className="mt-2 text-xs text-slate-500">{helper}</div>
+    </div>
+  );
+}
