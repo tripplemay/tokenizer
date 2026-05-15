@@ -47,6 +47,8 @@ The compose stack includes:
 - `migrate`: one-shot `prisma migrate deploy` job, run during deploys.
 - `app`: Next.js dashboard and ingestion API on port `3000`.
 
+PostgreSQL is only exposed inside the Docker Compose network. It is not published to the VPS host because the production server already runs other database services.
+
 Check status:
 
 ```bash
