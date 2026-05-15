@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { BatchUsageRequest, UsageEventInput } from "@/shared/usage";
-import { queuePath, TokenizerConfig } from "./config";
+import { queuePath, readDevice, TokenizerConfig } from "./config";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -15,8 +15,8 @@ export function clearQueue() {
 }
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
-  if (events.length === 0) return { inserted: 0, duplicates: 0, received: 0 };
-  const body: BatchUsageRequest = { events };
+  if (events.length === 0) return { inserted: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
+  const body: BatchUsageRequest = { device: readDevice(), events };
   const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
     method: "POST",
     headers: {
@@ -26,5 +26,5 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
     body: JSON.stringify(body)
   });
   if (!response.ok) throw new Error(`Sync failed: ${response.status} ${await response.text()}`);
-  return response.json() as Promise<{ inserted: number; duplicates: number; received: number }>;
+  return response.json() as Promise<{ inserted: number; duplicates: number; received: number; deviceId?: string }>;
 }

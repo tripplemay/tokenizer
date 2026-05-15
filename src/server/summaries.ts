@@ -8,13 +8,14 @@ export async function getSummary() {
   const week = new Date(now.getTime() - 7 * DAY_MS);
   const month = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const [total, todayAgg, weekAgg, monthAgg, eventCount, projectCount, lastEvent, unknownProject, unknownModel] = await Promise.all([
+  const [total, todayAgg, weekAgg, monthAgg, eventCount, projectCount, deviceCount, lastEvent, unknownProject, unknownModel] = await Promise.all([
     prisma.usageEvent.aggregate({ _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, reasoningOutputTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: today } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: week } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: month } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.count(),
     prisma.project.count(),
+    prisma.device.count(),
     prisma.usageEvent.findFirst({ orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
     prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true } })
@@ -31,10 +32,36 @@ export async function getSummary() {
     monthTokens: monthAgg._sum.totalTokens ?? 0,
     eventCount,
     projectCount,
+    deviceCount,
     lastEventAt: lastEvent?.occurredAt?.toISOString() ?? null,
     unknownProjectTokens: unknownProject._sum.totalTokens ?? 0,
     unknownModelTokens: unknownModel._sum.totalTokens ?? 0
   };
+}
+
+export async function getDeviceSummary() {
+  const rows = await prisma.usageEvent.groupBy({
+    by: ["deviceId"],
+    _sum: { totalTokens: true },
+    _count: true,
+    _max: { occurredAt: true },
+    orderBy: { _sum: { totalTokens: "desc" } }
+  });
+  const devices = await prisma.device.findMany({ where: { id: { in: rows.map((row) => row.deviceId) } } });
+  const deviceById = new Map(devices.map((device) => [device.id, device]));
+  return rows.map((row) => {
+    const device = deviceById.get(row.deviceId);
+    return {
+      deviceId: row.deviceId,
+      name: device?.name ?? row.deviceId,
+      hostname: device?.hostname ?? null,
+      platform: device?.platform ?? null,
+      lastSeenAt: device?.lastSeenAt?.toISOString() ?? null,
+      lastEventAt: row._max.occurredAt?.toISOString() ?? null,
+      totalTokens: row._sum.totalTokens ?? 0,
+      events: row._count
+    };
+  });
 }
 
 export async function getProjectSummary() {

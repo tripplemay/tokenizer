@@ -19,8 +19,22 @@ model Project {
   @@index([name])
 }
 
+model Device {
+  id          String       @id
+  name        String
+  hostname    String?
+  platform    String?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  lastSeenAt  DateTime?
+  usageEvents UsageEvent[]
+
+  @@index([lastSeenAt])
+}
+
 model UsageEvent {
   id                    String   @id @default(cuid())
+  deviceId              String
   source                String
   sourceEventId         String
   projectId             String?
@@ -38,9 +52,11 @@ model UsageEvent {
   createdAt             DateTime @default(now())
 
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  device  Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
-  @@unique([source, sourceEventId])
+  @@unique([deviceId, source, sourceEventId])
   @@index([occurredAt])
+  @@index([deviceId, occurredAt])
   @@index([source])
   @@index([model])
   @@index([projectId, occurredAt])

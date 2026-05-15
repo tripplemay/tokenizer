@@ -13,6 +13,6 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "events must be an array" }, { status: 400 });
   }
 
-  const result = await ingestUsageEvents(body.events);
+  const result = await ingestUsageEvents(body.events, body.device);
   return Response.json(result);
 }

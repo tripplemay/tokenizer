@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "verify": "prisma generate && tsc --noEmit",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",

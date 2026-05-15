@@ -1,4 +1,4 @@
-import { getBreakdown, getDailySummary, getProjectSummary, getSummary } from "@/server/summaries";
+import { getBreakdown, getDailySummary, getDeviceSummary, getProjectSummary, getSummary } from "@/server/summaries";
 import { formatDateTime, formatFullNumber, formatPercent, formatTokens } from "@/shared/format";
 
 export const dynamic = "force-dynamic";
@@ -21,12 +21,13 @@ function TokenCard({ label, value, helper }: { label: string; value: number; hel
 }
 
 export default async function HomePage() {
-  const [summary, projects, daily, sources, models] = await Promise.all([
+  const [summary, projects, daily, sources, models, devices] = await Promise.all([
     getSummary(),
     getProjectSummary(),
     getDailySummary(),
     getBreakdown("source"),
-    getBreakdown("model")
+    getBreakdown("model"),
+    getDeviceSummary()
   ]);
 
   const maxDailyTokens = Math.max(...daily.map((day) => day.totalTokens), 1);
@@ -37,7 +38,7 @@ export default async function HomePage() {
         <h1 className="text-4xl font-semibold">Coding Token Usage</h1>
         <p className="mt-2 text-slate-400">Aggregated token usage from Claude Code, Codex, and OpenCode adapters.</p>
         <p className="mt-3 text-sm text-slate-500">
-          Events: {formatFullNumber(summary.eventCount)} · Projects: {formatFullNumber(summary.projectCount)} · Last event: {formatDateTime(summary.lastEventAt)}
+          Events: {formatFullNumber(summary.eventCount)} · Projects: {formatFullNumber(summary.projectCount)} · Devices: {formatFullNumber(summary.deviceCount)} · Last event: {formatDateTime(summary.lastEventAt)}
         </p>
       </section>
 
@@ -109,7 +110,8 @@ export default async function HomePage() {
         <div className="mt-5 grid gap-4 md:grid-cols-4">
           <QualityMetric label="Unknown Project" value={formatTokens(summary.unknownProjectTokens)} title={`${formatFullNumber(summary.unknownProjectTokens)} tokens`} helper={formatPercent(summary.unknownProjectTokens, summary.totalTokens)} />
           <QualityMetric label="Unknown Model" value={formatTokens(summary.unknownModelTokens)} title={`${formatFullNumber(summary.unknownModelTokens)} tokens`} helper={formatPercent(summary.unknownModelTokens, summary.totalTokens)} />
-          <QualityMetric label="OpenCode" value="Pending" helper="Parser not implemented" />
+          <QualityMetric label="Devices" value={formatFullNumber(summary.deviceCount)} helper={devices.map((device) => device.name).join(", ") || "No devices"} />
+          <QualityMetric label="OpenCode" value="Ready" helper="SQLite parser enabled" />
           <QualityMetric label="Last Event" value={formatDateTime(summary.lastEventAt)} helper="Based on occurredAt" />
         </div>
       </section>

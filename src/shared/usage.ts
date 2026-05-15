@@ -17,7 +17,16 @@ export type UsageEventInput = {
   rawJson?: unknown;
 };
 
+export type DeviceInput = {
+  id: string;
+  name: string;
+  hostname?: string | null;
+  platform?: string | null;
+  metadata?: unknown;
+};
+
 export type BatchUsageRequest = {
+  device?: DeviceInput;
   events: UsageEventInput[];
 };
 

@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { configPath, ensureConfig, queuePath, readConfig } from "./config";
+import { configPath, devicePath, ensureConfig, queuePath, readConfig, readDevice } from "./config";
 import { collectEvents, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
@@ -10,9 +10,11 @@ const program = new Command();
 
 program.name("tokenizer").description("Collect and analyze coding token usage").version("0.1.0");
 
-program.command("init").description("Create ~/.tokenizer/config.json").action(() => {
-  ensureConfig();
+program.command("init").description("Create ~/.tokenizer/config.json and device.json").option("--device-name <name>", "Human-readable device name").action((options: { deviceName?: string }) => {
+  ensureConfig({ deviceName: options.deviceName });
+  const device = readDevice();
   console.log(`Config ready: ${configPath}`);
+  console.log(`Device ready: ${devicePath} (${device.name}, ${device.id})`);
 });
 
 program.command("collect").description("Collect local usage events into queue").action(() => {
@@ -49,6 +51,7 @@ program.command("run").description("Collect and sync in one step").action(async 
 
 program.command("status").description("Show local configuration and queue status").action(() => {
   console.log(`Config: ${existsSync(configPath) ? configPath : "missing"}`);
+  console.log(`Device: ${existsSync(devicePath) ? `${devicePath} (${readDevice().name}, ${readDevice().id})` : "missing"}`);
   console.log(`Queue: ${existsSync(queuePath) ? `${queuePath} (${readQueue().length} events)` : "empty"}`);
 });
 
