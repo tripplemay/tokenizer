@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "better-sqlite3": "^12.10.0",
     "commander": "^12.1.0",
     "next": "^14.2.23",
     "prisma": "^5.22.0",
@@ -27,6 +28,7 @@
     "recharts": "^2.15.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.7",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",

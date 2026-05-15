@@ -6,7 +6,7 @@ Supported in the MVP:
 
 - Claude Code: `~/.claude/usage-data/session-meta/*.json`
 - Codex: `~/.codex/sessions/**/rollout-*.jsonl`
-- OpenCode: diagnostic skeleton via `tokenizer diagnose opencode`
+- OpenCode: `~/.local/share/opencode/opencode.db` assistant messages
 
 ## Local Setup
 
@@ -32,6 +32,7 @@ Run the CLI from the project:
 npm run cli -- init
 npm run cli -- collect
 npm run cli -- sync
+npm run cli -- diagnose opencode
 ```
 
 Or link it globally:
@@ -122,4 +123,5 @@ Dashboard runs on port `3000` by default.
 
 - Ingestion is idempotent with `unique(source, sourceEventId)`.
 - Claude Code and Codex parsers use real usage fields exposed by local logs.
-- OpenCode parsing needs the actual local log format; start with `tokenizer diagnose opencode`.
+- OpenCode parsing reads the local SQLite database and maps one assistant message to one usage event.
+- OpenCode cache read tokens are stored as `cachedInputTokens`; cache write tokens are preserved in `rawJson` for now.
