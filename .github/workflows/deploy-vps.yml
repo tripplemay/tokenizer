@@ -60,7 +60,7 @@ jobs:
           set -eu
           DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
           SSH_TARGET="$VPS_USER@$VPS_HOST"
-          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22}"
+          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
           $SSH_CMD "$SSH_TARGET" "mkdir -p '$DEPLOY_PATH'"
           rsync -az --delete \
             --exclude='.git' \
@@ -75,7 +75,7 @@ jobs:
           set -eu
           DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
           SSH_TARGET="$VPS_USER@$VPS_HOST"
-          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22}"
+          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
           if [ -z "${APP_API_KEY:-}" ]; then
             echo "APP_API_KEY secret is required" >&2
