@@ -36,57 +36,68 @@ jobs:
     needs: verify
     if: github.ref == 'refs/heads/main'
     environment: production
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+      VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+      APP_API_KEY: ${{ secrets.APP_API_KEY }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
-        env:
-          APP_API_KEY: ${{ secrets.APP_API_KEY }}
-          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
-          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
-          DEPLOY_REF: ${{ github.sha }}
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_SSH_PORT || 22 }}
-          envs: APP_API_KEY,NEXT_PUBLIC_APP_URL,DEPLOY_PATH,VPS_HOST,REPOSITORY_URL,DEPLOY_REF
-          script_stop: true
-          script: |
-            set -eu
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            if [ -z "${DEPLOY_PATH:-}" ]; then
-              DEPLOY_PATH="/opt/tokenizer"
-            fi
+      - name: Prepare SSH
+        run: |
+          set -eu
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/tokenizer_vps
+          chmod 600 ~/.ssh/tokenizer_vps
+          ssh-keyscan -p "${VPS_SSH_PORT:-22}" -H "$VPS_HOST" >> ~/.ssh/known_hosts
 
-            if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              mkdir -p "$(dirname "$DEPLOY_PATH")"
-              git clone "$REPOSITORY_URL" "$DEPLOY_PATH"
-            fi
+      - name: Sync files to VPS
+        run: |
+          set -eu
+          DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
+          SSH_TARGET="$VPS_USER@$VPS_HOST"
+          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22}"
+          $SSH_CMD "$SSH_TARGET" "mkdir -p '$DEPLOY_PATH'"
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='.env' \
+            --exclude='.next' \
+            --exclude='node_modules' \
+            -e "$SSH_CMD" \
+            ./ "$SSH_TARGET:$DEPLOY_PATH/"
 
-            cd "$DEPLOY_PATH"
-            git fetch --prune origin
-            git checkout --force "$DEPLOY_REF"
+      - name: Deploy on VPS
+        run: |
+          set -eu
+          DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
+          SSH_TARGET="$VPS_USER@$VPS_HOST"
+          SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22}"
 
-            if [ -z "${APP_API_KEY:-}" ]; then
-              echo "APP_API_KEY secret is required" >&2
-              exit 1
-            fi
+          if [ -z "${APP_API_KEY:-}" ]; then
+            echo "APP_API_KEY secret is required" >&2
+            exit 1
+          fi
 
-            if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
-              NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
-            fi
+          if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
+            NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
+          fi
 
-            cat > .env <<EOF
-            APP_API_KEY=$APP_API_KEY
-            NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-            DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer
-            APP_HOST_PORT=127.0.0.1:3010
-            EOF
+          ENV_FILE="$(mktemp)"
+          {
+            printf 'APP_API_KEY=%s\n' "$APP_API_KEY"
+            printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
+            printf 'DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer\n'
+            printf 'APP_HOST_PORT=127.0.0.1:3010\n'
+          } > "$ENV_FILE"
+          scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
+          rm -f "$ENV_FILE"
 
-            docker compose build
-            docker compose up -d postgres
-            docker compose run --rm migrate
-            docker compose up -d app
-            docker compose ps
+          $SSH_CMD "$SSH_TARGET" "cd '$DEPLOY_PATH' && docker compose build
+          docker compose up -d postgres
+          docker compose run --rm migrate
+          docker compose up -d app
+          docker compose ps"
