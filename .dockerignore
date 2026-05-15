@@ -1,0 +1,13 @@
+.git
+.next
+node_modules
+npm-debug.log*
+.env
+.env.*
+!.env.example
+Dockerfile
+docker-compose.yml
+README.md
+docs
+coverage
+.tokenizer

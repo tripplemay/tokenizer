@@ -1,0 +1,92 @@
+name: Deploy VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run verify
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          APP_API_KEY: ${{ secrets.APP_API_KEY }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          DEPLOY_REF: ${{ github.sha }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          envs: APP_API_KEY,NEXT_PUBLIC_APP_URL,DEPLOY_PATH,VPS_HOST,REPOSITORY_URL,DEPLOY_REF
+          script_stop: true
+          script: |
+            set -eu
+
+            if [ -z "${DEPLOY_PATH:-}" ]; then
+              DEPLOY_PATH="/opt/tokenizer"
+            fi
+
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              mkdir -p "$(dirname "$DEPLOY_PATH")"
+              git clone "$REPOSITORY_URL" "$DEPLOY_PATH"
+            fi
+
+            cd "$DEPLOY_PATH"
+            git fetch --prune origin
+            git checkout --force "$DEPLOY_REF"
+
+            if [ -z "${APP_API_KEY:-}" ]; then
+              echo "APP_API_KEY secret is required" >&2
+              exit 1
+            fi
+
+            if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
+              NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
+            fi
+
+            cat > .env <<EOF
+APP_API_KEY=$APP_API_KEY
+NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer
+APP_HOST_PORT=127.0.0.1:3010
+EOF
+
+            docker compose build
+            docker compose up -d postgres
+            docker compose run --rm migrate
+            docker compose up -d app
+            docker compose ps

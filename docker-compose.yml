@@ -10,18 +10,38 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tokenizer -d tokenizer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: .
+      target: builder
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
+    command: ["npx", "prisma", "migrate", "deploy"]
 
   app:
-    build: .
+    build:
+      context: .
+      target: runner
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
       APP_API_KEY: ${APP_API_KEY:-change-me}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     ports:
-      - "3000:3000"
+      - "${APP_HOST_PORT:-127.0.0.1:3010}:3000"
 
 volumes:
   postgres-data:

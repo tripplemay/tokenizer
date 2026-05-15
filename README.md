@@ -114,10 +114,11 @@ Read endpoints:
 cp .env.example .env
 # edit APP_API_KEY and NEXT_PUBLIC_APP_URL
 docker compose up -d --build
-docker compose exec app npx prisma migrate deploy
 ```
 
-Dashboard runs on port `3000` by default.
+The app container listens on port `3000`; compose publishes it to `127.0.0.1:3010` by default for reverse proxy deployments.
+
+See `docs/VPS-deployment.md` for the full VPS setup, client configuration, upgrade, and backup workflow.
 
 ## Notes
 
