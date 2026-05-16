@@ -1,24 +1,25 @@
-import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
 import { ParserConfig, ParserResult } from "./types";
 
-function hash(value: string): string {
-  return createHash("sha1").update(value).digest("hex").slice(0, 16);
-}
-
 export function parseClaudeUsage(config: ParserConfig): ParserResult {
-  const dir = join(config.homeDir, ".claude", "usage-data", "session-meta");
+  const projectsDir = join(config.homeDir, ".claude", "projects");
+  const legacyDir = join(config.homeDir, ".claude", "usage-data", "session-meta");
   const warnings: string[] = [];
   const events: UsageEventInput[] = [];
-  if (existsSync(dir)) parseLegacySessionMeta(dir, config, events, warnings);
 
-  const projectsDir = join(config.homeDir, ".claude", "projects");
-  if (existsSync(projectsDir)) parseProjectJsonl(projectsDir, config, events, warnings);
-
-  if (!existsSync(dir) && !existsSync(projectsDir)) return { events, warnings: [`Claude usage directories not found: ${dir}, ${projectsDir}`] };
+  // The jsonl format is per-message and authoritative; legacy session-meta stores
+  // cumulative totals per session and is only consulted as a fallback to avoid
+  // double-counting the same session across both sources.
+  if (existsSync(projectsDir)) {
+    parseProjectJsonl(projectsDir, config, events, warnings);
+  } else if (existsSync(legacyDir)) {
+    parseLegacySessionMeta(legacyDir, config, events, warnings);
+  } else {
+    warnings.push(`Claude usage directories not found: ${projectsDir}, ${legacyDir}`);
+  }
   return { events, warnings };
 }
 
@@ -40,7 +41,7 @@ function parseLegacySessionMeta(dir: string, config: ParserConfig, events: Usage
 
       events.push({
         source: "claude-code",
-        sourceEventId: `claude:${sessionId}:${hash(`${mtime}:${text}`)}`,
+        sourceEventId: `claude-legacy:${sessionId}`,
         projectName: inferProjectName(workspacePath),
         sessionId,
         workspacePath,
