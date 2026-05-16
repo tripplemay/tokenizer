@@ -13,8 +13,16 @@ export function parseClaudeUsage(config: ParserConfig): ParserResult {
   const dir = join(config.homeDir, ".claude", "usage-data", "session-meta");
   const warnings: string[] = [];
   const events: UsageEventInput[] = [];
-  if (!existsSync(dir)) return { events, warnings: [`Claude usage directory not found: ${dir}`] };
+  if (existsSync(dir)) parseLegacySessionMeta(dir, config, events, warnings);
 
+  const projectsDir = join(config.homeDir, ".claude", "projects");
+  if (existsSync(projectsDir)) parseProjectJsonl(projectsDir, config, events, warnings);
+
+  if (!existsSync(dir) && !existsSync(projectsDir)) return { events, warnings: [`Claude usage directories not found: ${dir}, ${projectsDir}`] };
+  return { events, warnings };
+}
+
+function parseLegacySessionMeta(dir: string, config: ParserConfig, events: UsageEventInput[], warnings: string[]) {
   for (const name of readdirSync(dir)) {
     if (!name.endsWith(".json")) continue;
     const file = join(dir, name);
@@ -47,6 +55,55 @@ export function parseClaudeUsage(config: ParserConfig): ParserResult {
       warnings.push(`Failed to parse Claude file ${file}: ${(error as Error).message}`);
     }
   }
+}
 
-  return { events, warnings };
+function walkJsonl(dir: string, files: string[] = []): string[] {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) walkJsonl(full, files);
+    else if (entry.isFile() && entry.name.endsWith(".jsonl")) files.push(full);
+  }
+  return files;
+}
+
+function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: UsageEventInput[], warnings: string[]) {
+  for (const file of walkJsonl(projectsDir)) {
+    const fallbackTime = statSync(file).mtime.toISOString();
+    const lines = readFileSync(file, "utf8").replace(/\u0000/g, "").split(/\r?\n/);
+    lines.forEach((line, index) => {
+      if (!line.trim()) return;
+      try {
+        const row = JSON.parse(line) as any;
+        if (row.type !== "assistant" || row.message?.role !== "assistant") return;
+        const usage = row.message.usage;
+        if (!usage) return;
+
+        const inputTokens = normalizeTokenCount(usage.input_tokens);
+        const outputTokens = normalizeTokenCount(usage.output_tokens);
+        const cachedInputTokens = normalizeTokenCount(usage.cache_read_input_tokens);
+        const cacheCreationTokens = normalizeTokenCount(usage.cache_creation_input_tokens);
+        const totalTokens = inputTokens + outputTokens + cachedInputTokens + cacheCreationTokens;
+        if (totalTokens === 0) return;
+
+        const workspacePath = findWorkspaceFromPath(row.cwd, config.projectRoots);
+        const messageId = row.message.id ?? row.uuid ?? `${file}:${index + 1}`;
+        events.push({
+          source: "claude-code",
+          sourceEventId: `claude-jsonl:${messageId}:${row.uuid ?? index + 1}`,
+          projectName: inferProjectName(workspacePath),
+          sessionId: row.sessionId ?? null,
+          workspacePath,
+          model: typeof row.message.model === "string" ? row.message.model : null,
+          inputTokens: inputTokens + cacheCreationTokens,
+          outputTokens,
+          cachedInputTokens,
+          totalTokens,
+          occurredAt: typeof row.timestamp === "string" ? row.timestamp : fallbackTime,
+          rawJson: row
+        });
+      } catch (error) {
+        warnings.push(`Failed to parse Claude jsonl ${file}:${index + 1}: ${(error as Error).message}`);
+      }
+    });
+  }
 }

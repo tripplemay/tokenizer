@@ -15,6 +15,7 @@ export function clearQueue() {
 }
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
+  if (events.length > 500) return syncEventsInBatches(config, events);
   const body: BatchUsageRequest = { device: readDevice(), events };
   const credentials = readCredentials();
   const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
@@ -27,6 +28,19 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
   });
   if (!response.ok) throw new Error(`Sync failed: ${response.status} ${await response.text()}`);
   return response.json() as Promise<{ inserted: number; duplicates: number; received: number; deviceId?: string }>;
+}
+
+async function syncEventsInBatches(config: TokenizerConfig, events: UsageEventInput[]) {
+  const batchSize = 500;
+  const total = { inserted: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
+  for (let index = 0; index < events.length; index += batchSize) {
+    const result = await syncEvents(config, events.slice(index, index + batchSize));
+    total.inserted += result.inserted;
+    total.duplicates += result.duplicates;
+    total.received += result.received;
+    total.deviceId = result.deviceId ?? total.deviceId;
+  }
+  return total;
 }
 
 export async function heartbeat(config: TokenizerConfig) {
