@@ -7,8 +7,12 @@ export const dynamic = "force-dynamic";
 type BreakdownRow = {
   name: string;
   totalTokens: number;
+  inputTokens: number;
+  outputTokens: number;
+  billableTokens: number;
   events: number;
   avgTokensPerEvent: number;
+  avgBillablePerEvent: number;
 };
 
 function TokenCard({ label, value, helper }: { label: string; value: number; helper: string }) {
@@ -31,7 +35,7 @@ export default async function HomePage() {
     getDeviceSummary()
   ]);
 
-  const maxDailyTokens = Math.max(...daily.map((day) => day.totalTokens), 1);
+  const maxDailyBillable = Math.max(...daily.map((day) => day.billableTokens), 1);
 
   return (
     <div className="space-y-8">
@@ -41,6 +45,7 @@ export default async function HomePage() {
         <p className="mt-3 text-sm text-slate-500">
           Events: {formatFullNumber(summary.eventCount)} · Projects: {formatFullNumber(summary.projectCount)} · Devices: {formatFullNumber(summary.deviceCount)} · Last event: {formatDateTime(summary.lastEventAt)}
         </p>
+        <p className="mt-1 text-xs text-slate-600">All token figures below exclude cache reuse; cache hit rate is shown separately.</p>
       </section>
 
       <section className="grid gap-4 md:grid-cols-4">
@@ -72,7 +77,7 @@ export default async function HomePage() {
                   <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSeenAt)}</td>
                   <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSyncAt)}</td>
                   <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastEventAt)}</td>
-                  <td className="pr-4" title={`${formatFullNumber(device.totalTokens)} tokens`}>{formatTokens(device.totalTokens)}</td>
+                  <td className="pr-4" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
                   <td>{formatFullNumber(device.events)}</td>
                 </tr>
               ))}
@@ -98,10 +103,10 @@ export default async function HomePage() {
                 {projects.map((project) => (
                   <tr key={project.projectId ?? project.name} className="border-t border-slate-800">
                     <td className="py-3 pr-4"><a className="hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>{project.name}</a></td>
-                    <td className="pr-4" title={`${formatFullNumber(project.totalTokens)} tokens`}>{formatTokens(project.totalTokens)}</td>
-                    <td className="pr-4">{formatPercent(project.totalTokens, summary.totalTokens)}</td>
+                    <td className="pr-4" title={`${formatFullNumber(project.billableTokens)} billable tokens`}>{formatTokens(project.billableTokens)}</td>
+                    <td className="pr-4">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
                     <td className="pr-4">{formatFullNumber(project.events)}</td>
-                    <td className="pr-4" title={`${formatFullNumber(project.avgTokensPerEvent)} tokens`}>{formatTokens(project.avgTokensPerEvent)}</td>
+                    <td className="pr-4" title={`${formatFullNumber(project.avgBillablePerEvent)} billable tokens`}>{formatTokens(project.avgBillablePerEvent)}</td>
                     <td className="whitespace-nowrap text-slate-400">{formatDateTime(project.lastActiveAt)}</td>
                   </tr>
                 ))}
@@ -115,12 +120,12 @@ export default async function HomePage() {
           <p className="mt-1 text-sm text-slate-500">Last 180 days, latest 30 active days.</p>
           <div className="mt-5 space-y-3">
             {daily.slice(-30).map((day) => {
-              const width = Math.max(4, Math.round((day.totalTokens / maxDailyTokens) * 100));
+              const width = Math.max(4, Math.round((day.billableTokens / maxDailyBillable) * 100));
               return (
                 <div key={day.date}>
                   <div className="mb-1 flex justify-between gap-4 text-sm text-slate-400">
                     <span>{day.date}</span>
-                    <span title={`${formatFullNumber(day.totalTokens)} tokens`}>{formatTokens(day.totalTokens)}</span>
+                    <span title={`${formatFullNumber(day.billableTokens)} billable tokens`}>{formatTokens(day.billableTokens)}</span>
                   </div>
                   <div className="h-2 rounded bg-slate-800"><div className="h-2 rounded bg-cyan-400" style={{ width: `${width}%` }} /></div>
                   <div className="mt-1 text-xs text-slate-600">Input {formatTokens(day.inputTokens)} · Output {formatTokens(day.outputTokens)}</div>
@@ -132,16 +137,16 @@ export default async function HomePage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <Breakdown title="Sources" rows={sources} totalTokens={summary.totalTokens} />
-        <Breakdown title="Models" rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? "Unknown model" : row.name }))} totalTokens={summary.totalTokens} />
+        <Breakdown title="Sources" rows={sources} billableTotal={summary.billableTokens} />
+        <Breakdown title="Models" rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? "Unknown model" : row.name }))} billableTotal={summary.billableTokens} />
       </section>
 
       <section className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
         <h2 className="text-xl font-semibold">Data Quality</h2>
         <p className="mt-1 text-sm text-slate-500">Signals that affect analysis accuracy.</p>
         <div className="mt-5 grid gap-4 md:grid-cols-4">
-          <QualityMetric label="Unknown Project" value={formatTokens(summary.unknownProjectTokens)} title={`${formatFullNumber(summary.unknownProjectTokens)} tokens`} helper={formatPercent(summary.unknownProjectTokens, summary.totalTokens)} />
-          <QualityMetric label="Unknown Model" value={formatTokens(summary.unknownModelTokens)} title={`${formatFullNumber(summary.unknownModelTokens)} tokens`} helper={formatPercent(summary.unknownModelTokens, summary.totalTokens)} />
+          <QualityMetric label="Unknown Project" value={formatTokens(summary.unknownProjectBillable)} title={`${formatFullNumber(summary.unknownProjectBillable)} billable tokens`} helper={formatPercent(summary.unknownProjectBillable, summary.billableTokens)} />
+          <QualityMetric label="Unknown Model" value={formatTokens(summary.unknownModelBillable)} title={`${formatFullNumber(summary.unknownModelBillable)} billable tokens`} helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)} />
           <QualityMetric label="Devices" value={formatFullNumber(summary.deviceCount)} helper={devices.map((device) => device.name).join(", ") || "No devices"} />
           <QualityMetric label="OpenCode" value="Ready" helper="SQLite parser enabled" />
           <QualityMetric label="Last Event" value={formatDateTime(summary.lastEventAt)} helper="Based on occurredAt" />
@@ -159,7 +164,7 @@ function clientStatus(lastSeenAt: string | null) {
   return "Offline";
 }
 
-function Breakdown({ title, rows, totalTokens }: { title: string; rows: BreakdownRow[]; totalTokens: number }) {
+function Breakdown({ title, rows, billableTotal }: { title: string; rows: BreakdownRow[]; billableTotal: number }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
       <h2 className="mb-4 text-xl font-semibold">{title}</h2>
@@ -169,10 +174,10 @@ function Breakdown({ title, rows, totalTokens }: { title: string; rows: Breakdow
           {rows.map((row) => (
             <tr key={row.name} className="border-t border-slate-800">
               <td className="py-3 pr-4">{row.name}</td>
-              <td className="pr-4" title={`${formatFullNumber(row.totalTokens)} tokens`}>{formatTokens(row.totalTokens)}</td>
-              <td className="pr-4">{formatPercent(row.totalTokens, totalTokens)}</td>
+              <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} billable tokens`}>{formatTokens(row.billableTokens)}</td>
+              <td className="pr-4">{formatPercent(row.billableTokens, billableTotal)}</td>
               <td className="pr-4">{formatFullNumber(row.events)}</td>
-              <td title={`${formatFullNumber(row.avgTokensPerEvent)} tokens`}>{formatTokens(row.avgTokensPerEvent)}</td>
+              <td title={`${formatFullNumber(row.avgBillablePerEvent)} billable tokens`}>{formatTokens(row.avgBillablePerEvent)}</td>
             </tr>
           ))}
         </tbody>

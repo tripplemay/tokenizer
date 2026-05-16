@@ -18,8 +18,8 @@ export async function getSummary() {
     prisma.project.count(),
     prisma.device.count(),
     prisma.usageEvent.findFirst({ orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
-    prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true } })
+    prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } }),
+    prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } })
   ]);
 
   const inputTokens = total._sum.inputTokens ?? 0;
@@ -43,14 +43,16 @@ export async function getSummary() {
     deviceCount,
     lastEventAt: lastEvent?.occurredAt?.toISOString() ?? null,
     unknownProjectTokens: unknownProject._sum.totalTokens ?? 0,
-    unknownModelTokens: unknownModel._sum.totalTokens ?? 0
+    unknownProjectBillable: (unknownProject._sum.inputTokens ?? 0) + (unknownProject._sum.outputTokens ?? 0),
+    unknownModelTokens: unknownModel._sum.totalTokens ?? 0,
+    unknownModelBillable: (unknownModel._sum.inputTokens ?? 0) + (unknownModel._sum.outputTokens ?? 0)
   };
 }
 
 export async function getDeviceSummary() {
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
-    _sum: { totalTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true },
     _count: true,
     _max: { occurredAt: true },
     orderBy: { _sum: { totalTokens: "desc" } }
@@ -62,6 +64,8 @@ export async function getDeviceSummary() {
   return Array.from(ids).map((deviceId) => {
     const row = rowByDeviceId.get(deviceId);
     const device = deviceById.get(deviceId);
+    const inputTokens = row?._sum.inputTokens ?? 0;
+    const outputTokens = row?._sum.outputTokens ?? 0;
     return {
       deviceId,
       name: device?.name ?? deviceId,
@@ -71,6 +75,9 @@ export async function getDeviceSummary() {
       lastSyncAt: device?.lastSyncAt?.toISOString() ?? null,
       lastEventAt: row?._max.occurredAt?.toISOString() ?? null,
       totalTokens: row?._sum.totalTokens ?? 0,
+      inputTokens,
+      outputTokens,
+      billableTokens: inputTokens + outputTokens,
       events: row?._count ?? 0
     };
   });
@@ -87,17 +94,24 @@ export async function getProjectSummary() {
   });
   const projects = await prisma.project.findMany({ where: { id: { in: rows.map((row) => row.projectId).filter(Boolean) as string[] } } });
   const projectById = new Map(projects.map((project) => [project.id, project]));
-  return rows.map((row) => ({
-    projectId: row.projectId,
-    name: row.projectId ? projectById.get(row.projectId)?.name ?? "Unknown Project" : "Unknown Project",
-    workspacePath: row.projectId ? projectById.get(row.projectId)?.workspacePath ?? null : null,
-    totalTokens: row._sum.totalTokens ?? 0,
-    inputTokens: row._sum.inputTokens ?? 0,
-    outputTokens: row._sum.outputTokens ?? 0,
-    events: row._count,
-    avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0,
-    lastActiveAt: row._max.occurredAt?.toISOString() ?? null
-  }));
+  return rows.map((row) => {
+    const inputTokens = row._sum.inputTokens ?? 0;
+    const outputTokens = row._sum.outputTokens ?? 0;
+    const billableTokens = inputTokens + outputTokens;
+    return {
+      projectId: row.projectId,
+      name: row.projectId ? projectById.get(row.projectId)?.name ?? "Unknown Project" : "Unknown Project",
+      workspacePath: row.projectId ? projectById.get(row.projectId)?.workspacePath ?? null : null,
+      totalTokens: row._sum.totalTokens ?? 0,
+      inputTokens,
+      outputTokens,
+      billableTokens,
+      events: row._count,
+      avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0,
+      avgBillablePerEvent: row._count > 0 ? Math.round(billableTokens / row._count) : 0,
+      lastActiveAt: row._max.occurredAt?.toISOString() ?? null
+    };
+  });
 }
 
 export async function getDailySummary(days = 180) {
@@ -108,13 +122,14 @@ export async function getDailySummary(days = 180) {
     orderBy: { occurredAt: "asc" }
   });
 
-  const byDay = new Map<string, { date: string; totalTokens: number; inputTokens: number; outputTokens: number }>();
+  const byDay = new Map<string, { date: string; totalTokens: number; inputTokens: number; outputTokens: number; billableTokens: number }>();
   for (const event of events) {
     const date = event.occurredAt.toISOString().slice(0, 10);
-    const row = byDay.get(date) ?? { date, totalTokens: 0, inputTokens: 0, outputTokens: 0 };
+    const row = byDay.get(date) ?? { date, totalTokens: 0, inputTokens: 0, outputTokens: 0, billableTokens: 0 };
     row.totalTokens += event.totalTokens;
     row.inputTokens += event.inputTokens;
     row.outputTokens += event.outputTokens;
+    row.billableTokens += event.inputTokens + event.outputTokens;
     byDay.set(date, row);
   }
   return Array.from(byDay.values());
@@ -123,15 +138,24 @@ export async function getDailySummary(days = 180) {
 export async function getBreakdown(field: "source" | "model") {
   const rows = await prisma.usageEvent.groupBy({
     by: [field],
-    _sum: { totalTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true },
     _count: true,
     orderBy: { _sum: { totalTokens: "desc" } },
     take: 20
   });
-  return rows.map((row) => ({
-    name: String(row[field] ?? "unknown"),
-    totalTokens: row._sum.totalTokens ?? 0,
-    events: row._count,
-    avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0
-  }));
+  return rows.map((row) => {
+    const inputTokens = row._sum.inputTokens ?? 0;
+    const outputTokens = row._sum.outputTokens ?? 0;
+    const billableTokens = inputTokens + outputTokens;
+    return {
+      name: String(row[field] ?? "unknown"),
+      totalTokens: row._sum.totalTokens ?? 0,
+      inputTokens,
+      outputTokens,
+      billableTokens,
+      events: row._count,
+      avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0,
+      avgBillablePerEvent: row._count > 0 ? Math.round(billableTokens / row._count) : 0
+    };
+  });
 }
