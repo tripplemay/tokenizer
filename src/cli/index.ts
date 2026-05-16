@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { configPath, configure, credentialsPath, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath } from "./config";
-import { collectEvents, writeQueue } from "./collect";
+import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
 import { enrollDevice } from "./enroll";
@@ -35,8 +35,10 @@ program.command("enroll").description("Enroll this device with a one-time enroll
 program.command("collect").description("Collect local usage events into queue").action(() => {
   const config = readConfig();
   const { events, warnings } = collectEvents(config);
-  writeQueue(events);
-  console.log(`Collected ${events.length} events into ${queuePath}`);
+  const queued = readQueue();
+  const merged = dedupeBySourceEventId([...queued, ...events]);
+  writeQueue(merged);
+  console.log(`Collected ${events.length} events; queue holds ${merged.length} unique events at ${queuePath}`);
   for (const warning of warnings) console.warn(`Warning: ${warning}`);
 });
 

@@ -1,4 +1,4 @@
-import { appendFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname } from "node:path";
 import { parseClaudeUsage } from "@/parsers/claude";
@@ -32,7 +32,19 @@ export function collectEvents(config: TokenizerConfig) {
   return { events: enrichEventsWithGit(events), warnings };
 }
 
+// Truncating write: callers are expected to pass the full deduped set they want
+// persisted. The previous append-based implementation grew the queue unboundedly
+// when sync repeatedly failed because each retry appended the same events again.
 export function writeQueue(events: UsageEventInput[]) {
   mkdirSync(dirname(queuePath), { recursive: true });
-  for (const event of events) appendFileSync(queuePath, `${JSON.stringify(event)}\n`);
+  const content = events.length ? events.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
+  writeFileSync(queuePath, content);
+}
+
+export function dedupeBySourceEventId(events: UsageEventInput[]): UsageEventInput[] {
+  const map = new Map<string, UsageEventInput>();
+  for (const event of events) {
+    map.set(`${event.source}:${event.sourceEventId}`, event);
+  }
+  return Array.from(map.values());
 }

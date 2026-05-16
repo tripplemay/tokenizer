@@ -115,10 +115,14 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
         const sessionModel = parseSessionModel(row.session_model);
         const workspacePath = findWorkspaceFromPath(message.path?.cwd ?? row.directory ?? row.worktree, config.projectRoots);
         const projectName = row.project_name || inferProjectName(workspacePath);
-        const inputTokens = normalizeTokenCount(message.tokens?.input);
+        const rawInputTokens = normalizeTokenCount(message.tokens?.input);
+        const cacheWriteTokens = normalizeTokenCount(message.tokens?.cache?.write);
+        // Cache-write bytes are fresh input the model processed for the first time and
+        // additionally persisted to cache. Bundle them into inputTokens to match the
+        // Claude parser convention (raw_input + cache_creation).
+        const inputTokens = rawInputTokens + cacheWriteTokens;
         const outputTokens = normalizeTokenCount(message.tokens?.output);
         const cachedInputTokens = normalizeTokenCount(message.tokens?.cache?.read);
-        const cacheWriteTokens = normalizeTokenCount(message.tokens?.cache?.write);
         const reasoningOutputTokens = normalizeTokenCount(message.tokens?.reasoning);
 
         events.push({

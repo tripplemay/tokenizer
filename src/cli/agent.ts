@@ -1,7 +1,7 @@
 import { mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
-import { collectEvents, writeQueue } from "./collect";
+import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, updateState } from "./config";
 
@@ -17,7 +17,11 @@ export async function runOnce() {
   const startedAt = new Date().toISOString();
   const collected = collectEvents(config);
   const queued = readQueue();
-  const events = [...queued, ...collected.events];
+  const events = dedupeBySourceEventId([...queued, ...collected.events]);
+  // Persist the deduped set up front so a sync failure (or process kill mid-sync)
+  // doesn't lose the freshly collected events and so the queue cannot grow
+  // unboundedly across repeated failures.
+  writeQueue(events);
   try {
     const result = await syncEvents(config, events);
     clearQueue();
@@ -35,7 +39,7 @@ export async function runOnce() {
     for (const warning of collected.warnings) log(`warning ${warning}`);
     return result;
   } catch (error) {
-    writeQueue(collected.events);
+    // Queue already holds the deduped events; nothing more to write.
     updateState({ lastRunAt: startedAt, lastSyncStatus: "failed", lastError: error instanceof Error ? error.message : String(error) });
     log(`sync failed ${error instanceof Error ? error.message : String(error)}`);
     throw error;
