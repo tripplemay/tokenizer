@@ -101,6 +101,7 @@ jobs:
             printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
             printf 'DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer\n'
             printf 'APP_HOST_PORT=127.0.0.1:3010\n'
+            printf 'GIT_COMMIT=%s\n' "${{ github.sha }}"
           } > "$ENV_FILE"
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
           rm -f "$ENV_FILE"
@@ -111,4 +112,15 @@ jobs:
           docker compose up -d postgres
           docker compose run --rm migrate
           docker compose up -d app
-          docker compose ps"
+          docker compose ps
+          echo 'Waiting for /api/health to respond...'
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+            if curl -fsS http://127.0.0.1:3010/api/health > /dev/null; then
+              echo 'health check OK'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'health check FAILED after 30s' >&2
+          curl -sS http://127.0.0.1:3010/api/health || true
+          exit 1"
