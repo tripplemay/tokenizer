@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
-      APP_API_KEY: ${APP_API_KEY:-change-me}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     ports:
       - "${APP_HOST_PORT:-127.0.0.1:3010}:3000"

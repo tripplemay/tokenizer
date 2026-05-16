@@ -22,13 +22,13 @@ cp .env.example .env
 Edit `.env`:
 
 ```env
-APP_API_KEY=use-a-long-random-private-key
+ADMIN_TOKEN=use-a-long-random-private-token
 NEXT_PUBLIC_APP_URL=https://your-domain.example
 DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer
 APP_HOST_PORT=127.0.0.1:3010
 ```
 
-`APP_API_KEY` is the shared secret used by all CLI clients. Keep it private.
+`ADMIN_TOKEN` is used in the dashboard to generate one-time client enrollment commands. Keep it private.
 
 ## 2. Start Services
 
@@ -66,19 +66,17 @@ The production VPS uses Nginx with Let's Encrypt HTTPS and proxies `token.vpanel
 
 ## 3. Configure A Client Machine
 
-On each development machine, install dependencies and initialize the CLI:
+Generate a one-time install command from the dashboard, then run it on each client machine:
 
 ```bash
-npm install
-npm run cli -- init --device-name "MacBook Pro"
+curl -fsSL https://token.vpanel.cc/install.sh | bash -s -- --enroll-token enroll_xxx
 ```
 
-Edit `~/.tokenizer/config.json`:
+The installer creates `~/.tokenizer/config.json`:
 
 ```json
 {
   "serverUrl": "https://your-domain.example",
-  "apiKey": "use-a-long-random-private-key",
   "projectRoots": ["/Users/you/project"],
   "sources": {
     "claude": true,
@@ -87,6 +85,8 @@ Edit `~/.tokenizer/config.json`:
   }
 }
 ```
+
+It also stores the device token in `~/.tokenizer/credentials.json` with file mode `0600`.
 
 For a raw VPS IP without HTTPS, use:
 
@@ -145,7 +145,7 @@ Add these in GitHub repository settings: `Settings` -> `Secrets and variables` -
 VPS_HOST=your-vps-ip-or-hostname
 VPS_USER=tripplezhou
 VPS_SSH_KEY=<private SSH key used by GitHub Actions>
-APP_API_KEY=use-a-long-random-private-key
+ADMIN_TOKEN=use-a-long-random-private-token
 NEXT_PUBLIC_APP_URL=https://token.vpanel.cc
 ```
 
@@ -255,7 +255,7 @@ Production uses Nginx and Certbot on the VPS. HTTPS traffic for `token.vpanel.cc
 Required behavior:
 
 - Forward normal HTTP requests to `http://127.0.0.1:3010`.
-- Preserve request headers, including `x-api-key`.
+- Preserve request headers, including `authorization` and `x-admin-token`.
 - Set `NEXT_PUBLIC_APP_URL` to the public HTTPS URL.
 
 The active Nginx site is:
@@ -275,8 +275,9 @@ The certificate is managed by Certbot:
 
 Unauthorized sync:
 
-- Confirm client `~/.tokenizer/config.json` `apiKey` equals server `.env` `APP_API_KEY`.
-- Confirm reverse proxy forwards `x-api-key`.
+- Confirm the client has `~/.tokenizer/credentials.json`.
+- Confirm the device was enrolled with a valid one-time enrollment token.
+- Confirm reverse proxy forwards `authorization`.
 
 App starts before tables exist:
 

@@ -11,6 +11,7 @@ model Project {
   id            String       @id @default(cuid())
   name          String
   workspacePath String?      @unique
+  repoKey       String?      @unique
   repoRemote    String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
@@ -27,9 +28,44 @@ model Device {
   metadata    Json?
   createdAt   DateTime     @default(now())
   lastSeenAt  DateTime?
+  lastSyncAt  DateTime?
   usageEvents UsageEvent[]
+  tokens      DeviceToken[]
 
   @@index([lastSeenAt])
+  @@index([lastSyncAt])
+}
+
+model EnrollmentToken {
+  id        String    @id @default(cuid())
+  label     String?
+  tokenHash String    @unique
+  prefix    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  usedById  String?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  @@index([expiresAt])
+  @@index([usedAt])
+}
+
+model DeviceToken {
+  id         String    @id @default(cuid())
+  deviceId   String
+  tokenHash  String    @unique
+  prefix     String
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId])
+  @@index([lastUsedAt])
+  @@index([revokedAt])
 }
 
 model UsageEvent {
@@ -40,6 +76,11 @@ model UsageEvent {
   projectId             String?
   sessionId             String?
   workspacePath         String?
+  localWorkspacePath    String?
+  repoKey               String?
+  gitRemote             String?
+  gitBranch             String?
+  gitCommit             String?
   model                 String?
   inputTokens           Int      @default(0)
   outputTokens          Int      @default(0)
@@ -59,6 +100,7 @@ model UsageEvent {
   @@index([deviceId, occurredAt])
   @@index([source])
   @@index([model])
+  @@index([repoKey])
   @@index([projectId, occurredAt])
 }
 

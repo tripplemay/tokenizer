@@ -1,5 +1,6 @@
 import { getBreakdown, getDailySummary, getDeviceSummary, getProjectSummary, getSummary } from "@/server/summaries";
 import { formatDateTime, formatFullNumber, formatPercent, formatTokens } from "@/shared/format";
+import { ClientSetup } from "./client-setup";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,33 @@ export default async function HomePage() {
         <TokenCard label="Input tokens" value={summary.inputTokens} helper={`${formatPercent(summary.inputTokens, summary.totalTokens)} of total`} />
         <TokenCard label="Output tokens" value={summary.outputTokens} helper={`${formatPercent(summary.outputTokens, summary.totalTokens)} of total`} />
         <TokenCard label="Cached input tokens" value={summary.cachedInputTokens} helper={`${formatPercent(summary.cachedInputTokens, summary.inputTokens)} of input`} />
+      </section>
+
+      <ClientSetup />
+
+      <section className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+        <h2 className="text-xl font-semibold">Connected Clients</h2>
+        <p className="mt-1 text-sm text-slate-500">Heartbeat-driven device status.</p>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-slate-400"><tr><th className="py-2">Client</th><th>Status</th><th>Hostname</th><th>Platform</th><th>Last seen</th><th>Last sync</th><th>Last event</th><th>Tokens</th><th>Events</th></tr></thead>
+            <tbody>
+              {devices.map((device) => (
+                <tr key={device.deviceId} className="border-t border-slate-800">
+                  <td className="py-3 pr-4">{device.name}</td>
+                  <td className="pr-4">{clientStatus(device.lastSeenAt)}</td>
+                  <td className="pr-4 text-slate-400">{device.hostname ?? "-"}</td>
+                  <td className="pr-4 text-slate-400">{device.platform ?? "-"}</td>
+                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSeenAt)}</td>
+                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSyncAt)}</td>
+                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastEventAt)}</td>
+                  <td className="pr-4" title={`${formatFullNumber(device.totalTokens)} tokens`}>{formatTokens(device.totalTokens)}</td>
+                  <td>{formatFullNumber(device.events)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -117,6 +145,14 @@ export default async function HomePage() {
       </section>
     </div>
   );
+}
+
+function clientStatus(lastSeenAt: string | null) {
+  if (!lastSeenAt) return "Never seen";
+  const ageMs = Date.now() - new Date(lastSeenAt).getTime();
+  if (ageMs < 2 * 60 * 1000) return "Online";
+  if (ageMs < 30 * 60 * 1000) return "Stale";
+  return "Offline";
 }
 
 function Breakdown({ title, rows, totalTokens }: { title: string; rows: BreakdownRow[]; totalTokens: number }) {

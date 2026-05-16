@@ -17,10 +17,10 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Set a private API key in `.env`:
+Set an admin token in `.env`:
 
 ```env
-APP_API_KEY=replace-me
+ADMIN_TOKEN=replace-me
 DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer
 ```
 
@@ -30,6 +30,7 @@ Run the CLI from the project:
 
 ```bash
 npm run cli -- init
+npm run cli -- enroll --enroll-token <enroll-token>
 npm run cli -- collect
 npm run cli -- sync
 npm run cli -- diagnose opencode
@@ -54,7 +55,6 @@ Example config:
 ```json
 {
   "serverUrl": "http://localhost:3000",
-  "apiKey": "replace-me",
   "projectRoots": ["/Users/zhouyixing/project"],
   "sources": {
     "claude": true,
@@ -76,7 +76,7 @@ Batch ingestion:
 
 ```http
 POST /api/usage/events/batch
-x-api-key: <APP_API_KEY>
+authorization: Bearer <device-token>
 content-type: application/json
 ```
 
@@ -112,7 +112,7 @@ Read endpoints:
 
 ```bash
 cp .env.example .env
-# edit APP_API_KEY and NEXT_PUBLIC_APP_URL
+# edit ADMIN_TOKEN and NEXT_PUBLIC_APP_URL
 docker compose up -d --build
 ```
 

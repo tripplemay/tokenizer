@@ -6,6 +6,7 @@ import { parseCodexUsage } from "@/parsers/codex";
 import { parseOpenCodeUsage } from "@/parsers/opencode";
 import { UsageEventInput } from "@/shared/usage";
 import { queuePath, TokenizerConfig } from "./config";
+import { enrichEventsWithGit } from "./git";
 
 export function collectEvents(config: TokenizerConfig) {
   const parserConfig = { homeDir: homedir(), projectRoots: config.projectRoots };
@@ -28,7 +29,7 @@ export function collectEvents(config: TokenizerConfig) {
     warnings.push(...result.warnings);
   }
 
-  return { events, warnings };
+  return { events: enrichEventsWithGit(events), warnings };
 }
 
 export function writeQueue(events: UsageEventInput[]) {

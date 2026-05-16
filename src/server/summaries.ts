@@ -47,19 +47,23 @@ export async function getDeviceSummary() {
     _max: { occurredAt: true },
     orderBy: { _sum: { totalTokens: "desc" } }
   });
-  const devices = await prisma.device.findMany({ where: { id: { in: rows.map((row) => row.deviceId) } } });
+  const devices = await prisma.device.findMany();
+  const rowByDeviceId = new Map(rows.map((row) => [row.deviceId, row]));
   const deviceById = new Map(devices.map((device) => [device.id, device]));
-  return rows.map((row) => {
-    const device = deviceById.get(row.deviceId);
+  const ids = new Set([...devices.map((device) => device.id), ...rows.map((row) => row.deviceId)]);
+  return Array.from(ids).map((deviceId) => {
+    const row = rowByDeviceId.get(deviceId);
+    const device = deviceById.get(deviceId);
     return {
-      deviceId: row.deviceId,
-      name: device?.name ?? row.deviceId,
+      deviceId,
+      name: device?.name ?? deviceId,
       hostname: device?.hostname ?? null,
       platform: device?.platform ?? null,
       lastSeenAt: device?.lastSeenAt?.toISOString() ?? null,
-      lastEventAt: row._max.occurredAt?.toISOString() ?? null,
-      totalTokens: row._sum.totalTokens ?? 0,
-      events: row._count
+      lastSyncAt: device?.lastSyncAt?.toISOString() ?? null,
+      lastEventAt: row?._max.occurredAt?.toISOString() ?? null,
+      totalTokens: row?._sum.totalTokens ?? 0,
+      events: row?._count ?? 0
     };
   });
 }

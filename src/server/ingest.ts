@@ -2,17 +2,29 @@ import { Prisma } from "@prisma/client";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { prisma } from "./db";
 
-const LEGACY_DEVICE_ID = "dev_local_legacy";
-
 function projectNameFromPath(workspacePath?: string | null): string {
   if (!workspacePath) return "Unknown Project";
   const clean = workspacePath.replace(/\/+$/, "");
   return clean.split("/").filter(Boolean).at(-1) ?? "Unknown Project";
 }
 
+function projectNameFromRepoKey(repoKey?: string | null): string | null {
+  if (!repoKey) return null;
+  return repoKey.split("/").filter(Boolean).at(-1) ?? null;
+}
+
 async function ensureProject(event: UsageEventInput) {
+  const repoKey = event.repoKey?.trim() || null;
   const workspacePath = event.workspacePath?.trim() || null;
-  const name = event.projectName?.trim() || projectNameFromPath(workspacePath);
+  const name = event.projectName?.trim() || projectNameFromRepoKey(repoKey) || projectNameFromPath(workspacePath);
+
+  if (repoKey) {
+    return prisma.project.upsert({
+      where: { repoKey },
+      update: { name, repoRemote: event.gitRemote ?? undefined },
+      create: { name, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
+    });
+  }
 
   if (workspacePath) {
     return prisma.project.upsert({
@@ -27,39 +39,35 @@ async function ensureProject(event: UsageEventInput) {
   return prisma.project.create({ data: { name } });
 }
 
-async function ensureDevice(device?: DeviceInput) {
-  const normalized = device?.id
-    ? device
-    : {
-        id: LEGACY_DEVICE_ID,
-        name: "Local Device",
-        metadata: { legacy: true }
-      };
-
+async function ensureDevice(device: DeviceInput, lastSyncAt?: Date) {
   return prisma.device.upsert({
-    where: { id: normalized.id },
+    where: { id: device.id },
     update: {
-      name: normalized.name || normalized.id,
-      hostname: normalized.hostname ?? null,
-      platform: normalized.platform ?? null,
-      metadata: normalized.metadata === undefined ? Prisma.JsonNull : (normalized.metadata as Prisma.InputJsonValue),
-      lastSeenAt: new Date()
+      name: device.name || device.id,
+      hostname: device.hostname ?? null,
+      platform: device.platform ?? null,
+      metadata: device.metadata === undefined ? Prisma.JsonNull : (device.metadata as Prisma.InputJsonValue),
+      lastSeenAt: new Date(),
+      lastSyncAt
     },
     create: {
-      id: normalized.id,
-      name: normalized.name || normalized.id,
-      hostname: normalized.hostname ?? null,
-      platform: normalized.platform ?? null,
-      metadata: normalized.metadata === undefined ? Prisma.JsonNull : (normalized.metadata as Prisma.InputJsonValue),
-      lastSeenAt: new Date()
+      id: device.id,
+      name: device.name || device.id,
+      hostname: device.hostname ?? null,
+      platform: device.platform ?? null,
+      metadata: device.metadata === undefined ? Prisma.JsonNull : (device.metadata as Prisma.InputJsonValue),
+      lastSeenAt: new Date(),
+      lastSyncAt
     }
   });
 }
 
-export async function ingestUsageEvents(events: UsageEventInput[], deviceInput?: DeviceInput) {
+export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: DeviceInput, deviceTokenId: string) {
   let inserted = 0;
   let duplicates = 0;
-  const device = await ensureDevice(deviceInput);
+  const now = new Date();
+  const device = await ensureDevice(deviceInput, now);
+  await prisma.deviceToken.update({ where: { id: deviceTokenId }, data: { lastUsedAt: now } });
 
   for (const event of events) {
     const project = await ensureProject(event);
@@ -74,6 +82,11 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput?:
           projectId: project.id,
           sessionId: event.sessionId ?? null,
           workspacePath: event.workspacePath ?? null,
+          localWorkspacePath: event.localWorkspacePath ?? event.workspacePath ?? null,
+          repoKey: event.repoKey ?? null,
+          gitRemote: event.gitRemote ?? null,
+          gitBranch: event.gitBranch ?? null,
+          gitCommit: event.gitCommit ?? null,
           model: event.model ?? null,
           inputTokens: normalizeTokenCount(event.inputTokens),
           outputTokens: normalizeTokenCount(event.outputTokens),

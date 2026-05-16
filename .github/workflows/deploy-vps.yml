@@ -41,7 +41,7 @@ jobs:
       VPS_USER: ${{ secrets.VPS_USER }}
       VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
       VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
-      APP_API_KEY: ${{ secrets.APP_API_KEY }}
+      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
     steps:
       - name: Checkout
@@ -77,8 +77,8 @@ jobs:
           SSH_TARGET="$VPS_USER@$VPS_HOST"
           SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
-          if [ -z "${APP_API_KEY:-}" ]; then
-            echo "APP_API_KEY secret is required" >&2
+          if [ -z "${ADMIN_TOKEN:-}" ]; then
+            echo "ADMIN_TOKEN secret is required" >&2
             exit 1
           fi
 
@@ -88,7 +88,7 @@ jobs:
 
           ENV_FILE="$(mktemp)"
           {
-            printf 'APP_API_KEY=%s\n' "$APP_API_KEY"
+            printf 'ADMIN_TOKEN=%s\n' "$ADMIN_TOKEN"
             printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
             printf 'DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer\n'
             printf 'APP_HOST_PORT=127.0.0.1:3010\n'

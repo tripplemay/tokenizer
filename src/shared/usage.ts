@@ -6,6 +6,11 @@ export type UsageEventInput = {
   projectName?: string | null;
   sessionId?: string | null;
   workspacePath?: string | null;
+  localWorkspacePath?: string | null;
+  repoKey?: string | null;
+  gitRemote?: string | null;
+  gitBranch?: string | null;
+  gitCommit?: string | null;
   model?: string | null;
   inputTokens?: number;
   outputTokens?: number;

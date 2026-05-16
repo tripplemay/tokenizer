@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { hostname, homedir, platform } from "node:os";
 import { dirname, join } from "node:path";
@@ -6,7 +6,6 @@ import { DeviceInput } from "@/shared/usage";
 
 export type TokenizerConfig = {
   serverUrl: string;
-  apiKey: string;
   projectRoots: string[];
   sources: {
     claude: boolean;
@@ -15,14 +14,19 @@ export type TokenizerConfig = {
   };
 };
 
+export type TokenizerCredentials = {
+  deviceToken: string;
+};
+
 export const configPath = join(homedir(), ".tokenizer", "config.json");
 export const devicePath = join(homedir(), ".tokenizer", "device.json");
+export const credentialsPath = join(homedir(), ".tokenizer", "credentials.json");
 export const queuePath = join(homedir(), ".tokenizer", "queue.jsonl");
+export const statePath = join(homedir(), ".tokenizer", "state.json");
 
 export function defaultConfig(): TokenizerConfig {
   return {
     serverUrl: "http://localhost:3000",
-    apiKey: "change-me",
     projectRoots: [join(homedir(), "project")],
     sources: { claude: true, codex: true, opencode: true }
   };
@@ -43,6 +47,24 @@ export function readConfig(): TokenizerConfig {
     throw new Error(`Missing config. Run: tokenizer init`);
   }
   return JSON.parse(readFileSync(configPath, "utf8")) as TokenizerConfig;
+}
+
+export function writeConfig(config: TokenizerConfig) {
+  mkdirSync(dirname(configPath), { recursive: true });
+  writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+}
+
+export function configure(options: { serverUrl?: string; projectRoot?: string; sources?: Partial<TokenizerConfig["sources"]> }) {
+  const current = existsSync(configPath) ? readConfig() : defaultConfig();
+  const projectRoots = options.projectRoot ? [options.projectRoot] : current.projectRoots;
+  const config = {
+    ...current,
+    serverUrl: options.serverUrl ?? current.serverUrl,
+    projectRoots,
+    sources: { ...current.sources, ...options.sources }
+  };
+  writeConfig(config);
+  return config;
 }
 
 export function ensureDevice(options?: { deviceName?: string; preferLegacyId?: boolean }): DeviceInput {
@@ -72,4 +94,25 @@ export function ensureDevice(options?: { deviceName?: string; preferLegacyId?: b
 export function readDevice(): DeviceInput {
   if (!existsSync(devicePath)) return ensureDevice();
   return JSON.parse(readFileSync(devicePath, "utf8")) as DeviceInput;
+}
+
+export function writeDevice(device: DeviceInput) {
+  mkdirSync(dirname(devicePath), { recursive: true });
+  writeFileSync(devicePath, `${JSON.stringify(device, null, 2)}\n`);
+}
+
+export function readCredentials(): TokenizerCredentials {
+  if (!existsSync(credentialsPath)) throw new Error(`Missing credentials. Run: tokenizer enroll --enroll-token <token>`);
+  return JSON.parse(readFileSync(credentialsPath, "utf8")) as TokenizerCredentials;
+}
+
+export function writeCredentials(credentials: TokenizerCredentials) {
+  mkdirSync(dirname(credentialsPath), { recursive: true });
+  writeFileSync(credentialsPath, `${JSON.stringify(credentials, null, 2)}\n`);
+  chmodSync(credentialsPath, 0o600);
+}
+
+export function updateState(patch: Record<string, unknown>) {
+  const current = existsSync(statePath) ? (JSON.parse(readFileSync(statePath, "utf8")) as Record<string, unknown>) : {};
+  writeFileSync(statePath, `${JSON.stringify({ ...current, ...patch }, null, 2)}\n`);
 }
