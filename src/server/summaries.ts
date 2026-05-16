@@ -114,25 +114,55 @@ export async function getProjectSummary() {
   });
 }
 
+// Reporting timezone for daily bucket boundaries. Hardcoded for now because the
+// PRD scopes Tokenizer to a single user; revisit when multi-tenant support is
+// on the table.
+const REPORTING_TIMEZONE = "Asia/Shanghai";
+
+type DailySummaryRow = {
+  date: Date | string;
+  totalTokens: bigint | number | null;
+  inputTokens: bigint | number | null;
+  outputTokens: bigint | number | null;
+  billableTokens: bigint | number | null;
+};
+
+function bucketDateToIso(value: Date | string): string {
+  if (typeof value === "string") return value.slice(0, 10);
+  return value.toISOString().slice(0, 10);
+}
+
+function bigintToNumber(value: bigint | number | null | undefined): number {
+  if (value == null) return 0;
+  return typeof value === "bigint" ? Number(value) : value;
+}
+
 export async function getDailySummary(days = 180) {
   const since = new Date(Date.now() - days * DAY_MS);
-  const events = await prisma.usageEvent.findMany({
-    where: { occurredAt: { gte: since } },
-    select: { occurredAt: true, totalTokens: true, inputTokens: true, outputTokens: true, source: true, model: true },
-    orderBy: { occurredAt: "asc" }
-  });
 
-  const byDay = new Map<string, { date: string; totalTokens: number; inputTokens: number; outputTokens: number; billableTokens: number }>();
-  for (const event of events) {
-    const date = event.occurredAt.toISOString().slice(0, 10);
-    const row = byDay.get(date) ?? { date, totalTokens: 0, inputTokens: 0, outputTokens: 0, billableTokens: 0 };
-    row.totalTokens += event.totalTokens;
-    row.inputTokens += event.inputTokens;
-    row.outputTokens += event.outputTokens;
-    row.billableTokens += event.inputTokens + event.outputTokens;
-    byDay.set(date, row);
-  }
-  return Array.from(byDay.values());
+  // Aggregate in Postgres rather than loading every event into Node memory, and
+  // bucket by REPORTING_TIMEZONE so the "today" boundary on the chart matches
+  // the user's local perception instead of UTC midnight.
+  const rows = await prisma.$queryRaw<DailySummaryRow[]>`
+    SELECT
+      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      SUM("totalTokens")::bigint AS "totalTokens",
+      SUM("inputTokens")::bigint AS "inputTokens",
+      SUM("outputTokens")::bigint AS "outputTokens",
+      SUM("inputTokens" + "outputTokens")::bigint AS "billableTokens"
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${since}
+    GROUP BY 1
+    ORDER BY 1 ASC
+  `;
+
+  return rows.map((row) => ({
+    date: bucketDateToIso(row.date),
+    totalTokens: bigintToNumber(row.totalTokens),
+    inputTokens: bigintToNumber(row.inputTokens),
+    outputTokens: bigintToNumber(row.outputTokens),
+    billableTokens: bigintToNumber(row.billableTokens)
+  }));
 }
 
 export async function getBreakdown(field: "source" | "model") {
