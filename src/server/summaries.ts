@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { computeSummaryMetrics } from "./summary-metrics";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -21,12 +22,19 @@ export async function getSummary() {
     prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true } })
   ]);
 
+  const inputTokens = total._sum.inputTokens ?? 0;
+  const outputTokens = total._sum.outputTokens ?? 0;
+  const cachedInputTokens = total._sum.cachedInputTokens ?? 0;
+  const metrics = computeSummaryMetrics({ inputTokens, outputTokens, cachedInputTokens });
+
   return {
     totalTokens: total._sum.totalTokens ?? 0,
-    inputTokens: total._sum.inputTokens ?? 0,
-    outputTokens: total._sum.outputTokens ?? 0,
-    cachedInputTokens: total._sum.cachedInputTokens ?? 0,
+    inputTokens,
+    outputTokens,
+    cachedInputTokens,
     reasoningOutputTokens: total._sum.reasoningOutputTokens ?? 0,
+    billableTokens: metrics.billableTokens,
+    cacheHitRate: metrics.cacheHitRate,
     todayTokens: todayAgg._sum.totalTokens ?? 0,
     weekTokens: weekAgg._sum.totalTokens ?? 0,
     monthTokens: monthAgg._sum.totalTokens ?? 0,

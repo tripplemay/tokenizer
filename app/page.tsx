@@ -44,10 +44,14 @@ export default async function HomePage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-4">
-        <TokenCard label="Total tokens" value={summary.totalTokens} helper="All collected usage" />
-        <TokenCard label="Input tokens" value={summary.inputTokens} helper={`${formatPercent(summary.inputTokens, summary.totalTokens)} of total`} />
-        <TokenCard label="Output tokens" value={summary.outputTokens} helper={`${formatPercent(summary.outputTokens, summary.totalTokens)} of total`} />
-        <TokenCard label="Cached input tokens" value={summary.cachedInputTokens} helper={`${formatPercent(summary.cachedInputTokens, summary.inputTokens)} of input`} />
+        <TokenCard label="Total tokens" value={summary.billableTokens} helper="Input + Output (excludes cache reuse)" />
+        <TokenCard label="Input tokens" value={summary.inputTokens} helper={`${formatPercent(summary.inputTokens, summary.billableTokens)} of total`} />
+        <TokenCard label="Output tokens" value={summary.outputTokens} helper={`${formatPercent(summary.outputTokens, summary.billableTokens)} of total`} />
+        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 shadow-lg shadow-slate-950/20" title={`${formatFullNumber(summary.cachedInputTokens)} cached tokens reused`}>
+          <div className="text-sm text-slate-400">Cache hit rate</div>
+          <div className="mt-2 text-3xl font-semibold">{(summary.cacheHitRate * 100).toFixed(1)}%</div>
+          <div className="mt-2 text-xs text-slate-500">{formatTokens(summary.cachedInputTokens)} reused from cache</div>
+        </div>
       </section>
 
       <ClientSetup />
