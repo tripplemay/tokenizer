@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -30,11 +33,17 @@ jobs:
       - name: Typecheck
         run: npm run verify
 
+      - name: Install test runner (transient, not persisted to lockfile)
+        run: npm install --no-save --no-audit --no-fund vitest @vitest/coverage-v8
+
+      - name: Run unit tests
+        run: npm run test
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs: verify
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     env:
       VPS_HOST: ${{ secrets.VPS_HOST }}
