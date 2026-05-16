@@ -105,7 +105,9 @@ jobs:
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
           rm -f "$ENV_FILE"
 
-          $SSH_CMD "$SSH_TARGET" "cd '$DEPLOY_PATH' && docker compose build
+          $SSH_CMD "$SSH_TARGET" "set -e
+          cd '$DEPLOY_PATH'
+          docker compose build
           docker compose up -d postgres
           docker compose run --rm migrate
           docker compose up -d app

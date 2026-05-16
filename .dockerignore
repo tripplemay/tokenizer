@@ -11,3 +11,5 @@ README.md
 docs
 coverage
 .tokenizer
+tests
+vitest.config.ts
