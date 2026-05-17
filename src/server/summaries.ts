@@ -254,6 +254,8 @@ export async function getProjectSummary() {
       projectId: row.projectId,
       name: row.projectId ? projectById.get(row.projectId)?.name ?? "Unknown Project" : "Unknown Project",
       workspacePath: row.projectId ? projectById.get(row.projectId)?.workspacePath ?? null : null,
+      repoKey: row.projectId ? projectById.get(row.projectId)?.repoKey ?? null : null,
+      repoRemote: row.projectId ? projectById.get(row.projectId)?.repoRemote ?? null : null,
       totalTokens: row._sum.totalTokens ?? 0,
       inputTokens,
       outputTokens,

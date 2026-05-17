@@ -19,6 +19,7 @@ import {
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { DailyUsageChart } from "./daily-usage-chart";
+import { ProjectIcon } from "./_components/project-icon";
 
 export const dynamic = "force-dynamic";
 
@@ -149,9 +150,12 @@ export default async function HomePage() {
                 {projects.map((project) => (
                   <tr key={project.projectId ?? project.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
                     <td className="py-2.5 pr-4">
-                      <a className="font-medium hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>
-                        {project.name}
-                      </a>
+                      <div className="flex items-center gap-1.5">
+                        <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} />
+                        <a className="font-medium hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>
+                          {project.name}
+                        </a>
+                      </div>
                     </td>
                     <td className="pr-4 text-right" title={`${formatFullNumber(project.billableTokens)} compute tokens`}>{formatTokens(project.billableTokens)}</td>
                     <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(project.totalTokens)} total tokens`}>{formatTokens(project.totalTokens)}</td>

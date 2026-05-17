@@ -7,6 +7,7 @@ import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { formatDateTimeSeconds, formatUsd } from "@/shared/format";
 import { SourcePill } from "../../_components/source-pill";
+import { ProjectIcon } from "../../_components/project-icon";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           <MdArrowBack className="h-4 w-4" />
           {t("project.back")}
         </Link>
-        <h2 className="mt-2 text-2xl font-bold text-navy-700 dark:text-white">{project.name}</h2>
+        <div className="mt-2 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{project.name}</h2>
+          <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} size="md" />
+        </div>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{project.workspacePath ?? t("project.noWorkspace")}</p>
         <p className="mt-0.5 text-xs text-gray-500">{t("project.aggregateNote")}</p>
         <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>

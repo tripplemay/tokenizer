@@ -50,27 +50,36 @@ function projectKey(event: UsageEventInput): string {
 async function ensureProject(event: UsageEventInput) {
   const repoKey = event.repoKey?.trim() || null;
   const workspacePath = event.workspacePath?.trim() || null;
-  const name = event.projectName?.trim() || projectNameFromRepoKey(repoKey) || projectNameFromPath(workspacePath);
 
   if (repoKey) {
+    // When the event has a git remote, the project's display name is fully
+    // determined by the repoKey's last segment. Local folder names ("joyce"
+    // on a Mac, "kolmatrix" on a WSL host) are intentionally ignored so the
+    // dashboard label doesn't flap depending on which device synced last.
+    const canonicalName = projectNameFromRepoKey(repoKey) ?? event.projectName?.trim() ?? projectNameFromPath(workspacePath);
     return prisma.project.upsert({
       where: { repoKey },
-      update: { name, repoRemote: event.gitRemote ?? undefined },
-      create: { name, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
+      update: { name: canonicalName, repoRemote: event.gitRemote ?? undefined },
+      create: { name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
     });
   }
 
+  // Below: best-effort dedup for non-git projects. workspacePath is per-machine
+  // so two devices opening the same folder under different paths will create
+  // separate Project rows. That's a known limitation — without git remote
+  // there's no canonical identity to merge on.
+  const fallbackName = event.projectName?.trim() || projectNameFromPath(workspacePath);
   if (workspacePath) {
     return prisma.project.upsert({
       where: { workspacePath },
-      update: { name },
-      create: { name, workspacePath }
+      update: { name: fallbackName },
+      create: { name: fallbackName, workspacePath }
     });
   }
 
-  const existing = await prisma.project.findFirst({ where: { name, workspacePath: null } });
+  const existing = await prisma.project.findFirst({ where: { name: fallbackName, workspacePath: null } });
   if (existing) return existing;
-  return prisma.project.create({ data: { name } });
+  return prisma.project.create({ data: { name: fallbackName } });
 }
 
 async function ensureDevice(device: DeviceInput, lastSyncAt: Date) {
