@@ -1,11 +1,26 @@
 import { NextRequest } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "./db";
 import { hashToken, safeEqual } from "./tokens";
 
+export const ADMIN_COOKIE = "admin_token";
+
 export function isAdminAuthorized(request: NextRequest): boolean {
   const expected = process.env.ADMIN_TOKEN;
-  const provided = request.headers.get("x-admin-token");
-  return Boolean(expected && provided && safeEqual(provided, expected));
+  if (!expected) return false;
+  const header = request.headers.get("x-admin-token");
+  if (header && safeEqual(header, expected)) return true;
+  const cookieToken = request.cookies.get(ADMIN_COOKIE)?.value;
+  if (cookieToken && safeEqual(cookieToken, expected)) return true;
+  return false;
+}
+
+export async function isAdminAuthorizedFromCookie(): Promise<boolean> {
+  const expected = process.env.ADMIN_TOKEN;
+  if (!expected) return false;
+  const store = await cookies();
+  const provided = store.get(ADMIN_COOKIE)?.value;
+  return Boolean(provided && safeEqual(provided, expected));
 }
 
 export function bearerToken(request: NextRequest): string | null {

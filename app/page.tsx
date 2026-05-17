@@ -10,7 +10,6 @@ import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { MdBolt, MdInput, MdOutput, MdCached, MdDevices, MdInsights } from "react-icons/md";
 import { DailyUsageChart } from "./daily-usage-chart";
-import { ClientSetup } from "./client-setup";
 
 export const dynamic = "force-dynamic";
 
@@ -172,8 +171,6 @@ export default async function HomePage() {
           <QualityMetric label="Last Event" value={formatDateTime(summary.lastEventAt)} helper="Based on occurredAt" />
         </div>
       </Card>
-
-      <ClientSetup />
     </div>
   );
 }
