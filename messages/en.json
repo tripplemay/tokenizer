@@ -28,7 +28,8 @@
       "title": "Project Ranking",
       "col": {
         "project": "Project",
-        "tokens": "Tokens",
+        "compute": "Compute",
+        "total": "Total",
         "share": "Share",
         "events": "Events",
         "avgPerEvent": "Avg / event",
@@ -49,7 +50,8 @@
       "models": "Models",
       "col": {
         "name": "Name",
-        "tokens": "Tokens",
+        "compute": "Compute",
+        "total": "Total",
         "share": "Share",
         "events": "Events",
         "avgPerEvent": "Avg / event"
@@ -109,7 +111,8 @@
     "col": {
       "source": "Source",
       "model": "Model",
-      "tokens": "Tokens",
+      "compute": "Compute",
+      "total": "Total",
       "events": "Events",
       "time": "Time",
       "totalRaw": "Total (raw)",

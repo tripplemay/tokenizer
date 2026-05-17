@@ -28,7 +28,8 @@
       "title": "项目排名",
       "col": {
         "project": "项目",
-        "tokens": "Tokens",
+        "compute": "计算量",
+        "total": "总量",
         "share": "占比",
         "events": "事件数",
         "avgPerEvent": "平均/事件",
@@ -49,7 +50,8 @@
       "models": "模型",
       "col": {
         "name": "名称",
-        "tokens": "Tokens",
+        "compute": "计算量",
+        "total": "总量",
         "share": "占比",
         "events": "事件数",
         "avgPerEvent": "平均/事件"
@@ -109,7 +111,8 @@
     "col": {
       "source": "来源",
       "model": "模型",
-      "tokens": "Tokens",
+      "compute": "计算量",
+      "total": "总量",
       "events": "事件数",
       "time": "时间",
       "totalRaw": "Total(原始)",

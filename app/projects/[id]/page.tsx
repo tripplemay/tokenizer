@@ -70,17 +70,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("project.col.source")}</th>
-                <th className="pb-3 text-right">{t("project.col.tokens")}</th>
+                <th className="pb-3 text-right">{t("project.col.compute")}</th>
+                <th className="pb-3 text-right">{t("project.col.total")}</th>
                 <th className="pb-3 text-right">{t("project.col.events")}</th>
               </tr>
             </thead>
             <tbody>
               {bySource.map((row) => {
-                const billable = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
+                const compute = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
+                const total = (row._sum.inputTokens ?? 0) + (row._sum.outputTokens ?? 0);
                 return (
                   <tr key={row.source} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4"><SourcePill source={row.source} /></td>
-                    <td className="py-2.5 pr-4 text-right">{formatNumber(billable)}</td>
+                    <td className="py-2.5 pr-4 text-right">{formatNumber(compute)}</td>
+                    <td className="py-2.5 pr-4 text-right text-gray-500">{formatNumber(total)}</td>
                     <td className="py-2.5 pr-4 text-right">{row._count}</td>
                   </tr>
                 );
@@ -94,17 +97,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("project.col.model")}</th>
-                <th className="pb-3 text-right">{t("project.col.tokens")}</th>
+                <th className="pb-3 text-right">{t("project.col.compute")}</th>
+                <th className="pb-3 text-right">{t("project.col.total")}</th>
                 <th className="pb-3 text-right">{t("project.col.events")}</th>
               </tr>
             </thead>
             <tbody>
               {byModel.map((row) => {
-                const billable = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
+                const compute = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
+                const total = (row._sum.inputTokens ?? 0) + (row._sum.outputTokens ?? 0);
                 return (
                   <tr key={row.model ?? "unknown"} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4 font-medium">{row.model ?? t("project.unknownModel")}</td>
-                    <td className="py-2.5 pr-4 text-right">{formatNumber(billable)}</td>
+                    <td className="py-2.5 pr-4 text-right">{formatNumber(compute)}</td>
+                    <td className="py-2.5 pr-4 text-right text-gray-500">{formatNumber(total)}</td>
                     <td className="py-2.5 pr-4 text-right">{row._count}</td>
                   </tr>
                 );

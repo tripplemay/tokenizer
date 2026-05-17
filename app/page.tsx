@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 type BreakdownRow = {
   name: string;
   billableTokens: number;
+  totalTokens: number;
   events: number;
   avgBillablePerEvent: number;
 };
@@ -85,7 +86,8 @@ export default async function HomePage() {
               <thead className="text-gray-500">
                 <tr>
                   <th className="pb-3">{t("home.projectRanking.col.project")}</th>
-                  <th className="pb-3">{t("home.projectRanking.col.tokens")}</th>
+                  <th className="pb-3" title="max(0, input - cache_read) + output — the fresh-compute portion">{t("home.projectRanking.col.compute")}</th>
+                  <th className="pb-3" title="inputTokens + outputTokens — raw volume including cache reuse">{t("home.projectRanking.col.total")}</th>
                   <th className="pb-3">{t("home.projectRanking.col.share")}</th>
                   <th className="pb-3">{t("home.projectRanking.col.events")}</th>
                   <th className="pb-3">{t("home.projectRanking.col.avgPerEvent")}</th>
@@ -100,7 +102,8 @@ export default async function HomePage() {
                         {project.name}
                       </a>
                     </td>
-                    <td className="pr-4" title={`${formatFullNumber(project.billableTokens)} billable tokens`}>{formatTokens(project.billableTokens)}</td>
+                    <td className="pr-4" title={`${formatFullNumber(project.billableTokens)} compute tokens`}>{formatTokens(project.billableTokens)}</td>
+                    <td className="pr-4 text-gray-500" title={`${formatFullNumber(project.totalTokens)} total tokens (incl. cache reuse)`}>{formatTokens(project.totalTokens)}</td>
                     <td className="pr-4">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
                     <td className="pr-4">{formatFullNumber(project.events)}</td>
                     <td className="pr-4">{formatTokens(project.avgBillablePerEvent)}</td>
@@ -151,7 +154,8 @@ export default async function HomePage() {
           billableTotal={summary.billableTokens}
           col={{
             name: t("home.breakdown.col.name"),
-            tokens: t("home.breakdown.col.tokens"),
+            compute: t("home.breakdown.col.compute"),
+            total: t("home.breakdown.col.total"),
             share: t("home.breakdown.col.share"),
             events: t("home.breakdown.col.events"),
             avgPerEvent: t("home.breakdown.col.avgPerEvent")
@@ -163,7 +167,8 @@ export default async function HomePage() {
           billableTotal={summary.billableTokens}
           col={{
             name: t("home.breakdown.col.name"),
-            tokens: t("home.breakdown.col.tokens"),
+            compute: t("home.breakdown.col.compute"),
+            total: t("home.breakdown.col.total"),
             share: t("home.breakdown.col.share"),
             events: t("home.breakdown.col.events"),
             avgPerEvent: t("home.breakdown.col.avgPerEvent")
@@ -217,7 +222,7 @@ function ClientStatusBadge({ lastSeenAt, t }: { lastSeenAt: string | null; t: (k
   return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{t(`clientStatus.${key}`)}</span>;
 }
 
-function BreakdownCard({ title, rows, billableTotal, col }: { title: string; rows: BreakdownRow[]; billableTotal: number; col: { name: string; tokens: string; share: string; events: string; avgPerEvent: string } }) {
+function BreakdownCard({ title, rows, billableTotal, col }: { title: string; rows: BreakdownRow[]; billableTotal: number; col: { name: string; compute: string; total: string; share: string; events: string; avgPerEvent: string } }) {
   return (
     <Card extra="p-6">
       <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{title}</h3>
@@ -226,7 +231,8 @@ function BreakdownCard({ title, rows, billableTotal, col }: { title: string; row
           <thead className="text-gray-500">
             <tr>
               <th className="pb-3">{col.name}</th>
-              <th className="pb-3">{col.tokens}</th>
+              <th className="pb-3" title="max(0, input - cache_read) + output — the fresh-compute portion">{col.compute}</th>
+              <th className="pb-3" title="inputTokens + outputTokens — raw volume including cache reuse">{col.total}</th>
               <th className="pb-3">{col.share}</th>
               <th className="pb-3">{col.events}</th>
               <th className="pb-3">{col.avgPerEvent}</th>
@@ -236,7 +242,8 @@ function BreakdownCard({ title, rows, billableTotal, col }: { title: string; row
             {rows.map((row) => (
               <tr key={row.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
                 <td className="py-2.5 pr-4 font-medium">{row.name}</td>
-                <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} billable tokens`}>{formatTokens(row.billableTokens)}</td>
+                <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>
+                <td className="pr-4 text-gray-500" title={`${formatFullNumber(row.totalTokens)} total tokens (incl. cache reuse)`}>{formatTokens(row.totalTokens)}</td>
                 <td className="pr-4">{formatPercent(row.billableTokens, billableTotal)}</td>
                 <td className="pr-4">{formatFullNumber(row.events)}</td>
                 <td className="pr-4">{formatTokens(row.avgBillablePerEvent)}</td>
