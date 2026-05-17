@@ -123,8 +123,24 @@ ensure_git() {
   esac
 }
 
+# better-sqlite3 ships prebuilds for many Node/platform combos, but on WSL2 the
+# libc detection can come back empty and prebuild-install falls back to
+# node-gyp build-from-source. That needs make/g++/python3 on the box. macOS
+# users already have these through Xcode CLT (a brew install requirement).
+ensure_build_tools() {
+  case "$(uname -s)" in
+    Linux)
+      if command -v make >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then return; fi
+      log "Installing build tools (build-essential, python3) for native npm modules..."
+      sudo apt-get update
+      sudo apt-get install -y build-essential python3
+      ;;
+  esac
+}
+
 ensure_node
 ensure_git
+ensure_build_tools
 
 log "Installing Tokenizer client to $INSTALL_DIR"
 mkdir -p "$HOME/.tokenizer" "$BIN_DIR"
