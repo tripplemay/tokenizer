@@ -14,13 +14,33 @@
       "lastEvent": "最近事件"
     },
     "hero": {
-      "compute": "本周计算量",
-      "computeHint": "近 7 天 (input - cache read) + output。",
-      "cost": "本周成本",
-      "costHint": "近 7 天按官网公开 list price 估算的费用。",
-      "wowSuffix": "较上周",
+      "computeRange": "{label} 计算量",
+      "computeHint": "(input - cache read) + output,所选时间窗口内。",
+      "costRange": "{label} 成本",
+      "costHint": "按官网公开 list price 估算,所选时间窗口内。",
+      "wowSuffix": "较前一周期",
       "wowFlat": "持平",
-      "wowNoBaseline": "无对照"
+      "wowNoBaseline": "无对照",
+      "rangeLabel7d": "近 7 天",
+      "rangeLabel30d": "近 30 天",
+      "rangeLabelAll": "全部时间"
+    },
+    "range": {
+      "sevenDay": "近 7 天",
+      "thirtyDay": "近 30 天",
+      "all": "全部"
+    },
+    "filter": {
+      "all": "全部项目",
+      "gitOnly": "仅 git"
+    },
+    "dailyCost": {
+      "title": "每日成本",
+      "subtitle": "按 model 公开 list price 估算,Asia/Shanghai 时区,所选时间窗口内。"
+    },
+    "dailySource": {
+      "title": "Input 按来源拆分",
+      "subtitle": "每个 source 每日 input token(stacked),Asia/Shanghai 时区。"
     },
     "kpi": {
       "inputTokens": "Input tokens",

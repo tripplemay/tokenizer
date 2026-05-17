@@ -4,6 +4,32 @@ import { estimateCost, sumCostAcrossModels } from "@/shared/model-pricing";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+export type RangeOption = "7d" | "30d" | "all";
+export type ProjectFilter = "all" | "gitOnly";
+
+// Range filter helpers. "all" returns undefined so a caller can spread it into
+// a where clause without leaking an unbounded `occurredAt`.
+function rangeStart(range: RangeOption): Date | null {
+  if (range === "all") return null;
+  const days = range === "7d" ? 7 : 30;
+  return new Date(Date.now() - days * DAY_MS);
+}
+
+function rangeWhere(range: RangeOption): Record<string, unknown> {
+  const since = rangeStart(range);
+  return since ? { occurredAt: { gte: since } } : {};
+}
+
+// Equal-length prior window for WoW comparison. Returns null for "all" since
+// there is no natural "prior" baseline for an unbounded view.
+function priorWindow(range: RangeOption, now: Date): { gte: Date; lt: Date } | null {
+  if (range === "all") return null;
+  const days = range === "7d" ? 7 : 30;
+  const gte = new Date(now.getTime() - 2 * days * DAY_MS);
+  const lt = new Date(now.getTime() - days * DAY_MS);
+  return { gte, lt };
+}
+
 // New convention: inputTokens (DB) is the total input the model saw
 // (raw + cache_write + cache_read). billableTokens is the "fresh" portion:
 //   billable = (inputTokens - cachedInputTokens) + outputTokens
@@ -12,16 +38,6 @@ function billableOf(inputTokens: number, cachedInputTokens: number, outputTokens
   const fresh = Math.max(0, inputTokens - cachedInputTokens);
   return fresh + outputTokens;
 }
-
-// Token aggregates grouped by model. Used downstream by costFor… helpers to
-// compute USD totals for any "scope" (overall, per project, per source, …).
-type CostGroup = {
-  model: string | null;
-  inputTokens: number;
-  cachedInputTokens: number;
-  cacheWriteTokens: number;
-  outputTokens: number;
-};
 
 function sumNumeric(value: number | bigint | null | undefined): number {
   if (value == null) return 0;
@@ -48,15 +64,6 @@ async function costForWhere(where: Record<string, unknown>): Promise<number> {
   }, 0);
 }
 
-// Rolling 7-day "this week" vs "previous 7 days" baseline. Anchored to now so
-// hour-of-day differences don't slosh events across the boundary.
-type WeekWindow = { gte: Date; lt: Date };
-function rollingWeekWindows(now: Date): { current: WeekWindow; previous: WeekWindow } {
-  const current: WeekWindow = { gte: new Date(now.getTime() - 7 * DAY_MS), lt: now };
-  const previous: WeekWindow = { gte: new Date(now.getTime() - 14 * DAY_MS), lt: current.gte };
-  return { current, previous };
-}
-
 async function computeAndCostFor(where: Record<string, unknown>): Promise<{ compute: number; cost: number }> {
   const rows = await prisma.usageEvent.groupBy({
     by: ["model"],
@@ -77,41 +84,31 @@ async function computeAndCostFor(where: Record<string, unknown>): Promise<{ comp
   return { compute, cost };
 }
 
-export async function getSummary() {
+export async function getSummary(range: RangeOption = "all") {
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const week = new Date(now.getTime() - 7 * DAY_MS);
-  const month = new Date(now.getFullYear(), now.getMonth(), 1);
-  const windows = rollingWeekWindows(now);
+  const where = rangeWhere(range);
+  const prior = priorWindow(range, now);
 
   const [
     total,
-    todayAgg,
-    weekAgg,
-    monthAgg,
     eventCount,
-    projectCount,
-    deviceCount,
+    activeProjectIds,
+    activeDeviceIds,
     lastEvent,
     unknownProject,
     unknownModel,
     costByModel,
-    currentWeek,
-    previousWeek
+    priorMetrics
   ] = await Promise.all([
-    prisma.usageEvent.aggregate({ _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { occurredAt: { gte: today } }, _sum: { totalTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { occurredAt: { gte: week } }, _sum: { totalTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { occurredAt: { gte: month } }, _sum: { totalTokens: true } }),
-    prisma.usageEvent.count(),
-    prisma.project.count(),
-    prisma.device.count(),
+    prisma.usageEvent.aggregate({ where, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true } }),
+    prisma.usageEvent.count({ where }),
+    prisma.usageEvent.groupBy({ by: ["projectId"], where, _count: true }),
+    prisma.usageEvent.groupBy({ by: ["deviceId"], where, _count: true }),
     prisma.usageEvent.findFirst({ orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
-    prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
-    prisma.usageEvent.groupBy({ by: ["model"], _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true } }),
-    computeAndCostFor({ occurredAt: { gte: windows.current.gte, lt: windows.current.lt } }),
-    computeAndCostFor({ occurredAt: { gte: windows.previous.gte, lt: windows.previous.lt } })
+    prisma.usageEvent.aggregate({ where: { ...where, project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
+    prisma.usageEvent.aggregate({ where: { ...where, model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
+    prisma.usageEvent.groupBy({ by: ["model"], where, _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true } }),
+    prior ? computeAndCostFor({ occurredAt: { gte: prior.gte, lt: prior.lt } }) : Promise.resolve(null)
   ]);
 
   const inputTokens = total._sum.inputTokens ?? 0;
@@ -131,6 +128,7 @@ export async function getSummary() {
   );
 
   return {
+    range,
     totalTokens: total._sum.totalTokens ?? 0,
     inputTokens,
     outputTokens,
@@ -141,16 +139,11 @@ export async function getSummary() {
     cacheHitRate: metrics.cacheHitRate,
     totalCost,
     unpricedTokens,
-    todayTokens: todayAgg._sum.totalTokens ?? 0,
-    weekTokens: weekAgg._sum.totalTokens ?? 0,
-    monthTokens: monthAgg._sum.totalTokens ?? 0,
-    currentWeekCompute: currentWeek.compute,
-    currentWeekCost: currentWeek.cost,
-    previousWeekCompute: previousWeek.compute,
-    previousWeekCost: previousWeek.cost,
+    priorCompute: priorMetrics?.compute ?? null,
+    priorCost: priorMetrics?.cost ?? null,
     eventCount,
-    projectCount,
-    deviceCount,
+    projectCount: activeProjectIds.length,
+    deviceCount: activeDeviceIds.length,
     lastEventAt: lastEvent?.occurredAt?.toISOString() ?? null,
     unknownProjectTokens: unknownProject._sum.totalTokens ?? 0,
     unknownProjectBillable: billableOf(unknownProject._sum.inputTokens ?? 0, unknownProject._sum.cachedInputTokens ?? 0, unknownProject._sum.outputTokens ?? 0),
@@ -159,18 +152,19 @@ export async function getSummary() {
   };
 }
 
-export async function getDeviceSummary() {
+export async function getDeviceSummary(range: RangeOption = "all") {
+  const where = rangeWhere(range);
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
+    where,
     _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
     _count: true,
     _max: { occurredAt: true },
     orderBy: { _sum: { totalTokens: "desc" } }
   });
-  // Per-device cost requires the (deviceId, model) cross-section because a
-  // device can use multiple models, each with different pricing.
   const costRows = await prisma.usageEvent.groupBy({
     by: ["deviceId", "model"],
+    where,
     _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
   });
   const costByDevice = new Map<string, number>();
@@ -214,20 +208,21 @@ export async function getDeviceSummary() {
   });
 }
 
-export async function getProjectSummary() {
+export async function getProjectSummary(range: RangeOption = "all", filter: ProjectFilter = "all") {
+  const where = rangeWhere(range);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
       by: ["projectId"],
+      where,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
       _max: { occurredAt: true },
       _count: true,
       orderBy: { _sum: { totalTokens: "desc" } },
-      take: 20
+      take: 40
     }),
-    // (projectId, model) groupBy gives the slice needed to apply per-model
-    // pricing and then collapse back to a per-project cost total.
     prisma.usageEvent.groupBy({
       by: ["projectId", "model"],
+      where,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     })
   ]);
@@ -245,17 +240,18 @@ export async function getProjectSummary() {
   }
   const projects = await prisma.project.findMany({ where: { id: { in: rows.map((row) => row.projectId).filter(Boolean) as string[] } } });
   const projectById = new Map(projects.map((project) => [project.id, project]));
-  return rows.map((row) => {
+  const out = rows.map((row) => {
     const inputTokens = row._sum.inputTokens ?? 0;
     const outputTokens = row._sum.outputTokens ?? 0;
     const cachedInputTokens = row._sum.cachedInputTokens ?? 0;
     const billableTokens = billableOf(inputTokens, cachedInputTokens, outputTokens);
+    const project = row.projectId ? projectById.get(row.projectId) : undefined;
     return {
       projectId: row.projectId,
-      name: row.projectId ? projectById.get(row.projectId)?.name ?? "Unknown Project" : "Unknown Project",
-      workspacePath: row.projectId ? projectById.get(row.projectId)?.workspacePath ?? null : null,
-      repoKey: row.projectId ? projectById.get(row.projectId)?.repoKey ?? null : null,
-      repoRemote: row.projectId ? projectById.get(row.projectId)?.repoRemote ?? null : null,
+      name: project?.name ?? "Unknown Project",
+      workspacePath: project?.workspacePath ?? null,
+      repoKey: project?.repoKey ?? null,
+      repoRemote: project?.repoRemote ?? null,
       totalTokens: row._sum.totalTokens ?? 0,
       inputTokens,
       outputTokens,
@@ -269,6 +265,8 @@ export async function getProjectSummary() {
       lastActiveAt: row._max.occurredAt?.toISOString() ?? null
     };
   });
+  const filtered = filter === "gitOnly" ? out.filter((row) => row.repoKey && row.repoKey.trim() !== "") : out;
+  return filtered.slice(0, 20);
 }
 
 // Per-project (and its sub-tables) need their own model breakdown too — used
@@ -361,7 +359,14 @@ function bigintToNumber(value: bigint | number | null | undefined): number {
   return typeof value === "bigint" ? Number(value) : value;
 }
 
-export async function getDailySummary(days = 180) {
+function daysForRange(range: RangeOption): number {
+  if (range === "7d") return 7;
+  if (range === "30d") return 30;
+  return 180;
+}
+
+export async function getDailySummary(range: RangeOption = "all") {
+  const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
   const rows = await prisma.$queryRaw<DailySummaryRow[]>`
@@ -388,20 +393,112 @@ export async function getDailySummary(days = 180) {
   }));
 }
 
-export async function getBreakdown(field: "source" | "model") {
+type DailyCostByModelRow = {
+  date: Date | string;
+  model: string | null;
+  input: bigint | number | null;
+  cached: bigint | number | null;
+  cwrite: bigint | number | null;
+  output: bigint | number | null;
+};
+
+// Cost per day. We have to GROUP BY (day, model) and then apply per-model
+// pricing in JS since costs vary by model. Daily roll-up is a small result
+// set so the JS step is cheap.
+export async function getDailyCost(range: RangeOption = "all") {
+  const days = daysForRange(range);
+  const since = new Date(Date.now() - days * DAY_MS);
+
+  const rows = await prisma.$queryRaw<DailyCostByModelRow[]>`
+    SELECT
+      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      model,
+      SUM("inputTokens")::bigint AS input,
+      SUM("cachedInputTokens")::bigint AS cached,
+      SUM("cacheWriteTokens")::bigint AS cwrite,
+      SUM("outputTokens")::bigint AS output
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${since}
+    GROUP BY 1, 2
+    ORDER BY 1 ASC
+  `;
+
+  const costByDate = new Map<string, number>();
+  for (const row of rows) {
+    const date = bucketDateToIso(row.date);
+    const cost = estimateCost(row.model, {
+      inputTokens: bigintToNumber(row.input),
+      cachedInputTokens: bigintToNumber(row.cached),
+      cacheWriteTokens: bigintToNumber(row.cwrite),
+      outputTokens: bigintToNumber(row.output)
+    });
+    if (cost == null) continue;
+    costByDate.set(date, (costByDate.get(date) ?? 0) + cost);
+  }
+  return Array.from(costByDate.entries())
+    .map(([date, cost]) => ({ date, cost }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+type DailyBySourceRow = {
+  date: Date | string;
+  source: string;
+  input: bigint | number | null;
+};
+
+// Per-source input tokens per day — used by the stacked area chart. We use
+// inputTokens (total input, including cache) rather than billable so the
+// stacked area conveys "how much each source consumed" intuitively.
+export async function getDailyBySource(range: RangeOption = "all") {
+  const days = daysForRange(range);
+  const since = new Date(Date.now() - days * DAY_MS);
+
+  const rows = await prisma.$queryRaw<DailyBySourceRow[]>`
+    SELECT
+      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      source,
+      SUM("inputTokens")::bigint AS input
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${since}
+    GROUP BY 1, 2
+    ORDER BY 1 ASC
+  `;
+
+  const dates = new Set<string>();
+  const sources = new Set<string>();
+  const byDateSource = new Map<string, number>();
+  for (const row of rows) {
+    const date = bucketDateToIso(row.date);
+    dates.add(date);
+    sources.add(row.source);
+    byDateSource.set(`${date}|${row.source}`, bigintToNumber(row.input));
+  }
+  const sortedDates = Array.from(dates).sort();
+  const sortedSources = Array.from(sources).sort();
+  return {
+    dates: sortedDates,
+    sources: sortedSources,
+    series: sortedSources.map((source) => ({
+      name: source,
+      data: sortedDates.map((date) => byDateSource.get(`${date}|${source}`) ?? 0)
+    }))
+  };
+}
+
+export async function getBreakdown(field: "source" | "model", range: RangeOption = "all") {
+  const where = rangeWhere(range);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
       by: [field],
+      where,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
       _count: true,
       orderBy: { _sum: { totalTokens: "desc" } },
       take: 20
     }),
-    // (field, model) gives us the price-aware slice. When field === "model"
-    // it collapses to the same shape we'd compute directly; we still go
-    // through the same path for symmetry.
     prisma.usageEvent.groupBy({
       by: [field, "model"],
+      where,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     })
   ]);

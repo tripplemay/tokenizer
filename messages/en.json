@@ -14,13 +14,33 @@
       "lastEvent": "Last event"
     },
     "hero": {
-      "compute": "Compute this week",
-      "computeHint": "(input - cache read) + output, last 7 days.",
-      "cost": "Cost this week",
-      "costHint": "USD estimate for the last 7 days using public list prices.",
-      "wowSuffix": "vs prior week",
+      "computeRange": "Compute · {label}",
+      "computeHint": "(input - cache read) + output, within the selected window.",
+      "costRange": "Cost · {label}",
+      "costHint": "USD estimate using public list prices, within the selected window.",
+      "wowSuffix": "vs prior period",
       "wowFlat": "flat",
-      "wowNoBaseline": "no baseline"
+      "wowNoBaseline": "no baseline",
+      "rangeLabel7d": "last 7 days",
+      "rangeLabel30d": "last 30 days",
+      "rangeLabelAll": "all time"
+    },
+    "range": {
+      "sevenDay": "7d",
+      "thirtyDay": "30d",
+      "all": "All"
+    },
+    "filter": {
+      "all": "All projects",
+      "gitOnly": "Git only"
+    },
+    "dailyCost": {
+      "title": "Daily Cost",
+      "subtitle": "Estimated USD per day using each model's list price, Asia/Shanghai bucketing."
+    },
+    "dailySource": {
+      "title": "Input by Source",
+      "subtitle": "Daily input tokens stacked per source, Asia/Shanghai bucketing."
     },
     "kpi": {
       "inputTokens": "Input tokens",

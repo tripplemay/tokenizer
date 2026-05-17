@@ -2,11 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
+  getDailyCost,
+  getDailyBySource,
   getDailySummary,
   getDeviceSummary,
   getProjectSummary,
   getSummary
 } from "@/server/summaries";
+import type { ProjectFilter, RangeOption } from "@/server/summaries";
 import {
   formatDateTime,
   formatFullNumber,
@@ -19,7 +22,11 @@ import {
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { DailyUsageChart } from "./daily-usage-chart";
+import { DailyCostChart } from "./daily-cost-chart";
+import { DailySourceChart } from "./daily-source-chart";
 import { ProjectIcon } from "./_components/project-icon";
+import { RangeSelector } from "./_components/range-selector";
+import { GitFilterToggle } from "./_components/git-filter-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -32,25 +39,61 @@ type BreakdownRow = {
   avgBillablePerEvent: number;
 };
 
-export default async function HomePage() {
-  const [t, summary, projects, daily, sources, models, devices] = await Promise.all([
+function parseRange(raw: unknown): RangeOption {
+  if (raw === "7d" || raw === "30d") return raw;
+  return "all";
+}
+
+function parseGitFilter(raw: unknown): ProjectFilter {
+  if (raw === "1" || raw === "gitOnly") return "gitOnly";
+  return "all";
+}
+
+function rangeLabelKey(range: RangeOption): string {
+  if (range === "7d") return "home.hero.rangeLabel7d";
+  if (range === "30d") return "home.hero.rangeLabel30d";
+  return "home.hero.rangeLabelAll";
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const range = parseRange(params.range);
+  const gitFilter = parseGitFilter(params.gitOnly);
+
+  const [t, summary, projects, daily, dailyCost, dailySource, sources, models, devices] = await Promise.all([
     getTranslations(),
-    getSummary(),
-    getProjectSummary(),
-    getDailySummary(),
-    getBreakdown("source"),
-    getBreakdown("model"),
-    getDeviceSummary()
+    getSummary(range),
+    getProjectSummary(range, gitFilter),
+    getDailySummary(range),
+    getDailyCost(range),
+    getDailyBySource(range),
+    getBreakdown("source", range),
+    getBreakdown("model", range),
+    getDeviceSummary(range)
   ]);
 
-  const computeWow = formatWowDelta(summary.currentWeekCompute, summary.previousWeekCompute);
-  const costWow = formatWowDelta(summary.currentWeekCost, summary.previousWeekCost);
+  const computeWow = summary.priorCompute != null ? formatWowDelta(summary.billableTokens, summary.priorCompute) : null;
+  const costWow = summary.priorCost != null ? formatWowDelta(summary.totalCost, summary.priorCost) : null;
+  const rangeLabel = t(rangeLabelKey(range));
+
+  const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
+        </div>
+        <RangeSelector
+          current={range}
+          searchParams={params}
+          labels={{
+            sevenDay: t("home.range.sevenDay"),
+            thirtyDay: t("home.range.thirtyDay"),
+            all: t("home.range.all")
+          }}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -59,7 +102,7 @@ export default async function HomePage() {
         <ScaleCard label={t("home.scale.devices")} value={formatFullNumber(summary.deviceCount)} />
         <ScaleCard
           label={t("home.scale.lastEvent")}
-          value={formatRelativeTime(summary.lastEventAt, t as (key: string, values?: Record<string, string | number>) => string)}
+          value={formatRelativeTime(summary.lastEventAt, tRelative)}
           valueClass="text-base"
         />
       </div>
@@ -67,23 +110,25 @@ export default async function HomePage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <HeroCard
           icon={<MdBolt className="h-8 w-8" />}
-          label={t("home.hero.compute")}
-          value={formatTokens(summary.currentWeekCompute)}
+          label={t("home.hero.computeRange", { label: rangeLabel })}
+          value={formatTokens(summary.billableTokens)}
           hint={t("home.hero.computeHint")}
           delta={computeWow}
           wowSuffix={t("home.hero.wowSuffix")}
           wowFlat={t("home.hero.wowFlat")}
           wowNoBaseline={t("home.hero.wowNoBaseline")}
+          showWow={range !== "all"}
         />
         <HeroCard
           icon={<MdPaid className="h-8 w-8" />}
-          label={t("home.hero.cost")}
-          value={formatUsd(summary.currentWeekCost)}
+          label={t("home.hero.costRange", { label: rangeLabel })}
+          value={formatUsd(summary.totalCost)}
           hint={t("home.hero.costHint")}
           delta={costWow}
           wowSuffix={t("home.hero.wowSuffix")}
           wowFlat={t("home.hero.wowFlat")}
           wowNoBaseline={t("home.hero.wowNoBaseline")}
+          showWow={range !== "all"}
         />
         <Card extra="flex flex-col justify-center p-6">
           <div className="flex items-center gap-3">
@@ -126,13 +171,41 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="h-72">
-          <DailyUsageChart data={daily.slice(-30)} />
+          <DailyUsageChart data={daily} />
         </div>
       </Card>
 
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <Card extra="p-6">
+          <div className="mb-3">
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dailyCost.title")}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t("home.dailyCost.subtitle")}</p>
+          </div>
+          <div className="h-60">
+            <DailyCostChart data={dailyCost} />
+          </div>
+        </Card>
+        <Card extra="p-6">
+          <div className="mb-3">
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dailySource.title")}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t("home.dailySource.subtitle")}</p>
+          </div>
+          <div className="h-60">
+            <DailySourceChart dates={dailySource.dates} series={dailySource.series} />
+          </div>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Card extra="p-6">
-          <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("home.projectRanking.title")}</h3>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.projectRanking.title")}</h3>
+            <GitFilterToggle
+              current={gitFilter}
+              searchParams={params}
+              labels={{ all: t("home.filter.all"), gitOnly: t("home.filter.gitOnly") }}
+            />
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="text-gray-500">
@@ -162,7 +235,7 @@ export default async function HomePage() {
                     <td className="pr-4 text-right font-medium">{project.cost > 0 ? formatUsd(project.cost) : "—"}</td>
                     <td className="pr-4 text-right">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
                     <td className="pr-4 text-right">{formatFullNumber(project.events)}</td>
-                    <td className="whitespace-nowrap text-right text-gray-500">{formatDateTime(project.lastActiveAt)}</td>
+                    <td className="whitespace-nowrap text-right text-gray-500">{formatRelativeTime(project.lastActiveAt, tRelative)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -195,7 +268,7 @@ export default async function HomePage() {
                     </td>
                     <td className="pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
                     <td className="pr-4 text-right">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
-                    <td className="pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, t as (key: string, values?: Record<string, string | number>) => string)}</td>
+                    <td className="pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -283,7 +356,8 @@ function HeroCard({
   delta,
   wowSuffix,
   wowFlat,
-  wowNoBaseline
+  wowNoBaseline,
+  showWow
 }: {
   icon: React.ReactNode;
   label: string;
@@ -293,6 +367,7 @@ function HeroCard({
   wowSuffix: string;
   wowFlat: string;
   wowNoBaseline: string;
+  showWow: boolean;
 }) {
   return (
     <Card extra="p-6">
@@ -301,10 +376,12 @@ function HeroCard({
         <div className="flex-1">
           <div className="text-xs font-medium text-gray-500">{label}</div>
           <div className="mt-1 text-3xl font-bold text-navy-700 dark:text-white">{value}</div>
-          <div className="mt-1.5 flex items-center gap-1.5 text-xs">
-            <WowBadge delta={delta} flat={wowFlat} noBaseline={wowNoBaseline} />
-            <span className="text-gray-500">{wowSuffix}</span>
-          </div>
+          {showWow ? (
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+              <WowBadge delta={delta} flat={wowFlat} noBaseline={wowNoBaseline} />
+              <span className="text-gray-500">{wowSuffix}</span>
+            </div>
+          ) : null}
           <div className="mt-1 text-xs text-gray-500">{hint}</div>
         </div>
       </div>
