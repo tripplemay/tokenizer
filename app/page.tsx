@@ -211,12 +211,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <thead className="text-gray-500">
                 <tr>
                   <th className="pb-3">{t("home.projectRanking.col.project")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.compute")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.total")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.cost")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.share")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.events")}</th>
-                  <th className="pb-3 text-right">{t("home.projectRanking.col.lastActive")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.compute")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.total")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.cost")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.share")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.events")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.projectRanking.col.lastActive")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -252,10 +252,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <table className="w-full text-left text-sm">
               <thead className="text-gray-500">
                 <tr>
-                  <th className="pb-3">{t("home.connectedClients.col.client")}</th>
-                  <th className="pb-3">{t("home.connectedClients.col.status")}</th>
-                  <th className="pb-3 text-right">{t("home.connectedClients.col.tokens")}</th>
-                  <th className="pb-3 text-right">{t("home.connectedClients.col.cost")}</th>
+                  <th className="pb-3 pr-4">{t("home.connectedClients.col.client")}</th>
+                  <th className="pb-3 pr-4">{t("home.connectedClients.col.status")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.tokens")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.total")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.cost")}</th>
                   <th className="pb-3 text-right">{t("home.connectedClients.col.lastSeen")}</th>
                 </tr>
               </thead>
@@ -267,8 +268,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                       <ClientStatusBadge lastSeenAt={device.lastSeenAt} t={t} />
                     </td>
                     <td className="pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
+                    <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(device.totalTokens)} total tokens`}>{formatTokens(device.totalTokens)}</td>
                     <td className="pr-4 text-right">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
-                    <td className="pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
+                    <td className="text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -461,11 +463,11 @@ function BreakdownCard({
           <thead className="text-gray-500">
             <tr>
               <th className="pb-3">{col.name}</th>
-              <th className="pb-3 text-right">{col.compute}</th>
-              <th className="pb-3 text-right">{col.total}</th>
-              <th className="pb-3 text-right">{col.cost}</th>
-              <th className="pb-3 text-right">{col.share}</th>
-              <th className="pb-3 text-right">{col.events}</th>
+              <th className="pb-3 pr-4 text-right">{col.compute}</th>
+              <th className="pb-3 pr-4 text-right">{col.total}</th>
+              <th className="pb-3 pr-4 text-right">{col.cost}</th>
+              <th className="pb-3 pr-4 text-right">{col.share}</th>
+              <th className="pb-3 pr-4 text-right">{col.events}</th>
             </tr>
           </thead>
           <tbody>

@@ -186,9 +186,9 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("device.col.project")}</th>
-                <th className="pb-3 text-right">{t("device.col.compute")}</th>
-                <th className="pb-3 text-right">{t("device.col.cost")}</th>
-                <th className="pb-3 text-right">{t("device.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.events")}</th>
               </tr>
             </thead>
             <tbody>
@@ -214,9 +214,9 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("device.col.model")}</th>
-                <th className="pb-3 text-right">{t("device.col.compute")}</th>
-                <th className="pb-3 text-right">{t("device.col.cost")}</th>
-                <th className="pb-3 text-right">{t("device.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.events")}</th>
               </tr>
             </thead>
             <tbody>
@@ -239,10 +239,10 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
           <thead className="text-gray-500">
             <tr>
               <th className="pb-3">{t("device.col.source")}</th>
-              <th className="pb-3 text-right">{t("device.col.compute")}</th>
-              <th className="pb-3 text-right">{t("device.col.cost")}</th>
-              <th className="pb-3 text-right">{t("device.col.events")}</th>
-              <th className="pb-3 text-right">{t("device.col.share")}</th>
+              <th className="pb-3 pr-4 text-right">{t("device.col.compute")}</th>
+              <th className="pb-3 pr-4 text-right">{t("device.col.cost")}</th>
+              <th className="pb-3 pr-4 text-right">{t("device.col.events")}</th>
+              <th className="pb-3 pr-4 text-right">{t("device.col.share")}</th>
             </tr>
           </thead>
           <tbody>
@@ -269,8 +269,8 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
                 <th className="pb-3">{t("device.col.project")}</th>
                 <th className="pb-3">{t("device.col.source")}</th>
                 <th className="pb-3">{t("device.col.model")}</th>
-                <th className="pb-3 text-right">{t("device.col.input")}</th>
-                <th className="pb-3 text-right">{t("device.col.output")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.input")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.output")}</th>
               </tr>
             </thead>
             <tbody>

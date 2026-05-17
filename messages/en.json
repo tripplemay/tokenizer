@@ -76,7 +76,8 @@
       "col": {
         "client": "Client",
         "status": "Status",
-        "tokens": "Tokens",
+        "tokens": "Compute",
+        "total": "Total",
         "cost": "Cost",
         "lastSeen": "Last seen"
       }
@@ -125,6 +126,7 @@
     "subtitle": "Latest {count} raw usage events. Per-event token figures are the stored cumulative values; the dashboard's billable totals strip cache reads.",
     "col": {
       "time": "Time",
+      "device": "Device",
       "project": "Project",
       "source": "Source",
       "model": "Model",
@@ -136,6 +138,7 @@
       "reasoning": "Reasoning"
     },
     "unknownProject": "Unknown",
+    "unknownDevice": "Unknown",
     "unknownModel": "unknown"
   },
   "project": {
@@ -180,6 +183,7 @@
       "lastSync": "Last sync",
       "lastEvent": "Last event",
       "tokens": "Compute",
+      "total": "Total",
       "cost": "Cost",
       "cacheHit": "Cache hit",
       "events": "Events",

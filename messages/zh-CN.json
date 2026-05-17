@@ -76,7 +76,8 @@
       "col": {
         "client": "客户端",
         "status": "状态",
-        "tokens": "Tokens",
+        "tokens": "计算量",
+        "total": "总量",
         "cost": "成本",
         "lastSeen": "最近上线"
       }
@@ -125,6 +126,7 @@
     "subtitle": "最近 {count} 条原始用量事件。每行 token 是存储的累积原始值;Dashboard 的可计费总数已扣除 cache。",
     "col": {
       "time": "时间",
+      "device": "设备",
       "project": "项目",
       "source": "来源",
       "model": "模型",
@@ -136,6 +138,7 @@
       "reasoning": "Reasoning"
     },
     "unknownProject": "未知",
+    "unknownDevice": "未知",
     "unknownModel": "未知"
   },
   "project": {
@@ -180,6 +183,7 @@
       "lastSync": "最近同步",
       "lastEvent": "最近事件",
       "tokens": "计算量",
+      "total": "总量",
       "cost": "成本",
       "cacheHit": "Cache 命中率",
       "events": "事件数",

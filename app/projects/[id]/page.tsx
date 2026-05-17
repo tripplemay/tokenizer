@@ -74,10 +74,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("project.col.source")}</th>
-                <th className="pb-3 text-right">{t("project.col.compute")}</th>
-                <th className="pb-3 text-right">{t("project.col.total")}</th>
-                <th className="pb-3 text-right">{t("project.col.cost")}</th>
-                <th className="pb-3 text-right">{t("project.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.total")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.events")}</th>
               </tr>
             </thead>
             <tbody>
@@ -103,10 +103,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <thead className="text-gray-500">
               <tr>
                 <th className="pb-3">{t("project.col.model")}</th>
-                <th className="pb-3 text-right">{t("project.col.compute")}</th>
-                <th className="pb-3 text-right">{t("project.col.total")}</th>
-                <th className="pb-3 text-right">{t("project.col.cost")}</th>
-                <th className="pb-3 text-right">{t("project.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.total")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.events")}</th>
               </tr>
             </thead>
             <tbody>
@@ -137,9 +137,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <th className="pb-3">{t("project.col.time")}</th>
                 <th className="pb-3">{t("project.col.source")}</th>
                 <th className="pb-3">{t("project.col.model")}</th>
-                <th className="pb-3 text-right">{t("project.col.totalRaw")}</th>
-                <th className="pb-3 text-right">{t("project.col.input")}</th>
-                <th className="pb-3 text-right">{t("project.col.output")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.totalRaw")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.input")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.output")}</th>
               </tr>
             </thead>
             <tbody>

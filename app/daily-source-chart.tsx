@@ -35,10 +35,14 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
       type: "gradient",
       gradient: { shadeIntensity: 1, opacityFrom: 0.55, opacityTo: 0.1, stops: [0, 100] }
     },
+    // type: "category" + categories + number[] data is the combination that
+    // makes stacked discrete-day data line up with the axis labels. Earlier
+    // we mixed `type: "datetime"` with string categories, which ApexCharts
+    // tried to render as ms timestamps and produced misaligned bars.
     xaxis: {
-      type: "datetime" as const,
+      type: "category" as const,
       categories: dates,
-      labels: { style: { colors: "#A3AED0", fontSize: "12px", fontWeight: "500" } },
+      labels: { style: { colors: "#A3AED0", fontSize: "12px", fontWeight: "500" }, rotate: 0, hideOverlappingLabels: true },
       axisBorder: { show: false },
       axisTicks: { show: false }
     },
@@ -55,7 +59,26 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
       enabled: true,
       shared: true,
       intersect: false,
-      y: { formatter: (val: number) => formatTokens(val) }
+      // Use the same .duc-tooltip markup as the other charts so the hover
+      // popup has a proper background in both light and dark mode (the
+      // default ApexCharts tooltip ships transparent).
+      custom: ({ series: s, dataPointIndex }: { series: number[][]; dataPointIndex: number }) => {
+        const date = dates[dataPointIndex] ?? "";
+        const rows = series
+          .map((item, i) => {
+            const value = Number(s[i]?.[dataPointIndex] ?? 0);
+            return `
+              <div class="duc-tooltip-row">
+                <span class="duc-tooltip-label">
+                  <span class="duc-tooltip-dot" style="background:${colors[i]}"></span>${item.name}
+                </span>
+                <span class="duc-tooltip-value">${formatTokens(value)}</span>
+              </div>
+            `;
+          })
+          .join("");
+        return `<div class="duc-tooltip"><div class="duc-tooltip-title">${date}</div>${rows}</div>`;
+      }
     }
   };
 

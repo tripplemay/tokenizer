@@ -169,12 +169,13 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
                 <th className="pb-3">{t("devices.col.name")}</th>
                 <th className="pb-3">{t("devices.col.status")}</th>
                 <th className="pb-3">{t("devices.col.platform")}</th>
-                <th className="pb-3 text-right">{t("devices.col.tokens")}</th>
-                <th className="pb-3 text-right">{t("devices.col.cost")}</th>
-                <th className="pb-3 text-right">{t("devices.col.cacheHit")}</th>
-                <th className="pb-3 text-right">{t("devices.col.events")}</th>
-                <th className="pb-3 text-right">{t("devices.col.diagnostics")}</th>
-                <th className="pb-3 text-right">{t("devices.col.lastSeen")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.tokens")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.total")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.cacheHit")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.diagnostics")}</th>
+                <th className="pb-3 pr-4 text-right">{t("devices.col.lastSeen")}</th>
               </tr>
             </thead>
             <tbody>
@@ -195,6 +196,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
                     </td>
                     <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{device.platform ?? "—"}</td>
                     <td className="py-2.5 pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
+                    <td className="py-2.5 pr-4 text-right text-gray-500" title={`${formatFullNumber(device.totalTokens)} total tokens`}>{formatTokens(device.totalTokens)}</td>
                     <td className="py-2.5 pr-4 text-right font-medium">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
                     <td className="py-2.5 pr-4 text-right text-gray-600 dark:text-gray-300">{(device.cacheHitRate * 100).toFixed(1)}%</td>
                     <td className="py-2.5 pr-4 text-right">{formatFullNumber(device.events)}</td>
