@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { MdBolt, MdInput, MdOutput, MdCached, MdDevices, MdInsights } from "react-icons/md";
+import { MdBolt, MdLayers, MdOutput, MdCached, MdDevices, MdInsights } from "react-icons/md";
 import {
   getBreakdown,
   getDailySummary,
@@ -44,16 +44,21 @@ export default async function HomePage() {
             lastEvent: formatDateTime(summary.lastEventAt)
           })}
         </p>
-        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">{t("home.noCacheNote")}</p>
         <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("home.kpi.totalTokens")} subtitle={formatTokens(summary.billableTokens)} />
-        <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(summary.inputTokens)} />
-        <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
-        <div title={`${formatFullNumber(summary.cachedInputTokens)} cached tokens reused`}>
+        <div title={t("home.kpi.computeHint")}>
+          <Widget icon={<MdBolt className="h-7 w-7" />} title={t("home.kpi.compute")} subtitle={formatTokens(summary.billableTokens)} />
+        </div>
+        <div title={t("home.kpi.throughputHint")}>
+          <Widget icon={<MdLayers className="h-7 w-7" />} title={t("home.kpi.throughput")} subtitle={formatTokens(summary.totalTokens)} />
+        </div>
+        <div title={t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}>
           <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheHitRate")} subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`} />
+        </div>
+        <div title={t("home.kpi.outputHint")}>
+          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
         </div>
       </div>
 

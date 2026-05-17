@@ -8,15 +8,15 @@
   "home": {
     "title": "编程 Token 用量",
     "meta": "事件:{events} · 项目:{projects} · 设备:{devices} · 最近事件:{lastEvent}",
-    "noCacheNote": "下方所有 token 数据均排除 cache 复用;cache 命中率单独显示。",
     "kpi": {
-      "totalTokens": "总 token",
-      "totalHint": "Input + Output(排除 cache 复用)",
-      "inputTokens": "Input tokens",
+      "compute": "计算量",
+      "computeHint": "Input + Output,模型在这段时间内的"新工作量"。",
+      "throughput": "吞吐量",
+      "throughputHint": "模型处理 token 总量,包含从缓存复用的部分。",
       "outputTokens": "Output tokens",
+      "outputHint": "模型生成的 token。",
       "cacheHitRate": "Cache 命中率",
-      "cacheReused": "{tokens} 来自 cache 复用",
-      "ofTotal": "{percent} 占总数"
+      "cacheReused": "{tokens} 来自 cache 复用"
     },
     "daily": {
       "title": "日用量",
