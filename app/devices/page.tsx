@@ -7,10 +7,12 @@ import { formatDateTime, formatFullNumber, formatTokens } from "@/shared/format"
 export const dynamic = "force-dynamic";
 
 function deviceStatusKey(lastSeenAt: string | null) {
+  // See app/page.tsx for the rationale: thresholds match the default 15-min
+  // cron sync cadence so cron-mode clients aren't flagged Stale immediately.
   if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
   const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 2 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
-  if (ageMs < 30 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
+  if (ageMs < 20 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
+  if (ageMs < 60 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
   return { key: "offline" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
 }
 

@@ -201,10 +201,14 @@ export default async function HomePage() {
 }
 
 function clientStatus(lastSeenAt: string | null) {
+  // Cron-mode clients (default WSL install) ping the server every 15 minutes,
+  // so a 2-minute "Online" window left the device showing Stale most of the
+  // time. The thresholds below correspond to "missed 0 cycles" (Online),
+  // "missed up to ~3 cycles" (Stale), and "missed more" (Offline).
   if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
   const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 2 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
-  if (ageMs < 30 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
+  if (ageMs < 20 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
+  if (ageMs < 60 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
   return { key: "offline" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
 }
 

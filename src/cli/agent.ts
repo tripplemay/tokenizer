@@ -15,6 +15,15 @@ function log(message: string) {
 export async function runOnce() {
   const config = readConfig();
   const startedAt = new Date().toISOString();
+  // Refresh the server-side lastSeenAt at the start of every cron-triggered
+  // run so the dashboard reflects "device is alive" right after sync, not just
+  // when an explicit `tokenizer agent` loop is running. Heartbeat failures are
+  // non-fatal — sync will surface real connectivity errors separately.
+  try {
+    await heartbeat(config);
+  } catch {
+    /* ignore */
+  }
   const collected = collectEvents(config);
   const queued = readQueue();
   const events = dedupeBySourceEventId([...queued, ...collected.events]);
