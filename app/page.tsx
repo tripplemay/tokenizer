@@ -1,29 +1,25 @@
-import { getBreakdown, getDailySummary, getDeviceSummary, getProjectSummary, getSummary } from "@/server/summaries";
+import {
+  getBreakdown,
+  getDailySummary,
+  getDeviceSummary,
+  getProjectSummary,
+  getSummary
+} from "@/server/summaries";
 import { formatDateTime, formatFullNumber, formatPercent, formatTokens } from "@/shared/format";
+import Card from "@/components/card";
+import Widget from "@/components/widget/Widget";
+import { MdBolt, MdInput, MdOutput, MdCached, MdDevices, MdInsights } from "react-icons/md";
+import { DailyUsageChart } from "./daily-usage-chart";
 import { ClientSetup } from "./client-setup";
 
 export const dynamic = "force-dynamic";
 
 type BreakdownRow = {
   name: string;
-  totalTokens: number;
-  inputTokens: number;
-  outputTokens: number;
   billableTokens: number;
   events: number;
-  avgTokensPerEvent: number;
   avgBillablePerEvent: number;
 };
-
-function TokenCard({ label, value, helper }: { label: string; value: number; helper: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 shadow-lg shadow-slate-950/20" title={`${formatFullNumber(value)} tokens`}>
-      <div className="text-sm text-slate-400">{label}</div>
-      <div className="mt-2 text-3xl font-semibold">{formatTokens(value)}</div>
-      <div className="mt-2 text-xs text-slate-500">{helper}</div>
-    </div>
-  );
-}
 
 export default async function HomePage() {
   const [summary, projects, daily, sources, models, devices] = await Promise.all([
@@ -35,163 +31,204 @@ export default async function HomePage() {
     getDeviceSummary()
   ]);
 
-  const maxDailyBillable = Math.max(...daily.map((day) => day.billableTokens), 1);
-
   return (
-    <div className="space-y-8">
-      <section>
-        <h1 className="text-4xl font-semibold">Coding Token Usage</h1>
-        <p className="mt-2 text-slate-400">Aggregated token usage from Claude Code, Codex, and OpenCode adapters.</p>
-        <p className="mt-3 text-sm text-slate-500">
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Coding Token Usage</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Events: {formatFullNumber(summary.eventCount)} · Projects: {formatFullNumber(summary.projectCount)} · Devices: {formatFullNumber(summary.deviceCount)} · Last event: {formatDateTime(summary.lastEventAt)}
         </p>
-        <p className="mt-1 text-xs text-slate-600">All token figures below exclude cache reuse; cache hit rate is shown separately.</p>
-      </section>
+        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">All token figures below exclude cache reuse; cache hit rate is shown separately.</p>
+      </div>
 
-      <section className="grid gap-4 md:grid-cols-4">
-        <TokenCard label="Total tokens" value={summary.billableTokens} helper="Input + Output (excludes cache reuse)" />
-        <TokenCard label="Input tokens" value={summary.inputTokens} helper={`${formatPercent(summary.inputTokens, summary.billableTokens)} of total`} />
-        <TokenCard label="Output tokens" value={summary.outputTokens} helper={`${formatPercent(summary.outputTokens, summary.billableTokens)} of total`} />
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 shadow-lg shadow-slate-950/20" title={`${formatFullNumber(summary.cachedInputTokens)} cached tokens reused`}>
-          <div className="text-sm text-slate-400">Cache hit rate</div>
-          <div className="mt-2 text-3xl font-semibold">{(summary.cacheHitRate * 100).toFixed(1)}%</div>
-          <div className="mt-2 text-xs text-slate-500">{formatTokens(summary.cachedInputTokens)} reused from cache</div>
-        </div>
-      </section>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <Widget
+          icon={<MdBolt className="h-7 w-7" />}
+          title="Total tokens"
+          subtitle={formatTokens(summary.billableTokens)}
+        />
+        <Widget
+          icon={<MdInput className="h-7 w-7" />}
+          title="Input tokens"
+          subtitle={formatTokens(summary.inputTokens)}
+        />
+        <Widget
+          icon={<MdOutput className="h-7 w-7" />}
+          title="Output tokens"
+          subtitle={formatTokens(summary.outputTokens)}
+        />
+        <Widget
+          icon={<MdCached className="h-7 w-7" />}
+          title="Cache hit rate"
+          subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`}
+        />
+      </div>
 
-      <ClientSetup />
-
-      <section className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
-        <h2 className="text-xl font-semibold">Connected Clients</h2>
-        <p className="mt-1 text-sm text-slate-500">Heartbeat-driven device status.</p>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-slate-400"><tr><th className="py-2">Client</th><th>Status</th><th>Hostname</th><th>Platform</th><th>Last seen</th><th>Last sync</th><th>Last event</th><th>Tokens</th><th>Events</th></tr></thead>
-            <tbody>
-              {devices.map((device) => (
-                <tr key={device.deviceId} className="border-t border-slate-800">
-                  <td className="py-3 pr-4">{device.name}</td>
-                  <td className="pr-4">{clientStatus(device.lastSeenAt)}</td>
-                  <td className="pr-4 text-slate-400">{device.hostname ?? "-"}</td>
-                  <td className="pr-4 text-slate-400">{device.platform ?? "-"}</td>
-                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSeenAt)}</td>
-                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastSyncAt)}</td>
-                  <td className="pr-4 whitespace-nowrap">{formatDateTime(device.lastEventAt)}</td>
-                  <td className="pr-4" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
-                  <td>{formatFullNumber(device.events)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-semibold">Project Ranking</h2>
-              <p className="mt-1 text-sm text-slate-500">Where token usage is concentrated.</p>
-            </div>
+      <Card extra="p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">Daily Usage</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Billable token activity stacked by direction (input + output), last {daily.length} active days, bucketed in Asia/Shanghai.</p>
           </div>
+        </div>
+        <div className="h-72">
+          <DailyUsageChart data={daily.slice(-30)} />
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        <Card extra="p-6">
+          <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">Project Ranking</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="text-slate-400">
-                <tr><th className="py-2">Project</th><th>Tokens</th><th>Share</th><th>Events</th><th>Avg / event</th><th>Last active</th></tr>
+              <thead className="text-gray-500">
+                <tr>
+                  <th className="pb-3">Project</th>
+                  <th className="pb-3">Tokens</th>
+                  <th className="pb-3">Share</th>
+                  <th className="pb-3">Events</th>
+                  <th className="pb-3">Avg / event</th>
+                  <th className="pb-3">Last active</th>
+                </tr>
               </thead>
               <tbody>
                 {projects.map((project) => (
-                  <tr key={project.projectId ?? project.name} className="border-t border-slate-800">
-                    <td className="py-3 pr-4"><a className="hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>{project.name}</a></td>
+                  <tr key={project.projectId ?? project.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
+                    <td className="py-2.5 pr-4">
+                      <a className="font-medium hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>
+                        {project.name}
+                      </a>
+                    </td>
                     <td className="pr-4" title={`${formatFullNumber(project.billableTokens)} billable tokens`}>{formatTokens(project.billableTokens)}</td>
                     <td className="pr-4">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
                     <td className="pr-4">{formatFullNumber(project.events)}</td>
-                    <td className="pr-4" title={`${formatFullNumber(project.avgBillablePerEvent)} billable tokens`}>{formatTokens(project.avgBillablePerEvent)}</td>
-                    <td className="whitespace-nowrap text-slate-400">{formatDateTime(project.lastActiveAt)}</td>
+                    <td className="pr-4">{formatTokens(project.avgBillablePerEvent)}</td>
+                    <td className="whitespace-nowrap text-gray-500">{formatDateTime(project.lastActiveAt)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
-          <h2 className="text-xl font-semibold">Daily Usage</h2>
-          <p className="mt-1 text-sm text-slate-500">Last 180 days, latest 30 active days.</p>
-          <div className="mt-5 space-y-3">
-            {daily.slice(-30).map((day) => {
-              const width = Math.max(4, Math.round((day.billableTokens / maxDailyBillable) * 100));
-              return (
-                <div key={day.date}>
-                  <div className="mb-1 flex justify-between gap-4 text-sm text-slate-400">
-                    <span>{day.date}</span>
-                    <span title={`${formatFullNumber(day.billableTokens)} billable tokens`}>{formatTokens(day.billableTokens)}</span>
-                  </div>
-                  <div className="h-2 rounded bg-slate-800"><div className="h-2 rounded bg-cyan-400" style={{ width: `${width}%` }} /></div>
-                  <div className="mt-1 text-xs text-slate-600">Input {formatTokens(day.inputTokens)} · Output {formatTokens(day.outputTokens)}</div>
-                </div>
-              );
-            })}
+        <Card extra="p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <MdDevices className="h-5 w-5 text-brand-500" />
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">Connected Clients</h3>
           </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="text-gray-500">
+                <tr>
+                  <th className="pb-3">Client</th>
+                  <th className="pb-3">Status</th>
+                  <th className="pb-3">Tokens</th>
+                  <th className="pb-3">Last seen</th>
+                </tr>
+              </thead>
+              <tbody>
+                {devices.map((device) => (
+                  <tr key={device.deviceId} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
+                    <td className="py-2.5 pr-4 font-medium">{device.name}</td>
+                    <td className="pr-4">
+                      <ClientStatusBadge lastSeenAt={device.lastSeenAt} />
+                    </td>
+                    <td className="pr-4" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
+                    <td className="pr-4 whitespace-nowrap text-gray-500">{formatDateTime(device.lastSeenAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <BreakdownCard title="Sources" rows={sources} billableTotal={summary.billableTokens} />
+        <BreakdownCard
+          title="Models"
+          rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? "Unknown model" : row.name }))}
+          billableTotal={summary.billableTokens}
+        />
+      </div>
+
+      <Card extra="p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <MdInsights className="h-5 w-5 text-brand-500" />
+          <h3 className="text-lg font-bold text-navy-700 dark:text-white">Data Quality</h3>
         </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Breakdown title="Sources" rows={sources} billableTotal={summary.billableTokens} />
-        <Breakdown title="Models" rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? "Unknown model" : row.name }))} billableTotal={summary.billableTokens} />
-      </section>
-
-      <section className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
-        <h2 className="text-xl font-semibold">Data Quality</h2>
-        <p className="mt-1 text-sm text-slate-500">Signals that affect analysis accuracy.</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-4">
-          <QualityMetric label="Unknown Project" value={formatTokens(summary.unknownProjectBillable)} title={`${formatFullNumber(summary.unknownProjectBillable)} billable tokens`} helper={formatPercent(summary.unknownProjectBillable, summary.billableTokens)} />
-          <QualityMetric label="Unknown Model" value={formatTokens(summary.unknownModelBillable)} title={`${formatFullNumber(summary.unknownModelBillable)} billable tokens`} helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)} />
-          <QualityMetric label="Devices" value={formatFullNumber(summary.deviceCount)} helper={devices.map((device) => device.name).join(", ") || "No devices"} />
-          <QualityMetric label="OpenCode" value="Ready" helper="SQLite parser enabled" />
+        <div className="grid gap-4 md:grid-cols-4">
+          <QualityMetric
+            label="Unknown Project"
+            value={formatTokens(summary.unknownProjectBillable)}
+            helper={formatPercent(summary.unknownProjectBillable, summary.billableTokens)}
+          />
+          <QualityMetric
+            label="Unknown Model"
+            value={formatTokens(summary.unknownModelBillable)}
+            helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)}
+          />
+          <QualityMetric label="Devices" value={formatFullNumber(summary.deviceCount)} helper={devices.map((d) => d.name).join(", ") || "No devices"} />
           <QualityMetric label="Last Event" value={formatDateTime(summary.lastEventAt)} helper="Based on occurredAt" />
         </div>
-      </section>
+      </Card>
+
+      <ClientSetup />
     </div>
   );
 }
 
 function clientStatus(lastSeenAt: string | null) {
-  if (!lastSeenAt) return "Never seen";
+  if (!lastSeenAt) return { label: "Never seen", color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
   const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 2 * 60 * 1000) return "Online";
-  if (ageMs < 30 * 60 * 1000) return "Stale";
-  return "Offline";
+  if (ageMs < 2 * 60 * 1000) return { label: "Online", color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
+  if (ageMs < 30 * 60 * 1000) return { label: "Stale", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
+  return { label: "Offline", color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
 }
 
-function Breakdown({ title, rows, billableTotal }: { title: string; rows: BreakdownRow[]; billableTotal: number }) {
+function ClientStatusBadge({ lastSeenAt }: { lastSeenAt: string | null }) {
+  const { label, color } = clientStatus(lastSeenAt);
+  return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{label}</span>;
+}
+
+function BreakdownCard({ title, rows, billableTotal }: { title: string; rows: BreakdownRow[]; billableTotal: number }) {
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
-      <h2 className="mb-4 text-xl font-semibold">{title}</h2>
-      <table className="w-full text-left text-sm">
-        <thead className="text-slate-400"><tr><th className="py-2">Name</th><th>Tokens</th><th>Share</th><th>Events</th><th>Avg / event</th></tr></thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.name} className="border-t border-slate-800">
-              <td className="py-3 pr-4">{row.name}</td>
-              <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} billable tokens`}>{formatTokens(row.billableTokens)}</td>
-              <td className="pr-4">{formatPercent(row.billableTokens, billableTotal)}</td>
-              <td className="pr-4">{formatFullNumber(row.events)}</td>
-              <td title={`${formatFullNumber(row.avgBillablePerEvent)} billable tokens`}>{formatTokens(row.avgBillablePerEvent)}</td>
+    <Card extra="p-6">
+      <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{title}</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="text-gray-500">
+            <tr>
+              <th className="pb-3">Name</th>
+              <th className="pb-3">Tokens</th>
+              <th className="pb-3">Share</th>
+              <th className="pb-3">Events</th>
+              <th className="pb-3">Avg / event</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
+                <td className="py-2.5 pr-4 font-medium">{row.name}</td>
+                <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} billable tokens`}>{formatTokens(row.billableTokens)}</td>
+                <td className="pr-4">{formatPercent(row.billableTokens, billableTotal)}</td>
+                <td className="pr-4">{formatFullNumber(row.events)}</td>
+                <td className="pr-4">{formatTokens(row.avgBillablePerEvent)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
   );
 }
 
-function QualityMetric({ label, value, helper, title }: { label: string; value: string; helper: string; title?: string }) {
+function QualityMetric({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" title={title}>
-      <div className="text-sm text-slate-400">{label}</div>
-      <div className="mt-2 truncate text-2xl font-semibold">{value}</div>
-      <div className="mt-2 text-xs text-slate-500">{helper}</div>
+    <div className="rounded-2xl border border-gray-200 bg-white/40 p-4 dark:border-white/10 dark:bg-navy-900/40">
+      <div className="text-xs font-medium text-gray-500">{label}</div>
+      <div className="mt-1.5 truncate text-xl font-bold text-navy-700 dark:text-white">{value}</div>
+      <div className="mt-1 text-xs text-gray-500">{helper}</div>
     </div>
   );
 }
