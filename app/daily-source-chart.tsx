@@ -12,7 +12,8 @@ type SeriesItem = { name: string; data: number[] };
 const SOURCE_COLORS: Record<string, string> = {
   "claude-code": "#FF6F61",
   codex: "#4318FF",
-  opencode: "#01B574"
+  opencode: "#01B574",
+  aider: "#FFB547"
 };
 const FALLBACK_PALETTE = ["#FFB547", "#6AD2FF", "#A3AED0", "#FF5630"];
 

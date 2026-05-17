@@ -11,6 +11,7 @@ export type TokenizerConfig = {
     claude: boolean;
     codex: boolean;
     opencode: boolean;
+    aider: boolean;
   };
 };
 
@@ -28,7 +29,7 @@ export function defaultConfig(): TokenizerConfig {
   return {
     serverUrl: "http://localhost:3000",
     projectRoots: [join(homedir(), "project")],
-    sources: { claude: true, codex: true, opencode: true }
+    sources: { claude: true, codex: true, opencode: true, aider: true }
   };
 }
 
@@ -46,7 +47,13 @@ export function readConfig(): TokenizerConfig {
   if (!existsSync(configPath)) {
     throw new Error(`Missing config. Run: tokenizer init`);
   }
-  return JSON.parse(readFileSync(configPath, "utf8")) as TokenizerConfig;
+  const stored = JSON.parse(readFileSync(configPath, "utf8")) as TokenizerConfig;
+  // Backfill source flags so an existing install (whose config.json was
+  // written before a new source was added) auto-enables it on next read,
+  // instead of needing a manual `tokenizer configure` to flip the flag.
+  const defaults = defaultConfig();
+  stored.sources = { ...defaults.sources, ...stored.sources };
+  return stored;
 }
 
 export function writeConfig(config: TokenizerConfig) {
