@@ -21,6 +21,7 @@
     "test:unit": "vitest run"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.2",
     "@chakra-ui/hooks": "^2.1.4",
     "@chakra-ui/modal": "^2.2.9",
     "@chakra-ui/popover": "^2.1.8",
@@ -36,6 +37,7 @@
     "commander": "^12.1.0",
     "framer-motion": "^7.10.2",
     "next": "^15.1.4",
+    "next-auth": "^5.0.0-beta.31",
     "next-intl": "^3.26.0",
     "prisma": "^5.22.0",
     "react": "^19.0.0",
