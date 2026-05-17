@@ -10,7 +10,7 @@
     "meta": "事件:{events} · 项目:{projects} · 设备:{devices} · 最近事件:{lastEvent}",
     "kpi": {
       "compute": "计算量",
-      "computeHint": "Input + Output,模型在这段时间内的"新工作量"。",
+      "computeHint": "Input + Output,模型在这段时间内的「新工作量」。",
       "throughput": "吞吐量",
       "throughputHint": "模型处理 token 总量,包含从缓存复用的部分。",
       "outputTokens": "Output tokens",
