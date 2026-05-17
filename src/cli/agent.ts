@@ -67,7 +67,10 @@ export async function runHeartbeat() {
   const config = readConfig();
   try {
     const result = await heartbeat(config);
-    updateState({ lastHeartbeatAt: new Date().toISOString(), lastHeartbeatStatus: "success" });
+    // Clear lastError on success so a transient heartbeat failure (e.g. a
+    // 502 during a server deploy) doesn't stay stuck in state.json and keep
+    // surfacing on the dashboard's diagnostics card forever.
+    updateState({ lastHeartbeatAt: new Date().toISOString(), lastHeartbeatStatus: "success", lastError: null });
     return result;
   } catch (error) {
     updateState({ lastHeartbeatAt: new Date().toISOString(), lastHeartbeatStatus: "failed", lastError: error instanceof Error ? error.message : String(error) });
