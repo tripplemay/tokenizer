@@ -158,9 +158,14 @@ chmod +x bin/tokenizer
 ln -sfn "$INSTALL_DIR/bin/tokenizer" "$BIN_DIR/tokenizer"
 
 export PATH="$BIN_DIR:$PATH"
-init_args=()
-if [ -n "$DEVICE_NAME" ]; then init_args+=(--device-name "$DEVICE_NAME"); fi
-tokenizer init "${init_args[@]}"
+# macOS ships bash 3.2, where expanding an empty array via "${arr[@]}" under
+# `set -u` triggers "unbound variable". Branch on DEVICE_NAME instead of
+# accumulating optional flags into an array.
+if [ -n "$DEVICE_NAME" ]; then
+  tokenizer init --device-name "$DEVICE_NAME"
+else
+  tokenizer init
+fi
 tokenizer configure --server-url "$SERVER_URL" --project-root "$PROJECT_ROOT"
 
 if [ "$NEED_ENROLL" = "1" ]; then
