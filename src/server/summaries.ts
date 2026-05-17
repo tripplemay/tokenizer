@@ -806,11 +806,10 @@ async function getBreakdownImpl(field: "source" | "model", range: RangeOption = 
 // are intentionally NOT cached — they return Prisma Date objects that the
 // JSON cache layer would coerce to strings and break their consumers.
 
-// Temporary instrumentation: when CACHE_DEBUG=1 the wrappers log every cache
-// miss with its underlying query time. Helpful for confirming whether
-// unstable_cache is actually hitting in production vs being silently bypassed
-// by force-dynamic / other request-scoped behavior. Remove once verified.
-const CACHE_DEBUG = true; // TEMPORARY — flip back to false after diagnosis.
+// Opt-in cache-miss logging. Set CACHE_DEBUG=1 in the server env to see every
+// unstable_cache miss with its underlying query time — useful for spotting
+// when a regression starts bypassing the cache. Off by default.
+const CACHE_DEBUG = process.env.CACHE_DEBUG === "1";
 function instrument<T extends (...args: never[]) => Promise<unknown>>(name: string, fn: T): T {
   if (!CACHE_DEBUG) return fn;
   return (async (...args: never[]) => {
