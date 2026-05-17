@@ -2,6 +2,28 @@ import { Prisma } from "@prisma/client";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { prisma } from "./db";
 
+// Postgres' jsonb type rejects NUL bytes (U+0000). Old per-event create
+// quietly dropped bad rows; createMany fails the whole batch on any single
+// bad row, so we sanitize defensively here before we ever hit the wire.
+const NUL = String.fromCharCode(0);
+function stripNullBytesFromString(value: string): string {
+  return value.indexOf(NUL) === -1 ? value : value.split(NUL).join("");
+}
+function stripNullBytesDeep(value: unknown): unknown {
+  if (typeof value === "string") return stripNullBytesFromString(value);
+  if (Array.isArray(value)) return value.map(stripNullBytesDeep);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = stripNullBytesDeep(v);
+    return out;
+  }
+  return value;
+}
+function sanitizeNullableString<T extends string | null | undefined>(value: T): T {
+  if (value == null) return value;
+  return stripNullBytesFromString(value) as T;
+}
+
 function projectNameFromPath(workspacePath?: string | null): string {
   if (!workspacePath) return "Unknown Project";
   const clean = workspacePath.replace(/\/+$/, "");
@@ -97,20 +119,24 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
     projectIdByKey.set(key, project.id);
   }
 
-  // 2) Build the row payload for createMany.
+  // 2) Build the row payload for createMany. Every user-supplied string and
+  // the rawJson payload pass through stripNullBytesDeep / sanitizeNullableString —
+  // Postgres jsonb / text columns refuse U+0000, and a single bad row would
+  // otherwise fail the entire batch (createMany is not row-isolated the way
+  // the old per-event create loop was).
   const rows = events.map((event) => ({
     deviceId: device.id,
     source: event.source,
-    sourceEventId: event.sourceEventId,
+    sourceEventId: stripNullBytesFromString(event.sourceEventId),
     projectId: projectIdByKey.get(projectKey(event)) ?? null,
-    sessionId: event.sessionId ?? null,
-    workspacePath: event.workspacePath ?? null,
-    localWorkspacePath: event.localWorkspacePath ?? event.workspacePath ?? null,
-    repoKey: event.repoKey ?? null,
-    gitRemote: event.gitRemote ?? null,
-    gitBranch: event.gitBranch ?? null,
-    gitCommit: event.gitCommit ?? null,
-    model: event.model ?? null,
+    sessionId: sanitizeNullableString(event.sessionId ?? null),
+    workspacePath: sanitizeNullableString(event.workspacePath ?? null),
+    localWorkspacePath: sanitizeNullableString(event.localWorkspacePath ?? event.workspacePath ?? null),
+    repoKey: sanitizeNullableString(event.repoKey ?? null),
+    gitRemote: sanitizeNullableString(event.gitRemote ?? null),
+    gitBranch: sanitizeNullableString(event.gitBranch ?? null),
+    gitCommit: sanitizeNullableString(event.gitCommit ?? null),
+    model: sanitizeNullableString(event.model ?? null),
     inputTokens: normalizeTokenCount(event.inputTokens),
     outputTokens: normalizeTokenCount(event.outputTokens),
     cachedInputTokens: normalizeTokenCount(event.cachedInputTokens),
@@ -119,7 +145,10 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
     totalTokens: computeTotalTokens(event),
     costUsd: event.costUsd == null ? null : new Prisma.Decimal(event.costUsd),
     occurredAt: new Date(event.occurredAt),
-    rawJson: event.rawJson === undefined ? Prisma.JsonNull : (event.rawJson as Prisma.InputJsonValue)
+    rawJson:
+      event.rawJson === undefined
+        ? Prisma.JsonNull
+        : (stripNullBytesDeep(event.rawJson) as Prisma.InputJsonValue)
   }));
 
   // 3) Single createMany — Postgres ON CONFLICT DO NOTHING on the unique
