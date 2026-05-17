@@ -1,5 +1,5 @@
 import React from "react";
-import { MdDashboard, MdListAlt } from "react-icons/md";
+import { MdDashboard, MdListAlt, MdComputer } from "react-icons/md";
 
 const routes = [
   {
@@ -13,6 +13,12 @@ const routes = [
     layout: "",
     path: "/events",
     icon: <MdListAlt className="h-6 w-6" />
+  },
+  {
+    name: "Devices",
+    layout: "",
+    path: "/devices",
+    icon: <MdComputer className="h-6 w-6" />
   }
 ];
 
