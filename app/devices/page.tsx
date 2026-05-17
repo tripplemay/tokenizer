@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { MdComputer, MdInventory2, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { getDailyByDevice, getDeviceSummary } from "@/server/summaries";
+import { getCurrentTenantId } from "@/server/auth-session";
 import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
@@ -98,7 +99,8 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
 }
 
 async function DailyByDeviceSection({ range }: { range: RangeOption }) {
-  const [t, dailyByDevice] = await Promise.all([getTranslations(), getDailyByDevice(range)]);
+  const tenantId = await getCurrentTenantId();
+  const [t, dailyByDevice] = await Promise.all([getTranslations(), getDailyByDevice(tenantId, range)]);
   return (
     <Card extra="p-6">
       <div className="mb-3">
@@ -113,7 +115,8 @@ async function DailyByDeviceSection({ range }: { range: RangeOption }) {
 }
 
 async function DevicesTableSection({ range }: { range: RangeOption }) {
-  const [t, devices] = await Promise.all([getTranslations(), getDeviceSummary(range)]);
+  const tenantId = await getCurrentTenantId();
+  const [t, devices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, range)]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
   return (
     <Card extra="p-6">

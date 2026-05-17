@@ -23,9 +23,9 @@ function rangeStart(range: RangeOption): Date | null {
   return new Date(Date.now() - days * DAY_MS);
 }
 
-function rangeWhere(range: RangeOption): Record<string, unknown> {
+function rangeWhere(range: RangeOption, tenantId: string): Record<string, unknown> {
   const since = rangeStart(range);
-  return since ? { occurredAt: { gte: since } } : {};
+  return since ? { userId: tenantId, occurredAt: { gte: since } } : { userId: tenantId };
 }
 
 // Equal-length prior window for WoW comparison. Returns null for "all" since
@@ -92,9 +92,9 @@ async function computeAndCostFor(where: Record<string, unknown>): Promise<{ comp
   return { compute, cost };
 }
 
-async function getSummaryImpl(range: RangeOption = "all") {
+async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
   const now = new Date();
-  const where = rangeWhere(range);
+  const where = rangeWhere(range, tenantId);
   const prior = priorWindow(range, now);
 
   const [
@@ -160,8 +160,8 @@ async function getSummaryImpl(range: RangeOption = "all") {
   };
 }
 
-async function getDeviceSummaryImpl(range: RangeOption = "all") {
-  const where = rangeWhere(range);
+async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all") {
+  const where = rangeWhere(range, tenantId);
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
     where,
@@ -225,8 +225,8 @@ async function getDeviceSummaryImpl(range: RangeOption = "all") {
 
 // Detail rollup for a single device. Mirrors getProjectDetail() in shape so
 // /devices/[id] can reuse the same table layouts.
-export async function getDeviceDetail(deviceId: string, range: RangeOption = "all") {
-  const where = { deviceId, ...rangeWhere(range) };
+export async function getDeviceDetail(tenantId: string, deviceId: string, range: RangeOption = "all") {
+  const where = { deviceId, ...rangeWhere(range, tenantId) };
   const [device, totals, eventCount, events, byProject, byModel, bySource, projectCostRows, modelCostRows, sourceCostRows, deviceCost] = await Promise.all([
     prisma.device.findUnique({ where: { id: deviceId } }),
     prisma.usageEvent.aggregate({
@@ -385,7 +385,7 @@ type DailyForDeviceRow = {
   billableTokens: bigint | number | null;
 };
 
-export async function getDailyForDevice(deviceId: string, range: RangeOption = "all") {
+export async function getDailyForDevice(tenantId: string, deviceId: string, range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyForDeviceRow[]>`
@@ -397,7 +397,7 @@ export async function getDailyForDevice(deviceId: string, range: RangeOption = "
       SUM("cachedInputTokens")::bigint AS "cachedInputTokens",
       SUM(GREATEST("inputTokens" - "cachedInputTokens", 0) + "outputTokens")::bigint AS "billableTokens"
     FROM "UsageEvent"
-    WHERE "occurredAt" >= ${since} AND "deviceId" = ${deviceId}
+    WHERE "occurredAt" >= ${since} AND "deviceId" = ${deviceId} AND "userId" = ${tenantId}
     GROUP BY 1
     ORDER BY 1 ASC
   `;
@@ -423,7 +423,7 @@ type DailyByDeviceRow = {
   output: bigint | number | null;
 };
 
-async function getDailyByDeviceImpl(range: RangeOption = "all") {
+async function getDailyByDeviceImpl(tenantId: string, range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyByDeviceRow[]>`
@@ -471,8 +471,8 @@ async function getDailyByDeviceImpl(range: RangeOption = "all") {
   };
 }
 
-async function getProjectSummaryImpl(range: RangeOption = "all", filter: ProjectFilter = "all") {
-  const where = rangeWhere(range);
+async function getProjectSummaryImpl(tenantId: string, range: RangeOption = "all", filter: ProjectFilter = "all") {
+  const where = rangeWhere(range, tenantId);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
       by: ["projectId"],
@@ -534,36 +534,37 @@ async function getProjectSummaryImpl(range: RangeOption = "all", filter: Project
 
 // Per-project (and its sub-tables) need their own model breakdown too — used
 // by /projects/[id] to fill Sources / Models tables with cost columns.
-export async function getProjectDetail(projectId: string) {
+export async function getProjectDetail(tenantId: string, projectId: string) {
+  const projectWhere = { userId: tenantId, projectId };
   const [totals, events, bySource, byModel, sourceCostRows, modelCostRows, projectCost] = await Promise.all([
     prisma.usageEvent.aggregate({
-      where: { projectId },
+      where: projectWhere,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true }
     }),
-    prisma.usageEvent.findMany({ where: { projectId }, take: 100, orderBy: { occurredAt: "desc" } }),
+    prisma.usageEvent.findMany({ where: projectWhere, take: 100, orderBy: { occurredAt: "desc" } }),
     prisma.usageEvent.groupBy({
       by: ["source"],
-      where: { projectId },
+      where: projectWhere,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true },
       _count: true
     }),
     prisma.usageEvent.groupBy({
       by: ["model"],
-      where: { projectId },
+      where: projectWhere,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true },
       _count: true
     }),
     prisma.usageEvent.groupBy({
       by: ["source", "model"],
-      where: { projectId },
+      where: projectWhere,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     }),
     prisma.usageEvent.groupBy({
       by: ["model"],
-      where: { projectId },
+      where: projectWhere,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     }),
-    costForWhere({ projectId })
+    costForWhere(projectWhere)
   ]);
 
   const costBySource = new Map<string, number>();
@@ -628,7 +629,7 @@ function daysForRange(range: RangeOption): number {
   return 180;
 }
 
-async function getDailySummaryImpl(range: RangeOption = "all") {
+async function getDailySummaryImpl(tenantId: string, range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -668,7 +669,7 @@ type DailyCostByModelRow = {
 // Cost per day. We have to GROUP BY (day, model) and then apply per-model
 // pricing in JS since costs vary by model. Daily roll-up is a small result
 // set so the JS step is cheap.
-async function getDailyCostImpl(range: RangeOption = "all") {
+async function getDailyCostImpl(tenantId: string, range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -712,7 +713,7 @@ type DailyBySourceRow = {
 // Per-source input tokens per day — used by the stacked area chart. We use
 // inputTokens (total input, including cache) rather than billable so the
 // stacked area conveys "how much each source consumed" intuitively.
-async function getDailyBySourceImpl(range: RangeOption = "all") {
+async function getDailyBySourceImpl(tenantId: string, range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -748,8 +749,8 @@ async function getDailyBySourceImpl(range: RangeOption = "all") {
   };
 }
 
-async function getBreakdownImpl(field: "source" | "model", range: RangeOption = "all") {
-  const where = rangeWhere(range);
+async function getBreakdownImpl(tenantId: string, field: "source" | "model", range: RangeOption = "all") {
+  const where = rangeWhere(range, tenantId);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
       by: [field],

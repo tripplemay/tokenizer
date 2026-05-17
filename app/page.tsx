@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
+import { getCurrentTenantId } from "@/server/auth-session";
 import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
@@ -69,8 +70,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const range = parseRange(params.range);
   const gitFilter = parseGitFilter(params.gitOnly);
 
+  const tenantId = await getCurrentTenantId();
   const t = await getTranslations();
-  const summary = await getSummary(range);
+  const summary = await getSummary(tenantId, range);
 
   const rangeLabel = t(rangeLabelKey(range));
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
@@ -115,6 +117,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {/* HERO ROW — async because sparkline data is fetched per range */}
       <Suspense fallback={<HeroRowSkeleton />}>
         <HeroSection
+          tenantId={tenantId}
           range={range}
           summary={summary}
           rangeLabel={rangeLabel}
@@ -149,23 +152,23 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </div>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
-        <DailyUsageSection range={range} />
+        <DailyUsageSection tenantId={tenantId} range={range} />
       </Suspense>
 
       <Suspense fallback={<DualChartSkeleton />}>
-        <DailyCostAndSourceSection range={range} />
+        <DailyCostAndSourceSection tenantId={tenantId} range={range} />
       </Suspense>
 
       <Suspense fallback={<RankingSkeleton />}>
-        <ProjectsAndDevicesSection range={range} gitFilter={gitFilter} searchParams={params} summaryBillable={summary.billableTokens} />
+        <ProjectsAndDevicesSection tenantId={tenantId} range={range} gitFilter={gitFilter} searchParams={params} summaryBillable={summary.billableTokens} />
       </Suspense>
 
       <Suspense fallback={<SourcesGridSkeleton />}>
-        <SourcesGridSection range={range} summaryBillable={summary.billableTokens} />
+        <SourcesGridSection tenantId={tenantId} range={range} summaryBillable={summary.billableTokens} />
       </Suspense>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-64" />}>
-        <ModelsBreakdownSection range={range} summaryBillable={summary.billableTokens} />
+        <ModelsBreakdownSection tenantId={tenantId} range={range} summaryBillable={summary.billableTokens} />
       </Suspense>
 
       <Card extra="p-6">
@@ -219,10 +222,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 type SummaryShape = Awaited<ReturnType<typeof getSummary>>;
 
 async function HeroSection({
+  tenantId,
   range,
   summary,
   labels
 }: {
+  tenantId: string;
   range: RangeOption;
   summary: SummaryShape;
   rangeLabel: string;
@@ -241,7 +246,7 @@ async function HeroSection({
   // Sparklines reuse the daily series (cached, near-free). Cache-hit
   // sparkline is computed inline from the same dailySummary rather than
   // adding another query.
-  const [dailySummary, dailyCost] = await Promise.all([getDailySummary(range), getDailyCost(range)]);
+  const [dailySummary, dailyCost] = await Promise.all([getDailySummary(tenantId, range), getDailyCost(tenantId, range)]);
   const computeSpark = dailySummary.map((d) => d.billableTokens);
   const costSpark = dailyCost.map((d) => d.cost);
   const cacheSpark = dailySummary.map((d) => (d.inputTokens > 0 ? Math.min(100, (d.cachedInputTokens / d.inputTokens) * 100) : 0));
@@ -301,8 +306,8 @@ async function HeroSection({
   );
 }
 
-async function DailyUsageSection({ range }: { range: RangeOption }) {
-  const [t, daily] = await Promise.all([getTranslations(), getDailySummary(range)]);
+async function DailyUsageSection({ tenantId, range }: { tenantId: string; range: RangeOption }) {
+  const [t, daily] = await Promise.all([getTranslations(), getDailySummary(tenantId, range)]);
   return (
     <Card extra="p-6">
       <div className="mb-4">
@@ -316,8 +321,8 @@ async function DailyUsageSection({ range }: { range: RangeOption }) {
   );
 }
 
-async function DailyCostAndSourceSection({ range }: { range: RangeOption }) {
-  const [t, dailyCost, dailySource] = await Promise.all([getTranslations(), getDailyCost(range), getDailyBySource(range)]);
+async function DailyCostAndSourceSection({ tenantId, range }: { tenantId: string; range: RangeOption }) {
+  const [t, dailyCost, dailySource] = await Promise.all([getTranslations(), getDailyCost(tenantId, range), getDailyBySource(tenantId, range)]);
   return (
     <div className="grid grid-cols-12 gap-5">
       <Card extra="col-span-12 lg:col-span-6 p-6">
@@ -343,11 +348,13 @@ async function DailyCostAndSourceSection({ range }: { range: RangeOption }) {
 }
 
 async function ProjectsAndDevicesSection({
+  tenantId,
   range,
   gitFilter,
   searchParams,
   summaryBillable
 }: {
+  tenantId: string;
   range: RangeOption;
   gitFilter: ProjectFilter;
   searchParams: Record<string, string | string[] | undefined>;
@@ -355,8 +362,8 @@ async function ProjectsAndDevicesSection({
 }) {
   const [t, projects, devices] = await Promise.all([
     getTranslations(),
-    getProjectSummary(range, gitFilter),
-    getDeviceSummary(range)
+    getProjectSummary(tenantId, range, gitFilter),
+    getDeviceSummary(tenantId, range)
   ]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
   return (
@@ -456,11 +463,11 @@ async function ProjectsAndDevicesSection({
   );
 }
 
-async function SourcesGridSection({ range, summaryBillable }: { range: RangeOption; summaryBillable: number }) {
+async function SourcesGridSection({ tenantId, range, summaryBillable }: { tenantId: string; range: RangeOption; summaryBillable: number }) {
   const [t, sources, dailyBySource] = await Promise.all([
     getTranslations(),
-    getBreakdown("source", range),
-    getDailyBySource(range)
+    getBreakdown(tenantId, "source", range),
+    getDailyBySource(tenantId, range)
   ]);
   if (sources.length === 0) return null;
   return (
@@ -480,8 +487,8 @@ async function SourcesGridSection({ range, summaryBillable }: { range: RangeOpti
   );
 }
 
-async function ModelsBreakdownSection({ range, summaryBillable }: { range: RangeOption; summaryBillable: number }) {
-  const [t, models] = await Promise.all([getTranslations(), getBreakdown("model", range)]);
+async function ModelsBreakdownSection({ tenantId, range, summaryBillable }: { tenantId: string; range: RangeOption; summaryBillable: number }) {
+  const [t, models] = await Promise.all([getTranslations(), getBreakdown(tenantId, "model", range)]);
   return (
     <Card extra="p-6">
       <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("home.breakdown.models")}</h3>

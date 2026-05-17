@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import Card from "@/components/card";
 import { SourcePill } from "../_components/source-pill";
 import { formatDateTimeSeconds } from "@/shared/format";
+import { getCurrentTenantId } from "@/server/auth-session";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +13,11 @@ function formatNumber(value: number) {
 }
 
 export default async function EventsPage() {
+  const tenantId = await getCurrentTenantId();
   const [t, events] = await Promise.all([
     getTranslations(),
     prisma.usageEvent.findMany({
+      where: { userId: tenantId },
       take: 200,
       orderBy: { occurredAt: "desc" },
       include: { project: true, device: true }
