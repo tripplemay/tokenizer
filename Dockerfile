@@ -1,7 +1,9 @@
 FROM node:22-slim AS deps
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY package.json package-lock.json* ./
+# .npmrc carries legacy-peer-deps=true; without it npm ci would reject the
+# Chakra v2 / framer-motion v7 / React 19 peer combo with ERESOLVE.
+COPY package.json package-lock.json* .npmrc ./
 RUN npm ci
 
 FROM node:22-slim AS builder
