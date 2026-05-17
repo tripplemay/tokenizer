@@ -57,6 +57,12 @@ jobs:
       VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
       ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+      # Auth.js v5 — sign-in / session secrets. AUTH_SECRET and
+      # AUTH_RESEND_KEY come from GitHub Actions secrets (set them in repo
+      # Settings → Secrets and variables → Actions). AUTH_TRUST_HOST and
+      # AUTH_EMAIL_FROM are hardcoded sane defaults below.
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      AUTH_RESEND_KEY: ${{ secrets.AUTH_RESEND_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -100,6 +106,18 @@ jobs:
             NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
           fi
 
+          # Warn (not fail) on missing Auth.js secrets so an incomplete
+          # config doesn't block the deploy. Auth.js falls back at runtime:
+          # a missing AUTH_SECRET uses a build-time placeholder (login
+          # disabled until set); a missing AUTH_RESEND_KEY just drops the
+          # Resend provider (login form renders but sending email errors).
+          if [ -z "${AUTH_SECRET:-}" ]; then
+            echo "warning: AUTH_SECRET secret not set — login will be disabled until you add it" >&2
+          fi
+          if [ -z "${AUTH_RESEND_KEY:-}" ]; then
+            echo "warning: AUTH_RESEND_KEY secret not set — magic-link emails won't send until you add it" >&2
+          fi
+
           ENV_FILE="$(mktemp)"
           {
             printf 'ADMIN_TOKEN=%s\n' "$ADMIN_TOKEN"
@@ -107,6 +125,12 @@ jobs:
             printf 'DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer\n'
             printf 'APP_HOST_PORT=127.0.0.1:3010\n'
             printf 'GIT_COMMIT=%s\n' "${{ github.sha }}"
+            # Auth.js v5
+            printf 'AUTH_SECRET=%s\n' "${AUTH_SECRET:-}"
+            printf 'AUTH_TRUST_HOST=true\n'
+            printf 'AUTH_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
+            printf 'AUTH_RESEND_KEY=%s\n' "${AUTH_RESEND_KEY:-}"
+            printf 'AUTH_EMAIL_FROM=noreply@token.vpanel.cc\n'
           } > "$ENV_FILE"
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
           rm -f "$ENV_FILE"

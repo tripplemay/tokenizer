@@ -39,6 +39,13 @@ services:
       ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       GIT_COMMIT: ${GIT_COMMIT:-unknown}
+      # Auth.js v5 — values are passed in via the deploy workflow's .env file.
+      # See .github/workflows/deploy-vps.yml for the source of truth.
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-true}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+      AUTH_RESEND_KEY: ${AUTH_RESEND_KEY:-}
+      AUTH_EMAIL_FROM: ${AUTH_EMAIL_FROM:-noreply@token.vpanel.cc}
     ports:
       - "${APP_HOST_PORT:-127.0.0.1:3010}:3000"
 
