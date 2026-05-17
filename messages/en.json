@@ -7,7 +7,21 @@
   },
   "home": {
     "title": "Coding Token Usage",
-    "meta": "Events: {events} · Projects: {projects} · Devices: {devices} · Last event: {lastEvent}",
+    "scale": {
+      "events": "Events",
+      "projects": "Projects",
+      "devices": "Devices",
+      "lastEvent": "Last event"
+    },
+    "hero": {
+      "compute": "Compute this week",
+      "computeHint": "(input - cache read) + output, last 7 days.",
+      "cost": "Cost this week",
+      "costHint": "USD estimate for the last 7 days using public list prices.",
+      "wowSuffix": "vs prior week",
+      "wowFlat": "flat",
+      "wowNoBaseline": "no baseline"
+    },
     "kpi": {
       "inputTokens": "Input tokens",
       "inputHint": "Total input the model saw (includes both cache write and cache read).",
@@ -30,6 +44,7 @@
         "project": "Project",
         "compute": "Compute",
         "total": "Total",
+        "cost": "Cost",
         "share": "Share",
         "events": "Events",
         "avgPerEvent": "Avg / event",
@@ -42,6 +57,7 @@
         "client": "Client",
         "status": "Status",
         "tokens": "Tokens",
+        "cost": "Cost",
         "lastSeen": "Last seen"
       }
     },
@@ -52,6 +68,7 @@
         "name": "Name",
         "compute": "Compute",
         "total": "Total",
+        "cost": "Cost",
         "share": "Share",
         "events": "Events",
         "avgPerEvent": "Avg / event"
@@ -61,6 +78,8 @@
       "title": "Data Quality",
       "unknownProject": "Unknown Project",
       "unknownModel": "Unknown Model",
+      "unpriced": "Unpriced tokens",
+      "unpricedHelper": "Model missing from price table — cost shown as —",
       "reasoningTokens": "Reasoning tokens",
       "reasoningHelper": "{percent} of output",
       "devices": "Devices",
@@ -69,6 +88,11 @@
       "lastEventHelper": "Based on occurredAt"
     },
     "unknownModel": "Unknown model"
+  },
+  "relative": {
+    "justNow": "just now",
+    "minutesAgo": "{n} min ago",
+    "hoursAgo": "{n} h ago"
   },
   "clientStatus": {
     "online": "Online",
@@ -102,7 +126,8 @@
       "compute": "Compute",
       "input": "Input",
       "output": "Output",
-      "cacheRead": "Cache read"
+      "cacheRead": "Cache read",
+      "cost": "Cost"
     },
     "sources": "Sources",
     "models": "Models",
@@ -113,6 +138,7 @@
       "model": "Model",
       "compute": "Compute",
       "total": "Total",
+      "cost": "Cost",
       "events": "Events",
       "time": "Time",
       "totalRaw": "Total (raw)",

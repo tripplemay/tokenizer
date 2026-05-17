@@ -7,7 +7,21 @@
   },
   "home": {
     "title": "编程 Token 用量",
-    "meta": "事件:{events} · 项目:{projects} · 设备:{devices} · 最近事件:{lastEvent}",
+    "scale": {
+      "events": "事件总数",
+      "projects": "项目数",
+      "devices": "设备数",
+      "lastEvent": "最近事件"
+    },
+    "hero": {
+      "compute": "本周计算量",
+      "computeHint": "近 7 天 (input - cache read) + output。",
+      "cost": "本周成本",
+      "costHint": "近 7 天按官网公开 list price 估算的费用。",
+      "wowSuffix": "较上周",
+      "wowFlat": "持平",
+      "wowNoBaseline": "无对照"
+    },
     "kpi": {
       "inputTokens": "Input tokens",
       "inputHint": "模型本次看到的输入总量(含 cache write 和 cache read)。",
@@ -30,6 +44,7 @@
         "project": "项目",
         "compute": "计算量",
         "total": "总量",
+        "cost": "成本",
         "share": "占比",
         "events": "事件数",
         "avgPerEvent": "平均/事件",
@@ -42,6 +57,7 @@
         "client": "客户端",
         "status": "状态",
         "tokens": "Tokens",
+        "cost": "成本",
         "lastSeen": "最近上线"
       }
     },
@@ -52,6 +68,7 @@
         "name": "名称",
         "compute": "计算量",
         "total": "总量",
+        "cost": "成本",
         "share": "占比",
         "events": "事件数",
         "avgPerEvent": "平均/事件"
@@ -61,6 +78,8 @@
       "title": "数据质量",
       "unknownProject": "未知项目",
       "unknownModel": "未知模型",
+      "unpriced": "未估价 tokens",
+      "unpricedHelper": "model 不在价格表里,显示 — 代替成本",
       "reasoningTokens": "推理 tokens",
       "reasoningHelper": "占 output {percent}",
       "devices": "设备",
@@ -69,6 +88,11 @@
       "lastEventHelper": "基于 occurredAt"
     },
     "unknownModel": "未知模型"
+  },
+  "relative": {
+    "justNow": "刚刚",
+    "minutesAgo": "{n} 分钟前",
+    "hoursAgo": "{n} 小时前"
   },
   "clientStatus": {
     "online": "在线",
@@ -102,7 +126,8 @@
       "compute": "计算量",
       "input": "Input",
       "output": "Output",
-      "cacheRead": "Cache read"
+      "cacheRead": "Cache read",
+      "cost": "成本"
     },
     "sources": "来源",
     "models": "模型",
@@ -113,6 +138,7 @@
       "model": "模型",
       "compute": "计算量",
       "total": "总量",
+      "cost": "成本",
       "events": "事件数",
       "time": "时间",
       "totalRaw": "Total(原始)",

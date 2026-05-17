@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights } from "react-icons/md";
+import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
   getDailySummary,
@@ -7,7 +7,15 @@ import {
   getProjectSummary,
   getSummary
 } from "@/server/summaries";
-import { formatDateTime, formatFullNumber, formatPercent, formatTokens } from "@/shared/format";
+import {
+  formatDateTime,
+  formatFullNumber,
+  formatPercent,
+  formatRelativeTime,
+  formatTokens,
+  formatUsd,
+  formatWowDelta
+} from "@/shared/format";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { DailyUsageChart } from "./daily-usage-chart";
@@ -18,6 +26,7 @@ type BreakdownRow = {
   name: string;
   billableTokens: number;
   totalTokens: number;
+  cost: number;
   events: number;
   avgBillablePerEvent: number;
 };
@@ -33,22 +42,67 @@ export default async function HomePage() {
     getDeviceSummary()
   ]);
 
+  const computeWow = formatWowDelta(summary.currentWeekCompute, summary.previousWeekCompute);
+  const costWow = formatWowDelta(summary.currentWeekCost, summary.previousWeekCost);
+
   return (
     <div className="space-y-5">
       <div>
         <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          {t("home.meta", {
-            events: formatFullNumber(summary.eventCount),
-            projects: formatFullNumber(summary.projectCount),
-            devices: formatFullNumber(summary.deviceCount),
-            lastEvent: formatDateTime(summary.lastEventAt)
-          })}
-        </p>
-        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <ScaleCard label={t("home.scale.events")} value={formatFullNumber(summary.eventCount)} />
+        <ScaleCard label={t("home.scale.projects")} value={formatFullNumber(summary.projectCount)} />
+        <ScaleCard label={t("home.scale.devices")} value={formatFullNumber(summary.deviceCount)} />
+        <ScaleCard
+          label={t("home.scale.lastEvent")}
+          value={formatRelativeTime(summary.lastEventAt, t as (key: string, values?: Record<string, string | number>) => string)}
+          valueClass="text-base"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <HeroCard
+          icon={<MdBolt className="h-8 w-8" />}
+          label={t("home.hero.compute")}
+          value={formatTokens(summary.currentWeekCompute)}
+          hint={t("home.hero.computeHint")}
+          delta={computeWow}
+          wowSuffix={t("home.hero.wowSuffix")}
+          wowFlat={t("home.hero.wowFlat")}
+          wowNoBaseline={t("home.hero.wowNoBaseline")}
+        />
+        <HeroCard
+          icon={<MdPaid className="h-8 w-8" />}
+          label={t("home.hero.cost")}
+          value={formatUsd(summary.currentWeekCost)}
+          hint={t("home.hero.costHint")}
+          delta={costWow}
+          wowSuffix={t("home.hero.wowSuffix")}
+          wowFlat={t("home.hero.wowFlat")}
+          wowNoBaseline={t("home.hero.wowNoBaseline")}
+        />
+        <Card extra="flex flex-col justify-center p-6">
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-brand-500/10 p-2 text-brand-500">
+              <MdSpeed className="h-7 w-7" />
+            </span>
+            <div className="flex-1">
+              <div className="text-xs font-medium text-gray-500">{t("home.kpi.cacheHitRate")}</div>
+              <div className="text-2xl font-bold text-navy-700 dark:text-white">
+                {(summary.cacheHitRate * 100).toFixed(1)}%
+              </div>
+              <div className="mt-0.5 truncate text-xs text-gray-500">
+                {t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         <div title={t("home.kpi.inputHint")}>
           <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(summary.inputTokens)} />
         </div>
@@ -60,9 +114,6 @@ export default async function HomePage() {
         </div>
         <div title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
           <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
-        </div>
-        <div title={t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}>
-          <Widget icon={<MdSpeed className="h-7 w-7" />} title={t("home.kpi.cacheHitRate")} subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`} />
         </div>
       </div>
 
@@ -86,12 +137,12 @@ export default async function HomePage() {
               <thead className="text-gray-500">
                 <tr>
                   <th className="pb-3">{t("home.projectRanking.col.project")}</th>
-                  <th className="pb-3" title="max(0, input - cache_read) + output — the fresh-compute portion">{t("home.projectRanking.col.compute")}</th>
-                  <th className="pb-3" title="inputTokens + outputTokens — raw volume including cache reuse">{t("home.projectRanking.col.total")}</th>
-                  <th className="pb-3">{t("home.projectRanking.col.share")}</th>
-                  <th className="pb-3">{t("home.projectRanking.col.events")}</th>
-                  <th className="pb-3">{t("home.projectRanking.col.avgPerEvent")}</th>
-                  <th className="pb-3">{t("home.projectRanking.col.lastActive")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.compute")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.total")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.cost")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.share")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.events")}</th>
+                  <th className="pb-3 text-right">{t("home.projectRanking.col.lastActive")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,12 +153,12 @@ export default async function HomePage() {
                         {project.name}
                       </a>
                     </td>
-                    <td className="pr-4" title={`${formatFullNumber(project.billableTokens)} compute tokens`}>{formatTokens(project.billableTokens)}</td>
-                    <td className="pr-4 text-gray-500" title={`${formatFullNumber(project.totalTokens)} total tokens (incl. cache reuse)`}>{formatTokens(project.totalTokens)}</td>
-                    <td className="pr-4">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
-                    <td className="pr-4">{formatFullNumber(project.events)}</td>
-                    <td className="pr-4">{formatTokens(project.avgBillablePerEvent)}</td>
-                    <td className="whitespace-nowrap text-gray-500">{formatDateTime(project.lastActiveAt)}</td>
+                    <td className="pr-4 text-right" title={`${formatFullNumber(project.billableTokens)} compute tokens`}>{formatTokens(project.billableTokens)}</td>
+                    <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(project.totalTokens)} total tokens`}>{formatTokens(project.totalTokens)}</td>
+                    <td className="pr-4 text-right font-medium">{project.cost > 0 ? formatUsd(project.cost) : "—"}</td>
+                    <td className="pr-4 text-right">{formatPercent(project.billableTokens, summary.billableTokens)}</td>
+                    <td className="pr-4 text-right">{formatFullNumber(project.events)}</td>
+                    <td className="whitespace-nowrap text-right text-gray-500">{formatDateTime(project.lastActiveAt)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -126,8 +177,9 @@ export default async function HomePage() {
                 <tr>
                   <th className="pb-3">{t("home.connectedClients.col.client")}</th>
                   <th className="pb-3">{t("home.connectedClients.col.status")}</th>
-                  <th className="pb-3">{t("home.connectedClients.col.tokens")}</th>
-                  <th className="pb-3">{t("home.connectedClients.col.lastSeen")}</th>
+                  <th className="pb-3 text-right">{t("home.connectedClients.col.tokens")}</th>
+                  <th className="pb-3 text-right">{t("home.connectedClients.col.cost")}</th>
+                  <th className="pb-3 text-right">{t("home.connectedClients.col.lastSeen")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,8 +189,9 @@ export default async function HomePage() {
                     <td className="pr-4">
                       <ClientStatusBadge lastSeenAt={device.lastSeenAt} t={t} />
                     </td>
-                    <td className="pr-4" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
-                    <td className="pr-4 whitespace-nowrap text-gray-500">{formatDateTime(device.lastSeenAt)}</td>
+                    <td className="pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
+                    <td className="pr-4 text-right">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
+                    <td className="pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, t as (key: string, values?: Record<string, string | number>) => string)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -156,9 +209,9 @@ export default async function HomePage() {
             name: t("home.breakdown.col.name"),
             compute: t("home.breakdown.col.compute"),
             total: t("home.breakdown.col.total"),
+            cost: t("home.breakdown.col.cost"),
             share: t("home.breakdown.col.share"),
-            events: t("home.breakdown.col.events"),
-            avgPerEvent: t("home.breakdown.col.avgPerEvent")
+            events: t("home.breakdown.col.events")
           }}
         />
         <BreakdownCard
@@ -169,9 +222,9 @@ export default async function HomePage() {
             name: t("home.breakdown.col.name"),
             compute: t("home.breakdown.col.compute"),
             total: t("home.breakdown.col.total"),
+            cost: t("home.breakdown.col.cost"),
             share: t("home.breakdown.col.share"),
-            events: t("home.breakdown.col.events"),
-            avgPerEvent: t("home.breakdown.col.avgPerEvent")
+            events: t("home.breakdown.col.events")
           }}
         />
       </div>
@@ -193,15 +246,101 @@ export default async function HomePage() {
             helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)}
           />
           <QualityMetric
+            label={t("home.dataQuality.unpriced")}
+            value={formatTokens(summary.unpricedTokens)}
+            helper={t("home.dataQuality.unpricedHelper")}
+          />
+          <QualityMetric
             label={t("home.dataQuality.reasoningTokens")}
             value={formatTokens(summary.reasoningOutputTokens)}
             helper={t("home.dataQuality.reasoningHelper", { percent: formatPercent(summary.reasoningOutputTokens, summary.outputTokens) })}
           />
-          <QualityMetric label={t("home.dataQuality.devices")} value={formatFullNumber(summary.deviceCount)} helper={devices.map((d) => d.name).join(", ") || t("home.dataQuality.noDevices")} />
           <QualityMetric label={t("home.dataQuality.lastEvent")} value={formatDateTime(summary.lastEventAt)} helper={t("home.dataQuality.lastEventHelper")} />
         </div>
       </Card>
     </div>
+  );
+}
+
+function ScaleCard({ label, value, valueClass = "text-xl" }: { label: string; value: string; valueClass?: string }) {
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-navy-800">
+      <div className="text-xs font-medium text-gray-500">{label}</div>
+      <div className={`mt-1 truncate font-bold text-navy-700 dark:text-white ${valueClass}`}>{value}</div>
+    </div>
+  );
+}
+
+function HeroCard({
+  icon,
+  label,
+  value,
+  hint,
+  delta,
+  wowSuffix,
+  wowFlat,
+  wowNoBaseline
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  hint: string;
+  delta: { text: string; direction: "up" | "down" | "flat" } | null;
+  wowSuffix: string;
+  wowFlat: string;
+  wowNoBaseline: string;
+}) {
+  return (
+    <Card extra="p-6">
+      <div className="flex items-start gap-3">
+        <span className="rounded-full bg-brand-500/10 p-2 text-brand-500">{icon}</span>
+        <div className="flex-1">
+          <div className="text-xs font-medium text-gray-500">{label}</div>
+          <div className="mt-1 text-3xl font-bold text-navy-700 dark:text-white">{value}</div>
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+            <WowBadge delta={delta} flat={wowFlat} noBaseline={wowNoBaseline} />
+            <span className="text-gray-500">{wowSuffix}</span>
+          </div>
+          <div className="mt-1 text-xs text-gray-500">{hint}</div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function WowBadge({
+  delta,
+  flat,
+  noBaseline
+}: {
+  delta: { text: string; direction: "up" | "down" | "flat" } | null;
+  flat: string;
+  noBaseline: string;
+}) {
+  if (!delta) {
+    return <span className="inline-flex items-center gap-0.5 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500 dark:bg-white/10">{noBaseline}</span>;
+  }
+  if (delta.direction === "flat") {
+    return (
+      <span className="inline-flex items-center gap-0.5 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
+        <MdRemove className="h-3 w-3" />
+        {flat}
+      </span>
+    );
+  }
+  if (delta.direction === "up") {
+    return (
+      <span className="inline-flex items-center gap-0.5 rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300">
+        <MdArrowUpward className="h-3 w-3" />
+        {delta.text}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-0.5 rounded-full bg-green-100 px-2 py-0.5 font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+      <MdArrowDownward className="h-3 w-3" />
+      {delta.text}
+    </span>
   );
 }
 
@@ -222,7 +361,17 @@ function ClientStatusBadge({ lastSeenAt, t }: { lastSeenAt: string | null; t: (k
   return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{t(`clientStatus.${key}`)}</span>;
 }
 
-function BreakdownCard({ title, rows, billableTotal, col }: { title: string; rows: BreakdownRow[]; billableTotal: number; col: { name: string; compute: string; total: string; share: string; events: string; avgPerEvent: string } }) {
+function BreakdownCard({
+  title,
+  rows,
+  billableTotal,
+  col
+}: {
+  title: string;
+  rows: BreakdownRow[];
+  billableTotal: number;
+  col: { name: string; compute: string; total: string; cost: string; share: string; events: string };
+}) {
   return (
     <Card extra="p-6">
       <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{title}</h3>
@@ -231,22 +380,22 @@ function BreakdownCard({ title, rows, billableTotal, col }: { title: string; row
           <thead className="text-gray-500">
             <tr>
               <th className="pb-3">{col.name}</th>
-              <th className="pb-3" title="max(0, input - cache_read) + output — the fresh-compute portion">{col.compute}</th>
-              <th className="pb-3" title="inputTokens + outputTokens — raw volume including cache reuse">{col.total}</th>
-              <th className="pb-3">{col.share}</th>
-              <th className="pb-3">{col.events}</th>
-              <th className="pb-3">{col.avgPerEvent}</th>
+              <th className="pb-3 text-right">{col.compute}</th>
+              <th className="pb-3 text-right">{col.total}</th>
+              <th className="pb-3 text-right">{col.cost}</th>
+              <th className="pb-3 text-right">{col.share}</th>
+              <th className="pb-3 text-right">{col.events}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
                 <td className="py-2.5 pr-4 font-medium">{row.name}</td>
-                <td className="pr-4" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>
-                <td className="pr-4 text-gray-500" title={`${formatFullNumber(row.totalTokens)} total tokens (incl. cache reuse)`}>{formatTokens(row.totalTokens)}</td>
-                <td className="pr-4">{formatPercent(row.billableTokens, billableTotal)}</td>
-                <td className="pr-4">{formatFullNumber(row.events)}</td>
-                <td className="pr-4">{formatTokens(row.avgBillablePerEvent)}</td>
+                <td className="pr-4 text-right" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>
+                <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(row.totalTokens)} total tokens`}>{formatTokens(row.totalTokens)}</td>
+                <td className="pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
+                <td className="pr-4 text-right">{formatPercent(row.billableTokens, billableTotal)}</td>
+                <td className="pr-4 text-right">{formatFullNumber(row.events)}</td>
               </tr>
             ))}
           </tbody>
