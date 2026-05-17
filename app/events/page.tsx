@@ -39,7 +39,8 @@ export default async function EventsPage() {
                 <th className="pb-3 text-right">{t("events.col.totalRaw")}</th>
                 <th className="pb-3 text-right">{t("events.col.input")}</th>
                 <th className="pb-3 text-right">{t("events.col.output")}</th>
-                <th className="pb-3 text-right">{t("events.col.cache")}</th>
+                <th className="pb-3 text-right">{t("events.col.cacheWrite")}</th>
+                <th className="pb-3 text-right">{t("events.col.cacheRead")}</th>
                 <th className="pb-3 text-right">{t("events.col.reasoning")}</th>
               </tr>
             </thead>
@@ -53,6 +54,7 @@ export default async function EventsPage() {
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.totalTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.inputTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.outputTokens)}</td>
+                  <td className="py-2.5 pr-4 text-right">{formatNumber(event.cacheWriteTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.cachedInputTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.reasoningOutputTokens)}</td>
                 </tr>

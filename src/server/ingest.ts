@@ -91,6 +91,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
           inputTokens: normalizeTokenCount(event.inputTokens),
           outputTokens: normalizeTokenCount(event.outputTokens),
           cachedInputTokens: normalizeTokenCount(event.cachedInputTokens),
+          cacheWriteTokens: normalizeTokenCount(event.cacheWriteTokens),
           reasoningOutputTokens: normalizeTokenCount(event.reasoningOutputTokens),
           totalTokens,
           costUsd: event.costUsd == null ? null : new Prisma.Decimal(event.costUsd),

@@ -85,6 +85,7 @@ model UsageEvent {
   inputTokens           Int      @default(0)
   outputTokens          Int      @default(0)
   cachedInputTokens     Int      @default(0)
+  cacheWriteTokens      Int      @default(0)
   reasoningOutputTokens Int      @default(0)
   totalTokens           Int      @default(0)
   costUsd               Decimal? @db.Decimal(18, 8)

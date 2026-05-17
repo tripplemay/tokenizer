@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MdArrowBack, MdBolt, MdInput, MdOutput } from "react-icons/md";
+import { MdArrowBack, MdBolt, MdInput, MdOutput, MdCached } from "react-icons/md";
 import { prisma } from "@/server/db";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
@@ -18,10 +18,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const [t, project, totals, events, bySource, byModel] = await Promise.all([
     getTranslations(),
     prisma.project.findUnique({ where: { id } }),
-    prisma.usageEvent.aggregate({ where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } }),
+    prisma.usageEvent.aggregate({ where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true } }),
     prisma.usageEvent.findMany({ where: { projectId: id }, take: 100, orderBy: { occurredAt: "desc" } }),
-    prisma.usageEvent.groupBy({ by: ["source"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true }),
-    prisma.usageEvent.groupBy({ by: ["model"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true })
+    prisma.usageEvent.groupBy({ by: ["source"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true }, _count: true }),
+    prisma.usageEvent.groupBy({ by: ["model"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true }, _count: true })
   ]);
 
   if (!project) {
@@ -40,7 +40,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   const inputTokens = totals._sum.inputTokens ?? 0;
   const outputTokens = totals._sum.outputTokens ?? 0;
-  const billableTokens = inputTokens + outputTokens;
+  const cachedInputTokens = totals._sum.cachedInputTokens ?? 0;
+  const billableTokens = Math.max(0, inputTokens - cachedInputTokens) + outputTokens;
 
   return (
     <div className="space-y-5">
@@ -55,10 +56,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("project.metric.total")} subtitle={formatNumber(billableTokens)} />
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         <Widget icon={<MdInput className="h-7 w-7" />} title={t("project.metric.input")} subtitle={formatNumber(inputTokens)} />
+        <Widget icon={<MdCached className="h-7 w-7" />} title={t("project.metric.cacheRead")} subtitle={formatNumber(cachedInputTokens)} />
         <Widget icon={<MdOutput className="h-7 w-7" />} title={t("project.metric.output")} subtitle={formatNumber(outputTokens)} />
+        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("project.metric.compute")} subtitle={formatNumber(billableTokens)} />
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -74,7 +76,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             </thead>
             <tbody>
               {bySource.map((row) => {
-                const billable = (row._sum.inputTokens ?? 0) + (row._sum.outputTokens ?? 0);
+                const billable = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
                 return (
                   <tr key={row.source} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4"><SourcePill source={row.source} /></td>
@@ -98,7 +100,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             </thead>
             <tbody>
               {byModel.map((row) => {
-                const billable = (row._sum.inputTokens ?? 0) + (row._sum.outputTokens ?? 0);
+                const billable = Math.max(0, (row._sum.inputTokens ?? 0) - (row._sum.cachedInputTokens ?? 0)) + (row._sum.outputTokens ?? 0);
                 return (
                   <tr key={row.model ?? "unknown"} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4 font-medium">{row.model ?? t("project.unknownModel")}</td>

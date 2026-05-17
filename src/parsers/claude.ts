@@ -79,11 +79,15 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
         const usage = row.message.usage;
         if (!usage) return;
 
-        const inputTokens = normalizeTokenCount(usage.input_tokens);
+        const rawInput = normalizeTokenCount(usage.input_tokens);
+        const cacheCreation = normalizeTokenCount(usage.cache_creation_input_tokens);
+        const cacheRead = normalizeTokenCount(usage.cache_read_input_tokens);
         const outputTokens = normalizeTokenCount(usage.output_tokens);
-        const cachedInputTokens = normalizeTokenCount(usage.cache_read_input_tokens);
-        const cacheCreationTokens = normalizeTokenCount(usage.cache_creation_input_tokens);
-        const totalTokens = inputTokens + outputTokens + cachedInputTokens + cacheCreationTokens;
+        // New convention: inputTokens is the total input the model saw (incl.
+        // both cache write and cache read). cachedInputTokens / cacheWriteTokens
+        // remain as decomposed subsets.
+        const inputTokens = rawInput + cacheCreation + cacheRead;
+        const totalTokens = inputTokens + outputTokens;
         if (totalTokens === 0) return;
 
         const workspacePath = findWorkspaceFromPath(row.cwd, config.projectRoots);
@@ -95,9 +99,10 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
           sessionId: row.sessionId ?? null,
           workspacePath,
           model: typeof row.message.model === "string" ? row.message.model : null,
-          inputTokens: inputTokens + cacheCreationTokens,
+          inputTokens,
           outputTokens,
-          cachedInputTokens,
+          cachedInputTokens: cacheRead,
+          cacheWriteTokens: cacheCreation,
           totalTokens,
           occurredAt: typeof row.timestamp === "string" ? row.timestamp : fallbackTime,
           rawJson: row

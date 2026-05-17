@@ -59,7 +59,7 @@ describe("parseCodexUsage", () => {
     expect(result.events).toEqual([]);
   });
 
-  it("subtracts cached_input_tokens from input_tokens so inputTokens matches cross-source semantics", () => {
+  it("stores Codex input_tokens verbatim (already total: includes cached portion)", () => {
     writeRollout("rollout-1.jsonl", [
       sessionMeta(),
       turnContext(),
@@ -68,10 +68,12 @@ describe("parseCodexUsage", () => {
     const result = parseCodexUsage({ homeDir, projectRoots: [] });
     expect(result.events).toHaveLength(1);
     const event = result.events[0];
-    // Codex's input_tokens (100) includes the cached subset (30); inputTokens stored in
-    // the DB should be the non-cached remainder (70) to mirror Claude/OpenCode semantics.
-    expect(event.inputTokens).toBe(70);
+    // Codex input_tokens already follows the new convention: it includes the
+    // cached subset. Store as-is; downstream code subtracts cached when it
+    // needs the "fresh" portion.
+    expect(event.inputTokens).toBe(100);
     expect(event.cachedInputTokens).toBe(30);
+    expect(event.cacheWriteTokens).toBe(0);
     expect(event.outputTokens).toBe(20);
     expect(event.totalTokens).toBe(120);
     expect(event.reasoningOutputTokens).toBe(5);

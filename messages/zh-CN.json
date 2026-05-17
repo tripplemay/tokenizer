@@ -10,11 +10,13 @@
     "meta": "事件:{events} · 项目:{projects} · 设备:{devices} · 最近事件:{lastEvent}",
     "kpi": {
       "inputTokens": "Input tokens",
-      "inputHint": "模型新处理的输入 token(含 cache write)。",
+      "inputHint": "模型本次看到的输入总量(含 cache write 和 cache read)。",
       "outputTokens": "Output tokens",
       "outputHint": "模型生成的 token,其中 {reasoning} 为推理(reasoning)token。",
-      "cacheReuse": "缓存复用",
-      "cacheReuseHint": "从缓存读取的 token 量,不计入新增计算。",
+      "cacheWrite": "Cache write",
+      "cacheWriteHint": "首次写入缓存的 token 量(Input 的子集)。",
+      "cacheReuse": "Cache read",
+      "cacheReuseHint": "从缓存读取复用的 token 量(Input 的子集)。",
       "cacheHitRate": "Cache 命中率",
       "cacheReused": "{tokens} 来自 cache 复用"
     },
@@ -83,7 +85,8 @@
       "totalRaw": "Total(原始)",
       "input": "Input",
       "output": "Output",
-      "cache": "Cache",
+      "cacheWrite": "Cache write",
+      "cacheRead": "Cache read",
       "reasoning": "Reasoning"
     },
     "unknownProject": "未知",
@@ -94,9 +97,10 @@
     "noWorkspace": "无工作目录",
     "aggregateNote": "聚合指标排除 cache 复用;下方逐事件行显示存储的原始 token。",
     "metric": {
-      "total": "总计",
+      "compute": "计算量",
       "input": "Input",
-      "output": "Output"
+      "output": "Output",
+      "cacheRead": "Cache read"
     },
     "sources": "来源",
     "models": "模型",

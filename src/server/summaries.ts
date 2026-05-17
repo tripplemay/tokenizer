@@ -3,6 +3,15 @@ import { computeSummaryMetrics } from "./summary-metrics";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// New convention: inputTokens (DB) is the total input the model saw
+// (raw + cache_write + cache_read). billableTokens is the "fresh" portion:
+//   billable = (inputTokens - cachedInputTokens) + outputTokens
+// Using Math.max guards against any stale rows where inputTokens < cached.
+function billableOf(inputTokens: number, cachedInputTokens: number, outputTokens: number): number {
+  const fresh = Math.max(0, inputTokens - cachedInputTokens);
+  return fresh + outputTokens;
+}
+
 export async function getSummary() {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -10,7 +19,7 @@ export async function getSummary() {
   const month = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const [total, todayAgg, weekAgg, monthAgg, eventCount, projectCount, deviceCount, lastEvent, unknownProject, unknownModel] = await Promise.all([
-    prisma.usageEvent.aggregate({ _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, reasoningOutputTokens: true } }),
+    prisma.usageEvent.aggregate({ _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: today } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: week } }, _sum: { totalTokens: true } }),
     prisma.usageEvent.aggregate({ where: { occurredAt: { gte: month } }, _sum: { totalTokens: true } }),
@@ -18,13 +27,14 @@ export async function getSummary() {
     prisma.project.count(),
     prisma.device.count(),
     prisma.usageEvent.findFirst({ orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
-    prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } }),
-    prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } })
+    prisma.usageEvent.aggregate({ where: { project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
+    prisma.usageEvent.aggregate({ where: { model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } })
   ]);
 
   const inputTokens = total._sum.inputTokens ?? 0;
   const outputTokens = total._sum.outputTokens ?? 0;
   const cachedInputTokens = total._sum.cachedInputTokens ?? 0;
+  const cacheWriteTokens = total._sum.cacheWriteTokens ?? 0;
   const metrics = computeSummaryMetrics({ inputTokens, outputTokens, cachedInputTokens });
 
   return {
@@ -32,6 +42,7 @@ export async function getSummary() {
     inputTokens,
     outputTokens,
     cachedInputTokens,
+    cacheWriteTokens,
     reasoningOutputTokens: total._sum.reasoningOutputTokens ?? 0,
     billableTokens: metrics.billableTokens,
     cacheHitRate: metrics.cacheHitRate,
@@ -43,16 +54,16 @@ export async function getSummary() {
     deviceCount,
     lastEventAt: lastEvent?.occurredAt?.toISOString() ?? null,
     unknownProjectTokens: unknownProject._sum.totalTokens ?? 0,
-    unknownProjectBillable: (unknownProject._sum.inputTokens ?? 0) + (unknownProject._sum.outputTokens ?? 0),
+    unknownProjectBillable: billableOf(unknownProject._sum.inputTokens ?? 0, unknownProject._sum.cachedInputTokens ?? 0, unknownProject._sum.outputTokens ?? 0),
     unknownModelTokens: unknownModel._sum.totalTokens ?? 0,
-    unknownModelBillable: (unknownModel._sum.inputTokens ?? 0) + (unknownModel._sum.outputTokens ?? 0)
+    unknownModelBillable: billableOf(unknownModel._sum.inputTokens ?? 0, unknownModel._sum.cachedInputTokens ?? 0, unknownModel._sum.outputTokens ?? 0)
   };
 }
 
 export async function getDeviceSummary() {
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
-    _sum: { totalTokens: true, inputTokens: true, outputTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
     _count: true,
     _max: { occurredAt: true },
     orderBy: { _sum: { totalTokens: "desc" } }
@@ -66,6 +77,7 @@ export async function getDeviceSummary() {
     const device = deviceById.get(deviceId);
     const inputTokens = row?._sum.inputTokens ?? 0;
     const outputTokens = row?._sum.outputTokens ?? 0;
+    const cachedInputTokens = row?._sum.cachedInputTokens ?? 0;
     return {
       deviceId,
       name: device?.name ?? deviceId,
@@ -77,7 +89,9 @@ export async function getDeviceSummary() {
       totalTokens: row?._sum.totalTokens ?? 0,
       inputTokens,
       outputTokens,
-      billableTokens: inputTokens + outputTokens,
+      cachedInputTokens,
+      cacheWriteTokens: row?._sum.cacheWriteTokens ?? 0,
+      billableTokens: billableOf(inputTokens, cachedInputTokens, outputTokens),
       events: row?._count ?? 0
     };
   });
@@ -86,7 +100,7 @@ export async function getDeviceSummary() {
 export async function getProjectSummary() {
   const rows = await prisma.usageEvent.groupBy({
     by: ["projectId"],
-    _sum: { totalTokens: true, inputTokens: true, outputTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
     _max: { occurredAt: true },
     _count: true,
     orderBy: { _sum: { totalTokens: "desc" } },
@@ -97,7 +111,8 @@ export async function getProjectSummary() {
   return rows.map((row) => {
     const inputTokens = row._sum.inputTokens ?? 0;
     const outputTokens = row._sum.outputTokens ?? 0;
-    const billableTokens = inputTokens + outputTokens;
+    const cachedInputTokens = row._sum.cachedInputTokens ?? 0;
+    const billableTokens = billableOf(inputTokens, cachedInputTokens, outputTokens);
     return {
       projectId: row.projectId,
       name: row.projectId ? projectById.get(row.projectId)?.name ?? "Unknown Project" : "Unknown Project",
@@ -105,6 +120,8 @@ export async function getProjectSummary() {
       totalTokens: row._sum.totalTokens ?? 0,
       inputTokens,
       outputTokens,
+      cachedInputTokens,
+      cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       billableTokens,
       events: row._count,
       avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0,
@@ -124,6 +141,7 @@ type DailySummaryRow = {
   totalTokens: bigint | number | null;
   inputTokens: bigint | number | null;
   outputTokens: bigint | number | null;
+  cachedInputTokens: bigint | number | null;
   billableTokens: bigint | number | null;
 };
 
@@ -140,16 +158,14 @@ function bigintToNumber(value: bigint | number | null | undefined): number {
 export async function getDailySummary(days = 180) {
   const since = new Date(Date.now() - days * DAY_MS);
 
-  // Aggregate in Postgres rather than loading every event into Node memory, and
-  // bucket by REPORTING_TIMEZONE so the "today" boundary on the chart matches
-  // the user's local perception instead of UTC midnight.
   const rows = await prisma.$queryRaw<DailySummaryRow[]>`
     SELECT
       date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
       SUM("totalTokens")::bigint AS "totalTokens",
       SUM("inputTokens")::bigint AS "inputTokens",
       SUM("outputTokens")::bigint AS "outputTokens",
-      SUM("inputTokens" + "outputTokens")::bigint AS "billableTokens"
+      SUM("cachedInputTokens")::bigint AS "cachedInputTokens",
+      SUM(GREATEST("inputTokens" - "cachedInputTokens", 0) + "outputTokens")::bigint AS "billableTokens"
     FROM "UsageEvent"
     WHERE "occurredAt" >= ${since}
     GROUP BY 1
@@ -161,6 +177,7 @@ export async function getDailySummary(days = 180) {
     totalTokens: bigintToNumber(row.totalTokens),
     inputTokens: bigintToNumber(row.inputTokens),
     outputTokens: bigintToNumber(row.outputTokens),
+    cachedInputTokens: bigintToNumber(row.cachedInputTokens),
     billableTokens: bigintToNumber(row.billableTokens)
   }));
 }
@@ -168,7 +185,7 @@ export async function getDailySummary(days = 180) {
 export async function getBreakdown(field: "source" | "model") {
   const rows = await prisma.usageEvent.groupBy({
     by: [field],
-    _sum: { totalTokens: true, inputTokens: true, outputTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
     _count: true,
     orderBy: { _sum: { totalTokens: "desc" } },
     take: 20
@@ -176,12 +193,15 @@ export async function getBreakdown(field: "source" | "model") {
   return rows.map((row) => {
     const inputTokens = row._sum.inputTokens ?? 0;
     const outputTokens = row._sum.outputTokens ?? 0;
-    const billableTokens = inputTokens + outputTokens;
+    const cachedInputTokens = row._sum.cachedInputTokens ?? 0;
+    const billableTokens = billableOf(inputTokens, cachedInputTokens, outputTokens);
     return {
       name: String(row[field] ?? "unknown"),
       totalTokens: row._sum.totalTokens ?? 0,
       inputTokens,
       outputTokens,
+      cachedInputTokens,
+      cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       billableTokens,
       events: row._count,
       avgTokensPerEvent: row._count > 0 ? Math.round((row._sum.totalTokens ?? 0) / row._count) : 0,

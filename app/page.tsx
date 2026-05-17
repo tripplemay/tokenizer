@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { MdInput, MdOutput, MdCached, MdSpeed, MdDevices, MdInsights } from "react-icons/md";
+import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights } from "react-icons/md";
 import {
   getBreakdown,
   getDailySummary,
@@ -47,15 +47,18 @@ export default async function HomePage() {
         <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
         <div title={t("home.kpi.inputHint")}>
           <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(summary.inputTokens)} />
         </div>
-        <div title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
-          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
+        <div title={t("home.kpi.cacheWriteHint")}>
+          <Widget icon={<MdSave className="h-7 w-7" />} title={t("home.kpi.cacheWrite")} subtitle={formatTokens(summary.cacheWriteTokens)} />
         </div>
         <div title={t("home.kpi.cacheReuseHint")}>
           <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheReuse")} subtitle={formatTokens(summary.cachedInputTokens)} />
+        </div>
+        <div title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
+          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
         </div>
         <div title={t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}>
           <Widget icon={<MdSpeed className="h-7 w-7" />} title={t("home.kpi.cacheHitRate")} subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`} />

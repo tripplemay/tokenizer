@@ -67,7 +67,7 @@ const assistantMessage = (overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("parseOpenCodeUsage", () => {
-  it("adds cache.write to inputTokens for parity with the Claude parser", () => {
+  it("inputTokens is raw input + cache write + cache read (new total-input semantic)", () => {
     setupOpenCodeDb([
       {
         id: "msg-1",
@@ -79,13 +79,15 @@ describe("parseOpenCodeUsage", () => {
     const result = parseOpenCodeUsage({ homeDir, projectRoots: [] });
     expect(result.events).toHaveLength(1);
     const event = result.events[0];
-    expect(event.inputTokens).toBe(125); // 100 raw + 25 cache write
+    // 100 raw + 25 cache write + 30 cache read = 155
+    expect(event.inputTokens).toBe(155);
     expect(event.cachedInputTokens).toBe(30);
+    expect(event.cacheWriteTokens).toBe(25);
     expect(event.outputTokens).toBe(50);
     expect(event.totalTokens).toBe(205);
   });
 
-  it("keeps inputTokens equal to tokens.input when cache.write is zero", () => {
+  it("inputTokens still includes cache reads when cache.write is zero", () => {
     setupOpenCodeDb([
       {
         id: "msg-2",
@@ -95,7 +97,10 @@ describe("parseOpenCodeUsage", () => {
       }
     ]);
     const result = parseOpenCodeUsage({ homeDir, projectRoots: [] });
-    expect(result.events[0].inputTokens).toBe(50);
+    // 50 raw + 0 cache write + 100 cache read = 150
+    expect(result.events[0].inputTokens).toBe(150);
+    expect(result.events[0].cachedInputTokens).toBe(100);
+    expect(result.events[0].cacheWriteTokens).toBe(0);
   });
 
   it("uses opencode:<message_id> as a stable sourceEventId", () => {

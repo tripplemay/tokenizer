@@ -15,6 +15,7 @@ export type UsageEventInput = {
   inputTokens?: number;
   outputTokens?: number;
   cachedInputTokens?: number;
+  cacheWriteTokens?: number;
   reasoningOutputTokens?: number;
   totalTokens?: number;
   costUsd?: number | null;

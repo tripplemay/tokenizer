@@ -117,12 +117,12 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
         const projectName = row.project_name || inferProjectName(workspacePath);
         const rawInputTokens = normalizeTokenCount(message.tokens?.input);
         const cacheWriteTokens = normalizeTokenCount(message.tokens?.cache?.write);
-        // Cache-write bytes are fresh input the model processed for the first time and
-        // additionally persisted to cache. Bundle them into inputTokens to match the
-        // Claude parser convention (raw_input + cache_creation).
-        const inputTokens = rawInputTokens + cacheWriteTokens;
-        const outputTokens = normalizeTokenCount(message.tokens?.output);
         const cachedInputTokens = normalizeTokenCount(message.tokens?.cache?.read);
+        // New convention: inputTokens is the total input the model saw — raw
+        // + cache write + cache read. The two cache buckets remain separate
+        // fields so the dashboard can show the decomposition.
+        const inputTokens = rawInputTokens + cacheWriteTokens + cachedInputTokens;
+        const outputTokens = normalizeTokenCount(message.tokens?.output);
         const reasoningOutputTokens = normalizeTokenCount(message.tokens?.reasoning);
 
         events.push({
@@ -135,6 +135,7 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
           inputTokens,
           outputTokens,
           cachedInputTokens,
+          cacheWriteTokens,
           reasoningOutputTokens,
           totalTokens,
           costUsd: typeof message.cost === "number" ? message.cost : null,

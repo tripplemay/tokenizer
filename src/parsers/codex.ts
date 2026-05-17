@@ -46,15 +46,16 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
         if (row.type !== "event_msg" || row.payload?.type !== "token_count" || !row.payload?.info?.last_token_usage) return;
 
         const usage = row.payload.info.last_token_usage;
-        const codexInputTokens = normalizeTokenCount(usage.input_tokens);
+        // Codex follows the OpenAI convention: input_tokens already includes the
+        // cached_input_tokens subset. We store inputTokens as-is, matching the
+        // new project-wide convention where inputTokens means "total input the
+        // model saw" with cached as a separate subset. Codex does not expose a
+        // cache_write counter, so cacheWriteTokens stays 0.
+        const inputTokens = normalizeTokenCount(usage.input_tokens);
         const cachedInputTokens = normalizeTokenCount(usage.cached_input_tokens);
-        // Codex follows the OpenAI convention where input_tokens already includes the
-        // cached_input_tokens subset. Subtract so inputTokens means "fresh non-cached
-        // input", matching the Claude and OpenCode parsers.
-        const inputTokens = Math.max(0, codexInputTokens - cachedInputTokens);
         const outputTokens = normalizeTokenCount(usage.output_tokens);
         const reasoningOutputTokens = normalizeTokenCount(usage.reasoning_output_tokens);
-        const totalTokens = normalizeTokenCount(usage.total_tokens) || codexInputTokens + outputTokens;
+        const totalTokens = normalizeTokenCount(usage.total_tokens) || inputTokens + outputTokens;
         if (totalTokens === 0) return;
 
         events.push({
@@ -67,6 +68,7 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
           inputTokens,
           outputTokens,
           cachedInputTokens,
+          cacheWriteTokens: 0,
           reasoningOutputTokens,
           totalTokens,
           occurredAt: row.timestamp ?? fallbackTime,
