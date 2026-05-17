@@ -2,11 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #0f172a;
-  color: #e2e8f0;
-}
-
 a {
   color: inherit;
+}
+
+/* Daily Usage chart custom tooltip — high-contrast in both light and dark modes.
+ * Override ApexCharts' default tooltip wrapper so only our inner card is
+ * visible, then style the card explicitly for each color scheme. */
+.apexcharts-tooltip.apexcharts-theme-light,
+.apexcharts-tooltip.apexcharts-theme-dark {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.duc-tooltip {
+  background: #ffffff;
+  color: #1b2559;
+  padding: 10px 14px;
+  border: 1px solid #e0e5f2;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  min-width: 180px;
+}
+
+.dark .duc-tooltip {
+  background: #111c44;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+
+.duc-tooltip-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.duc-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 3px 0;
+}
+
+.duc-tooltip-total {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e0e5f2;
+  font-weight: 700;
+}
+
+.dark .duc-tooltip-total {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+.duc-tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4d5da1;
+  font-weight: 500;
+}
+
+.dark .duc-tooltip-label {
+  color: #cbd5e1;
+}
+
+.duc-tooltip-value {
+  font-weight: 600;
+  color: inherit;
+}
+
+.duc-tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
 }

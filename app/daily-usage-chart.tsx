@@ -12,6 +12,31 @@ type DailyRow = {
   billableTokens: number;
 };
 
+function tooltipHtml(date: string, input: number, output: number): string {
+  const total = input + output;
+  return `
+    <div class="duc-tooltip">
+      <div class="duc-tooltip-title">${date}</div>
+      <div class="duc-tooltip-row">
+        <span class="duc-tooltip-label">
+          <span class="duc-tooltip-dot" style="background:#4318FF"></span>Input
+        </span>
+        <span class="duc-tooltip-value">${formatTokens(input)}</span>
+      </div>
+      <div class="duc-tooltip-row">
+        <span class="duc-tooltip-label">
+          <span class="duc-tooltip-dot" style="background:#6AD2FF"></span>Output
+        </span>
+        <span class="duc-tooltip-value">${formatTokens(output)}</span>
+      </div>
+      <div class="duc-tooltip-row duc-tooltip-total">
+        <span class="duc-tooltip-label">Total</span>
+        <span class="duc-tooltip-value">${formatTokens(total)}</span>
+      </div>
+    </div>
+  `;
+}
+
 export function DailyUsageChart({ data }: { data: DailyRow[] }) {
   const series = [
     { name: "Input", data: data.map((d) => ({ x: d.date, y: d.inputTokens })) },
@@ -26,7 +51,7 @@ export function DailyUsageChart({ data }: { data: DailyRow[] }) {
       fontFamily: "DM Sans, sans-serif",
       stacked: true
     },
-    legend: { show: true, position: "top" as const, horizontalAlign: "right" as const },
+    legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
     stroke: { curve: "smooth" as const, width: 2 },
     colors: ["#4318FF", "#6AD2FF"],
@@ -53,9 +78,16 @@ export function DailyUsageChart({ data }: { data: DailyRow[] }) {
     },
     grid: { borderColor: "#E0E5F2", strokeDashArray: 5 },
     tooltip: {
-      theme: "light",
-      x: { format: "yyyy-MM-dd" },
-      y: { formatter: (val: number) => formatTokens(val) }
+      enabled: true,
+      shared: true,
+      intersect: false,
+      custom: ({ series: s, dataPointIndex, w }: { series: number[][]; dataPointIndex: number; w: { globals: { seriesX: number[][] } } }) => {
+        const xRaw = w.globals.seriesX?.[0]?.[dataPointIndex];
+        const date = xRaw ? new Date(xRaw).toISOString().slice(0, 10) : "";
+        const input = Number(s[0]?.[dataPointIndex] ?? 0);
+        const output = Number(s[1]?.[dataPointIndex] ?? 0);
+        return tooltipHtml(date, input, output);
+      }
     }
   };
 
