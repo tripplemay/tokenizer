@@ -298,7 +298,7 @@ async function ProjectsAndDevicesSection({
                 <tr key={project.projectId ?? project.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
                   <td className="py-2.5 pr-4">
                     <div className="flex items-center gap-1.5">
-                      <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} />
+                      <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} folderTitle={t("project.localFolderTooltip")} />
                       <a className="font-medium hover:underline" href={project.projectId ? `/projects/${project.projectId}` : "#"}>
                         {project.name}
                       </a>

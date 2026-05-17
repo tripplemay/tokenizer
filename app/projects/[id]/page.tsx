@@ -5,15 +5,11 @@ import { prisma } from "@/server/db";
 import { getProjectDetail } from "@/server/summaries";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
-import { formatDateTimeSeconds, formatUsd } from "@/shared/format";
+import { formatDateTimeSeconds, formatFullNumber, formatTokens, formatUsd } from "@/shared/format";
 import { SourcePill } from "../../_components/source-pill";
 import { ProjectIcon } from "../../_components/project-icon";
 
 export const dynamic = "force-dynamic";
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-US").format(value);
-}
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -52,7 +48,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         </Link>
         <div className="mt-2 flex items-center gap-2">
           <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{project.name}</h2>
-          <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} size="md" />
+          <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} size="md" folderTitle={t("project.localFolderTooltip")} />
         </div>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{project.workspacePath ?? t("project.noWorkspace")}</p>
         <p className="mt-0.5 text-xs text-gray-500">{t("project.aggregateNote")}</p>
@@ -60,10 +56,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
-        <Widget icon={<MdInput className="h-7 w-7" />} title={t("project.metric.input")} subtitle={formatNumber(inputTokens)} />
-        <Widget icon={<MdCached className="h-7 w-7" />} title={t("project.metric.cacheRead")} subtitle={formatNumber(cachedInputTokens)} />
-        <Widget icon={<MdOutput className="h-7 w-7" />} title={t("project.metric.output")} subtitle={formatNumber(outputTokens)} />
-        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("project.metric.compute")} subtitle={formatNumber(billableTokens)} />
+        <Widget icon={<MdInput className="h-7 w-7" />} title={t("project.metric.input")} subtitle={formatTokens(inputTokens)} />
+        <Widget icon={<MdCached className="h-7 w-7" />} title={t("project.metric.cacheRead")} subtitle={formatTokens(cachedInputTokens)} />
+        <Widget icon={<MdOutput className="h-7 w-7" />} title={t("project.metric.output")} subtitle={formatTokens(outputTokens)} />
+        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("project.metric.compute")} subtitle={formatTokens(billableTokens)} />
         <Widget icon={<MdPaid className="h-7 w-7" />} title={t("project.metric.cost")} subtitle={projectCost > 0 ? formatUsd(projectCost) : "—"} />
       </div>
 
@@ -87,10 +83,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 return (
                   <tr key={row.source} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4"><SourcePill source={row.source} /></td>
-                    <td className="py-2.5 pr-4 text-right">{formatNumber(compute)}</td>
-                    <td className="py-2.5 pr-4 text-right text-gray-500">{formatNumber(total)}</td>
+                    <td className="py-2.5 pr-4 text-right" title={`${formatFullNumber(compute)} compute tokens`}>{formatTokens(compute)}</td>
+                    <td className="py-2.5 pr-4 text-right text-gray-500" title={`${formatFullNumber(total)} total tokens`}>{formatTokens(total)}</td>
                     <td className="py-2.5 pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
-                    <td className="py-2.5 pr-4 text-right">{row._count}</td>
+                    <td className="py-2.5 pr-4 text-right">{formatFullNumber(row._count)}</td>
                   </tr>
                 );
               })}
@@ -116,10 +112,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 return (
                   <tr key={row.model ?? "unknown"} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                     <td className="py-2.5 pr-4 font-medium">{row.model ?? t("project.unknownModel")}</td>
-                    <td className="py-2.5 pr-4 text-right">{formatNumber(compute)}</td>
-                    <td className="py-2.5 pr-4 text-right text-gray-500">{formatNumber(total)}</td>
+                    <td className="py-2.5 pr-4 text-right" title={`${formatFullNumber(compute)} compute tokens`}>{formatTokens(compute)}</td>
+                    <td className="py-2.5 pr-4 text-right text-gray-500" title={`${formatFullNumber(total)} total tokens`}>{formatTokens(total)}</td>
                     <td className="py-2.5 pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
-                    <td className="py-2.5 pr-4 text-right">{row._count}</td>
+                    <td className="py-2.5 pr-4 text-right">{formatFullNumber(row._count)}</td>
                   </tr>
                 );
               })}
@@ -148,9 +144,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt)}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("project.unknownModel")}</td>
-                  <td className="py-2.5 pr-4 text-right">{formatNumber(event.totalTokens)}</td>
-                  <td className="py-2.5 pr-4 text-right">{formatNumber(event.inputTokens)}</td>
-                  <td className="py-2.5 pr-4 text-right">{formatNumber(event.outputTokens)}</td>
+                  <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.totalTokens)}</td>
+                  <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.inputTokens)}</td>
+                  <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.outputTokens)}</td>
                 </tr>
               ))}
             </tbody>

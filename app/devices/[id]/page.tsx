@@ -196,7 +196,7 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
                 <tr key={row.projectId ?? row.name} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                   <td className="py-2.5 pr-4">
                     <div className="flex items-center gap-1.5">
-                      <ProjectIcon repoKey={row.repoKey} workspacePath={row.workspacePath} />
+                      <ProjectIcon repoKey={row.repoKey} workspacePath={row.workspacePath} folderTitle={t("project.localFolderTooltip")} />
                       <Link href={row.projectId ? `/projects/${row.projectId}` : "#"} className="font-medium hover:underline">{row.name}</Link>
                     </div>
                   </td>

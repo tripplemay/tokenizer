@@ -21,6 +21,12 @@ export function clearQueue() {
 // (nginx defaults to client_max_body_size 1m) while still amortising the
 // per-request roundtrip cost.
 const BATCH_SIZE = 200;
+// Generous per-request timeout. After the macOS-sleep / wake fix, an
+// in-flight fetch that was active when the host suspended often becomes
+// permanently stuck — without a timeout, the agent will block forever on
+// that orphan socket. 60s is enough for a healthy POST (sub-second on Phase
+// 1's batched ingest) while guaranteeing a wake-up retry path.
+const REQUEST_TIMEOUT_MS = 60_000;
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
   if (events.length > BATCH_SIZE) return syncEventsInBatches(config, events);
@@ -32,7 +38,8 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
       "content-type": "application/json",
       authorization: `Bearer ${credentials.deviceToken}`
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) throw new Error(`Sync failed: ${response.status} ${await response.text()}`);
   return response.json() as Promise<{ inserted: number; duplicates: number; received: number; deviceId?: string }>;
@@ -93,7 +100,8 @@ export async function heartbeat(config: TokenizerConfig) {
       "content-type": "application/json",
       authorization: `Bearer ${credentials.deviceToken}`
     },
-    body: JSON.stringify({ device: deviceWithDiagnostics() })
+    body: JSON.stringify({ device: deviceWithDiagnostics() }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) throw new Error(`Heartbeat failed: ${response.status} ${await response.text()}`);
   return response.json() as Promise<{ ok: boolean; deviceId: string; lastSeenAt: string }>;

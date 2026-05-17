@@ -17,7 +17,14 @@ const SOURCE_COLORS: Record<string, string> = {
 const FALLBACK_PALETTE = ["#FFB547", "#6AD2FF", "#A3AED0", "#FF5630"];
 
 export function DailySourceChart({ dates, series }: { dates: string[]; series: SeriesItem[] }) {
-  const colors = series.map((s, i) => SOURCE_COLORS[s.name] ?? FALLBACK_PALETTE[i % FALLBACK_PALETTE.length]);
+  // Order series by their peak value DESCENDING so the largest source is
+  // drawn first (behind), letting smaller sources stay visible on top.
+  // Also non-stacked: stacking made it look like every source had roughly
+  // the same contribution because the smaller bands were hidden behind a
+  // big one — overlapping areas with proper transparency keeps each
+  // source's true magnitude against the Y axis.
+  const orderedSeries = [...series].sort((a, b) => Math.max(...b.data) - Math.max(...a.data));
+  const colors = orderedSeries.map((s, i) => SOURCE_COLORS[s.name] ?? FALLBACK_PALETTE[i % FALLBACK_PALETTE.length]);
 
   const options = {
     chart: {
@@ -25,7 +32,7 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      stacked: true
+      stacked: false
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
@@ -64,7 +71,7 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
       // default ApexCharts tooltip ships transparent).
       custom: ({ series: s, dataPointIndex }: { series: number[][]; dataPointIndex: number }) => {
         const date = dates[dataPointIndex] ?? "";
-        const rows = series
+        const rows = orderedSeries
           .map((item, i) => {
             const value = Number(s[i]?.[dataPointIndex] ?? 0);
             return `
@@ -82,5 +89,5 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
     }
   };
 
-  return <Chart options={options as never} type="area" series={series} width="100%" height="100%" />;
+  return <Chart options={options as never} type="area" series={orderedSeries} width="100%" height="100%" />;
 }

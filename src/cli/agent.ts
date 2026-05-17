@@ -114,11 +114,35 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
 
+  // Tick-based scheduler instead of setInterval. setInterval timers freeze
+  // while the host is asleep (laptop lid closed, macOS suspended) and on
+  // wake their next callback may not fire for another full interval. The
+  // 5-second tick polls the wall clock and beats/syncs whenever the
+  // appropriate interval has elapsed, so a wake-from-sleep is reconciled
+  // within ~5s instead of up to a full heartbeatSeconds.
+  const TICK_MS = 5000;
+  let lastBeatAt = 0;
+  let lastSyncAt = 0;
+
   await beat();
+  lastBeatAt = Date.now();
   await sync();
-  const heartbeatTimer = setInterval(() => void beat(), options.heartbeatSeconds * 1000);
-  const syncTimer = setInterval(() => void sync(), options.syncMinutes * 60 * 1000);
+  lastSyncAt = Date.now();
+
+  const tick = () => {
+    if (stopped) return;
+    const now = Date.now();
+    if (now - lastBeatAt >= options.heartbeatSeconds * 1000) {
+      lastBeatAt = now;
+      void beat();
+    }
+    if (now - lastSyncAt >= options.syncMinutes * 60 * 1000) {
+      lastSyncAt = now;
+      void sync();
+    }
+    setTimeout(tick, TICK_MS);
+  };
+  setTimeout(tick, TICK_MS);
+
   while (!stopped) await new Promise((resolve) => setTimeout(resolve, 60_000));
-  clearInterval(heartbeatTimer);
-  clearInterval(syncTimer);
 }

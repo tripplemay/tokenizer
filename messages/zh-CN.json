@@ -14,10 +14,10 @@
       "lastEvent": "最近事件"
     },
     "hero": {
-      "computeRange": "{label} 计算量",
-      "computeHint": "(input - cache read) + output,所选时间窗口内。",
-      "costRange": "{label} 成本",
-      "costHint": "按官网公开 list price 估算,所选时间窗口内。",
+      "computeRange": "{label} · 计算量",
+      "computeHint": "实际计算量 = 输入 token − 命中缓存的输入 + 输出 token。",
+      "costRange": "{label} · 估算成本",
+      "costHint": "按各模型厂商公开价目表估算,所选时间窗口内累计。",
       "wowSuffix": "较前一周期",
       "wowFlat": "持平",
       "wowNoBaseline": "无对照",
@@ -35,28 +35,28 @@
       "gitOnly": "仅 git"
     },
     "dailyCost": {
-      "title": "每日成本",
-      "subtitle": "按 model 公开 list price 估算,Asia/Shanghai 时区,所选时间窗口内。"
+      "title": "每日成本趋势",
+      "subtitle": "按各模型公开价目表估算 (Asia/Shanghai)。"
     },
     "dailySource": {
-      "title": "Input 按来源拆分",
-      "subtitle": "每个 source 每日 input token(stacked),Asia/Shanghai 时区。"
+      "title": "输入 token 按工具拆分",
+      "subtitle": "每日输入 token 按客户端工具区分 (Asia/Shanghai)。"
     },
     "kpi": {
-      "inputTokens": "Input tokens",
-      "inputHint": "模型本次看到的输入总量(含 cache write 和 cache read)。",
-      "outputTokens": "Output tokens",
-      "outputHint": "模型生成的 token,其中 {reasoning} 为推理(reasoning)token。",
-      "cacheWrite": "Cache write",
-      "cacheWriteHint": "首次写入缓存的 token 量(Input 的子集)。",
-      "cacheReuse": "Cache read",
-      "cacheReuseHint": "从缓存读取复用的 token 量(Input 的子集)。",
+      "inputTokens": "输入 token",
+      "inputHint": "模型接收到的输入 token 累计,包含 cache 写入与 cache 读取。",
+      "outputTokens": "输出 token",
+      "outputHint": "模型生成的 token 累计,其中 {reasoning} 为推理 token。",
+      "cacheWrite": "Cache 写入",
+      "cacheWriteHint": "首次写入缓存的 token 量,是输入 token 的子集。",
+      "cacheReuse": "Cache 读取",
+      "cacheReuseHint": "命中缓存复用的 token 量,是输入 token 的子集。",
       "cacheHitRate": "Cache 命中率",
-      "cacheReused": "{tokens} 来自 cache 复用"
+      "cacheReused": "{tokens} 来自缓存复用"
     },
     "daily": {
-      "title": "日用量",
-      "subtitle": "Input 和 output 每日数据(独立绘制于同一 Y 轴),最近 {days} 天,按 Asia/Shanghai 时区聚合。"
+      "title": "日用量趋势",
+      "subtitle": "近 {days} 天每日输入 / 输出 token (Asia/Shanghai)。"
     },
     "projectRanking": {
       "title": "项目排名",
@@ -99,14 +99,14 @@
       "title": "数据质量",
       "unknownProject": "未知项目",
       "unknownModel": "未知模型",
-      "unpriced": "未估价 tokens",
-      "unpricedHelper": "model 不在价格表里,显示 — 代替成本",
-      "reasoningTokens": "推理 tokens",
-      "reasoningHelper": "占 output {percent}",
+      "unpriced": "未估价 token",
+      "unpricedHelper": "模型不在价格表中,成本显示为 —",
+      "reasoningTokens": "推理 token",
+      "reasoningHelper": "占输出 {percent}",
       "devices": "设备",
       "noDevices": "无设备",
       "lastEvent": "最近事件",
-      "lastEventHelper": "基于 occurredAt"
+      "lastEventHelper": "基于事件原始发生时间"
     },
     "unknownModel": "未知模型"
   },
@@ -123,19 +123,19 @@
   },
   "events": {
     "title": "事件",
-    "subtitle": "最近 {count} 条原始用量事件。每行 token 是存储的累积原始值;Dashboard 的可计费总数已扣除 cache。",
+    "subtitle": "最近 {count} 条原始用量事件;每行为单次调用的存储值,聚合视图已扣除 cache 复用。",
     "col": {
       "time": "时间",
       "device": "设备",
       "project": "项目",
       "source": "来源",
       "model": "模型",
-      "totalRaw": "Total(原始)",
-      "input": "Input",
-      "output": "Output",
-      "cacheWrite": "Cache write",
-      "cacheRead": "Cache read",
-      "reasoning": "Reasoning"
+      "totalRaw": "总量 (原始)",
+      "input": "输入",
+      "output": "输出",
+      "cacheWrite": "Cache 写入",
+      "cacheRead": "Cache 读取",
+      "reasoning": "推理"
     },
     "unknownProject": "未知",
     "unknownDevice": "未知",
@@ -144,12 +144,13 @@
   "project": {
     "back": "返回总览",
     "noWorkspace": "无工作目录",
-    "aggregateNote": "聚合指标排除 cache 复用;下方逐事件行显示存储的原始 token。",
+    "aggregateNote": "聚合指标已扣除 cache 复用;下方事件列表为原始存储值。",
+    "localFolderTooltip": "本地目录,无 git remote",
     "metric": {
       "compute": "计算量",
-      "input": "Input",
-      "output": "Output",
-      "cacheRead": "Cache read",
+      "input": "输入 token",
+      "output": "输出 token",
+      "cacheRead": "Cache 读取",
       "cost": "成本"
     },
     "sources": "来源",
@@ -164,15 +165,15 @@
       "cost": "成本",
       "events": "事件数",
       "time": "时间",
-      "totalRaw": "Total(原始)",
-      "input": "Input",
-      "output": "Output"
+      "totalRaw": "总量 (原始)",
+      "input": "输入",
+      "output": "输出"
     },
     "unknownModel": "未知模型"
   },
   "devices": {
     "title": "设备",
-    "subtitle": "所有已注册的设备及其 token 贡献。",
+    "subtitle": "已注册设备的在线状态、用量与诊断信息。",
     "count": "{count, plural, =0 {无设备} other {# 台设备}}",
     "col": {
       "name": "名称",
@@ -196,7 +197,7 @@
     },
     "dailyByDevice": {
       "title": "每日成本按设备拆分",
-      "subtitle": "stacked area,每条颜色代表一台机器,所选时间窗口内。"
+      "subtitle": "堆叠面积图,一种颜色代表一台机器。"
     }
   },
   "device": {
@@ -216,20 +217,20 @@
       "events": "事件数"
     },
     "daily": {
-      "title": "日用量",
-      "subtitle": "这台设备最近 {days} 天的 input / output token,Asia/Shanghai 时区。"
+      "title": "日用量趋势",
+      "subtitle": "该设备近 {days} 天的输入 / 输出 token 趋势。"
     },
     "diagnostics": {
-      "title": "Agent 诊断",
+      "title": "客户端诊断",
       "agentVersion": "Agent 版本",
-      "queueDepth": "队列深度",
-      "lastSyncStatus": "上次同步",
+      "queueDepth": "本地队列深度",
+      "lastSyncStatus": "上次同步状态",
       "lastError": "最近错误",
       "status": { "success": "成功", "failed": "失败" }
     },
-    "projects": { "title": "项目排名(本设备)" },
-    "models": { "title": "模型用量(本设备)" },
-    "sources": { "title": "来源拆分(本设备)" },
+    "projects": { "title": "本设备项目排名" },
+    "models": { "title": "本设备模型用量" },
+    "sources": { "title": "本设备来源拆分" },
     "recentEvents": "最近事件",
     "col": {
       "project": "项目",
@@ -240,21 +241,21 @@
       "events": "事件数",
       "share": "占比",
       "time": "时间",
-      "input": "Input",
-      "output": "Output"
+      "input": "输入",
+      "output": "输出"
     }
   },
   "admin": {
     "login": {
       "title": "管理员登录",
-      "subtitle": "输入 ADMIN_TOKEN 以访问管理页面。Token 在服务端的 ADMIN_TOKEN 环境变量中设置。",
+      "subtitle": "输入管理员 token 访问管理页面 (来自服务端 ADMIN_TOKEN 环境变量)。",
       "placeholder": "管理员 token",
       "submit": "登录",
       "submitting": "登录中..."
     },
     "setup": {
       "title": "客户端配置",
-      "subtitle": "为新客户端机器生成一次性安装命令。安装器会自动检测设备名,你可以在过程中修改。",
+      "subtitle": "为新机器生成一次性安装命令。安装时会自动检测设备名,可在交互过程中修改。",
       "generate": "生成安装命令",
       "generating": "生成中...",
       "expires": "过期时间:{time}",
@@ -266,11 +267,11 @@
     "copyright": "© {year} Tokenizer — 编程 token 用量追踪。"
   },
   "timezone": {
-    "note": "所有时间使用 Asia/Shanghai 时区(UTC+8)。"
+    "note": "所有时间均按 Asia/Shanghai 时区 (UTC+8) 显示。"
   },
   "chart": {
-    "input": "Input",
-    "output": "Output",
+    "input": "输入",
+    "output": "输出",
     "total": "总计"
   }
 }
