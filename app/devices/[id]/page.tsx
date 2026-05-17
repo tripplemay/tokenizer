@@ -17,6 +17,15 @@ function parseRange(raw: unknown): RangeOption {
   return "all";
 }
 
+function DiagItem({ label, value, valueClass, mono, wrap }: { label: string; value: string; valueClass?: string; mono?: boolean; wrap?: boolean }) {
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white/40 p-4 dark:border-white/10 dark:bg-navy-900/40">
+      <div className="text-xs font-medium text-gray-500">{label}</div>
+      <div className={`mt-1.5 ${wrap ? "break-words" : "truncate"} text-sm font-semibold text-navy-700 dark:text-white ${mono ? "font-mono" : ""} ${valueClass ?? ""}`}>{value}</div>
+    </div>
+  );
+}
+
 function deviceStatusKey(lastSeenAt: string | null | undefined) {
   if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
   const ageMs = Date.now() - new Date(lastSeenAt).getTime();
@@ -94,6 +103,7 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
   }
 
   const { device, totals, events, byProject, byModel, bySource } = detail;
+  const hasDiagnostics = device.agentVersion != null || device.queueDepth != null || device.lastError != null || device.lastSyncStatus != null;
   const { key: statusKey, color: statusColor } = deviceStatusKey(device.lastSeenAt?.toISOString() ?? null);
 
   return (
@@ -133,6 +143,31 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
         <Widget icon={<MdSpeed className="h-7 w-7" />} title={t("device.metric.cacheHit")} subtitle={`${(totals.cacheHitRate * 100).toFixed(1)}%`} />
         <Widget icon={<MdCached className="h-7 w-7" />} title={t("device.metric.events")} subtitle={formatFullNumber(totals.eventCount)} />
       </div>
+
+      {hasDiagnostics ? (
+        <Card extra="p-6">
+          <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("device.diagnostics.title")}</h3>
+          <div className="grid gap-4 md:grid-cols-4">
+            <DiagItem label={t("device.diagnostics.agentVersion")} value={device.agentVersion ?? "—"} mono />
+            <DiagItem
+              label={t("device.diagnostics.queueDepth")}
+              value={device.queueDepth == null ? "—" : String(device.queueDepth)}
+              valueClass={device.queueDepth && device.queueDepth > 0 ? "text-yellow-600 dark:text-yellow-400" : undefined}
+            />
+            <DiagItem
+              label={t("device.diagnostics.lastSyncStatus")}
+              value={device.lastSyncStatus ? t(`device.diagnostics.status.${device.lastSyncStatus}`) : "—"}
+              valueClass={device.lastSyncStatus === "failed" ? "text-red-600 dark:text-red-400" : device.lastSyncStatus === "success" ? "text-green-600 dark:text-green-400" : undefined}
+            />
+            <DiagItem
+              label={t("device.diagnostics.lastError")}
+              value={device.lastError ?? "—"}
+              valueClass={device.lastError ? "text-red-600 dark:text-red-400" : undefined}
+              wrap
+            />
+          </div>
+        </Card>
+      ) : null}
 
       <Card extra="p-6">
         <div className="mb-3">

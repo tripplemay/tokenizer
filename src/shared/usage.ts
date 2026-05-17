@@ -23,12 +23,23 @@ export type UsageEventInput = {
   rawJson?: unknown;
 };
 
+// Diagnostic info pushed by the agent on every heartbeat. All fields are
+// optional so old clients still validate; the server treats missing fields
+// as "no update" rather than overwriting with null.
+export type DeviceDiagnostics = {
+  agentVersion?: string | null;
+  queueDepth?: number;
+  lastError?: string | null;
+  lastSyncStatus?: "success" | "failed" | null;
+};
+
 export type DeviceInput = {
   id: string;
   name: string;
   hostname?: string | null;
   platform?: string | null;
   metadata?: unknown;
+  diagnostics?: DeviceDiagnostics;
 };
 
 export type BatchUsageRequest = {

@@ -182,7 +182,13 @@
       "tokens": "Compute",
       "cost": "Cost",
       "cacheHit": "Cache hit",
-      "events": "Events"
+      "events": "Events",
+      "diagnostics": "Diagnostics"
+    },
+    "diag": {
+      "notReported": "no data",
+      "queued": "Queue",
+      "lastError": "Error"
     },
     "dailyByDevice": {
       "title": "Daily Cost by Device",
@@ -208,6 +214,14 @@
     "daily": {
       "title": "Daily Usage",
       "subtitle": "Input / output tokens per day for this device, last {days} active days, Asia/Shanghai."
+    },
+    "diagnostics": {
+      "title": "Agent Diagnostics",
+      "agentVersion": "Agent version",
+      "queueDepth": "Queue depth",
+      "lastSyncStatus": "Last sync",
+      "lastError": "Last error",
+      "status": { "success": "success", "failed": "failed" }
     },
     "projects": { "title": "Projects (this device)" },
     "models": { "title": "Models (this device)" },

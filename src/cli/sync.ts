@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { BatchUsageRequest, UsageEventInput } from "@/shared/usage";
-import { queuePath, readCredentials, readDevice, TokenizerConfig } from "./config";
+import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
+import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
+import { getAgentVersion } from "./agent-version";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -49,6 +50,41 @@ async function syncEventsInBatches(config: TokenizerConfig, events: UsageEventIn
   return total;
 }
 
+function readDiagnostics(): DeviceDiagnostics {
+  let queueDepth = 0;
+  try {
+    if (existsSync(queuePath)) {
+      const text = readFileSync(queuePath, "utf8");
+      queueDepth = text.split(/\r?\n/).filter(Boolean).length;
+    }
+  } catch {
+    /* leave at 0 — diagnostics are best-effort */
+  }
+  let lastError: string | null = null;
+  let lastSyncStatus: DeviceDiagnostics["lastSyncStatus"] = null;
+  try {
+    if (existsSync(statePath)) {
+      const state = JSON.parse(readFileSync(statePath, "utf8")) as Record<string, unknown>;
+      const err = state.lastError;
+      lastError = typeof err === "string" && err.length ? err.slice(0, 500) : null;
+      const status = state.lastSyncStatus;
+      if (status === "success" || status === "failed") lastSyncStatus = status;
+    }
+  } catch {
+    /* corrupted state file shouldn't block heartbeat */
+  }
+  return {
+    agentVersion: getAgentVersion(),
+    queueDepth,
+    lastError,
+    lastSyncStatus
+  };
+}
+
+function deviceWithDiagnostics(): DeviceInput {
+  return { ...readDevice(), diagnostics: readDiagnostics() };
+}
+
 export async function heartbeat(config: TokenizerConfig) {
   const credentials = readCredentials();
   const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/heartbeat`, {
@@ -57,7 +93,7 @@ export async function heartbeat(config: TokenizerConfig) {
       "content-type": "application/json",
       authorization: `Bearer ${credentials.deviceToken}`
     },
-    body: JSON.stringify({ device: readDevice() })
+    body: JSON.stringify({ device: deviceWithDiagnostics() })
   });
   if (!response.ok) throw new Error(`Heartbeat failed: ${response.status} ${await response.text()}`);
   return response.json() as Promise<{ ok: boolean; deviceId: string; lastSeenAt: string }>;

@@ -21,16 +21,21 @@ model Project {
 }
 
 model Device {
-  id          String       @id
-  name        String
-  hostname    String?
-  platform    String?
-  metadata    Json?
-  createdAt   DateTime     @default(now())
-  lastSeenAt  DateTime?
-  lastSyncAt  DateTime?
-  usageEvents UsageEvent[]
-  tokens      DeviceToken[]
+  id             String       @id
+  name           String
+  hostname       String?
+  platform       String?
+  metadata       Json?
+  createdAt      DateTime     @default(now())
+  lastSeenAt     DateTime?
+  lastSyncAt     DateTime?
+  agentVersion   String?
+  queueDepth     Int?
+  lastError      String?
+  lastErrorAt    DateTime?
+  lastSyncStatus String?
+  usageEvents    UsageEvent[]
+  tokens         DeviceToken[]
 
   @@index([lastSeenAt])
   @@index([lastSyncAt])

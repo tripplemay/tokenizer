@@ -182,7 +182,13 @@
       "tokens": "计算量",
       "cost": "成本",
       "cacheHit": "Cache 命中率",
-      "events": "事件数"
+      "events": "事件数",
+      "diagnostics": "诊断"
+    },
+    "diag": {
+      "notReported": "无上报",
+      "queued": "队列",
+      "lastError": "错误"
     },
     "dailyByDevice": {
       "title": "每日成本按设备拆分",
@@ -208,6 +214,14 @@
     "daily": {
       "title": "日用量",
       "subtitle": "这台设备最近 {days} 天的 input / output token,Asia/Shanghai 时区。"
+    },
+    "diagnostics": {
+      "title": "Agent 诊断",
+      "agentVersion": "Agent 版本",
+      "queueDepth": "队列深度",
+      "lastSyncStatus": "上次同步",
+      "lastError": "最近错误",
+      "status": { "success": "成功", "failed": "失败" }
     },
     "projects": { "title": "项目排名(本设备)" },
     "models": { "title": "模型用量(本设备)" },

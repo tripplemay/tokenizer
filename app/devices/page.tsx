@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MdComputer, MdSpeed } from "react-icons/md";
+import { MdComputer, MdSpeed, MdInventory2, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { getDailyByDevice, getDeviceSummary } from "@/server/summaries";
 import type { RangeOption } from "@/server/summaries";
@@ -9,6 +9,49 @@ import { RangeSelector } from "../_components/range-selector";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 
 export const dynamic = "force-dynamic";
+
+type DiagnosticsDevice = {
+  agentVersion: string | null;
+  queueDepth: number | null;
+  lastError: string | null;
+  lastSyncStatus: string | null;
+};
+
+function DiagnosticsBadges({
+  device,
+  reportedNoData,
+  queueLabel,
+  errorLabel
+}: {
+  device: DiagnosticsDevice;
+  reportedNoData: string;
+  queueLabel: string;
+  errorLabel: string;
+}) {
+  const nothing = device.agentVersion == null && device.queueDepth == null && device.lastError == null;
+  if (nothing) {
+    return <span className="text-xs text-gray-400" title="Diagnostics will populate once the device upgrades to the agent build that pushes them.">{reportedNoData}</span>;
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {device.lastError ? (
+        <span className="inline-flex items-center gap-0.5 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300" title={`${errorLabel}: ${device.lastError}`}>
+          <MdWarning className="h-3 w-3" />
+          {errorLabel}
+        </span>
+      ) : null}
+      {device.queueDepth != null && device.queueDepth > 0 ? (
+        <span className="inline-flex items-center gap-0.5 rounded-full bg-yellow-100 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300" title={`${queueLabel}: ${device.queueDepth}`}>
+          <MdInventory2 className="h-3 w-3" />
+          {device.queueDepth}
+        </span>
+      ) : null}
+      {device.agentVersion ? (
+        <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600 dark:bg-white/10 dark:text-gray-300" title={`agent ${device.agentVersion}`}>{device.agentVersion.slice(0, 7)}</span>
+      ) : null}
+    </span>
+  );
+}
 
 function deviceStatusKey(lastSeenAt: string | null) {
   // See app/page.tsx for the rationale: thresholds match the default 15-min
@@ -130,6 +173,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
                 <th className="pb-3 text-right">{t("devices.col.cost")}</th>
                 <th className="pb-3 text-right">{t("devices.col.cacheHit")}</th>
                 <th className="pb-3 text-right">{t("devices.col.events")}</th>
+                <th className="pb-3 text-right">{t("devices.col.diagnostics")}</th>
                 <th className="pb-3 text-right">{t("devices.col.lastSeen")}</th>
               </tr>
             </thead>
@@ -154,6 +198,9 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
                     <td className="py-2.5 pr-4 text-right font-medium">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
                     <td className="py-2.5 pr-4 text-right text-gray-600 dark:text-gray-300">{(device.cacheHitRate * 100).toFixed(1)}%</td>
                     <td className="py-2.5 pr-4 text-right">{formatFullNumber(device.events)}</td>
+                    <td className="py-2.5 pr-4 text-right">
+                      <DiagnosticsBadges device={device} reportedNoData={t("devices.diag.notReported")} queueLabel={t("devices.diag.queued")} errorLabel={t("devices.diag.lastError")} />
+                    </td>
                     <td className="py-2.5 pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
                   </tr>
                 );

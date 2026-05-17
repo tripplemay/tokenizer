@@ -15,17 +15,27 @@ export async function POST(request: NextRequest) {
   if (body.device.id !== token.deviceId) return forbidden("device token does not match device");
 
   const now = new Date();
+  // Diagnostics are optional — old clients won't send them. We only set the
+  // diagnostic columns when the payload actually carries values so a missing
+  // field doesn't clobber the last-known-good value with null.
+  const diag = body.device.diagnostics ?? {};
+  const data: Prisma.DeviceUpdateInput = {
+    name: body.device.name,
+    hostname: body.device.hostname ?? null,
+    platform: body.device.platform ?? null,
+    metadata: body.device.metadata === undefined ? Prisma.JsonNull : (body.device.metadata as Prisma.InputJsonValue),
+    lastSeenAt: now
+  };
+  if ("agentVersion" in diag) data.agentVersion = diag.agentVersion ?? null;
+  if ("queueDepth" in diag) data.queueDepth = typeof diag.queueDepth === "number" ? diag.queueDepth : null;
+  if ("lastError" in diag) {
+    data.lastError = diag.lastError ?? null;
+    data.lastErrorAt = diag.lastError ? now : null;
+  }
+  if ("lastSyncStatus" in diag) data.lastSyncStatus = diag.lastSyncStatus ?? null;
+
   await prisma.$transaction([
-    prisma.device.update({
-      where: { id: body.device.id },
-      data: {
-        name: body.device.name,
-        hostname: body.device.hostname ?? null,
-        platform: body.device.platform ?? null,
-        metadata: body.device.metadata === undefined ? Prisma.JsonNull : (body.device.metadata as Prisma.InputJsonValue),
-        lastSeenAt: now
-      }
-    }),
+    prisma.device.update({ where: { id: body.device.id }, data }),
     prisma.deviceToken.update({ where: { id: token.id }, data: { lastUsedAt: now } })
   ]);
 
