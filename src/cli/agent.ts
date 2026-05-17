@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, updateState } from "./config";
+import { readCursor, writeCursor } from "./cursor";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -24,7 +25,13 @@ export async function runOnce() {
   } catch {
     /* ignore */
   }
-  const collected = collectEvents(config);
+  // Read cursor and pass to parsers. Parsers mutate the cursor in-place to
+  // record per-file fingerprints and the OpenCode time_created high-water
+  // mark. We only persist the mutated cursor after a successful sync below,
+  // so a sync failure cleanly leaves us re-parsing the same files next run
+  // (server-side createMany skipDuplicates handles the overlap).
+  const cursor = readCursor();
+  const collected = collectEvents(config, cursor);
   const queued = readQueue();
   const events = dedupeBySourceEventId([...queued, ...collected.events]);
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
@@ -34,6 +41,7 @@ export async function runOnce() {
   try {
     const result = await syncEvents(config, events);
     clearQueue();
+    writeCursor(cursor);
     updateState({
       lastRunAt: startedAt,
       lastSyncAt: new Date().toISOString(),

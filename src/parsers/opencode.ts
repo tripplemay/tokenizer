@@ -81,6 +81,12 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
   if (!dbPath) return { events, warnings: ["OpenCode database not found. Run tokenizer diagnose opencode to locate data files."] };
 
   const db = new Database(dbPath, { readonly: true, fileMustExist: true });
+  // Skip messages we've already ingested in a prior successful sync. The
+  // cursor stores the highest m.time_created we've emitted; ">" (strict) is
+  // safe because (deviceId, sourceEventId) is unique on the server side and
+  // we always emit each message_id exactly once per file.
+  const cutoff = config.cursor?.opencodeLastTimeCreated ?? 0;
+  let maxTimeCreated = cutoff;
   try {
     const rows = db
       .prepare(
@@ -100,11 +106,13 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
         from message m
         join session s on s.id = m.session_id
         left join project p on p.id = s.project_id
+        where m.time_created > ?
         order by m.time_created asc`
       )
-      .all() as OpenCodeRow[];
+      .all(cutoff) as OpenCodeRow[];
 
     for (const row of rows) {
+      if (row.time_created > maxTimeCreated) maxTimeCreated = row.time_created;
       try {
         const message = JSON.parse(row.message_data) as any;
         if (message.role !== "assistant") continue;
@@ -171,6 +179,8 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
   } finally {
     db.close();
   }
+
+  if (config.cursor) config.cursor.opencodeLastTimeCreated = maxTimeCreated;
 
   return { events, warnings };
 }

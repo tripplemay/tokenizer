@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
+import { recordFile, shouldSkipFile } from "@/cli/cursor";
 import { ParserConfig, ParserResult } from "./types";
 
 export function parseClaudeUsage(config: ParserConfig): ParserResult {
@@ -27,6 +28,7 @@ function parseLegacySessionMeta(dir: string, config: ParserConfig, events: Usage
   for (const name of readdirSync(dir)) {
     if (!name.endsWith(".json")) continue;
     const file = join(dir, name);
+    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
     try {
       const text = readFileSync(file, "utf8");
       const json = JSON.parse(text) as Record<string, unknown>;
@@ -55,6 +57,7 @@ function parseLegacySessionMeta(dir: string, config: ParserConfig, events: Usage
     } catch (error) {
       warnings.push(`Failed to parse Claude file ${file}: ${(error as Error).message}`);
     }
+    if (config.cursor) recordFile(file, config.cursor);
   }
 }
 
@@ -69,6 +72,7 @@ function walkJsonl(dir: string, files: string[] = []): string[] {
 
 function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: UsageEventInput[], warnings: string[]) {
   for (const file of walkJsonl(projectsDir)) {
+    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
     const fallbackTime = statSync(file).mtime.toISOString();
     const lines = readFileSync(file, "utf8").replace(/\u0000/g, "").split(/\r?\n/);
     lines.forEach((line, index) => {
@@ -111,5 +115,6 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
         warnings.push(`Failed to parse Claude jsonl ${file}:${index + 1}: ${(error as Error).message}`);
       }
     });
+    if (config.cursor) recordFile(file, config.cursor);
   }
 }

@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
+import { recordFile, shouldSkipFile } from "@/cli/cursor";
 import { ParserConfig, ParserResult } from "./types";
 
 function walk(dir: string, files: string[] = []): string[] {
@@ -21,6 +22,7 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
   if (!existsSync(dir)) return { events, warnings: [`Codex sessions directory not found: ${dir}`] };
 
   for (const file of walk(dir)) {
+    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
     let sessionId: string | null = null;
     let workspacePath: string | null = null;
     let model: string | null = null;
@@ -78,6 +80,7 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
         warnings.push(`Failed to parse Codex ${file}:${index + 1}: ${(error as Error).message}`);
       }
     });
+    if (config.cursor) recordFile(file, config.cursor);
   }
 
   return { events, warnings };

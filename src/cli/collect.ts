@@ -6,10 +6,15 @@ import { parseCodexUsage } from "@/parsers/codex";
 import { parseOpenCodeUsage } from "@/parsers/opencode";
 import { UsageEventInput } from "@/shared/usage";
 import { queuePath, TokenizerConfig } from "./config";
+import { ParserCursor } from "./cursor";
 import { enrichEventsWithGit } from "./git";
 
-export function collectEvents(config: TokenizerConfig) {
-  const parserConfig = { homeDir: homedir(), projectRoots: config.projectRoots };
+// `cursor` is optional. When supplied, parsers will skip files whose fingerprint
+// is unchanged and (for OpenCode) restrict the SQL query to rows newer than
+// the cutoff. Parsers mutate the cursor in-place; the caller is responsible
+// for persisting it only after a successful sync.
+export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
+  const parserConfig = { homeDir: homedir(), projectRoots: config.projectRoots, cursor };
   const warnings: string[] = [];
   const events: UsageEventInput[] = [];
 
