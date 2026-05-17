@@ -1,6 +1,14 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { computeSummaryMetrics } from "./summary-metrics";
 import { estimateCost, sumCostAcrossModels } from "@/shared/model-pricing";
+
+// Short-TTL cache for the dashboard's expensive aggregates. Each summary
+// function is wrapped at the bottom of this file; arguments form part of
+// the cache key automatically. 30s strikes a balance between live updates
+// (events arrive within a 60s heartbeat window) and avoiding repeated
+// multi-second cold reads when the user navigates between pages.
+const CACHE_REVALIDATE_SECONDS = 30;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -84,7 +92,7 @@ async function computeAndCostFor(where: Record<string, unknown>): Promise<{ comp
   return { compute, cost };
 }
 
-export async function getSummary(range: RangeOption = "all") {
+async function getSummaryImpl(range: RangeOption = "all") {
   const now = new Date();
   const where = rangeWhere(range);
   const prior = priorWindow(range, now);
@@ -152,7 +160,7 @@ export async function getSummary(range: RangeOption = "all") {
   };
 }
 
-export async function getDeviceSummary(range: RangeOption = "all") {
+async function getDeviceSummaryImpl(range: RangeOption = "all") {
   const where = rangeWhere(range);
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
@@ -415,7 +423,7 @@ type DailyByDeviceRow = {
   output: bigint | number | null;
 };
 
-export async function getDailyByDevice(range: RangeOption = "all") {
+async function getDailyByDeviceImpl(range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyByDeviceRow[]>`
@@ -463,7 +471,7 @@ export async function getDailyByDevice(range: RangeOption = "all") {
   };
 }
 
-export async function getProjectSummary(range: RangeOption = "all", filter: ProjectFilter = "all") {
+async function getProjectSummaryImpl(range: RangeOption = "all", filter: ProjectFilter = "all") {
   const where = rangeWhere(range);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
@@ -620,7 +628,7 @@ function daysForRange(range: RangeOption): number {
   return 180;
 }
 
-export async function getDailySummary(range: RangeOption = "all") {
+async function getDailySummaryImpl(range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -660,7 +668,7 @@ type DailyCostByModelRow = {
 // Cost per day. We have to GROUP BY (day, model) and then apply per-model
 // pricing in JS since costs vary by model. Daily roll-up is a small result
 // set so the JS step is cheap.
-export async function getDailyCost(range: RangeOption = "all") {
+async function getDailyCostImpl(range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -704,7 +712,7 @@ type DailyBySourceRow = {
 // Per-source input tokens per day — used by the stacked area chart. We use
 // inputTokens (total input, including cache) rather than billable so the
 // stacked area conveys "how much each source consumed" intuitively.
-export async function getDailyBySource(range: RangeOption = "all") {
+async function getDailyBySourceImpl(range: RangeOption = "all") {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
@@ -740,7 +748,7 @@ export async function getDailyBySource(range: RangeOption = "all") {
   };
 }
 
-export async function getBreakdown(field: "source" | "model", range: RangeOption = "all") {
+async function getBreakdownImpl(field: "source" | "model", range: RangeOption = "all") {
   const where = rangeWhere(range);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
@@ -790,3 +798,18 @@ export async function getBreakdown(field: "source" | "model", range: RangeOption
     };
   });
 }
+
+// ---- Cached public API ---------------------------------------------------
+// Wrappers attach Next's unstable_cache with a 30s revalidate. Arguments are
+// part of the cache key automatically, so (range, filter, field) tuples each
+// get their own slot. Detail functions (getProjectDetail, getDeviceDetail)
+// are intentionally NOT cached — they return Prisma Date objects that the
+// JSON cache layer would coerce to strings and break their consumers.
+export const getSummary = unstable_cache(getSummaryImpl, ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDeviceSummary = unstable_cache(getDeviceSummaryImpl, ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getProjectSummary = unstable_cache(getProjectSummaryImpl, ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailySummary = unstable_cache(getDailySummaryImpl, ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyCost = unstable_cache(getDailyCostImpl, ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyBySource = unstable_cache(getDailyBySourceImpl, ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyByDevice = unstable_cache(getDailyByDeviceImpl, ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getBreakdown = unstable_cache(getBreakdownImpl, ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS });
