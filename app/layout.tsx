@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AdminShell } from "./admin-shell";
+import { AuthProvider } from "./session-provider";
 
 export const metadata: Metadata = {
   title: "Tokenizer",
@@ -20,7 +21,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale}>
       <body id="root">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AdminShell>{children}</AdminShell>
+          <AuthProvider>
+            <AdminShell>{children}</AdminShell>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>
