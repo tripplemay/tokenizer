@@ -22,9 +22,13 @@ const Navbar = (props: {
   [x: string]: any;
 }) => {
   const { onOpenSidenav, brandText, mini, hovered } = props;
-  const [darkmode, setDarkmode] = React.useState(
-    document.body.classList.contains('dark'),
-  );
+  // Guard against SSR/prerender: `document` is undefined during Next's static
+  // generation of pages like /_not-found. Lazy default to false, then sync to
+  // the real class state once we're on the client.
+  const [darkmode, setDarkmode] = React.useState(false);
+  React.useEffect(() => {
+    setDarkmode(document.body.classList.contains('dark'));
+  }, []);
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
