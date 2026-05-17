@@ -1,10 +1,10 @@
+import { auth } from "@/auth";
 import { getProjectSummary } from "@/server/summaries";
-import { getCurrentTenantId } from "@/server/auth-session";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  // TODO(1d): require a session.
-  const tenantId = await getCurrentTenantId();
-  return Response.json({ projects: await getProjectSummary(tenantId) });
+  const session = await auth();
+  if (!session?.user?.id) return Response.json({ error: "unauthorized" }, { status: 401 });
+  return Response.json({ projects: await getProjectSummary(session.user.id) });
 }

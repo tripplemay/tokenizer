@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { DEFAULT_TENANT_ID, isAdminAuthorized, unauthorized } from "@/server/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/server/db";
 import { generateToken, hashToken, tokenPrefix } from "@/server/tokens";
 
@@ -9,19 +9,22 @@ export const dynamic = "force-dynamic";
 const DEFAULT_EXPIRES_MINUTES = 30;
 const MAX_EXPIRES_MINUTES = 24 * 60;
 
+// Generates a one-time device-enrollment token bound to the calling user.
+// Replaces the previous ADMIN_TOKEN-gated flow — each user manages enroll
+// tokens for their own tenant via /settings/enrollment (and during the
+// transition, /admin/setup which still hits this route).
 export async function POST(request: NextRequest) {
-  if (!isAdminAuthorized(request)) return unauthorized();
+  const session = await auth();
+  if (!session?.user?.id) return Response.json({ error: "unauthorized" }, { status: 401 });
 
   const body = (await request.json().catch(() => ({}))) as { label?: string; expiresInMinutes?: number };
   const expiresInMinutes = Math.max(1, Math.min(MAX_EXPIRES_MINUTES, Math.trunc(body.expiresInMinutes || DEFAULT_EXPIRES_MINUTES)));
   const enrollToken = generateToken("enroll");
   const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
 
-  // Admin-issued enroll tokens belong to the seeded owner until the per-user
-  // session-aware flow ships in 1b/1c. Then this becomes session.user.id.
   await prisma.enrollmentToken.create({
     data: {
-      userId: DEFAULT_TENANT_ID,
+      userId: session.user.id,
       label: body.label?.trim() || null,
       tokenHash: hashToken(enrollToken),
       prefix: tokenPrefix(enrollToken),

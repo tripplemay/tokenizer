@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { MdArrowBack, MdBolt, MdInput, MdOutput, MdCached, MdPaid } from "react-icons/md";
 import { prisma } from "@/server/db";
 import { getProjectDetail } from "@/server/summaries";
-import { getCurrentTenantId } from "@/server/auth-session";
+import { requireSession } from "@/server/auth-session";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { formatDateTimeSeconds, formatFullNumber, formatTokens, formatUsd } from "@/shared/format";
@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const tenantId = await getCurrentTenantId();
+  const session = await requireSession();
+  const tenantId = session.user.id;
   // Scope project lookup to the current tenant so a leaked URL like
   // /projects/<some-other-users-id> doesn't reveal someone else's project.
   const [t, project, detail] = await Promise.all([

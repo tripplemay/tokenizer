@@ -4,7 +4,7 @@ import { MdArrowBack, MdBolt, MdCached, MdComputer, MdPaid, MdSpeed } from "reac
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { getDailyForDevice, getDeviceDetail } from "@/server/summaries";
-import { getCurrentTenantId } from "@/server/auth-session";
+import { requireSession } from "@/server/auth-session";
 import type { RangeOption } from "@/server/summaries";
 import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyUsageChart } from "../../daily-usage-chart";
@@ -81,7 +81,8 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
   const { id } = await params;
   const sp = await searchParams;
   const range = parseRange(sp.range);
-  const tenantId = await getCurrentTenantId();
+  const session = await requireSession();
+  const tenantId = session.user.id;
   const [t, detail, daily] = await Promise.all([
     getTranslations(),
     getDeviceDetail(tenantId, id, range),

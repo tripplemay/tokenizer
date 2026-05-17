@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { getCurrentTenantId } from "@/server/auth-session";
+import { requireSession } from "@/server/auth-session";
 import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
@@ -70,7 +70,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const range = parseRange(params.range);
   const gitFilter = parseGitFilter(params.gitOnly);
 
-  const tenantId = await getCurrentTenantId();
+  const session = await requireSession();
+  const tenantId = session.user.id;
   const t = await getTranslations();
   const summary = await getSummary(tenantId, range);
 
