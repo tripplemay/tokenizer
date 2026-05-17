@@ -27,9 +27,35 @@ export function installService(options: { heartbeatSeconds: number; syncMinutes:
   return installCron(options);
 }
 
+function resolveLaunchdPath(): string {
+  // launchd starts processes with a minimal PATH (/usr/bin:/bin:/usr/sbin:/sbin),
+  // which means /usr/bin/env can't find a Homebrew-installed `node`. We bake
+  // the actual node parent dir into the plist's PATH so the bin/tokenizer
+  // shebang resolves regardless of launchd's environment.
+  const candidates = [
+    "/opt/homebrew/bin",
+    "/opt/homebrew/opt/node@22/bin",
+    "/opt/homebrew/opt/node/bin",
+    "/usr/local/bin",
+    "/usr/local/opt/node@22/bin",
+    "/usr/local/opt/node/bin",
+    join(homedir(), ".local", "bin")
+  ].filter((dir) => existsSync(dir));
+  let nodeDir: string | null = null;
+  try {
+    const which = execFileSync("which", ["node"], { encoding: "utf8" }).trim();
+    if (which) nodeDir = dirname(which);
+  } catch {
+    /* fall through to candidates */
+  }
+  const dirs = new Set<string>([...(nodeDir ? [nodeDir] : []), ...candidates, "/usr/bin", "/bin"]);
+  return Array.from(dirs).join(":");
+}
+
 function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number }) {
   const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
   mkdirSync(dirname(plist), { recursive: true });
+  const path = resolveLaunchdPath();
   writeFileSync(
     plist,
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -37,8 +63,13 @@ function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number
 <plist version="1.0"><dict>
   <key>Label</key><string>cc.tokenizer.agent</string>
   <key>ProgramArguments</key><array><string>${binPath}</string><string>agent</string><string>--heartbeat-seconds</string><string>${options.heartbeatSeconds}</string><string>--sync-minutes</string><string>${options.syncMinutes}</string></array>
+  <key>EnvironmentVariables</key><dict>
+    <key>PATH</key><string>${path}</string>
+    <key>HOME</key><string>${homedir()}</string>
+  </dict>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
   <key>StandardOutPath</key><string>${logPath}</string>
   <key>StandardErrorPath</key><string>${logPath}</string>
 </dict></plist>
@@ -46,7 +77,7 @@ function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number
   );
   execFileSync("launchctl", ["unload", plist], { stdio: "ignore" });
   execFileSync("launchctl", ["load", plist], { stdio: "inherit" });
-  return `Installed launchd agent: ${plist}`;
+  return `Installed launchd agent: ${plist}\nPATH: ${path}`;
 }
 
 function installSystemd(options: { heartbeatSeconds: number; syncMinutes: number }) {
