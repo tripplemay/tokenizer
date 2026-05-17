@@ -6,13 +6,14 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
-export default async function ProjectPage({ params }: { params: { id: string } }) {
-  const project = await prisma.project.findUnique({ where: { id: params.id } });
+export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const project = await prisma.project.findUnique({ where: { id } });
   const [totals, events, bySource, byModel] = await Promise.all([
-    prisma.usageEvent.aggregate({ where: { projectId: params.id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } }),
-    prisma.usageEvent.findMany({ where: { projectId: params.id }, take: 100, orderBy: { occurredAt: "desc" } }),
-    prisma.usageEvent.groupBy({ by: ["source"], where: { projectId: params.id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true }),
-    prisma.usageEvent.groupBy({ by: ["model"], where: { projectId: params.id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true })
+    prisma.usageEvent.aggregate({ where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true } }),
+    prisma.usageEvent.findMany({ where: { projectId: id }, take: 100, orderBy: { occurredAt: "desc" } }),
+    prisma.usageEvent.groupBy({ by: ["source"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true }),
+    prisma.usageEvent.groupBy({ by: ["model"], where: { projectId: id }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true }, _count: true })
   ]);
 
   if (!project) return <div>Project not found</div>;
