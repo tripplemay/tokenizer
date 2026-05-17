@@ -47,7 +47,7 @@ function projectKey(event: UsageEventInput): string {
   return `name:${name}`;
 }
 
-async function ensureProject(event: UsageEventInput) {
+async function ensureProject(event: UsageEventInput, userId: string) {
   const repoKey = event.repoKey?.trim() || null;
   const workspacePath = event.workspacePath?.trim() || null;
 
@@ -58,9 +58,9 @@ async function ensureProject(event: UsageEventInput) {
     // dashboard label doesn't flap depending on which device synced last.
     const canonicalName = projectNameFromRepoKey(repoKey) ?? event.projectName?.trim() ?? projectNameFromPath(workspacePath);
     return prisma.project.upsert({
-      where: { repoKey },
+      where: { userId_repoKey: { userId, repoKey } },
       update: { name: canonicalName, repoRemote: event.gitRemote ?? undefined },
-      create: { name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
+      create: { userId, name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
     });
   }
 
@@ -71,18 +71,18 @@ async function ensureProject(event: UsageEventInput) {
   const fallbackName = event.projectName?.trim() || projectNameFromPath(workspacePath);
   if (workspacePath) {
     return prisma.project.upsert({
-      where: { workspacePath },
+      where: { userId_workspacePath: { userId, workspacePath } },
       update: { name: fallbackName },
-      create: { name: fallbackName, workspacePath }
+      create: { userId, name: fallbackName, workspacePath }
     });
   }
 
-  const existing = await prisma.project.findFirst({ where: { name: fallbackName, workspacePath: null } });
+  const existing = await prisma.project.findFirst({ where: { userId, name: fallbackName, workspacePath: null } });
   if (existing) return existing;
-  return prisma.project.create({ data: { name: fallbackName } });
+  return prisma.project.create({ data: { userId, name: fallbackName } });
 }
 
-async function ensureDevice(device: DeviceInput, lastSyncAt: Date) {
+async function ensureDevice(device: DeviceInput, lastSyncAt: Date, userId: string) {
   return prisma.device.upsert({
     where: { id: device.id },
     update: {
@@ -95,6 +95,7 @@ async function ensureDevice(device: DeviceInput, lastSyncAt: Date) {
     },
     create: {
       id: device.id,
+      userId,
       name: device.name || device.id,
       hostname: device.hostname ?? null,
       platform: device.platform ?? null,
@@ -105,9 +106,9 @@ async function ensureDevice(device: DeviceInput, lastSyncAt: Date) {
   });
 }
 
-export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: DeviceInput, deviceTokenId: string) {
+export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: DeviceInput, deviceTokenId: string, userId: string) {
   const now = new Date();
-  const device = await ensureDevice(deviceInput, now);
+  const device = await ensureDevice(deviceInput, now, userId);
   await prisma.deviceToken.update({ where: { id: deviceTokenId }, data: { lastUsedAt: now } });
 
   if (events.length === 0) {
@@ -115,8 +116,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   }
 
   // 1) Reduce N events to the small set of distinct Projects they reference,
-  // upsert each once, then build a lookup map. For a typical 200-event batch
-  // this collapses to <15 project upserts instead of 200.
+  // upsert each once, then build a lookup map.
   const projectByKey = new Map<string, UsageEventInput>();
   for (const event of events) {
     const key = projectKey(event);
@@ -124,7 +124,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   }
   const projectIdByKey = new Map<string, string>();
   for (const [key, sample] of projectByKey) {
-    const project = await ensureProject(sample);
+    const project = await ensureProject(sample, userId);
     projectIdByKey.set(key, project.id);
   }
 
@@ -134,6 +134,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   // otherwise fail the entire batch (createMany is not row-isolated the way
   // the old per-event create loop was).
   const rows = events.map((event) => ({
+    userId,
     deviceId: device.id,
     source: event.source,
     sourceEventId: stripNullBytesFromString(event.sourceEventId),

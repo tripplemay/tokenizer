@@ -23,6 +23,11 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "invalid or expired enrollment token" }, { status: 401 });
   }
 
+  // The enrollment token carries the tenant that issued it; the device + its
+  // long-lived deviceToken inherit that ownership so every subsequent
+  // heartbeat / batch can resolve the tenant from the deviceToken alone.
+  const ownerUserId = token.userId;
+
   const device = await prisma.device.upsert({
     where: { id: body.device.id },
     update: {
@@ -34,6 +39,7 @@ export async function POST(request: NextRequest) {
     },
     create: {
       id: body.device.id,
+      userId: ownerUserId,
       name: body.device.name,
       hostname: body.device.hostname ?? null,
       platform: body.device.platform ?? null,
@@ -46,6 +52,7 @@ export async function POST(request: NextRequest) {
   await prisma.$transaction([
     prisma.deviceToken.create({
       data: {
+        userId: ownerUserId,
         deviceId: device.id,
         tokenHash: hashToken(deviceToken),
         prefix: tokenPrefix(deviceToken),

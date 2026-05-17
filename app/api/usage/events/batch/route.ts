@@ -15,6 +15,6 @@ export async function POST(request: NextRequest) {
   }
   if (body.device.id !== token.deviceId) return forbidden("device token does not match device");
 
-  const result = await ingestUsageEvents(body.events, body.device, token.id);
+  const result = await ingestUsageEvents(body.events, body.device, token.id, token.userId);
   return Response.json(result);
 }

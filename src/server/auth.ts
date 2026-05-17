@@ -5,6 +5,14 @@ import { hashToken, safeEqual } from "./tokens";
 
 export const ADMIN_COOKIE = "admin_token";
 
+// Multi-tenant foundation (Phase 1a): every business row is now owned by a
+// User. Before the Auth.js login flow lands in 1b, server actions that don't
+// yet have a request-scoped session (admin token, enroll flow) attribute
+// writes to this seeded "owner" user — the same one the data migration
+// backfilled all existing rows to. Subsequent commits replace this with
+// session.user.id once the login surface ships.
+export const DEFAULT_TENANT_ID = "user_default_seed";
+
 export function isAdminAuthorized(request: NextRequest): boolean {
   const expected = process.env.ADMIN_TOKEN;
   if (!expected) return false;

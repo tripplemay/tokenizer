@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { isAdminAuthorized, unauthorized } from "@/server/auth";
+import { DEFAULT_TENANT_ID, isAdminAuthorized, unauthorized } from "@/server/auth";
 import { prisma } from "@/server/db";
 import { generateToken, hashToken, tokenPrefix } from "@/server/tokens";
 
@@ -17,8 +17,11 @@ export async function POST(request: NextRequest) {
   const enrollToken = generateToken("enroll");
   const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
 
+  // Admin-issued enroll tokens belong to the seeded owner until the per-user
+  // session-aware flow ships in 1b/1c. Then this becomes session.user.id.
   await prisma.enrollmentToken.create({
     data: {
+      userId: DEFAULT_TENANT_ID,
       label: body.label?.trim() || null,
       tokenHash: hashToken(enrollToken),
       prefix: tokenPrefix(enrollToken),
