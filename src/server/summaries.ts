@@ -805,11 +805,27 @@ async function getBreakdownImpl(field: "source" | "model", range: RangeOption = 
 // get their own slot. Detail functions (getProjectDetail, getDeviceDetail)
 // are intentionally NOT cached — they return Prisma Date objects that the
 // JSON cache layer would coerce to strings and break their consumers.
-export const getSummary = unstable_cache(getSummaryImpl, ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDeviceSummary = unstable_cache(getDeviceSummaryImpl, ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getProjectSummary = unstable_cache(getProjectSummaryImpl, ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailySummary = unstable_cache(getDailySummaryImpl, ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyCost = unstable_cache(getDailyCostImpl, ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyBySource = unstable_cache(getDailyBySourceImpl, ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyByDevice = unstable_cache(getDailyByDeviceImpl, ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getBreakdown = unstable_cache(getBreakdownImpl, ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS });
+
+// Temporary instrumentation: when CACHE_DEBUG=1 the wrappers log every cache
+// miss with its underlying query time. Helpful for confirming whether
+// unstable_cache is actually hitting in production vs being silently bypassed
+// by force-dynamic / other request-scoped behavior. Remove once verified.
+const CACHE_DEBUG = true; // TEMPORARY — flip back to false after diagnosis.
+function instrument<T extends (...args: never[]) => Promise<unknown>>(name: string, fn: T): T {
+  if (!CACHE_DEBUG) return fn;
+  return (async (...args: never[]) => {
+    const start = Date.now();
+    const result = await fn(...args);
+    console.log(`[cache-miss] ${name}(${JSON.stringify(args)}) ${Date.now() - start}ms`);
+    return result;
+  }) as T;
+}
+
+export const getSummary = unstable_cache(instrument("getSummary", getSummaryImpl), ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDeviceSummary = unstable_cache(instrument("getDeviceSummary", getDeviceSummaryImpl), ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getProjectSummary = unstable_cache(instrument("getProjectSummary", getProjectSummaryImpl), ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailySummary = unstable_cache(instrument("getDailySummary", getDailySummaryImpl), ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyCost = unstable_cache(instrument("getDailyCost", getDailyCostImpl), ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyBySource = unstable_cache(instrument("getDailyBySource", getDailyBySourceImpl), ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getDailyByDevice = unstable_cache(instrument("getDailyByDevice", getDailyByDeviceImpl), ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getBreakdown = unstable_cache(instrument("getBreakdown", getBreakdownImpl), ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS });
