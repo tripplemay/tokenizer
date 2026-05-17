@@ -414,39 +414,43 @@ async function ProjectsAndDevicesSection({
           <MdDevices className="h-5 w-5 text-brand-500" />
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.connectedClients.title")}</h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-gray-500">
-              <tr>
-                <th className="pb-3 pr-4">{t("home.connectedClients.col.client")}</th>
-                <th className="pb-3 pr-4">{t("home.connectedClients.col.status")}</th>
-                <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.tokens")}</th>
-                <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.total")}</th>
-                <th className="pb-3 pr-4 text-right">{t("home.connectedClients.col.cost")}</th>
-                <th className="pb-3 text-right">{t("home.connectedClients.col.lastSeen")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {devices.map((device) => (
-                <tr key={device.deviceId} className="border-t border-gray-200 text-navy-700 transition-colors hover:bg-brand-500/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
-                  <td className="py-2.5 pr-4 font-medium">
-                    <div className="flex items-center gap-1.5">
-                      <PlatformIcon platform={device.platform} />
-                      <span>{device.name}</span>
-                    </div>
-                  </td>
-                  <td className="pr-4">
+        {/* Compact stacked list instead of a 6-column table — the card sits in
+            a narrow xl:col-span-4 slot where a wide table would force an
+            internal horizontal scrollbar. Each row stays self-contained:
+            platform icon + name + status on the top line, metrics + last
+            seen on the bottom line. */}
+        <ul className="divide-y divide-gray-200 dark:divide-white/10">
+          {devices.map((device) => (
+            <li key={device.deviceId} className="group">
+              <a
+                href={`/devices/${device.deviceId}`}
+                className="-mx-2 flex items-start gap-3 rounded-xl px-2 py-3 transition hover:bg-brand-500/5 dark:hover:bg-white/5"
+              >
+                <span className="mt-0.5 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
+                  <PlatformIcon platform={device.platform} className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-sm font-medium text-navy-700 dark:text-white">{device.name}</span>
                     <ClientStatusBadge lastSeenAt={device.lastSeenAt} t={t} />
-                  </td>
-                  <td className="pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
-                  <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(device.totalTokens)} total tokens`}>{formatTokens(device.totalTokens)}</td>
-                  <td className="pr-4 text-right">{device.cost > 0 ? formatUsd(device.cost) : "—"}</td>
-                  <td className="text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-500">
+                    <span title={`${formatFullNumber(device.billableTokens)} ${t("home.connectedClients.col.tokens")}`}>{formatTokens(device.billableTokens)}</span>
+                    <span className="text-gray-300 dark:text-gray-600">·</span>
+                    <span title={`${formatFullNumber(device.totalTokens)} ${t("home.connectedClients.col.total")}`}>{formatTokens(device.totalTokens)}</span>
+                    {device.cost > 0 ? (
+                      <>
+                        <span className="text-gray-300 dark:text-gray-600">·</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{formatUsd(device.cost)}</span>
+                      </>
+                    ) : null}
+                    <span className="ml-auto whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</span>
+                  </div>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
       </Card>
     </div>
   );
