@@ -36,6 +36,7 @@
     "commander": "^12.1.0",
     "framer-motion": "^7.10.2",
     "next": "^15.1.4",
+    "next-intl": "^3.26.0",
     "prisma": "^5.22.0",
     "react": "^19.0.0",
     "react-apexcharts": "^1.4.0",

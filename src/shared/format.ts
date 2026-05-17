@@ -1,3 +1,26 @@
+const REPORTING_TIMEZONE = "Asia/Shanghai";
+
+const dateTimeFmt = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: REPORTING_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false
+});
+
+const dateTimeSecondsFmt = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: REPORTING_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false
+});
+
 export function formatFullNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
 }
@@ -30,8 +53,15 @@ export function formatPercent(numerator: number, denominator: number): string {
 }
 
 export function formatDateTime(value: Date | string | null | undefined): string {
-  if (!value) return "No data";
+  if (!value) return "—";
   const date = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(date.getTime())) return "No data";
-  return date.toISOString().replace("T", " ").slice(0, 16);
+  if (Number.isNaN(date.getTime())) return "—";
+  return dateTimeFmt.format(date);
+}
+
+export function formatDateTimeSeconds(value: Date | string | null | undefined): string {
+  if (!value) return "—";
+  const date = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return "—";
+  return dateTimeSecondsFmt.format(date);
 }

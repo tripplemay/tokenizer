@@ -21,9 +21,12 @@ export const findCurrentRoute = (
   return undefined;
 };
 
-export const getActiveRoute = (routes: IRoute[], pathname: string): string => {
+// Returns the active route's message key (e.g. "nav.overview") so callers
+// can resolve it via next-intl on the client side. Defaults to "app.name"
+// when no route matches (e.g. /admin/setup which isn't in the sidebar).
+export const getActiveRouteKey = (routes: IRoute[], pathname: string): string => {
   const route = findCurrentRoute(routes, pathname);
-  return route?.name || "Tokenizer";
+  return route?.name || "app.name";
 };
 
 export const getActiveNavbar = (
@@ -34,9 +37,5 @@ export const getActiveNavbar = (
   return Boolean(route?.secondary);
 };
 
-export const getActiveNavbarText = (
-  routes: IRoute[],
-  pathname: string
-): string | boolean => {
-  return getActiveRoute(routes, pathname) || false;
-};
+// Kept for backward compatibility — same as getActiveRouteKey now.
+export const getActiveRoute = getActiveRouteKey;

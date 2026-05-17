@@ -1,8 +1,12 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { FiAlignJustify } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import { MdSettings } from "react-icons/md";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -11,11 +15,9 @@ const Navbar = (props: {
   [x: string]: any;
 }) => {
   const { onOpenSidenav, brandText } = props;
+  const t = useTranslations();
   const [darkmode, setDarkmode] = React.useState(false);
 
-  // Sync local toggle state from localStorage / system preference on mount,
-  // then apply the .dark class to the <html> element (Tailwind's default
-  // darkMode: 'class' target).
   React.useEffect(() => {
     const stored = localStorage.getItem("darkmode");
     const prefersDark =
@@ -33,11 +35,21 @@ const Navbar = (props: {
     document.documentElement.classList.toggle("dark", next);
   };
 
+  // brandText is the active-route translation key from getActiveRouteKey;
+  // resolve here so each page header reads in the current locale.
+  const title = (() => {
+    try {
+      return t(brandText);
+    } catch {
+      return brandText;
+    }
+  })();
+
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
         <p className="shrink text-[26px] font-bold capitalize text-navy-700 dark:text-white">
-          {brandText}
+          {title}
         </p>
       </div>
 
@@ -50,6 +62,8 @@ const Navbar = (props: {
         >
           <FiAlignJustify className="h-5 w-5" />
         </button>
+
+        <LocaleSwitcher />
 
         <button
           type="button"

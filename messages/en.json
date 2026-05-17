@@ -1,0 +1,160 @@
+{
+  "app": { "name": "Tokenizer" },
+  "nav": {
+    "overview": "Overview",
+    "events": "Events",
+    "devices": "Devices"
+  },
+  "home": {
+    "title": "Coding Token Usage",
+    "meta": "Events: {events} · Projects: {projects} · Devices: {devices} · Last event: {lastEvent}",
+    "noCacheNote": "All token figures below exclude cache reuse; cache hit rate is shown separately.",
+    "kpi": {
+      "totalTokens": "Total tokens",
+      "totalHint": "Input + Output (excludes cache reuse)",
+      "inputTokens": "Input tokens",
+      "outputTokens": "Output tokens",
+      "cacheHitRate": "Cache hit rate",
+      "cacheReused": "{tokens} reused from cache",
+      "ofTotal": "{percent} of total"
+    },
+    "daily": {
+      "title": "Daily Usage",
+      "subtitle": "Input and output token activity per day (each plotted independently against the same Y axis), last {days} active days, bucketed in Asia/Shanghai."
+    },
+    "projectRanking": {
+      "title": "Project Ranking",
+      "col": {
+        "project": "Project",
+        "tokens": "Tokens",
+        "share": "Share",
+        "events": "Events",
+        "avgPerEvent": "Avg / event",
+        "lastActive": "Last active"
+      }
+    },
+    "connectedClients": {
+      "title": "Connected Clients",
+      "col": {
+        "client": "Client",
+        "status": "Status",
+        "tokens": "Tokens",
+        "lastSeen": "Last seen"
+      }
+    },
+    "breakdown": {
+      "sources": "Sources",
+      "models": "Models",
+      "col": {
+        "name": "Name",
+        "tokens": "Tokens",
+        "share": "Share",
+        "events": "Events",
+        "avgPerEvent": "Avg / event"
+      }
+    },
+    "dataQuality": {
+      "title": "Data Quality",
+      "unknownProject": "Unknown Project",
+      "unknownModel": "Unknown Model",
+      "devices": "Devices",
+      "noDevices": "No devices",
+      "lastEvent": "Last Event",
+      "lastEventHelper": "Based on occurredAt"
+    },
+    "unknownModel": "Unknown model"
+  },
+  "clientStatus": {
+    "online": "Online",
+    "stale": "Stale",
+    "offline": "Offline",
+    "neverSeen": "Never seen"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Latest {count} raw usage events. Per-event token figures are the stored cumulative values; the dashboard's billable totals strip cache reads.",
+    "col": {
+      "time": "Time",
+      "project": "Project",
+      "source": "Source",
+      "model": "Model",
+      "totalRaw": "Total (raw)",
+      "input": "Input",
+      "output": "Output",
+      "cache": "Cache",
+      "reasoning": "Reasoning"
+    },
+    "unknownProject": "Unknown",
+    "unknownModel": "unknown"
+  },
+  "project": {
+    "back": "Back to overview",
+    "noWorkspace": "No workspace path",
+    "aggregateNote": "Aggregate metrics exclude cache reuse; per-event rows below show raw stored totals.",
+    "metric": {
+      "total": "Total",
+      "input": "Input",
+      "output": "Output"
+    },
+    "sources": "Sources",
+    "models": "Models",
+    "recentEvents": "Recent Events",
+    "notFound": "Project not found.",
+    "col": {
+      "source": "Source",
+      "model": "Model",
+      "tokens": "Tokens",
+      "events": "Events",
+      "time": "Time",
+      "totalRaw": "Total (raw)",
+      "input": "Input",
+      "output": "Output"
+    },
+    "unknownModel": "Unknown model"
+  },
+  "devices": {
+    "title": "Devices",
+    "subtitle": "All registered devices and the token activity they have contributed.",
+    "count": "{count, plural, =0 {No devices} =1 {1 device} other {# devices}}",
+    "col": {
+      "name": "Name",
+      "status": "Status",
+      "hostname": "Hostname",
+      "platform": "Platform",
+      "lastSeen": "Last seen",
+      "lastSync": "Last sync",
+      "lastEvent": "Last event",
+      "tokens": "Tokens",
+      "events": "Events"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Sign In",
+      "subtitle": "Enter the admin token to access admin pages. Token is set via the ADMIN_TOKEN env var on the server.",
+      "placeholder": "Admin token",
+      "submit": "Sign in",
+      "submitting": "Signing in..."
+    },
+    "setup": {
+      "title": "Client Setup",
+      "subtitle": "Generate a one-time install command for a new client machine. The installer detects the device name and lets you edit it during enrollment.",
+      "generate": "Generate Install Command",
+      "generating": "Generating...",
+      "expires": "Expires: {time}",
+      "expiresUnknown": "unknown",
+      "logout": "Sign out"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Tokenizer — coding token usage tracker."
+  },
+  "timezone": {
+    "note": "All times shown in Asia/Shanghai (UTC+8)."
+  },
+  "chart": {
+    "input": "Input",
+    "output": "Output",
+    "total": "Total"
+  }
+}

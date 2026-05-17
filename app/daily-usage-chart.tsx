@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { formatTokens } from "@/shared/format";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -12,36 +13,38 @@ type DailyRow = {
   billableTokens: number;
 };
 
-function tooltipHtml(date: string, input: number, output: number): string {
-  const total = input + output;
-  return `
-    <div class="duc-tooltip">
-      <div class="duc-tooltip-title">${date}</div>
-      <div class="duc-tooltip-row">
-        <span class="duc-tooltip-label">
-          <span class="duc-tooltip-dot" style="background:#4318FF"></span>Input
-        </span>
-        <span class="duc-tooltip-value">${formatTokens(input)}</span>
-      </div>
-      <div class="duc-tooltip-row">
-        <span class="duc-tooltip-label">
-          <span class="duc-tooltip-dot" style="background:#6AD2FF"></span>Output
-        </span>
-        <span class="duc-tooltip-value">${formatTokens(output)}</span>
-      </div>
-      <div class="duc-tooltip-row duc-tooltip-total">
-        <span class="duc-tooltip-label">Total</span>
-        <span class="duc-tooltip-value">${formatTokens(total)}</span>
-      </div>
-    </div>
-  `;
-}
-
 export function DailyUsageChart({ data }: { data: DailyRow[] }) {
+  const t = useTranslations("chart");
+
   const series = [
-    { name: "Input", data: data.map((d) => ({ x: d.date, y: d.inputTokens })) },
-    { name: "Output", data: data.map((d) => ({ x: d.date, y: d.outputTokens })) }
+    { name: t("input"), data: data.map((d) => ({ x: d.date, y: d.inputTokens })) },
+    { name: t("output"), data: data.map((d) => ({ x: d.date, y: d.outputTokens })) }
   ];
+
+  function tooltipHtml(date: string, input: number, output: number): string {
+    const total = input + output;
+    return `
+      <div class="duc-tooltip">
+        <div class="duc-tooltip-title">${date}</div>
+        <div class="duc-tooltip-row">
+          <span class="duc-tooltip-label">
+            <span class="duc-tooltip-dot" style="background:#4318FF"></span>${t("input")}
+          </span>
+          <span class="duc-tooltip-value">${formatTokens(input)}</span>
+        </div>
+        <div class="duc-tooltip-row">
+          <span class="duc-tooltip-label">
+            <span class="duc-tooltip-dot" style="background:#6AD2FF"></span>${t("output")}
+          </span>
+          <span class="duc-tooltip-value">${formatTokens(output)}</span>
+        </div>
+        <div class="duc-tooltip-row duc-tooltip-total">
+          <span class="duc-tooltip-label">${t("total")}</span>
+          <span class="duc-tooltip-value">${formatTokens(total)}</span>
+        </div>
+      </div>
+    `;
+  }
 
   const options = {
     chart: {
@@ -49,9 +52,6 @@ export function DailyUsageChart({ data }: { data: DailyRow[] }) {
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      // Not stacked: each series plots from 0 so the visible position of a
-      // point on the Y axis equals its actual value. Stacking caused Output
-      // to be drawn at (input + output) which didn't match the tooltip.
       stacked: false
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },

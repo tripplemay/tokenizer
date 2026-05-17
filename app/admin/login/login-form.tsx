@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function LoginForm() {
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("admin.login");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +41,7 @@ export function LoginForm() {
         autoFocus
         value={token}
         onChange={(e) => setToken(e.target.value)}
-        placeholder="Admin token"
+        placeholder={t("placeholder")}
         className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-navy-700 focus:border-brand-500 focus:outline-none dark:border-white/10 dark:bg-navy-900 dark:text-white"
       />
       <button
@@ -47,7 +49,7 @@ export function LoginForm() {
         disabled={loading || !token}
         className="w-full rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-50"
       >
-        {loading ? "Signing in..." : "Sign in"}
+        {loading ? t("submitting") : t("submit")}
       </button>
       {error ? <div className="text-sm text-red-500">{error}</div> : null}
     </form>

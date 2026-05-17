@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function SetupForm() {
   const [command, setCommand] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("admin.setup");
 
   async function generate() {
     setLoading(true);
@@ -36,12 +38,12 @@ export function SetupForm() {
         disabled={loading}
         className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60"
       >
-        {loading ? "Generating..." : "Generate Install Command"}
+        {loading ? t("generating") : t("generate")}
       </button>
       {error ? <div className="mt-3 text-sm text-red-500">{error}</div> : null}
       {command ? (
         <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-navy-900">
-          <div className="text-xs text-gray-500">Expires: {expiresAt ? new Date(expiresAt).toLocaleString() : "unknown"}</div>
+          <div className="text-xs text-gray-500">{t("expires", { time: expiresAt ? new Date(expiresAt).toLocaleString() : t("expiresUnknown") })}</div>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all text-sm text-brand-500">{command}</pre>
         </div>
       ) : null}

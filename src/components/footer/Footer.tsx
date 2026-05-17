@@ -1,9 +1,12 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 const Footer = () => {
+  const t = useTranslations();
   return (
     <div className="flex w-full flex-col items-center justify-between gap-2 px-1 pb-6 pt-3 text-xs text-gray-500 lg:px-8 xl:flex-row">
-      <p>
-        © {new Date().getFullYear()} Tokenizer — coding token usage tracker.
-      </p>
+      <p>{t("footer.copyright", { year: new Date().getFullYear() })}</p>
       <p className="font-mono">
         <a
           href="https://github.com/tripplemay/tokenizer"

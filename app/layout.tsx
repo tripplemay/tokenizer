@@ -4,6 +4,8 @@ import "@/styles/Contact.css";
 import "@/styles/MiniCalendar.css";
 import "@/styles/index.css";
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { AdminShell } from "./admin-shell";
 
 export const metadata: Metadata = {
@@ -11,11 +13,15 @@ export const metadata: Metadata = {
   description: "Coding token usage tracker"
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body id="root">
-        <AdminShell>{children}</AdminShell>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AdminShell>{children}</AdminShell>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

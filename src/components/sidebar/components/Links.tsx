@@ -2,11 +2,13 @@
 import React from "react";
 import { useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import NavLink from "components/link/NavLink";
 import DashIcon from "components/icons/DashIcon";
 
 export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
   const pathname = usePathname();
+  const t = useTranslations();
   const { routes } = props;
 
   const isActive = useCallback(
@@ -22,6 +24,8 @@ export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
     return routes.map((route, index) => {
       const href = route.layout ? route.layout + "/" + route.path : route.path;
       const active = isActive(route.path);
+      // route.name is a translation key (e.g. "nav.overview").
+      const label = t(route.name);
       return (
         <NavLink key={index} href={href}>
           <div className="relative mb-3 flex hover:cursor-pointer">
@@ -45,7 +49,7 @@ export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
                     : "font-medium text-gray-600"
                 }`}
               >
-                {route.name}
+                {label}
               </p>
             </li>
             {active ? (

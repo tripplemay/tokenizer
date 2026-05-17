@@ -1,0 +1,160 @@
+{
+  "app": { "name": "Tokenizer" },
+  "nav": {
+    "overview": "总览",
+    "events": "事件",
+    "devices": "设备"
+  },
+  "home": {
+    "title": "编程 Token 用量",
+    "meta": "事件:{events} · 项目:{projects} · 设备:{devices} · 最近事件:{lastEvent}",
+    "noCacheNote": "下方所有 token 数据均排除 cache 复用;cache 命中率单独显示。",
+    "kpi": {
+      "totalTokens": "总 token",
+      "totalHint": "Input + Output(排除 cache 复用)",
+      "inputTokens": "Input tokens",
+      "outputTokens": "Output tokens",
+      "cacheHitRate": "Cache 命中率",
+      "cacheReused": "{tokens} 来自 cache 复用",
+      "ofTotal": "{percent} 占总数"
+    },
+    "daily": {
+      "title": "日用量",
+      "subtitle": "Input 和 output 每日数据(独立绘制于同一 Y 轴),最近 {days} 天,按 Asia/Shanghai 时区聚合。"
+    },
+    "projectRanking": {
+      "title": "项目排名",
+      "col": {
+        "project": "项目",
+        "tokens": "Tokens",
+        "share": "占比",
+        "events": "事件数",
+        "avgPerEvent": "平均/事件",
+        "lastActive": "最近活动"
+      }
+    },
+    "connectedClients": {
+      "title": "在线客户端",
+      "col": {
+        "client": "客户端",
+        "status": "状态",
+        "tokens": "Tokens",
+        "lastSeen": "最近上线"
+      }
+    },
+    "breakdown": {
+      "sources": "来源",
+      "models": "模型",
+      "col": {
+        "name": "名称",
+        "tokens": "Tokens",
+        "share": "占比",
+        "events": "事件数",
+        "avgPerEvent": "平均/事件"
+      }
+    },
+    "dataQuality": {
+      "title": "数据质量",
+      "unknownProject": "未知项目",
+      "unknownModel": "未知模型",
+      "devices": "设备",
+      "noDevices": "无设备",
+      "lastEvent": "最近事件",
+      "lastEventHelper": "基于 occurredAt"
+    },
+    "unknownModel": "未知模型"
+  },
+  "clientStatus": {
+    "online": "在线",
+    "stale": "失联",
+    "offline": "离线",
+    "neverSeen": "从未上线"
+  },
+  "events": {
+    "title": "事件",
+    "subtitle": "最近 {count} 条原始用量事件。每行 token 是存储的累积原始值;Dashboard 的可计费总数已扣除 cache。",
+    "col": {
+      "time": "时间",
+      "project": "项目",
+      "source": "来源",
+      "model": "模型",
+      "totalRaw": "Total(原始)",
+      "input": "Input",
+      "output": "Output",
+      "cache": "Cache",
+      "reasoning": "Reasoning"
+    },
+    "unknownProject": "未知",
+    "unknownModel": "未知"
+  },
+  "project": {
+    "back": "返回总览",
+    "noWorkspace": "无工作目录",
+    "aggregateNote": "聚合指标排除 cache 复用;下方逐事件行显示存储的原始 token。",
+    "metric": {
+      "total": "总计",
+      "input": "Input",
+      "output": "Output"
+    },
+    "sources": "来源",
+    "models": "模型",
+    "recentEvents": "最近事件",
+    "notFound": "项目不存在。",
+    "col": {
+      "source": "来源",
+      "model": "模型",
+      "tokens": "Tokens",
+      "events": "事件数",
+      "time": "时间",
+      "totalRaw": "Total(原始)",
+      "input": "Input",
+      "output": "Output"
+    },
+    "unknownModel": "未知模型"
+  },
+  "devices": {
+    "title": "设备",
+    "subtitle": "所有已注册的设备及其 token 贡献。",
+    "count": "{count, plural, =0 {无设备} other {# 台设备}}",
+    "col": {
+      "name": "名称",
+      "status": "状态",
+      "hostname": "主机名",
+      "platform": "平台",
+      "lastSeen": "最近上线",
+      "lastSync": "最近同步",
+      "lastEvent": "最近事件",
+      "tokens": "Tokens",
+      "events": "事件数"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "管理员登录",
+      "subtitle": "输入 ADMIN_TOKEN 以访问管理页面。Token 在服务端的 ADMIN_TOKEN 环境变量中设置。",
+      "placeholder": "管理员 token",
+      "submit": "登录",
+      "submitting": "登录中..."
+    },
+    "setup": {
+      "title": "客户端配置",
+      "subtitle": "为新客户端机器生成一次性安装命令。安装器会自动检测设备名,你可以在过程中修改。",
+      "generate": "生成安装命令",
+      "generating": "生成中...",
+      "expires": "过期时间:{time}",
+      "expiresUnknown": "未知",
+      "logout": "退出登录"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Tokenizer — 编程 token 用量追踪。"
+  },
+  "timezone": {
+    "note": "所有时间使用 Asia/Shanghai 时区(UTC+8)。"
+  },
+  "chart": {
+    "input": "Input",
+    "output": "Output",
+    "total": "总计"
+  }
+}
