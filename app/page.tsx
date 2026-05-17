@@ -28,8 +28,15 @@ import { DailySourceChart } from "./daily-source-chart";
 import { ProjectIcon } from "./_components/project-icon";
 import { RangeSelector } from "./_components/range-selector";
 import { GitFilterToggle } from "./_components/git-filter-toggle";
+import { Sparkline } from "./_components/sparkline";
+import { AnimatedNumber } from "./_components/animated-number";
+import { ShareBar } from "./_components/share-bar";
+import { SourceCardGrid } from "./_components/source-card-grid";
+import { PlatformIcon } from "./_components/platform-icon";
 
 export const dynamic = "force-dynamic";
+
+const HOVER_LIFT = "transition duration-200 hover:-translate-y-0.5 hover:shadow-lg";
 
 type BreakdownRow = {
   name: string;
@@ -57,11 +64,6 @@ function rangeLabelKey(range: RangeOption): string {
 }
 
 // ---- Page entry ----------------------------------------------------------
-// Above-the-fold sections (header, scale, hero, KPI detail, data quality)
-// share `summary` and render synchronously once that one query completes.
-// Everything below is wrapped in its own Suspense boundary so each chart /
-// table streams in independently and the user sees something useful well
-// before the slowest query is done.
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const range = parseRange(params.range);
@@ -70,92 +72,78 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const t = await getTranslations();
   const summary = await getSummary(range);
 
-  const computeWow = summary.priorCompute != null ? formatWowDelta(summary.billableTokens, summary.priorCompute) : null;
-  const costWow = summary.priorCost != null ? formatWowDelta(summary.totalCost, summary.priorCost) : null;
   const rangeLabel = t(rangeLabelKey(range));
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">{t("timezone.note")}</p>
+    <div className="space-y-6">
+      {/* HEADER BANNER — subtle brand-purple gradient with decorative bloom
+          for a touch of identity without becoming gaudy. */}
+      <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-brand-500/10 via-white to-brand-500/5 px-6 py-5 dark:border-white/10 dark:from-brand-500/15 dark:via-navy-800 dark:to-brand-500/5">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-12 h-48 w-48 rounded-full bg-brand-500/10 blur-3xl" />
+        <div className="relative flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note")}</p>
+          </div>
+          <RangeSelector
+            current={range}
+            searchParams={params}
+            labels={{
+              sevenDay: t("home.range.sevenDay"),
+              thirtyDay: t("home.range.thirtyDay"),
+              all: t("home.range.all")
+            }}
+          />
         </div>
-        <RangeSelector
-          current={range}
-          searchParams={params}
-          labels={{
-            sevenDay: t("home.range.sevenDay"),
-            thirtyDay: t("home.range.thirtyDay"),
-            all: t("home.range.all")
-          }}
-        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <ScaleCard label={t("home.scale.events")} value={formatFullNumber(summary.eventCount)} />
-        <ScaleCard label={t("home.scale.projects")} value={formatFullNumber(summary.projectCount)} />
-        <ScaleCard label={t("home.scale.devices")} value={formatFullNumber(summary.deviceCount)} />
+      {/* SCALE ROW (12-grid) */}
+      <div className="grid grid-cols-12 gap-5">
+        <ScaleCard className="col-span-6 lg:col-span-3" label={t("home.scale.events")} value={formatFullNumber(summary.eventCount)} />
+        <ScaleCard className="col-span-6 lg:col-span-3" label={t("home.scale.projects")} value={formatFullNumber(summary.projectCount)} />
+        <ScaleCard className="col-span-6 lg:col-span-3" label={t("home.scale.devices")} value={formatFullNumber(summary.deviceCount)} />
         <ScaleCard
+          className="col-span-6 lg:col-span-3"
           label={t("home.scale.lastEvent")}
           value={formatRelativeTime(summary.lastEventAt, tRelative)}
           valueClass="text-base"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <HeroCard
-          icon={<MdBolt className="h-8 w-8" />}
-          label={t("home.hero.computeRange", { label: rangeLabel })}
-          value={formatTokens(summary.billableTokens)}
-          hint={t("home.hero.computeHint")}
-          delta={computeWow}
-          wowSuffix={t("home.hero.wowSuffix")}
-          wowFlat={t("home.hero.wowFlat")}
-          wowNoBaseline={t("home.hero.wowNoBaseline")}
-          showWow={range !== "all"}
+      {/* HERO ROW — async because sparkline data is fetched per range */}
+      <Suspense fallback={<HeroRowSkeleton />}>
+        <HeroSection
+          range={range}
+          summary={summary}
+          rangeLabel={rangeLabel}
+          labels={{
+            computeRange: t("home.hero.computeRange", { label: rangeLabel }),
+            computeHint: t("home.hero.computeHint"),
+            costRange: t("home.hero.costRange", { label: rangeLabel }),
+            costHint: t("home.hero.costHint"),
+            cacheHitRate: t("home.kpi.cacheHitRate"),
+            cacheReused: t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) }),
+            wowSuffix: t("home.hero.wowSuffix"),
+            wowFlat: t("home.hero.wowFlat"),
+            wowNoBaseline: t("home.hero.wowNoBaseline")
+          }}
         />
-        <HeroCard
-          icon={<MdPaid className="h-8 w-8" />}
-          label={t("home.hero.costRange", { label: rangeLabel })}
-          value={formatUsd(summary.totalCost)}
-          hint={t("home.hero.costHint")}
-          delta={costWow}
-          wowSuffix={t("home.hero.wowSuffix")}
-          wowFlat={t("home.hero.wowFlat")}
-          wowNoBaseline={t("home.hero.wowNoBaseline")}
-          showWow={range !== "all"}
-        />
-        <Card extra="flex flex-col justify-center p-6">
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-brand-500/10 p-2 text-brand-500">
-              <MdSpeed className="h-7 w-7" />
-            </span>
-            <div className="flex-1">
-              <div className="text-xs font-medium text-gray-500">{t("home.kpi.cacheHitRate")}</div>
-              <div className="text-2xl font-bold text-navy-700 dark:text-white">
-                {(summary.cacheHitRate * 100).toFixed(1)}%
-              </div>
-              <div className="mt-0.5 truncate text-xs text-gray-500">
-                {t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
+      </Suspense>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <div title={t("home.kpi.inputHint")}>
+      {/* KPI ROW — same column rhythm as Scale row */}
+      <div className="grid grid-cols-12 gap-5">
+        <div className="col-span-6 lg:col-span-3" title={t("home.kpi.inputHint")}>
           <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(summary.inputTokens)} />
         </div>
-        <div title={t("home.kpi.cacheWriteHint")}>
+        <div className="col-span-6 lg:col-span-3" title={t("home.kpi.cacheWriteHint")}>
           <Widget icon={<MdSave className="h-7 w-7" />} title={t("home.kpi.cacheWrite")} subtitle={formatTokens(summary.cacheWriteTokens)} />
         </div>
-        <div title={t("home.kpi.cacheReuseHint")}>
+        <div className="col-span-6 lg:col-span-3" title={t("home.kpi.cacheReuseHint")}>
           <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheReuse")} subtitle={formatTokens(summary.cachedInputTokens)} />
         </div>
-        <div title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
+        <div className="col-span-6 lg:col-span-3" title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
           <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
         </div>
       </div>
@@ -172,8 +160,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <ProjectsAndDevicesSection range={range} gitFilter={gitFilter} searchParams={params} summaryBillable={summary.billableTokens} />
       </Suspense>
 
-      <Suspense fallback={<BreakdownSkeleton />}>
-        <BreakdownsSection range={range} summaryBillable={summary.billableTokens} />
+      <Suspense fallback={<SourcesGridSkeleton />}>
+        <SourcesGridSection range={range} summaryBillable={summary.billableTokens} />
+      </Suspense>
+
+      <Suspense fallback={<ChartCardSkeleton heightClass="h-64" />}>
+        <ModelsBreakdownSection range={range} summaryBillable={summary.billableTokens} />
       </Suspense>
 
       <Card extra="p-6">
@@ -181,28 +173,41 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <MdInsights className="h-5 w-5 text-brand-500" />
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dataQuality.title")}</h3>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-12 gap-4">
           <QualityMetric
+            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-2"
             label={t("home.dataQuality.unknownProject")}
             value={formatTokens(summary.unknownProjectBillable)}
             helper={formatPercent(summary.unknownProjectBillable, summary.billableTokens)}
+            healthRatio={summary.unknownProjectBillable / Math.max(1, summary.billableTokens)}
           />
           <QualityMetric
+            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-2"
             label={t("home.dataQuality.unknownModel")}
             value={formatTokens(summary.unknownModelBillable)}
             helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)}
+            healthRatio={summary.unknownModelBillable / Math.max(1, summary.billableTokens)}
           />
           <QualityMetric
+            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-2"
             label={t("home.dataQuality.unpriced")}
             value={formatTokens(summary.unpricedTokens)}
             helper={t("home.dataQuality.unpricedHelper")}
+            healthRatio={summary.unpricedTokens / Math.max(1, summary.totalTokens)}
           />
           <QualityMetric
+            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-3"
             label={t("home.dataQuality.reasoningTokens")}
             value={formatTokens(summary.reasoningOutputTokens)}
             helper={t("home.dataQuality.reasoningHelper", { percent: formatPercent(summary.reasoningOutputTokens, summary.outputTokens) })}
           />
-          <QualityMetric label={t("home.dataQuality.lastEvent")} value={formatDateTime(summary.lastEventAt)} helper={t("home.dataQuality.lastEventHelper")} />
+          <QualityMetric
+            className="col-span-12 lg:col-span-12 xl:col-span-3"
+            label={t("home.dataQuality.lastEvent")}
+            value={formatDateTime(summary.lastEventAt)}
+            helper={t("home.dataQuality.lastEventHelper")}
+            valueClass="text-base"
+          />
         </div>
       </Card>
     </div>
@@ -210,6 +215,91 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 }
 
 // ---- Streamed sections ---------------------------------------------------
+
+type SummaryShape = Awaited<ReturnType<typeof getSummary>>;
+
+async function HeroSection({
+  range,
+  summary,
+  labels
+}: {
+  range: RangeOption;
+  summary: SummaryShape;
+  rangeLabel: string;
+  labels: {
+    computeRange: string;
+    computeHint: string;
+    costRange: string;
+    costHint: string;
+    cacheHitRate: string;
+    cacheReused: string;
+    wowSuffix: string;
+    wowFlat: string;
+    wowNoBaseline: string;
+  };
+}) {
+  // Sparklines reuse the daily series (cached, near-free). Cache-hit
+  // sparkline is computed inline from the same dailySummary rather than
+  // adding another query.
+  const [dailySummary, dailyCost] = await Promise.all([getDailySummary(range), getDailyCost(range)]);
+  const computeSpark = dailySummary.map((d) => d.billableTokens);
+  const costSpark = dailyCost.map((d) => d.cost);
+  const cacheSpark = dailySummary.map((d) => (d.inputTokens > 0 ? Math.min(100, (d.cachedInputTokens / d.inputTokens) * 100) : 0));
+
+  const computeWow = summary.priorCompute != null ? formatWowDelta(summary.billableTokens, summary.priorCompute) : null;
+  const costWow = summary.priorCost != null ? formatWowDelta(summary.totalCost, summary.priorCost) : null;
+  const showWow = range !== "all";
+
+  return (
+    <div className="grid grid-cols-12 gap-5">
+      <HeroCard
+        className="col-span-12 lg:col-span-4"
+        icon={<MdBolt className="h-7 w-7" />}
+        label={labels.computeRange}
+        hint={labels.computeHint}
+        value={summary.billableTokens}
+        valueKind="tokens"
+        spark={computeSpark}
+        sparkColor="#4318FF"
+        delta={computeWow}
+        showWow={showWow}
+        wowSuffix={labels.wowSuffix}
+        wowFlat={labels.wowFlat}
+        wowNoBaseline={labels.wowNoBaseline}
+      />
+      <HeroCard
+        className="col-span-12 lg:col-span-4"
+        icon={<MdPaid className="h-7 w-7" />}
+        label={labels.costRange}
+        hint={labels.costHint}
+        value={summary.totalCost}
+        valueKind="usd"
+        spark={costSpark}
+        sparkColor="#FFB547"
+        delta={costWow}
+        showWow={showWow}
+        wowSuffix={labels.wowSuffix}
+        wowFlat={labels.wowFlat}
+        wowNoBaseline={labels.wowNoBaseline}
+      />
+      <HeroCard
+        className="col-span-12 lg:col-span-4"
+        icon={<MdSpeed className="h-7 w-7" />}
+        label={labels.cacheHitRate}
+        hint={labels.cacheReused}
+        value={summary.cacheHitRate * 100}
+        valueKind="percent"
+        spark={cacheSpark}
+        sparkColor="#01B574"
+        delta={null}
+        showWow={false}
+        wowSuffix={labels.wowSuffix}
+        wowFlat={labels.wowFlat}
+        wowNoBaseline={labels.wowNoBaseline}
+      />
+    </div>
+  );
+}
 
 async function DailyUsageSection({ range }: { range: RangeOption }) {
   const [t, daily] = await Promise.all([getTranslations(), getDailySummary(range)]);
@@ -229,8 +319,8 @@ async function DailyUsageSection({ range }: { range: RangeOption }) {
 async function DailyCostAndSourceSection({ range }: { range: RangeOption }) {
   const [t, dailyCost, dailySource] = await Promise.all([getTranslations(), getDailyCost(range), getDailyBySource(range)]);
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-      <Card extra="p-6">
+    <div className="grid grid-cols-12 gap-5">
+      <Card extra="col-span-12 lg:col-span-6 p-6">
         <div className="mb-3">
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dailyCost.title")}</h3>
           <p className="text-xs text-gray-600 dark:text-gray-400">{t("home.dailyCost.subtitle")}</p>
@@ -239,7 +329,7 @@ async function DailyCostAndSourceSection({ range }: { range: RangeOption }) {
           <DailyCostChart data={dailyCost} />
         </div>
       </Card>
-      <Card extra="p-6">
+      <Card extra="col-span-12 lg:col-span-6 p-6">
         <div className="mb-3">
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dailySource.title")}</h3>
           <p className="text-xs text-gray-600 dark:text-gray-400">{t("home.dailySource.subtitle")}</p>
@@ -270,8 +360,8 @@ async function ProjectsAndDevicesSection({
   ]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-      <Card extra="p-6">
+    <div className="grid grid-cols-12 gap-5">
+      <Card extra="col-span-12 xl:col-span-8 p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.projectRanking.title")}</h3>
           <GitFilterToggle
@@ -295,7 +385,7 @@ async function ProjectsAndDevicesSection({
             </thead>
             <tbody>
               {projects.map((project) => (
-                <tr key={project.projectId ?? project.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
+                <tr key={project.projectId ?? project.name} className="border-t border-gray-200 text-navy-700 transition-colors hover:bg-brand-500/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
                   <td className="py-2.5 pr-4">
                     <div className="flex items-center gap-1.5">
                       <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} folderTitle={t("project.localFolderTooltip")} />
@@ -307,7 +397,9 @@ async function ProjectsAndDevicesSection({
                   <td className="pr-4 text-right" title={`${formatFullNumber(project.billableTokens)} compute tokens`}>{formatTokens(project.billableTokens)}</td>
                   <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(project.totalTokens)} total tokens`}>{formatTokens(project.totalTokens)}</td>
                   <td className="pr-4 text-right font-medium">{project.cost > 0 ? formatUsd(project.cost) : "—"}</td>
-                  <td className="pr-4 text-right">{formatPercent(project.billableTokens, summaryBillable)}</td>
+                  <td className="pr-4 text-right">
+                    <ShareBar value={project.billableTokens} total={summaryBillable} />
+                  </td>
                   <td className="pr-4 text-right">{formatFullNumber(project.events)}</td>
                   <td className="whitespace-nowrap text-right text-gray-500">{formatRelativeTime(project.lastActiveAt, tRelative)}</td>
                 </tr>
@@ -317,7 +409,7 @@ async function ProjectsAndDevicesSection({
         </div>
       </Card>
 
-      <Card extra="p-6">
+      <Card extra="col-span-12 xl:col-span-4 p-6">
         <div className="mb-4 flex items-center gap-2">
           <MdDevices className="h-5 w-5 text-brand-500" />
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.connectedClients.title")}</h3>
@@ -336,8 +428,13 @@ async function ProjectsAndDevicesSection({
             </thead>
             <tbody>
               {devices.map((device) => (
-                <tr key={device.deviceId} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
-                  <td className="py-2.5 pr-4 font-medium">{device.name}</td>
+                <tr key={device.deviceId} className="border-t border-gray-200 text-navy-700 transition-colors hover:bg-brand-500/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
+                  <td className="py-2.5 pr-4 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <PlatformIcon platform={device.platform} />
+                      <span>{device.name}</span>
+                    </div>
+                  </td>
                   <td className="pr-4">
                     <ClientStatusBadge lastSeenAt={device.lastSeenAt} t={t} />
                   </td>
@@ -355,42 +452,85 @@ async function ProjectsAndDevicesSection({
   );
 }
 
-async function BreakdownsSection({ range, summaryBillable }: { range: RangeOption; summaryBillable: number }) {
-  const [t, sources, models] = await Promise.all([
+async function SourcesGridSection({ range, summaryBillable }: { range: RangeOption; summaryBillable: number }) {
+  const [t, sources, dailyBySource] = await Promise.all([
     getTranslations(),
     getBreakdown("source", range),
-    getBreakdown("model", range)
+    getDailyBySource(range)
   ]);
+  if (sources.length === 0) return null;
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      <BreakdownCard
-        title={t("home.breakdown.sources")}
+    <Card extra="p-6">
+      <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("home.breakdown.sources")}</h3>
+      <SourceCardGrid
         rows={sources}
         billableTotal={summaryBillable}
-        col={{
-          name: t("home.breakdown.col.name"),
+        series={dailyBySource.series}
+        labels={{
           compute: t("home.breakdown.col.compute"),
-          total: t("home.breakdown.col.total"),
           cost: t("home.breakdown.col.cost"),
-          share: t("home.breakdown.col.share"),
           events: t("home.breakdown.col.events")
         }}
       />
-      <BreakdownCard
-        title={t("home.breakdown.models")}
-        rows={models.map((row) => ({ ...row, name: row.name === "unknown" ? t("home.unknownModel") : row.name }))}
-        billableTotal={summaryBillable}
-        col={{
-          name: t("home.breakdown.col.name"),
-          compute: t("home.breakdown.col.compute"),
-          total: t("home.breakdown.col.total"),
-          cost: t("home.breakdown.col.cost"),
-          share: t("home.breakdown.col.share"),
-          events: t("home.breakdown.col.events")
-        }}
-      />
-    </div>
+    </Card>
   );
+}
+
+async function ModelsBreakdownSection({ range, summaryBillable }: { range: RangeOption; summaryBillable: number }) {
+  const [t, models] = await Promise.all([getTranslations(), getBreakdown("model", range)]);
+  return (
+    <Card extra="p-6">
+      <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("home.breakdown.models")}</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="text-gray-500">
+            <tr>
+              <th className="pb-3">{t("home.breakdown.col.name")}</th>
+              <th className="pb-3 pr-4 text-right">{t("home.breakdown.col.compute")}</th>
+              <th className="pb-3 pr-4 text-right">{t("home.breakdown.col.total")}</th>
+              <th className="pb-3 pr-4 text-right">{t("home.breakdown.col.cost")}</th>
+              <th className="pb-3 pr-4 text-right">{t("home.breakdown.col.share")}</th>
+              <th className="pb-3 pr-4 text-right">{t("home.breakdown.col.events")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {models.map((row) => {
+              const display = row.name === "unknown" ? t("home.unknownModel") : row.name;
+              return (
+                <tr key={row.name} className="border-t border-gray-200 text-navy-700 transition-colors hover:bg-brand-500/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
+                  <td className="py-2.5 pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block h-2 w-2 rounded-full" style={{ background: colorForModel(row.name) }} />
+                      <span className="font-medium">{display}</span>
+                    </div>
+                  </td>
+                  <td className="pr-4 text-right" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>
+                  <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(row.totalTokens)} total tokens`}>{formatTokens(row.totalTokens)}</td>
+                  <td className="pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
+                  <td className="pr-4 text-right">
+                    <ShareBar value={row.billableTokens} total={summaryBillable} colorHex={colorForModel(row.name)} />
+                  </td>
+                  <td className="pr-4 text-right">{formatFullNumber(row.events)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
+// Subtle visual cue: each model family gets a colored dot so the eye can
+// group them when scanning the table.
+function colorForModel(model: string): string {
+  const m = model.toLowerCase();
+  if (m.startsWith("claude")) return "#7C3AED";
+  if (m.startsWith("gpt")) return "#0EA5E9";
+  if (m.startsWith("gemini")) return "#EF4444";
+  if (m.startsWith("mimo")) return "#F59E0B";
+  if (m.startsWith("minimax")) return "#10B981";
+  return "#A3AED0";
 }
 
 // ---- Skeletons -----------------------------------------------------------
@@ -406,17 +546,17 @@ function ChartCardSkeleton({ heightClass = "h-72" }: { heightClass?: string }) {
 
 function DualChartSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-      <ChartCardSkeleton heightClass="h-60" />
-      <ChartCardSkeleton heightClass="h-60" />
+    <div className="grid grid-cols-12 gap-5">
+      <div className="col-span-12 lg:col-span-6"><ChartCardSkeleton heightClass="h-60" /></div>
+      <div className="col-span-12 lg:col-span-6"><ChartCardSkeleton heightClass="h-60" /></div>
     </div>
   );
 }
 
 function RankingSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-      <Card extra="p-6">
+    <div className="grid grid-cols-12 gap-5">
+      <Card extra="col-span-12 xl:col-span-8 p-6">
         <div className="mb-4 h-5 w-32 rounded bg-gray-100 dark:bg-white/10" />
         <div className="space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -424,7 +564,7 @@ function RankingSkeleton() {
           ))}
         </div>
       </Card>
-      <Card extra="p-6">
+      <Card extra="col-span-12 xl:col-span-4 p-6">
         <div className="mb-4 h-5 w-32 rounded bg-gray-100 dark:bg-white/10" />
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -436,28 +576,34 @@ function RankingSkeleton() {
   );
 }
 
-function BreakdownSkeleton() {
+function SourcesGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      {[0, 1].map((i) => (
-        <Card key={i} extra="p-6">
-          <div className="mb-4 h-5 w-24 rounded bg-gray-100 dark:bg-white/10" />
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, j) => (
-              <div key={j} className="h-7 animate-pulse rounded bg-gray-100 dark:bg-white/5" />
-            ))}
-          </div>
-        </Card>
+    <Card extra="p-6">
+      <div className="mb-4 h-5 w-24 rounded bg-gray-100 dark:bg-white/10" />
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-44 animate-pulse rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/5" />
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function HeroRowSkeleton() {
+  return (
+    <div className="grid grid-cols-12 gap-5">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="col-span-12 lg:col-span-4 h-44 animate-pulse rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/5" />
       ))}
     </div>
   );
 }
 
-// ---- Pure presentational helpers (unchanged from prior revision) ---------
+// ---- Presentational ------------------------------------------------------
 
-function ScaleCard({ label, value, valueClass = "text-xl" }: { label: string; value: string; valueClass?: string }) {
+function ScaleCard({ className = "", label, value, valueClass = "text-xl" }: { className?: string; label: string; value: string; valueClass?: string }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-navy-800">
+    <div className={`${className} rounded-2xl border border-gray-200 bg-white px-4 py-3 ${HOVER_LIFT} dark:border-white/10 dark:bg-navy-800`}>
       <div className="text-xs font-medium text-gray-500">{label}</div>
       <div className={`mt-1 truncate font-bold text-navy-700 dark:text-white ${valueClass}`}>{value}</div>
     </div>
@@ -465,43 +611,60 @@ function ScaleCard({ label, value, valueClass = "text-xl" }: { label: string; va
 }
 
 function HeroCard({
+  className = "",
   icon,
   label,
   value,
+  valueKind,
   hint,
   delta,
+  spark,
+  sparkColor,
+  showWow,
   wowSuffix,
   wowFlat,
-  wowNoBaseline,
-  showWow
+  wowNoBaseline
 }: {
+  className?: string;
   icon: React.ReactNode;
   label: string;
-  value: string;
+  value: number;
+  valueKind: "tokens" | "usd" | "percent";
   hint: string;
   delta: { text: string; direction: "up" | "down" | "flat" } | null;
+  spark: number[];
+  sparkColor: string;
+  showWow: boolean;
   wowSuffix: string;
   wowFlat: string;
   wowNoBaseline: string;
-  showWow: boolean;
 }) {
   return (
-    <Card extra="p-6">
-      <div className="flex items-start gap-3">
-        <span className="rounded-full bg-brand-500/10 p-2 text-brand-500">{icon}</span>
-        <div className="flex-1">
-          <div className="text-xs font-medium text-gray-500">{label}</div>
-          <div className="mt-1 text-3xl font-bold text-navy-700 dark:text-white">{value}</div>
-          {showWow ? (
-            <div className="mt-1.5 flex items-center gap-1.5 text-xs">
-              <WowBadge delta={delta} flat={wowFlat} noBaseline={wowNoBaseline} />
-              <span className="text-gray-500">{wowSuffix}</span>
+    <div className={className}>
+      <Card extra={`p-6 ${HOVER_LIFT}`}>
+        <div className="flex items-start gap-3">
+          <span className="rounded-full bg-brand-500/10 p-2 text-brand-500">{icon}</span>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium text-gray-500">{label}</div>
+            <div className="mt-1 truncate font-display text-4xl font-bold tracking-tight text-navy-700 dark:text-white">
+              <AnimatedNumber value={value} kind={valueKind} />
             </div>
-          ) : null}
-          <div className="mt-1 text-xs text-gray-500">{hint}</div>
+            {showWow ? (
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+                <WowBadge delta={delta} flat={wowFlat} noBaseline={wowNoBaseline} />
+                <span className="text-gray-500">{wowSuffix}</span>
+              </div>
+            ) : null}
+            <div className="mt-1 truncate text-xs text-gray-500">{hint}</div>
+          </div>
         </div>
-      </div>
-    </Card>
+        {spark.length > 0 ? (
+          <div className="-mx-2 -mb-4 mt-3">
+            <Sparkline data={spark} color={sparkColor} height={44} />
+          </div>
+        ) : null}
+      </Card>
+    </div>
   );
 }
 
@@ -558,56 +721,34 @@ function ClientStatusBadge({ lastSeenAt, t }: { lastSeenAt: string | null; t: (k
   return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{t(`clientStatus.${key}`)}</span>;
 }
 
-function BreakdownCard({
-  title,
-  rows,
-  billableTotal,
-  col
+function QualityMetric({
+  className = "",
+  label,
+  value,
+  helper,
+  valueClass = "text-xl",
+  healthRatio
 }: {
-  title: string;
-  rows: BreakdownRow[];
-  billableTotal: number;
-  col: { name: string; compute: string; total: string; cost: string; share: string; events: string };
+  className?: string;
+  label: string;
+  value: string;
+  helper: string;
+  valueClass?: string;
+  // 0..1 representing how concerning this metric's value is. > 30% = red,
+  // 10–30% = amber, ≤ 10% = green; undefined leaves border neutral.
+  healthRatio?: number;
 }) {
+  let border = "border-gray-200 dark:border-white/10";
+  if (healthRatio != null) {
+    if (healthRatio > 0.3) border = "border-red-200 dark:border-red-400/30";
+    else if (healthRatio > 0.1) border = "border-amber-200 dark:border-amber-400/30";
+    else if (healthRatio > 0) border = "border-emerald-200 dark:border-emerald-400/20";
+  }
   return (
-    <Card extra="p-6">
-      <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{title}</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="text-gray-500">
-            <tr>
-              <th className="pb-3">{col.name}</th>
-              <th className="pb-3 pr-4 text-right">{col.compute}</th>
-              <th className="pb-3 pr-4 text-right">{col.total}</th>
-              <th className="pb-3 pr-4 text-right">{col.cost}</th>
-              <th className="pb-3 pr-4 text-right">{col.share}</th>
-              <th className="pb-3 pr-4 text-right">{col.events}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.name} className="border-t border-gray-200 dark:border-white/10 text-navy-700 dark:text-white">
-                <td className="py-2.5 pr-4 font-medium">{row.name}</td>
-                <td className="pr-4 text-right" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>
-                <td className="pr-4 text-right text-gray-500" title={`${formatFullNumber(row.totalTokens)} total tokens`}>{formatTokens(row.totalTokens)}</td>
-                <td className="pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
-                <td className="pr-4 text-right">{formatPercent(row.billableTokens, billableTotal)}</td>
-                <td className="pr-4 text-right">{formatFullNumber(row.events)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-}
-
-function QualityMetric({ label, value, helper }: { label: string; value: string; helper: string }) {
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white/40 p-4 dark:border-white/10 dark:bg-navy-900/40">
+    <div className={`${className} rounded-2xl border ${border} bg-white p-4 dark:bg-navy-900/40`}>
       <div className="text-xs font-medium text-gray-500">{label}</div>
-      <div className="mt-1.5 truncate text-xl font-bold text-navy-700 dark:text-white">{value}</div>
-      <div className="mt-1 text-xs text-gray-500">{helper}</div>
+      <div className={`mt-1.5 truncate font-bold text-navy-700 dark:text-white ${valueClass}`}>{value}</div>
+      <div className="mt-1 truncate text-xs text-gray-500" title={helper}>{helper}</div>
     </div>
   );
 }

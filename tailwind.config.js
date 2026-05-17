@@ -114,6 +114,9 @@ module.exports = {
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
         dm: ['DM Sans', 'sans-serif'],
+        // System-ui stack with -letter-spacing for hero numbers; no external
+        // font fetched so this stays free at the bundle level.
+        display: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       boxShadow: {
         '3xl': '14px 17px 40px 4px',
