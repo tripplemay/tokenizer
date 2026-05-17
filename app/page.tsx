@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { MdBolt, MdLayers, MdOutput, MdCached, MdDevices, MdInsights } from "react-icons/md";
+import { MdInput, MdOutput, MdCached, MdSpeed, MdDevices, MdInsights } from "react-icons/md";
 import {
   getBreakdown,
   getDailySummary,
@@ -48,17 +48,17 @@ export default async function HomePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <div title={t("home.kpi.computeHint")}>
-          <Widget icon={<MdBolt className="h-7 w-7" />} title={t("home.kpi.compute")} subtitle={formatTokens(summary.billableTokens)} />
+        <div title={t("home.kpi.inputHint")}>
+          <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(summary.inputTokens)} />
         </div>
-        <div title={t("home.kpi.throughputHint")}>
-          <Widget icon={<MdLayers className="h-7 w-7" />} title={t("home.kpi.throughput")} subtitle={formatTokens(summary.totalTokens)} />
+        <div title={t("home.kpi.outputHint", { reasoning: formatTokens(summary.reasoningOutputTokens) })}>
+          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
+        </div>
+        <div title={t("home.kpi.cacheReuseHint")}>
+          <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheReuse")} subtitle={formatTokens(summary.cachedInputTokens)} />
         </div>
         <div title={t("home.kpi.cacheReused", { tokens: formatFullNumber(summary.cachedInputTokens) })}>
-          <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheHitRate")} subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`} />
-        </div>
-        <div title={t("home.kpi.outputHint")}>
-          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(summary.outputTokens)} />
+          <Widget icon={<MdSpeed className="h-7 w-7" />} title={t("home.kpi.cacheHitRate")} subtitle={`${(summary.cacheHitRate * 100).toFixed(1)}%`} />
         </div>
       </div>
 
@@ -173,7 +173,7 @@ export default async function HomePage() {
           <MdInsights className="h-5 w-5 text-brand-500" />
           <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.dataQuality.title")}</h3>
         </div>
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           <QualityMetric
             label={t("home.dataQuality.unknownProject")}
             value={formatTokens(summary.unknownProjectBillable)}
@@ -183,6 +183,11 @@ export default async function HomePage() {
             label={t("home.dataQuality.unknownModel")}
             value={formatTokens(summary.unknownModelBillable)}
             helper={formatPercent(summary.unknownModelBillable, summary.billableTokens)}
+          />
+          <QualityMetric
+            label={t("home.dataQuality.reasoningTokens")}
+            value={formatTokens(summary.reasoningOutputTokens)}
+            helper={t("home.dataQuality.reasoningHelper", { percent: formatPercent(summary.reasoningOutputTokens, summary.outputTokens) })}
           />
           <QualityMetric label={t("home.dataQuality.devices")} value={formatFullNumber(summary.deviceCount)} helper={devices.map((d) => d.name).join(", ") || t("home.dataQuality.noDevices")} />
           <QualityMetric label={t("home.dataQuality.lastEvent")} value={formatDateTime(summary.lastEventAt)} helper={t("home.dataQuality.lastEventHelper")} />
