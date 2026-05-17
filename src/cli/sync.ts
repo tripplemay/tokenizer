@@ -14,8 +14,15 @@ export function clearQueue() {
   writeFileSync(queuePath, "");
 }
 
+// Batches are intentionally small. Each event includes the raw API response
+// in rawJson, which for Claude messages with tool use can be 5–15 KB. 200
+// events ≈ 600 KB–3 MB on the wire, safely under reverse-proxy body limits
+// (nginx defaults to client_max_body_size 1m) while still amortising the
+// per-request roundtrip cost.
+const BATCH_SIZE = 200;
+
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
-  if (events.length > 500) return syncEventsInBatches(config, events);
+  if (events.length > BATCH_SIZE) return syncEventsInBatches(config, events);
   const body: BatchUsageRequest = { device: readDevice(), events };
   const credentials = readCredentials();
   const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
@@ -31,10 +38,9 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
 }
 
 async function syncEventsInBatches(config: TokenizerConfig, events: UsageEventInput[]) {
-  const batchSize = 500;
   const total = { inserted: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
-  for (let index = 0; index < events.length; index += batchSize) {
-    const result = await syncEvents(config, events.slice(index, index + batchSize));
+  for (let index = 0; index < events.length; index += BATCH_SIZE) {
+    const result = await syncEvents(config, events.slice(index, index + BATCH_SIZE));
     total.inserted += result.inserted;
     total.duplicates += result.duplicates;
     total.received += result.received;
