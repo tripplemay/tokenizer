@@ -39,6 +39,11 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Next.js build smoke check
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
