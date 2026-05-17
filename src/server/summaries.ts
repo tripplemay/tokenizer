@@ -157,7 +157,7 @@ export async function getDeviceSummary(range: RangeOption = "all") {
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
     where,
-    _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+    _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true },
     _count: true,
     _max: { occurredAt: true },
     orderBy: { _sum: { totalTokens: "desc" } }
@@ -201,11 +201,261 @@ export async function getDeviceSummary(range: RangeOption = "all") {
       outputTokens,
       cachedInputTokens,
       cacheWriteTokens: row?._sum.cacheWriteTokens ?? 0,
+      reasoningOutputTokens: row?._sum.reasoningOutputTokens ?? 0,
       billableTokens: billableOf(inputTokens, cachedInputTokens, outputTokens),
+      cacheHitRate: inputTokens > 0 ? Math.min(1, cachedInputTokens / inputTokens) : 0,
       cost: costByDevice.get(deviceId) ?? 0,
       events: row?._count ?? 0
     };
   });
+}
+
+// Detail rollup for a single device. Mirrors getProjectDetail() in shape so
+// /devices/[id] can reuse the same table layouts.
+export async function getDeviceDetail(deviceId: string, range: RangeOption = "all") {
+  const where = { deviceId, ...rangeWhere(range) };
+  const [device, totals, eventCount, events, byProject, byModel, bySource, projectCostRows, modelCostRows, sourceCostRows, deviceCost] = await Promise.all([
+    prisma.device.findUnique({ where: { id: deviceId } }),
+    prisma.usageEvent.aggregate({
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true }
+    }),
+    prisma.usageEvent.count({ where }),
+    prisma.usageEvent.findMany({ where, take: 100, orderBy: { occurredAt: "desc" } }),
+    prisma.usageEvent.groupBy({
+      by: ["projectId"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: "desc" } },
+      take: 20
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["model"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: "desc" } }
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["source"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true },
+      _count: true
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["projectId", "model"],
+      where,
+      _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["model"],
+      where,
+      _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["source", "model"],
+      where,
+      _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
+    }),
+    costForWhere(where)
+  ]);
+
+  const costByProject = new Map<string, number>();
+  for (const row of projectCostRows) {
+    const key = row.projectId ?? "__null__";
+    const c = estimateCost(row.model, {
+      inputTokens: row._sum.inputTokens ?? 0,
+      cachedInputTokens: row._sum.cachedInputTokens ?? 0,
+      cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
+      outputTokens: row._sum.outputTokens ?? 0
+    });
+    if (c == null) continue;
+    costByProject.set(key, (costByProject.get(key) ?? 0) + c);
+  }
+  const costByModelMap = new Map<string, number>();
+  for (const row of modelCostRows) {
+    const c = estimateCost(row.model, {
+      inputTokens: row._sum.inputTokens ?? 0,
+      cachedInputTokens: row._sum.cachedInputTokens ?? 0,
+      cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
+      outputTokens: row._sum.outputTokens ?? 0
+    });
+    if (c == null) continue;
+    costByModelMap.set(row.model ?? "__null__", (costByModelMap.get(row.model ?? "__null__") ?? 0) + c);
+  }
+  const costBySource = new Map<string, number>();
+  for (const row of sourceCostRows) {
+    const c = estimateCost(row.model, {
+      inputTokens: row._sum.inputTokens ?? 0,
+      cachedInputTokens: row._sum.cachedInputTokens ?? 0,
+      cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
+      outputTokens: row._sum.outputTokens ?? 0
+    });
+    if (c == null) continue;
+    costBySource.set(row.source, (costBySource.get(row.source) ?? 0) + c);
+  }
+
+  // Resolve project names; null projectId rows fall through as "Unknown"
+  const projectIds = byProject.map((r) => r.projectId).filter((id): id is string => Boolean(id));
+  const projects = projectIds.length ? await prisma.project.findMany({ where: { id: { in: projectIds } } }) : [];
+  const projectById = new Map(projects.map((p) => [p.id, p]));
+
+  const inputTokens = totals._sum.inputTokens ?? 0;
+  const outputTokens = totals._sum.outputTokens ?? 0;
+  const cachedInputTokens = totals._sum.cachedInputTokens ?? 0;
+
+  return {
+    device,
+    totals: {
+      totalTokens: totals._sum.totalTokens ?? 0,
+      inputTokens,
+      outputTokens,
+      cachedInputTokens,
+      cacheWriteTokens: totals._sum.cacheWriteTokens ?? 0,
+      reasoningOutputTokens: totals._sum.reasoningOutputTokens ?? 0,
+      billableTokens: billableOf(inputTokens, cachedInputTokens, outputTokens),
+      cacheHitRate: inputTokens > 0 ? Math.min(1, cachedInputTokens / inputTokens) : 0,
+      cost: deviceCost,
+      eventCount
+    },
+    events,
+    byProject: byProject.map((row) => {
+      const project = row.projectId ? projectById.get(row.projectId) : undefined;
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        projectId: row.projectId,
+        name: project?.name ?? "Unknown Project",
+        repoKey: project?.repoKey ?? null,
+        workspacePath: project?.workspacePath ?? null,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costByProject.get(row.projectId ?? "__null__") ?? 0,
+        events: row._count
+      };
+    }),
+    byModel: byModel.map((row) => {
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        model: row.model,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costByModelMap.get(row.model ?? "__null__") ?? 0,
+        events: row._count
+      };
+    }),
+    bySource: bySource.map((row) => {
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        source: row.source,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costBySource.get(row.source) ?? 0,
+        events: row._count
+      };
+    })
+  };
+}
+
+type DailyForDeviceRow = {
+  date: Date | string;
+  totalTokens: bigint | number | null;
+  inputTokens: bigint | number | null;
+  outputTokens: bigint | number | null;
+  cachedInputTokens: bigint | number | null;
+  billableTokens: bigint | number | null;
+};
+
+export async function getDailyForDevice(deviceId: string, range: RangeOption = "all") {
+  const days = daysForRange(range);
+  const since = new Date(Date.now() - days * DAY_MS);
+  const rows = await prisma.$queryRaw<DailyForDeviceRow[]>`
+    SELECT
+      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      SUM("totalTokens")::bigint AS "totalTokens",
+      SUM("inputTokens")::bigint AS "inputTokens",
+      SUM("outputTokens")::bigint AS "outputTokens",
+      SUM("cachedInputTokens")::bigint AS "cachedInputTokens",
+      SUM(GREATEST("inputTokens" - "cachedInputTokens", 0) + "outputTokens")::bigint AS "billableTokens"
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${since} AND "deviceId" = ${deviceId}
+    GROUP BY 1
+    ORDER BY 1 ASC
+  `;
+  return rows.map((row) => ({
+    date: bucketDateToIso(row.date),
+    totalTokens: bigintToNumber(row.totalTokens),
+    inputTokens: bigintToNumber(row.inputTokens),
+    outputTokens: bigintToNumber(row.outputTokens),
+    cachedInputTokens: bigintToNumber(row.cachedInputTokens),
+    billableTokens: bigintToNumber(row.billableTokens)
+  }));
+}
+
+// Cross-device cost chart. Returns dates + per-device series so the stacked
+// area chart on /devices can show how each device contributes to daily spend.
+type DailyByDeviceRow = {
+  date: Date | string;
+  deviceId: string;
+  model: string | null;
+  input: bigint | number | null;
+  cached: bigint | number | null;
+  cwrite: bigint | number | null;
+  output: bigint | number | null;
+};
+
+export async function getDailyByDevice(range: RangeOption = "all") {
+  const days = daysForRange(range);
+  const since = new Date(Date.now() - days * DAY_MS);
+  const rows = await prisma.$queryRaw<DailyByDeviceRow[]>`
+    SELECT
+      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      "deviceId",
+      model,
+      SUM("inputTokens")::bigint AS input,
+      SUM("cachedInputTokens")::bigint AS cached,
+      SUM("cacheWriteTokens")::bigint AS cwrite,
+      SUM("outputTokens")::bigint AS output
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${since}
+    GROUP BY 1, 2, 3
+    ORDER BY 1 ASC
+  `;
+
+  const dates = new Set<string>();
+  const deviceIds = new Set<string>();
+  const byKey = new Map<string, number>();
+  for (const row of rows) {
+    const date = bucketDateToIso(row.date);
+    const cost = estimateCost(row.model, {
+      inputTokens: bigintToNumber(row.input),
+      cachedInputTokens: bigintToNumber(row.cached),
+      cacheWriteTokens: bigintToNumber(row.cwrite),
+      outputTokens: bigintToNumber(row.output)
+    });
+    if (cost == null) continue;
+    dates.add(date);
+    deviceIds.add(row.deviceId);
+    const key = `${date}|${row.deviceId}`;
+    byKey.set(key, (byKey.get(key) ?? 0) + cost);
+  }
+  const deviceList = Array.from(deviceIds);
+  const devices = deviceList.length ? await prisma.device.findMany({ where: { id: { in: deviceList } } }) : [];
+  const nameById = new Map(devices.map((d) => [d.id, d.name]));
+  const sortedDates = Array.from(dates).sort();
+  return {
+    dates: sortedDates,
+    series: deviceList.map((id) => ({
+      name: nameById.get(id) ?? id,
+      data: sortedDates.map((date) => byKey.get(`${date}|${id}`) ?? 0)
+    }))
+  };
 }
 
 export async function getProjectSummary(range: RangeOption = "all", filter: ProjectFilter = "all") {

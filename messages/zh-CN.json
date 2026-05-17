@@ -179,8 +179,51 @@
       "lastSeen": "最近上线",
       "lastSync": "最近同步",
       "lastEvent": "最近事件",
-      "tokens": "Tokens",
+      "tokens": "计算量",
+      "cost": "成本",
+      "cacheHit": "Cache 命中率",
       "events": "事件数"
+    },
+    "dailyByDevice": {
+      "title": "每日成本按设备拆分",
+      "subtitle": "stacked area,每条颜色代表一台机器,所选时间窗口内。"
+    }
+  },
+  "device": {
+    "back": "返回设备列表",
+    "notFound": "设备不存在。",
+    "unknownModel": "未知模型",
+    "meta": {
+      "hostname": "主机名:{value}",
+      "platform": "平台:{value}",
+      "lastSeen": "最近上线:{value}",
+      "lastSync": "最近同步:{value}"
+    },
+    "metric": {
+      "compute": "计算量",
+      "cost": "成本",
+      "cacheHit": "Cache 命中率",
+      "events": "事件数"
+    },
+    "daily": {
+      "title": "日用量",
+      "subtitle": "这台设备最近 {days} 天的 input / output token,Asia/Shanghai 时区。"
+    },
+    "projects": { "title": "项目排名(本设备)" },
+    "models": { "title": "模型用量(本设备)" },
+    "sources": { "title": "来源拆分(本设备)" },
+    "recentEvents": "最近事件",
+    "col": {
+      "project": "项目",
+      "model": "模型",
+      "source": "来源",
+      "compute": "计算量",
+      "cost": "成本",
+      "events": "事件数",
+      "share": "占比",
+      "time": "时间",
+      "input": "Input",
+      "output": "Output"
     }
   },
   "admin": {

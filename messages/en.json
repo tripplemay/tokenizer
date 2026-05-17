@@ -179,8 +179,51 @@
       "lastSeen": "Last seen",
       "lastSync": "Last sync",
       "lastEvent": "Last event",
-      "tokens": "Tokens",
+      "tokens": "Compute",
+      "cost": "Cost",
+      "cacheHit": "Cache hit",
       "events": "Events"
+    },
+    "dailyByDevice": {
+      "title": "Daily Cost by Device",
+      "subtitle": "Stacked area — one colour per device, within the selected window."
+    }
+  },
+  "device": {
+    "back": "Back to devices",
+    "notFound": "Device not found.",
+    "unknownModel": "Unknown model",
+    "meta": {
+      "hostname": "Hostname: {value}",
+      "platform": "Platform: {value}",
+      "lastSeen": "Last seen: {value}",
+      "lastSync": "Last sync: {value}"
+    },
+    "metric": {
+      "compute": "Compute",
+      "cost": "Cost",
+      "cacheHit": "Cache hit",
+      "events": "Events"
+    },
+    "daily": {
+      "title": "Daily Usage",
+      "subtitle": "Input / output tokens per day for this device, last {days} active days, Asia/Shanghai."
+    },
+    "projects": { "title": "Projects (this device)" },
+    "models": { "title": "Models (this device)" },
+    "sources": { "title": "Sources (this device)" },
+    "recentEvents": "Recent Events",
+    "col": {
+      "project": "Project",
+      "model": "Model",
+      "source": "Source",
+      "compute": "Compute",
+      "cost": "Cost",
+      "events": "Events",
+      "share": "Share",
+      "time": "Time",
+      "input": "Input",
+      "output": "Output"
     }
   },
   "admin": {
