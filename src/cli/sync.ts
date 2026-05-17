@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
 import { getAgentVersion } from "./agent-version";
+import { agentFetch } from "./fetch";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -32,7 +33,7 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
   if (events.length > BATCH_SIZE) return syncEventsInBatches(config, events);
   const body: BatchUsageRequest = { device: readDevice(), events };
   const credentials = readCredentials();
-  const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
+  const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -94,7 +95,7 @@ function deviceWithDiagnostics(): DeviceInput {
 
 export async function heartbeat(config: TokenizerConfig) {
   const credentials = readCredentials();
-  const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/heartbeat`, {
+  const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/heartbeat`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
