@@ -1,5 +1,10 @@
 import "./globals.css";
+import "@/styles/App.css";
+import "@/styles/Contact.css";
+import "@/styles/MiniCalendar.css";
+import "@/styles/index.css";
 import type { Metadata } from "next";
+import { AdminShell } from "./admin-shell";
 
 export const metadata: Metadata = {
   title: "Tokenizer",
@@ -9,17 +14,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <main className="mx-auto min-h-screen max-w-7xl px-6 py-8">
-          <nav className="mb-8 flex items-center justify-between">
-            <a href="/" className="text-2xl font-semibold tracking-tight">Tokenizer</a>
-            <div className="flex gap-4 text-sm text-slate-300">
-              <a href="/">Overview</a>
-              <a href="/events">Events</a>
-            </div>
-          </nav>
-          {children}
-        </main>
+      <body id="root">
+        <AdminShell>{children}</AdminShell>
       </body>
     </html>
   );
