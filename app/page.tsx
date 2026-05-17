@@ -67,7 +67,7 @@ export default async function HomePage() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold text-navy-700 dark:text-white">Daily Usage</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Billable token activity stacked by direction (input + output), last {daily.length} active days, bucketed in Asia/Shanghai.</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Input and output token activity per day (each plotted independently against the same Y axis), last {daily.length} active days, bucketed in Asia/Shanghai.</p>
           </div>
         </div>
         <div className="h-72">

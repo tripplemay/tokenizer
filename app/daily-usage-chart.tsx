@@ -49,17 +49,20 @@ export function DailyUsageChart({ data }: { data: DailyRow[] }) {
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      stacked: true
+      // Not stacked: each series plots from 0 so the visible position of a
+      // point on the Y axis equals its actual value. Stacking caused Output
+      // to be drawn at (input + output) which didn't match the tooltip.
+      stacked: false
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth" as const, width: 2 },
+    stroke: { curve: "smooth" as const, width: 3 },
     colors: ["#4318FF", "#6AD2FF"],
     fill: {
       type: "gradient",
       gradient: {
         shadeIntensity: 1,
-        opacityFrom: 0.4,
+        opacityFrom: 0.25,
         opacityTo: 0,
         stops: [0, 100]
       }
