@@ -29,15 +29,32 @@ export const MODEL_PRICES: Record<string, ModelPriceRow> = {
   "claude-sonnet-4-6": { input: 3.0, cacheRead: 0.3, cacheWrite: 3.75, output: 15.0 },
   "claude-haiku-4-5": { input: 1.0, cacheRead: 0.1, cacheWrite: 1.25, output: 5.0 },
 
-  // OpenAI — https://openai.com/api/pricing
+  // OpenAI — https://developers.openai.com/api/docs/pricing (verified 2026-05-17)
   // OpenAI exposes a cache-read discount only; first writes are billed at the
   // base input rate (no explicit cache-write premium), so cacheWrite == input.
   "gpt-5.5": { input: 5.0, cacheRead: 0.5, cacheWrite: 5.0, output: 30.0 },
+  "gpt-5.4": { input: 2.5, cacheRead: 0.25, cacheWrite: 2.5, output: 15.0 },
+  "gpt-5.4-mini": { input: 0.75, cacheRead: 0.075, cacheWrite: 0.75, output: 4.5 },
+
+  // OpenAI Codex variants — https://developers.openai.com/codex/pricing
+  // The Codex page lists prices in credits at 25 credits = $1; e.g. gpt-5.3-codex
+  // is 43.75 / 4.375 / 350 credits ≈ $1.75 / $0.175 / $14 / Mtok.
+  "gpt-5.3-codex": { input: 1.75, cacheRead: 0.175, cacheWrite: 1.75, output: 14.0 },
+  // gpt-5.1-codex follows the older GPT-5.1 rate card (no Codex premium for the
+  // 5.1 generation per helicone.ai's verified table); cacheRead defaults to
+  // base input since OpenAI didn't document a cached-discount line.
+  "gpt-5.1-codex": { input: 1.25, cacheRead: 0.125, cacheWrite: 1.25, output: 10.0 },
+  "gpt-5.1-codex-mini": { input: 0.25, cacheRead: 0.025, cacheWrite: 0.25, output: 2.0 },
 
   // Google AI — https://ai.google.dev/gemini-api/docs/pricing
   // Pricing below 200K context; above 200K input/output bumps to $4 / $18 — out
   // of scope for the initial table, revisit if long-context usage shows up.
-  "gemini-3.1-pro-preview": { input: 2.0, cacheRead: 0.2, cacheWrite: 2.0, output: 12.0 }
+  "gemini-3.1-pro-preview": { input: 2.0, cacheRead: 0.2, cacheWrite: 2.0, output: 12.0 },
+
+  // MiniMax M2.5 accessed via OpenRouter free tier — the "-free" suffix in the
+  // model id means literal $0 to the user. The paid tier (minimax-m2.5 without
+  // -free) lists at $0.30 / $1.20 per Mtok; add it if we see paid traffic.
+  "minimax-m2.5-free": { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 }
 };
 
 // Xiaomi MiMo is omitted from MODEL_PRICES because its pricing structure

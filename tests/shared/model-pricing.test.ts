@@ -70,6 +70,31 @@ describe("estimateCost", () => {
       expect(cost).toBeCloseTo(MODEL_PRICES[key].input, 6);
     }
   });
+
+  it("covers every model that has appeared in production usage data", () => {
+    // Guardrails: if a new model name shows up in DB we want a test failure
+    // here rather than silent $0 cost reporting. Update this list whenever
+    // distinct(model) changes upstream.
+    const observedModels = [
+      "claude-opus-4-7",
+      "claude-opus-4-6",
+      "claude-sonnet-4-6",
+      "claude-haiku-4-5-20251001",
+      "gpt-5.5",
+      "gpt-5.4",
+      "gpt-5.4-mini",
+      "gpt-5.3-codex",
+      "gpt-5.1-codex",
+      "gpt-5.1-codex-mini",
+      "gemini-3.1-pro-preview",
+      "mimo-v2.5-pro",
+      "minimax-m2.5-free"
+    ];
+    for (const model of observedModels) {
+      const cost = estimateCost(model, { inputTokens: 1000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 500 });
+      expect(cost, `expected ${model} to be priced`).not.toBeNull();
+    }
+  });
 });
 
 describe("sumCostAcrossModels", () => {
