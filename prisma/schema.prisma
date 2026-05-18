@@ -19,6 +19,7 @@ model User {
   image           String?
   role            String              @default("user")
   quotaTier       String              @default("free")
+  timezone        String?
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
