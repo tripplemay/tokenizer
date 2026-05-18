@@ -9,6 +9,7 @@ import Widget from "@/components/widget/Widget";
 import { formatDateTimeSeconds, formatFullNumber, formatTokens, formatUsd } from "@/shared/format";
 import { SourcePill } from "../../_components/source-pill";
 import { ProjectIcon } from "../../_components/project-icon";
+import { PageBanner } from "../../_components/page-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -46,19 +47,27 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-5">
-      <div>
-        <Link href="/" className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline">
-          <MdArrowBack className="h-4 w-4" />
-          {t("project.back")}
-        </Link>
-        <div className="mt-2 flex items-center gap-2">
-          <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{project.name}</h2>
-          <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} size="md" folderTitle={t("project.localFolderTooltip")} />
-        </div>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{project.workspacePath ?? t("project.noWorkspace")}</p>
-        <p className="mt-0.5 text-xs text-gray-500">{t("project.aggregateNote")}</p>
-        <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
-      </div>
+      <PageBanner
+        overline={
+          <Link href="/" className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline">
+            <MdArrowBack className="h-4 w-4" />
+            {t("project.back")}
+          </Link>
+        }
+        title={
+          <span className="inline-flex items-center gap-2">
+            {project.name}
+            <ProjectIcon repoKey={project.repoKey} workspacePath={project.workspacePath} size="md" folderTitle={t("project.localFolderTooltip")} />
+          </span>
+        }
+        subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{project.workspacePath ?? t("project.noWorkspace")}</p>}
+        note={
+          <>
+            <p className="mt-0.5 text-xs text-gray-500">{t("project.aggregateNote")}</p>
+            <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
         <Widget icon={<MdInput className="h-7 w-7" />} title={t("project.metric.input")} subtitle={formatTokens(inputTokens)} />
