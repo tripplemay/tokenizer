@@ -7,6 +7,7 @@ import { getActiveRoute, isWindowAvailable } from "@/utils/navigation";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 import Footer from "@/components/footer/Footer";
+import { TimezoneReporter } from "./_components/timezone-reporter";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
+      <TimezoneReporter />
     </div>
   );
 }
