@@ -509,47 +509,31 @@
     </section>
 
     <section class="card">
-      <p class="eyebrow">5 分钟上手</p>
-      <h2 class="section-title">五步把你的 AI 用量接进来</h2>
-      <p class="section-sub">完成前两步即可在控制台看到你的第一台设备；完成五步即可看到第一条用量。</p>
+      <p class="eyebrow">60 秒上手</p>
+      <h2 class="section-title">三步把这台机器接进来</h2>
+      <p class="section-sub">不用装 CLI、不用改环境变量。控制台一键签发一条安装命令，粘到终端就行。</p>
       <ol class="steps">
         <li class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <h4>安装 CLI</h4>
-            <p>在项目根目录链接全局命令，或者直接 <span class="mono">npm install -g</span>。</p>
-            <pre class="cmd"><code>npm link</code></pre>
+            <h4>在控制台生成安装命令</h4>
+            <p>登录 dashboard → 点击「生成安装命令」。服务器会签发一条 30 分钟内有效的一次性安装命令，包含你的 enroll token 与服务地址。</p>
           </div>
         </li>
         <li class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <h4>初始化配置</h4>
-            <p>生成 <span class="mono">~/.tokenizer/config.json</span> 并指向你的 Tokenizer 服务地址。</p>
-            <pre class="cmd"><code>tokenizer init</code></pre>
+            <h4>粘贴到 Mac / Linux / WSL 终端</h4>
+            <p>命令长这样（具体内容由控制台生成，无需手填）：自动检测 Node、克隆 agent、注册本机、安装后台同步服务。</p>
+            <pre class="cmd"><code>curl -fsSL https://&lt;your-server&gt;/install.sh | bash -s -- \
+  --enroll-token &lt;token&gt; --server-url https://&lt;your-server&gt;</code></pre>
           </div>
         </li>
         <li class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <h4>领取 enroll token</h4>
-            <p>登录控制台 → <span class="mono">/devices</span> → 点击「添加设备」，复制一次性 enroll token。</p>
-          </div>
-        </li>
-        <li class="step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <h4>注册这台设备</h4>
-            <p>用 enroll token 换取长期 device token，自动写入本地配置。</p>
-            <pre class="cmd"><code>tokenizer enroll --enroll-token &lt;token&gt;</code></pre>
-          </div>
-        </li>
-        <li class="step">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <h4>采集 & 同步</h4>
-            <p>扫描三个本地源、增量去重、上传到服务端。可加进 cron 或 launchd 定时跑。</p>
-            <pre class="cmd"><code>tokenizer collect &amp;&amp; tokenizer sync</code></pre>
+            <h4>等待首次同步（约 60–90 秒）</h4>
+            <p>客户端首次上线后，控制台会自动显示「已连接：&lt;设备名&gt;」，dashboard 数据无需刷新就会出现。后续每 15 分钟自动同步一次。</p>
           </div>
         </li>
       </ol>
