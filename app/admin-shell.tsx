@@ -13,6 +13,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = "ltr";
 
+  // Login routes render full-bleed with their own brand shell — bypass
+  // the admin sidebar/navbar so unauthenticated users don't see nav
+  // links they can't use.
+  if (pathname?.startsWith("/login")) return <>{children}</>;
+
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
       <Sidebar routes={routes} open={open} setOpen={setOpen} variant="admin" />
