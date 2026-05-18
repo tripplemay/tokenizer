@@ -31,7 +31,7 @@ const REQUEST_TIMEOUT_MS = 60_000;
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
   if (events.length > BATCH_SIZE) return syncEventsInBatches(config, events);
-  const body: BatchUsageRequest = { device: readDevice(), events };
+  const body: BatchUsageRequest = { device: readDevice(), events, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
     method: "POST",
@@ -101,7 +101,10 @@ export async function heartbeat(config: TokenizerConfig) {
       "content-type": "application/json",
       authorization: `Bearer ${credentials.deviceToken}`
     },
-    body: JSON.stringify({ device: deviceWithDiagnostics() }),
+    body: JSON.stringify({
+      device: deviceWithDiagnostics(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) throw new Error(`Heartbeat failed: ${response.status} ${await response.text()}`);
