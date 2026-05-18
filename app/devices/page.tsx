@@ -9,6 +9,7 @@ import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 import { AddDeviceSection } from "../_components/add-device-section";
+import { PageBanner } from "../_components/page-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -73,25 +74,25 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("devices.title")}</h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("devices.subtitle")}</p>
-          <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <AddDeviceSection initialDeviceIds={currentDevices.map((d) => d.deviceId)} />
-          <DevicesRangeSelector
-            current={range}
-            searchParams={params}
-            labels={{
-              sevenDay: t("home.range.sevenDay"),
-              thirtyDay: t("home.range.thirtyDay"),
-              all: t("home.range.all")
-            }}
-          />
-        </div>
-      </div>
+      <PageBanner
+        title={t("devices.title")}
+        subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("devices.subtitle")}</p>}
+        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>}
+        rightSlot={
+          <div className="flex flex-wrap items-center gap-3">
+            <AddDeviceSection initialDeviceIds={currentDevices.map((d) => d.deviceId)} />
+            <DevicesRangeSelector
+              current={range}
+              searchParams={params}
+              labels={{
+                sevenDay: t("home.range.sevenDay"),
+                thirtyDay: t("home.range.thirtyDay"),
+                all: t("home.range.all")
+              }}
+            />
+          </div>
+        }
+      />
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
         <DailyByDeviceSection range={range} />
