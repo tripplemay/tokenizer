@@ -35,6 +35,7 @@ import { ShareBar } from "./_components/share-bar";
 import { SourceCardGrid } from "./_components/source-card-grid";
 import { PlatformIcon } from "./_components/platform-icon";
 import { OnboardingCard } from "./_components/onboarding-card";
+import { PageBanner } from "./_components/page-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -94,16 +95,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="space-y-6">
-      {/* HEADER BANNER — subtle brand-purple gradient with decorative bloom
-          for a touch of identity without becoming gaudy. */}
-      <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-brand-500/10 via-white to-brand-500/5 px-6 py-5 dark:border-white/10 dark:from-brand-500/15 dark:via-navy-800 dark:to-brand-500/5">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -left-12 h-48 w-48 rounded-full bg-brand-500/10 blur-3xl" />
-        <div className="relative flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("home.title")}</h2>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note")}</p>
-          </div>
+      <PageBanner
+        title={t("home.title")}
+        note={<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note")}</p>}
+        rightSlot={
           <RangeSelector
             current={range}
             searchParams={params}
@@ -113,8 +108,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               all: t("home.range.all")
             }}
           />
-        </div>
-      </div>
+        }
+      />
 
       {/* SCALE ROW (12-grid) */}
       <div className="grid grid-cols-12 gap-5">
