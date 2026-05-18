@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tokenizer · 新用户总览</title>
+  <style>
+    :root {
+      --brand-50:#E9E3FF; --brand-400:#7551FF; --brand-500:#422AFB; --brand-600:#3311DB;
+      --navy-700:#1B254B; --navy-800:#111c44;
+      --gray-100:#EEF0F6; --gray-200:#DADEEC; --gray-500:#B5BED9; --gray-700:#707EAE;
+      --bg:#F4F7FE; --card:#FFFFFF;
+      --horizon-green:#01B574; --horizon-orange:#FFB547; --horizon-blue:#3965FF; --horizon-purple:#7551FF;
+      --radius-card:24px; --radius-chip:9999px;
+      --shadow-card:0 10px 30px -12px rgba(112,144,176,0.18);
+      --font-display:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+      --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-display);
+      background: var(--bg);
+      color: var(--navy-700);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--brand-500);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy-700);
+      margin: 0 0 4px;
+    }
+    .section-sub {
+      color: var(--gray-700);
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    @media (max-width: 768px) {
+      .page { padding: 28px 16px 40px; gap: 24px; }
+      .card { padding: 20px; }
+    }
+
+    /* ---------- Section 1: Hero ---------- */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--gray-200);
+      background: linear-gradient(135deg, rgba(66,42,251,0.10) 0%, #ffffff 45%, rgba(66,42,251,0.05) 100%);
+      padding: 40px 36px;
+    }
+    .bloom {
+      position: absolute;
+      border-radius: 9999px;
+      background: rgba(66,42,251,0.18);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+    .bloom-tr { top: -64px; right: -64px; width: 224px; height: 224px; }
+    .bloom-bl { bottom: -80px; left: -48px; width: 192px; height: 192px; background: rgba(117,81,255,0.18); }
+    .hero-inner { position: relative; }
+    .hero-title {
+      font-size: 36px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--navy-700);
+      margin: 12px 0 12px;
+    }
+    .hero-sub {
+      color: var(--gray-700);
+      font-size: 15px;
+      max-width: 640px;
+      margin: 0 0 20px;
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-chip);
+      background: var(--brand-50);
+      color: var(--brand-600);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(66,42,251,0.15);
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 28px 22px; }
+      .hero-title { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="bloom bloom-tr"></div>
+      <div class="bloom bloom-bl"></div>
+      <div class="hero-inner">
+        <p class="eyebrow">Tokenizer · 新用户总览</p>
+        <h1 class="hero-title">把每一次 AI 编码的 token 用量<br/>看得清清楚楚</h1>
+        <p class="hero-sub">一份面向独立开发者与小团队的 AI 编码用量分析工具 —— 跨工具、多设备、多项目聚合，本地采集，集中分析。</p>
+        <div class="chip-row">
+          <span class="chip">🛠 多工具</span>
+          <span class="chip">💻 多设备</span>
+          <span class="chip">📁 多项目</span>
+        </div>
+      </div>
+    </header>
+  </main>
+</body>
+</html>
