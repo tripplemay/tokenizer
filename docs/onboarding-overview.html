@@ -265,6 +265,86 @@
     .cap-icon-blue   { background: rgba(57,101,255,0.12); color: var(--horizon-blue); }
     .cap-icon-green  { background: rgba(1,181,116,0.12);  color: var(--horizon-green); }
     .cap-icon-orange { background: rgba(255,181,71,0.18); color: #C27400; }
+
+    /* ---------- Section 6: Quickstart ---------- */
+    .steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      background: linear-gradient(90deg, rgba(66,42,251,0.05) 0%, #fff 30%);
+      border-left: 3px solid var(--brand-500);
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 9999px;
+      background: var(--brand-500);
+      color: #fff;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-body h4 { margin: 0 0 4px; font-size: 15px; color: var(--navy-700); }
+    .step-body p { margin: 0 0 8px; font-size: 13.5px; color: var(--gray-700); }
+    .cmd {
+      margin: 0;
+      background: var(--navy-800);
+      color: #E9E3FF;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      overflow-x: auto;
+    }
+    .cmd code { font-family: var(--font-mono); color: inherit; }
+
+    /* ---------- Section 7: Footer ---------- */
+    .foot {
+      border-radius: var(--radius-card);
+      border: 1px solid var(--gray-200);
+      background: linear-gradient(135deg, var(--navy-800) 0%, var(--brand-600) 100%);
+      color: #fff;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .foot .eyebrow { color: rgba(255,255,255,0.7); }
+    .foot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .foot-mono {
+      margin: 4px 0 0;
+      color: #fff;
+      font-size: 13px;
+      background: rgba(255,255,255,0.10);
+      padding: 8px 12px;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+    .foot-tag {
+      margin: 0;
+      text-align: right;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+    @media (max-width: 768px) {
+      .foot-grid { grid-template-columns: 1fr; }
+      .foot-tag { text-align: left; }
+    }
   </style>
 </head>
 <body>
@@ -427,6 +507,71 @@
         </div>
       </div>
     </section>
+
+    <section class="card">
+      <p class="eyebrow">5 分钟上手</p>
+      <h2 class="section-title">五步把你的 AI 用量接进来</h2>
+      <p class="section-sub">完成前两步即可在控制台看到你的第一台设备；完成五步即可看到第一条用量。</p>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>安装 CLI</h4>
+            <p>在项目根目录链接全局命令，或者直接 <span class="mono">npm install -g</span>。</p>
+            <pre class="cmd"><code>npm link</code></pre>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>初始化配置</h4>
+            <p>生成 <span class="mono">~/.tokenizer/config.json</span> 并指向你的 Tokenizer 服务地址。</p>
+            <pre class="cmd"><code>tokenizer init</code></pre>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>领取 enroll token</h4>
+            <p>登录控制台 → <span class="mono">/devices</span> → 点击「添加设备」，复制一次性 enroll token。</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>注册这台设备</h4>
+            <p>用 enroll token 换取长期 device token，自动写入本地配置。</p>
+            <pre class="cmd"><code>tokenizer enroll --enroll-token &lt;token&gt;</code></pre>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>采集 & 同步</h4>
+            <p>扫描三个本地源、增量去重、上传到服务端。可加进 cron 或 launchd 定时跑。</p>
+            <pre class="cmd"><code>tokenizer collect &amp;&amp; tokenizer sync</code></pre>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-grid">
+        <div>
+          <p class="eyebrow">配置文件</p>
+          <p class="mono foot-mono">~/.tokenizer/config.json</p>
+        </div>
+        <div>
+          <p class="eyebrow">失败队列</p>
+          <p class="mono foot-mono">~/.tokenizer/queue.jsonl</p>
+        </div>
+        <div>
+          <p class="eyebrow">API 入口</p>
+          <p class="mono foot-mono">POST /api/usage/events/batch</p>
+        </div>
+      </div>
+      <p class="foot-tag">Tokenizer · 把 AI 编码的每一个 token 都记账</p>
+    </footer>
   </main>
 </body>
 </html>
