@@ -266,6 +266,175 @@
     .cap-icon-green  { background: rgba(1,181,116,0.12);  color: var(--horizon-green); }
     .cap-icon-orange { background: rgba(255,181,71,0.18); color: #C27400; }
 
+    /* ---------- Screenshot mockups (browser-framed) ---------- */
+    .shot {
+      border-radius: 18px;
+      border: 1px solid var(--gray-200);
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 24px 60px -28px rgba(27,37,75,0.30);
+    }
+    .shot-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #F4F7FE;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .shot-dot { width: 11px; height: 11px; border-radius: 9999px; }
+    .shot-dot-r { background: #FF6058; }
+    .shot-dot-y { background: #FFBD2E; }
+    .shot-dot-g { background: #28CA42; }
+    .shot-url {
+      margin-left: 12px;
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 7px;
+      padding: 4px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gray-700);
+      max-width: 360px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .shot-body { padding: 16px; background: var(--bg); }
+    .shot-caption {
+      margin: 10px 0 0;
+      font-size: 12.5px;
+      color: var(--gray-700);
+      text-align: center;
+    }
+
+    /* Mockup A — main dashboard */
+    .mock-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      background: linear-gradient(135deg, rgba(66,42,251,0.10) 0%, #fff 60%);
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .mock-hero h5 { margin: 0; font-size: 14px; color: var(--navy-700); font-weight: 800; }
+    .mock-hero p { margin: 2px 0 0; font-size: 10.5px; color: var(--gray-700); }
+    .mock-range {
+      display: inline-flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--gray-200);
+      border-radius: 9999px;
+      padding: 3px;
+    }
+    .mock-range span {
+      font-size: 10.5px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      color: var(--gray-700);
+      font-weight: 600;
+    }
+    .mock-range span.on { background: var(--brand-500); color: #fff; }
+    .mock-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .mock-kpi {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mock-kpi-label { font-size: 10.5px; color: var(--gray-700); font-weight: 600; }
+    .mock-kpi-value { font-size: 16px; color: var(--navy-700); font-weight: 800; letter-spacing: -0.02em; }
+    .mock-kpi-delta { font-size: 10px; font-weight: 700; }
+    .mock-kpi-delta.up { color: var(--horizon-green); }
+    .mock-kpi-delta.down { color: #E31A1A; }
+    .mock-chart-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .mock-chart-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .mock-chart-title { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--navy-700); }
+    .mock-legend { display: flex; gap: 10px; font-size: 10.5px; color: var(--gray-700); }
+    .mock-legend .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+    /* Mockup B — per-source breakdown rows */
+    .mock-src-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 64px;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 12px;
+      color: var(--navy-700);
+    }
+    .mock-src-row:last-child { border-bottom: 0; }
+    .mock-src-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .mock-src-name .dot { width: 8px; height: 8px; margin-right: 0; }
+    .mock-src-bar { height: 8px; border-radius: 9999px; background: var(--gray-100); overflow: hidden; display: flex; }
+    .mock-src-bar span { display: block; height: 100%; }
+    .mock-src-val { text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--gray-700); }
+
+    /* Mockup C — project leaderboard */
+    .mock-rank {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mock-rank li {
+      display: grid;
+      grid-template-columns: 20px 1fr 60px;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--navy-700);
+    }
+    .mock-rank-num {
+      width: 20px; height: 20px;
+      border-radius: 9999px;
+      background: var(--brand-50);
+      color: var(--brand-600);
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-rank li:first-child .mock-rank-num { background: var(--brand-500); color: #fff; }
+    .mock-rank-bar { height: 6px; border-radius: 9999px; background: var(--gray-100); overflow: hidden; }
+    .mock-rank-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--brand-500) 0%, var(--horizon-purple) 100%); border-radius: 9999px; }
+    .mock-rank-val { text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--gray-700); }
+
+    /* Layout: 1 large + 2 small */
+    .shot-grid-1 { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 18px; }
+    .shot-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 768px) {
+      .shot-grid-2 { grid-template-columns: 1fr; }
+      .mock-kpi-row { grid-template-columns: 1fr 1fr; }
+    }
+
     /* ---------- Section 6: Quickstart ---------- */
     .steps {
       list-style: none;
@@ -363,6 +532,201 @@
         </div>
       </div>
     </header>
+
+    <section class="card">
+      <p class="eyebrow">界面预览</p>
+      <h2 class="section-title">产品长这样</h2>
+      <p class="section-sub">所有数据按租户隔离展示；下方为示意效果，实际数值会依你接入的工具与项目而异。</p>
+
+      <div class="shot-grid-1">
+        <figure style="margin:0">
+          <div class="shot">
+            <div class="shot-bar">
+              <span class="shot-dot shot-dot-r"></span>
+              <span class="shot-dot shot-dot-y"></span>
+              <span class="shot-dot shot-dot-g"></span>
+              <span class="shot-url">https://token.your-domain.com/</span>
+            </div>
+            <div class="shot-body">
+              <div class="mock-hero">
+                <div>
+                  <h5>首页</h5>
+                  <p>最近 30 天 · 跨工具聚合</p>
+                </div>
+                <div class="mock-range">
+                  <span>7 天</span>
+                  <span class="on">30 天</span>
+                  <span>全部</span>
+                </div>
+              </div>
+              <div class="mock-kpi-row">
+                <div class="mock-kpi">
+                  <span class="mock-kpi-label">输入 tokens</span>
+                  <span class="mock-kpi-value">768k</span>
+                  <span class="mock-kpi-delta up">▲ 18% 周环比</span>
+                </div>
+                <div class="mock-kpi">
+                  <span class="mock-kpi-label">输出 tokens</span>
+                  <span class="mock-kpi-value">284k</span>
+                  <span class="mock-kpi-delta up">▲ 6%</span>
+                </div>
+                <div class="mock-kpi">
+                  <span class="mock-kpi-label">缓存命中</span>
+                  <span class="mock-kpi-value">188k</span>
+                  <span class="mock-kpi-delta down">▼ 3%</span>
+                </div>
+                <div class="mock-kpi">
+                  <span class="mock-kpi-label">成本</span>
+                  <span class="mock-kpi-value">$184.20</span>
+                  <span class="mock-kpi-delta up">▲ 12%</span>
+                </div>
+              </div>
+              <div class="mock-chart-card">
+                <div class="mock-chart-head">
+                  <h6 class="mock-chart-title">每日 token 用量（按工具拆分）</h6>
+                  <div class="mock-legend">
+                    <span><i class="swatch" style="background:var(--horizon-purple)"></i>Claude Code</span>
+                    <span><i class="swatch" style="background:var(--horizon-green)"></i>Codex</span>
+                    <span><i class="swatch" style="background:var(--horizon-orange)"></i>OpenCode</span>
+                  </div>
+                </div>
+                <svg viewBox="0 0 600 180" preserveAspectRatio="none" width="100%" height="180" role="img" aria-label="每日 token 用量堆叠柱状图">
+                  <line x1="0" y1="160" x2="600" y2="160" stroke="var(--gray-200)" stroke-width="1"/>
+                  <line x1="0" y1="120" x2="600" y2="120" stroke="var(--gray-100)" stroke-width="1"/>
+                  <line x1="0" y1="80"  x2="600" y2="80"  stroke="var(--gray-100)" stroke-width="1"/>
+                  <line x1="0" y1="40"  x2="600" y2="40"  stroke="var(--gray-100)" stroke-width="1"/>
+                  <!-- 14 stacked bars (claude/codex/opencode) -->
+                  <g>
+                    <!-- bar template values approximate token volume; orange (open) on top, green (codex) middle, purple (claude) bottom -->
+                    <!-- bar 1 -->
+                    <rect x="10"  y="110" width="28" height="50" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="10"  y="90"  width="28" height="20" fill="var(--horizon-green)"/>
+                    <rect x="10"  y="80"  width="28" height="10" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 2 -->
+                    <rect x="50"  y="98"  width="28" height="62" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="50"  y="78"  width="28" height="20" fill="var(--horizon-green)"/>
+                    <rect x="50"  y="62"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 3 -->
+                    <rect x="90"  y="120" width="28" height="40" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="90"  y="106" width="28" height="14" fill="var(--horizon-green)"/>
+                    <rect x="90"  y="98"  width="28" height="8"  fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 4 -->
+                    <rect x="130" y="88"  width="28" height="72" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="130" y="64"  width="28" height="24" fill="var(--horizon-green)"/>
+                    <rect x="130" y="50"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 5 -->
+                    <rect x="170" y="100" width="28" height="60" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="170" y="82"  width="28" height="18" fill="var(--horizon-green)"/>
+                    <rect x="170" y="70"  width="28" height="12" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 6 -->
+                    <rect x="210" y="76"  width="28" height="84" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="210" y="52"  width="28" height="24" fill="var(--horizon-green)"/>
+                    <rect x="210" y="36"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 7 -->
+                    <rect x="250" y="92"  width="28" height="68" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="250" y="74"  width="28" height="18" fill="var(--horizon-green)"/>
+                    <rect x="250" y="60"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 8 -->
+                    <rect x="290" y="106" width="28" height="54" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="290" y="88"  width="28" height="18" fill="var(--horizon-green)"/>
+                    <rect x="290" y="78"  width="28" height="10" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 9 -->
+                    <rect x="330" y="80"  width="28" height="80" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="330" y="58"  width="28" height="22" fill="var(--horizon-green)"/>
+                    <rect x="330" y="42"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 10 -->
+                    <rect x="370" y="68"  width="28" height="92" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="370" y="42"  width="28" height="26" fill="var(--horizon-green)"/>
+                    <rect x="370" y="24"  width="28" height="18" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 11 -->
+                    <rect x="410" y="86"  width="28" height="74" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="410" y="64"  width="28" height="22" fill="var(--horizon-green)"/>
+                    <rect x="410" y="50"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 12 -->
+                    <rect x="450" y="58"  width="28" height="102" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="450" y="32"  width="28" height="26"  fill="var(--horizon-green)"/>
+                    <rect x="450" y="16"  width="28" height="16"  fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 13 -->
+                    <rect x="490" y="74"  width="28" height="86" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="490" y="54"  width="28" height="20" fill="var(--horizon-green)"/>
+                    <rect x="490" y="42"  width="28" height="12" fill="var(--horizon-orange)" rx="3"/>
+                    <!-- bar 14 -->
+                    <rect x="530" y="64"  width="28" height="96" fill="var(--horizon-purple)" rx="3"/>
+                    <rect x="530" y="40"  width="28" height="24" fill="var(--horizon-green)"/>
+                    <rect x="530" y="26"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <figcaption class="shot-caption">首页 · 时间窗切换 + 关键指标 + 每日用量堆叠图</figcaption>
+        </figure>
+      </div>
+
+      <div class="shot-grid-2">
+        <figure style="margin:0">
+          <div class="shot">
+            <div class="shot-bar">
+              <span class="shot-dot shot-dot-r"></span>
+              <span class="shot-dot shot-dot-y"></span>
+              <span class="shot-dot shot-dot-g"></span>
+              <span class="shot-url">/ · 来源拆分</span>
+            </div>
+            <div class="shot-body">
+              <div class="mock-chart-card">
+                <div class="mock-chart-head">
+                  <h6 class="mock-chart-title">按工具拆分</h6>
+                  <span class="mock-legend" style="font-size:10.5px;color:var(--gray-700)">本期 1.24M tokens</span>
+                </div>
+                <div class="mock-src-row">
+                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-purple)"></span>Claude Code</span>
+                  <div class="mock-src-bar"><span style="width:58%;background:var(--horizon-purple)"></span></div>
+                  <span class="mock-src-val">720k</span>
+                </div>
+                <div class="mock-src-row">
+                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-green)"></span>Codex</span>
+                  <div class="mock-src-bar"><span style="width:30%;background:var(--horizon-green)"></span></div>
+                  <span class="mock-src-val">372k</span>
+                </div>
+                <div class="mock-src-row">
+                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-orange)"></span>OpenCode</span>
+                  <div class="mock-src-bar"><span style="width:12%;background:var(--horizon-orange)"></span></div>
+                  <span class="mock-src-val">148k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="shot-caption">每个工具的贡献量一目了然</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="shot">
+            <div class="shot-bar">
+              <span class="shot-dot shot-dot-r"></span>
+              <span class="shot-dot shot-dot-y"></span>
+              <span class="shot-dot shot-dot-g"></span>
+              <span class="shot-url">/projects · 项目排行</span>
+            </div>
+            <div class="shot-body">
+              <div class="mock-chart-card">
+                <div class="mock-chart-head">
+                  <h6 class="mock-chart-title">项目排行</h6>
+                  <span class="mock-legend" style="font-size:10.5px;color:var(--gray-700)">仅 Git 项目</span>
+                </div>
+                <ol class="mock-rank">
+                  <li><span class="mock-rank-num">1</span><div><div style="margin-bottom:3px">tokenizer</div><div class="mock-rank-bar"><span style="width:92%"></span></div></div><span class="mock-rank-val">432k</span></li>
+                  <li><span class="mock-rank-num">2</span><div><div style="margin-bottom:3px">web-dashboard</div><div class="mock-rank-bar"><span style="width:62%"></span></div></div><span class="mock-rank-val">281k</span></li>
+                  <li><span class="mock-rank-num">3</span><div><div style="margin-bottom:3px">parser-codex</div><div class="mock-rank-bar"><span style="width:42%"></span></div></div><span class="mock-rank-val">187k</span></li>
+                  <li><span class="mock-rank-num">4</span><div><div style="margin-bottom:3px">infra-cli</div><div class="mock-rank-bar"><span style="width:24%"></span></div></div><span class="mock-rank-val">102k</span></li>
+                  <li><span class="mock-rank-num">5</span><div><div style="margin-bottom:3px">notes-mcp</div><div class="mock-rank-bar"><span style="width:14%"></span></div></div><span class="mock-rank-val">58k</span></li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <figcaption class="shot-caption">按项目聚合，支持「只看 Git 项目」过滤</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <section class="card">
       <p class="eyebrow">数据源</p>
