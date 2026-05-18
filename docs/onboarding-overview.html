@@ -502,8 +502,8 @@
           <div class="cap-icon cap-icon-orange">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
           </div>
-          <h4>增量同步 & 失败队列</h4>
-          <p>幂等去重让重跑安全；上传失败会落入 <span class="mono">~/.tokenizer/queue.jsonl</span> 下次自动重发。</p>
+          <h4>后台自动同步</h4>
+          <p>安装后即装即用：后台 agent 默认每 15 分钟采集并上传一次，每 60 秒心跳上报状态；幂等去重，重跑安全。</p>
         </div>
       </div>
     </section>
@@ -542,16 +542,16 @@
     <footer class="foot">
       <div class="foot-grid">
         <div>
-          <p class="eyebrow">配置文件</p>
-          <p class="mono foot-mono">~/.tokenizer/config.json</p>
+          <p class="eyebrow">设备凭据</p>
+          <p class="foot-mono"><span class="mono">~/.tokenizer/credentials.json</span></p>
         </div>
         <div>
-          <p class="eyebrow">失败队列</p>
-          <p class="mono foot-mono">~/.tokenizer/queue.jsonl</p>
+          <p class="eyebrow">后台同步周期</p>
+          <p class="foot-mono">默认 15 分钟一次</p>
         </div>
         <div>
-          <p class="eyebrow">API 入口</p>
-          <p class="mono foot-mono">POST /api/usage/events/batch</p>
+          <p class="eyebrow">安装命令有效期</p>
+          <p class="foot-mono">签发后 30 分钟</p>
         </div>
       </div>
       <p class="foot-tag">Tokenizer · 把 AI 编码的每一个 token 都记账</p>
