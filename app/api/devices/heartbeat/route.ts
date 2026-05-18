@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth";
 import { prisma } from "@/server/db";
+import { updateUserTimezoneIfValid } from "@/server/timezone";
 import { DeviceInput } from "@/shared/usage";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
   const token = await authenticateDeviceToken(request);
   if (!token) return unauthorized();
 
-  const body = (await request.json().catch(() => null)) as { device?: DeviceInput } | null;
+  const body = (await request.json().catch(() => null)) as { device?: DeviceInput; timezone?: string } | null;
   if (!body?.device?.id || !body.device.name) return Response.json({ error: "device is required" }, { status: 400 });
   if (body.device.id !== token.deviceId) return forbidden("device token does not match device");
 
@@ -38,6 +39,8 @@ export async function POST(request: NextRequest) {
     prisma.device.update({ where: { id: body.device.id }, data }),
     prisma.deviceToken.update({ where: { id: token.id }, data: { lastUsedAt: now } })
   ]);
+
+  await updateUserTimezoneIfValid(token.userId, body.timezone);
 
   return Response.json({ ok: true, deviceId: body.device.id, lastSeenAt: now.toISOString() });
 }
