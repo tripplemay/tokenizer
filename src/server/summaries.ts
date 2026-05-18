@@ -112,11 +112,11 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
     prisma.usageEvent.count({ where }),
     prisma.usageEvent.groupBy({ by: ["projectId"], where, _count: true }),
     prisma.usageEvent.groupBy({ by: ["deviceId"], where, _count: true }),
-    prisma.usageEvent.findFirst({ orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
+    prisma.usageEvent.findFirst({ where: { userId: tenantId }, orderBy: { occurredAt: "desc" }, select: { occurredAt: true } }),
     prisma.usageEvent.aggregate({ where: { ...where, project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
     prisma.usageEvent.aggregate({ where: { ...where, model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
     prisma.usageEvent.groupBy({ by: ["model"], where, _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true } }),
-    prior ? computeAndCostFor({ occurredAt: { gte: prior.gte, lt: prior.lt } }) : Promise.resolve(null)
+    prior ? computeAndCostFor({ userId: tenantId, occurredAt: { gte: prior.gte, lt: prior.lt } }) : Promise.resolve(null)
   ]);
 
   const inputTokens = total._sum.inputTokens ?? 0;
@@ -186,7 +186,7 @@ async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all"
     if (c == null) continue;
     costByDevice.set(row.deviceId, (costByDevice.get(row.deviceId) ?? 0) + c);
   }
-  const devices = await prisma.device.findMany();
+  const devices = await prisma.device.findMany({ where: { userId: tenantId } });
   const rowByDeviceId = new Map(rows.map((row) => [row.deviceId, row]));
   const deviceById = new Map(devices.map((device) => [device.id, device]));
   const ids = new Set([...devices.map((device) => device.id), ...rows.map((row) => row.deviceId)]);
@@ -228,7 +228,7 @@ async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all"
 export async function getDeviceDetail(tenantId: string, deviceId: string, range: RangeOption = "all") {
   const where = { deviceId, ...rangeWhere(range, tenantId) };
   const [device, totals, eventCount, events, byProject, byModel, bySource, projectCostRows, modelCostRows, sourceCostRows, deviceCost] = await Promise.all([
-    prisma.device.findUnique({ where: { id: deviceId } }),
+    prisma.device.findFirst({ where: { id: deviceId, userId: tenantId } }),
     prisma.usageEvent.aggregate({
       where,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true }
@@ -311,7 +311,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
 
   // Resolve project names; null projectId rows fall through as "Unknown"
   const projectIds = byProject.map((r) => r.projectId).filter((id): id is string => Boolean(id));
-  const projects = projectIds.length ? await prisma.project.findMany({ where: { id: { in: projectIds } } }) : [];
+  const projects = projectIds.length ? await prisma.project.findMany({ where: { id: { in: projectIds }, userId: tenantId } }) : [];
   const projectById = new Map(projects.map((p) => [p.id, p]));
 
   const inputTokens = totals._sum.inputTokens ?? 0;
@@ -436,7 +436,7 @@ async function getDailyByDeviceImpl(tenantId: string, range: RangeOption = "all"
       SUM("cacheWriteTokens")::bigint AS cwrite,
       SUM("outputTokens")::bigint AS output
     FROM "UsageEvent"
-    WHERE "occurredAt" >= ${since}
+    WHERE "occurredAt" >= ${since} AND "userId" = ${tenantId}
     GROUP BY 1, 2, 3
     ORDER BY 1 ASC
   `;
@@ -459,7 +459,7 @@ async function getDailyByDeviceImpl(tenantId: string, range: RangeOption = "all"
     byKey.set(key, (byKey.get(key) ?? 0) + cost);
   }
   const deviceList = Array.from(deviceIds);
-  const devices = deviceList.length ? await prisma.device.findMany({ where: { id: { in: deviceList } } }) : [];
+  const devices = deviceList.length ? await prisma.device.findMany({ where: { id: { in: deviceList }, userId: tenantId } }) : [];
   const nameById = new Map(devices.map((d) => [d.id, d.name]));
   const sortedDates = Array.from(dates).sort();
   return {
@@ -501,7 +501,7 @@ async function getProjectSummaryImpl(tenantId: string, range: RangeOption = "all
     if (c == null) continue;
     costByProject.set(key, (costByProject.get(key) ?? 0) + c);
   }
-  const projects = await prisma.project.findMany({ where: { id: { in: rows.map((row) => row.projectId).filter(Boolean) as string[] } } });
+  const projects = await prisma.project.findMany({ where: { id: { in: rows.map((row) => row.projectId).filter(Boolean) as string[] }, userId: tenantId } });
   const projectById = new Map(projects.map((project) => [project.id, project]));
   const out = rows.map((row) => {
     const inputTokens = row._sum.inputTokens ?? 0;
@@ -642,7 +642,7 @@ async function getDailySummaryImpl(tenantId: string, range: RangeOption = "all")
       SUM("cachedInputTokens")::bigint AS "cachedInputTokens",
       SUM(GREATEST("inputTokens" - "cachedInputTokens", 0) + "outputTokens")::bigint AS "billableTokens"
     FROM "UsageEvent"
-    WHERE "occurredAt" >= ${since}
+    WHERE "occurredAt" >= ${since} AND "userId" = ${tenantId}
     GROUP BY 1
     ORDER BY 1 ASC
   `;
@@ -682,7 +682,7 @@ async function getDailyCostImpl(tenantId: string, range: RangeOption = "all") {
       SUM("cacheWriteTokens")::bigint AS cwrite,
       SUM("outputTokens")::bigint AS output
     FROM "UsageEvent"
-    WHERE "occurredAt" >= ${since}
+    WHERE "occurredAt" >= ${since} AND "userId" = ${tenantId}
     GROUP BY 1, 2
     ORDER BY 1 ASC
   `;
@@ -723,7 +723,7 @@ async function getDailyBySourceImpl(tenantId: string, range: RangeOption = "all"
       source,
       SUM("inputTokens")::bigint AS input
     FROM "UsageEvent"
-    WHERE "occurredAt" >= ${since}
+    WHERE "occurredAt" >= ${since} AND "userId" = ${tenantId}
     GROUP BY 1, 2
     ORDER BY 1 ASC
   `;
