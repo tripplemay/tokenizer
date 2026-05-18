@@ -197,6 +197,74 @@
       }
       .flow-arrow svg { transform: rotate(90deg); }
     }
+
+    /* ---------- Section 4: Dashboard preview ---------- */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .widget {
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 158px;
+    }
+    .widget-label { font-size: 12px; color: var(--gray-700); margin: 0; font-weight: 600; }
+    .widget-value { font-size: 24px; font-weight: 800; color: var(--navy-700); margin: 0; letter-spacing: -0.02em; }
+    .widget-unit { font-size: 13px; color: var(--gray-700); font-weight: 600; margin-left: 4px; }
+    .widget-bar { height: 8px; border-radius: 9999px; background: var(--gray-100); overflow: hidden; display: flex; }
+    .widget-bar span { display: block; height: 100%; }
+    .bar-in    { background: var(--brand-500); }
+    .bar-out   { background: var(--horizon-blue); }
+    .bar-cache { background: var(--horizon-orange); }
+    .widget-legend { margin: 0; font-size: 11px; color: var(--gray-700); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; margin-right: 4px; vertical-align: middle; }
+    .dot-in { background: var(--brand-500); }
+    .dot-out { background: var(--horizon-blue); }
+    .dot-cache { background: var(--horizon-orange); }
+    .spark { width: 100%; height: 36px; }
+    .widget-foot { margin: 0; font-size: 12px; color: var(--horizon-green); font-weight: 600; }
+    .rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .rank li { display: flex; justify-content: space-between; font-size: 13px; color: var(--navy-700); }
+    .rank li .mono { color: var(--gray-700); font-size: 12px; }
+    .device-row { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--navy-700); }
+    .device-bar { height: 6px; background: var(--gray-100); border-radius: 9999px; overflow: hidden; }
+    .device-bar > span { display: block; height: 100%; border-radius: 9999px; }
+    @media (max-width: 768px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- Section 5: Capabilities ---------- */
+    .cap-grid .cap {
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 18px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cap h4 { margin: 6px 0 0; font-size: 15px; color: var(--navy-700); }
+    .cap p { margin: 0; font-size: 13px; color: var(--gray-700); }
+    .cap-icon {
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cap-icon-purple { background: rgba(117,81,255,0.12); color: var(--horizon-purple); }
+    .cap-icon-blue   { background: rgba(57,101,255,0.12); color: var(--horizon-blue); }
+    .cap-icon-green  { background: rgba(1,181,116,0.12);  color: var(--horizon-green); }
+    .cap-icon-orange { background: rgba(255,181,71,0.18); color: #C27400; }
   </style>
 </head>
 <body>
@@ -283,6 +351,81 @@
           <p>Server 解析事件，按租户聚合到仪表盘</p>
         </li>
       </ol>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">仪表盘</p>
+      <h2 class="section-title">一眼看懂你在 AI 上花了什么</h2>
+      <p class="section-sub">所有数据按租户隔离；时间窗、项目、设备维度自由切换。</p>
+      <div class="grid-4">
+        <div class="widget">
+          <p class="widget-label">Token 拆分</p>
+          <p class="widget-value">1.24<span class="widget-unit">M</span></p>
+          <div class="widget-bar">
+            <span class="bar-in"  style="width:62%"></span>
+            <span class="bar-out" style="width:23%"></span>
+            <span class="bar-cache" style="width:15%"></span>
+          </div>
+          <p class="widget-legend"><span class="dot dot-in"></span>输入 <span class="dot dot-out"></span>输出 <span class="dot dot-cache"></span>缓存</p>
+        </div>
+        <div class="widget">
+          <p class="widget-label">每日成本趋势</p>
+          <p class="widget-value">$<span>18.40</span><span class="widget-unit">/天</span></p>
+          <svg class="spark" viewBox="0 0 120 36" preserveAspectRatio="none">
+            <polyline points="0,28 15,22 30,25 45,14 60,18 75,8 90,12 105,6 120,10" fill="none" stroke="var(--horizon-green)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <p class="widget-foot">↑ 12% 周环比</p>
+        </div>
+        <div class="widget">
+          <p class="widget-label">项目排行 Top 3</p>
+          <ul class="rank">
+            <li><span>tokenizer</span><span class="mono">432k</span></li>
+            <li><span>web-dashboard</span><span class="mono">281k</span></li>
+            <li><span>parser-codex</span><span class="mono">187k</span></li>
+          </ul>
+        </div>
+        <div class="widget">
+          <p class="widget-label">设备贡献</p>
+          <div class="device-row"><span>MacBook Pro</span><div class="device-bar"><span style="width:58%;background:var(--brand-500)"></span></div></div>
+          <div class="device-row"><span>Linux Workstation</span><div class="device-bar"><span style="width:34%;background:var(--horizon-purple)"></span></div></div>
+          <div class="device-row"><span>VPS Tmux</span><div class="device-bar"><span style="width:8%;background:var(--horizon-orange)"></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">核心能力</p>
+      <h2 class="section-title">为什么用 Tokenizer</h2>
+      <div class="grid-4 cap-grid">
+        <div class="cap">
+          <div class="cap-icon cap-icon-purple">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h4>多设备聚合</h4>
+          <p>一个账号关联多台机器，每台设备一个 token，数据汇总到同一仪表盘。</p>
+        </div>
+        <div class="cap">
+          <div class="cap-icon cap-icon-blue">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+          </div>
+          <h4>多项目过滤</h4>
+          <p>按工作目录自动归类项目；可一键过滤"只看 Git 项目"，屏蔽实验性目录。</p>
+        </div>
+        <div class="cap">
+          <div class="cap-icon cap-icon-green">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <h4>时间窗切换</h4>
+          <p>7 天 / 30 天 / 全部时段一键切换，对比环比趋势，识别用量异常。</p>
+        </div>
+        <div class="cap">
+          <div class="cap-icon cap-icon-orange">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+          </div>
+          <h4>增量同步 & 失败队列</h4>
+          <p>幂等去重让重跑安全；上传失败会落入 <span class="mono">~/.tokenizer/queue.jsonl</span> 下次自动重发。</p>
+        </div>
+      </div>
     </section>
   </main>
 </body>
