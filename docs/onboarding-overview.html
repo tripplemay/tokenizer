@@ -114,6 +114,89 @@
       .hero { padding: 28px 22px; }
       .hero-title { font-size: 26px; }
     }
+
+    /* ---------- Section 2: Data sources ---------- */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .source-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 18px;
+      padding: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #FAFBFF 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .source-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+    .source-head { display: flex; align-items: center; gap: 10px; }
+    .source-head h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--navy-700); }
+    .source-dot { width: 10px; height: 10px; border-radius: 9999px; }
+    .source-claude .source-dot { background: var(--horizon-purple); box-shadow: 0 0 0 4px rgba(117,81,255,0.15); }
+    .source-codex  .source-dot { background: var(--horizon-green);  box-shadow: 0 0 0 4px rgba(1,181,116,0.15); }
+    .source-opencode .source-dot { background: var(--horizon-orange); box-shadow: 0 0 0 4px rgba(255,181,71,0.15); }
+    .source-path {
+      margin: 0;
+      font-size: 12px;
+      color: var(--brand-600);
+      background: var(--brand-50);
+      padding: 6px 10px;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+    .source-note { margin: 0; font-size: 13px; color: var(--gray-700); }
+    @media (max-width: 768px) {
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- Section 3: Architecture flow ---------- */
+    .flow {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .flow-step {
+      background: linear-gradient(180deg, #ffffff 0%, #F7F8FE 100%);
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .flow-step h4 { margin: 4px 0 0; font-size: 14px; color: var(--navy-700); }
+    .flow-step p { margin: 0; font-size: 12.5px; color: var(--gray-700); }
+    .flow-num {
+      width: 28px; height: 28px;
+      border-radius: 9999px;
+      background: var(--brand-500);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flow-step-final .flow-num { background: var(--horizon-green); }
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--horizon-blue);
+    }
+    @media (max-width: 768px) {
+      .flow {
+        grid-template-columns: 1fr;
+      }
+      .flow-arrow svg { transform: rotate(90deg); }
+    }
   </style>
 </head>
 <body>
@@ -132,6 +215,75 @@
         </div>
       </div>
     </header>
+
+    <section class="card">
+      <p class="eyebrow">数据源</p>
+      <h2 class="section-title">三个本地源，零侵入采集</h2>
+      <p class="section-sub">CLI 直接读你机器上的日志/数据库文件；不需要改你的工作流，不需要装插件。</p>
+      <div class="grid-3">
+        <article class="source-card source-claude">
+          <div class="source-head">
+            <span class="source-dot"></span>
+            <h3>Claude Code</h3>
+          </div>
+          <p class="source-path mono">~/.claude/usage-data/session-meta/*.json</p>
+          <p class="source-note">逐 session 解析 input / output / cached / cost</p>
+        </article>
+        <article class="source-card source-codex">
+          <div class="source-head">
+            <span class="source-dot"></span>
+            <h3>Codex</h3>
+          </div>
+          <p class="source-path mono">~/.codex/sessions/**/rollout-*.jsonl</p>
+          <p class="source-note">逐 rollout 事件解析模型与 token</p>
+        </article>
+        <article class="source-card source-opencode">
+          <div class="source-head">
+            <span class="source-dot"></span>
+            <h3>OpenCode</h3>
+          </div>
+          <p class="source-path mono">~/.local/share/opencode/opencode.db</p>
+          <p class="source-note">读本地 SQLite，按 assistant 消息一条一记</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">数据流转</p>
+      <h2 class="section-title">从你的硬盘到仪表盘，四步走</h2>
+      <p class="section-sub">本地解析、增量去重、HTTPS 上传，全程对原始日志只读。</p>
+      <ol class="flow">
+        <li class="flow-step">
+          <div class="flow-num">1</div>
+          <h4>本地读取</h4>
+          <p>CLI 扫描三个源的日志/数据库文件</p>
+        </li>
+        <li class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </li>
+        <li class="flow-step">
+          <div class="flow-num">2</div>
+          <h4>增量去重</h4>
+          <p><span class="mono">unique(source, sourceEventId)</span> 保证幂等</p>
+        </li>
+        <li class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </li>
+        <li class="flow-step">
+          <div class="flow-num">3</div>
+          <h4>HTTPS 上传</h4>
+          <p>Bearer token 调 <span class="mono">POST /api/usage/events/batch</span></p>
+        </li>
+        <li class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </li>
+        <li class="flow-step flow-step-final">
+          <div class="flow-num">4</div>
+          <h4>入库 & 可视化</h4>
+          <p>Server 解析事件，按租户聚合到仪表盘</p>
+        </li>
+      </ol>
+    </section>
   </main>
 </body>
 </html>
