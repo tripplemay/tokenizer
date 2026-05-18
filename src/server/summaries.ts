@@ -385,12 +385,17 @@ type DailyForDeviceRow = {
   billableTokens: bigint | number | null;
 };
 
-export async function getDailyForDevice(tenantId: string, deviceId: string, range: RangeOption = "all") {
+export async function getDailyForDevice(
+  tenantId: string,
+  deviceId: string,
+  range: RangeOption = "all",
+  timezone: string = "Asia/Shanghai",
+) {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyForDeviceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
       SUM("totalTokens")::bigint AS "totalTokens",
       SUM("inputTokens")::bigint AS "inputTokens",
       SUM("outputTokens")::bigint AS "outputTokens",
@@ -423,12 +428,16 @@ type DailyByDeviceRow = {
   output: bigint | number | null;
 };
 
-async function getDailyByDeviceImpl(tenantId: string, range: RangeOption = "all") {
+async function getDailyByDeviceImpl(
+  tenantId: string,
+  range: RangeOption = "all",
+  timezone: string = "Asia/Shanghai",
+) {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyByDeviceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
       "deviceId",
       model,
       SUM("inputTokens")::bigint AS input,
@@ -599,10 +608,6 @@ export async function getProjectDetail(tenantId: string, projectId: string) {
   };
 }
 
-// Reporting timezone for daily bucket boundaries. Hardcoded for now because the
-// PRD scopes Tokenizer to a single user; revisit when multi-tenant support is
-// on the table.
-const REPORTING_TIMEZONE = "Asia/Shanghai";
 
 type DailySummaryRow = {
   date: Date | string;
@@ -629,13 +634,17 @@ function daysForRange(range: RangeOption): number {
   return 180;
 }
 
-async function getDailySummaryImpl(tenantId: string, range: RangeOption = "all") {
+async function getDailySummaryImpl(
+  tenantId: string,
+  range: RangeOption = "all",
+  timezone: string = "Asia/Shanghai",
+) {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
   const rows = await prisma.$queryRaw<DailySummaryRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
       SUM("totalTokens")::bigint AS "totalTokens",
       SUM("inputTokens")::bigint AS "inputTokens",
       SUM("outputTokens")::bigint AS "outputTokens",
@@ -669,13 +678,17 @@ type DailyCostByModelRow = {
 // Cost per day. We have to GROUP BY (day, model) and then apply per-model
 // pricing in JS since costs vary by model. Daily roll-up is a small result
 // set so the JS step is cheap.
-async function getDailyCostImpl(tenantId: string, range: RangeOption = "all") {
+async function getDailyCostImpl(
+  tenantId: string,
+  range: RangeOption = "all",
+  timezone: string = "Asia/Shanghai",
+) {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
   const rows = await prisma.$queryRaw<DailyCostByModelRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
       model,
       SUM("inputTokens")::bigint AS input,
       SUM("cachedInputTokens")::bigint AS cached,
@@ -713,13 +726,17 @@ type DailyBySourceRow = {
 // Per-source input tokens per day — used by the stacked area chart. We use
 // inputTokens (total input, including cache) rather than billable so the
 // stacked area conveys "how much each source consumed" intuitively.
-async function getDailyBySourceImpl(tenantId: string, range: RangeOption = "all") {
+async function getDailyBySourceImpl(
+  tenantId: string,
+  range: RangeOption = "all",
+  timezone: string = "Asia/Shanghai",
+) {
   const days = daysForRange(range);
   const since = new Date(Date.now() - days * DAY_MS);
 
   const rows = await prisma.$queryRaw<DailyBySourceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${REPORTING_TIMEZONE})::date AS date,
+      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
       source,
       SUM("inputTokens")::bigint AS input
     FROM "UsageEvent"
