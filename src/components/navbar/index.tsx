@@ -90,8 +90,9 @@ const Navbar = (props: {
         </button>
 
         <Link
-          href="/admin/setup"
-          aria-label="Settings"
+          href="/devices"
+          aria-label="设备管理"
+          title="设备管理"
           className="cursor-pointer rounded-full p-1 text-gray-600 hover:text-brand-500 dark:text-white"
         >
           <MdSettings className="h-5 w-5" />

@@ -34,6 +34,7 @@ import { AnimatedNumber } from "./_components/animated-number";
 import { ShareBar } from "./_components/share-bar";
 import { SourceCardGrid } from "./_components/source-card-grid";
 import { PlatformIcon } from "./_components/platform-icon";
+import { OnboardingCard } from "./_components/onboarding-card";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,19 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const tenantId = session.user.id;
   const t = await getTranslations();
   const summary = await getSummary(tenantId, range);
+
+  // Fresh tenants land on a guided onboarding card instead of a wall of
+  // zeros. Threshold is "no events", not "no devices" — a device that just
+  // enrolled but hasn't synced yet still gets the onboarding view so the
+  // user has feedback while they wait for the first sync.
+  if (summary.eventCount === 0) {
+    const devices = await getDeviceSummary(tenantId, "all");
+    return (
+      <div className="space-y-6">
+        <OnboardingCard initialDeviceIds={devices.map((d) => d.deviceId)} />
+      </div>
+    );
+  }
 
   const rangeLabel = t(rangeLabelKey(range));
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;

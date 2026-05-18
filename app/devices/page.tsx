@@ -8,6 +8,7 @@ import { requireSession } from "@/server/auth-session";
 import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
+import { AddDeviceSection } from "../_components/add-device-section";
 
 export const dynamic = "force-dynamic";
 
@@ -66,7 +67,9 @@ function DevicesRangeSelector({
 export default async function DevicesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const range = parseRange(params.range);
-  const t = await getTranslations();
+  const session = await requireSession();
+  const tenantId = session.user.id;
+  const [t, currentDevices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, "all")]);
 
   return (
     <div className="space-y-5">
@@ -76,15 +79,18 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("devices.subtitle")}</p>
           <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
         </div>
-        <DevicesRangeSelector
-          current={range}
-          searchParams={params}
-          labels={{
-            sevenDay: t("home.range.sevenDay"),
-            thirtyDay: t("home.range.thirtyDay"),
-            all: t("home.range.all")
-          }}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <AddDeviceSection initialDeviceIds={currentDevices.map((d) => d.deviceId)} />
+          <DevicesRangeSelector
+            current={range}
+            searchParams={params}
+            labels={{
+              sevenDay: t("home.range.sevenDay"),
+              thirtyDay: t("home.range.thirtyDay"),
+              all: t("home.range.all")
+            }}
+          />
+        </div>
       </div>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
