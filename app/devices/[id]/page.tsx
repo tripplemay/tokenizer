@@ -5,6 +5,7 @@ import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { getDailyForDevice, getDeviceDetail } from "@/server/summaries";
 import { requireSession } from "@/server/auth-session";
+import { getUserTimezone } from "@/server/timezone";
 import type { RangeOption } from "@/server/summaries";
 import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyUsageChart } from "../../daily-usage-chart";
@@ -84,10 +85,11 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
   const range = parseRange(sp.range);
   const session = await requireSession();
   const tenantId = session.user.id;
+  const tz = await getUserTimezone(tenantId);
   const [t, detail, daily] = await Promise.all([
     getTranslations(),
     getDeviceDetail(tenantId, id, range),
-    getDailyForDevice(tenantId, id, range)
+    getDailyForDevice(tenantId, id, range, tz)
   ]);
 
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
@@ -130,8 +132,8 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
             <span>{t("device.meta.hostname", { value: device.hostname ?? "—" })}</span>
             <span>{t("device.meta.platform", { value: device.platform ?? "—" })}</span>
-            <span>{t("device.meta.lastSeen", { value: formatRelativeTime(device.lastSeenAt?.toISOString() ?? null, tRelative) })}</span>
-            <span>{t("device.meta.lastSync", { value: formatRelativeTime(device.lastSyncAt?.toISOString() ?? null, tRelative) })}</span>
+            <span>{t("device.meta.lastSeen", { value: formatRelativeTime(device.lastSeenAt?.toISOString() ?? null, tRelative, tz) })}</span>
+            <span>{t("device.meta.lastSync", { value: formatRelativeTime(device.lastSyncAt?.toISOString() ?? null, tRelative, tz) })}</span>
           </div>
         }
         rightSlot={
@@ -286,7 +288,7 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
             <tbody>
               {events.map((event) => (
                 <tr key={event.id} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
-                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt)}</td>
+                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt, tz)}</td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.workspacePath ? event.workspacePath.split("/").filter(Boolean).at(-1) : "—"}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("device.unknownModel")}</td>

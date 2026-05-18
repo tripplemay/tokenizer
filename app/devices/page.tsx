@@ -5,6 +5,7 @@ import { MdComputer, MdInventory2, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { getDailyByDevice, getDeviceSummary } from "@/server/summaries";
 import { requireSession } from "@/server/auth-session";
+import { getUserTimezone } from "@/server/timezone";
 import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
@@ -70,6 +71,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
   const range = parseRange(params.range);
   const session = await requireSession();
   const tenantId = session.user.id;
+  const tz = await getUserTimezone(tenantId);
   const [t, currentDevices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, "all")]);
 
   return (
@@ -77,7 +79,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
       <PageBanner
         title={t("devices.title")}
         subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("devices.subtitle")}</p>}
-        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>}
+        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note", { tz })}</p>}
         rightSlot={
           <div className="flex flex-wrap items-center gap-3">
             <AddDeviceSection initialDeviceIds={currentDevices.map((d) => d.deviceId)} />
@@ -95,20 +97,20 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
       />
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
-        <DailyByDeviceSection range={range} />
+        <DailyByDeviceSection range={range} tz={tz} />
       </Suspense>
 
       <Suspense fallback={<DevicesTableSkeleton />}>
-        <DevicesTableSection range={range} />
+        <DevicesTableSection range={range} tz={tz} />
       </Suspense>
     </div>
   );
 }
 
-async function DailyByDeviceSection({ range }: { range: RangeOption }) {
+async function DailyByDeviceSection({ range, tz }: { range: RangeOption; tz: string }) {
   const session = await requireSession();
   const tenantId = session.user.id;
-  const [t, dailyByDevice] = await Promise.all([getTranslations(), getDailyByDevice(tenantId, range)]);
+  const [t, dailyByDevice] = await Promise.all([getTranslations(), getDailyByDevice(tenantId, range, tz)]);
   return (
     <Card extra="p-6">
       <div className="mb-3">
@@ -122,7 +124,7 @@ async function DailyByDeviceSection({ range }: { range: RangeOption }) {
   );
 }
 
-async function DevicesTableSection({ range }: { range: RangeOption }) {
+async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: string }) {
   const session = await requireSession();
   const tenantId = session.user.id;
   const [t, devices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, range)]);
@@ -174,7 +176,7 @@ async function DevicesTableSection({ range }: { range: RangeOption }) {
                   <td className="py-2.5 pr-4 text-right">
                     <DiagnosticsBadges device={device} reportedNoData={t("devices.diag.notReported")} queueLabel={t("devices.diag.queued")} errorLabel={t("devices.diag.lastError")} />
                   </td>
-                  <td className="py-2.5 pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</td>
+                  <td className="py-2.5 pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative, tz)}</td>
                 </tr>
               );
             })}

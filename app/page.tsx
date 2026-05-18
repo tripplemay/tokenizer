@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/server/auth-session";
+import { getUserTimezone } from "@/server/timezone";
 import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
@@ -74,6 +75,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const session = await requireSession();
   const tenantId = session.user.id;
+  const tz = await getUserTimezone(tenantId);
   const t = await getTranslations();
   const summary = await getSummary(tenantId, range);
 
@@ -97,7 +99,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="space-y-6">
       <PageBanner
         title={t("home.title")}
-        note={<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note")}</p>}
+        note={<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note", { tz })}</p>}
         rightSlot={
           <RangeSelector
             current={range}
@@ -119,7 +121,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <ScaleCard
           className="col-span-6 lg:col-span-3"
           label={t("home.scale.lastEvent")}
-          value={formatRelativeTime(summary.lastEventAt, tRelative)}
+          value={formatRelativeTime(summary.lastEventAt, tRelative, tz)}
           valueClass="text-base"
         />
       </div>
@@ -131,6 +133,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           range={range}
           summary={summary}
           rangeLabel={rangeLabel}
+          tz={tz}
           labels={{
             computeRange: t("home.hero.computeRange", { label: rangeLabel }),
             computeHint: t("home.hero.computeHint"),
@@ -162,19 +165,19 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </div>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
-        <DailyUsageSection tenantId={tenantId} range={range} />
+        <DailyUsageSection tenantId={tenantId} range={range} tz={tz} />
       </Suspense>
 
       <Suspense fallback={<DualChartSkeleton />}>
-        <DailyCostAndSourceSection tenantId={tenantId} range={range} />
+        <DailyCostAndSourceSection tenantId={tenantId} range={range} tz={tz} />
       </Suspense>
 
       <Suspense fallback={<RankingSkeleton />}>
-        <ProjectsAndDevicesSection tenantId={tenantId} range={range} gitFilter={gitFilter} searchParams={params} summaryBillable={summary.billableTokens} />
+        <ProjectsAndDevicesSection tenantId={tenantId} range={range} gitFilter={gitFilter} searchParams={params} summaryBillable={summary.billableTokens} tz={tz} />
       </Suspense>
 
       <Suspense fallback={<SourcesGridSkeleton />}>
-        <SourcesGridSection tenantId={tenantId} range={range} summaryBillable={summary.billableTokens} />
+        <SourcesGridSection tenantId={tenantId} range={range} summaryBillable={summary.billableTokens} tz={tz} />
       </Suspense>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-64" />}>
@@ -217,7 +220,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <QualityMetric
             className="col-span-12 lg:col-span-12 xl:col-span-3"
             label={t("home.dataQuality.lastEvent")}
-            value={formatDateTime(summary.lastEventAt)}
+            value={formatDateTime(summary.lastEventAt, tz)}
             helper={t("home.dataQuality.lastEventHelper")}
             valueClass="text-base"
           />
@@ -235,12 +238,14 @@ async function HeroSection({
   tenantId,
   range,
   summary,
-  labels
+  labels,
+  tz
 }: {
   tenantId: string;
   range: RangeOption;
   summary: SummaryShape;
   rangeLabel: string;
+  tz: string;
   labels: {
     computeRange: string;
     computeHint: string;
@@ -256,7 +261,7 @@ async function HeroSection({
   // Sparklines reuse the daily series (cached, near-free). Cache-hit
   // sparkline is computed inline from the same dailySummary rather than
   // adding another query.
-  const [dailySummary, dailyCost] = await Promise.all([getDailySummary(tenantId, range), getDailyCost(tenantId, range)]);
+  const [dailySummary, dailyCost] = await Promise.all([getDailySummary(tenantId, range, tz), getDailyCost(tenantId, range, tz)]);
   const computeSpark = dailySummary.map((d) => d.billableTokens);
   const costSpark = dailyCost.map((d) => d.cost);
   const cacheSpark = dailySummary.map((d) => (d.inputTokens > 0 ? Math.min(100, (d.cachedInputTokens / d.inputTokens) * 100) : 0));
@@ -316,8 +321,8 @@ async function HeroSection({
   );
 }
 
-async function DailyUsageSection({ tenantId, range }: { tenantId: string; range: RangeOption }) {
-  const [t, daily] = await Promise.all([getTranslations(), getDailySummary(tenantId, range)]);
+async function DailyUsageSection({ tenantId, range, tz }: { tenantId: string; range: RangeOption; tz: string }) {
+  const [t, daily] = await Promise.all([getTranslations(), getDailySummary(tenantId, range, tz)]);
   return (
     <Card extra="p-6">
       <div className="mb-4">
@@ -331,8 +336,8 @@ async function DailyUsageSection({ tenantId, range }: { tenantId: string; range:
   );
 }
 
-async function DailyCostAndSourceSection({ tenantId, range }: { tenantId: string; range: RangeOption }) {
-  const [t, dailyCost, dailySource] = await Promise.all([getTranslations(), getDailyCost(tenantId, range), getDailyBySource(tenantId, range)]);
+async function DailyCostAndSourceSection({ tenantId, range, tz }: { tenantId: string; range: RangeOption; tz: string }) {
+  const [t, dailyCost, dailySource] = await Promise.all([getTranslations(), getDailyCost(tenantId, range, tz), getDailyBySource(tenantId, range, tz)]);
   return (
     <div className="grid grid-cols-12 gap-5">
       <Card extra="col-span-12 lg:col-span-6 p-6">
@@ -362,13 +367,15 @@ async function ProjectsAndDevicesSection({
   range,
   gitFilter,
   searchParams,
-  summaryBillable
+  summaryBillable,
+  tz
 }: {
   tenantId: string;
   range: RangeOption;
   gitFilter: ProjectFilter;
   searchParams: Record<string, string | string[] | undefined>;
   summaryBillable: number;
+  tz: string;
 }) {
   const [t, projects, devices] = await Promise.all([
     getTranslations(),
@@ -418,7 +425,7 @@ async function ProjectsAndDevicesSection({
                     <ShareBar value={project.billableTokens} total={summaryBillable} />
                   </td>
                   <td className="pr-4 text-right">{formatFullNumber(project.events)}</td>
-                  <td className="whitespace-nowrap text-right text-gray-500">{formatRelativeTime(project.lastActiveAt, tRelative)}</td>
+                  <td className="whitespace-nowrap text-right text-gray-500">{formatRelativeTime(project.lastActiveAt, tRelative, tz)}</td>
                 </tr>
               ))}
             </tbody>
@@ -461,7 +468,7 @@ async function ProjectsAndDevicesSection({
                         <span className="font-medium text-gray-700 dark:text-gray-300">{formatUsd(device.cost)}</span>
                       </>
                     ) : null}
-                    <span className="ml-auto whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative)}</span>
+                    <span className="ml-auto whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative, tz)}</span>
                   </div>
                 </div>
               </a>
@@ -473,11 +480,11 @@ async function ProjectsAndDevicesSection({
   );
 }
 
-async function SourcesGridSection({ tenantId, range, summaryBillable }: { tenantId: string; range: RangeOption; summaryBillable: number }) {
+async function SourcesGridSection({ tenantId, range, summaryBillable, tz }: { tenantId: string; range: RangeOption; summaryBillable: number; tz: string }) {
   const [t, sources, dailyBySource] = await Promise.all([
     getTranslations(),
     getBreakdown(tenantId, "source", range),
-    getDailyBySource(tenantId, range)
+    getDailyBySource(tenantId, range, tz)
   ]);
   if (sources.length === 0) return null;
   return (

@@ -4,6 +4,7 @@ import { MdArrowBack, MdBolt, MdInput, MdOutput, MdCached, MdPaid } from "react-
 import { prisma } from "@/server/db";
 import { getProjectDetail } from "@/server/summaries";
 import { requireSession } from "@/server/auth-session";
+import { getUserTimezone } from "@/server/timezone";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { formatDateTimeSeconds, formatFullNumber, formatTokens, formatUsd } from "@/shared/format";
@@ -17,6 +18,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const session = await requireSession();
   const tenantId = session.user.id;
+  const tz = await getUserTimezone(tenantId);
   // Scope project lookup to the current tenant so a leaked URL like
   // /projects/<some-other-users-id> doesn't reveal someone else's project.
   const [t, project, detail] = await Promise.all([
@@ -64,7 +66,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         note={
           <>
             <p className="mt-0.5 text-xs text-gray-500">{t("project.aggregateNote")}</p>
-            <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
+            <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note", { tz })}</p>
           </>
         }
       />
@@ -155,7 +157,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <tbody>
               {events.map((event) => (
                 <tr key={event.id} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
-                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt)}</td>
+                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt, tz)}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("project.unknownModel")}</td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.totalTokens)}</td>

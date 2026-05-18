@@ -6,6 +6,7 @@ import { SourcePill } from "../_components/source-pill";
 import { PageBanner } from "../_components/page-banner";
 import { formatDateTimeSeconds } from "@/shared/format";
 import { requireSession } from "@/server/auth-session";
+import { getUserTimezone } from "@/server/timezone";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ function formatNumber(value: number) {
 export default async function EventsPage() {
   const session = await requireSession();
   const tenantId = session.user.id;
+  const tz = await getUserTimezone(tenantId);
   const [t, events] = await Promise.all([
     getTranslations(),
     prisma.usageEvent.findMany({
@@ -31,7 +33,7 @@ export default async function EventsPage() {
       <PageBanner
         title={t("events.title")}
         subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("events.subtitle", { count: events.length })}</p>}
-        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>}
+        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note", { tz })}</p>}
       />
       <Card extra="p-6">
         <div className="overflow-x-auto">
@@ -54,7 +56,7 @@ export default async function EventsPage() {
             <tbody>
               {events.map((event) => (
                 <tr key={event.id} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
-                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500 dark:text-gray-400">{formatDateTimeSeconds(event.occurredAt)}</td>
+                  <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500 dark:text-gray-400">{formatDateTimeSeconds(event.occurredAt, tz)}</td>
                   <td className="py-2.5 pr-4 whitespace-nowrap text-gray-600 dark:text-gray-300">
                     {event.device ? (
                       <Link href={`/devices/${event.deviceId}`} className="hover:underline">{event.device.name}</Link>
