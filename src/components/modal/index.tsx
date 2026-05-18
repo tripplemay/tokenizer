@@ -1,12 +1,25 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { MdClose } from "react-icons/md";
 import type { ReactNode } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton } from "@chakra-ui/modal";
 
-// Tailwind-skinned wrapper around Chakra's Modal — same pattern as
-// src/components/popover/index.tsx and src/components/tooltip/index.tsx.
-// The `!` modifier on Tailwind classes is necessary because Chakra ships
-// inline styles whose specificity beats plain class rules.
+type Size = "sm" | "md" | "lg" | "xl" | "2xl";
+
+const SIZE_CLASSES: Record<Size, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-2xl",
+  "2xl": "max-w-3xl",
+};
+
+// Built on the native <dialog> element so focus trap, ESC-to-close,
+// scroll lock, and inert background come from the browser. The
+// imperative showModal()/close() API is mirrored from the controlled
+// `isOpen` prop via useEffect. Reaches for <dialog> rather than Chakra
+// or another headless library because no matching provider is set up
+// elsewhere in this app — keeping this dependency-free avoids coupling.
 export default function ModalDialog({
   isOpen,
   onClose,
@@ -17,21 +30,45 @@ export default function ModalDialog({
   isOpen: boolean;
   onClose: () => void;
   title?: ReactNode;
-  size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  size?: Size;
   children: ReactNode;
 }) {
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) dialog.showModal();
+    else if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen]);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={size} isCentered>
-      <ModalOverlay className="bg-black/40 backdrop-blur-sm" />
-      <ModalContent className="!rounded-2xl !bg-white !shadow-2xl dark:!bg-navy-800">
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => {
+        // When shown via showModal() the dialog fills the viewport; a
+        // click on the backdrop registers with target === currentTarget.
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className={`w-[calc(100%-2rem)] ${SIZE_CLASSES[size]} rounded-2xl bg-white p-0 text-navy-700 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm dark:bg-navy-800 dark:text-white`}
+    >
+      <div className="relative">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-navy-700 dark:hover:bg-white/10 dark:hover:text-white"
+        >
+          <MdClose className="h-5 w-5" />
+        </button>
         {title ? (
-          <ModalHeader className="!px-6 !pt-5 !pb-2 text-lg font-bold text-navy-700 dark:text-white">
+          <div className="px-6 pb-2 pr-12 pt-5 text-lg font-bold text-navy-700 dark:text-white">
             {title}
-          </ModalHeader>
+          </div>
         ) : null}
-        <ModalCloseButton className="!top-3 !right-3 !text-gray-500 hover:!text-navy-700 dark:hover:!text-white" />
-        <ModalBody className="!px-6 !pb-6 !pt-2">{children}</ModalBody>
-      </ModalContent>
-    </Modal>
+        <div className="px-6 pb-6 pt-2">{children}</div>
+      </div>
+    </dialog>
   );
 }
