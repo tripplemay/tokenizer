@@ -10,6 +10,7 @@ import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatRelativeT
 import { DailyUsageChart } from "../../daily-usage-chart";
 import { ProjectIcon } from "../../_components/project-icon";
 import { SourcePill } from "../../_components/source-pill";
+import { PageBanner } from "../../_components/page-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -111,34 +112,40 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+      <PageBanner
+        overline={
           <Link href="/devices" className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline">
             <MdArrowBack className="h-4 w-4" />
             {t("device.back")}
           </Link>
-          <div className="mt-2 flex items-center gap-2">
+        }
+        title={
+          <span className="inline-flex flex-wrap items-center gap-2">
             <MdComputer className="h-6 w-6 text-brand-500" />
-            <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{device.name}</h2>
+            {device.name}
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColor}`}>{t(`clientStatus.${statusKey}`)}</span>
-          </div>
+          </span>
+        }
+        subtitle={
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
             <span>{t("device.meta.hostname", { value: device.hostname ?? "—" })}</span>
             <span>{t("device.meta.platform", { value: device.platform ?? "—" })}</span>
             <span>{t("device.meta.lastSeen", { value: formatRelativeTime(device.lastSeenAt?.toISOString() ?? null, tRelative) })}</span>
             <span>{t("device.meta.lastSync", { value: formatRelativeTime(device.lastSyncAt?.toISOString() ?? null, tRelative) })}</span>
           </div>
-        </div>
-        <DeviceRangeSelector
-          deviceId={id}
-          current={range}
-          labels={{
-            sevenDay: t("home.range.sevenDay"),
-            thirtyDay: t("home.range.thirtyDay"),
-            all: t("home.range.all")
-          }}
-        />
-      </div>
+        }
+        rightSlot={
+          <DeviceRangeSelector
+            deviceId={id}
+            current={range}
+            labels={{
+              sevenDay: t("home.range.sevenDay"),
+              thirtyDay: t("home.range.thirtyDay"),
+              all: t("home.range.all")
+            }}
+          />
+        }
+      />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Widget icon={<MdBolt className="h-7 w-7" />} title={t("device.metric.compute")} subtitle={formatTokens(totals.billableTokens)} />
