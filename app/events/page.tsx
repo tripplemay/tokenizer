@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { prisma } from "@/server/db";
 import Card from "@/components/card";
 import { SourcePill } from "../_components/source-pill";
+import { PageBanner } from "../_components/page-banner";
 import { formatDateTimeSeconds } from "@/shared/format";
 import { requireSession } from "@/server/auth-session";
 
@@ -27,11 +28,11 @@ export default async function EventsPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-2xl font-bold text-navy-700 dark:text-white">{t("events.title")}</h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("events.subtitle", { count: events.length })}</p>
-        <p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>
-      </div>
+      <PageBanner
+        title={t("events.title")}
+        subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("events.subtitle", { count: events.length })}</p>}
+        note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note")}</p>}
+      />
       <Card extra="p-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
