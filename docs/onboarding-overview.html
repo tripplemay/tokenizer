@@ -309,8 +309,8 @@
       text-align: center;
     }
 
-    /* Mockup A — main dashboard */
-    .mock-hero {
+    /* Mockup A — main dashboard (matches app/page.tsx layout) */
+    .mock-hero-band {
       position: relative;
       overflow: hidden;
       border-radius: 14px;
@@ -320,10 +320,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-    .mock-hero h5 { margin: 0; font-size: 14px; color: var(--navy-700); font-weight: 800; }
-    .mock-hero p { margin: 2px 0 0; font-size: 10.5px; color: var(--gray-700); }
+    .mock-hero-band h5 { margin: 0; font-size: 14px; color: var(--navy-700); font-weight: 800; }
+    .mock-hero-band p { margin: 2px 0 0; font-size: 10.5px; color: var(--gray-700); }
     .mock-range {
       display: inline-flex;
       gap: 4px;
@@ -340,92 +340,152 @@
       font-weight: 600;
     }
     .mock-range span.on { background: var(--brand-500); color: #fff; }
-    .mock-kpi-row {
+
+    /* Hero row — 3 large cards with icon + value + WoW + sparkline */
+    .mock-row-3 {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-bottom: 12px;
-    }
-    .mock-kpi {
-      background: #fff;
-      border: 1px solid var(--gray-200);
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .mock-kpi-label { font-size: 10.5px; color: var(--gray-700); font-weight: 600; }
-    .mock-kpi-value { font-size: 16px; color: var(--navy-700); font-weight: 800; letter-spacing: -0.02em; }
-    .mock-kpi-delta { font-size: 10px; font-weight: 700; }
-    .mock-kpi-delta.up { color: var(--horizon-green); }
-    .mock-kpi-delta.down { color: #E31A1A; }
-    .mock-chart-card {
-      background: #fff;
-      border: 1px solid var(--gray-200);
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .mock-chart-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 10px;
     }
-    .mock-chart-title { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--navy-700); }
-    .mock-legend { display: flex; gap: 10px; font-size: 10.5px; color: var(--gray-700); }
-    .mock-legend .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
-
-    /* Mockup B — per-source breakdown rows */
-    .mock-src-row {
+    .mock-hero-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 12px;
       display: grid;
-      grid-template-columns: 110px 1fr 64px;
+      grid-template-columns: 36px 1fr;
       gap: 10px;
       align-items: center;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--gray-100);
-      font-size: 12px;
-      color: var(--navy-700);
     }
-    .mock-src-row:last-child { border-bottom: 0; }
-    .mock-src-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
-    .mock-src-name .dot { width: 8px; height: 8px; margin-right: 0; }
-    .mock-src-bar { height: 8px; border-radius: 9999px; background: var(--gray-100); overflow: hidden; display: flex; }
-    .mock-src-bar span { display: block; height: 100%; }
-    .mock-src-val { text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--gray-700); }
-
-    /* Mockup C — project leaderboard */
-    .mock-rank {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .mock-rank li {
-      display: grid;
-      grid-template-columns: 20px 1fr 60px;
-      gap: 10px;
-      align-items: center;
-      font-size: 12px;
-      color: var(--navy-700);
-    }
-    .mock-rank-num {
-      width: 20px; height: 20px;
+    .mock-hero-icon {
+      width: 36px; height: 36px;
       border-radius: 9999px;
       background: var(--brand-50);
-      color: var(--brand-600);
-      font-size: 10px;
-      font-weight: 700;
+      color: var(--brand-500);
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
-    .mock-rank li:first-child .mock-rank-num { background: var(--brand-500); color: #fff; }
-    .mock-rank-bar { height: 6px; border-radius: 9999px; background: var(--gray-100); overflow: hidden; }
-    .mock-rank-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--brand-500) 0%, var(--horizon-purple) 100%); border-radius: 9999px; }
-    .mock-rank-val { text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--gray-700); }
+    .mock-hero-card .label { font-size: 10.5px; color: var(--gray-700); font-weight: 600; line-height: 1.2; }
+    .mock-hero-card .value { font-size: 18px; color: var(--navy-700); font-weight: 800; letter-spacing: -0.02em; }
+    .mock-hero-card .delta { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; }
+    .mock-hero-card .delta.up { color: var(--horizon-green); }
+    .mock-hero-card .delta.down { color: #E31A1A; }
+    .mock-hero-card .delta.flat { color: var(--gray-700); }
+    .mock-hero-card svg.spark-mini { width: 100%; height: 22px; margin-top: 2px; }
+
+    /* KPI row — 4 small widgets matching Widget.tsx */
+    .mock-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+    .mock-widget {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .mock-widget-icon {
+      width: 30px; height: 30px;
+      border-radius: 9999px;
+      background: #F4F7FE;
+      color: var(--brand-500);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-widget-label { display: block; font-size: 10.5px; color: var(--gray-700); font-weight: 500; line-height: 1.2; }
+    .mock-widget-value { display: block; font-size: 14px; color: var(--navy-700); font-weight: 800; margin-top: 2px; }
+
+    /* Area chart card */
+    .mock-chart-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .mock-chart-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .mock-chart-title { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--navy-700); }
+    .mock-chart-sub { margin: 2px 0 0; font-size: 10px; color: var(--gray-700); }
+    .mock-legend { display: flex; gap: 10px; font-size: 10.5px; color: var(--gray-700); align-items: center; }
+    .mock-legend .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+    /* Mockup B — SourceCardGrid (4 cards, each with pill / number / cost / share bar / sparkline) */
+    .mock-src-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .mock-src-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .mock-src-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .mock-src-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .pill-claude   { background: #F3E8FF; color: #7928CA; }
+    .pill-codex    { background: #DBEAFE; color: #1D4ED8; }
+    .pill-opencode { background: #CFFAFE; color: #155E75; }
+    .pill-aider    { background: #FEF3C7; color: #B45309; }
+    .mock-src-events { font-size: 9.5px; color: var(--gray-700); font-weight: 500; }
+    .mock-src-num { font-size: 18px; color: var(--navy-700); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+    .mock-src-cost { font-size: 11px; color: var(--gray-700); margin-top: 2px; }
+    .mock-src-cost b { color: var(--navy-700); font-weight: 700; }
+    .mock-src-share { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+    .mock-src-share .bar { flex: 1; height: 5px; border-radius: 9999px; background: rgba(218,222,236,0.8); overflow: hidden; }
+    .mock-src-share .bar > span { display: block; height: 100%; border-radius: 9999px; }
+    .mock-src-share .pct { font-size: 10px; color: var(--gray-700); font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+    .mock-src-spark { width: 100%; height: 30px; margin-top: 4px; }
+
+    /* Mockup C — Project ranking table */
+    .mock-table-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .mock-filter {
+      display: inline-flex; gap: 0;
+      background: #F4F7FE;
+      border: 1px solid var(--gray-200);
+      border-radius: 9999px;
+      padding: 2px;
+      font-size: 10px;
+    }
+    .mock-filter span { padding: 3px 9px; border-radius: 9999px; color: var(--gray-700); font-weight: 600; }
+    .mock-filter span.on { background: #fff; color: var(--navy-700); box-shadow: 0 1px 3px rgba(112,144,176,0.20); }
+    .mock-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .mock-tbl th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-700);
+      padding-bottom: 8px;
+      font-size: 10px;
+      text-transform: none;
+    }
+    .mock-tbl th.r, .mock-tbl td.r { text-align: right; }
+    .mock-tbl td {
+      padding: 7px 0;
+      border-top: 1px solid var(--gray-200);
+      color: var(--navy-700);
+    }
+    .mock-tbl td.muted { color: var(--gray-700); }
+    .mock-tbl td .proj { display: inline-flex; align-items: center; gap: 6px; }
+    .mock-tbl td .proj .icon {
+      width: 14px; height: 14px;
+      border-radius: 4px;
+      background: var(--brand-50);
+      color: var(--brand-500);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 800;
+    }
+    .mock-tbl td .proj a { color: var(--navy-700); text-decoration: none; font-weight: 600; }
+    .mock-tbl td.r .num { font-variant-numeric: tabular-nums; }
+    .mock-share-inline { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; }
+    .mock-share-inline .bar { width: 56px; height: 5px; border-radius: 9999px; background: rgba(218,222,236,0.8); overflow: hidden; }
+    .mock-share-inline .bar > span { display: block; height: 100%; background: var(--brand-500); border-radius: 9999px; }
+    .mock-share-inline .pct { font-size: 10px; color: var(--gray-700); font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
 
     /* Layout: 1 large + 2 small */
     .shot-grid-1 { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 18px; }
@@ -548,10 +608,10 @@
               <span class="shot-url">https://token.your-domain.com/</span>
             </div>
             <div class="shot-body">
-              <div class="mock-hero">
+              <div class="mock-hero-band">
                 <div>
                   <h5>首页</h5>
-                  <p>最近 30 天 · 跨工具聚合</p>
+                  <p>时区按 UTC+8 · 跨工具聚合</p>
                 </div>
                 <div class="mock-range">
                   <span>7 天</span>
@@ -559,107 +619,159 @@
                   <span>全部</span>
                 </div>
               </div>
-              <div class="mock-kpi-row">
-                <div class="mock-kpi">
-                  <span class="mock-kpi-label">输入 tokens</span>
-                  <span class="mock-kpi-value">768k</span>
-                  <span class="mock-kpi-delta up">▲ 18% 周环比</span>
-                </div>
-                <div class="mock-kpi">
-                  <span class="mock-kpi-label">输出 tokens</span>
-                  <span class="mock-kpi-value">284k</span>
-                  <span class="mock-kpi-delta up">▲ 6%</span>
-                </div>
-                <div class="mock-kpi">
-                  <span class="mock-kpi-label">缓存命中</span>
-                  <span class="mock-kpi-value">188k</span>
-                  <span class="mock-kpi-delta down">▼ 3%</span>
-                </div>
-                <div class="mock-kpi">
-                  <span class="mock-kpi-label">成本</span>
-                  <span class="mock-kpi-value">$184.20</span>
-                  <span class="mock-kpi-delta up">▲ 12%</span>
-                </div>
-              </div>
-              <div class="mock-chart-card">
-                <div class="mock-chart-head">
-                  <h6 class="mock-chart-title">每日 token 用量（按工具拆分）</h6>
-                  <div class="mock-legend">
-                    <span><i class="swatch" style="background:var(--horizon-purple)"></i>Claude Code</span>
-                    <span><i class="swatch" style="background:var(--horizon-green)"></i>Codex</span>
-                    <span><i class="swatch" style="background:var(--horizon-orange)"></i>OpenCode</span>
+
+              <!-- HERO ROW: 3 large cards (Compute / Cost / Cache hit rate) -->
+              <div class="mock-row-3">
+                <div class="mock-hero-card">
+                  <span class="mock-hero-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+                  </span>
+                  <div>
+                    <span class="label">最近 30 天计算量</span>
+                    <span class="value">1.24M</span>
+                    <span class="delta up">▲ 12.4% 周环比</span>
+                    <svg class="spark-mini" viewBox="0 0 100 22" preserveAspectRatio="none">
+                      <defs><linearGradient id="sparkA" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4318FF" stop-opacity="0.35"/><stop offset="100%" stop-color="#4318FF" stop-opacity="0"/></linearGradient></defs>
+                      <path d="M0,18 L8,14 L16,16 L24,10 L32,12 L40,8 L48,11 L56,6 L64,9 L72,5 L80,7 L88,3 L96,5 L100,4 L100,22 L0,22 Z" fill="url(#sparkA)"/>
+                      <polyline points="0,18 8,14 16,16 24,10 32,12 40,8 48,11 56,6 64,9 72,5 80,7 88,3 96,5 100,4" fill="none" stroke="#4318FF" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                    </svg>
                   </div>
                 </div>
-                <svg viewBox="0 0 600 180" preserveAspectRatio="none" width="100%" height="180" role="img" aria-label="每日 token 用量堆叠柱状图">
-                  <line x1="0" y1="160" x2="600" y2="160" stroke="var(--gray-200)" stroke-width="1"/>
-                  <line x1="0" y1="120" x2="600" y2="120" stroke="var(--gray-100)" stroke-width="1"/>
-                  <line x1="0" y1="80"  x2="600" y2="80"  stroke="var(--gray-100)" stroke-width="1"/>
-                  <line x1="0" y1="40"  x2="600" y2="40"  stroke="var(--gray-100)" stroke-width="1"/>
-                  <!-- 14 stacked bars (claude/codex/opencode) -->
-                  <g>
-                    <!-- bar template values approximate token volume; orange (open) on top, green (codex) middle, purple (claude) bottom -->
-                    <!-- bar 1 -->
-                    <rect x="10"  y="110" width="28" height="50" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="10"  y="90"  width="28" height="20" fill="var(--horizon-green)"/>
-                    <rect x="10"  y="80"  width="28" height="10" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 2 -->
-                    <rect x="50"  y="98"  width="28" height="62" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="50"  y="78"  width="28" height="20" fill="var(--horizon-green)"/>
-                    <rect x="50"  y="62"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 3 -->
-                    <rect x="90"  y="120" width="28" height="40" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="90"  y="106" width="28" height="14" fill="var(--horizon-green)"/>
-                    <rect x="90"  y="98"  width="28" height="8"  fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 4 -->
-                    <rect x="130" y="88"  width="28" height="72" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="130" y="64"  width="28" height="24" fill="var(--horizon-green)"/>
-                    <rect x="130" y="50"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 5 -->
-                    <rect x="170" y="100" width="28" height="60" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="170" y="82"  width="28" height="18" fill="var(--horizon-green)"/>
-                    <rect x="170" y="70"  width="28" height="12" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 6 -->
-                    <rect x="210" y="76"  width="28" height="84" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="210" y="52"  width="28" height="24" fill="var(--horizon-green)"/>
-                    <rect x="210" y="36"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 7 -->
-                    <rect x="250" y="92"  width="28" height="68" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="250" y="74"  width="28" height="18" fill="var(--horizon-green)"/>
-                    <rect x="250" y="60"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 8 -->
-                    <rect x="290" y="106" width="28" height="54" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="290" y="88"  width="28" height="18" fill="var(--horizon-green)"/>
-                    <rect x="290" y="78"  width="28" height="10" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 9 -->
-                    <rect x="330" y="80"  width="28" height="80" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="330" y="58"  width="28" height="22" fill="var(--horizon-green)"/>
-                    <rect x="330" y="42"  width="28" height="16" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 10 -->
-                    <rect x="370" y="68"  width="28" height="92" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="370" y="42"  width="28" height="26" fill="var(--horizon-green)"/>
-                    <rect x="370" y="24"  width="28" height="18" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 11 -->
-                    <rect x="410" y="86"  width="28" height="74" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="410" y="64"  width="28" height="22" fill="var(--horizon-green)"/>
-                    <rect x="410" y="50"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 12 -->
-                    <rect x="450" y="58"  width="28" height="102" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="450" y="32"  width="28" height="26"  fill="var(--horizon-green)"/>
-                    <rect x="450" y="16"  width="28" height="16"  fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 13 -->
-                    <rect x="490" y="74"  width="28" height="86" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="490" y="54"  width="28" height="20" fill="var(--horizon-green)"/>
-                    <rect x="490" y="42"  width="28" height="12" fill="var(--horizon-orange)" rx="3"/>
-                    <!-- bar 14 -->
-                    <rect x="530" y="64"  width="28" height="96" fill="var(--horizon-purple)" rx="3"/>
-                    <rect x="530" y="40"  width="28" height="24" fill="var(--horizon-green)"/>
-                    <rect x="530" y="26"  width="28" height="14" fill="var(--horizon-orange)" rx="3"/>
+                <div class="mock-hero-card">
+                  <span class="mock-hero-icon" style="background:#FFF7EB; color:#FFB547">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
+                  </span>
+                  <div>
+                    <span class="label">最近 30 天成本</span>
+                    <span class="value">$184.20</span>
+                    <span class="delta up">▲ 8.1% 周环比</span>
+                    <svg class="spark-mini" viewBox="0 0 100 22" preserveAspectRatio="none">
+                      <defs><linearGradient id="sparkB" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#FFB547" stop-opacity="0.40"/><stop offset="100%" stop-color="#FFB547" stop-opacity="0"/></linearGradient></defs>
+                      <path d="M0,17 L10,13 L20,15 L30,9 L40,11 L50,7 L60,8 L70,5 L80,6 L90,4 L100,5 L100,22 L0,22 Z" fill="url(#sparkB)"/>
+                      <polyline points="0,17 10,13 20,15 30,9 40,11 50,7 60,8 70,5 80,6 90,4 100,5" fill="none" stroke="#FFB547" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mock-hero-card">
+                  <span class="mock-hero-icon" style="background:rgba(1,181,116,0.10); color:#01B574">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+                  </span>
+                  <div>
+                    <span class="label">缓存命中率（节省 188k tokens）</span>
+                    <span class="value">42.5%</span>
+                    <span class="delta flat">—</span>
+                    <svg class="spark-mini" viewBox="0 0 100 22" preserveAspectRatio="none">
+                      <defs><linearGradient id="sparkC" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#01B574" stop-opacity="0.35"/><stop offset="100%" stop-color="#01B574" stop-opacity="0"/></linearGradient></defs>
+                      <path d="M0,14 L10,11 L20,13 L30,9 L40,12 L50,10 L60,8 L70,11 L80,9 L90,10 L100,8 L100,22 L0,22 Z" fill="url(#sparkC)"/>
+                      <polyline points="0,14 10,11 20,13 30,9 40,12 50,10 60,8 70,11 80,9 90,10 100,8" fill="none" stroke="#01B574" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KPI ROW: 4 small widgets -->
+              <div class="mock-row-4">
+                <div class="mock-widget">
+                  <span class="mock-widget-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4m0 0l6-6m-6 6l6 6"/></svg>
+                  </span>
+                  <div>
+                    <span class="mock-widget-label">输入 tokens</span>
+                    <span class="mock-widget-value">768k</span>
+                  </div>
+                </div>
+                <div class="mock-widget">
+                  <span class="mock-widget-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21V13H7v8M7 3v5h8"/></svg>
+                  </span>
+                  <div>
+                    <span class="mock-widget-label">缓存写入</span>
+                    <span class="mock-widget-value">96k</span>
+                  </div>
+                </div>
+                <div class="mock-widget">
+                  <span class="mock-widget-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                  </span>
+                  <div>
+                    <span class="mock-widget-label">缓存复用</span>
+                    <span class="mock-widget-value">188k</span>
+                  </div>
+                </div>
+                <div class="mock-widget">
+                  <span class="mock-widget-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+                  </span>
+                  <div>
+                    <span class="mock-widget-label">输出 tokens</span>
+                    <span class="mock-widget-value">284k</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Daily usage AREA chart (Input + Output, dual axes) -->
+              <div class="mock-chart-card">
+                <div class="mock-chart-head">
+                  <div>
+                    <h6 class="mock-chart-title">每日用量趋势</h6>
+                    <p class="mock-chart-sub">最近 30 天 · 输入 / 输出 双轴</p>
+                  </div>
+                  <div class="mock-legend">
+                    <span><i class="swatch" style="background:#4318FF"></i>输入</span>
+                    <span><i class="swatch" style="background:#6AD2FF"></i>输出</span>
+                  </div>
+                </div>
+                <svg viewBox="0 0 620 170" width="100%" height="170" role="img" aria-label="每日用量面积图（输入/输出）">
+                  <defs>
+                    <linearGradient id="areaIn" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%"  stop-color="#4318FF" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#4318FF" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="areaOut" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%"  stop-color="#6AD2FF" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#6AD2FF" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- dashed grid -->
+                  <g stroke="#E0E5F2" stroke-dasharray="4 5" stroke-width="1">
+                    <line x1="40" y1="20"  x2="600" y2="20"/>
+                    <line x1="40" y1="60"  x2="600" y2="60"/>
+                    <line x1="40" y1="100" x2="600" y2="100"/>
+                    <line x1="40" y1="140" x2="600" y2="140"/>
                   </g>
+                  <!-- left Y axis (Input) labels -->
+                  <g font-size="9" fill="#4318FF" font-weight="600" text-anchor="end">
+                    <text x="34" y="24">40k</text>
+                    <text x="34" y="64">30k</text>
+                    <text x="34" y="104">20k</text>
+                    <text x="34" y="144">10k</text>
+                  </g>
+                  <!-- right Y axis (Output) labels -->
+                  <g font-size="9" fill="#6AD2FF" font-weight="600" text-anchor="start">
+                    <text x="606" y="24">12k</text>
+                    <text x="606" y="64">9k</text>
+                    <text x="606" y="104">6k</text>
+                    <text x="606" y="144">3k</text>
+                  </g>
+                  <!-- x axis labels -->
+                  <g font-size="9" fill="#A3AED0" text-anchor="middle">
+                    <text x="80"  y="160">04-19</text>
+                    <text x="200" y="160">04-25</text>
+                    <text x="320" y="160">05-01</text>
+                    <text x="440" y="160">05-08</text>
+                    <text x="560" y="160">05-15</text>
+                  </g>
+                  <!-- Input area (smooth-ish, polyline + closed path) -->
+                  <path d="M40,100 C 80,90 100,70 140,80 C 180,90 220,60 260,70 C 300,80 340,40 380,50 C 420,60 460,30 500,40 C 540,50 580,25 600,30 L 600,150 L 40,150 Z" fill="url(#areaIn)"/>
+                  <path d="M40,100 C 80,90 100,70 140,80 C 180,90 220,60 260,70 C 300,80 340,40 380,50 C 420,60 460,30 500,40 C 540,50 580,25 600,30" fill="none" stroke="#4318FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                  <!-- Output area (smaller scale) -->
+                  <path d="M40,120 C 80,115 100,108 140,112 C 180,116 220,100 260,105 C 300,110 340,90 380,95 C 420,100 460,82 500,86 C 540,90 580,78 600,82 L 600,150 L 40,150 Z" fill="url(#areaOut)"/>
+                  <path d="M40,120 C 80,115 100,108 140,112 C 180,116 220,100 260,105 C 300,110 340,90 380,95 C 420,100 460,82 500,86 C 540,90 580,78 600,82" fill="none" stroke="#6AD2FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
                 </svg>
               </div>
             </div>
           </div>
-          <figcaption class="shot-caption">首页 · 时间窗切换 + 关键指标 + 每日用量堆叠图</figcaption>
+          <figcaption class="shot-caption">首页 · Hero 三卡（计算量 / 成本 / 缓存命中率）+ 四个 KPI Widget + 每日用量双轴面积图</figcaption>
         </figure>
       </div>
 
@@ -670,33 +782,74 @@
               <span class="shot-dot shot-dot-r"></span>
               <span class="shot-dot shot-dot-y"></span>
               <span class="shot-dot shot-dot-g"></span>
-              <span class="shot-url">/ · 来源拆分</span>
+              <span class="shot-url">/ · 工具拆分</span>
             </div>
             <div class="shot-body">
-              <div class="mock-chart-card">
-                <div class="mock-chart-head">
-                  <h6 class="mock-chart-title">按工具拆分</h6>
-                  <span class="mock-legend" style="font-size:10.5px;color:var(--gray-700)">本期 1.24M tokens</span>
+              <div class="mock-src-grid">
+                <!-- card 1: claude-code -->
+                <div class="mock-src-card">
+                  <div class="mock-src-top">
+                    <span class="mock-src-pill pill-claude">claude-code</span>
+                    <span class="mock-src-events">1,284 · events</span>
+                  </div>
+                  <div class="mock-src-num">720k</div>
+                  <div class="mock-src-cost"><b>$92.40</b> <span>cost</span></div>
+                  <div class="mock-src-share"><div class="bar"><span style="width:58%;background:#FF6F61"></span></div><span class="pct">58.0%</span></div>
+                  <svg class="mock-src-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <defs><linearGradient id="spS1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#FF6F61" stop-opacity="0.35"/><stop offset="100%" stop-color="#FF6F61" stop-opacity="0"/></linearGradient></defs>
+                    <path d="M0,22 L10,18 L20,20 L30,12 L40,15 L50,9 L60,12 L70,7 L80,10 L90,5 L100,8 L100,30 L0,30 Z" fill="url(#spS1)"/>
+                    <polyline points="0,22 10,18 20,20 30,12 40,15 50,9 60,12 70,7 80,10 90,5 100,8" fill="none" stroke="#FF6F61" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  </svg>
                 </div>
-                <div class="mock-src-row">
-                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-purple)"></span>Claude Code</span>
-                  <div class="mock-src-bar"><span style="width:58%;background:var(--horizon-purple)"></span></div>
-                  <span class="mock-src-val">720k</span>
+                <!-- card 2: codex -->
+                <div class="mock-src-card">
+                  <div class="mock-src-top">
+                    <span class="mock-src-pill pill-codex">codex</span>
+                    <span class="mock-src-events">612 · events</span>
+                  </div>
+                  <div class="mock-src-num">372k</div>
+                  <div class="mock-src-cost"><b>$68.10</b> <span>cost</span></div>
+                  <div class="mock-src-share"><div class="bar"><span style="width:30%;background:#4318FF"></span></div><span class="pct">30.0%</span></div>
+                  <svg class="mock-src-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <defs><linearGradient id="spS2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4318FF" stop-opacity="0.35"/><stop offset="100%" stop-color="#4318FF" stop-opacity="0"/></linearGradient></defs>
+                    <path d="M0,20 L10,22 L20,15 L30,18 L40,12 L50,14 L60,10 L70,13 L80,8 L90,11 L100,7 L100,30 L0,30 Z" fill="url(#spS2)"/>
+                    <polyline points="0,20 10,22 20,15 30,18 40,12 50,14 60,10 70,13 80,8 90,11 100,7" fill="none" stroke="#4318FF" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  </svg>
                 </div>
-                <div class="mock-src-row">
-                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-green)"></span>Codex</span>
-                  <div class="mock-src-bar"><span style="width:30%;background:var(--horizon-green)"></span></div>
-                  <span class="mock-src-val">372k</span>
+                <!-- card 3: opencode -->
+                <div class="mock-src-card">
+                  <div class="mock-src-top">
+                    <span class="mock-src-pill pill-opencode">opencode</span>
+                    <span class="mock-src-events">204 · events</span>
+                  </div>
+                  <div class="mock-src-num">148k</div>
+                  <div class="mock-src-cost"><b>$18.70</b> <span>cost</span></div>
+                  <div class="mock-src-share"><div class="bar"><span style="width:12%;background:#01B574"></span></div><span class="pct">12.0%</span></div>
+                  <svg class="mock-src-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <defs><linearGradient id="spS3" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#01B574" stop-opacity="0.35"/><stop offset="100%" stop-color="#01B574" stop-opacity="0"/></linearGradient></defs>
+                    <path d="M0,24 L10,22 L20,20 L30,21 L40,18 L50,20 L60,16 L70,18 L80,14 L90,15 L100,12 L100,30 L0,30 Z" fill="url(#spS3)"/>
+                    <polyline points="0,24 10,22 20,20 30,21 40,18 50,20 60,16 70,18 80,14 90,15 100,12" fill="none" stroke="#01B574" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  </svg>
                 </div>
-                <div class="mock-src-row">
-                  <span class="mock-src-name"><span class="dot" style="background:var(--horizon-orange)"></span>OpenCode</span>
-                  <div class="mock-src-bar"><span style="width:12%;background:var(--horizon-orange)"></span></div>
-                  <span class="mock-src-val">148k</span>
+                <!-- card 4: aider -->
+                <div class="mock-src-card">
+                  <div class="mock-src-top">
+                    <span class="mock-src-pill pill-aider">aider</span>
+                    <span class="mock-src-events">38 · events</span>
+                  </div>
+                  <div class="mock-src-num">24k</div>
+                  <div class="mock-src-cost"><b>$4.90</b> <span>cost</span></div>
+                  <div class="mock-src-share"><div class="bar"><span style="width:2%;background:#FFB547"></span></div><span class="pct">2.0%</span></div>
+                  <svg class="mock-src-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <defs><linearGradient id="spS4" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#FFB547" stop-opacity="0.35"/><stop offset="100%" stop-color="#FFB547" stop-opacity="0"/></linearGradient></defs>
+                    <path d="M0,26 L10,25 L20,26 L30,24 L40,25 L50,23 L60,24 L70,22 L80,23 L90,21 L100,22 L100,30 L0,30 Z" fill="url(#spS4)"/>
+                    <polyline points="0,26 10,25 20,26 30,24 40,25 50,23 60,24 70,22 80,23 90,21 100,22" fill="none" stroke="#FFB547" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  </svg>
                 </div>
               </div>
             </div>
           </div>
-          <figcaption class="shot-caption">每个工具的贡献量一目了然</figcaption>
+          <figcaption class="shot-caption">SourceCardGrid · 每个工具一张卡，计算量 / 成本 / share / 7 日走势</figcaption>
         </figure>
 
         <figure style="margin:0">
@@ -705,25 +858,72 @@
               <span class="shot-dot shot-dot-r"></span>
               <span class="shot-dot shot-dot-y"></span>
               <span class="shot-dot shot-dot-g"></span>
-              <span class="shot-url">/projects · 项目排行</span>
+              <span class="shot-url">/ · 项目排行</span>
             </div>
             <div class="shot-body">
               <div class="mock-chart-card">
-                <div class="mock-chart-head">
+                <div class="mock-table-head">
                   <h6 class="mock-chart-title">项目排行</h6>
-                  <span class="mock-legend" style="font-size:10.5px;color:var(--gray-700)">仅 Git 项目</span>
+                  <div class="mock-filter"><span>全部</span><span class="on">仅 Git 项目</span></div>
                 </div>
-                <ol class="mock-rank">
-                  <li><span class="mock-rank-num">1</span><div><div style="margin-bottom:3px">tokenizer</div><div class="mock-rank-bar"><span style="width:92%"></span></div></div><span class="mock-rank-val">432k</span></li>
-                  <li><span class="mock-rank-num">2</span><div><div style="margin-bottom:3px">web-dashboard</div><div class="mock-rank-bar"><span style="width:62%"></span></div></div><span class="mock-rank-val">281k</span></li>
-                  <li><span class="mock-rank-num">3</span><div><div style="margin-bottom:3px">parser-codex</div><div class="mock-rank-bar"><span style="width:42%"></span></div></div><span class="mock-rank-val">187k</span></li>
-                  <li><span class="mock-rank-num">4</span><div><div style="margin-bottom:3px">infra-cli</div><div class="mock-rank-bar"><span style="width:24%"></span></div></div><span class="mock-rank-val">102k</span></li>
-                  <li><span class="mock-rank-num">5</span><div><div style="margin-bottom:3px">notes-mcp</div><div class="mock-rank-bar"><span style="width:14%"></span></div></div><span class="mock-rank-val">58k</span></li>
-                </ol>
+                <table class="mock-tbl">
+                  <thead>
+                    <tr>
+                      <th>项目</th>
+                      <th class="r">计算量</th>
+                      <th class="r">总量</th>
+                      <th class="r">成本</th>
+                      <th class="r">占比</th>
+                      <th class="r">事件</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="proj"><span class="icon">T</span><a href="#">tokenizer</a></span></td>
+                      <td class="r"><span class="num">432k</span></td>
+                      <td class="r muted"><span class="num">510k</span></td>
+                      <td class="r"><span class="num">$58.40</span></td>
+                      <td class="r"><span class="mock-share-inline"><span class="bar"><span style="width:92%"></span></span><span class="pct">34.8%</span></span></td>
+                      <td class="r muted"><span class="num">812</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="proj"><span class="icon">W</span><a href="#">web-dashboard</a></span></td>
+                      <td class="r"><span class="num">281k</span></td>
+                      <td class="r muted"><span class="num">340k</span></td>
+                      <td class="r"><span class="num">$42.10</span></td>
+                      <td class="r"><span class="mock-share-inline"><span class="bar"><span style="width:62%"></span></span><span class="pct">22.7%</span></span></td>
+                      <td class="r muted"><span class="num">514</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="proj"><span class="icon">P</span><a href="#">parser-codex</a></span></td>
+                      <td class="r"><span class="num">187k</span></td>
+                      <td class="r muted"><span class="num">220k</span></td>
+                      <td class="r"><span class="num">$28.60</span></td>
+                      <td class="r"><span class="mock-share-inline"><span class="bar"><span style="width:42%"></span></span><span class="pct">15.1%</span></span></td>
+                      <td class="r muted"><span class="num">312</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="proj"><span class="icon">I</span><a href="#">infra-cli</a></span></td>
+                      <td class="r"><span class="num">102k</span></td>
+                      <td class="r muted"><span class="num">128k</span></td>
+                      <td class="r"><span class="num">$14.20</span></td>
+                      <td class="r"><span class="mock-share-inline"><span class="bar"><span style="width:24%"></span></span><span class="pct">8.2%</span></span></td>
+                      <td class="r muted"><span class="num">186</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="proj"><span class="icon">N</span><a href="#">notes-mcp</a></span></td>
+                      <td class="r"><span class="num">58k</span></td>
+                      <td class="r muted"><span class="num">72k</span></td>
+                      <td class="r"><span class="num">$7.90</span></td>
+                      <td class="r"><span class="mock-share-inline"><span class="bar"><span style="width:14%"></span></span><span class="pct">4.6%</span></span></td>
+                      <td class="r muted"><span class="num">96</span></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-          <figcaption class="shot-caption">按项目聚合，支持「只看 Git 项目」过滤</figcaption>
+          <figcaption class="shot-caption">项目排行表 · 计算量 / 总量 / 成本 / 占比 / 事件，支持「仅 Git 项目」切换</figcaption>
         </figure>
       </div>
     </section>
