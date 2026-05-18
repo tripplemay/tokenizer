@@ -291,7 +291,7 @@
     "copyright": "© {year} Tokenizer — 编程 token 用量追踪。"
   },
   "timezone": {
-    "note": "所有时间均按 Asia/Shanghai 时区 (UTC+8) 显示。"
+    "note": "所有时间均按 {tz} 时区显示。"
   },
   "chart": {
     "input": "输入",

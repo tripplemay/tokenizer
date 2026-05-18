@@ -291,7 +291,7 @@
     "copyright": "© {year} Tokenizer — coding token usage tracker."
   },
   "timezone": {
-    "note": "All times shown in Asia/Shanghai (UTC+8)."
+    "note": "All times shown in {tz}."
   },
   "chart": {
     "input": "Input",
