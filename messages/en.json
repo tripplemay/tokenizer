@@ -245,6 +245,30 @@
       "output": "Output"
     }
   },
+  "login": {
+    "tagline": "Coding token usage tracker",
+    "title": "Sign in to Tokenizer",
+    "description": "Enter your email; we'll send you a one-click sign-in link. No password needed.",
+    "field": {
+      "email": "Email"
+    },
+    "submit": {
+      "idle": "Send sign-in link",
+      "pending": "Sending…"
+    },
+    "firstUseHint": "First time? An account is created automatically when you submit.",
+    "error": {
+      "configuration": "Sign-in service is not configured yet. Try again later or contact the admin.",
+      "generic": "Sign-in failed ({code})."
+    },
+    "verify": {
+      "title": "Check your inbox",
+      "description": "We sent you a sign-in link. Click it to finish signing in — valid for 10 minutes.",
+      "noEmailHint": "Didn't get it? Check your spam folder, or ",
+      "resendWaiting": "Resend in {seconds}s",
+      "resendReady": "Resend now"
+    }
+  },
   "admin": {
     "login": {
       "title": "Admin Sign In",
