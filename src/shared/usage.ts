@@ -45,6 +45,7 @@ export type DeviceInput = {
 export type BatchUsageRequest = {
   device?: DeviceInput;
   events: UsageEventInput[];
+  timezone?: string;
 };
 
 export function normalizeTokenCount(value: unknown): number {
