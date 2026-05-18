@@ -1,25 +1,45 @@
-const REPORTING_TIMEZONE = "Asia/Shanghai";
+const DEFAULT_TIMEZONE = "Asia/Shanghai";
 
-const dateTimeFmt = new Intl.DateTimeFormat("sv-SE", {
-  timeZone: REPORTING_TIMEZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false
-});
+// Memoize Intl.DateTimeFormat per timezone. Pages call formatDateTime
+// hundreds of times per render across event tables and device lists,
+// and constructing Intl formatters is non-trivial.
+const dateTimeCache = new Map<string, Intl.DateTimeFormat>();
+const dateTimeSecondsCache = new Map<string, Intl.DateTimeFormat>();
 
-const dateTimeSecondsFmt = new Intl.DateTimeFormat("sv-SE", {
-  timeZone: REPORTING_TIMEZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hour12: false
-});
+function getDateTimeFmt(timezone: string): Intl.DateTimeFormat {
+  let fmt = dateTimeCache.get(timezone);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    dateTimeCache.set(timezone, fmt);
+  }
+  return fmt;
+}
+
+function getDateTimeSecondsFmt(timezone: string): Intl.DateTimeFormat {
+  let fmt = dateTimeSecondsCache.get(timezone);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    dateTimeSecondsCache.set(timezone, fmt);
+  }
+  return fmt;
+}
 
 export function formatFullNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
@@ -78,31 +98,41 @@ export function formatWowDelta(current: number, previous: number): { text: strin
 // Relative time helper for "5 分钟前" / "2 小时前" style display. Falls back to
 // the absolute date for anything older than ~24h since relative time stops
 // being precise enough beyond that.
-export function formatRelativeTime(value: Date | string | null | undefined, t: (key: string, values?: Record<string, string | number>) => string): string {
+export function formatRelativeTime(
+  value: Date | string | null | undefined,
+  t: (key: string, values?: Record<string, string | number>) => string,
+  timezone: string = DEFAULT_TIMEZONE,
+): string {
   if (!value) return "—";
   const date = typeof value === "string" ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return "—";
   const diffMs = Date.now() - date.getTime();
-  if (diffMs < 0) return formatDateTime(date);
+  if (diffMs < 0) return formatDateTime(date, timezone);
   const sec = Math.floor(diffMs / 1000);
   if (sec < 60) return t("relative.justNow");
   const min = Math.floor(sec / 60);
   if (min < 60) return t("relative.minutesAgo", { n: min });
   const hr = Math.floor(min / 60);
   if (hr < 24) return t("relative.hoursAgo", { n: hr });
-  return formatDateTime(date);
+  return formatDateTime(date, timezone);
 }
 
-export function formatDateTime(value: Date | string | null | undefined): string {
+export function formatDateTime(
+  value: Date | string | null | undefined,
+  timezone: string = DEFAULT_TIMEZONE,
+): string {
   if (!value) return "—";
   const date = typeof value === "string" ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return "—";
-  return dateTimeFmt.format(date);
+  return getDateTimeFmt(timezone).format(date);
 }
 
-export function formatDateTimeSeconds(value: Date | string | null | undefined): string {
+export function formatDateTimeSeconds(
+  value: Date | string | null | undefined,
+  timezone: string = DEFAULT_TIMEZONE,
+): string {
   if (!value) return "—";
   const date = typeof value === "string" ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return "—";
-  return dateTimeSecondsFmt.format(date);
+  return getDateTimeSecondsFmt(timezone).format(date);
 }
