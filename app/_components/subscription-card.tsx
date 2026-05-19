@@ -93,18 +93,21 @@ function ConnectedCard({ codex, t, tz }: { codex: QuotaLatestProvider; t: Transl
 }
 
 function RateLimitRow({ label, window: w, t, tz }: { label: string; window: QuotaLatestWindow; t: Translator; tz: string }) {
-  const pct = w.utilization != null ? Math.round(w.utilization * 100) : null;
+  // Display as REMAINING capacity (matches Codex CLI's terminology). Bar
+  // is full at 100% remaining and empties as the user spends quota. Color
+  // thresholds invert: low remaining = danger, high remaining = healthy.
+  const remaining = w.utilization != null ? Math.max(0, 100 - Math.round(w.utilization * 100)) : null;
   const barColor =
-    pct == null ? "bg-gray-200 dark:bg-white/10" :
-    pct >= 90 ? "bg-red-500" :
-    pct >= 70 ? "bg-amber-500" :
+    remaining == null ? "bg-gray-200 dark:bg-white/10" :
+    remaining <= 10 ? "bg-red-500" :
+    remaining <= 30 ? "bg-amber-500" :
     "bg-brand-500";
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
         <span>{label}</span>
         <span>
-          {pct != null ? `${pct}%` : "—"}
+          {remaining != null ? `${remaining}%` : "—"}
           {w.resetsAt && (
             <span className="ml-2 text-gray-500">
               {t("subscription.codex.resetsIn", { time: formatRelativeTime(w.resetsAt, t, tz) })}
@@ -113,7 +116,7 @@ function RateLimitRow({ label, window: w, t, tz }: { label: string; window: Quot
         </span>
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-        <div className={`h-full ${barColor}`} style={{ width: pct != null ? `${pct}%` : "0%" }} />
+        <div className={`h-full ${barColor}`} style={{ width: remaining != null ? `${remaining}%` : "0%" }} />
       </div>
     </div>
   );

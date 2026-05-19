@@ -275,10 +275,10 @@
       "title": "Codex / ChatGPT",
       "planLabel": "{plan} tier",
       "creditBalance": "余额",
-      "ratePrimary": "速率限制（主窗口）",
-      "rateSecondary": "速率限制（副窗口）",
-      "codeReviewPrimary": "Code Review 主窗口",
-      "codeReviewSecondary": "Code Review 副窗口",
+      "ratePrimary": "剩余额度（5小时）",
+      "rateSecondary": "剩余额度（一周）",
+      "codeReviewPrimary": "Code Review 剩余额度（5小时）",
+      "codeReviewSecondary": "Code Review 剩余额度（一周）",
       "resetsIn": "{time}后重置"
     },
     "empty": {

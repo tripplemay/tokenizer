@@ -275,10 +275,10 @@
       "title": "Codex / ChatGPT",
       "planLabel": "{plan} tier",
       "creditBalance": "Credit balance",
-      "ratePrimary": "Rate limit (primary)",
-      "rateSecondary": "Rate limit (secondary)",
-      "codeReviewPrimary": "Code review (primary)",
-      "codeReviewSecondary": "Code review (secondary)",
+      "ratePrimary": "Remaining (5h window)",
+      "rateSecondary": "Remaining (weekly)",
+      "codeReviewPrimary": "Code review remaining (5h)",
+      "codeReviewSecondary": "Code review remaining (weekly)",
       "resetsIn": "resets in {time}"
     },
     "empty": {
