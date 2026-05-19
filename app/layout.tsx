@@ -10,6 +10,7 @@ import { AdminShell } from "./admin-shell";
 import { AuthProvider } from "./session-provider";
 import { auth } from "@/auth";
 import { countOutdatedDevices, INSTALL_COMMAND } from "@/server/agent-version";
+import { UpgradeBanner } from "./_components/upgrade-banner";
 
 export const metadata: Metadata = {
   title: "Tokenizer",
@@ -23,12 +24,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const outdatedCount = session?.user?.id
     ? await countOutdatedDevices(session.user.id)
     : 0;
+  const banner = outdatedCount > 0
+    ? <UpgradeBanner count={outdatedCount} command={INSTALL_COMMAND} />
+    : null;
   return (
     <html lang={locale}>
       <body id="root">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
-            <AdminShell outdatedCount={outdatedCount} installCommand={INSTALL_COMMAND}>
+            <AdminShell banner={banner}>
               {children}
             </AdminShell>
           </AuthProvider>

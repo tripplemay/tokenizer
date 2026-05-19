@@ -8,15 +8,12 @@ import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 import Footer from "@/components/footer/Footer";
 import { TimezoneReporter } from "./_components/timezone-reporter";
-import { UpgradeBanner } from "./_components/upgrade-banner";
 
 export function AdminShell({
-  outdatedCount,
-  installCommand,
+  banner,
   children,
 }: {
-  outdatedCount: number;
-  installCommand: string;
+  banner: React.ReactNode;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -39,9 +36,9 @@ export function AdminShell({
               brandText={getActiveRoute(routes, pathname || "/")}
               secondary={false}
             />
-            {outdatedCount > 0 && (
+            {banner && (
               <div className="mx-auto px-2 pt-2 md:px-2">
-                <UpgradeBanner count={outdatedCount} command={installCommand} />
+                {banner}
               </div>
             )}
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">

@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { isDeviceOutdated, MIN_AGENT_SHA } from "@/server/agent-version";
 
 describe("isDeviceOutdated", () => {
+  it("MIN_AGENT_SHA is a 12-character hex string", () => {
+    expect(MIN_AGENT_SHA).toMatch(/^[a-f0-9]{12}$/);
+  });
+
   it("returns false when agentVersion matches MIN_AGENT_SHA", () => {
     expect(isDeviceOutdated(MIN_AGENT_SHA)).toBe(false);
   });

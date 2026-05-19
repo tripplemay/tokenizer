@@ -6,9 +6,9 @@ import { prisma } from "./db";
 // reporting any other SHA will be prompted to upgrade.
 //
 // History (newest first):
-//   8101f94 — 2026-05-19: Codex quota poll + Claude JSONL enrichment
-//   c4bc2f2 — 2026-05-19: timezone capture
-export const MIN_AGENT_SHA = "8101f94";
+//   8101f94f6111 — 2026-05-19: Codex quota poll + Claude JSONL enrichment
+//   c4bc2f251cf9 — 2026-05-19: timezone capture
+export const MIN_AGENT_SHA = "8101f94f6111";
 
 // The curl install URL — kept in code so it's easy to point staging at
 // a different host during testing. Production is token.vpanel.cc.
