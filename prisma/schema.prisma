@@ -31,6 +31,7 @@ model User {
   deviceTokens    DeviceToken[]
   enrollmentTokens EnrollmentToken[]
   collectorStates  CollectorState[]
+  quotaSnapshots   QuotaSnapshot[]
 }
 
 model Account {
@@ -110,6 +111,7 @@ model Device {
   lastSyncStatus String?
   usageEvents    UsageEvent[]
   tokens         DeviceToken[]
+  quotaSnapshots QuotaSnapshot[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -205,6 +207,27 @@ model UsageEvent {
   @@index([occurredAt, source])
   @@index([occurredAt, deviceId])
   @@index([occurredAt, projectId])
+}
+
+model QuotaSnapshot {
+  id           String    @id @default(cuid())
+  userId       String
+  provider     String
+  accountKey   String
+  windowKey    String
+  utilization  Decimal?  @db.Decimal(6, 4)
+  usedRaw      BigInt?
+  limitRaw     BigInt?
+  unit         String?
+  resetsAt     DateTime?
+  capturedAt   DateTime  @default(now())
+  capturedBy   String?
+  rawJson      Json?
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device Device? @relation(fields: [capturedBy], references: [id], onDelete: SetNull)
+
+  @@index([userId, provider, windowKey, capturedAt])
 }
 
 model CollectorState {
