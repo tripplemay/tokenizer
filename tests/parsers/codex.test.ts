@@ -114,6 +114,37 @@ describe("parseCodexUsage", () => {
     expect(result.events).toEqual([]);
   });
 
+  it("collapses identical token_count events written on multiple lines to one event", () => {
+    // Regression for the May-2026 overcount bug: Codex CLI sometimes writes
+    // the same token_count payload multiple times in one rollout (identical
+    // timestamp + identical usage numbers, on consecutive lines). The old
+    // sourceEventId included the line index, so each duplicate copy slipped
+    // past the server's unique constraint — HanteenWongdeMacBook-Air had a
+    // single event repeated up to 7 times in production.
+    const sameUsage = { input_tokens: 100, cached_input_tokens: 0, output_tokens: 20, total_tokens: 120 };
+    writeRollout("rollout-dup.jsonl", [
+      sessionMeta(),
+      turnContext(),
+      tokenCountEvent(sameUsage, "2026-01-01T00:00:02.000Z"),
+      tokenCountEvent(sameUsage, "2026-01-01T00:00:02.000Z"),
+      tokenCountEvent(sameUsage, "2026-01-01T00:00:02.000Z"),
+    ]);
+    const result = parseCodexUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.events[0].totalTokens).toBe(120);
+  });
+
+  it("keeps distinct token_count events that share a timestamp but differ in usage", () => {
+    writeRollout("rollout-mixed.jsonl", [
+      sessionMeta(),
+      turnContext(),
+      tokenCountEvent({ input_tokens: 100, cached_input_tokens: 0, output_tokens: 20, total_tokens: 120 }, "2026-01-01T00:00:02.000Z"),
+      tokenCountEvent({ input_tokens: 150, cached_input_tokens: 0, output_tokens: 25, total_tokens: 175 }, "2026-01-01T00:00:02.000Z"),
+    ]);
+    const result = parseCodexUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(2);
+  });
+
   it("produces a stable sourceEventId derived from file + line + timestamp", () => {
     writeRollout("rollout-1.jsonl", [
       sessionMeta(),

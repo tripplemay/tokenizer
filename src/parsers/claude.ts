@@ -74,6 +74,12 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
   for (const file of walkJsonl(projectsDir)) {
     if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
     const fallbackTime = statSync(file).mtime.toISOString();
+    // Claude Code occasionally writes the same assistant message to the
+    // JSONL multiple times (same message.id, different per-line uuid). The
+    // sourceEventId mixes in row.uuid so each copy gets a distinct key and
+    // slips past the server's unique constraint. Dedupe per-file on the
+    // message.id and keep the first occurrence.
+    const seenMessageIds = new Set<string>();
     const lines = readFileSync(file, "utf8").replace(/\u0000/g, "").split(/\r?\n/);
     lines.forEach((line, index) => {
       if (!line.trim()) return;
@@ -106,6 +112,8 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
 
         const workspacePath = findWorkspaceFromPath(row.cwd, config.projectRoots);
         const messageId = row.message.id ?? row.uuid ?? `${file}:${index + 1}`;
+        if (seenMessageIds.has(messageId)) return;
+        seenMessageIds.add(messageId);
         events.push({
           source: "claude-code",
           sourceEventId: `claude-jsonl:${messageId}:${row.uuid ?? index + 1}`,

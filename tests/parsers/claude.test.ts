@@ -201,6 +201,34 @@ describe("parseClaudeUsage", () => {
     expect(event.serviceTier).toBeNull();
   });
 
+  it("collapses jsonl lines sharing one message.id to a single event", () => {
+    // Regression for the May-2026 overcount bug: Claude Code wrote the same
+    // assistant message to JSONL on multiple lines (same message.id, different
+    // per-line uuid). The old sourceEventId scheme included row.uuid so each
+    // copy slipped past the server's unique constraint and over-counted usage.
+    writeJsonl("proj-dup", [
+      assistantJsonlRow("msg-shared", "uuid-1", { input: 100, output: 50 }),
+      assistantJsonlRow("msg-shared", "uuid-2", { input: 100, output: 50 }),
+      assistantJsonlRow("msg-shared", "uuid-3", { input: 100, output: 50 }),
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.events[0].inputTokens).toBe(100);
+    expect(result.events[0].outputTokens).toBe(50);
+  });
+
+  it("keeps distinct message.ids even within a single file", () => {
+    writeJsonl("proj-mix", [
+      assistantJsonlRow("msg-a", "uuid-1", { input: 10, output: 5 }),
+      assistantJsonlRow("msg-b", "uuid-2", { input: 20, output: 7 }),
+      assistantJsonlRow("msg-a", "uuid-3", { input: 10, output: 5 }),
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(2);
+    const ids = new Set(result.events.map((e) => e.sourceEventId));
+    expect(ids.size).toBe(2);
+  });
+
   it("preserves a non-standard service_tier value verbatim", () => {
     writeJsonl("proj-C", [
       assistantJsonlRowWithExtras("msg-300", "uuid-300", { serviceTier: "enterprise-beta" }),

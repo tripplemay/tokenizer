@@ -28,6 +28,14 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
     let model: string | null = null;
     const fallbackTime = statSync(file).mtime.toISOString();
     const lines = readFileSync(file, "utf8").split(/\r?\n/);
+    // Codex sometimes writes the same `token_count` event multiple times in
+    // one session file (identical timestamp + identical usage numbers, on
+    // different lines). The old sourceEventId included the line index, so
+    // each duplicate row got a different key and the server's unique
+    // constraint did not catch them — see the 1432-row regression on
+    // HanteenWongdeMacBook-Air's May-14 rollout. Dedupe per-file on the
+    // content fingerprint and keep the first occurrence.
+    const seenFingerprints = new Set<string>();
 
     lines.forEach((line, index) => {
       if (!line.trim()) return;
@@ -59,6 +67,11 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
         const reasoningOutputTokens = normalizeTokenCount(usage.reasoning_output_tokens);
         const totalTokens = normalizeTokenCount(usage.total_tokens) || inputTokens + outputTokens;
         if (totalTokens === 0) return;
+
+        const occurredAt = row.timestamp ?? fallbackTime;
+        const fingerprint = `${occurredAt}:${model ?? ""}:${inputTokens}:${outputTokens}:${cachedInputTokens}:${reasoningOutputTokens}`;
+        if (seenFingerprints.has(fingerprint)) return;
+        seenFingerprints.add(fingerprint);
 
         events.push({
           source: "codex",
