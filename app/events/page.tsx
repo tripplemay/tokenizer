@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { prisma } from "@/server/db";
 import Card from "@/components/card";
 import { SourcePill } from "../_components/source-pill";
+import { TierPill } from "../_components/tier-pill";
 import { PageBanner } from "../_components/page-banner";
 import { formatDateTimeSeconds } from "@/shared/format";
 import { requireSession } from "@/server/auth-session";
@@ -66,7 +67,12 @@ export default async function EventsPage() {
                   </td>
                   <td className="py-2.5 pr-4 font-medium">{event.project?.name ?? t("events.unknownProject")}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
-                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("events.unknownModel")}</td>
+                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">
+                    <span className="inline-flex items-center gap-1.5">
+                      {event.model ?? t("events.unknownModel")}
+                      <TierPill tier={event.serviceTier} />
+                    </span>
+                  </td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.totalTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.inputTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.outputTokens)}</td>
