@@ -269,6 +269,28 @@
       "resendReady": "Resend now"
     }
   },
+  "subscription": {
+    "title": "Subscription status",
+    "codex": {
+      "title": "Codex / ChatGPT",
+      "planLabel": "{plan} tier",
+      "creditBalance": "Credit balance",
+      "ratePrimary": "Rate limit (primary)",
+      "rateSecondary": "Rate limit (secondary)",
+      "codeReviewPrimary": "Code review (primary)",
+      "codeReviewSecondary": "Code review (secondary)",
+      "resetsIn": "resets in {time}"
+    },
+    "empty": {
+      "title": "Codex CLI not detected",
+      "hint": "Install it and your ChatGPT subscription status will show up here",
+      "installLink": "Installation docs"
+    },
+    "footer": {
+      "viaDevice": "via {device}·refreshed {ago} ago",
+      "refreshed": "refreshed {ago} ago"
+    }
+  },
   "admin": {
     "login": {
       "title": "Admin Sign In",

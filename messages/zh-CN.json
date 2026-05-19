@@ -269,6 +269,28 @@
       "resendReady": "重新发送"
     }
   },
+  "subscription": {
+    "title": "订阅状态",
+    "codex": {
+      "title": "Codex / ChatGPT",
+      "planLabel": "{plan} tier",
+      "creditBalance": "余额",
+      "ratePrimary": "速率限制（主窗口）",
+      "rateSecondary": "速率限制（副窗口）",
+      "codeReviewPrimary": "Code Review 主窗口",
+      "codeReviewSecondary": "Code Review 副窗口",
+      "resetsIn": "{time}后重置"
+    },
+    "empty": {
+      "title": "未检测到 Codex CLI",
+      "hint": "安装后这里会显示你的 ChatGPT 订阅状态",
+      "installLink": "查看安装文档"
+    },
+    "footer": {
+      "viaDevice": "由设备 {device}·{ago}前刷新",
+      "refreshed": "{ago}前刷新"
+    }
+  },
   "admin": {
     "login": {
       "title": "管理员登录",
