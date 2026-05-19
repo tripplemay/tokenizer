@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
 import { getAgentVersion } from "./agent-version";
+import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { agentFetch } from "./fetch";
 
 export function readQueue(): UsageEventInput[] {
@@ -83,6 +84,7 @@ function readDiagnostics(): DeviceDiagnostics {
   }
   return {
     agentVersion: getAgentVersion(),
+    agentFeatureVersion: AGENT_FEATURE_VERSION,
     queueDepth,
     lastError,
     lastSyncStatus

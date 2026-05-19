@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
     lastSeenAt: now
   };
   if ("agentVersion" in diag) data.agentVersion = diag.agentVersion ?? null;
+  if ("agentFeatureVersion" in diag) {
+    data.agentFeatureVersion = typeof diag.agentFeatureVersion === "number" ? diag.agentFeatureVersion : null;
+  }
   if ("queueDepth" in diag) data.queueDepth = typeof diag.queueDepth === "number" ? diag.queueDepth : null;
   if ("lastError" in diag) {
     data.lastError = diag.lastError ?? null;

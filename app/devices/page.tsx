@@ -182,7 +182,7 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>
                         {t(`clientStatus.${key}`)}
                       </span>
-                      {isDeviceOutdated(device.agentVersion) && (
+                      {isDeviceOutdated(device.agentFeatureVersion) && (
                         <OutdatedBadge agentVersion={device.agentVersion} />
                       )}
                     </span>

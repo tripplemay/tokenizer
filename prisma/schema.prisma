@@ -104,8 +104,9 @@ model Device {
   createdAt      DateTime      @default(now())
   lastSeenAt     DateTime?
   lastSyncAt     DateTime?
-  agentVersion   String?
-  queueDepth     Int?
+  agentVersion         String?
+  agentFeatureVersion  Int?
+  queueDepth           Int?
   lastError      String?
   lastErrorAt    DateTime?
   lastSyncStatus String?

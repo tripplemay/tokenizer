@@ -33,6 +33,10 @@ export type UsageEventInput = {
 // as "no update" rather than overwriting with null.
 export type DeviceDiagnostics = {
   agentVersion?: string | null;
+  // Numeric capability version; lets the server compare with a simple
+  // `featureVersion < MIN` without enumerating git SHAs. See
+  // src/shared/agent-feature-version.ts for the bump policy.
+  agentFeatureVersion?: number | null;
   queueDepth?: number;
   lastError?: string | null;
   lastSyncStatus?: "success" | "failed" | null;
