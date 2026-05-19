@@ -10,12 +10,16 @@ import { prisma } from "./db";
 // without falsely marking already-upgraded devices as outdated.
 //
 // History (newest first):
+//   6dcbf2917038 — 2026-05-19: parser per-file dedupe (Codex + Claude overcount fix)
+//   e4c757836281 — 2026-05-19: freeze agent SHA at startup, set membership, install.sh kill+restart
 //   380b1e594025 — 2026-05-19: upgrade-reminder SHA-length + slot-pattern follow-up
 //   8101f94f6111 — 2026-05-19: Codex quota poll + Claude JSONL enrichment
 //   c4bc2f251cf9 — 2026-05-19: timezone capture
 export const ACCEPTABLE_AGENT_SHAS: ReadonlySet<string> = new Set([
   "8101f94f6111",
   "380b1e594025",
+  "e4c757836281",
+  "6dcbf2917038",
 ]);
 
 // The curl install URL — kept in code so it's easy to point staging at
