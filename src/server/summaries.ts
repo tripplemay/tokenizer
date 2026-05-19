@@ -395,7 +395,7 @@ export async function getDailyForDevice(
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyForDeviceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
+      date_trunc('day', ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date AS date,
       SUM("totalTokens")::bigint AS "totalTokens",
       SUM("inputTokens")::bigint AS "inputTokens",
       SUM("outputTokens")::bigint AS "outputTokens",
@@ -437,7 +437,7 @@ async function getDailyByDeviceImpl(
   const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.$queryRaw<DailyByDeviceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
+      date_trunc('day', ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date AS date,
       "deviceId",
       model,
       SUM("inputTokens")::bigint AS input,
@@ -644,7 +644,7 @@ async function getDailySummaryImpl(
 
   const rows = await prisma.$queryRaw<DailySummaryRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
+      date_trunc('day', ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date AS date,
       SUM("totalTokens")::bigint AS "totalTokens",
       SUM("inputTokens")::bigint AS "inputTokens",
       SUM("outputTokens")::bigint AS "outputTokens",
@@ -688,7 +688,7 @@ async function getDailyCostImpl(
 
   const rows = await prisma.$queryRaw<DailyCostByModelRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
+      date_trunc('day', ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date AS date,
       model,
       SUM("inputTokens")::bigint AS input,
       SUM("cachedInputTokens")::bigint AS cached,
@@ -736,7 +736,7 @@ async function getDailyBySourceImpl(
 
   const rows = await prisma.$queryRaw<DailyBySourceRow[]>`
     SELECT
-      date_trunc('day', "occurredAt" AT TIME ZONE ${timezone})::date AS date,
+      date_trunc('day', ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date AS date,
       source,
       SUM("inputTokens")::bigint AS input
     FROM "UsageEvent"
