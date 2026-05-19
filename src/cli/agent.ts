@@ -3,8 +3,9 @@ import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
-import { readConfig, updateState } from "./config";
+import { readConfig, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
+import { runQuotaRefresh } from "@/quota/run";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -54,6 +55,19 @@ export async function runOnce() {
     });
     log(`sync received=${result.received} inserted=${result.inserted} duplicates=${result.duplicates}`);
     for (const warning of collected.warnings) log(`warning ${warning}`);
+    // Refresh lastEventActivityAt so the agent's active-vs-idle scheduler knows
+    // the user is still coding. Active threshold is 1h of zero events.
+    if (collected.events.length > 0) {
+      updateState({ lastEventActivityAt: new Date().toISOString() });
+    }
+    // Cron-mode safety net — call runQuotaRefresh at the end of runOnce so
+    // users running `tokenizer run` on a cron get the same quota freshness
+    // as daemon-mode users at sync cadence. Single-flighted, non-fatal.
+    try {
+      await runQuotaRefresh(config);
+    } catch (err) {
+      log(`quota refresh failed (non-fatal): ${err instanceof Error ? err.message : String(err)}`);
+    }
     return result;
   } catch (error) {
     // Queue already holds the deduped events; nothing more to write.
@@ -80,6 +94,7 @@ export async function runHeartbeat() {
 }
 
 export async function runAgent(options: { heartbeatSeconds: number; syncMinutes: number }) {
+  const config = readConfig();
   let syncing = false;
   let stopped = false;
   updateState({ agent: { status: "running", pid: process.pid, startedAt: new Date().toISOString() } });
@@ -121,6 +136,9 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
   // appropriate interval has elapsed, so a wake-from-sleep is reconciled
   // within ~5s instead of up to a full heartbeatSeconds.
   const TICK_MS = 5000;
+  const QUOTA_ACTIVE_MS = 60_000;
+  const QUOTA_IDLE_MS = 300_000;
+  const ACTIVITY_WINDOW_MS = 60 * 60 * 1000;
   let lastBeatAt = 0;
   let lastSyncAt = 0;
 
@@ -139,6 +157,16 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
     if (now - lastSyncAt >= options.syncMinutes * 60 * 1000) {
       lastSyncAt = now;
       void sync();
+    }
+    const state = readState();
+    const lastActivityAt = state.lastEventActivityAt ? new Date(state.lastEventActivityAt).getTime() : 0;
+    const isActive = lastActivityAt > 0 && (now - lastActivityAt) < ACTIVITY_WINDOW_MS;
+    const quotaThreshold = isActive ? QUOTA_ACTIVE_MS : QUOTA_IDLE_MS;
+    const lastQuotaAt = state.lastQuotaRefreshAt ? new Date(state.lastQuotaRefreshAt).getTime() : 0;
+    if (now - lastQuotaAt >= quotaThreshold) {
+      void runQuotaRefresh(config).catch((err) => {
+        log(`quota refresh failed: ${err instanceof Error ? err.message : String(err)}`);
+      });
     }
     setTimeout(tick, TICK_MS);
   };
