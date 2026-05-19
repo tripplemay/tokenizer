@@ -177,6 +177,11 @@ model UsageEvent {
   cachedInputTokens     Int      @default(0)
   cacheWriteTokens      Int      @default(0)
   reasoningOutputTokens Int      @default(0)
+  cacheEphemeral5mInputTokens Int     @default(0)
+  cacheEphemeral1hInputTokens Int     @default(0)
+  webSearchRequests           Int     @default(0)
+  webFetchRequests            Int     @default(0)
+  serviceTier                 String?
   totalTokens           Int      @default(0)
   costUsd               Decimal? @db.Decimal(18, 8)
   occurredAt            DateTime
