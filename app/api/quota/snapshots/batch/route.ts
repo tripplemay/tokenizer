@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
   const token = await authenticateDeviceToken(request);
   if (!token) return unauthorized();
 
-  const body = (await request.json()) as SnapshotBody;
+  const body = (await request.json().catch(() => null)) as SnapshotBody | null;
+  if (!body) {
+    return Response.json({ error: "invalid JSON body" }, { status: 400 });
+  }
   if (!Array.isArray(body?.snapshots)) {
     return Response.json({ error: "snapshots required" }, { status: 400 });
   }
