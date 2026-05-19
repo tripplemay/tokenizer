@@ -1,14 +1,22 @@
 import { cache } from "react";
 import { prisma } from "./db";
 
-// Bump when a server-side feature relies on client-side code changes
-// (e.g., new parser fields, new agent loop responsibilities). Devices
-// reporting any other SHA will be prompted to upgrade.
+// SHAs of agent releases that are considered up-to-date. Add a new SHA
+// here when shipping a commit that should not trigger the upgrade banner.
+//
+// Why a set (not a single MIN_AGENT_SHA): the server can't order git SHAs
+// without the repo, so "agentVersion >= MIN" comparisons aren't possible.
+// Listing every known-good SHA explicitly lets us land follow-up commits
+// without falsely marking already-upgraded devices as outdated.
 //
 // History (newest first):
+//   380b1e594025 — 2026-05-19: upgrade-reminder SHA-length + slot-pattern follow-up
 //   8101f94f6111 — 2026-05-19: Codex quota poll + Claude JSONL enrichment
 //   c4bc2f251cf9 — 2026-05-19: timezone capture
-export const MIN_AGENT_SHA = "8101f94f6111";
+export const ACCEPTABLE_AGENT_SHAS: ReadonlySet<string> = new Set([
+  "8101f94f6111",
+  "380b1e594025",
+]);
 
 // The curl install URL — kept in code so it's easy to point staging at
 // a different host during testing. Production is token.vpanel.cc.
@@ -22,7 +30,7 @@ export function isDeviceOutdated(agentVersion: string | null | undefined): boole
   // the agentVersion field. Either way, prompting them now adds noise
   // without clear action.
   if (!agentVersion) return false;
-  return agentVersion !== MIN_AGENT_SHA;
+  return !ACCEPTABLE_AGENT_SHAS.has(agentVersion);
 }
 
 // React 19 cache() — multiple calls per render dedup. Not unstable_cache

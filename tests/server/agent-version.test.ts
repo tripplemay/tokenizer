@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { isDeviceOutdated, MIN_AGENT_SHA } from "@/server/agent-version";
+import { ACCEPTABLE_AGENT_SHAS, isDeviceOutdated } from "@/server/agent-version";
 
 describe("isDeviceOutdated", () => {
-  it("MIN_AGENT_SHA is a 12-character hex string", () => {
-    expect(MIN_AGENT_SHA).toMatch(/^[a-f0-9]{12}$/);
+  it("ACCEPTABLE_AGENT_SHAS is non-empty and every entry is a 12-char hex string", () => {
+    expect(ACCEPTABLE_AGENT_SHAS.size).toBeGreaterThan(0);
+    for (const sha of ACCEPTABLE_AGENT_SHAS) {
+      expect(sha).toMatch(/^[a-f0-9]{12}$/);
+    }
   });
 
-  it("returns false when agentVersion matches MIN_AGENT_SHA", () => {
-    expect(isDeviceOutdated(MIN_AGENT_SHA)).toBe(false);
+  it("returns false for every SHA in ACCEPTABLE_AGENT_SHAS", () => {
+    for (const sha of ACCEPTABLE_AGENT_SHAS) {
+      expect(isDeviceOutdated(sha)).toBe(false);
+    }
   });
 
   it("returns true for any other non-empty SHA", () => {

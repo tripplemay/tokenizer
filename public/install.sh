@@ -177,8 +177,33 @@ else
   log "Re-using existing credentials at $CREDENTIALS_FILE."
 fi
 
+# Kill any existing tokenizer agent processes so the freshly-pulled code
+# actually takes effect. Without this, a long-running daemon started before
+# the `git pull` above keeps executing the previous code (its in-memory
+# modules are frozen at startup) — install would appear to succeed while the
+# dashboard quietly stayed on stale features.
+#
+# install-service's launchd/systemd backends restart the service themselves,
+# but the cron fallback and any manually-started `nohup tokenizer agent &`
+# daemons survive — kill them here.
+if command -v pkill >/dev/null 2>&1; then
+  pkill -f "tokenizer agent" 2>/dev/null || true
+fi
+
+mkdir -p "$HOME/.tokenizer/logs"
+
 if [ "$INSTALL_SERVICE" = "1" ]; then
   tokenizer install-service --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES"
+  # install-service may have fallen through to the cron backend (no daemon)
+  # on hosts without launchd or user-systemd — common on WSL2. Give the
+  # service manager a beat to spawn the daemon, then start one ourselves
+  # if nothing is running so heartbeat + quota refresh keep ticking.
+  sleep 1
+  if ! pgrep -f "tokenizer agent" >/dev/null 2>&1; then
+    log "Daemon not detected after install-service; starting via nohup..."
+    nohup tokenizer agent --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES" >"$HOME/.tokenizer/logs/agent.log" 2>&1 &
+    disown 2>/dev/null || true
+  fi
 fi
 
 tokenizer run || true
