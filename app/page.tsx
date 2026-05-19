@@ -37,6 +37,7 @@ import { SourceCardGrid } from "./_components/source-card-grid";
 import { PlatformIcon } from "./_components/platform-icon";
 import { OnboardingCard } from "./_components/onboarding-card";
 import { PageBanner } from "./_components/page-banner";
+import { SubscriptionCard } from "./_components/subscription-card";
 
 export const dynamic = "force-dynamic";
 
@@ -146,6 +147,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             wowNoBaseline: t("home.hero.wowNoBaseline")
           }}
         />
+      </Suspense>
+
+      {/* SUBSCRIPTION ROW */}
+      <Suspense fallback={<SubscriptionCardSkeleton />}>
+        <SubscriptionCard userId={tenantId} />
       </Suspense>
 
       {/* KPI ROW — same column rhythm as Scale row */}
@@ -613,6 +619,15 @@ function SourcesGridSkeleton() {
           <div key={i} className="h-44 animate-pulse rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/5" />
         ))}
       </div>
+    </Card>
+  );
+}
+
+function SubscriptionCardSkeleton() {
+  return (
+    <Card extra="p-6">
+      <div className="mb-4 h-5 w-40 rounded bg-gray-100 dark:bg-white/10" />
+      <div className="h-32 animate-pulse rounded-xl bg-gray-100 dark:bg-white/5" />
     </Card>
   );
 }
