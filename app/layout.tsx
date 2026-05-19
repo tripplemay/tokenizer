@@ -8,6 +8,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AdminShell } from "./admin-shell";
 import { AuthProvider } from "./session-provider";
+import { auth } from "@/auth";
+import { countOutdatedDevices, INSTALL_COMMAND } from "@/server/agent-version";
 
 export const metadata: Metadata = {
   title: "Tokenizer",
@@ -17,12 +19,18 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const session = await auth();
+  const outdatedCount = session?.user?.id
+    ? await countOutdatedDevices(session.user.id)
+    : 0;
   return (
     <html lang={locale}>
       <body id="root">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
-            <AdminShell>{children}</AdminShell>
+            <AdminShell outdatedCount={outdatedCount} installCommand={INSTALL_COMMAND}>
+              {children}
+            </AdminShell>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

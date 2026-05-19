@@ -8,8 +8,17 @@ import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 import Footer from "@/components/footer/Footer";
 import { TimezoneReporter } from "./_components/timezone-reporter";
+import { UpgradeBanner } from "./_components/upgrade-banner";
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({
+  outdatedCount,
+  installCommand,
+  children,
+}: {
+  outdatedCount: number;
+  installCommand: string;
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = "ltr";
@@ -30,6 +39,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               brandText={getActiveRoute(routes, pathname || "/")}
               secondary={false}
             />
+            {outdatedCount > 0 && (
+              <div className="mx-auto px-2 pt-2 md:px-2">
+                <UpgradeBanner count={outdatedCount} command={installCommand} />
+              </div>
+            )}
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
               {children}
             </div>
