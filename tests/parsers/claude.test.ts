@@ -30,6 +30,42 @@ function writeJsonl(projectName: string, lines: Array<Record<string, unknown>>) 
   return file;
 }
 
+function assistantJsonlRowWithExtras(messageId: string, uuid: string, extras: {
+  cacheEphemeral5m?: number;
+  cacheEphemeral1h?: number;
+  webSearch?: number;
+  webFetch?: number;
+  serviceTier?: string;
+}) {
+  return {
+    type: "assistant",
+    uuid,
+    cwd: "/tmp/proj",
+    timestamp: "2026-01-01T00:00:00.000Z",
+    sessionId: "jsonl-session-extras",
+    message: {
+      role: "assistant",
+      model: "claude-3-5-sonnet",
+      id: messageId,
+      usage: {
+        input_tokens: 100,
+        output_tokens: 50,
+        cache_read_input_tokens: 0,
+        cache_creation_input_tokens: 100,
+        cache_creation: {
+          ephemeral_5m_input_tokens: extras.cacheEphemeral5m ?? 0,
+          ephemeral_1h_input_tokens: extras.cacheEphemeral1h ?? 0,
+        },
+        server_tool_use: {
+          web_search_requests: extras.webSearch ?? 0,
+          web_fetch_requests: extras.webFetch ?? 0,
+        },
+        ...(extras.serviceTier ? { service_tier: extras.serviceTier } : {}),
+      },
+    },
+  };
+}
+
 function assistantJsonlRow(messageId: string, uuid: string, tokens: { input: number; output: number }) {
   return {
     type: "assistant",
@@ -131,5 +167,46 @@ describe("parseClaudeUsage", () => {
     expect(result.events[0].sourceEventId).toMatch(/^claude-jsonl:/);
     expect(result.events[0].inputTokens).toBe(10);
     expect(result.events[0].outputTokens).toBe(5);
+  });
+
+  it("extracts ephemeral cache, web tool, and service_tier fields", () => {
+    writeJsonl("proj-A", [
+      assistantJsonlRowWithExtras("msg-100", "uuid-100", {
+        cacheEphemeral5m: 100,
+        cacheEphemeral1h: 50,
+        webSearch: 2,
+        webFetch: 1,
+        serviceTier: "priority",
+      }),
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    const event = result.events[0];
+    expect(event.cacheEphemeral5mInputTokens).toBe(100);
+    expect(event.cacheEphemeral1hInputTokens).toBe(50);
+    expect(event.webSearchRequests).toBe(2);
+    expect(event.webFetchRequests).toBe(1);
+    expect(event.serviceTier).toBe("priority");
+  });
+
+  it("defaults all enrichment fields when JSONL omits them (backward compat)", () => {
+    writeJsonl("proj-B", [assistantJsonlRow("msg-200", "uuid-200", { input: 10, output: 5 })]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    const event = result.events[0];
+    expect(event.cacheEphemeral5mInputTokens).toBe(0);
+    expect(event.cacheEphemeral1hInputTokens).toBe(0);
+    expect(event.webSearchRequests).toBe(0);
+    expect(event.webFetchRequests).toBe(0);
+    expect(event.serviceTier).toBeNull();
+  });
+
+  it("preserves a non-standard service_tier value verbatim", () => {
+    writeJsonl("proj-C", [
+      assistantJsonlRowWithExtras("msg-300", "uuid-300", { serviceTier: "enterprise-beta" }),
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.events[0].serviceTier).toBe("enterprise-beta");
   });
 });

@@ -94,6 +94,16 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
         const totalTokens = inputTokens + outputTokens;
         if (totalTokens === 0) return;
 
+        const cacheCreationDetail = (usage.cache_creation ?? {}) as Record<string, unknown>;
+        const cacheEphemeral5m = normalizeTokenCount(cacheCreationDetail.ephemeral_5m_input_tokens);
+        const cacheEphemeral1h = normalizeTokenCount(cacheCreationDetail.ephemeral_1h_input_tokens);
+
+        const serverToolUse = (usage.server_tool_use ?? {}) as Record<string, unknown>;
+        const webSearchRequests = normalizeTokenCount(serverToolUse.web_search_requests);
+        const webFetchRequests = normalizeTokenCount(serverToolUse.web_fetch_requests);
+
+        const serviceTier = typeof usage.service_tier === "string" ? usage.service_tier : null;
+
         const workspacePath = findWorkspaceFromPath(row.cwd, config.projectRoots);
         const messageId = row.message.id ?? row.uuid ?? `${file}:${index + 1}`;
         events.push({
@@ -108,6 +118,11 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
           cachedInputTokens: cacheRead,
           cacheWriteTokens: cacheCreation,
           totalTokens,
+          cacheEphemeral5mInputTokens: cacheEphemeral5m,
+          cacheEphemeral1hInputTokens: cacheEphemeral1h,
+          webSearchRequests,
+          webFetchRequests,
+          serviceTier,
           occurredAt: typeof row.timestamp === "string" ? row.timestamp : fallbackTime,
           rawJson: row
         });

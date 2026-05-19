@@ -19,6 +19,11 @@ export type UsageEventInput = {
   reasoningOutputTokens?: number;
   totalTokens?: number;
   costUsd?: number | null;
+  cacheEphemeral5mInputTokens?: number;
+  cacheEphemeral1hInputTokens?: number;
+  webSearchRequests?: number;
+  webFetchRequests?: number;
+  serviceTier?: string | null;
   occurredAt: string;
   rawJson?: unknown;
 };
