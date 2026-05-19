@@ -13,16 +13,27 @@ export function runQuotaRefresh(config: TokenizerConfig): Promise<void> {
   inflight = (async () => {
     try {
       const { snapshots, errors } = await runConfiguredProviders();
-      const errorEntries = Object.entries(errors);
       const at = new Date().toISOString();
 
       if (snapshots.length > 0) {
-        await syncQuotaSnapshots(config, snapshots);
+        try {
+          await syncQuotaSnapshots(config, snapshots);
+        } catch (err) {
+          // HTTP 5xx / timeout: record as a synthetic provider error so the
+          // state-write below always proceeds and the dashboard footer reflects
+          // the failure rather than showing a stale "refreshed Xs ago".
+          errors["__sync__"] = { code: "sync_failed", message: err instanceof Error ? err.message : String(err) };
+        }
       }
 
-      const quotaAuthErrors: Record<string, { code: number | string; lastFailedAt: string; consecutiveFailures: number }> = {};
+      const errorEntries = Object.entries(errors);
+
+      // Intermediate map carries only the fields that originate from the
+      // scrape layer; mergeQuotaAuthErrors is responsible for computing
+      // consecutiveFailures from prior state, so we don't pre-seed it here.
+      const quotaAuthErrors: Record<string, { code: number | string; lastFailedAt: string }> = {};
       for (const [providerId, err] of errorEntries) {
-        quotaAuthErrors[providerId] = { code: err.code, lastFailedAt: at, consecutiveFailures: 1 };
+        quotaAuthErrors[providerId] = { code: err.code, lastFailedAt: at };
       }
 
       const prevState = readState();
@@ -37,7 +48,10 @@ export function runQuotaRefresh(config: TokenizerConfig): Promise<void> {
         lastQuotaRefreshStatus: errorEntries.length === 0 ? "success" : "failed",
         ...(merged !== undefined ? { quotaAuthErrors: merged } : {}),
       };
-      // Clear quotaAuthErrors when all providers recovered
+      // When all providers recovered, pass quotaAuthErrors: undefined.
+      // updateState does { ...prev, ...patch } then JSON.stringify, and
+      // JSON.stringify drops undefined-valued keys, so the key is cleanly
+      // removed from state.json on disk — stale errors do NOT persist.
       if (merged === undefined && prevState.quotaAuthErrors !== undefined) {
         updateState({ ...patch, quotaAuthErrors: undefined });
       } else {
@@ -52,7 +66,7 @@ export function runQuotaRefresh(config: TokenizerConfig): Promise<void> {
 
 function mergeQuotaAuthErrors(
   prev: Record<string, { code: number | string; lastFailedAt: string; consecutiveFailures: number }> | undefined,
-  current: Record<string, { code: number | string; lastFailedAt: string; consecutiveFailures: number }>,
+  current: Record<string, { code: number | string; lastFailedAt: string }>,
   failedIds: string[]
 ) {
   const out = { ...(prev ?? {}) };
