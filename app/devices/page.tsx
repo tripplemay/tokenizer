@@ -8,8 +8,11 @@ import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
+import { INSTALL_COMMAND, isDeviceOutdated } from "@/server/agent-version";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 import { AddDeviceSection } from "../_components/add-device-section";
+import { CopyInstallCommand } from "../_components/copy-install-command";
+import { OutdatedBadge } from "../_components/outdated-badge";
 import { PageBanner } from "../_components/page-banner";
 
 export const dynamic = "force-dynamic";
@@ -96,6 +99,16 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
         }
       />
 
+      <Card extra="p-6">
+        <h3 className="text-lg font-bold text-navy-700 dark:text-white">
+          {t("devices.upgrade.title")}
+        </h3>
+        <p className="mt-1 mb-3 text-sm text-gray-500 dark:text-gray-400">
+          {t("devices.upgrade.subtitle")}
+        </p>
+        <CopyInstallCommand command={INSTALL_COMMAND} variant="card" />
+      </Card>
+
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>
         <DailyByDeviceSection range={range} tz={tz} />
       </Suspense>
@@ -165,7 +178,14 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
                     ) : null}
                   </td>
                   <td className="py-2.5 pr-4">
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{t(`clientStatus.${key}`)}</span>
+                    <span className="inline-flex flex-wrap items-center gap-1.5">
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>
+                        {t(`clientStatus.${key}`)}
+                      </span>
+                      {isDeviceOutdated(device.agentVersion) && (
+                        <OutdatedBadge agentVersion={device.agentVersion} />
+                      )}
+                    </span>
                   </td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{device.platform ?? "—"}</td>
                   <td className="py-2.5 pr-4 text-right" title={`${formatFullNumber(device.billableTokens)} billable tokens`}>{formatTokens(device.billableTokens)}</td>
