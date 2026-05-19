@@ -198,7 +198,12 @@
     "dailyByDevice": {
       "title": "Daily cost by device",
       "subtitle": "Stacked area — one colour per machine."
-    }
+    },
+    "upgrade": {
+      "title": "Upgrade all devices",
+      "subtitle": "Run this on each device to pull the latest code and restart the agent."
+    },
+    "outdatedBadge": "outdated"
   },
   "device": {
     "back": "Back to devices",
@@ -290,6 +295,11 @@
       "viaDevice": "via {device}·refreshed {ago} ago",
       "refreshed": "refreshed {ago} ago"
     }
+  },
+  "upgradeBanner": {
+    "message": "{count} devices are running outdated agents. Upgrade to enable the latest features (timezone capture, Codex quota tracking, service-tier badges).",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "admin": {
     "login": {

@@ -198,7 +198,12 @@
     "dailyByDevice": {
       "title": "每日成本按设备拆分",
       "subtitle": "堆叠面积图,一种颜色代表一台机器。"
-    }
+    },
+    "upgrade": {
+      "title": "升级所有设备",
+      "subtitle": "在每台设备上运行以下命令，自动 pull 最新代码并重启 agent。"
+    },
+    "outdatedBadge": "过期"
   },
   "device": {
     "back": "返回设备列表",
@@ -290,6 +295,11 @@
       "viaDevice": "由设备 {device}·{ago}前刷新",
       "refreshed": "{ago}前刷新"
     }
+  },
+  "upgradeBanner": {
+    "message": "{count} 台设备运行较早的客户端代码。升级以启用最新功能（时区采集、Codex 配额追踪、Claude tier 徽章等）。",
+    "copy": "复制",
+    "copied": "已复制"
   },
   "admin": {
     "login": {
