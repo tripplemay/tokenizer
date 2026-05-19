@@ -119,6 +119,25 @@ export function writeCredentials(credentials: TokenizerCredentials) {
   chmodSync(credentialsPath, 0o600);
 }
 
+export type TokenizerState = {
+  lastSyncStatus?: "success" | "failed";
+  lastError?: string;
+  lastQuotaRefreshAt?: string;
+  lastQuotaRefreshStatus?: "success" | "failed";
+  lastEventActivityAt?: string;
+  quotaAuthErrors?: Record<string, { code: number | string; lastFailedAt: string; consecutiveFailures: number }>;
+  [key: string]: unknown;
+};
+
+export function readState(): TokenizerState {
+  if (!existsSync(statePath)) return {};
+  try {
+    return JSON.parse(readFileSync(statePath, "utf8")) as TokenizerState;
+  } catch {
+    return {};
+  }
+}
+
 export function updateState(patch: Record<string, unknown>) {
   const current = existsSync(statePath) ? (JSON.parse(readFileSync(statePath, "utf8")) as Record<string, unknown>) : {};
   writeFileSync(statePath, `${JSON.stringify({ ...current, ...patch }, null, 2)}\n`);
