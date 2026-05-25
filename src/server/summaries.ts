@@ -635,6 +635,31 @@ function daysForRange(range: RangeOption): number {
   return 180;
 }
 
+// yyyy-mm-dd for the calendar day at `now` in `timezone`. Charts must end on
+// the user's local "today" even when no event has been recorded yet today, so
+// the daily aggregators reach for this to bound the rendered range.
+export function localDateRange(timezone: string, days: number, now: Date = new Date()): string[] {
+  if (days <= 0) return [];
+  // en-CA's narrow formatter outputs zero-padded yyyy-mm-dd, matching the
+  // shape produced by bucketDateToIso on the SQL side.
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(now);
+  // Parse as a UTC instant and step by whole UTC days. We never look at the
+  // hour, so DST transitions in `timezone` cannot perturb the date arithmetic.
+  const end = new Date(`${today}T00:00:00Z`);
+  const out = new Array<string>(days);
+  for (let i = 0; i < days; i++) {
+    const d = new Date(end);
+    d.setUTCDate(d.getUTCDate() - (days - 1 - i));
+    out[i] = d.toISOString().slice(0, 10);
+  }
+  return out;
+}
+
 async function getDailySummaryImpl(
   tenantId: string,
   range: RangeOption = "all",
@@ -657,14 +682,21 @@ async function getDailySummaryImpl(
     ORDER BY 1 ASC
   `;
 
-  return rows.map((row) => ({
-    date: bucketDateToIso(row.date),
-    totalTokens: bigintToNumber(row.totalTokens),
-    inputTokens: bigintToNumber(row.inputTokens),
-    outputTokens: bigintToNumber(row.outputTokens),
-    cachedInputTokens: bigintToNumber(row.cachedInputTokens),
-    billableTokens: bigintToNumber(row.billableTokens)
-  }));
+  const byDate = new Map<string, DailySummaryRow>();
+  for (const row of rows) byDate.set(bucketDateToIso(row.date), row);
+  // Zero-fill missing days so the chart x-axis always reaches today_local,
+  // even on days with no events.
+  return localDateRange(timezone, days).map((date) => {
+    const row = byDate.get(date);
+    return {
+      date,
+      totalTokens: row ? bigintToNumber(row.totalTokens) : 0,
+      inputTokens: row ? bigintToNumber(row.inputTokens) : 0,
+      outputTokens: row ? bigintToNumber(row.outputTokens) : 0,
+      cachedInputTokens: row ? bigintToNumber(row.cachedInputTokens) : 0,
+      billableTokens: row ? bigintToNumber(row.billableTokens) : 0
+    };
+  });
 }
 
 type DailyCostByModelRow = {
@@ -713,9 +745,10 @@ async function getDailyCostImpl(
     if (cost == null) continue;
     costByDate.set(date, (costByDate.get(date) ?? 0) + cost);
   }
-  return Array.from(costByDate.entries())
-    .map(([date, cost]) => ({ date, cost }))
-    .sort((a, b) => a.date.localeCompare(b.date));
+  return localDateRange(timezone, days).map((date) => ({
+    date,
+    cost: costByDate.get(date) ?? 0
+  }));
 }
 
 type DailyBySourceRow = {
@@ -746,16 +779,14 @@ async function getDailyBySourceImpl(
     ORDER BY 1 ASC
   `;
 
-  const dates = new Set<string>();
   const sources = new Set<string>();
   const byDateSource = new Map<string, number>();
   for (const row of rows) {
     const date = bucketDateToIso(row.date);
-    dates.add(date);
     sources.add(row.source);
     byDateSource.set(`${date}|${row.source}`, bigintToNumber(row.input));
   }
-  const sortedDates = Array.from(dates).sort();
+  const sortedDates = localDateRange(timezone, days);
   const sortedSources = Array.from(sources).sort();
   return {
     dates: sortedDates,
