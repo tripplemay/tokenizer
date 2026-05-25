@@ -407,14 +407,21 @@ export async function getDailyForDevice(
     GROUP BY 1
     ORDER BY 1 ASC
   `;
-  return rows.map((row) => ({
-    date: bucketDateToIso(row.date),
-    totalTokens: bigintToNumber(row.totalTokens),
-    inputTokens: bigintToNumber(row.inputTokens),
-    outputTokens: bigintToNumber(row.outputTokens),
-    cachedInputTokens: bigintToNumber(row.cachedInputTokens),
-    billableTokens: bigintToNumber(row.billableTokens)
-  }));
+  const byDate = new Map<string, DailyForDeviceRow>();
+  for (const row of rows) byDate.set(bucketDateToIso(row.date), row);
+  // Zero-fill missing days so the chart x-axis always reaches today_local,
+  // even on days with no events.
+  return localDateRange(timezone, days).map((date) => {
+    const row = byDate.get(date);
+    return {
+      date,
+      totalTokens: row ? bigintToNumber(row.totalTokens) : 0,
+      inputTokens: row ? bigintToNumber(row.inputTokens) : 0,
+      outputTokens: row ? bigintToNumber(row.outputTokens) : 0,
+      cachedInputTokens: row ? bigintToNumber(row.cachedInputTokens) : 0,
+      billableTokens: row ? bigintToNumber(row.billableTokens) : 0
+    };
+  });
 }
 
 // Cross-device cost chart. Returns dates + per-device series so the stacked
@@ -451,7 +458,6 @@ async function getDailyByDeviceImpl(
     ORDER BY 1 ASC
   `;
 
-  const dates = new Set<string>();
   const deviceIds = new Set<string>();
   const byKey = new Map<string, number>();
   for (const row of rows) {
@@ -463,7 +469,6 @@ async function getDailyByDeviceImpl(
       outputTokens: bigintToNumber(row.output)
     });
     if (cost == null) continue;
-    dates.add(date);
     deviceIds.add(row.deviceId);
     const key = `${date}|${row.deviceId}`;
     byKey.set(key, (byKey.get(key) ?? 0) + cost);
@@ -471,7 +476,9 @@ async function getDailyByDeviceImpl(
   const deviceList = Array.from(deviceIds);
   const devices = deviceList.length ? await prisma.device.findMany({ where: { id: { in: deviceList }, userId: tenantId } }) : [];
   const nameById = new Map(devices.map((d) => [d.id, d.name]));
-  const sortedDates = Array.from(dates).sort();
+  // Zero-fill missing days so the chart x-axis always reaches today_local,
+  // even on days with no events.
+  const sortedDates = localDateRange(timezone, days);
   return {
     dates: sortedDates,
     series: deviceList.map((id) => ({
