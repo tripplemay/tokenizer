@@ -126,3 +126,4 @@ See `docs/VPS-deployment.md` for the full VPS setup, client configuration, upgra
 - Claude Code and Codex parsers use real usage fields exposed by local logs.
 - OpenCode parsing reads the local SQLite database and maps one assistant message to one usage event.
 - OpenCode cache read tokens are stored as `cachedInputTokens`; cache write tokens are preserved in `rawJson` for now.
+- **All timestamps are UTC, end-to-end.** Clients must send `occurredAt` as an ISO 8601 string in UTC (e.g. `2026-05-15T00:00:00.000Z`). The server, app container, and Postgres session all run in UTC; `occurredAt` / `createdAt` are stored as naive `timestamp` columns whose wall-clock value is UTC. Do not deploy any service in this stack with a non-UTC `TZ`.
