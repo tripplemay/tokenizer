@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MdArrowBack, MdBolt, MdCached, MdMemory, MdPaid, MdSpeed } from "react-icons/md";
+import { MdArrowBack, MdBolt, MdCached, MdInput, MdMemory, MdOutput, MdPaid, MdReceiptLong, MdSave, MdSpeed } from "react-icons/md";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { getDailyForModel, getModelDetail } from "@/server/summaries";
@@ -119,10 +119,26 @@ export default async function ModelDetailPage({
       {banner}
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Widget icon={<MdBolt className="h-7 w-7" />} title={t("modelDetail.metric.compute")} subtitle={formatTokens(totals.billableTokens)} />
-        <Widget icon={<MdPaid className="h-7 w-7" />} title={t("modelDetail.metric.cost")} subtitle={totals.cost > 0 ? formatUsd(totals.cost) : "—"} />
+        <div title={t("home.hero.computeHint")}>
+          <Widget icon={<MdBolt className="h-7 w-7" />} title={t("modelDetail.metric.compute")} subtitle={formatTokens(totals.billableTokens)} />
+        </div>
+        <div title={t("home.hero.costHint")}>
+          <Widget icon={<MdPaid className="h-7 w-7" />} title={t("modelDetail.metric.cost")} subtitle={totals.cost > 0 ? formatUsd(totals.cost) : "—"} />
+        </div>
         <Widget icon={<MdSpeed className="h-7 w-7" />} title={t("modelDetail.metric.cacheHit")} subtitle={`${(totals.cacheHitRate * 100).toFixed(1)}%`} />
-        <Widget icon={<MdCached className="h-7 w-7" />} title={t("modelDetail.metric.events")} subtitle={formatFullNumber(totals.eventCount)} />
+        <Widget icon={<MdReceiptLong className="h-7 w-7" />} title={t("modelDetail.metric.events")} subtitle={formatFullNumber(totals.eventCount)} />
+        <div title={t("home.kpi.inputHint")}>
+          <Widget icon={<MdInput className="h-7 w-7" />} title={t("home.kpi.inputTokens")} subtitle={formatTokens(totals.inputTokens)} />
+        </div>
+        <div title={t("home.kpi.cacheWriteHint")}>
+          <Widget icon={<MdSave className="h-7 w-7" />} title={t("home.kpi.cacheWrite")} subtitle={formatTokens(totals.cacheWriteTokens)} />
+        </div>
+        <div title={t("home.kpi.cacheReuseHint")}>
+          <Widget icon={<MdCached className="h-7 w-7" />} title={t("home.kpi.cacheReuse")} subtitle={formatTokens(totals.cachedInputTokens)} />
+        </div>
+        <div title={t("home.kpi.outputHint", { reasoning: formatTokens(totals.reasoningOutputTokens) })}>
+          <Widget icon={<MdOutput className="h-7 w-7" />} title={t("home.kpi.outputTokens")} subtitle={formatTokens(totals.outputTokens)} />
+        </div>
       </div>
 
       <Card extra="p-6">
