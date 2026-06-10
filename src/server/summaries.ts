@@ -1,7 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { computeSummaryMetrics } from "./summary-metrics";
-import { estimateCost, sumCostAcrossModels } from "@/shared/model-pricing";
+import { decomposeCost, estimateCost, getModelPrice, sumCostAcrossModels } from "@/shared/model-pricing";
+import { bucketKeys, granularityForSpan, sqlBucket } from "./time-buckets";
 
 // Short-TTL cache for the dashboard's expensive aggregates. Each summary
 // function is wrapped at the bottom of this file; arguments form part of
@@ -357,6 +358,9 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
       return {
         model: row.model,
         totalTokens: row._sum.totalTokens ?? 0,
+        inputTokens: i,
+        outputTokens: o,
+        cachedInputTokens: c,
         billableTokens: billableOf(i, c, o),
         cost: costByModelMap.get(row.model ?? "__null__") ?? 0,
         events: row._count
@@ -372,6 +376,184 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
         billableTokens: billableOf(i, c, o),
         cost: costBySource.get(row.source) ?? 0,
         events: row._count
+      };
+    })
+  };
+}
+
+// Detail rollup for a single model string. Exact match — date-suffixed variants
+// (e.g. claude-haiku-4-5-20251001) drill in as their own page. Mirrors
+// getDeviceDetail but adds a by-device breakdown and is scoped to an arbitrary
+// [from, to) window. Not cached (returns Prisma Date objects on `events`).
+export async function getModelDetail(tenantId: string, model: string, fromMs: number, toMs: number) {
+  const where = { userId: tenantId, model, occurredAt: { gte: new Date(fromMs), lt: new Date(toMs) } };
+  const [totals, eventCount, events, byProject, byDevice, bySource] = await Promise.all([
+    prisma.usageEvent.aggregate({
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true }
+    }),
+    prisma.usageEvent.count({ where }),
+    prisma.usageEvent.findMany({ where, take: 100, orderBy: { occurredAt: "desc" } }),
+    prisma.usageEvent.groupBy({
+      by: ["projectId"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: "desc" } },
+      take: 20
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["deviceId"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: "desc" } },
+      take: 20
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["source"],
+      where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+      _count: true
+    })
+  ]);
+
+  // A single model means one unit price for the whole page, so cost for any
+  // token bundle is a direct estimateCost() call (0 when the model is unpriced).
+  const costOf = (s: { inputTokens: number | null; cachedInputTokens: number | null; cacheWriteTokens: number | null; outputTokens: number | null }) =>
+    estimateCost(model, {
+      inputTokens: s.inputTokens ?? 0,
+      cachedInputTokens: s.cachedInputTokens ?? 0,
+      cacheWriteTokens: s.cacheWriteTokens ?? 0,
+      outputTokens: s.outputTokens ?? 0
+    }) ?? 0;
+
+  const projectIds = byProject.map((r) => r.projectId).filter((id): id is string => Boolean(id));
+  const deviceIds = byDevice.map((r) => r.deviceId);
+  const [projects, devices] = await Promise.all([
+    projectIds.length ? prisma.project.findMany({ where: { id: { in: projectIds }, userId: tenantId } }) : Promise.resolve([]),
+    deviceIds.length ? prisma.device.findMany({ where: { id: { in: deviceIds }, userId: tenantId } }) : Promise.resolve([])
+  ]);
+  const projectById = new Map(projects.map((p) => [p.id, p]));
+  const deviceById = new Map(devices.map((d) => [d.id, d]));
+
+  const inputTokens = totals._sum.inputTokens ?? 0;
+  const outputTokens = totals._sum.outputTokens ?? 0;
+  const cachedInputTokens = totals._sum.cachedInputTokens ?? 0;
+  const cacheWriteTokens = totals._sum.cacheWriteTokens ?? 0;
+  const tokenAggregate = { inputTokens, cachedInputTokens, cacheWriteTokens, outputTokens };
+
+  return {
+    model,
+    price: getModelPrice(model),
+    costBreakdown: decomposeCost(model, tokenAggregate),
+    totals: {
+      totalTokens: totals._sum.totalTokens ?? 0,
+      inputTokens,
+      outputTokens,
+      cachedInputTokens,
+      cacheWriteTokens,
+      reasoningOutputTokens: totals._sum.reasoningOutputTokens ?? 0,
+      billableTokens: billableOf(inputTokens, cachedInputTokens, outputTokens),
+      cacheHitRate: inputTokens > 0 ? Math.min(1, cachedInputTokens / inputTokens) : 0,
+      cost: estimateCost(model, tokenAggregate) ?? 0,
+      eventCount
+    },
+    events,
+    byProject: byProject.map((row) => {
+      const project = row.projectId ? projectById.get(row.projectId) : undefined;
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        projectId: row.projectId,
+        name: project?.name ?? "Unknown Project",
+        repoKey: project?.repoKey ?? null,
+        workspacePath: project?.workspacePath ?? null,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costOf(row._sum),
+        events: row._count
+      };
+    }),
+    byDevice: byDevice.map((row) => {
+      const device = deviceById.get(row.deviceId);
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        deviceId: row.deviceId,
+        name: device?.name ?? row.deviceId,
+        platform: device?.platform ?? null,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costOf(row._sum),
+        events: row._count
+      };
+    }),
+    bySource: bySource.map((row) => {
+      const i = row._sum.inputTokens ?? 0;
+      const o = row._sum.outputTokens ?? 0;
+      const c = row._sum.cachedInputTokens ?? 0;
+      return {
+        source: row.source,
+        totalTokens: row._sum.totalTokens ?? 0,
+        billableTokens: billableOf(i, c, o),
+        cost: costOf(row._sum),
+        events: row._count
+      };
+    })
+  };
+}
+
+type DailyForModelRow = {
+  bucket: string;
+  totalTokens: bigint | number | null;
+  inputTokens: bigint | number | null;
+  outputTokens: bigint | number | null;
+  cachedInputTokens: bigint | number | null;
+  billableTokens: bigint | number | null;
+};
+
+// Token trend for a single model over an arbitrary [from, to) window. Bucket
+// granularity (hour/day/week) is derived from the span; gaps are zero-filled
+// against bucketKeys() so the chart x-axis spans the whole window.
+export async function getDailyForModel(
+  tenantId: string,
+  model: string,
+  fromMs: number,
+  toMs: number,
+  timezone: string = "Asia/Shanghai",
+) {
+  const granularity = granularityForSpan(fromMs, toMs);
+  const { unit, format } = sqlBucket(granularity);
+  const from = new Date(fromMs);
+  const to = new Date(toMs);
+  const rows = await prisma.$queryRaw<DailyForModelRow[]>`
+    SELECT
+      to_char(date_trunc(${unit}, ("occurredAt" AT TIME ZONE 'UTC') AT TIME ZONE ${timezone}), ${format}) AS bucket,
+      SUM("totalTokens")::bigint AS "totalTokens",
+      SUM("inputTokens")::bigint AS "inputTokens",
+      SUM("outputTokens")::bigint AS "outputTokens",
+      SUM("cachedInputTokens")::bigint AS "cachedInputTokens",
+      SUM(GREATEST("inputTokens" - "cachedInputTokens", 0) + "outputTokens")::bigint AS "billableTokens"
+    FROM "UsageEvent"
+    WHERE "occurredAt" >= ${from} AND "occurredAt" < ${to} AND "userId" = ${tenantId} AND model = ${model}
+    GROUP BY 1
+    ORDER BY 1 ASC
+  `;
+  const byBucket = new Map(rows.map((row) => [row.bucket, row]));
+  return {
+    granularity,
+    points: bucketKeys(fromMs, toMs, granularity, timezone).map((date) => {
+      const row = byBucket.get(date);
+      return {
+        date,
+        totalTokens: row ? bigintToNumber(row.totalTokens) : 0,
+        inputTokens: row ? bigintToNumber(row.inputTokens) : 0,
+        outputTokens: row ? bigintToNumber(row.outputTokens) : 0,
+        cachedInputTokens: row ? bigintToNumber(row.cachedInputTokens) : 0,
+        billableTokens: row ? bigintToNumber(row.billableTokens) : 0
       };
     })
   };

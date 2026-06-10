@@ -11,6 +11,7 @@ import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatRelativeT
 import { DailyUsageChart } from "../../daily-usage-chart";
 import { ProjectIcon } from "../../_components/project-icon";
 import { SourcePill } from "../../_components/source-pill";
+import { ModelLink } from "../../_components/model-link";
 import { PageBanner } from "../../_components/page-banner";
 
 export const dynamic = "force-dynamic";
@@ -227,16 +228,20 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
               <tr>
                 <th className="pb-3">{t("device.col.model")}</th>
                 <th className="pb-3 pr-4 text-right">{t("device.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.total")}</th>
                 <th className="pb-3 pr-4 text-right">{t("device.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("device.col.share")}</th>
                 <th className="pb-3 pr-4 text-right">{t("device.col.events")}</th>
               </tr>
             </thead>
             <tbody>
               {byModel.map((row) => (
                 <tr key={row.model ?? "unknown"} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
-                  <td className="py-2.5 pr-4 font-medium">{row.model ?? t("device.unknownModel")}</td>
+                  <td className="py-2.5 pr-4 font-medium"><ModelLink model={row.model} fallback={t("device.unknownModel")} /></td>
                   <td className="pr-4 text-right">{formatTokens(row.billableTokens)}</td>
+                  <td className="pr-4 text-right text-gray-500">{formatTokens(row.inputTokens + row.outputTokens)}</td>
                   <td className="pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
+                  <td className="pr-4 text-right">{formatPercent(row.billableTokens, totals.billableTokens)}</td>
                   <td className="pr-4 text-right">{row.events}</td>
                 </tr>
               ))}
@@ -291,7 +296,7 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
                   <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt, tz)}</td>
                   <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.workspacePath ? event.workspacePath.split("/").filter(Boolean).at(-1) : "—"}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
-                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("device.unknownModel")}</td>
+                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300"><ModelLink model={event.model} fallback={t("device.unknownModel")} /></td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.inputTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.outputTokens)}</td>
                 </tr>

@@ -28,6 +28,7 @@ import { DailyUsageChart } from "./daily-usage-chart";
 import { DailyCostChart } from "./daily-cost-chart";
 import { DailySourceChart } from "./daily-source-chart";
 import { ProjectIcon } from "./_components/project-icon";
+import { ModelLink } from "./_components/model-link";
 import { RangeSelector } from "./_components/range-selector";
 import { GitFilterToggle } from "./_components/git-filter-toggle";
 import { Sparkline } from "./_components/sparkline";
@@ -535,7 +536,7 @@ async function ModelsBreakdownSection({ tenantId, range, summaryBillable }: { te
                   <td className="py-2.5 pr-4">
                     <div className="flex items-center gap-2">
                       <span className="inline-block h-2 w-2 rounded-full" style={{ background: colorForModel(row.name) }} />
-                      <span className="font-medium">{display}</span>
+                      <ModelLink model={row.name === "unknown" ? null : row.name} fallback={display} className="font-medium" />
                     </div>
                   </td>
                   <td className="pr-4 text-right" title={`${formatFullNumber(row.billableTokens)} compute tokens`}>{formatTokens(row.billableTokens)}</td>

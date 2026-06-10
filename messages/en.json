@@ -163,6 +163,7 @@
       "compute": "Compute",
       "total": "Total",
       "cost": "Cost",
+      "share": "Share",
       "events": "Events",
       "time": "Time",
       "totalRaw": "Total (raw)",
@@ -240,6 +241,64 @@
     "col": {
       "project": "Project",
       "model": "Model",
+      "source": "Source",
+      "compute": "Compute",
+      "total": "Total",
+      "cost": "Cost",
+      "events": "Events",
+      "share": "Share",
+      "time": "Time",
+      "input": "Input",
+      "output": "Output"
+    }
+  },
+  "modelDetail": {
+    "back": "Back to overview",
+    "notFound": "No usage recorded for this model in the selected window.",
+    "unpriced": "Unpriced",
+    "unpricedHelper": "This model is not in the price table, so cost is shown as —.",
+    "free": "Free ($0)",
+    "metric": {
+      "compute": "Compute",
+      "cost": "Cost",
+      "cacheHit": "Cache hit",
+      "events": "Events"
+    },
+    "pricing": {
+      "title": "Pricing & cost breakdown",
+      "perMtok": "List price (USD / 1M tokens)",
+      "input": "Input",
+      "cacheRead": "Cache read",
+      "cacheWrite": "Cache write",
+      "output": "Output",
+      "breakdownTitle": "Where the cost went",
+      "freshInput": "Fresh input",
+      "total": "Total"
+    },
+    "range": {
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last24h": "Last 24h",
+      "granularity": {
+        "hour": "hourly buckets",
+        "day": "daily buckets",
+        "week": "weekly buckets"
+      }
+    },
+    "daily": {
+      "title": "Usage trend",
+      "subtitle": "Input / output tokens, {granularity} ({tz})."
+    },
+    "devices": { "title": "By device" },
+    "projects": { "title": "By project" },
+    "sources": { "title": "By source" },
+    "recentEvents": "Recent Events",
+    "col": {
+      "device": "Device",
+      "project": "Project",
       "source": "Source",
       "compute": "Compute",
       "cost": "Cost",

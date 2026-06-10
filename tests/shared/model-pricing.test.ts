@@ -76,17 +76,25 @@ describe("estimateCost", () => {
     // here rather than silent $0 cost reporting. Update this list whenever
     // distinct(model) changes upstream.
     const observedModels = [
+      "claude-opus-4-8",
       "claude-opus-4-7",
       "claude-opus-4-6",
+      "claude-fable-5",
       "claude-sonnet-4-6",
       "claude-haiku-4-5-20251001",
       "gpt-5.5",
       "gpt-5.4",
       "gpt-5.4-mini",
       "gpt-5.3-codex",
+      "gpt-5.2",
       "gpt-5.1-codex",
       "gpt-5.1-codex-mini",
       "gemini-3.1-pro-preview",
+      "kimi-for-coding",
+      "deepseek-v4-pro",
+      "deepseek-v4-flash-free",
+      "glm-5",
+      "glm-4.7",
       "mimo-v2.5-pro",
       "minimax-m2.5-free"
     ];

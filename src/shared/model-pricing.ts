@@ -24,6 +24,10 @@ export type ModelPriceRow = {
 export const MODEL_PRICES: Record<string, ModelPriceRow> = {
   // Anthropic — https://platform.claude.com/docs/en/about-claude/pricing
   // Cache write = 1.25x base input (5-minute cache), cache read = 0.1x base input.
+  // Fable 5 is the tier above Opus ($10/$50); Opus 4.8 shares the 4.7/4.6 Opus
+  // rate card. (verified 2026-06-10)
+  "claude-fable-5": { input: 10.0, cacheRead: 1.0, cacheWrite: 12.5, output: 50.0 },
+  "claude-opus-4-8": { input: 5.0, cacheRead: 0.5, cacheWrite: 6.25, output: 25.0 },
   "claude-opus-4-7": { input: 5.0, cacheRead: 0.5, cacheWrite: 6.25, output: 25.0 },
   "claude-opus-4-6": { input: 5.0, cacheRead: 0.5, cacheWrite: 6.25, output: 25.0 },
   "claude-sonnet-4-6": { input: 3.0, cacheRead: 0.3, cacheWrite: 3.75, output: 15.0 },
@@ -35,6 +39,8 @@ export const MODEL_PRICES: Record<string, ModelPriceRow> = {
   "gpt-5.5": { input: 5.0, cacheRead: 0.5, cacheWrite: 5.0, output: 30.0 },
   "gpt-5.4": { input: 2.5, cacheRead: 0.25, cacheWrite: 2.5, output: 15.0 },
   "gpt-5.4-mini": { input: 0.75, cacheRead: 0.075, cacheWrite: 0.75, output: 4.5 },
+  // gpt-5.2 base model (verified 2026-06-10 via openrouter.ai/openai/gpt-5.2).
+  "gpt-5.2": { input: 1.75, cacheRead: 0.175, cacheWrite: 1.75, output: 14.0 },
 
   // OpenAI Codex variants — https://developers.openai.com/codex/pricing
   // The Codex page lists prices in credits at 25 credits = $1; e.g. gpt-5.3-codex
@@ -50,6 +56,25 @@ export const MODEL_PRICES: Record<string, ModelPriceRow> = {
   // Pricing below 200K context; above 200K input/output bumps to $4 / $18 — out
   // of scope for the initial table, revisit if long-context usage shows up.
   "gemini-3.1-pro-preview": { input: 2.0, cacheRead: 0.2, cacheWrite: 2.0, output: 12.0 },
+
+  // DeepSeek — https://api-docs.deepseek.com/quick_start/pricing (verified 2026-06-10)
+  // V4-Pro made its 75% discount permanent on 2026-05-22. Cache-hit (read) bills
+  // far below input; cache writes bill at the cache-miss (base input) rate.
+  "deepseek-v4-pro": { input: 0.435, cacheRead: 0.003625, cacheWrite: 0.435, output: 0.87 },
+  // The "-free" Flash tier is literal $0 to the user (cf. minimax-m2.5-free below).
+  "deepseek-v4-flash-free": { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 },
+
+  // Zhipu GLM — https://docs.z.ai/guides/overview/pricing (verified 2026-06-10)
+  // No documented cache-write premium, so cacheWrite == base input.
+  "glm-5": { input: 1.0, cacheRead: 0.2, cacheWrite: 1.0, output: 3.2 },
+  "glm-4.7": { input: 0.6, cacheRead: 0.11, cacheWrite: 0.6, output: 2.2 },
+
+  // Moonshot Kimi — https://platform.kimi.ai/docs/pricing/chat (verified 2026-06-10)
+  // "kimi-for-coding" is Moonshot's coding *subscription plan*, not a metered API
+  // model, so it has no published per-token list price. We approximate it with the
+  // current coding flagship (Kimi K2.6: $0.95 / $0.16 cache-read / $4.00 out per
+  // Mtok; cache writes at base input) so its spend shows up rather than as "—".
+  "kimi-for-coding": { input: 0.95, cacheRead: 0.16, cacheWrite: 0.95, output: 4.0 },
 
   // MiniMax M2.5 accessed via OpenRouter free tier — the "-free" suffix in the
   // model id means literal $0 to the user. The paid tier (minimax-m2.5 without
@@ -94,6 +119,38 @@ export function estimateCost(model: string | null | undefined, t: TokenAggregate
     (t.cacheWriteTokens * price.cacheWrite) / 1_000_000 +
     (t.outputTokens * price.output) / 1_000_000
   );
+}
+
+// Look up the published unit prices for a model, or null if it is unpriced.
+// Used by the model detail page to render a pricing panel.
+export function getModelPrice(model: string | null | undefined): ModelPriceRow | null {
+  const key = normalizeModelKey(model);
+  if (!key) return null;
+  return MODEL_PRICES[key] ?? null;
+}
+
+export type CostBreakdown = {
+  freshInput: number;
+  cacheRead: number;
+  cacheWrite: number;
+  output: number;
+  total: number;
+};
+
+// Same arithmetic as estimateCost, but returns the four per-component dollar
+// figures so the model detail page can show where the spend went. Null when the
+// model is unknown / unpriced.
+export function decomposeCost(model: string | null | undefined, t: TokenAggregate): CostBreakdown | null {
+  const key = normalizeModelKey(model);
+  if (!key) return null;
+  const price = MODEL_PRICES[key];
+  if (!price) return null;
+  const fresh = Math.max(0, t.inputTokens - t.cachedInputTokens - t.cacheWriteTokens);
+  const freshInput = (fresh * price.input) / 1_000_000;
+  const cacheRead = (t.cachedInputTokens * price.cacheRead) / 1_000_000;
+  const cacheWrite = (t.cacheWriteTokens * price.cacheWrite) / 1_000_000;
+  const output = (t.outputTokens * price.output) / 1_000_000;
+  return { freshInput, cacheRead, cacheWrite, output, total: freshInput + cacheRead + cacheWrite + output };
 }
 
 // Reduce a list of (model, tokens) aggregate rows to a single USD total. Rows

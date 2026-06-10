@@ -14,15 +14,34 @@ type DailyRow = {
   billableTokens: number;
 };
 
+// When granularity is supplied (model detail page), buckets may be sub-day and
+// the date string carries an hour ("2026-06-10T08:00"). We parse those into UTC
+// timestamps so the datetime axis positions them correctly, and label tooltips
+// down to the hour. Omitting the prop preserves the original daily behaviour for
+// the dashboard and device pages.
+type Granularity = "hour" | "day" | "week";
+
 const INPUT_COLOR = "#4318FF";
 const OUTPUT_COLOR = "#6AD2FF";
 
-export function DailyUsageChart({ data }: { data: DailyRow[] }) {
+// Bucket key -> UTC timestamp. The key already encodes the user's wall clock, so
+// reading it as UTC makes the datetime axis render that exact wall clock.
+function bucketToTs(date: string, granularity: Granularity): number {
+  return Date.parse(granularity === "hour" ? `${date}:00Z` : `${date}T00:00:00Z`);
+}
+
+function labelForTs(ts: number, granularity: Granularity): string {
+  const iso = new Date(ts).toISOString();
+  return granularity === "hour" ? `${iso.slice(0, 10)} ${iso.slice(11, 16)}` : iso.slice(0, 10);
+}
+
+export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granularity?: Granularity }) {
   const t = useTranslations("chart");
 
+  const toX = (d: DailyRow) => (granularity ? bucketToTs(d.date, granularity) : d.date);
   const series = [
-    { name: t("input"), data: data.map((d) => ({ x: d.date, y: d.inputTokens })) },
-    { name: t("output"), data: data.map((d) => ({ x: d.date, y: d.outputTokens })) }
+    { name: t("input"), data: data.map((d) => ({ x: toX(d), y: d.inputTokens })) },
+    { name: t("output"), data: data.map((d) => ({ x: toX(d), y: d.outputTokens })) }
   ];
 
   function tooltipHtml(date: string, input: number, output: number): string {
@@ -103,7 +122,7 @@ export function DailyUsageChart({ data }: { data: DailyRow[] }) {
       intersect: false,
       custom: ({ series: s, dataPointIndex, w }: { series: number[][]; dataPointIndex: number; w: { globals: { seriesX: number[][] } } }) => {
         const xRaw = w.globals.seriesX?.[0]?.[dataPointIndex];
-        const date = xRaw ? new Date(xRaw).toISOString().slice(0, 10) : "";
+        const date = xRaw ? (granularity ? labelForTs(Number(xRaw), granularity) : new Date(xRaw).toISOString().slice(0, 10)) : "";
         const input = Number(s[0]?.[dataPointIndex] ?? 0);
         const output = Number(s[1]?.[dataPointIndex] ?? 0);
         return tooltipHtml(date, input, output);

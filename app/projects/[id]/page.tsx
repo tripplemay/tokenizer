@@ -7,8 +7,9 @@ import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
-import { formatDateTimeSeconds, formatFullNumber, formatTokens, formatUsd } from "@/shared/format";
+import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatTokens, formatUsd } from "@/shared/format";
 import { SourcePill } from "../../_components/source-pill";
+import { ModelLink } from "../../_components/model-link";
 import { ProjectIcon } from "../../_components/project-icon";
 import { PageBanner } from "../../_components/page-banner";
 
@@ -118,6 +119,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <th className="pb-3 pr-4 text-right">{t("project.col.compute")}</th>
                 <th className="pb-3 pr-4 text-right">{t("project.col.total")}</th>
                 <th className="pb-3 pr-4 text-right">{t("project.col.cost")}</th>
+                <th className="pb-3 pr-4 text-right">{t("project.col.share")}</th>
                 <th className="pb-3 pr-4 text-right">{t("project.col.events")}</th>
               </tr>
             </thead>
@@ -127,10 +129,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 const total = (row._sum.inputTokens ?? 0) + (row._sum.outputTokens ?? 0);
                 return (
                   <tr key={row.model ?? "unknown"} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
-                    <td className="py-2.5 pr-4 font-medium">{row.model ?? t("project.unknownModel")}</td>
+                    <td className="py-2.5 pr-4 font-medium"><ModelLink model={row.model} fallback={t("project.unknownModel")} /></td>
                     <td className="py-2.5 pr-4 text-right" title={`${formatFullNumber(compute)} compute tokens`}>{formatTokens(compute)}</td>
                     <td className="py-2.5 pr-4 text-right text-gray-500" title={`${formatFullNumber(total)} total tokens`}>{formatTokens(total)}</td>
                     <td className="py-2.5 pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
+                    <td className="py-2.5 pr-4 text-right">{formatPercent(compute, billableTokens)}</td>
                     <td className="py-2.5 pr-4 text-right">{formatFullNumber(row._count)}</td>
                   </tr>
                 );
@@ -159,7 +162,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <tr key={event.id} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                   <td className="py-2.5 pr-4 whitespace-nowrap text-gray-500">{formatDateTimeSeconds(event.occurredAt, tz)}</td>
                   <td className="py-2.5 pr-4"><SourcePill source={event.source} /></td>
-                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300">{event.model ?? t("project.unknownModel")}</td>
+                  <td className="py-2.5 pr-4 text-gray-600 dark:text-gray-300"><ModelLink model={event.model} fallback={t("project.unknownModel")} /></td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.totalTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.inputTokens)}</td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(event.outputTokens)}</td>
