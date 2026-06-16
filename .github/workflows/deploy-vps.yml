@@ -137,16 +137,17 @@ jobs:
 
           $SSH_CMD "$SSH_TARGET" "set -e
           cd '$DEPLOY_PATH'
-          # Reclaim disk before building: accumulated build cache and old
-          # images from prior deploys fill the disk and break image export with
-          # 'no space left on device'. Use -a: a plain prune only drops cache
-          # not referenced by the latest build, which reclaimed 0B here while
-          # 3.2GB of 'in-use' cache remained. -a force-removes ALL build cache
-          # and every image not used by a running container (re-pulled/rebuilt
-          # as needed). Best-effort (|| true) so a prune hiccup never blocks a
-          # deploy; never touches named volumes — the postgres data is intact.
+          # Reclaim disk before building so image export doesn't hit
+          # 'no space left on device'. This is a SHARED host (other projects
+          # run here too), so scope the cleanup carefully:
+          #   - builder prune -af: drop ALL build cache. It's ephemeral and
+          #     regenerates as needed; the only docker-reclaimable space here.
+          #   - image prune -f: dangling images only. Do NOT use -a, which
+          #     would delete other projects' non-running images too.
+          # Best-effort (|| true) so a prune hiccup never blocks a deploy;
+          # never touches named volumes — the postgres data stays intact.
           docker builder prune -af || true
-          docker image prune -af || true
+          docker image prune -f || true
           docker compose build
           docker compose up -d postgres
           docker compose run --rm migrate
