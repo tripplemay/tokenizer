@@ -137,6 +137,13 @@ jobs:
 
           $SSH_CMD "$SSH_TARGET" "set -e
           cd '$DEPLOY_PATH'
+          # Reclaim disk before building: accumulated build cache and dangling
+          # images from prior deploys fill the disk and break image export with
+          # 'no space left on device'. Best-effort (|| true) so a prune hiccup
+          # never blocks a deploy; only touches build cache and dangling images,
+          # never named volumes — the postgres data volume stays intact.
+          docker builder prune -f || true
+          docker image prune -f || true
           docker compose build
           docker compose up -d postgres
           docker compose run --rm migrate
