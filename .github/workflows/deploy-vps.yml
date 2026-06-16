@@ -137,13 +137,16 @@ jobs:
 
           $SSH_CMD "$SSH_TARGET" "set -e
           cd '$DEPLOY_PATH'
-          # Reclaim disk before building: accumulated build cache and dangling
+          # Reclaim disk before building: accumulated build cache and old
           # images from prior deploys fill the disk and break image export with
-          # 'no space left on device'. Best-effort (|| true) so a prune hiccup
-          # never blocks a deploy; only touches build cache and dangling images,
-          # never named volumes — the postgres data volume stays intact.
-          docker builder prune -f || true
-          docker image prune -f || true
+          # 'no space left on device'. Use -a: a plain prune only drops cache
+          # not referenced by the latest build, which reclaimed 0B here while
+          # 3.2GB of 'in-use' cache remained. -a force-removes ALL build cache
+          # and every image not used by a running container (re-pulled/rebuilt
+          # as needed). Best-effort (|| true) so a prune hiccup never blocks a
+          # deploy; never touches named volumes — the postgres data is intact.
+          docker builder prune -af || true
+          docker image prune -af || true
           docker compose build
           docker compose up -d postgres
           docker compose run --rm migrate
