@@ -47,6 +47,10 @@ function projectKey(event: UsageEventInput): string {
   return `name:${name}`;
 }
 
+function isUniqueConstraintError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+}
+
 async function ensureProject(event: UsageEventInput, userId: string) {
   const repoKey = event.repoKey?.trim() || null;
   const workspacePath = event.workspacePath?.trim() || null;
@@ -57,11 +61,27 @@ async function ensureProject(event: UsageEventInput, userId: string) {
     // on a Mac, "kolmatrix" on a WSL host) are intentionally ignored so the
     // dashboard label doesn't flap depending on which device synced last.
     const canonicalName = projectNameFromRepoKey(repoKey) ?? event.projectName?.trim() ?? projectNameFromPath(workspacePath);
-    return prisma.project.upsert({
-      where: { userId_repoKey: { userId, repoKey } },
-      update: { name: canonicalName, repoRemote: event.gitRemote ?? undefined },
-      create: { userId, name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
-    });
+    try {
+      return await prisma.project.upsert({
+        where: { userId_repoKey: { userId, repoKey } },
+        update: { name: canonicalName, repoRemote: event.gitRemote ?? undefined },
+        create: { userId, name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null, workspacePath }
+      });
+    } catch (error) {
+      // A folder that synced before it had a git remote already owns this
+      // workspacePath as a repoKey-less row, so the create above trips the
+      // (userId, workspacePath) unique. Adopt that row: stamping its repoKey
+      // makes every future sync match on (userId, repoKey) directly.
+      if (!isUniqueConstraintError(error) || !workspacePath) throw error;
+      const existing = await prisma.project.findUnique({
+        where: { userId_workspacePath: { userId, workspacePath } }
+      });
+      if (!existing) throw error;
+      return prisma.project.update({
+        where: { id: existing.id },
+        data: { name: canonicalName, repoKey, repoRemote: event.gitRemote ?? null }
+      });
+    }
   }
 
   // Below: best-effort dedup for non-git projects. workspacePath is per-machine
@@ -124,8 +144,14 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   }
   const projectIdByKey = new Map<string, string>();
   for (const [key, sample] of projectByKey) {
-    const project = await ensureProject(sample, userId);
-    projectIdByKey.set(key, project.id);
+    try {
+      const project = await ensureProject(sample, userId);
+      projectIdByKey.set(key, project.id);
+    } catch (error) {
+      // One broken project must not block the whole batch: keep its events
+      // (projectId stays null) so the client's queue still drains.
+      console.error(`ensureProject failed for ${key} (user ${userId}); ingesting events without project link`, error);
+    }
   }
 
   // 2) Build the row payload for createMany. Every user-supplied string and
