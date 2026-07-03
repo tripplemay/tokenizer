@@ -96,7 +96,7 @@ describe("parseAiderUsage (filesystem)", () => {
     const file = join(projectDir, ".aider.chat.history.md");
     writeFileSync(file, "# aider chat started at 2026-05-17 10:00:00\nTokens: 100 sent, 50 received.\n");
 
-    const cursor = { files: {}, opencodeLastTimeCreated: 0 };
+    const cursor = { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 0 };
     const first = parseAiderUsage({ homeDir: tmpdir(), projectRoots: [dir], cursor });
     expect(first.events).toHaveLength(1);
 

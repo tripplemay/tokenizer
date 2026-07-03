@@ -107,6 +107,7 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
     unknownProject,
     unknownModel,
     costByModel,
+    fallbackAgg,
     priorMetrics
   ] = await Promise.all([
     prisma.usageEvent.aggregate({ where, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true } }),
@@ -117,6 +118,10 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
     prisma.usageEvent.aggregate({ where: { ...where, project: { name: "Unknown Project" } }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
     prisma.usageEvent.aggregate({ where: { ...where, model: null }, _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true } }),
     prisma.usageEvent.groupBy({ by: ["model"], where, _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true } }),
+    // One row per mid-request model downgrade: the final event of a fallback
+    // carries fallbackFromModel (the segment events carry fallbackToModel and
+    // would double-count occurrences).
+    prisma.usageEvent.count({ where: { ...where, fallbackFromModel: { not: null } } }),
     prior ? computeAndCostFor({ userId: tenantId, occurredAt: { gte: prior.gte, lt: prior.lt } }) : Promise.resolve(null)
   ]);
 
@@ -157,7 +162,8 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
     unknownProjectTokens: unknownProject._sum.totalTokens ?? 0,
     unknownProjectBillable: billableOf(unknownProject._sum.inputTokens ?? 0, unknownProject._sum.cachedInputTokens ?? 0, unknownProject._sum.outputTokens ?? 0),
     unknownModelTokens: unknownModel._sum.totalTokens ?? 0,
-    unknownModelBillable: billableOf(unknownModel._sum.inputTokens ?? 0, unknownModel._sum.cachedInputTokens ?? 0, unknownModel._sum.outputTokens ?? 0)
+    unknownModelBillable: billableOf(unknownModel._sum.inputTokens ?? 0, unknownModel._sum.cachedInputTokens ?? 0, unknownModel._sum.outputTokens ?? 0),
+    fallbackEvents: fallbackAgg
   };
 }
 
@@ -387,7 +393,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
 // [from, to) window. Not cached (returns Prisma Date objects on `events`).
 export async function getModelDetail(tenantId: string, model: string, fromMs: number, toMs: number) {
   const where = { userId: tenantId, model, occurredAt: { gte: new Date(fromMs), lt: new Date(toMs) } };
-  const [totals, eventCount, events, byProject, byDevice, bySource] = await Promise.all([
+  const [totals, eventCount, events, byProject, byDevice, bySource, fallbackOutRows, fallbackInRows] = await Promise.all([
     prisma.usageEvent.aggregate({
       where,
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, reasoningOutputTokens: true }
@@ -413,6 +419,21 @@ export async function getModelDetail(tenantId: string, model: string, fromMs: nu
     prisma.usageEvent.groupBy({
       by: ["source"],
       where,
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+      _count: true
+    }),
+    // Mid-request fallbacks touching this model. "Out": segments this model
+    // started before the request fell back to another model. "In": events
+    // this model served after a request fell back from another model.
+    prisma.usageEvent.groupBy({
+      by: ["fallbackToModel"],
+      where: { ...where, fallbackToModel: { not: null } },
+      _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
+      _count: true
+    }),
+    prisma.usageEvent.groupBy({
+      by: ["fallbackFromModel"],
+      where: { ...where, fallbackFromModel: { not: null } },
       _sum: { totalTokens: true, inputTokens: true, outputTokens: true, cachedInputTokens: true, cacheWriteTokens: true },
       _count: true
     })
@@ -502,7 +523,29 @@ export async function getModelDetail(tenantId: string, model: string, fromMs: nu
         cost: costOf(row._sum),
         events: row._count
       };
-    })
+    }),
+    fallback: {
+      out: fallbackOutRows
+        .map((row) => ({
+          model: row.fallbackToModel as string,
+          events: row._count,
+          totalTokens: row._sum.totalTokens ?? 0,
+          outputTokens: row._sum.outputTokens ?? 0,
+          billableTokens: billableOf(row._sum.inputTokens ?? 0, row._sum.cachedInputTokens ?? 0, row._sum.outputTokens ?? 0),
+          cost: costOf(row._sum)
+        }))
+        .sort((a, b) => b.events - a.events),
+      in: fallbackInRows
+        .map((row) => ({
+          model: row.fallbackFromModel as string,
+          events: row._count,
+          totalTokens: row._sum.totalTokens ?? 0,
+          outputTokens: row._sum.outputTokens ?? 0,
+          billableTokens: billableOf(row._sum.inputTokens ?? 0, row._sum.cachedInputTokens ?? 0, row._sum.outputTokens ?? 0),
+          cost: costOf(row._sum)
+        }))
+        .sort((a, b) => b.events - a.events)
+    }
   };
 }
 

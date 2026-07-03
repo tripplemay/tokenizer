@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { prisma } from "./db";
 
@@ -159,12 +160,45 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   // Postgres jsonb / text columns refuse U+0000, and a single bad row would
   // otherwise fail the entire batch (createMany is not row-isolated the way
   // the old per-event create loop was).
-  const rows = events.map((event) => ({
+  const rows = events.map((event) => toRow(event, userId, device.id, projectIdByKey.get(projectKey(event)) ?? null));
+
+  // 3) Single createMany — Postgres ON CONFLICT DO NOTHING on the unique
+  // (deviceId, source, sourceEventId) index handles dedup atomically.
+  const result = await prisma.usageEvent.createMany({
+    data: rows,
+    skipDuplicates: true
+  });
+
+  // 4) A conflict is usually an identical re-upload (a grown file gets fully
+  // re-parsed), but a message that completed after its first partial parse
+  // legitimately revises the stored row: the final streamed row carries the
+  // real bill and, on a mid-request model fallback, the corrected model
+  // attribution. Update those rows in place instead of dropping the new data.
+  // Gated on the agent's feature version — older agents still upload
+  // first-row placeholder snapshots that must not regress corrected rows.
+  const agentCanCorrect =
+    (deviceInput.diagnostics?.agentFeatureVersion ?? 0) >= PARSER_CORRECTION_FEATURE_VERSION;
+  const updated =
+    agentCanCorrect && result.count < rows.length ? await correctStaleDuplicates(rows, device.id, userId) : 0;
+
+  return {
+    inserted: result.count,
+    updated,
+    duplicates: events.length - result.count - updated,
+    received: events.length,
+    deviceId: device.id
+  };
+}
+
+type IngestRow = ReturnType<typeof toRow>;
+
+function toRow(event: UsageEventInput, userId: string, deviceId: string, projectId: string | null) {
+  return {
     userId,
-    deviceId: device.id,
+    deviceId,
     source: event.source,
     sourceEventId: stripNullBytesFromString(event.sourceEventId),
-    projectId: projectIdByKey.get(projectKey(event)) ?? null,
+    projectId,
     sessionId: sanitizeNullableString(event.sessionId ?? null),
     workspacePath: sanitizeNullableString(event.workspacePath ?? null),
     localWorkspacePath: sanitizeNullableString(event.localWorkspacePath ?? event.workspacePath ?? null),
@@ -183,6 +217,8 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
     webSearchRequests: normalizeTokenCount(event.webSearchRequests),
     webFetchRequests: normalizeTokenCount(event.webFetchRequests),
     serviceTier: sanitizeNullableString(event.serviceTier ?? null),
+    fallbackFromModel: sanitizeNullableString(event.fallbackFromModel ?? null),
+    fallbackToModel: sanitizeNullableString(event.fallbackToModel ?? null),
     totalTokens: computeTotalTokens(event),
     costUsd: event.costUsd == null ? null : new Prisma.Decimal(event.costUsd),
     occurredAt: new Date(event.occurredAt),
@@ -190,19 +226,103 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
       event.rawJson === undefined
         ? Prisma.JsonNull
         : (stripNullBytesDeep(event.rawJson) as Prisma.InputJsonValue)
-  }));
-
-  // 3) Single createMany — Postgres ON CONFLICT DO NOTHING on the unique
-  // (deviceId, source, sourceEventId) index handles dedup atomically.
-  const result = await prisma.usageEvent.createMany({
-    data: rows,
-    skipDuplicates: true
-  });
-
-  return {
-    inserted: result.count,
-    duplicates: events.length - result.count,
-    received: events.length,
-    deviceId: device.id
   };
+}
+
+// Fields a re-parse can legitimately revise. Identity fields (occurredAt is
+// pinned to the first streamed row) and costUsd (display-time computed) are
+// deliberately excluded so identical re-uploads stay write-free.
+const COMPARABLE_FIELDS = [
+  "model",
+  "inputTokens",
+  "outputTokens",
+  "cachedInputTokens",
+  "cacheWriteTokens",
+  "reasoningOutputTokens",
+  "cacheEphemeral5mInputTokens",
+  "cacheEphemeral1hInputTokens",
+  "webSearchRequests",
+  "webFetchRequests",
+  "serviceTier",
+  "totalTokens",
+  "fallbackFromModel",
+  "fallbackToModel"
+] as const;
+
+async function correctStaleDuplicates(rows: IngestRow[], deviceId: string, userId: string): Promise<number> {
+  const bySource = new Map<string, Map<string, IngestRow>>();
+  for (const row of rows) {
+    const forSource = bySource.get(row.source) ?? new Map<string, IngestRow>();
+    forSource.set(row.sourceEventId, row);
+    bySource.set(row.source, forSource);
+  }
+
+  const updates: ReturnType<typeof prisma.usageEvent.update>[] = [];
+  for (const [source, rowsByEventId] of bySource) {
+    // userId is redundant with the deviceId scope (Device.id is globally
+    // unique and the route already pinned it to the token) but this function
+    // mutates billing rows, so scope defensively anyway.
+    const existing = await prisma.usageEvent.findMany({
+      where: { userId, deviceId, source, sourceEventId: { in: [...rowsByEventId.keys()] } },
+      select: {
+        id: true,
+        sourceEventId: true,
+        model: true,
+        inputTokens: true,
+        outputTokens: true,
+        cachedInputTokens: true,
+        cacheWriteTokens: true,
+        reasoningOutputTokens: true,
+        cacheEphemeral5mInputTokens: true,
+        cacheEphemeral1hInputTokens: true,
+        webSearchRequests: true,
+        webFetchRequests: true,
+        serviceTier: true,
+        totalTokens: true,
+        fallbackFromModel: true,
+        fallbackToModel: true
+      }
+    });
+    for (const current of existing) {
+      const incoming = rowsByEventId.get(current.sourceEventId);
+      if (!incoming) continue;
+      const changes = COMPARABLE_FIELDS.filter(
+        (field) => (incoming[field] ?? null) !== ((current as Record<string, unknown>)[field] ?? null)
+      );
+      if (changes.length === 0) continue;
+      // Corrections are the only path that mutates a billing row after
+      // insert — leave an audit trail of exactly what moved.
+      console.warn(
+        `usage-event correction (user ${userId}, device ${deviceId}): ${source}/${current.sourceEventId} ` +
+          changes
+            .map((field) => `${field}: ${(current as Record<string, unknown>)[field] ?? null} -> ${incoming[field] ?? null}`)
+            .join(", ")
+      );
+      updates.push(
+        prisma.usageEvent.update({
+          where: { id: current.id },
+          data: {
+            model: incoming.model,
+            inputTokens: incoming.inputTokens,
+            outputTokens: incoming.outputTokens,
+            cachedInputTokens: incoming.cachedInputTokens,
+            cacheWriteTokens: incoming.cacheWriteTokens,
+            reasoningOutputTokens: incoming.reasoningOutputTokens,
+            cacheEphemeral5mInputTokens: incoming.cacheEphemeral5mInputTokens,
+            cacheEphemeral1hInputTokens: incoming.cacheEphemeral1hInputTokens,
+            webSearchRequests: incoming.webSearchRequests,
+            webFetchRequests: incoming.webFetchRequests,
+            serviceTier: incoming.serviceTier,
+            totalTokens: incoming.totalTokens,
+            fallbackFromModel: incoming.fallbackFromModel,
+            fallbackToModel: incoming.fallbackToModel,
+            rawJson: incoming.rawJson
+          }
+        })
+      );
+    }
+  }
+  if (updates.length === 0) return 0;
+  await prisma.$transaction(updates);
+  return updates.length;
 }

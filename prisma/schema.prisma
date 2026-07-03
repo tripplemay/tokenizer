@@ -187,6 +187,11 @@ model UsageEvent {
   serviceTier                 String?
   totalTokens           Int      @default(0)
   costUsd               Decimal? @db.Decimal(18, 8)
+  // Mid-request model fallback (e.g. claude-fable-5 downgrading to
+  // claude-opus-4-8): the final event carries fallbackFromModel, the
+  // abandoned-segment event carries fallbackToModel. Both null otherwise.
+  fallbackFromModel     String?
+  fallbackToModel       String?
   occurredAt            DateTime
   rawJson               Json?
   createdAt             DateTime @default(now())

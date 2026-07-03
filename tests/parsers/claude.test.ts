@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseClaudeUsage } from "@/parsers/claude";
+import { CLAUDE_PARSER_VERSION, parseClaudeUsage } from "@/parsers/claude";
+import { emptyCursor } from "@/cli/cursor";
 
 let homeDir: string;
 
@@ -80,6 +81,35 @@ function assistantJsonlRow(messageId: string, uuid: string, tokens: { input: num
       usage: {
         input_tokens: tokens.input,
         output_tokens: tokens.output,
+        cache_read_input_tokens: 0,
+        cache_creation_input_tokens: 0
+      }
+    }
+  };
+}
+
+function rawAssistantRow(opts: {
+  messageId: string;
+  uuid: string;
+  model?: string;
+  timestamp?: string;
+  usage?: Record<string, unknown>;
+  content?: Array<Record<string, unknown>>;
+}) {
+  return {
+    type: "assistant",
+    uuid: opts.uuid,
+    cwd: "/tmp/proj",
+    timestamp: opts.timestamp ?? "2026-01-01T00:00:00.000Z",
+    sessionId: "jsonl-session-stream",
+    message: {
+      role: "assistant",
+      model: opts.model ?? "claude-3-5-sonnet",
+      id: opts.messageId,
+      ...(opts.content ? { content: opts.content } : {}),
+      usage: opts.usage ?? {
+        input_tokens: 0,
+        output_tokens: 0,
         cache_read_input_tokens: 0,
         cache_creation_input_tokens: 0
       }
@@ -236,5 +266,285 @@ describe("parseClaudeUsage", () => {
     const result = parseClaudeUsage({ homeDir, projectRoots: [] });
     expect(result.events).toHaveLength(1);
     expect(result.events[0].serviceTier).toBe("enterprise-beta");
+  });
+
+  it("takes usage and model from the final row of a multi-row streamed message", () => {
+    // Streaming writes several rows per message.id; early rows carry a
+    // placeholder usage snapshot (tiny output_tokens), only the last row has
+    // the real bill. Identity must still come from the first row so the
+    // sourceEventId matches what earlier partial parses uploaded.
+    writeJsonl("proj-stream", [
+      rawAssistantRow({
+        messageId: "msg-stream",
+        uuid: "uuid-s1",
+        timestamp: "2026-07-02T19:10:26.027Z",
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-stream",
+        uuid: "uuid-s2",
+        timestamp: "2026-07-02T19:10:27.867Z",
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-stream",
+        uuid: "uuid-s3",
+        timestamp: "2026-07-02T19:10:29.004Z",
+        usage: { input_tokens: 2, output_tokens: 527, cache_read_input_tokens: 500, cache_creation_input_tokens: 0 }
+      })
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    const event = result.events[0];
+    expect(event.outputTokens).toBe(527);
+    expect(event.inputTokens).toBe(2 + 500);
+    expect(event.cachedInputTokens).toBe(500);
+    expect(event.sourceEventId).toBe("claude-jsonl:msg-stream:uuid-s1");
+    expect(event.occurredAt).toBe("2026-07-02T19:10:26.027Z");
+    expect(event.fallbackFromModel ?? null).toBeNull();
+    expect(event.fallbackToModel ?? null).toBeNull();
+  });
+
+  it("expands a mid-request model fallback into one event per billed iteration", () => {
+    // Mirrors the real claude-fable-5 -> claude-opus-4-8 fallback sequence:
+    // the message starts streaming on fable, a {type:"fallback"} block marks
+    // the switch, and the final row's usage.iterations carries the per-model
+    // bill. One event per iteration keeps model attribution and cost right.
+    writeJsonl("proj-fallback", [
+      rawAssistantRow({
+        messageId: "msg-fb",
+        uuid: "uuid-f1",
+        model: "claude-fable-5",
+        timestamp: "2026-07-02T19:14:20.691Z",
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 71131, cache_creation_input_tokens: 2155 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-fb",
+        uuid: "uuid-f2",
+        model: "claude-fable-5",
+        timestamp: "2026-07-02T19:14:23.552Z",
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 71131, cache_creation_input_tokens: 2155 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-fb",
+        uuid: "uuid-f3",
+        model: "claude-opus-4-8",
+        timestamp: "2026-07-02T19:14:23.681Z",
+        content: [{ type: "fallback", from: { model: "claude-fable-5" }, to: { model: "claude-opus-4-8" } }],
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 71131, cache_creation_input_tokens: 2155 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-fb",
+        uuid: "uuid-f4",
+        model: "claude-opus-4-8",
+        timestamp: "2026-07-02T19:14:35.153Z",
+        usage: {
+          input_tokens: 2,
+          output_tokens: 767,
+          cache_read_input_tokens: 69459,
+          cache_creation_input_tokens: 0,
+          iterations: [
+            {
+              type: "message",
+              model: "claude-fable-5",
+              input_tokens: 2,
+              output_tokens: 851,
+              cache_read_input_tokens: 71131,
+              cache_creation_input_tokens: 2155,
+              cache_creation: { ephemeral_5m_input_tokens: 2155, ephemeral_1h_input_tokens: 0 }
+            },
+            {
+              type: "fallback_message",
+              model: "claude-opus-4-8",
+              input_tokens: 2,
+              output_tokens: 767,
+              cache_read_input_tokens: 69459,
+              cache_creation_input_tokens: 0
+            }
+          ]
+        }
+      })
+    ]);
+
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(2);
+
+    const segment = result.events.find((e) => e.sourceEventId === "claude-jsonl:msg-fb:uuid-f1:iter0");
+    expect(segment).toBeDefined();
+    expect(segment!.model).toBe("claude-fable-5");
+    expect(segment!.outputTokens).toBe(851);
+    expect(segment!.inputTokens).toBe(2 + 2155 + 71131);
+    expect(segment!.cachedInputTokens).toBe(71131);
+    expect(segment!.cacheWriteTokens).toBe(2155);
+    expect(segment!.fallbackToModel).toBe("claude-opus-4-8");
+    expect(segment!.fallbackFromModel ?? null).toBeNull();
+    expect(segment!.cacheEphemeral5mInputTokens).toBe(2155);
+    expect(segment!.occurredAt).toBe("2026-07-02T19:14:20.691Z");
+
+    const final = result.events.find((e) => e.sourceEventId === "claude-jsonl:msg-fb:uuid-f1");
+    expect(final).toBeDefined();
+    expect(final!.model).toBe("claude-opus-4-8");
+    expect(final!.outputTokens).toBe(767);
+    expect(final!.inputTokens).toBe(2 + 69459);
+    expect(final!.fallbackFromModel).toBe("claude-fable-5");
+    expect(final!.fallbackToModel ?? null).toBeNull();
+    expect(final!.occurredAt).toBe("2026-07-02T19:14:20.691Z");
+  });
+
+  it("keeps the primary sourceEventId stable when a message completes in a later parse", () => {
+    // A sync can race a message mid-stream: the first parse sees only the
+    // fable rows, a later parse sees the full sequence. The primary event's
+    // sourceEventId must not change so the server can correct the row in place.
+    const partial = [
+      rawAssistantRow({
+        messageId: "msg-race",
+        uuid: "uuid-r1",
+        model: "claude-fable-5",
+        usage: { input_tokens: 2, output_tokens: 8, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+      })
+    ];
+    const full = [
+      ...partial,
+      rawAssistantRow({
+        messageId: "msg-race",
+        uuid: "uuid-r2",
+        model: "claude-opus-4-8",
+        usage: {
+          input_tokens: 2,
+          output_tokens: 300,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+          iterations: [
+            { type: "message", model: "claude-fable-5", input_tokens: 2, output_tokens: 90 },
+            { type: "fallback_message", model: "claude-opus-4-8", input_tokens: 2, output_tokens: 300 }
+          ]
+        }
+      })
+    ];
+
+    writeJsonl("proj-race", partial);
+    const first = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(first.events).toHaveLength(1);
+    const firstId = first.events[0].sourceEventId;
+    expect(first.events[0].model).toBe("claude-fable-5");
+
+    writeJsonl("proj-race", full);
+    const second = parseClaudeUsage({ homeDir, projectRoots: [] });
+    const finalEvent = second.events.find((e) => e.sourceEventId === firstId);
+    expect(finalEvent).toBeDefined();
+    expect(finalEvent!.model).toBe("claude-opus-4-8");
+    expect(finalEvent!.outputTokens).toBe(300);
+    expect(finalEvent!.fallbackFromModel).toBe("claude-fable-5");
+  });
+
+  it("marks fallbackFromModel from the fallback block when usage.iterations is absent", () => {
+    writeJsonl("proj-block-only", [
+      rawAssistantRow({
+        messageId: "msg-blk",
+        uuid: "uuid-b1",
+        model: "claude-fable-5",
+        usage: { input_tokens: 5, output_tokens: 3, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+      }),
+      rawAssistantRow({
+        messageId: "msg-blk",
+        uuid: "uuid-b2",
+        model: "claude-opus-4-8",
+        content: [{ type: "fallback", from: { model: "claude-fable-5" }, to: { model: "claude-opus-4-8" } }],
+        usage: { input_tokens: 5, output_tokens: 120, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+      })
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.events[0].model).toBe("claude-opus-4-8");
+    expect(result.events[0].outputTokens).toBe(120);
+    expect(result.events[0].fallbackFromModel).toBe("claude-fable-5");
+  });
+
+  it("warns when the final row's usage disagrees with the last iteration", () => {
+    // Canary for the double-count-safety assumption: the final event bills
+    // the top-level usage, the segments bill iterations[0..n-2]. That is only
+    // safe while Anthropic keeps top-level usage == last iteration (not a
+    // cumulative sum). If the shape ever changes, surface it loudly.
+    writeJsonl("proj-canary", [
+      rawAssistantRow({
+        messageId: "msg-canary",
+        uuid: "uuid-c1",
+        usage: {
+          input_tokens: 10,
+          output_tokens: 500,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+          iterations: [
+            { type: "message", model: "claude-fable-5", input_tokens: 10, output_tokens: 200 },
+            { type: "fallback_message", model: "claude-opus-4-8", input_tokens: 10, output_tokens: 300 }
+          ]
+        }
+      })
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(2);
+    expect(result.warnings.some((w) => /disagrees with its last usage iteration/.test(w))).toBe(true);
+  });
+
+  it("warns when assistant rows lack message.id and falls back to per-line grouping", () => {
+    const row = rawAssistantRow({
+      messageId: "ignored",
+      uuid: "uuid-noid",
+      usage: { input_tokens: 5, output_tokens: 5, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+    }) as { message: { id?: string } };
+    delete row.message.id;
+    writeJsonl("proj-noid", [row as Record<string, unknown>]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.warnings.some((w) => /lack message\.id/.test(w))).toBe(true);
+  });
+
+  it("re-parses fingerprinted claude files once when the parser version bumps", () => {
+    // v2 changed which streamed row a message's usage comes from (undercount
+    // fix + fallback expansion). Files fingerprinted by an older parser
+    // generation must be re-parsed once so the server can correct rows in
+    // place; after that the normal fingerprint skip applies again.
+    writeJsonl("proj-ver", [assistantJsonlRow("msg-v1", "uuid-v1", { input: 10, output: 5 })]);
+    const cursor = emptyCursor();
+
+    const first = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
+    expect(first.events).toHaveLength(1);
+    expect(cursor.claudeParserVersion).toBe(CLAUDE_PARSER_VERSION);
+
+    const second = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
+    expect(second.events).toHaveLength(0);
+
+    cursor.claudeParserVersion = CLAUDE_PARSER_VERSION - 1;
+    const third = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
+    expect(third.events).toHaveLength(1);
+    expect(cursor.claudeParserVersion).toBe(CLAUDE_PARSER_VERSION);
+  });
+
+  it("expands same-model iterations without fallback markers", () => {
+    // Defensive: a mid-stream retry that did not switch models still bills
+    // per iteration, but it is not a fallback and must not be flagged as one.
+    writeJsonl("proj-retry", [
+      rawAssistantRow({
+        messageId: "msg-retry",
+        uuid: "uuid-t1",
+        usage: {
+          input_tokens: 10,
+          output_tokens: 40,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+          iterations: [
+            { type: "message", model: "claude-3-5-sonnet", input_tokens: 10, output_tokens: 25 },
+            { type: "message", model: "claude-3-5-sonnet", input_tokens: 10, output_tokens: 40 }
+          ]
+        }
+      })
+    ]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(2);
+    for (const event of result.events) {
+      expect(event.model).toBe("claude-3-5-sonnet");
+      expect(event.fallbackFromModel ?? null).toBeNull();
+      expect(event.fallbackToModel ?? null).toBeNull();
+    }
   });
 });

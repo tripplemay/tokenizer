@@ -15,10 +15,16 @@ export type ParserCursor = {
   // OpenCode keeps usage in SQLite. We track the highest message.time_created
   // we've already ingested so subsequent runs can WHERE time_created > cursor.
   opencodeLastTimeCreated: number;
+  // Generation of the Claude JSONL parser that recorded the fingerprints.
+  // When the parser's extraction semantics change (e.g. the v2 keep-last +
+  // fallback-expansion fix), parseClaudeUsage drops the stale claude
+  // fingerprints once so history gets re-parsed and corrected server-side.
+  // 0 = written before versioning existed.
+  claudeParserVersion: number;
 };
 
 export function emptyCursor(): ParserCursor {
-  return { files: {}, opencodeLastTimeCreated: 0 };
+  return { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 0 };
 }
 
 export function readCursor(): ParserCursor {
@@ -27,7 +33,8 @@ export function readCursor(): ParserCursor {
     const parsed = JSON.parse(readFileSync(cursorPath, "utf8")) as Partial<ParserCursor>;
     return {
       files: parsed.files ?? {},
-      opencodeLastTimeCreated: parsed.opencodeLastTimeCreated ?? 0
+      opencodeLastTimeCreated: parsed.opencodeLastTimeCreated ?? 0,
+      claudeParserVersion: parsed.claudeParserVersion ?? 0
     };
   } catch {
     return emptyCursor();
@@ -62,6 +69,7 @@ export function recordFile(path: string, cursor: ParserCursor): void {
 export function cloneCursor(cursor: ParserCursor): ParserCursor {
   return {
     files: { ...cursor.files },
-    opencodeLastTimeCreated: cursor.opencodeLastTimeCreated
+    opencodeLastTimeCreated: cursor.opencodeLastTimeCreated,
+    claudeParserVersion: cursor.claudeParserVersion
   };
 }

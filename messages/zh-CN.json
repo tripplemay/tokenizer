@@ -103,6 +103,8 @@
       "unpricedHelper": "模型不在价格表中,成本显示为 —",
       "reasoningTokens": "推理 token",
       "reasoningHelper": "占输出 {percent}",
+      "fallback": "模型降级",
+      "fallbackHelper": "请求在流式输出中途被降级到其他模型的次数",
       "devices": "设备",
       "noDevices": "无设备",
       "lastEvent": "最近事件",
@@ -139,7 +141,11 @@
     },
     "unknownProject": "未知",
     "unknownDevice": "未知",
-    "unknownModel": "未知"
+    "unknownModel": "未知",
+    "fallbackFrom": "降级自 {model}",
+    "fallbackTo": "降级至 {model}",
+    "fallbackFromTitle": "中途降级:该请求由 {model} 起步,最终由当前模型完成",
+    "fallbackToTitle": "中途降级:该片段被放弃,请求改由 {model} 完成"
   },
   "project": {
     "back": "返回总览",
@@ -291,6 +297,15 @@
     "daily": {
       "title": "用量趋势",
       "subtitle": "输入 / 输出 token,{granularity}({tz})。"
+    },
+    "fallback": {
+      "title": "模型降级",
+      "subtitle": "所选时间段内与该模型相关的请求中途降级。",
+      "out": "降级至",
+      "in": "降级自",
+      "colDirection": "方向",
+      "colModel": "对端模型",
+      "note": "「降级至」:本模型先输出、随后请求改由对端模型完成的片段;「降级自」:本模型接手此类请求后产生的用量。两侧均计费。"
     },
     "devices": { "title": "按设备" },
     "projects": { "title": "按项目" },

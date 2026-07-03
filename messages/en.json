@@ -103,6 +103,8 @@
       "unpricedHelper": "Model missing from the price table; cost rendered as —",
       "reasoningTokens": "Reasoning tokens",
       "reasoningHelper": "{percent} of output",
+      "fallback": "Model fallback",
+      "fallbackHelper": "Requests that fell back to another model mid-stream",
       "devices": "Devices",
       "noDevices": "No devices",
       "lastEvent": "Last Event",
@@ -139,7 +141,11 @@
     },
     "unknownProject": "Unknown",
     "unknownDevice": "Unknown",
-    "unknownModel": "unknown"
+    "unknownModel": "unknown",
+    "fallbackFrom": "from {model}",
+    "fallbackTo": "to {model}",
+    "fallbackFromTitle": "Mid-request fallback: started on {model}, finished by the model shown",
+    "fallbackToTitle": "Mid-request fallback: this segment was abandoned and the request was re-served by {model}"
   },
   "project": {
     "back": "Back to overview",
@@ -291,6 +297,15 @@
     "daily": {
       "title": "Usage trend",
       "subtitle": "Input / output tokens, {granularity} ({tz})."
+    },
+    "fallback": {
+      "title": "Model fallback",
+      "subtitle": "Mid-request downgrades involving this model in the selected window.",
+      "out": "Fell back to",
+      "in": "Fell back from",
+      "colDirection": "Direction",
+      "colModel": "Counterpart model",
+      "note": "\"Fell back to\": segments this model streamed before the request was re-served by the counterpart model. \"Fell back from\": usage this model served after taking over such a request. Both sides are billed."
     },
     "devices": { "title": "By device" },
     "projects": { "title": "By project" },

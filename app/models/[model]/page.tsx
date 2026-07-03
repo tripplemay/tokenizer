@@ -68,7 +68,11 @@ export default async function ModelDetailPage({
     getDailyForModel(tenantId, model, fromMs, toMs, tz),
   ]);
 
-  const { totals, byProject, byDevice, bySource, events, price, costBreakdown } = detail;
+  const { totals, byProject, byDevice, bySource, events, price, costBreakdown, fallback } = detail;
+  const fallbackRows = [
+    ...fallback.out.map((row) => ({ ...row, direction: "out" as const })),
+    ...fallback.in.map((row) => ({ ...row, direction: "in" as const }))
+  ];
   const vendor = vendorOf(model);
   const isFree = price != null && price.input === 0 && price.output === 0;
 
@@ -180,6 +184,54 @@ export default async function ModelDetailPage({
           </div>
         )}
       </Card>
+
+      {fallbackRows.length > 0 ? (
+        <Card extra="p-6">
+          <div className="mb-3">
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("modelDetail.fallback.title")}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t("modelDetail.fallback.subtitle")}</p>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead className="text-gray-500">
+              <tr>
+                <th className="pb-3">{t("modelDetail.fallback.colDirection")}</th>
+                <th className="pb-3">{t("modelDetail.fallback.colModel")}</th>
+                <th className="pb-3 pr-4 text-right">{t("modelDetail.col.events")}</th>
+                <th className="pb-3 pr-4 text-right">{t("modelDetail.col.output")}</th>
+                <th className="pb-3 pr-4 text-right">{t("modelDetail.col.compute")}</th>
+                <th className="pb-3 pr-4 text-right">{t("modelDetail.col.cost")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fallbackRows.map((row) => (
+                <tr key={`${row.direction}:${row.model}`} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
+                  <td className="py-2.5 pr-4">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                        row.direction === "out"
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
+                          : "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
+                      }`}
+                    >
+                      {t(`modelDetail.fallback.${row.direction}`)}
+                    </span>
+                  </td>
+                  <td className="py-2.5 pr-4">
+                    <Link href={`/models/${encodeURIComponent(row.model)}`} className="font-mono font-medium hover:underline">
+                      {row.model}
+                    </Link>
+                  </td>
+                  <td className="pr-4 text-right">{formatFullNumber(row.events)}</td>
+                  <td className="pr-4 text-right">{formatTokens(row.outputTokens)}</td>
+                  <td className="pr-4 text-right">{formatTokens(row.billableTokens)}</td>
+                  <td className="pr-4 text-right font-medium">{row.cost > 0 ? formatUsd(row.cost) : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-3 text-xs text-gray-500">{t("modelDetail.fallback.note")}</p>
+        </Card>
+      ) : null}
 
       <Card extra="p-6">
         <div className="mb-3">

@@ -24,6 +24,11 @@ export type UsageEventInput = {
   webSearchRequests?: number;
   webFetchRequests?: number;
   serviceTier?: string | null;
+  // Set when this event is one side of a mid-request model fallback (e.g.
+  // claude-fable-5 downgrading to claude-opus-4-8). The final event carries
+  // fallbackFromModel; the abandoned-segment event carries fallbackToModel.
+  fallbackFromModel?: string | null;
+  fallbackToModel?: string | null;
   occurredAt: string;
   rawJson?: unknown;
 };

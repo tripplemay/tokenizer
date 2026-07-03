@@ -5,6 +5,7 @@ import Card from "@/components/card";
 import { SourcePill } from "../_components/source-pill";
 import { ModelLink } from "../_components/model-link";
 import { TierPill } from "../_components/tier-pill";
+import { FallbackPill } from "../_components/fallback-pill";
 import { PageBanner } from "../_components/page-banner";
 import { formatDateTimeSeconds } from "@/shared/format";
 import { requireSession } from "@/server/auth-session";
@@ -72,6 +73,18 @@ export default async function EventsPage() {
                     <span className="inline-flex items-center gap-1.5">
                       <ModelLink model={event.model} fallback={t("events.unknownModel")} />
                       <TierPill tier={event.serviceTier} />
+                      {event.fallbackFromModel ? (
+                        <FallbackPill
+                          label={t("events.fallbackFrom", { model: event.fallbackFromModel })}
+                          title={t("events.fallbackFromTitle", { model: event.fallbackFromModel })}
+                        />
+                      ) : null}
+                      {event.fallbackToModel ? (
+                        <FallbackPill
+                          label={t("events.fallbackTo", { model: event.fallbackToModel })}
+                          title={t("events.fallbackToTitle", { model: event.fallbackToModel })}
+                        />
+                      ) : null}
                     </span>
                   </td>
                   <td className="py-2.5 pr-4 text-right">{formatNumber(event.totalTokens)}</td>

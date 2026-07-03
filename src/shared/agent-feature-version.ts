@@ -17,5 +17,14 @@
 //
 // History:
 //   1 — 2026-05-19: initial cutover from SHA-based gating
-export const AGENT_FEATURE_VERSION = 1;
-export const MIN_AGENT_FEATURE_VERSION = 1;
+//   2 — 2026-07-03: claude parser v2 (streamed-usage undercount fix + model
+//       fallback attribution); old agents keep uploading first-row snapshots
+//       that the corrected data would fight with, so prompt an upgrade.
+export const AGENT_FEATURE_VERSION = 2;
+export const MIN_AGENT_FEATURE_VERSION = 2;
+
+// The ingest correction pass (updating an existing UsageEvent row in place
+// when a re-parse revises it) is only trusted from agents at or above this
+// version: older agents upload first-row placeholder snapshots that would
+// regress corrected rows.
+export const PARSER_CORRECTION_FEATURE_VERSION = 2;

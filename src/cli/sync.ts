@@ -32,7 +32,9 @@ const REQUEST_TIMEOUT_MS = 60_000;
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[]) {
   if (events.length > BATCH_SIZE) return syncEventsInBatches(config, events);
-  const body: BatchUsageRequest = { device: readDevice(), events, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  // Diagnostics carry agentFeatureVersion: the server only trusts in-place
+  // row corrections (parser v2 re-parses) from agents that declare it.
+  const body: BatchUsageRequest = { device: deviceWithDiagnostics(), events, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
     method: "POST",

@@ -219,13 +219,20 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             healthRatio={summary.unpricedTokens / Math.max(1, summary.totalTokens)}
           />
           <QualityMetric
-            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-3"
+            className="col-span-12 sm:col-span-6 lg:col-span-3 xl:col-span-2"
+            label={t("home.dataQuality.fallback")}
+            value={formatFullNumber(summary.fallbackEvents)}
+            helper={t("home.dataQuality.fallbackHelper")}
+            healthRatio={summary.fallbackEvents / Math.max(1, summary.eventCount)}
+          />
+          <QualityMetric
+            className="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-2"
             label={t("home.dataQuality.reasoningTokens")}
             value={formatTokens(summary.reasoningOutputTokens)}
             helper={t("home.dataQuality.reasoningHelper", { percent: formatPercent(summary.reasoningOutputTokens, summary.outputTokens) })}
           />
           <QualityMetric
-            className="col-span-12 lg:col-span-12 xl:col-span-3"
+            className="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-2"
             label={t("home.dataQuality.lastEvent")}
             value={formatDateTime(summary.lastEventAt, tz)}
             helper={t("home.dataQuality.lastEventHelper")}
