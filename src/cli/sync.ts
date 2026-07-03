@@ -46,14 +46,33 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) throw new Error(`Sync failed: ${response.status} ${await response.text()}`);
-  return response.json() as Promise<{ inserted: number; duplicates: number; received: number; deviceId?: string }>;
+  return response.json() as Promise<{ inserted: number; updated?: number; duplicates: number; received: number; deviceId?: string }>;
+}
+
+// A multi-batch run (especially the one-time parser-v2 backfill: 200+
+// sequential batches) shouldn't abort on one transient network blip — the
+// user's proxy path in particular drops the occasional request. Re-sending a
+// batch is idempotent server-side (skipDuplicates + compare-equal
+// corrections), so retry each batch a couple of times before giving up.
+const BATCH_RETRY_DELAYS_MS = [5_000, 15_000];
+
+async function syncBatchWithRetry(config: TokenizerConfig, batch: UsageEventInput[]) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await syncEvents(config, batch);
+    } catch (error) {
+      if (attempt >= BATCH_RETRY_DELAYS_MS.length) throw error;
+      await new Promise((resolve) => setTimeout(resolve, BATCH_RETRY_DELAYS_MS[attempt]));
+    }
+  }
 }
 
 async function syncEventsInBatches(config: TokenizerConfig, events: UsageEventInput[]) {
-  const total = { inserted: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
+  const total = { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
   for (let index = 0; index < events.length; index += BATCH_SIZE) {
-    const result = await syncEvents(config, events.slice(index, index + BATCH_SIZE));
+    const result = await syncBatchWithRetry(config, events.slice(index, index + BATCH_SIZE));
     total.inserted += result.inserted;
+    total.updated += result.updated ?? 0;
     total.duplicates += result.duplicates;
     total.received += result.received;
     total.deviceId = result.deviceId ?? total.deviceId;
