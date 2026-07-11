@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
 import { FiAlignJustify } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
-import { MdSettings, MdLogout } from "react-icons/md";
+import { MdSettings, MdLogout, MdPriceCheck } from "react-icons/md";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 
 const Navbar = (props: {
@@ -127,6 +127,20 @@ const Navbar = (props: {
                   ) : null}
                 </div>
                 <div className="my-1 h-px bg-gray-100 dark:bg-white/10" />
+                {session.user.role === "admin" ? (
+                  <>
+                    <Link
+                      href="/admin/pricing"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/5"
+                    >
+                      <MdPriceCheck className="h-4 w-4" />
+                      模型定价
+                    </Link>
+                    <div className="my-1 h-px bg-gray-100 dark:bg-white/10" />
+                  </>
+                ) : null}
                 <button
                   type="button"
                   role="menuitem"
