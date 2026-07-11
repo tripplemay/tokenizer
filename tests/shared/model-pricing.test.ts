@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCost, MODEL_PRICES, normalizeModelKey, sumCostAcrossModels } from "@/shared/model-pricing";
+import { decomposeCost, estimateCost, getModelPrice, MODEL_PRICES, normalizeModelKey, sumCostAcrossModels } from "@/shared/model-pricing";
 
 describe("normalizeModelKey", () => {
   it("returns null for nullish input", () => {
@@ -114,5 +114,55 @@ describe("sumCostAcrossModels", () => {
     ]);
     expect(cost).toBeCloseTo(0.0035, 6);
     expect(unpricedTokens).toBe(200 + 100 + 50 + 25);
+  });
+});
+
+// The optional `prices` param is how the server threads the DB-backed
+// auto-pricing overlay (src/server/model-prices.ts) into the pure math. These
+// tests pin the overlay semantics without touching any DB.
+describe("effective-price overlay (prices param)", () => {
+  const overlay = {
+    ...MODEL_PRICES,
+    // A model the static seed does not know about, learned at runtime.
+    "brand-new-model": { input: 2, cacheRead: 0.2, cacheWrite: 2, output: 8 }
+  };
+
+  it("prices a model present only in the overlay, still null without it", () => {
+    const tokens = { inputTokens: 1_000_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 0 };
+    expect(estimateCost("brand-new-model", tokens)).toBe(null); // seed default: unpriced
+    expect(estimateCost("brand-new-model", tokens, overlay)).toBeCloseTo(2, 6);
+  });
+
+  it("normalises the date suffix before hitting the overlay", () => {
+    const tokens = { inputTokens: 1_000_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 0 };
+    expect(estimateCost("Brand-New-Model-20260710", tokens, overlay)).toBeCloseTo(2, 6);
+  });
+
+  it("keeps null-means-unpriced for keys absent from the supplied table", () => {
+    const tokens = { inputTokens: 100, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 50 };
+    expect(estimateCost("still-unknown", tokens, overlay)).toBe(null);
+    const { unpricedTokens } = sumCostAcrossModels(
+      [{ model: "still-unknown", inputTokens: 100, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 50 }],
+      overlay
+    );
+    expect(unpricedTokens).toBe(150);
+  });
+
+  it("lets an overlay entry override a seed key (admin correction escape hatch)", () => {
+    const corrected = { ...MODEL_PRICES, "claude-haiku-4-5": { input: 99, cacheRead: 9.9, cacheWrite: 99, output: 99 } };
+    const tokens = { inputTokens: 1_000_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 0 };
+    expect(estimateCost("claude-haiku-4-5", tokens)).toBeCloseTo(1, 6); // seed
+    expect(estimateCost("claude-haiku-4-5", tokens, corrected)).toBeCloseTo(99, 6); // overlay wins
+  });
+
+  it("getModelPrice and decomposeCost honour the overlay too", () => {
+    expect(getModelPrice("brand-new-model")).toBe(null);
+    expect(getModelPrice("brand-new-model", overlay)).toEqual({ input: 2, cacheRead: 0.2, cacheWrite: 2, output: 8 });
+    const breakdown = decomposeCost(
+      "brand-new-model",
+      { inputTokens: 1_000_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 1_000_000 },
+      overlay
+    );
+    expect(breakdown?.total).toBeCloseTo(2 + 8, 6);
   });
 });

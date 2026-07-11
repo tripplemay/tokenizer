@@ -108,6 +108,13 @@ Read endpoints:
 - `GET /api/events`
 - `GET /api/projects`
 
+## Model pricing
+
+New vendor models are detected automatically and queued at `/admin/pricing`,
+where an admin can price them (taking effect with no redeploy) or let an optional
+LiteLLM/OpenRouter lookup pre-fill candidates. See
+[`docs/auto-pricing.md`](docs/auto-pricing.md).
+
 ## VPS Deployment
 
 ```bash

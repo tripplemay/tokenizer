@@ -46,6 +46,14 @@ services:
       AUTH_URL: ${AUTH_URL:-http://localhost:3000}
       AUTH_RESEND_KEY: ${AUTH_RESEND_KEY:-}
       AUTH_EMAIL_FROM: ${AUTH_EMAIL_FROM:-noreply@token.vpanel.cc}
+      # Auto-pricing. Detection always runs; PRICING_AUTO_ENABLED gates the
+      # outbound LiteLLM/OpenRouter/LLM lookups (ships off — dark launch).
+      PRICING_AUTO_ENABLED: ${PRICING_AUTO_ENABLED:-0}
+      LITELLM_PRICES_URL: ${LITELLM_PRICES_URL:-}
+      OPENROUTER_MODELS_URL: ${OPENROUTER_MODELS_URL:-}
+      PRICING_LLM_BASE_URL: ${PRICING_LLM_BASE_URL:-}
+      PRICING_LLM_KEY: ${PRICING_LLM_KEY:-}
+      PRICING_LLM_MODEL: ${PRICING_LLM_MODEL:-}
     ports:
       - "${APP_HOST_PORT:-127.0.0.1:3010}:3000"
 

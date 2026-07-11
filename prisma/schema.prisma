@@ -250,3 +250,37 @@ model CollectorState {
   @@unique([userId, source, key])
   @@index([userId])
 }
+
+// Global auto-pricing overlay for the static MODEL_PRICES seed. UNLIKE every
+// other business table this is deliberately NOT tenant-scoped: a model's list
+// price is identical for all users, so we keep one global row per normalized
+// model key (= normalizeModelKey output). The static seed in
+// src/shared/model-pricing.ts remains the fallback; this table fills keys the
+// seed lacks. Only rows with status IN ('auto_applied','approved') are billable
+// (see src/server/model-prices.ts) — everything else (detected/pending_review/
+// failed/rejected/ignored) is tracked but does NOT change any reported cost, so
+// the "unpriced beats guessed" contract holds until a trusted source or a human
+// confirms the price. All four unit prices are USD per 1M tokens.
+model ModelPrice {
+  id           String    @id @default(cuid())
+  modelKey     String    @unique
+  input        Decimal?  @db.Decimal(14, 8)
+  cacheRead    Decimal?  @db.Decimal(14, 8)
+  cacheWrite   Decimal?  @db.Decimal(14, 8)
+  output       Decimal?  @db.Decimal(14, 8)
+  // detected | auto_applied | pending_review | approved | rejected | failed | ignored
+  status       String    @default("detected")
+  source       String?   // litellm | openrouter | llm-websearch | convention | manual | seed
+  sourceUrl    String?
+  confidence   String?   // high | low
+  rawLookup    Json?     // raw source payload kept for audit / re-verification
+  notes        String?
+  firstSeenAt  DateTime  @default(now())
+  pricedAt     DateTime?
+  verifiedAt   DateTime?
+  reviewedById String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status])
+}

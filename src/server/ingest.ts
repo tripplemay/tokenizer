@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { prisma } from "./db";
+import { detectAndTrackUnpricedModels } from "./pricing/detect";
 
 // Postgres' jsonb type rejects NUL bytes (U+0000). Old per-event create
 // quietly dropped bad rows; createMany fails the whole batch on any single
@@ -181,12 +182,26 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   const updated =
     agentCanCorrect && result.count < rows.length ? await correctStaleDuplicates(rows, device.id, userId) : 0;
 
+  // 5) Auto-pricing detection. Any model the seed doesn't price and that isn't
+  // already tracked gets a ModelPrice row (detected, or auto $0 for -free). This
+  // is best-effort and fully isolated: a detection failure must never fail the
+  // client's upload, which has already been committed above.
+  let newModelKeys: string[] = [];
+  try {
+    newModelKeys = await detectAndTrackUnpricedModels(events.map((event) => event.model));
+  } catch (error) {
+    console.error(`model-price detection failed (user ${userId}); ingest unaffected`, error);
+  }
+
   return {
     inserted: result.count,
     updated,
     duplicates: events.length - result.count - updated,
     received: events.length,
-    deviceId: device.id
+    deviceId: device.id,
+    // Keys needing a price lookup. The batch route triggers an out-of-band
+    // lookup for these after responding (see app/api/usage/events/batch).
+    newModelKeys
   };
 }
 

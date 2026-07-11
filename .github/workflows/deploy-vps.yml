@@ -63,6 +63,14 @@ jobs:
       # AUTH_EMAIL_FROM are hardcoded sane defaults below.
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_RESEND_KEY: ${{ secrets.AUTH_RESEND_KEY }}
+      # Auto-pricing (all optional; feature ships off). Toggle/URLs live in repo
+      # Variables; the LLM-fallback key is a Secret.
+      PRICING_AUTO_ENABLED: ${{ vars.PRICING_AUTO_ENABLED }}
+      LITELLM_PRICES_URL: ${{ vars.LITELLM_PRICES_URL }}
+      OPENROUTER_MODELS_URL: ${{ vars.OPENROUTER_MODELS_URL }}
+      PRICING_LLM_BASE_URL: ${{ vars.PRICING_LLM_BASE_URL }}
+      PRICING_LLM_MODEL: ${{ vars.PRICING_LLM_MODEL }}
+      PRICING_LLM_KEY: ${{ secrets.PRICING_LLM_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -131,6 +139,13 @@ jobs:
             printf 'AUTH_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
             printf 'AUTH_RESEND_KEY=%s\n' "${AUTH_RESEND_KEY:-}"
             printf 'AUTH_EMAIL_FROM=noreply@token.vpanel.cc\n'
+            # Auto-pricing (feature ships off unless PRICING_AUTO_ENABLED=1)
+            printf 'PRICING_AUTO_ENABLED=%s\n' "${PRICING_AUTO_ENABLED:-0}"
+            printf 'LITELLM_PRICES_URL=%s\n' "${LITELLM_PRICES_URL:-}"
+            printf 'OPENROUTER_MODELS_URL=%s\n' "${OPENROUTER_MODELS_URL:-}"
+            printf 'PRICING_LLM_BASE_URL=%s\n' "${PRICING_LLM_BASE_URL:-}"
+            printf 'PRICING_LLM_KEY=%s\n' "${PRICING_LLM_KEY:-}"
+            printf 'PRICING_LLM_MODEL=%s\n' "${PRICING_LLM_MODEL:-}"
           } > "$ENV_FILE"
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
           rm -f "$ENV_FILE"

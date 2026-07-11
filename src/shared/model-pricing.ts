@@ -107,10 +107,21 @@ export type TokenAggregate = {
 // Returns USD cost or null when the model is unknown / unpriced. Callers
 // decide whether to surface "—" or fall back to 0; we deliberately do not
 // silently bill unknown models at $0 so the data-quality story stays visible.
-export function estimateCost(model: string | null | undefined, t: TokenAggregate): number | null {
+//
+// `prices` defaults to the static MODEL_PRICES seed so this stays a pure
+// function usable anywhere. Server callers pass an effective table (seed
+// merged with the DB-backed auto-pricing overlay — see
+// src/server/model-prices.ts) so newly-learned prices take effect without a
+// redeploy. Passing an overlay never changes the null-means-unpriced contract:
+// a key absent from the supplied table still returns null.
+export function estimateCost(
+  model: string | null | undefined,
+  t: TokenAggregate,
+  prices: Record<string, ModelPriceRow> = MODEL_PRICES
+): number | null {
   const key = normalizeModelKey(model);
   if (!key) return null;
-  const price = MODEL_PRICES[key];
+  const price = prices[key];
   if (!price) return null;
   const fresh = Math.max(0, t.inputTokens - t.cachedInputTokens - t.cacheWriteTokens);
   return (
@@ -122,11 +133,15 @@ export function estimateCost(model: string | null | undefined, t: TokenAggregate
 }
 
 // Look up the published unit prices for a model, or null if it is unpriced.
-// Used by the model detail page to render a pricing panel.
-export function getModelPrice(model: string | null | undefined): ModelPriceRow | null {
+// Used by the model detail page to render a pricing panel. `prices` defaults
+// to the static seed; server callers pass the effective (DB-merged) table.
+export function getModelPrice(
+  model: string | null | undefined,
+  prices: Record<string, ModelPriceRow> = MODEL_PRICES
+): ModelPriceRow | null {
   const key = normalizeModelKey(model);
   if (!key) return null;
-  return MODEL_PRICES[key] ?? null;
+  return prices[key] ?? null;
 }
 
 export type CostBreakdown = {
@@ -139,11 +154,16 @@ export type CostBreakdown = {
 
 // Same arithmetic as estimateCost, but returns the four per-component dollar
 // figures so the model detail page can show where the spend went. Null when the
-// model is unknown / unpriced.
-export function decomposeCost(model: string | null | undefined, t: TokenAggregate): CostBreakdown | null {
+// model is unknown / unpriced. `prices` defaults to the static seed; server
+// callers pass the effective (DB-merged) table.
+export function decomposeCost(
+  model: string | null | undefined,
+  t: TokenAggregate,
+  prices: Record<string, ModelPriceRow> = MODEL_PRICES
+): CostBreakdown | null {
   const key = normalizeModelKey(model);
   if (!key) return null;
-  const price = MODEL_PRICES[key];
+  const price = prices[key];
   if (!price) return null;
   const fresh = Math.max(0, t.inputTokens - t.cachedInputTokens - t.cacheWriteTokens);
   const freshInput = (fresh * price.input) / 1_000_000;
@@ -157,12 +177,13 @@ export function decomposeCost(model: string | null | undefined, t: TokenAggregat
 // for unknown models contribute 0 but their token counts are returned via
 // `unpricedTokens` so callers can surface the gap if they want to.
 export function sumCostAcrossModels(
-  rows: Array<{ model: string | null | undefined } & TokenAggregate>
+  rows: Array<{ model: string | null | undefined } & TokenAggregate>,
+  prices: Record<string, ModelPriceRow> = MODEL_PRICES
 ): { cost: number; unpricedTokens: number } {
   let cost = 0;
   let unpricedTokens = 0;
   for (const row of rows) {
-    const c = estimateCost(row.model, row);
+    const c = estimateCost(row.model, row, prices);
     if (c == null) {
       unpricedTokens += row.inputTokens + row.outputTokens;
     } else {

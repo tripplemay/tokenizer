@@ -26,6 +26,21 @@ export async function requireSession() {
   return session;
 }
 
+// Page-level admin gate. Unauthenticated visitors go to /login; authenticated
+// non-admins are bounced to the dashboard rather than shown a 403 (the admin
+// surface simply doesn't exist for them). role lives on session.user.role and
+// defaults to "user" (see src/auth.ts session callback).
+export async function requireAdmin() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+  if (session.user.role !== "admin") {
+    redirect("/");
+  }
+  return session;
+}
+
 // Useful when a page is "auth optional" — show a friendlier message instead
 // of redirecting, e.g. for landing or marketing surfaces.
 export async function getSessionOrNull() {

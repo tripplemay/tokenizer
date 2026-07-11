@@ -1,7 +1,9 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { computeSummaryMetrics } from "./summary-metrics";
-import { decomposeCost, estimateCost, getModelPrice, sumCostAcrossModels } from "@/shared/model-pricing";
+import { decomposeCost, estimateCost, getModelPrice, sumCostAcrossModels, type ModelPriceRow } from "@/shared/model-pricing";
+import { getEffectivePrices } from "./model-prices";
+import { MODEL_PRICES_CACHE_TAG } from "@/shared/model-price";
 import { bucketKeys, granularityForSpan, sqlBucket } from "./time-buckets";
 
 // Short-TTL cache for the dashboard's expensive aggregates. Each summary
@@ -56,7 +58,7 @@ function sumNumeric(value: number | bigint | null | undefined): number {
 // One-shot cost aggregation across an arbitrary WHERE. Prisma `groupBy({ by: ["model"] })`
 // gives us the per-model token rollup; we then walk the rows and apply the
 // per-model unit price.
-async function costForWhere(where: Record<string, unknown>): Promise<number> {
+async function costForWhere(where: Record<string, unknown>, prices: Record<string, ModelPriceRow>): Promise<number> {
   const rows = await prisma.usageEvent.groupBy({
     by: ["model"],
     where,
@@ -68,12 +70,12 @@ async function costForWhere(where: Record<string, unknown>): Promise<number> {
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     return total + (c ?? 0);
   }, 0);
 }
 
-async function computeAndCostFor(where: Record<string, unknown>): Promise<{ compute: number; cost: number }> {
+async function computeAndCostFor(where: Record<string, unknown>, prices: Record<string, ModelPriceRow>): Promise<{ compute: number; cost: number }> {
   const rows = await prisma.usageEvent.groupBy({
     by: ["model"],
     where,
@@ -87,13 +89,14 @@ async function computeAndCostFor(where: Record<string, unknown>): Promise<{ comp
     const o = row._sum.outputTokens ?? 0;
     const w = row._sum.cacheWriteTokens ?? 0;
     compute += billableOf(i, c, o);
-    const dollars = estimateCost(row.model, { inputTokens: i, cachedInputTokens: c, cacheWriteTokens: w, outputTokens: o });
+    const dollars = estimateCost(row.model, { inputTokens: i, cachedInputTokens: c, cacheWriteTokens: w, outputTokens: o }, prices);
     if (dollars != null) cost += dollars;
   }
   return { compute, cost };
 }
 
 async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
+  const prices = await getEffectivePrices();
   const now = new Date();
   const where = rangeWhere(range, tenantId);
   const prior = priorWindow(range, now);
@@ -122,7 +125,7 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
     // carries fallbackFromModel (the segment events carry fallbackToModel and
     // would double-count occurrences).
     prisma.usageEvent.count({ where: { ...where, fallbackFromModel: { not: null } } }),
-    prior ? computeAndCostFor({ userId: tenantId, occurredAt: { gte: prior.gte, lt: prior.lt } }) : Promise.resolve(null)
+    prior ? computeAndCostFor({ userId: tenantId, occurredAt: { gte: prior.gte, lt: prior.lt } }, prices) : Promise.resolve(null)
   ]);
 
   const inputTokens = total._sum.inputTokens ?? 0;
@@ -138,7 +141,8 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    }))
+    })),
+    prices
   );
 
   return {
@@ -168,6 +172,7 @@ async function getSummaryImpl(tenantId: string, range: RangeOption = "all") {
 }
 
 async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all") {
+  const prices = await getEffectivePrices();
   const where = rangeWhere(range, tenantId);
   const rows = await prisma.usageEvent.groupBy({
     by: ["deviceId"],
@@ -189,7 +194,7 @@ async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all"
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costByDevice.set(row.deviceId, (costByDevice.get(row.deviceId) ?? 0) + c);
   }
@@ -234,6 +239,7 @@ async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all"
 // Detail rollup for a single device. Mirrors getProjectDetail() in shape so
 // /devices/[id] can reuse the same table layouts.
 export async function getDeviceDetail(tenantId: string, deviceId: string, range: RangeOption = "all") {
+  const prices = await getEffectivePrices();
   const where = { deviceId, ...rangeWhere(range, tenantId) };
   const [device, totals, eventCount, events, byProject, byModel, bySource, projectCostRows, modelCostRows, sourceCostRows, deviceCost] = await Promise.all([
     prisma.device.findFirst({ where: { id: deviceId, userId: tenantId } }),
@@ -279,7 +285,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
       where,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     }),
-    costForWhere(where)
+    costForWhere(where, prices)
   ]);
 
   const costByProject = new Map<string, number>();
@@ -290,7 +296,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costByProject.set(key, (costByProject.get(key) ?? 0) + c);
   }
@@ -301,7 +307,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costByModelMap.set(row.model ?? "__null__", (costByModelMap.get(row.model ?? "__null__") ?? 0) + c);
   }
@@ -312,7 +318,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costBySource.set(row.source, (costBySource.get(row.source) ?? 0) + c);
   }
@@ -392,6 +398,7 @@ export async function getDeviceDetail(tenantId: string, deviceId: string, range:
 // getDeviceDetail but adds a by-device breakdown and is scoped to an arbitrary
 // [from, to) window. Not cached (returns Prisma Date objects on `events`).
 export async function getModelDetail(tenantId: string, model: string, fromMs: number, toMs: number) {
+  const prices = await getEffectivePrices();
   const where = { userId: tenantId, model, occurredAt: { gte: new Date(fromMs), lt: new Date(toMs) } };
   const [totals, eventCount, events, byProject, byDevice, bySource, fallbackOutRows, fallbackInRows] = await Promise.all([
     prisma.usageEvent.aggregate({
@@ -447,7 +454,7 @@ export async function getModelDetail(tenantId: string, model: string, fromMs: nu
       cachedInputTokens: s.cachedInputTokens ?? 0,
       cacheWriteTokens: s.cacheWriteTokens ?? 0,
       outputTokens: s.outputTokens ?? 0
-    }) ?? 0;
+    }, prices) ?? 0;
 
   const projectIds = byProject.map((r) => r.projectId).filter((id): id is string => Boolean(id));
   const deviceIds = byDevice.map((r) => r.deviceId);
@@ -466,8 +473,8 @@ export async function getModelDetail(tenantId: string, model: string, fromMs: nu
 
   return {
     model,
-    price: getModelPrice(model),
-    costBreakdown: decomposeCost(model, tokenAggregate),
+    price: getModelPrice(model, prices),
+    costBreakdown: decomposeCost(model, tokenAggregate, prices),
     totals: {
       totalTokens: totals._sum.totalTokens ?? 0,
       inputTokens,
@@ -477,7 +484,7 @@ export async function getModelDetail(tenantId: string, model: string, fromMs: nu
       reasoningOutputTokens: totals._sum.reasoningOutputTokens ?? 0,
       billableTokens: billableOf(inputTokens, cachedInputTokens, outputTokens),
       cacheHitRate: inputTokens > 0 ? Math.min(1, cachedInputTokens / inputTokens) : 0,
-      cost: estimateCost(model, tokenAggregate) ?? 0,
+      cost: estimateCost(model, tokenAggregate, prices) ?? 0,
       eventCount
     },
     events,
@@ -683,6 +690,7 @@ async function getDailyByDeviceImpl(
     ORDER BY 1 ASC
   `;
 
+  const prices = await getEffectivePrices();
   const deviceIds = new Set<string>();
   const byKey = new Map<string, number>();
   for (const row of rows) {
@@ -692,7 +700,7 @@ async function getDailyByDeviceImpl(
       cachedInputTokens: bigintToNumber(row.cached),
       cacheWriteTokens: bigintToNumber(row.cwrite),
       outputTokens: bigintToNumber(row.output)
-    });
+    }, prices);
     if (cost == null) continue;
     deviceIds.add(row.deviceId);
     const key = `${date}|${row.deviceId}`;
@@ -714,6 +722,7 @@ async function getDailyByDeviceImpl(
 }
 
 async function getProjectSummaryImpl(tenantId: string, range: RangeOption = "all", filter: ProjectFilter = "all") {
+  const prices = await getEffectivePrices();
   const where = rangeWhere(range, tenantId);
   const [rows, costRows] = await Promise.all([
     prisma.usageEvent.groupBy({
@@ -739,7 +748,7 @@ async function getProjectSummaryImpl(tenantId: string, range: RangeOption = "all
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costByProject.set(key, (costByProject.get(key) ?? 0) + c);
   }
@@ -777,6 +786,7 @@ async function getProjectSummaryImpl(tenantId: string, range: RangeOption = "all
 // Per-project (and its sub-tables) need their own model breakdown too — used
 // by /projects/[id] to fill Sources / Models tables with cost columns.
 export async function getProjectDetail(tenantId: string, projectId: string) {
+  const prices = await getEffectivePrices();
   const projectWhere = { userId: tenantId, projectId };
   const [totals, events, bySource, byModel, sourceCostRows, modelCostRows, projectCost] = await Promise.all([
     prisma.usageEvent.aggregate({
@@ -806,7 +816,7 @@ export async function getProjectDetail(tenantId: string, projectId: string) {
       where: projectWhere,
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     }),
-    costForWhere(projectWhere)
+    costForWhere(projectWhere, prices)
   ]);
 
   const costBySource = new Map<string, number>();
@@ -816,7 +826,7 @@ export async function getProjectDetail(tenantId: string, projectId: string) {
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costBySource.set(row.source, (costBySource.get(row.source) ?? 0) + c);
   }
@@ -827,7 +837,7 @@ export async function getProjectDetail(tenantId: string, projectId: string) {
       cachedInputTokens: row._sum.cachedInputTokens ?? 0,
       cacheWriteTokens: row._sum.cacheWriteTokens ?? 0,
       outputTokens: row._sum.outputTokens ?? 0
-    });
+    }, prices);
     if (c == null) continue;
     costByModelMap.set(row.model ?? "__null__", (costByModelMap.get(row.model ?? "__null__") ?? 0) + c);
   }
@@ -965,6 +975,7 @@ async function getDailyCostImpl(
     ORDER BY 1 ASC
   `;
 
+  const prices = await getEffectivePrices();
   const costByDate = new Map<string, number>();
   for (const row of rows) {
     const date = bucketDateToIso(row.date);
@@ -973,7 +984,7 @@ async function getDailyCostImpl(
       cachedInputTokens: bigintToNumber(row.cached),
       cacheWriteTokens: bigintToNumber(row.cwrite),
       outputTokens: bigintToNumber(row.output)
-    });
+    }, prices);
     if (cost == null) continue;
     costByDate.set(date, (costByDate.get(date) ?? 0) + cost);
   }
@@ -1047,6 +1058,7 @@ async function getBreakdownImpl(tenantId: string, field: "source" | "model", ran
       _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
     })
   ]);
+  const prices = await getEffectivePrices();
   const costByKey = new Map<string, number>();
   for (const row of costRows) {
     const key = String(row[field] ?? "unknown");
@@ -1055,7 +1067,7 @@ async function getBreakdownImpl(tenantId: string, field: "source" | "model", ran
       cachedInputTokens: sumNumeric(row._sum.cachedInputTokens),
       cacheWriteTokens: sumNumeric(row._sum.cacheWriteTokens),
       outputTokens: sumNumeric(row._sum.outputTokens)
-    });
+    }, prices);
     if (c == null) continue;
     costByKey.set(key, (costByKey.get(key) ?? 0) + c);
   }
@@ -1102,11 +1114,11 @@ function instrument<T extends (...args: never[]) => Promise<unknown>>(name: stri
   }) as T;
 }
 
-export const getSummary = unstable_cache(instrument("getSummary", getSummaryImpl), ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDeviceSummary = unstable_cache(instrument("getDeviceSummary", getDeviceSummaryImpl), ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getProjectSummary = unstable_cache(instrument("getProjectSummary", getProjectSummaryImpl), ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailySummary = unstable_cache(instrument("getDailySummary", getDailySummaryImpl), ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyCost = unstable_cache(instrument("getDailyCost", getDailyCostImpl), ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyBySource = unstable_cache(instrument("getDailyBySource", getDailyBySourceImpl), ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getDailyByDevice = unstable_cache(instrument("getDailyByDevice", getDailyByDeviceImpl), ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS });
-export const getBreakdown = unstable_cache(instrument("getBreakdown", getBreakdownImpl), ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS });
+export const getSummary = unstable_cache(instrument("getSummary", getSummaryImpl), ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getDeviceSummary = unstable_cache(instrument("getDeviceSummary", getDeviceSummaryImpl), ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getProjectSummary = unstable_cache(instrument("getProjectSummary", getProjectSummaryImpl), ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getDailySummary = unstable_cache(instrument("getDailySummary", getDailySummaryImpl), ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getDailyCost = unstable_cache(instrument("getDailyCost", getDailyCostImpl), ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getDailyBySource = unstable_cache(instrument("getDailyBySource", getDailyBySourceImpl), ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getDailyByDevice = unstable_cache(instrument("getDailyByDevice", getDailyByDeviceImpl), ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+export const getBreakdown = unstable_cache(instrument("getBreakdown", getBreakdownImpl), ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });

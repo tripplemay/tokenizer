@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MdArrowBack, MdBolt, MdCached, MdInput, MdMemory, MdOutput, MdPaid, MdReceiptLong, MdSave, MdSpeed } from "react-icons/md";
+import { MdArrowBack, MdBolt, MdCached, MdInput, MdMemory, MdOutput, MdPaid, MdPriceCheck, MdReceiptLong, MdSave, MdSpeed } from "react-icons/md";
 import Card from "@/components/card";
 import Widget from "@/components/widget/Widget";
 import { getDailyForModel, getModelDetail } from "@/server/summaries";
@@ -44,6 +44,7 @@ export default async function ModelDetailPage({
   const sp = await searchParams;
   const session = await requireSession();
   const tenantId = session.user.id;
+  const isAdmin = session.user.role === "admin";
   const tz = await getUserTimezone(tenantId);
 
   // [from, to) carry the user's local wall clock (the datetime-local value).
@@ -148,7 +149,17 @@ export default async function ModelDetailPage({
       <Card extra="p-6">
         <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("modelDetail.pricing.title")}</h3>
         {price == null ? (
-          <p className="text-sm text-gray-500">{t("modelDetail.unpricedHelper")}</p>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">{t("modelDetail.unpricedHelper")}</p>
+            {isAdmin ? (
+              <Link
+                href="/admin/pricing"
+                className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline"
+              >
+                <MdPriceCheck className="h-4 w-4" /> Review pricing queue
+              </Link>
+            ) : null}
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             <div>

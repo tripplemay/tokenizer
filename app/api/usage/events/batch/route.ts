@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth";
 import { ingestUsageEvents } from "@/server/ingest";
+import { maybeTriggerPriceLookup } from "@/server/pricing/trigger";
 import { updateUserTimezoneIfValid } from "@/server/timezone";
 import { BatchUsageRequest } from "@/shared/usage";
 
@@ -19,5 +20,14 @@ export async function POST(request: NextRequest) {
   await updateUserTimezoneIfValid(token.userId, body.timezone);
 
   const result = await ingestUsageEvents(body.events, body.device, token.id, token.userId);
+
+  // Event-driven auto-pricing: kick off an out-of-band lookup for any brand-new
+  // unpriced models this batch introduced. after() runs post-response so the
+  // external HTTP never delays the client's upload; no-op unless auto-pricing
+  // is enabled.
+  if (result.newModelKeys && result.newModelKeys.length > 0) {
+    await maybeTriggerPriceLookup(result.newModelKeys);
+  }
+
   return Response.json(result);
 }
