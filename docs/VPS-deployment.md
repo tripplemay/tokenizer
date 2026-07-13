@@ -158,14 +158,19 @@ VPS_DEPLOY_PATH=/opt/tokenizer
 
 If `VPS_DEPLOY_PATH` is omitted, the workflow deploys to `/opt/tokenizer`.
 
-Current production values:
+Current production values (deploysvr, migrated 2026-07-13):
 
 ```text
-VPS_HOST=34.180.93.185
-VPS_USER=tripplezhou
+VPS_HOST=194.238.26.173
+VPS_USER=root
 NEXT_PUBLIC_APP_URL=https://token.vpanel.cc
 VPS_DEPLOY_PATH=/opt/tokenizer
 ```
+
+> Migrated off the retiring shared host `34.180.93.185` (user `tripplezhou`) on
+> 2026-07-13. The new host `deploysvr` is a shared box (kolmatrix / aigc-gateway
+> / invoce / grandtianfu also run there); tokenizer's compose stack, `postgres-data`
+> volume, and the `127.0.0.1:3010` app port are isolated per compose project.
 
 ### Prepare The VPS User
 
@@ -258,15 +263,21 @@ Required behavior:
 - Preserve request headers, including `authorization` and `x-admin-token`.
 - Set `NEXT_PUBLIC_APP_URL` to the public HTTPS URL.
 
-The active Nginx site is:
+The active Nginx site is version-controlled at `deploy/nginx/tokenizer.conf` and
+installed on the host as:
 
 ```text
-/etc/nginx/conf.d/tokenizer.conf
+/etc/nginx/sites-available/tokenizer.conf   (symlinked into sites-enabled/)
 ```
 
-The certificate is managed by Certbot:
+token.vpanel.cc is DNS-only (Cloudflare grey cloud, proxied=false), so clients
+connect straight to the origin over HTTPS. The certificate is issued and renewed
+by Certbot via the Cloudflare DNS-01 challenge (no HTTP-01 / DNS cutover needed):
 
 ```text
+certbot certonly --dns-cloudflare \
+  --dns-cloudflare-credentials /root/.secrets/cloudflare.ini -d token.vpanel.cc
+
 /etc/letsencrypt/live/token.vpanel.cc/fullchain.pem
 /etc/letsencrypt/live/token.vpanel.cc/privkey.pem
 ```
