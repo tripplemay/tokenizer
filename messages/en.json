@@ -402,6 +402,9 @@
   "chart": {
     "input": "Input",
     "output": "Output",
-    "total": "Total"
+    "total": "Total",
+    "bar": "Bar",
+    "line": "Line",
+    "typeToggle": "Chart type"
   }
 }

@@ -1,9 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import BarChart from "@/components/charts/BarChart";
+import LineChart from "@/components/charts/LineChart";
+import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatUsd } from "@/shared/format";
-
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { ChartTypeToggle } from "../_components/chart-type-toggle";
+import { useChartType } from "../_components/use-chart-type";
 
 type SeriesItem = { name: string; data: number[] };
 
@@ -12,6 +14,11 @@ type SeriesItem = { name: string; data: number[] };
 const PALETTE = ["#4318FF", "#FF6F61", "#01B574", "#FFB547", "#6AD2FF", "#A3AED0", "#FF5630"];
 
 export function DailyDeviceCostChart({ dates, series }: { dates: string[]; series: SeriesItem[] }) {
+  const [chartType, setChartType] = useChartType("daily-device-cost");
+  // Per-device cost composes a daily total, so bar mode stacks. Line mode draws
+  // one independent line per device (a stacked line reads as ambiguous bands).
+  const visuals = chartTypeVisuals(chartType, { stacked: true });
+
   const colors = series.map((_, i) => PALETTE[i % PALETTE.length]);
   // Pre-format dates strictly to YYYY-MM-DD so the tooltip stays consistent
   // regardless of locale.
@@ -19,20 +26,18 @@ export function DailyDeviceCostChart({ dates, series }: { dates: string[]; serie
 
   const options = {
     chart: {
-      type: "area" as const,
+      type: visuals.apexType,
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      stacked: true
+      stacked: visuals.stacked
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth" as const, width: 2 },
+    stroke: visuals.stroke,
     colors,
-    fill: {
-      type: "gradient",
-      gradient: { shadeIntensity: 1, opacityFrom: 0.55, opacityTo: 0.1, stops: [0, 100] }
-    },
+    fill: visuals.fill,
+    ...(visuals.plotOptions ? { plotOptions: visuals.plotOptions } : {}),
     xaxis: {
       type: "category" as const,
       categories: safeDates,
@@ -55,7 +60,7 @@ export function DailyDeviceCostChart({ dates, series }: { dates: string[]; serie
       intersect: false,
       // Custom HTML so the popup has a proper background (the default
       // ApexCharts tooltip ships transparent and reads poorly on top of
-      // the stacked gradient).
+      // the stacked series).
       custom: ({ series: s, dataPointIndex }: { series: number[][]; dataPointIndex: number }) => {
         const date = safeDates[dataPointIndex] ?? "";
         const rows = series
@@ -77,5 +82,18 @@ export function DailyDeviceCostChart({ dates, series }: { dates: string[]; serie
     }
   };
 
-  return <Chart options={options as never} type="area" series={series} width="100%" height="100%" />;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-1 flex justify-end">
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <div className="min-h-0 flex-1">
+        {chartType === "bar" ? (
+          <BarChart chartData={series} chartOptions={options} />
+        ) : (
+          <LineChart chartData={series} chartOptions={options} />
+        )}
+      </div>
+    </div>
+  );
 }

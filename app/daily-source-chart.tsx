@@ -1,9 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import BarChart from "@/components/charts/BarChart";
+import LineChart from "@/components/charts/LineChart";
+import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatTokens } from "@/shared/format";
-
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { ChartTypeToggle } from "./_components/chart-type-toggle";
+import { useChartType } from "./_components/use-chart-type";
 
 type SeriesItem = { name: string; data: number[] };
 
@@ -18,6 +20,11 @@ const SOURCE_COLORS: Record<string, string> = {
 const FALLBACK_PALETTE = ["#FFB547", "#6AD2FF", "#A3AED0", "#FF5630"];
 
 export function DailySourceChart({ dates, series }: { dates: string[]; series: SeriesItem[] }) {
+  const [chartType, setChartType] = useChartType("daily-source");
+  // Sources are shown at their true magnitude, never stacked — see the note
+  // below — so bar mode draws grouped (side-by-side) columns.
+  const visuals = chartTypeVisuals(chartType, { stacked: false });
+
   // Order series by their peak value DESCENDING so the largest source is
   // drawn first (behind), letting smaller sources stay visible on top.
   // Also non-stacked: stacking made it look like every source had roughly
@@ -29,24 +36,22 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
 
   const options = {
     chart: {
-      type: "area" as const,
+      type: visuals.apexType,
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      stacked: false
+      stacked: visuals.stacked
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth" as const, width: 2 },
+    stroke: visuals.stroke,
     colors,
-    fill: {
-      type: "gradient",
-      gradient: { shadeIntensity: 1, opacityFrom: 0.55, opacityTo: 0.1, stops: [0, 100] }
-    },
+    fill: visuals.fill,
+    ...(visuals.plotOptions ? { plotOptions: visuals.plotOptions } : {}),
     // type: "category" + categories + number[] data is the combination that
-    // makes stacked discrete-day data line up with the axis labels. Earlier
-    // we mixed `type: "datetime"` with string categories, which ApexCharts
-    // tried to render as ms timestamps and produced misaligned bars.
+    // makes discrete-day data line up with the axis labels. Earlier we mixed
+    // `type: "datetime"` with string categories, which ApexCharts tried to
+    // render as ms timestamps and produced misaligned bars.
     xaxis: {
       type: "category" as const,
       categories: dates,
@@ -90,5 +95,18 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
     }
   };
 
-  return <Chart options={options as never} type="area" series={orderedSeries} width="100%" height="100%" />;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-1 flex justify-end">
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <div className="min-h-0 flex-1">
+        {chartType === "bar" ? (
+          <BarChart chartData={orderedSeries} chartOptions={options} />
+        ) : (
+          <LineChart chartData={orderedSeries} chartOptions={options} />
+        )}
+      </div>
+    </div>
+  );
 }

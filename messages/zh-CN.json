@@ -402,6 +402,9 @@
   "chart": {
     "input": "输入",
     "output": "输出",
-    "total": "总计"
+    "total": "总计",
+    "bar": "柱状图",
+    "line": "折线图",
+    "typeToggle": "图表类型"
   }
 }

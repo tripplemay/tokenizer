@@ -1,10 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import BarChart from "@/components/charts/BarChart";
+import LineChart from "@/components/charts/LineChart";
+import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatTokens } from "@/shared/format";
-
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { ChartTypeToggle } from "./_components/chart-type-toggle";
+import { useChartType } from "./_components/use-chart-type";
 
 type DailyRow = {
   date: string;
@@ -37,6 +39,8 @@ function labelForTs(ts: number, granularity: Granularity): string {
 
 export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granularity?: Granularity }) {
   const t = useTranslations("chart");
+  const [chartType, setChartType] = useChartType("daily-usage");
+  const visuals = chartTypeVisuals(chartType);
 
   const toX = (d: DailyRow) => (granularity ? bucketToTs(d.date, granularity) : d.date);
   const series = [
@@ -66,25 +70,18 @@ export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granu
 
   const options = {
     chart: {
-      type: "area" as const,
+      type: visuals.apexType,
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif",
-      stacked: false
+      stacked: visuals.stacked
     },
     legend: { show: true, position: "top" as const, horizontalAlign: "right" as const, labels: { colors: "#A3AED0" } },
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth" as const, width: 3 },
+    stroke: visuals.stroke,
     colors: [INPUT_COLOR, OUTPUT_COLOR],
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.25,
-        opacityTo: 0,
-        stops: [0, 100]
-      }
-    },
+    fill: visuals.fill,
+    ...(visuals.plotOptions ? { plotOptions: visuals.plotOptions } : {}),
     xaxis: {
       type: "datetime" as const,
       labels: { style: { colors: "#A3AED0", fontSize: "12px", fontWeight: "500" } },
@@ -93,7 +90,7 @@ export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granu
     },
     // Dual Y axes: Input on the left (huge values once cache reuse is included),
     // Output on the right (smaller scale). Each gets its own range so neither
-    // line collapses against the other.
+    // series collapses against the other.
     yaxis: [
       {
         labels: {
@@ -130,5 +127,18 @@ export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granu
     }
   };
 
-  return <Chart options={options as never} type="area" series={series} width="100%" height="100%" />;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-1 flex justify-end">
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <div className="min-h-0 flex-1">
+        {chartType === "bar" ? (
+          <BarChart chartData={series} chartOptions={options} />
+        ) : (
+          <LineChart chartData={series} chartOptions={options} />
+        )}
+      </div>
+    </div>
+  );
 }

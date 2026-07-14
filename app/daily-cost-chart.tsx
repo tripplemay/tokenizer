@@ -1,32 +1,36 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import BarChart from "@/components/charts/BarChart";
+import LineChart from "@/components/charts/LineChart";
+import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatUsd } from "@/shared/format";
-
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { ChartTypeToggle } from "./_components/chart-type-toggle";
+import { useChartType } from "./_components/use-chart-type";
 
 type DailyCostRow = { date: string; cost: number };
 
 const COST_COLOR = "#01B574";
 
 export function DailyCostChart({ data }: { data: DailyCostRow[] }) {
+  const [chartType, setChartType] = useChartType("daily-cost");
+  const visuals = chartTypeVisuals(chartType);
+
   const series = [{ name: "USD", data: data.map((d) => ({ x: d.date, y: Number(d.cost.toFixed(4)) })) }];
 
   const options = {
     chart: {
-      type: "area" as const,
+      type: visuals.apexType,
+      stacked: visuals.stacked,
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "DM Sans, sans-serif"
     },
     legend: { show: false },
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth" as const, width: 3 },
+    stroke: visuals.stroke,
     colors: [COST_COLOR],
-    fill: {
-      type: "gradient",
-      gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0, stops: [0, 100] }
-    },
+    fill: visuals.fill,
+    ...(visuals.plotOptions ? { plotOptions: visuals.plotOptions } : {}),
     xaxis: {
       type: "datetime" as const,
       labels: { style: { colors: "#A3AED0", fontSize: "12px", fontWeight: "500" } },
@@ -65,5 +69,18 @@ export function DailyCostChart({ data }: { data: DailyCostRow[] }) {
     }
   };
 
-  return <Chart options={options as never} type="area" series={series} width="100%" height="100%" />;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-1 flex justify-end">
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <div className="min-h-0 flex-1">
+        {chartType === "bar" ? (
+          <BarChart chartData={series} chartOptions={options} />
+        ) : (
+          <LineChart chartData={series} chartOptions={options} />
+        )}
+      </div>
+    </div>
+  );
 }
