@@ -5,6 +5,7 @@ import { configPath, configure, credentialsPath, devicePath, ensureConfig, queue
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
+import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
 import { installService, serviceStatus, uninstallService } from "./service";
@@ -88,6 +89,11 @@ program.command("diagnose [source]").description("Diagnose parser source availab
   if (!source || source === "opencode") {
     const found = diagnoseOpenCode(homedir(), process.cwd());
     if (found.length === 0) console.log("No OpenCode log directories found.");
+    else console.log(found.join("\n"));
+  }
+  if (!source || source === "kimicode") {
+    const found = diagnoseKimiCode(homedir());
+    if (found.length === 0) console.log("No Kimi Code session directories found.");
     else console.log(found.join("\n"));
   }
 });

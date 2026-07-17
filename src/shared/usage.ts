@@ -1,4 +1,4 @@
-export type UsageSource = "claude-code" | "codex" | "opencode" | "aider";
+export type UsageSource = "claude-code" | "codex" | "opencode" | "aider" | "kimicode";
 
 export type UsageEventInput = {
   source: UsageSource;

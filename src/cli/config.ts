@@ -12,6 +12,7 @@ export type TokenizerConfig = {
     codex: boolean;
     opencode: boolean;
     aider: boolean;
+    kimicode: boolean;
   };
 };
 
@@ -29,7 +30,7 @@ export function defaultConfig(): TokenizerConfig {
   return {
     serverUrl: "http://localhost:3000",
     projectRoots: [join(homedir(), "project")],
-    sources: { claude: true, codex: true, opencode: true, aider: true }
+    sources: { claude: true, codex: true, opencode: true, aider: true, kimicode: true }
   };
 }
 

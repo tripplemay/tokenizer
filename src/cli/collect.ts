@@ -5,6 +5,7 @@ import { parseClaudeUsage } from "@/parsers/claude";
 import { parseCodexUsage } from "@/parsers/codex";
 import { parseOpenCodeUsage } from "@/parsers/opencode";
 import { parseAiderUsage } from "@/parsers/aider";
+import { parseKimiCodeUsage } from "@/parsers/kimicode";
 import { UsageEventInput } from "@/shared/usage";
 import { queuePath, TokenizerConfig } from "./config";
 import { ParserCursor } from "./cursor";
@@ -36,6 +37,11 @@ export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
   }
   if (config.sources.aider) {
     const result = parseAiderUsage(parserConfig);
+    events.push(...result.events);
+    warnings.push(...result.warnings);
+  }
+  if (config.sources.kimicode) {
+    const result = parseKimiCodeUsage(parserConfig);
     events.push(...result.events);
     warnings.push(...result.warnings);
   }

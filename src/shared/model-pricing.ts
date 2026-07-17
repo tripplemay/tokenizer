@@ -76,6 +76,15 @@ export const MODEL_PRICES: Record<string, ModelPriceRow> = {
   // Mtok; cache writes at base input) so its spend shows up rather than as "—".
   "kimi-for-coding": { input: 0.95, cacheRead: 0.16, cacheWrite: 0.95, output: 4.0 },
 
+  // Kimi Code CLI (~/.kimi-code) reports its model verbatim as "kimi-code/<name>".
+  // These are subscription-plan coding models with no published per-token list
+  // price, so we approximate all three with the Kimi K2.6 flagship rates (same
+  // basis as "kimi-for-coding" above). "kimi-code/k3" is the current default
+  // (1M ctx); revise if Moonshot publishes K3-specific rates.
+  "kimi-code/k3": { input: 0.95, cacheRead: 0.16, cacheWrite: 0.95, output: 4.0 },
+  "kimi-code/kimi-for-coding": { input: 0.95, cacheRead: 0.16, cacheWrite: 0.95, output: 4.0 },
+  "kimi-code/kimi-for-coding-highspeed": { input: 0.95, cacheRead: 0.16, cacheWrite: 0.95, output: 4.0 },
+
   // MiniMax M2.5 accessed via OpenRouter free tier — the "-free" suffix in the
   // model id means literal $0 to the user. The paid tier (minimax-m2.5 without
   // -free) lists at $0.30 / $1.20 per Mtok; add it if we see paid traffic.

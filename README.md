@@ -7,6 +7,7 @@ Supported in the MVP:
 - Claude Code: `~/.claude/usage-data/session-meta/*.json`
 - Codex: `~/.codex/sessions/**/rollout-*.jsonl`
 - OpenCode: `~/.local/share/opencode/opencode.db` assistant messages
+- Kimi Code: `~/.kimi-code/sessions/**/agents/*/wire.jsonl` `usage.record` turns
 
 ## Local Setup
 
@@ -59,7 +60,8 @@ Example config:
   "sources": {
     "claude": true,
     "codex": true,
-    "opencode": true
+    "opencode": true,
+    "kimicode": true
   }
 }
 ```
