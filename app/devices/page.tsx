@@ -8,6 +8,8 @@ import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
+import { deviceStatusBadge } from "@/shared/device-status";
+import { AutoRefresh } from "../_components/auto-refresh";
 import { INSTALL_COMMAND, isDeviceOutdated } from "@/server/agent-version";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 import { AddDeviceSection } from "../_components/add-device-section";
@@ -79,6 +81,8 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-5">
+      {/* Keep device status/metrics live without a manual reload. */}
+      <AutoRefresh />
       <PageBanner
         title={t("devices.title")}
         subtitle={<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("devices.subtitle")}</p>}
@@ -142,6 +146,7 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
   const tenantId = session.user.id;
   const [t, devices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, range)]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
+  const nowMs = Date.now();
   return (
     <Card extra="p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -166,7 +171,7 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
           </thead>
           <tbody>
             {devices.map((device) => {
-              const { key, color } = deviceStatusKey(device.lastSeenAt);
+              const { key, color } = deviceStatusBadge(device.lastSeenAt, nowMs);
               return (
                 <tr key={device.deviceId} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                   <td className="py-2.5 pr-4">
@@ -274,14 +279,4 @@ function DiagnosticsBadges({
       ) : null}
     </span>
   );
-}
-
-function deviceStatusKey(lastSeenAt: string | null) {
-  // See app/page.tsx for the rationale: thresholds match the default 15-min
-  // cron sync cadence so cron-mode clients aren't flagged Stale immediately.
-  if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
-  const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 20 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
-  if (ageMs < 60 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
-  return { key: "offline" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
 }

@@ -8,6 +8,8 @@ import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import type { RangeOption } from "@/server/summaries";
 import { formatDateTimeSeconds, formatFullNumber, formatPercent, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
+import { deviceStatusBadge } from "@/shared/device-status";
+import { AutoRefresh } from "../../_components/auto-refresh";
 import { DailyUsageChart } from "../../daily-usage-chart";
 import { ProjectIcon } from "../../_components/project-icon";
 import { SourcePill } from "../../_components/source-pill";
@@ -28,14 +30,6 @@ function DiagItem({ label, value, valueClass, mono, wrap }: { label: string; val
       <div className={`mt-1.5 ${wrap ? "break-words" : "truncate"} text-sm font-semibold text-navy-700 dark:text-white ${mono ? "font-mono" : ""} ${valueClass ?? ""}`}>{value}</div>
     </div>
   );
-}
-
-function deviceStatusKey(lastSeenAt: string | null | undefined) {
-  if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
-  const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 20 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
-  if (ageMs < 60 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
-  return { key: "offline" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
 }
 
 function DeviceRangeSelector({
@@ -111,10 +105,12 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
 
   const { device, totals, events, byProject, byModel, bySource } = detail;
   const hasDiagnostics = device.agentVersion != null || device.queueDepth != null || device.lastError != null || device.lastSyncStatus != null;
-  const { key: statusKey, color: statusColor } = deviceStatusKey(device.lastSeenAt?.toISOString() ?? null);
+  const { key: statusKey, color: statusColor } = deviceStatusBadge(device.lastSeenAt?.toISOString() ?? null, Date.now());
 
   return (
     <div className="space-y-5">
+      {/* Keep device status/metrics live without a manual reload. */}
+      <AutoRefresh />
       <PageBanner
         overline={
           <Link href="/devices" className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline">

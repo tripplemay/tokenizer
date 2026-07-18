@@ -39,6 +39,10 @@ import { PlatformIcon } from "./_components/platform-icon";
 import { OnboardingCard } from "./_components/onboarding-card";
 import { PageBanner } from "./_components/page-banner";
 import { SubscriptionCard } from "./_components/subscription-card";
+import { AutoRefresh } from "./_components/auto-refresh";
+import { ClientStatusBadge } from "./_components/client-status-badge";
+
+const AUTO_REFRESH_INTERVAL_MS = 30_000;
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +103,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="space-y-6">
+      {/* Keep KPI cards, charts and device status live without a manual reload. */}
+      <AutoRefresh intervalMs={AUTO_REFRESH_INTERVAL_MS} />
       <PageBanner
         title={t("home.title")}
         note={<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note", { tz })}</p>}
@@ -397,6 +403,10 @@ async function ProjectsAndDevicesSection({
     getDeviceSummary(tenantId, range)
   ]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
+  // Seed the client status badges with a single server-side "now" so the
+  // initial render is consistent; each badge then keeps itself fresh on the
+  // client (see ClientStatusBadge).
+  const nowMs = Date.now();
   return (
     <div className="grid grid-cols-12 gap-5">
       <Card extra="col-span-12 xl:col-span-8 p-6">
@@ -470,7 +480,7 @@ async function ProjectsAndDevicesSection({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-medium text-navy-700 dark:text-white">{device.name}</span>
-                    <ClientStatusBadge lastSeenAt={device.lastSeenAt} t={t} />
+                    <ClientStatusBadge lastSeenAt={device.lastSeenAt} initialNowMs={nowMs} />
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-500">
                     <span title={`${formatFullNumber(device.billableTokens)} ${t("home.connectedClients.col.tokens")}`}>{formatTokens(device.billableTokens)}</span>
@@ -753,23 +763,6 @@ function WowBadge({
       {delta.text}
     </span>
   );
-}
-
-function clientStatus(lastSeenAt: string | null) {
-  // Cron-mode clients (default WSL install) ping the server every 15 minutes,
-  // so a 2-minute "Online" window left the device showing Stale most of the
-  // time. The thresholds below correspond to "missed 0 cycles" (Online),
-  // "missed up to ~3 cycles" (Stale), and "missed more" (Offline).
-  if (!lastSeenAt) return { key: "neverSeen" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
-  const ageMs = Date.now() - new Date(lastSeenAt).getTime();
-  if (ageMs < 20 * 60 * 1000) return { key: "online" as const, color: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300" };
-  if (ageMs < 60 * 60 * 1000) return { key: "stale" as const, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300" };
-  return { key: "offline" as const, color: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300" };
-}
-
-function ClientStatusBadge({ lastSeenAt, t }: { lastSeenAt: string | null; t: (k: string) => string }) {
-  const { key, color } = clientStatus(lastSeenAt);
-  return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{t(`clientStatus.${key}`)}</span>;
 }
 
 function QualityMetric({
