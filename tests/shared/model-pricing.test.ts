@@ -91,6 +91,7 @@ describe("estimateCost", () => {
       "gpt-5.1-codex-mini",
       "gemini-3.1-pro-preview",
       "kimi-for-coding",
+      "kimi-code/k3",
       "deepseek-v4-pro",
       "deepseek-v4-flash-free",
       "glm-5",
