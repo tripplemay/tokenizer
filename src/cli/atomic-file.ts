@@ -13,6 +13,7 @@
 
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync } from "node:fs";
 import { dirname } from "node:path";
+import { randomUUID } from "node:crypto";
 
 // Windows hands out transient EPERM/EBUSY when an antivirus scanner or the
 // search indexer has the file open for a few milliseconds. Retrying briefly
@@ -50,11 +51,18 @@ export function writeFileAtomic(path: string, content: string): void {
   mkdirSync(dir, { recursive: true });
 
   const temp = `${path}.${process.pid}.${tempCounter++}.tmp`;
-  const handle = openSync(temp, "w");
   try {
-    writeSync(handle, content);
-  } finally {
-    closeSync(handle);
+    const handle = openSync(temp, "w");
+    try {
+      writeSync(handle, content);
+    } finally {
+      closeSync(handle);
+    }
+  } catch (error) {
+    // Without this, a failed write (ENOSPC, EIO) leaks its temp file forever:
+    // the rename loop's cleanup below is only reached on a rename failure.
+    rmSync(temp, { force: true });
+    throw error;
   }
 
   for (let attempt = 0; ; attempt++) {
@@ -85,6 +93,43 @@ function isStale(lock: string, staleMs: number): boolean {
 }
 
 /**
+ * Take over an abandoned lock, atomically.
+ *
+ * Deliberately a rename and not a stat-then-unlink: those are two operations
+ * against a *path*, so a racer that decided "stale" a moment ago can end up
+ * unlinking a different, freshly created lock — leaving two processes each
+ * convinced they hold it. rename() has exactly one winner: the loser gets
+ * ENOENT because the source no longer exists.
+ */
+function stealStaleLock(lock: string, staleMs: number): boolean {
+  if (!isStale(lock, staleMs)) return false;
+  const claim = `${lock}.steal.${process.pid}.${tempCounter++}`;
+  try {
+    renameSync(lock, claim);
+  } catch {
+    return false;
+  }
+  rmSync(claim, { force: true });
+  return true;
+}
+
+/**
+ * Release only if the lock is still the one we took.
+ *
+ * If our own `fn` outran `staleMs`, another process may have legitimately
+ * stolen the lock while we were working; deleting the path unconditionally
+ * would then evict that new, valid holder.
+ */
+function releaseLock(lock: string, token: string): void {
+  try {
+    if (readFileSync(lock, "utf8") !== token) return;
+  } catch {
+    return;
+  }
+  rmSync(lock, { force: true });
+}
+
+/**
  * Run `fn` while holding an exclusive lock keyed to `path`.
  *
  * Not re-entrant: a nested acquire on the same path blocks until it times out.
@@ -102,6 +147,9 @@ export function withFileLock<T>(
   const lock = lockPathFor(path);
   mkdirSync(dirname(path), { recursive: true });
 
+  // Identifies this specific acquisition, so release can tell our own lock
+  // from a successor's. The pid alone is not enough — it is reused.
+  const token = `${process.pid}:${randomUUID()}`;
   const deadline = Date.now() + timeoutMs;
   let handle: number | null = null;
   for (;;) {
@@ -111,10 +159,7 @@ export function withFileLock<T>(
       break;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "EEXIST" && !isTransient(error)) throw error;
-      if (isStale(lock, staleMs)) {
-        rmSync(lock, { force: true });
-        continue;
-      }
+      if (stealStaleLock(lock, staleMs)) continue;
       if (Date.now() >= deadline) {
         throw new Error(`Timed out after ${timeoutMs}ms waiting for lock: ${lock}`);
       }
@@ -123,17 +168,25 @@ export function withFileLock<T>(
   }
 
   try {
-    writeSync(handle, String(process.pid));
-  } catch {
-    // The pid is a debugging aid only; failing to record it must not abort
-    // the operation we just acquired the lock for.
+    writeSync(handle, token);
+    closeSync(handle);
+  } catch (error) {
+    // The token is what release matches on, so a lock we could not stamp is
+    // unreleasable. Drop it now rather than making every later caller wait
+    // out staleMs for a lock nobody holds.
+    try {
+      closeSync(handle);
+    } catch {
+      /* already closed */
+    }
+    rmSync(lock, { force: true });
+    throw error;
   }
-  closeSync(handle);
 
   try {
     return fn();
   } finally {
-    rmSync(lock, { force: true });
+    releaseLock(lock, token);
   }
 }
 

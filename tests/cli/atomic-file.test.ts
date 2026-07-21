@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync, statSync, utimesSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync, statSync, utimesSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { writeFileAtomic, withFileLock } from "@/cli/atomic-file";
@@ -120,5 +120,74 @@ describe("withFileLock", () => {
     const target = join(dir, "fresh", "state.json");
     expect(withFileLock(target, () => "ok")).toBe("ok");
     expect(statSync(join(dir, "fresh")).isDirectory()).toBe(true);
+  });
+});
+
+describe("withFileLock steal safety", () => {
+  it("does not evict a successor that legitimately stole our expired lock", () => {
+    // Our own fn outran staleMs, so another process took the lock. Releasing
+    // by path would delete THEIR lock and let a third caller in while they
+    // are still working.
+    const target = join(dir, "state.json");
+    const lock = `${target}.lock`;
+    withFileLock(target, () => {
+      // Simulate the successor: replace the lock file with someone else's.
+      writeFileSync(lock, "9999:other-process-token");
+    });
+    expect(existsSync(lock)).toBe(true);
+    expect(readFileSync(lock, "utf8")).toBe("9999:other-process-token");
+    rmSync(lock, { force: true });
+  });
+
+  it("only lets one of two racing stealers win", () => {
+    // Both see the same stale lock. rename() has exactly one winner, so the
+    // loser must fall through to waiting rather than also taking the lock.
+    const target = join(dir, "state.json");
+    const lock = `${target}.lock`;
+    writeFileSync(lock, "1:stale");
+    const old = new Date(Date.now() - 60_000);
+    utimesSync(lock, old, old);
+
+    let inner: string | null = null;
+    const outer = withFileLock(target, () => {
+      // A second acquisition while the first is held must NOT succeed by
+      // stealing: the lock it would find is fresh, not stale.
+      try {
+        withFileLock(target, () => "inner-got-lock", { staleMs: 5_000, timeoutMs: 120 });
+        inner = "acquired";
+      } catch (error) {
+        inner = (error as Error).message;
+      }
+      return "outer-got-lock";
+    }, { staleMs: 5_000 });
+
+    expect(outer).toBe("outer-got-lock");
+    expect(inner).toMatch(/Timed out/);
+  });
+
+  it("still removes the lock when the callback completes normally", () => {
+    const target = join(dir, "state.json");
+    withFileLock(target, () => "ok");
+    expect(existsSync(`${target}.lock`)).toBe(false);
+  });
+
+  it("leaves no steal-claim files behind", () => {
+    const target = join(dir, "state.json");
+    const lock = `${target}.lock`;
+    writeFileSync(lock, "1:stale");
+    const old = new Date(Date.now() - 60_000);
+    utimesSync(lock, old, old);
+    withFileLock(target, () => "ok", { staleMs: 5_000 });
+    expect(readdirSync(dir).filter((name) => name.includes(".steal."))).toEqual([]);
+  });
+});
+
+describe("writeFileAtomic failure cleanup", () => {
+  it("leaves no temp file behind when the write target is unwritable", () => {
+    // A directory where the file should be makes openSync/writeSync fail.
+    const target = join(dir, "blocked");
+    mkdirSync(target);
+    expect(() => writeFileAtomic(join(target, "x", ".."), "data")).toThrow();
+    expect(readdirSync(dir).filter((name) => name.endsWith(".tmp"))).toEqual([]);
   });
 });

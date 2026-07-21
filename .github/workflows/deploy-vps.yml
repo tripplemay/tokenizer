@@ -71,6 +71,20 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      # install.ps1 cannot be parsed anywhere but Windows, so a syntax error
+      # would otherwise only surface on a user's machine mid-install.
+      - name: Validate install.ps1 syntax
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path ./public/install.ps1), [ref]$null, [ref]$errors) | Out-Null
+          if ($errors) {
+            $errors | ForEach-Object { Write-Host "::error::$($_.Extent.StartLineNumber): $($_.Message)" }
+            exit 1
+          }
+          Write-Host "install.ps1 parsed cleanly"
+
       # No Next.js build here: the server only ever runs on Linux. This job
       # exists to guard the CLI collector, which is what users install natively.
 

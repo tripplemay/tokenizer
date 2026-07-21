@@ -42,6 +42,18 @@ $CredentialsFile = Join-Path $TokenizerHome "credentials.json"
 
 function Write-Log { param([string] $Message) Write-Host "[tokenizer] $Message" }
 
+# $ErrorActionPreference = "Stop" only covers PowerShell's own terminating
+# errors — a native executable exiting non-zero sails straight past it. Without
+# this wrapper a failed `npm ci` would keep going and still report success,
+# which is the behaviour `set -euo pipefail` gives install.sh for free.
+function Invoke-Checked {
+  param([Parameter(Mandatory)][string] $Exe, [Parameter(ValueFromRemainingArguments)][string[]] $Arguments)
+  & $Exe @Arguments
+  if ($LASTEXITCODE -ne 0) {
+    throw "Command failed with exit code ${LASTEXITCODE}: $Exe $($Arguments -join ' ')"
+  }
+}
+
 function Assert-Command {
   param([string] $Name, [string] $WingetId, [string] $Hint)
   if (Get-Command $Name -ErrorAction SilentlyContinue) { return }
@@ -69,8 +81,14 @@ function Stop-RunningAgent {
   # modules, so the upgrade would appear to succeed while the dashboard
   # silently stayed on stale features.
   try { & schtasks /End /TN "Tokenizer Agent" 2>$null | Out-Null } catch { }
+  # Anchored to $InstallDir: matching "cli/index.ts ... agent" alone would
+  # also kill unrelated Node tools that happen to share that shape.
   Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue |
-    Where-Object { $_.CommandLine -and $_.CommandLine -match "cli[\\/]index\.ts.*\bagent\b" } |
+    Where-Object {
+      $_.CommandLine -and
+      $_.CommandLine.Contains($InstallDir) -and
+      $_.CommandLine -match "cli[\\/]index\.ts.*\bagent\b"
+    } |
     ForEach-Object {
       Write-Log "Stopping running agent (pid $($_.ProcessId))"
       Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
@@ -80,14 +98,19 @@ function Stop-RunningAgent {
 function New-CmdShim {
   # pushd/popd because tsx is resolved relative to the working directory —
   # the same constraint that makes bin/tokenizer set cwd on POSIX.
-  $shim = @"
+  # The install path is deliberately NOT interpolated here. It contains the
+  # username, which on Windows may be non-ASCII (CJK, Cyrillic, accented
+  # Latin); writing it into a .cmd would corrupt it under any single-byte
+  # encoding. %~dp0 resolves relative to the shim at runtime instead, so the
+  # file stays pure ASCII whatever the user is called.
+  $shim = @'
 @echo off
-pushd "$InstallDir"
+pushd "%~dp0..\app"
 node --import tsx "src\cli\index.ts" %*
 set TOKENIZER_EXIT=%ERRORLEVEL%
 popd
 exit /b %TOKENIZER_EXIT%
-"@
+'@
   Set-Content -Path (Join-Path $BinDir "tokenizer.cmd") -Value $shim -Encoding ASCII
 }
 
@@ -110,11 +133,11 @@ New-Item -ItemType Directory -Force -Path $TokenizerHome, $BinDir, (Join-Path $T
 Stop-RunningAgent
 
 if (Test-Path (Join-Path $InstallDir ".git")) {
-  & git -C $InstallDir fetch --prune origin
-  & git -C $InstallDir checkout --force origin/main
+  Invoke-Checked git -C $InstallDir fetch --prune origin
+  Invoke-Checked git -C $InstallDir checkout --force origin/main
 } else {
   if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
-  & git clone $RepoUrl $InstallDir
+  Invoke-Checked git clone $RepoUrl $InstallDir
 }
 
 Push-Location $InstallDir
@@ -122,7 +145,7 @@ try {
   # better-sqlite3 (the OpenCode collector) resolves a win32-x64 prebuild
   # here. If that download is blocked, npm falls back to node-gyp and will
   # ask for Visual Studio Build Tools.
-  & npm ci
+  Invoke-Checked npm ci
 } finally {
   Pop-Location
 }
@@ -133,8 +156,8 @@ $env:Path = "$BinDir;$env:Path"
 
 $tokenizer = Join-Path $BinDir "tokenizer.cmd"
 
-if ($DeviceName) { & $tokenizer init --device-name $DeviceName } else { & $tokenizer init }
-& $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
+if ($DeviceName) { Invoke-Checked $tokenizer init --device-name $DeviceName } else { Invoke-Checked $tokenizer init }
+Invoke-Checked $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
 
 $needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
 if ($needEnroll) {
@@ -144,13 +167,13 @@ if ($needEnroll) {
   $enrollArgs = @("enroll", "--enroll-token", $EnrollToken, "--server-url", $ServerUrl)
   if ($DeviceName) { $enrollArgs += @("--device-name", $DeviceName) }
   if ($Yes)        { $enrollArgs += "--yes" }
-  & $tokenizer @enrollArgs
+  Invoke-Checked $tokenizer @enrollArgs
 } else {
   Write-Log "Re-using existing credentials at $CredentialsFile."
 }
 
 if (-not $NoService) {
-  & $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
+  Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
   # The scheduled task is ONLOGON-triggered, so it will not start on its own
   # until the next sign-in. Run it now so the first heartbeat lands today.
   try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
@@ -158,5 +181,7 @@ if (-not $NoService) {
   }
 }
 
+# Best-effort, mirroring `tokenizer run || true` in install.sh: a first
+# collection failure should not undo a successful install.
 & $tokenizer run
 Write-Log "Tokenizer installed. Run: tokenizer status"
