@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname } from "node:path";
+import { writeFileAtomic } from "@/cli/atomic-file";
 import { parseClaudeUsage } from "@/parsers/claude";
 import { parseCodexUsage } from "@/parsers/codex";
 import { parseOpenCodeUsage } from "@/parsers/opencode";
@@ -53,9 +52,8 @@ export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
 // persisted. The previous append-based implementation grew the queue unboundedly
 // when sync repeatedly failed because each retry appended the same events again.
 export function writeQueue(events: UsageEventInput[]) {
-  mkdirSync(dirname(queuePath), { recursive: true });
   const content = events.length ? events.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
-  writeFileSync(queuePath, content);
+  writeFileAtomic(queuePath, content);
 }
 
 export function dedupeBySourceEventId(events: UsageEventInput[]): UsageEventInput[] {

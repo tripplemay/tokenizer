@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeGitRemote } from "@/cli/git";
+import { enrichEventsWithGit, normalizeGitRemote } from "@/cli/git";
 
 describe("normalizeGitRemote", () => {
   it("normalizes ssh form with git@host:owner/repo.git", () => {
@@ -60,5 +60,37 @@ describe("normalizeGitRemote", () => {
 
   it("returns null for whitespace-only string", () => {
     expect(normalizeGitRemote("   ")).toBeNull();
+  });
+});
+
+describe("enrichEventsWithGit path normalization", () => {
+  // These paths don't exist, so the git probe fails and we exercise the
+  // no-git fallback — which is exactly where an unnormalized Windows path
+  // would leak through to the server's userId_workspacePath unique index.
+  const event = (workspacePath: string) =>
+    ({ source: "claude", sourceEventId: "x", model: "m", occurredAt: "2026-01-01T00:00:00.000Z", workspacePath }) as never;
+
+  it("collapses git-style and native-style Windows paths to one spelling", () => {
+    const [a] = enrichEventsWithGit([event("C:/Users/me/proj")]);
+    const [b] = enrichEventsWithGit([event("c:\\Users\\me\\proj")]);
+    expect(a.workspacePath).toBe("C:\\Users\\me\\proj");
+    expect(b.workspacePath).toBe("C:\\Users\\me\\proj");
+  });
+
+  it("mirrors the normalized path into localWorkspacePath", () => {
+    const [enriched] = enrichEventsWithGit([event("C:/Users/me/proj")]);
+    expect(enriched.localWorkspacePath).toBe("C:\\Users\\me\\proj");
+  });
+
+  it("leaves POSIX workspace paths byte-identical", () => {
+    const [enriched] = enrichEventsWithGit([event("/Users/me/proj")]);
+    expect(enriched.workspacePath).toBe("/Users/me/proj");
+  });
+
+  it("does not rewrite sourceEventId", () => {
+    // sourceEventId embeds absolute paths and is the ingest dedup key —
+    // touching it would re-ingest every device's entire history.
+    const [enriched] = enrichEventsWithGit([event("C:/Users/me/proj")]);
+    expect(enriched.sourceEventId).toBe("x");
   });
 });

@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { UsageEventInput } from "@/shared/usage";
+import { normalizeWorkspacePath, pathCacheKey } from "@/shared/path";
 
 type GitInfo = {
   localWorkspacePath: string;
@@ -32,30 +33,40 @@ export function normalizeGitRemote(remote: string | null): string | null {
 
 function getGitInfo(workspacePath?: string | null): GitInfo | null {
   if (!workspacePath) return null;
-  if (cache.has(workspacePath)) return cache.get(workspacePath) ?? null;
+  const cacheKey = pathCacheKey(workspacePath);
+  if (cache.has(cacheKey)) return cache.get(cacheKey) ?? null;
 
   const root = git(["rev-parse", "--show-toplevel"], workspacePath);
   if (!root) {
-    cache.set(workspacePath, null);
+    cache.set(cacheKey, null);
     return null;
   }
 
   const remote = git(["remote", "get-url", "origin"], root);
   const info = {
-    localWorkspacePath: root,
+    // git prints "C:/Users/me/proj" even on Windows, while the agent logs
+    // record "C:\Users\me\proj". Unnormalized, the same directory keys as two
+    // different projects server-side.
+    localWorkspacePath: normalizeWorkspacePath(root),
     repoKey: normalizeGitRemote(remote),
     gitRemote: remote,
     gitBranch: git(["branch", "--show-current"], root),
     gitCommit: git(["rev-parse", "HEAD"], root)
   };
-  cache.set(workspacePath, info);
+  cache.set(cacheKey, info);
   return info;
 }
 
 export function enrichEventsWithGit(events: UsageEventInput[]): UsageEventInput[] {
   return events.map((event) => {
     const info = getGitInfo(event.workspacePath);
-    if (!info) return { ...event, localWorkspacePath: event.localWorkspacePath ?? event.workspacePath ?? null };
-    return { ...event, ...info };
+    // Normalized on the way out so both the git-backed and the no-git path
+    // agree on one spelling. Identity for POSIX paths, so existing installs
+    // keep hashing to the same userId_workspacePath row.
+    const workspacePath = event.workspacePath ? normalizeWorkspacePath(event.workspacePath) : event.workspacePath;
+    if (!info) {
+      return { ...event, workspacePath, localWorkspacePath: event.localWorkspacePath ?? workspacePath ?? null };
+    }
+    return { ...event, ...info, workspacePath };
   });
 }

@@ -1,7 +1,9 @@
-import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { hostname, homedir, platform } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
+import { updateFileAtomic, writeFileAtomic } from "@/cli/atomic-file";
+import { restrictToCurrentUser } from "@/cli/file-permissions";
 import { DeviceInput } from "@/shared/usage";
 
 export type TokenizerConfig = {
@@ -37,8 +39,7 @@ export function defaultConfig(): TokenizerConfig {
 export function ensureConfig(options?: { deviceName?: string }): TokenizerConfig {
   const hadConfig = existsSync(configPath);
   if (!hadConfig) {
-    mkdirSync(dirname(configPath), { recursive: true });
-    writeFileSync(configPath, `${JSON.stringify(defaultConfig(), null, 2)}\n`);
+    writeFileAtomic(configPath, `${JSON.stringify(defaultConfig(), null, 2)}\n`);
   }
   ensureDevice({ ...options, preferLegacyId: hadConfig && !existsSync(devicePath) });
   return readConfig();
@@ -58,8 +59,7 @@ export function readConfig(): TokenizerConfig {
 }
 
 export function writeConfig(config: TokenizerConfig) {
-  mkdirSync(dirname(configPath), { recursive: true });
-  writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+  writeFileAtomic(configPath, `${JSON.stringify(config, null, 2)}\n`);
 }
 
 export function configure(options: { serverUrl?: string; projectRoot?: string; sources?: Partial<TokenizerConfig["sources"]> }) {
@@ -77,7 +77,6 @@ export function configure(options: { serverUrl?: string; projectRoot?: string; s
 
 export function ensureDevice(options?: { deviceName?: string; preferLegacyId?: boolean }): DeviceInput {
   if (!existsSync(devicePath)) {
-    mkdirSync(dirname(devicePath), { recursive: true });
     const name = options?.deviceName || hostname();
     const device: DeviceInput = {
       id: options?.preferLegacyId ? "dev_local_legacy" : `dev_${randomUUID().replace(/-/g, "")}`,
@@ -86,14 +85,14 @@ export function ensureDevice(options?: { deviceName?: string; preferLegacyId?: b
       platform: platform(),
       metadata: { createdAt: new Date().toISOString() }
     };
-    writeFileSync(devicePath, `${JSON.stringify(device, null, 2)}\n`);
+    writeFileAtomic(devicePath, `${JSON.stringify(device, null, 2)}\n`);
     return device;
   }
 
   const device = readDevice();
   if (options?.deviceName && options.deviceName !== device.name) {
     const updated = { ...device, name: options.deviceName };
-    writeFileSync(devicePath, `${JSON.stringify(updated, null, 2)}\n`);
+    writeFileAtomic(devicePath, `${JSON.stringify(updated, null, 2)}\n`);
     return updated;
   }
   return device;
@@ -105,8 +104,7 @@ export function readDevice(): DeviceInput {
 }
 
 export function writeDevice(device: DeviceInput) {
-  mkdirSync(dirname(devicePath), { recursive: true });
-  writeFileSync(devicePath, `${JSON.stringify(device, null, 2)}\n`);
+  writeFileAtomic(devicePath, `${JSON.stringify(device, null, 2)}\n`);
 }
 
 export function readCredentials(): TokenizerCredentials {
@@ -115,9 +113,13 @@ export function readCredentials(): TokenizerCredentials {
 }
 
 export function writeCredentials(credentials: TokenizerCredentials) {
-  mkdirSync(dirname(credentialsPath), { recursive: true });
-  writeFileSync(credentialsPath, `${JSON.stringify(credentials, null, 2)}\n`);
-  chmodSync(credentialsPath, 0o600);
+  writeFileAtomic(credentialsPath, `${JSON.stringify(credentials, null, 2)}\n`);
+  const restricted = restrictToCurrentUser(credentialsPath);
+  if (!restricted.ok) {
+    // Loud, not fatal: enrollment should still complete, but a device token
+    // that other local accounts can read must never fail silently.
+    console.warn(`Warning: could not restrict permissions on ${credentialsPath} (${restricted.method}): ${restricted.error}`);
+  }
 }
 
 export type TokenizerState = {
@@ -140,6 +142,20 @@ export function readState(): TokenizerState {
 }
 
 export function updateState(patch: Record<string, unknown>) {
-  const current = existsSync(statePath) ? (JSON.parse(readFileSync(statePath, "utf8")) as Record<string, unknown>) : {};
-  writeFileSync(statePath, `${JSON.stringify({ ...current, ...patch }, null, 2)}\n`);
+  // Read and write under one lock: the scheduled task and a manual
+  // `tokenizer run` genuinely overlap, and the old unlocked
+  // read-then-write silently dropped one side's update.
+  updateFileAtomic(statePath, (current) => {
+    let parsed: Record<string, unknown> = {};
+    if (current) {
+      // Tolerate a torn file the same way readState does, so one bad write
+      // can't wedge every future update.
+      try {
+        parsed = JSON.parse(current) as Record<string, unknown>;
+      } catch {
+        parsed = {};
+      }
+    }
+    return `${JSON.stringify({ ...parsed, ...patch }, null, 2)}\n`;
+  });
 }

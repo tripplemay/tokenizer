@@ -23,7 +23,10 @@ export function EnrollFlowCard({
   onSuccess?: (device: ResponseDevice) => void;
 }) {
   const [mode, setMode] = useState<Mode>("idle");
-  const [command, setCommand] = useState<string | null>(null);
+  // Both platform variants are kept so a Windows user is not handed a bash
+  // one-liner; `platform` selects which one is shown and copied.
+  const [commands, setCommands] = useState<{ id: string; label: string; command: string }[]>([]);
+  const [platform, setPlatform] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -34,7 +37,7 @@ export function EnrollFlowCard({
   async function generate() {
     setMode("generating");
     setError(null);
-    setCommand(null);
+    setCommands([]);
     setNewDevice(null);
     try {
       const response = await fetch("/api/admin/enrollment-tokens", {
@@ -44,7 +47,9 @@ export function EnrollFlowCard({
       });
       const json = await response.json();
       if (!response.ok) throw new Error(json.error || "failed to generate install command");
-      setCommand(json.installCommand);
+      setCommands(
+        json.installCommands ?? [{ id: "posix", label: "macOS / Linux", command: json.installCommand }]
+      );
       setExpiresAt(json.expiresAt);
       setMode("waiting");
     } catch (err) {
@@ -53,10 +58,12 @@ export function EnrollFlowCard({
     }
   }
 
+  const activeCommand = commands.find((entry) => entry.id === platform) ?? commands[0] ?? null;
+
   async function copyCommand() {
-    if (!command) return;
+    if (!activeCommand) return;
     try {
-      await navigator.clipboard.writeText(command);
+      await navigator.clipboard.writeText(activeCommand.command);
       setCopied(true);
       setTimeout(() => setCopied(false), 2_000);
     } catch {
@@ -132,7 +139,7 @@ export function EnrollFlowCard({
                 onClick={() => {
                   initialIdsRef.current.add(newDevice.deviceId);
                   setMode("idle");
-                  setCommand(null);
+                  setCommands([]);
                   setNewDevice(null);
                   setError(null);
                 }}
@@ -170,7 +177,7 @@ export function EnrollFlowCard({
         </div>
       ) : null}
 
-      {command && (mode === "waiting" || mode === "error") ? (
+      {activeCommand && (mode === "waiting" || mode === "error") ? (
         <div className="mt-4 space-y-3">
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-navy-900/60">
             <div className="flex items-center justify-between gap-2">
@@ -188,7 +195,25 @@ export function EnrollFlowCard({
                 {copied ? "已复制" : "复制"}
               </button>
             </div>
-            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all font-mono text-sm text-brand-500 dark:text-brand-300">{command}</pre>
+            <div className="mt-2 flex items-center gap-1">
+                    {commands.length > 1
+                      ? commands.map((entry) => (
+                          <button
+                            key={entry.id}
+                            type="button"
+                            onClick={() => setPlatform(entry.id)}
+                            className={`rounded-md px-2 py-0.5 text-xs font-medium ${
+                              entry.id === activeCommand.id
+                                ? "bg-gray-100 text-navy-700 dark:bg-white/10 dark:text-gray-100"
+                                : "text-gray-500 dark:text-gray-400"
+                            }`}
+                          >
+                            {entry.label}
+                          </button>
+                        ))
+                      : null}
+                  </div>
+                  <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all font-mono text-sm text-brand-500 dark:text-brand-300">{activeCommand.command}</pre>
           </div>
           {mode === "waiting" ? (
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">

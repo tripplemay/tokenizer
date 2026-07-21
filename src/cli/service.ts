@@ -1,7 +1,16 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, rmSync, appendFileSync, readFileSync } from "node:fs";
 import { homedir, platform, release } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { installWindowsService, uninstallWindowsService, windowsServiceStatus } from "@/cli/service-windows";
+
+// The repo root this agent is running out of (~/.tokenizer/app for a normal
+// install). Task Scheduler needs absolute paths for both the entry script and
+// the working directory.
+function installRoot(): string {
+  return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+}
 
 const binPath = join(homedir(), ".local", "bin", "tokenizer");
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
@@ -21,6 +30,9 @@ function hasSystemdUser() {
 
 export function installService(options: { heartbeatSeconds: number; syncMinutes: number }) {
   mkdirSync(dirname(logPath), { recursive: true });
+  // Checked first: on Windows every branch below fails — hasSystemdUser()
+  // throws, and the cron fallback shells out to a `crontab` that does not exist.
+  if (platform() === "win32") return installWindowsService(options, installRoot());
   if (platform() === "darwin") return installLaunchd(options);
   if (!isWsl() && hasSystemdUser()) return installSystemd(options);
   if (hasSystemdUser()) return installSystemd(options);
@@ -158,6 +170,9 @@ function installCron(options: { syncMinutes: number }) {
 
 export function uninstallService() {
   const messages: string[] = [];
+  if (platform() === "win32") {
+    return uninstallWindowsService() ?? "No tokenizer service found";
+  }
   const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
   if (existsSync(plist)) {
     try { execFileSync("launchctl", ["unload", plist], { stdio: "ignore" }); } catch {}
@@ -180,6 +195,9 @@ export function uninstallService() {
 
 export function serviceStatus() {
   const lines: string[] = [];
+  if (platform() === "win32") {
+    return windowsServiceStatus() ?? "No tokenizer service detected";
+  }
   const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
   if (existsSync(plist)) lines.push(`launchd: ${plist}`);
   if (hasSystemdUser()) {

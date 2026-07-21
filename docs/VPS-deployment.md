@@ -86,7 +86,12 @@ The installer creates `~/.tokenizer/config.json`:
 }
 ```
 
-It also stores the device token in `~/.tokenizer/credentials.json` with file mode `0600`.
+It also restricts the device token in `~/.tokenizer/credentials.json` to the
+current user: file mode `0600` on macOS and Linux, and an `icacls` ACL granting
+only the current account on Windows (`chmod` there only toggles the read-only
+attribute and would leave the token readable by other local accounts). If the
+CLI cannot apply the restriction it prints a warning rather than failing the
+enrollment — check for that warning if the token must stay confidential.
 
 For a raw VPS IP without HTTPS, use:
 

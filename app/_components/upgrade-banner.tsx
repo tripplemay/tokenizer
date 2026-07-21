@@ -1,6 +1,6 @@
 import { MdWarningAmber } from "react-icons/md";
 import { getTranslations } from "next-intl/server";
-import { CopyInstallCommand } from "./copy-install-command";
+import { CopyInstallCommand, type InstallCommandOption } from "./copy-install-command";
 
 // Server-component banner. Rendered by AdminShell only when count > 0.
 // The interactive copy logic lives in <CopyInstallCommand>, which is
@@ -9,10 +9,10 @@ import { CopyInstallCommand } from "./copy-install-command";
 // paint.
 export async function UpgradeBanner({
   count,
-  command,
+  commands,
 }: {
   count: number;
-  command: string;
+  commands: InstallCommandOption[];
 }) {
   const t = await getTranslations();
   return (
@@ -24,7 +24,7 @@ export async function UpgradeBanner({
             {t("upgradeBanner.message", { count })}
           </p>
           <div className="mt-2">
-            <CopyInstallCommand command={command} variant="banner" />
+            <CopyInstallCommand commands={commands} variant="banner" />
           </div>
         </div>
       </div>

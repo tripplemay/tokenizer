@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { writeFileAtomic } from "@/cli/atomic-file";
 import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
 import { getAgentVersion } from "./agent-version";
@@ -14,7 +15,7 @@ export function readQueue(): UsageEventInput[] {
 }
 
 export function clearQueue() {
-  writeFileSync(queuePath, "");
+  writeFileAtomic(queuePath, "");
 }
 
 // Batches are intentionally small. Each event includes the raw API response

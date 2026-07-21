@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
+import { pathSegments } from "@/shared/path";
 import { prisma } from "./db";
 import { detectAndTrackUnpricedModels } from "./pricing/detect";
 
@@ -26,10 +27,13 @@ function sanitizeNullableString<T extends string | null | undefined>(value: T): 
   return stripNullBytesFromString(value) as T;
 }
 
-function projectNameFromPath(workspacePath?: string | null): string {
+// Separator handling is shape-driven (see @/shared/path): a Windows client
+// posts "C:\Users\me\proj", which a "/"-only split turned into a project
+// literally named after the whole path. POSIX paths are unaffected — notably,
+// a backslash inside a POSIX path stays part of the directory name.
+export function projectNameFromPath(workspacePath?: string | null): string {
   if (!workspacePath) return "Unknown Project";
-  const clean = workspacePath.replace(/\/+$/, "");
-  return clean.split("/").filter(Boolean).at(-1) ?? "Unknown Project";
+  return pathSegments(workspacePath).at(-1) ?? "Unknown Project";
 }
 
 function projectNameFromRepoKey(repoKey?: string | null): string | null {

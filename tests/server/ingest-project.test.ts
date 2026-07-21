@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Prisma } from "@prisma/client";
 import type { DeviceInput, UsageEventInput } from "@/shared/usage";
+import { projectNameFromPath } from "@/server/ingest";
 
 const prismaMock = vi.hoisted(() => ({
   device: { upsert: vi.fn() },
@@ -132,5 +133,46 @@ describe("ingestUsageEvents project resolution", () => {
     expect(prismaMock.project.findUnique).not.toHaveBeenCalled();
     expect(prismaMock.project.update).not.toHaveBeenCalled();
     consoleError.mockRestore();
+  });
+});
+
+describe("projectNameFromPath", () => {
+  it("takes the last segment of a POSIX path", () => {
+    expect(projectNameFromPath("/Users/me/proj")).toBe("proj");
+  });
+
+  it("ignores a trailing separator", () => {
+    expect(projectNameFromPath("/Users/me/proj/")).toBe("proj");
+    expect(projectNameFromPath("C:\\Users\\me\\proj\\")).toBe("proj");
+  });
+
+  it("takes the last segment of a Windows path", () => {
+    // Previously split on "/" only, so a Windows client's project name came
+    // out as the entire path string.
+    expect(projectNameFromPath("C:\\Users\\me\\proj")).toBe("proj");
+  });
+
+  it("takes the last segment of a Windows path in git's forward-slash form", () => {
+    expect(projectNameFromPath("C:/Users/me/proj")).toBe("proj");
+  });
+
+  it("handles UNC paths", () => {
+    expect(projectNameFromPath("\\\\server\\share\\proj")).toBe("proj");
+  });
+
+  it("does not split a POSIX path on backslashes", () => {
+    // A backslash is a legal POSIX filename character — splitting on it here
+    // would rename real projects on existing Linux/macOS clients.
+    expect(projectNameFromPath("/home/me/weird\\dir")).toBe("weird\\dir");
+  });
+
+  it("falls back for a bare drive root", () => {
+    expect(projectNameFromPath("C:\\")).toBe("Unknown Project");
+  });
+
+  it("falls back for empty input", () => {
+    expect(projectNameFromPath(null)).toBe("Unknown Project");
+    expect(projectNameFromPath(undefined)).toBe("Unknown Project");
+    expect(projectNameFromPath("")).toBe("Unknown Project");
   });
 });

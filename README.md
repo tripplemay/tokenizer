@@ -45,6 +45,34 @@ tokenizer init
 tokenizer run
 ```
 
+## Installing on a client machine
+
+macOS / Linux:
+
+```bash
+curl -fsSL https://token.vpanel.cc/install.sh | bash -s -- --enroll-token <token>
+```
+
+Windows (PowerShell, no elevation required):
+
+```powershell
+& ([scriptblock]::Create((irm https://token.vpanel.cc/install.ps1))) -EnrollToken <token>
+```
+
+The background agent uses the platform's own supervisor: launchd on macOS,
+a systemd user unit on Linux (cron where unavailable), and a Task Scheduler
+job on Windows. The Windows task is logon-triggered with restart-on-failure,
+which is the closest equivalent to launchd's `KeepAlive`.
+
+Two Windows-specific notes:
+
+- A scheduled task cannot carry environment variables, so `install-service`
+  snapshots `HTTPS_PROXY` / `HTTP_PROXY` to `~/.tokenizer/proxy.json`. The live
+  environment still wins when present, so changing your proxy in-shell works.
+- `%USERPROFILE%\.local\share\opencode` is the correct OpenCode data path on
+  Windows — OpenCode bundles an XDG library with no Windows branch, so it does
+  not use `%LOCALAPPDATA%`.
+
 Config is stored at:
 
 ```text

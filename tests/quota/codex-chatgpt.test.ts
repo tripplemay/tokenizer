@@ -9,9 +9,16 @@ let restoreHome: () => void;
 
 beforeEach(() => {
   fakeHome = mkdtempSync(join(tmpdir(), "tokenizer-codex-"));
+  // os.homedir() prefers USERPROFILE on Windows and HOME elsewhere, so both
+  // have to be redirected for the fake home to take effect on either OS.
   const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
   process.env.HOME = fakeHome;
-  restoreHome = () => { process.env.HOME = originalHome; };
+  process.env.USERPROFILE = fakeHome;
+  restoreHome = () => {
+    process.env.HOME = originalHome;
+    process.env.USERPROFILE = originalUserProfile;
+  };
   vi.resetModules();
   vi.unstubAllGlobals();
 });

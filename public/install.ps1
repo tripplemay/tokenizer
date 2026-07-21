@@ -1,0 +1,162 @@
+<#
+.SYNOPSIS
+  Installs the Tokenizer usage-collection client on native Windows.
+
+.DESCRIPTION
+  The Windows counterpart to install.sh. The differences from the POSIX script
+  are forced by the platform, not by preference:
+
+    * No symlink. Creating one needs Developer Mode or elevation, so a
+      tokenizer.cmd shim is generated instead and its directory is added to
+      the user's PATH.
+    * No chmod. Credential file permissions are handled by the CLI itself via
+      icacls (see src/cli/file-permissions.ts).
+    * No pkill. A running agent is stopped through Task Scheduler, falling
+      back to matching the node process by command line.
+
+.EXAMPLE
+  & ([scriptblock]::Create((irm https://token.vpanel.cc/install.ps1))) -EnrollToken abc123
+#>
+
+[CmdletBinding()]
+param(
+  [string] $ServerUrl        = $(if ($env:TOKENIZER_SERVER_URL)   { $env:TOKENIZER_SERVER_URL }   else { "https://token.vpanel.cc" }),
+  [string] $EnrollToken      = $env:TOKENIZER_ENROLL_TOKEN,
+  [string] $DeviceName       = $env:TOKENIZER_DEVICE_NAME,
+  [string] $ProjectRoot      = $(if ($env:TOKENIZER_PROJECT_ROOT) { $env:TOKENIZER_PROJECT_ROOT } else { Join-Path $HOME "project" }),
+  [int]    $HeartbeatSeconds = $(if ($env:TOKENIZER_HEARTBEAT_SECONDS) { [int]$env:TOKENIZER_HEARTBEAT_SECONDS } else { 60 }),
+  [int]    $SyncMinutes      = $(if ($env:TOKENIZER_SYNC_MINUTES)      { [int]$env:TOKENIZER_SYNC_MINUTES }      else { 15 }),
+  [switch] $NoService,
+  [switch] $ForceEnroll,
+  [switch] $Yes
+)
+
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+
+$RepoUrl         = "https://github.com/tripplemay/tokenizer.git"
+$TokenizerHome   = Join-Path $HOME ".tokenizer"
+$InstallDir      = Join-Path $TokenizerHome "app"
+$BinDir          = Join-Path $TokenizerHome "bin"
+$CredentialsFile = Join-Path $TokenizerHome "credentials.json"
+
+function Write-Log { param([string] $Message) Write-Host "[tokenizer] $Message" }
+
+function Assert-Command {
+  param([string] $Name, [string] $WingetId, [string] $Hint)
+  if (Get-Command $Name -ErrorAction SilentlyContinue) { return }
+  Write-Host ""
+  Write-Host "Tokenizer needs '$Name', which is not on your PATH." -ForegroundColor Yellow
+  if ($WingetId) { Write-Host "  Install it with:  winget install $WingetId" }
+  if ($Hint)     { Write-Host "  $Hint" }
+  Write-Host ""
+  throw "Missing required command: $Name"
+}
+
+# Node 22+ is required: the CLI relies on undici's EnvHttpProxyAgent and on
+# fetch being available without a flag.
+function Assert-NodeVersion {
+  $raw = (& node --version) 2>$null
+  if (-not $raw) { throw "Could not determine the Node.js version." }
+  $major = [int]($raw.TrimStart("v").Split(".")[0])
+  if ($major -lt 22) {
+    throw "Node.js 22 or newer is required (found $raw). Install it with: winget install OpenJS.NodeJS.LTS"
+  }
+}
+
+function Stop-RunningAgent {
+  # A daemon started before this install keeps executing its old in-memory
+  # modules, so the upgrade would appear to succeed while the dashboard
+  # silently stayed on stale features.
+  try { & schtasks /End /TN "Tokenizer Agent" 2>$null | Out-Null } catch { }
+  Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -and $_.CommandLine -match "cli[\\/]index\.ts.*\bagent\b" } |
+    ForEach-Object {
+      Write-Log "Stopping running agent (pid $($_.ProcessId))"
+      Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function New-CmdShim {
+  # pushd/popd because tsx is resolved relative to the working directory —
+  # the same constraint that makes bin/tokenizer set cwd on POSIX.
+  $shim = @"
+@echo off
+pushd "$InstallDir"
+node --import tsx "src\cli\index.ts" %*
+set TOKENIZER_EXIT=%ERRORLEVEL%
+popd
+exit /b %TOKENIZER_EXIT%
+"@
+  Set-Content -Path (Join-Path $BinDir "tokenizer.cmd") -Value $shim -Encoding ASCII
+}
+
+function Add-ToUserPath {
+  param([string] $Directory)
+  $current = [Environment]::GetEnvironmentVariable("Path", "User")
+  if ($current -and ($current -split ";" | Where-Object { $_ -eq $Directory })) { return }
+  $updated = if ([string]::IsNullOrEmpty($current)) { $Directory } else { "$current;$Directory" }
+  [Environment]::SetEnvironmentVariable("Path", $updated, "User")
+  Write-Log "Added $Directory to your user PATH (open a new terminal to pick it up)"
+}
+
+Assert-Command -Name "node" -WingetId "OpenJS.NodeJS.LTS"
+Assert-Command -Name "git"  -WingetId "Git.Git"
+Assert-NodeVersion
+
+Write-Log "Installing Tokenizer client to $InstallDir"
+New-Item -ItemType Directory -Force -Path $TokenizerHome, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
+
+Stop-RunningAgent
+
+if (Test-Path (Join-Path $InstallDir ".git")) {
+  & git -C $InstallDir fetch --prune origin
+  & git -C $InstallDir checkout --force origin/main
+} else {
+  if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
+  & git clone $RepoUrl $InstallDir
+}
+
+Push-Location $InstallDir
+try {
+  # better-sqlite3 (the OpenCode collector) resolves a win32-x64 prebuild
+  # here. If that download is blocked, npm falls back to node-gyp and will
+  # ask for Visual Studio Build Tools.
+  & npm ci
+} finally {
+  Pop-Location
+}
+
+New-CmdShim
+Add-ToUserPath -Directory $BinDir
+$env:Path = "$BinDir;$env:Path"
+
+$tokenizer = Join-Path $BinDir "tokenizer.cmd"
+
+if ($DeviceName) { & $tokenizer init --device-name $DeviceName } else { & $tokenizer init }
+& $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
+
+$needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
+if ($needEnroll) {
+  if (-not $EnrollToken) {
+    throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
+  }
+  $enrollArgs = @("enroll", "--enroll-token", $EnrollToken, "--server-url", $ServerUrl)
+  if ($DeviceName) { $enrollArgs += @("--device-name", $DeviceName) }
+  if ($Yes)        { $enrollArgs += "--yes" }
+  & $tokenizer @enrollArgs
+} else {
+  Write-Log "Re-using existing credentials at $CredentialsFile."
+}
+
+if (-not $NoService) {
+  & $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
+  # The scheduled task is ONLOGON-triggered, so it will not start on its own
+  # until the next sign-in. Run it now so the first heartbeat lands today.
+  try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
+    Write-Log "Could not start the scheduled task immediately; it will start at next logon."
+  }
+}
+
+& $tokenizer run
+Write-Log "Tokenizer installed. Run: tokenizer status"

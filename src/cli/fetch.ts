@@ -1,5 +1,6 @@
 import { Agent, ProxyAgent, fetch as undiciFetch } from "undici";
 import type { RequestInit as UndiciRequestInit } from "undici";
+import { resolveProxyUrl } from "@/cli/proxy-env";
 
 // Self-healing fetch for the agent. Builds two dispatchers at module load:
 // one direct, one tunnelled through HTTPS_PROXY / HTTP_PROXY if either is set
@@ -18,17 +19,12 @@ import type { RequestInit as UndiciRequestInit } from "undici";
 // launchd job). Probing common proxy ports could close that gap; deferred
 // until we see it in the wild.
 
-const PROXY_KEYS = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"];
-function readProxyFromEnv(): string | null {
-  for (const key of PROXY_KEYS) {
-    const value = process.env[key];
-    if (value) return value;
-  }
-  return null;
-}
+// Resolution order lives in proxy-env: live environment first, then the
+// snapshot captured at install time. The snapshot exists because Windows
+// Task Scheduler cannot pass environment variables to a task at all.
 
 const directAgent = new Agent({ connect: { timeout: 10_000 } });
-const proxyUrl = readProxyFromEnv();
+const proxyUrl = resolveProxyUrl();
 const proxyAgent = proxyUrl ? new ProxyAgent(proxyUrl) : null;
 
 type StrategyName = "direct" | "proxy";

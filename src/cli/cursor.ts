@@ -1,6 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
+import { pathCacheKey } from "@/shared/path";
+import { writeFileAtomic } from "@/cli/atomic-file";
 
 export const cursorPath = join(homedir(), ".tokenizer", "cursor.json");
 
@@ -42,12 +44,14 @@ export function readCursor(): ParserCursor {
 }
 
 export function writeCursor(cursor: ParserCursor) {
-  mkdirSync(dirname(cursorPath), { recursive: true });
-  writeFileSync(cursorPath, `${JSON.stringify(cursor, null, 2)}\n`);
+  writeFileAtomic(cursorPath, `${JSON.stringify(cursor, null, 2)}\n`);
 }
 
 export function shouldSkipFile(path: string, cursor: ParserCursor): boolean {
-  const prev = cursor.files[path];
+  // Keyed by canonical form, not the raw string: NTFS resolves "C:\P\a" and
+  // "c:\p\a" to one file, and keying on exact case would re-parse it and
+  // re-emit every event. Identity on POSIX, so existing cursors still hit.
+  const prev = cursor.files[pathCacheKey(path)];
   if (!prev) return false;
   try {
     const stat = statSync(path);
@@ -60,7 +64,7 @@ export function shouldSkipFile(path: string, cursor: ParserCursor): boolean {
 export function recordFile(path: string, cursor: ParserCursor): void {
   try {
     const stat = statSync(path);
-    cursor.files[path] = { mtimeMs: stat.mtimeMs, size: stat.size };
+    cursor.files[pathCacheKey(path)] = { mtimeMs: stat.mtimeMs, size: stat.size };
   } catch {
     /* file vanished — leave cursor as-is */
   }

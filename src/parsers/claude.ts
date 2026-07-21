@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
 import { recordFile, shouldSkipFile } from "@/cli/cursor";
+import { isPathUnder, pathSegments } from "@/shared/path";
 import { ParserConfig, ParserResult } from "./types";
 
 // Generation of this parser's extraction semantics. Bump when re-parsing
@@ -25,7 +26,10 @@ export function parseClaudeUsage(config: ParserConfig): ParserResult {
   if (config.cursor && config.cursor.claudeParserVersion !== CLAUDE_PARSER_VERSION) {
     const claudeRoot = join(config.homeDir, ".claude");
     for (const path of Object.keys(config.cursor.files)) {
-      if (path === claudeRoot || path.startsWith(claudeRoot + "/") || path.includes("/.claude/")) {
+      // Separator- and case-tolerant: on Windows the cursor keys are
+      // "C:\...\.claude\..." and a hardcoded "/" test silently matches
+      // nothing, leaving stale fingerprints in place forever.
+      if (isPathUnder(path, claudeRoot) || pathSegments(path).includes(".claude")) {
         delete config.cursor.files[path];
       }
     }

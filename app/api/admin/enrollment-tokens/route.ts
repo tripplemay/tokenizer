@@ -35,6 +35,19 @@ export async function POST(request: NextRequest) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") || request.nextUrl.origin;
   const installCommand = `curl -fsSL ${appUrl}/install.sh | bash -s -- --enroll-token ${enrollToken}`;
+  const windowsInstallCommand =
+    `& ([scriptblock]::Create((irm ${appUrl}/install.ps1))) -EnrollToken ${enrollToken}`;
+  const installCommands = [
+    { id: "posix", label: "macOS / Linux", command: installCommand },
+    { id: "windows", label: "Windows", command: windowsInstallCommand }
+  ];
 
-  return Response.json({ enrollToken, expiresAt: expiresAt.toISOString(), installCommand });
+  // installCommand is retained alongside installCommands so an older client
+  // that only knows the single-string shape keeps working.
+  return Response.json({
+    enrollToken,
+    expiresAt: expiresAt.toISOString(),
+    installCommand,
+    installCommands
+  });
 }

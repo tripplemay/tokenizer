@@ -9,7 +9,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { AdminShell } from "./admin-shell";
 import { AuthProvider } from "./session-provider";
 import { auth } from "@/auth";
-import { countOutdatedDevices, INSTALL_COMMAND } from "@/server/agent-version";
+import { countOutdatedDevices, INSTALL_COMMANDS } from "@/server/agent-version";
 import { UpgradeBanner } from "./_components/upgrade-banner";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     ? await countOutdatedDevices(session.user.id)
     : 0;
   const banner = outdatedCount > 0
-    ? <UpgradeBanner count={outdatedCount} command={INSTALL_COMMAND} />
+    ? <UpgradeBanner count={outdatedCount} commands={INSTALL_COMMANDS} />
     : null;
   return (
     <html lang={locale}>

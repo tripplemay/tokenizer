@@ -10,7 +10,7 @@ import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { deviceStatusBadge } from "@/shared/device-status";
 import { AutoRefresh } from "../_components/auto-refresh";
-import { INSTALL_COMMAND, isDeviceOutdated } from "@/server/agent-version";
+import { INSTALL_COMMANDS, isDeviceOutdated } from "@/server/agent-version";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 import { AddDeviceSection } from "../_components/add-device-section";
 import { CopyInstallCommand } from "../_components/copy-install-command";
@@ -110,7 +110,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
         <p className="mt-1 mb-3 text-sm text-gray-500 dark:text-gray-400">
           {t("devices.upgrade.subtitle")}
         </p>
-        <CopyInstallCommand command={INSTALL_COMMAND} variant="card" />
+        <CopyInstallCommand commands={INSTALL_COMMANDS} variant="card" />
       </Card>
 
       <Suspense fallback={<ChartCardSkeleton heightClass="h-72" />}>

@@ -44,9 +44,41 @@ jobs:
         env:
           DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
 
+  verify-windows:
+    name: Verify (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Also the live check that better-sqlite3 resolves a win32-x64 prebuild
+      # instead of falling back to node-gyp (which would need MSVC toolchain).
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install test runner (transient, not persisted to lockfile)
+        run: npm install --no-save --no-audit --no-fund vitest @vitest/coverage-v8
+
+      - name: Typecheck
+        run: npm run verify
+
+      - name: Run unit tests
+        run: npm run test
+
+      # No Next.js build here: the server only ever runs on Linux. This job
+      # exists to guard the CLI collector, which is what users install natively.
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    # Deliberately not gated on verify-windows: the server only runs on Linux,
+    # and a Windows-only CLI regression should not block a server deploy.
     needs: verify
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment: production

@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseOpenCodeUsage } from "@/parsers/opencode";
+import { openCodeDataDirs, parseOpenCodeUsage } from "@/parsers/opencode";
 
 let homeDir: string;
 
@@ -130,5 +130,49 @@ describe("parseOpenCodeUsage", () => {
     ]);
     const result = parseOpenCodeUsage({ homeDir, projectRoots: [] });
     expect(result.events).toEqual([]);
+  });
+});
+
+describe("openCodeDataDirs", () => {
+  const ORIGINAL = { xdg: process.env.XDG_DATA_HOME, local: process.env.LOCALAPPDATA };
+  afterEach(() => {
+    if (ORIGINAL.xdg === undefined) delete process.env.XDG_DATA_HOME;
+    else process.env.XDG_DATA_HOME = ORIGINAL.xdg;
+    if (ORIGINAL.local === undefined) delete process.env.LOCALAPPDATA;
+    else process.env.LOCALAPPDATA = ORIGINAL.local;
+  });
+
+  it("always offers the XDG default, which is where opencode really stores data", () => {
+    // opencode bundles an XDG lib with no win32 branch: it resolves to
+    // XDG_DATA_HOME || $HOME/.local/share on every platform, Windows included.
+    delete process.env.XDG_DATA_HOME;
+    const dirs = openCodeDataDirs(join("HOME"), join("CWD"));
+    expect(dirs).toContain(join("HOME", ".local", "share", "opencode"));
+  });
+
+  it("honours XDG_DATA_HOME when set", () => {
+    process.env.XDG_DATA_HOME = join("XDG");
+    expect(openCodeDataDirs(join("HOME"), join("CWD"))).toContain(join("XDG", "opencode"));
+  });
+
+  it("offers LOCALAPPDATA candidates when the variable is present", () => {
+    // Defensive only: opencode does not use these today, but its bundled deps
+    // contain env-paths-style logic that would land here if it ever switched.
+    process.env.LOCALAPPDATA = join("LOCAL");
+    const dirs = openCodeDataDirs(join("HOME"), join("CWD"));
+    expect(dirs).toContain(join("LOCAL", "opencode"));
+    expect(dirs).toContain(join("LOCAL", "opencode", "Data"));
+  });
+
+  it("omits LOCALAPPDATA candidates when the variable is absent", () => {
+    delete process.env.LOCALAPPDATA;
+    const dirs = openCodeDataDirs(join("HOME"), join("CWD"));
+    expect(dirs.some((dir) => dir.includes("LOCAL"))).toBe(false);
+  });
+
+  it("returns no duplicates", () => {
+    process.env.LOCALAPPDATA = join("LOCAL");
+    const dirs = openCodeDataDirs(join("HOME"), join("CWD"));
+    expect(new Set(dirs).size).toBe(dirs.length);
   });
 });

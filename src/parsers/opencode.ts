@@ -20,7 +20,14 @@ type OpenCodeRow = {
   project_name: string | null;
 };
 
-function openCodeDataDirs(homeDir: string, cwd: string): string[] {
+// Windows needs no special-casing to work today: opencode bundles an XDG
+// library with no win32 branch, so it resolves to
+// `XDG_DATA_HOME || $HOME/.local/share` on every platform — already covered
+// below. The LOCALAPPDATA entries are purely defensive: opencode's own
+// dependencies already ship env-paths-style logic (`%LOCALAPPDATA%\<name>\Data`),
+// so probing there costs one existsSync and survives a future switch.
+export function openCodeDataDirs(homeDir: string, cwd: string): string[] {
+  const localAppData = process.env.LOCALAPPDATA;
   const dirs = [
     process.env.XDG_DATA_HOME ? join(process.env.XDG_DATA_HOME, "opencode") : null,
     join(homeDir, ".local", "share", "opencode"),
@@ -28,6 +35,8 @@ function openCodeDataDirs(homeDir: string, cwd: string): string[] {
     join(homeDir, ".opencode"),
     join(homeDir, ".config", "opencode"),
     join(homeDir, ".cache", "opencode"),
+    localAppData ? join(localAppData, "opencode") : null,
+    localAppData ? join(localAppData, "opencode", "Data") : null,
     join(cwd, ".opencode")
   ].filter(Boolean) as string[];
   return Array.from(new Set(dirs));

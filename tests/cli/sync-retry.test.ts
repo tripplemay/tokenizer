@@ -2,10 +2,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UsageEventInput } from "@/shared/usage";
 
 const fetchMock = vi.hoisted(() => vi.fn());
+// Windows has no "/tmp"; a hardcoded POSIX path would resolve to the current
+// drive root and fail. Read the env directly — vi.hoisted runs before imports,
+// so node:os isn't available here.
+const tmp = vi.hoisted(() => {
+  const dir = (process.env.TMPDIR || process.env.TEMP || process.env.TMP || "/tmp").replace(/[\\/]+$/, "");
+  return {
+    queuePath: `${dir}/tokenizer-test-queue.jsonl`,
+    statePath: `${dir}/tokenizer-test-state.json`
+  };
+});
 vi.mock("@/cli/fetch", () => ({ agentFetch: fetchMock }));
 vi.mock("@/cli/config", () => ({
-  queuePath: "/tmp/tokenizer-test-queue.jsonl",
-  statePath: "/tmp/tokenizer-test-state.json",
+  queuePath: tmp.queuePath,
+  statePath: tmp.statePath,
   readCredentials: () => ({ deviceToken: "tok" }),
   readDevice: () => ({ id: "dev-1", name: "Test Device" })
 }));
