@@ -28,7 +28,10 @@ param(
   [int]    $SyncMinutes      = $(if ($env:TOKENIZER_SYNC_MINUTES)      { [int]$env:TOKENIZER_SYNC_MINUTES }      else { 15 }),
   [switch] $NoService,
   [switch] $ForceEnroll,
-  [switch] $Yes
+  [switch] $Yes,
+  # Branch to install from. Exists so a change can be tested end-to-end on a
+  # real machine before it is merged and deployed.
+  [string] $Branch = $(if ($env:TOKENIZER_BRANCH) { $env:TOKENIZER_BRANCH } else { "main" })
 )
 
 $ErrorActionPreference = "Stop"
@@ -132,12 +135,15 @@ New-Item -ItemType Directory -Force -Path $TokenizerHome, $BinDir, (Join-Path $T
 
 Stop-RunningAgent
 
+if ($Branch -ne "main") { Write-Log "Installing from branch '$Branch'" }
+
 if (Test-Path (Join-Path $InstallDir ".git")) {
   Invoke-Checked git -C $InstallDir fetch --prune origin
-  Invoke-Checked git -C $InstallDir checkout --force origin/main
+  Invoke-Checked git -C $InstallDir checkout --force "origin/$Branch"
 } else {
   if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
   Invoke-Checked git clone $RepoUrl $InstallDir
+  Invoke-Checked git -C $InstallDir checkout --force "origin/$Branch"
 }
 
 Push-Location $InstallDir
