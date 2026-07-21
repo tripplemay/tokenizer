@@ -67,9 +67,30 @@ describe("buildTaskXml", () => {
     expect(xml).toContain("<WorkingDirectory>C:\\a &amp; b\\&lt;c&gt;</WorkingDirectory>");
   });
 
-  it("omits UserId entirely when it cannot be determined", () => {
+  it("omits UserId entirely when explicitly given null", () => {
     const xml = buildTaskXml({ ...options, userId: null });
     expect(xml).not.toContain("<UserId>");
+  });
+
+  it("distinguishes an absent userId from an explicit null", () => {
+    // `??` cannot tell these apart, so an explicit null silently fell back to
+    // the ambient USERNAME — invisible on a machine where it happens to be unset.
+    // Both variables are pinned: leaving USERDOMAIN ambient makes the
+    // expected value differ between a domain-joined machine and a local one.
+    const originalUser = process.env.USERNAME;
+    const originalDomain = process.env.USERDOMAIN;
+    process.env.USERNAME = "someone";
+    process.env.USERDOMAIN = "MACHINE";
+    try {
+      const { userId, ...withoutUserId } = options;
+      expect(buildTaskXml(withoutUserId)).toContain("<UserId>MACHINE\\someone</UserId>");
+      expect(buildTaskXml({ ...options, userId: null })).not.toContain("<UserId>");
+    } finally {
+      if (originalUser === undefined) delete process.env.USERNAME;
+      else process.env.USERNAME = originalUser;
+      if (originalDomain === undefined) delete process.env.USERDOMAIN;
+      else process.env.USERDOMAIN = originalDomain;
+    }
   });
 });
 

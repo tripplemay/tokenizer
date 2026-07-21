@@ -66,7 +66,9 @@ export function buildTaskXml(options: TaskOptions): string {
     String(options.syncMinutes)
   ].join(" ");
 
-  const userId = options.userId ?? currentTaskUser();
+  // `??` would be wrong here: an explicit null means "register without a
+  // UserId", and `??` cannot distinguish that from the property being absent.
+  const userId = options.userId !== undefined ? options.userId : currentTaskUser();
   const principalUser = userId ? `\n      <UserId>${escapeXml(userId)}</UserId>` : "";
   const triggerUser = userId ? `\n      <UserId>${escapeXml(userId)}</UserId>` : "";
 

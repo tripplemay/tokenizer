@@ -18,9 +18,16 @@ afterEach(() => {
 });
 
 describe("restrictToCurrentUser", () => {
-  it("chmods to 0600 on POSIX", () => {
-    const result = restrictToCurrentUser(target, "linux");
-    expect(result).toEqual({ ok: true, method: "chmod" });
+  it("reports a chmod on POSIX", () => {
+    expect(restrictToCurrentUser(target, "linux")).toEqual({ ok: true, method: "chmod" });
+  });
+
+  // The resulting mode is only meaningful on a filesystem that has POSIX
+  // permission bits. NTFS has none, so chmod there sets the read-only
+  // attribute and `mode & 0o777` never equals 0o600 — which is the entire
+  // reason restrictToCurrentUser exists.
+  it.skipIf(process.platform === "win32")("actually sets mode 0600 on POSIX", () => {
+    restrictToCurrentUser(target, "linux");
     expect(statSync(target).mode & 0o777).toBe(0o600);
   });
 
