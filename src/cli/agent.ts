@@ -128,12 +128,14 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
-  // Windows never delivers SIGTERM — Node emits SIGBREAK instead (Ctrl+Break,
-  // and console close). Without this the agent skips its "stopped" state
-  // write on every Windows shutdown. Device status is derived from lastSeenAt
-  // age, so this is tidiness rather than correctness, but leaving a stale
-  // "running" record around is needlessly confusing when debugging.
+  // Windows never delivers SIGTERM — Node emits SIGBREAK for Ctrl+Break and
+  // SIGHUP for a closed console window (POSIX raises SIGHUP on terminal
+  // hangup too). Without these the agent skips its "stopped" state write.
+  // Device status is derived from lastSeenAt age, so this is tidiness rather
+  // than correctness, but leaving a stale "running" record around is
+  // needlessly confusing when debugging.
   process.on("SIGBREAK", shutdown);
+  process.on("SIGHUP", shutdown);
 
   // Tick-based scheduler instead of setInterval. setInterval timers freeze
   // while the host is asleep (laptop lid closed, macOS suspended) and on

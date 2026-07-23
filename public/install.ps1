@@ -83,9 +83,27 @@ function Stop-RunningAgent {
   # A daemon started before this install keeps executing its old in-memory
   # modules, so the upgrade would appear to succeed while the dashboard
   # silently stayed on stale features.
+  #
+  # Disable before ending: the task has a repeating revive trigger, so between
+  # this stop and the re-registration at the end of the install it could fire
+  # and relaunch the OLD definition. /Create /F re-registers with
+  # <Enabled>true</Enabled>, which lifts the disable.
+  try { & schtasks /Change /TN "Tokenizer Agent" /DISABLE 2>$null | Out-Null } catch { }
   try { & schtasks /End /TN "Tokenizer Agent" 2>$null | Out-Null } catch { }
-  # Anchored to $InstallDir: matching "cli/index.ts ... agent" alone would
-  # also kill unrelated Node tools that happen to share that shape.
+  # The task's own process is the wscript launcher; schtasks /End is not
+  # guaranteed to take the child node.exe down with it, so both are matched
+  # explicitly. Anchored to the install's own directories: a looser match
+  # would also kill unrelated scripts or Node tools that share the shape.
+  Get-CimInstance Win32_Process -Filter "Name = 'wscript.exe'" -ErrorAction SilentlyContinue |
+    Where-Object {
+      $_.CommandLine -and
+      $_.CommandLine.Contains($BinDir) -and
+      $_.CommandLine.Contains("tokenizer-agent.vbs")
+    } |
+    ForEach-Object {
+      Write-Log "Stopping agent launcher (pid $($_.ProcessId))"
+      Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
   Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue |
     Where-Object {
       $_.CommandLine -and
@@ -180,10 +198,10 @@ if ($needEnroll) {
 
 if (-not $NoService) {
   Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
-  # The scheduled task is ONLOGON-triggered, so it will not start on its own
-  # until the next sign-in. Run it now so the first heartbeat lands today.
+  # The task's repeating revive trigger will start the agent within 15 minutes
+  # on its own. Run it now so the first heartbeat lands immediately.
   try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
-    Write-Log "Could not start the scheduled task immediately; it will start at next logon."
+    Write-Log "Could not start the scheduled task immediately; it will start within 15 minutes."
   }
 }
 
