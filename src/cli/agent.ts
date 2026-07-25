@@ -6,12 +6,21 @@ import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
+import { runHarnessSync } from "./harness";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
 function log(message: string) {
   mkdirSync(dirname(logPath), { recursive: true });
   appendFileSync(logPath, `[${new Date().toISOString()}] ${message}\n`);
+}
+
+// 跳过的原因**逐条落日志**：闸门中继一旦长期跳过（比如仓库缺 console.pub），
+// 现象是「网页上批了、机器却没动」——这条日志是唯一能解释它的线索。
+function logHarness(h: Awaited<ReturnType<typeof runHarnessSync>>) {
+  if (h.reported > 0 || h.applied > 0) log(`harness reported=${h.reported} relayed=${h.applied}`);
+  for (const reason of h.skippedReports) log(`harness report skip ${reason}`);
+  for (const reason of h.skipped) log(`harness relay skip ${reason}`);
 }
 
 export async function runOnce() {
@@ -67,6 +76,13 @@ export async function runOnce() {
       await runQuotaRefresh(config);
     } catch (err) {
       log(`quota refresh failed (non-fatal): ${err instanceof Error ? err.message : String(err)}`);
+    }
+    // harness 编排状态上报 + 闸门决策中继。与 quota 同为非致命：这台机器没有 harness
+    // 项目、或服务端还没上这个功能时，不该拖垮用量同步这条主链路。
+    try {
+      logHarness(await runHarnessSync(config));
+    } catch (err) {
+      log(`harness sync failed (non-fatal): ${err instanceof Error ? err.message : String(err)}`);
     }
     return result;
   } catch (error) {
@@ -144,11 +160,16 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
   // appropriate interval has elapsed, so a wake-from-sleep is reconciled
   // within ~5s instead of up to a full heartbeatSeconds.
   const TICK_MS = 5000;
+  // 闸门周转的体感上限：人在网页上批准后，最多等这么久机器才会拿到。
+  // 比 sync 快得多（sync 以分钟计），又不搭在 heartbeat 上以免拖慢存活上报。
+  const HARNESS_MS = 60_000;
   const QUOTA_ACTIVE_MS = 60_000;
   const QUOTA_IDLE_MS = 300_000;
   const ACTIVITY_WINDOW_MS = 60 * 60 * 1000;
   let lastBeatAt = 0;
   let lastSyncAt = 0;
+  let lastHarnessAt = 0;
+  let harnessInFlight = false;
 
   await beat();
   lastBeatAt = Date.now();
@@ -165,6 +186,17 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
     if (now - lastSyncAt >= options.syncMinutes * 60 * 1000) {
       lastSyncAt = now;
       void sync();
+    }
+    // 单飞：一次 harness 同步要遍历多个仓库并可能写盘 + commit，慢于 tick 时不叠加
+    if (!harnessInFlight && now - lastHarnessAt >= HARNESS_MS) {
+      lastHarnessAt = now;
+      harnessInFlight = true;
+      void runHarnessSync(config)
+        .then(logHarness)
+        .catch((err) => log(`harness sync failed: ${err instanceof Error ? err.message : String(err)}`))
+        .finally(() => {
+          harnessInFlight = false;
+        });
     }
     const state = readState();
     const lastActivityAt = state.lastEventActivityAt ? new Date(state.lastEventActivityAt).getTime() : 0;

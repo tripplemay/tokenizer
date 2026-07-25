@@ -8,6 +8,7 @@ import { diagnoseOpenCode } from "@/parsers/opencode";
 import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
+import { discoverHarnessRepos, runHarnessSync } from "./harness";
 import { installService, serviceStatus, uninstallService } from "./service";
 
 const program = new Command();
@@ -31,6 +32,21 @@ program.command("enroll").description("Enroll this device with a one-time enroll
   const { device } = await enrollDevice(options);
   console.log(`Enrolled device: ${device.name} (${device.id})`);
   console.log(`Credentials ready: ${credentialsPath}`);
+});
+
+program.command("harness").description("Report harness orchestration state and relay signed gate decisions").option("--list", "Only list discovered harness projects").action(async (options: { list?: boolean }) => {
+  const config = readConfig();
+  const repos = discoverHarnessRepos(config);
+  if (repos.length === 0) {
+    console.log("No harness projects found under projectRoots (need both progress.json and harness-rules.md).");
+    return;
+  }
+  for (const repo of repos) console.log(`${repo.name}  ${repo.repoKey}  ${repo.path}`);
+  if (options.list) return;
+  const result = await runHarnessSync(config);
+  console.log(`Reported: ${result.reported}  Relayed: ${result.applied}`);
+  for (const reason of result.skippedReports) console.log(`  report skip ${reason}`);
+  for (const reason of result.skipped) console.log(`  relay skip  ${reason}`);
 });
 
 program.command("collect").description("Collect local usage events into queue").action(() => {
