@@ -1,5 +1,5 @@
 import React from "react";
-import { MdDashboard, MdListAlt, MdComputer } from "react-icons/md";
+import { MdDashboard, MdListAlt, MdComputer, MdAccountTree } from "react-icons/md";
 
 // route.name is now a next-intl message key resolved at render time so the
 // sidebar / navbar labels follow the active locale. The IRoute interface still
@@ -22,6 +22,12 @@ const routes = [
     layout: "",
     path: "/devices",
     icon: <MdComputer className="h-6 w-6" />
+  },
+  {
+    name: "nav.harness",
+    layout: "",
+    path: "/harness",
+    icon: <MdAccountTree className="h-6 w-6" />
   }
 ];
 

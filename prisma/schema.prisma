@@ -12,26 +12,28 @@ datasource db {
 // the adapter's expected schema; do not rename without checking the adapter.
 
 model User {
-  id              String              @id @default(cuid())
-  email           String              @unique
-  emailVerified   DateTime?
-  name            String?
-  image           String?
-  role            String              @default("user")
-  quotaTier       String              @default("free")
-  timezone        String?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          String    @default("user")
+  quotaTier     String    @default("free")
+  timezone      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   accounts         Account[]
   sessions         Session[]
   projects         Project[]
   devices          Device[]
   usageEvents      UsageEvent[]
-  deviceTokens    DeviceToken[]
+  deviceTokens     DeviceToken[]
   enrollmentTokens EnrollmentToken[]
   collectorStates  CollectorState[]
   quotaSnapshots   QuotaSnapshot[]
+  harnessProjects  HarnessProject[]
+  harnessGates     HarnessGate[]
 }
 
 model Account {
@@ -86,7 +88,8 @@ model Project {
   updatedAt     DateTime     @updatedAt
   usageEvents   UsageEvent[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  HarnessProject HarnessProject[]
 
   @@unique([userId, workspacePath])
   @@unique([userId, repoKey])
@@ -95,24 +98,25 @@ model Project {
 }
 
 model Device {
-  id             String        @id
-  userId         String
-  name           String
-  hostname       String?
-  platform       String?
-  metadata       Json?
-  createdAt      DateTime      @default(now())
-  lastSeenAt     DateTime?
-  lastSyncAt     DateTime?
-  agentVersion         String?
-  agentFeatureVersion  Int?
-  queueDepth           Int?
-  lastError      String?
-  lastErrorAt    DateTime?
-  lastSyncStatus String?
-  usageEvents    UsageEvent[]
-  tokens         DeviceToken[]
-  quotaSnapshots QuotaSnapshot[]
+  id                  String           @id
+  userId              String
+  name                String
+  hostname            String?
+  platform            String?
+  metadata            Json?
+  createdAt           DateTime         @default(now())
+  lastSeenAt          DateTime?
+  lastSyncAt          DateTime?
+  agentVersion        String?
+  agentFeatureVersion Int?
+  queueDepth          Int?
+  lastError           String?
+  lastErrorAt         DateTime?
+  lastSyncStatus      String?
+  usageEvents         UsageEvent[]
+  tokens              DeviceToken[]
+  quotaSnapshots      QuotaSnapshot[]
+  harnessProjects     HarnessProject[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -161,40 +165,40 @@ model DeviceToken {
 }
 
 model UsageEvent {
-  id                    String   @id @default(cuid())
-  userId                String
-  deviceId              String
-  source                String
-  sourceEventId         String
-  projectId             String?
-  sessionId             String?
-  workspacePath         String?
-  localWorkspacePath    String?
-  repoKey               String?
-  gitRemote             String?
-  gitBranch             String?
-  gitCommit             String?
-  model                 String?
-  inputTokens           Int      @default(0)
-  outputTokens          Int      @default(0)
-  cachedInputTokens     Int      @default(0)
-  cacheWriteTokens      Int      @default(0)
-  reasoningOutputTokens Int      @default(0)
-  cacheEphemeral5mInputTokens Int     @default(0)
-  cacheEphemeral1hInputTokens Int     @default(0)
-  webSearchRequests           Int     @default(0)
-  webFetchRequests            Int     @default(0)
+  id                          String   @id @default(cuid())
+  userId                      String
+  deviceId                    String
+  source                      String
+  sourceEventId               String
+  projectId                   String?
+  sessionId                   String?
+  workspacePath               String?
+  localWorkspacePath          String?
+  repoKey                     String?
+  gitRemote                   String?
+  gitBranch                   String?
+  gitCommit                   String?
+  model                       String?
+  inputTokens                 Int      @default(0)
+  outputTokens                Int      @default(0)
+  cachedInputTokens           Int      @default(0)
+  cacheWriteTokens            Int      @default(0)
+  reasoningOutputTokens       Int      @default(0)
+  cacheEphemeral5mInputTokens Int      @default(0)
+  cacheEphemeral1hInputTokens Int      @default(0)
+  webSearchRequests           Int      @default(0)
+  webFetchRequests            Int      @default(0)
   serviceTier                 String?
-  totalTokens           Int      @default(0)
-  costUsd               Decimal? @db.Decimal(18, 8)
+  totalTokens                 Int      @default(0)
+  costUsd                     Decimal? @db.Decimal(18, 8)
   // Mid-request model fallback (e.g. claude-fable-5 downgrading to
   // claude-opus-4-8): the final event carries fallbackFromModel, the
   // abandoned-segment event carries fallbackToModel. Both null otherwise.
-  fallbackFromModel     String?
-  fallbackToModel       String?
-  occurredAt            DateTime
-  rawJson               Json?
-  createdAt             DateTime @default(now())
+  fallbackFromModel           String?
+  fallbackToModel             String?
+  occurredAt                  DateTime
+  rawJson                     Json?
+  createdAt                   DateTime @default(now())
 
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
@@ -216,19 +220,19 @@ model UsageEvent {
 }
 
 model QuotaSnapshot {
-  id           String    @id @default(cuid())
-  userId       String
-  provider     String
-  accountKey   String
-  windowKey    String
-  utilization  Decimal?  @db.Decimal(6, 4)
-  usedRaw      BigInt?
-  limitRaw     BigInt?
-  unit         String?
-  resetsAt     DateTime?
-  capturedAt   DateTime  @default(now())
-  capturedBy   String?
-  rawJson      Json?
+  id          String    @id @default(cuid())
+  userId      String
+  provider    String
+  accountKey  String
+  windowKey   String
+  utilization Decimal?  @db.Decimal(6, 4)
+  usedRaw     BigInt?
+  limitRaw    BigInt?
+  unit        String?
+  resetsAt    DateTime?
+  capturedAt  DateTime  @default(now())
+  capturedBy  String?
+  rawJson     Json?
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   device Device? @relation(fields: [capturedBy], references: [id], onDelete: SetNull)
@@ -270,10 +274,10 @@ model ModelPrice {
   output       Decimal?  @db.Decimal(14, 8)
   // detected | auto_applied | pending_review | approved | rejected | failed | ignored
   status       String    @default("detected")
-  source       String?   // litellm | openrouter | llm-websearch | convention | manual | seed
+  source       String? // litellm | openrouter | llm-websearch | convention | manual | seed
   sourceUrl    String?
-  confidence   String?   // high | low
-  rawLookup    Json?     // raw source payload kept for audit / re-verification
+  confidence   String? // high | low
+  rawLookup    Json? // raw source payload kept for audit / re-verification
   notes        String?
   firstSeenAt  DateTime  @default(now())
   pricedAt     DateTime?
@@ -283,4 +287,88 @@ model ModelPrice {
   updatedAt    DateTime  @updatedAt
 
   @@index([status])
+}
+
+// ---- Harness console ------------------------------------------------------
+// harness（Triad Workflow）编排状态的云端只读镜像 + 人闸门。
+// ⚠️ 真相源永远是各机器仓库里的 progress.json / features.json——这两张表是镜像，
+// 渲染出错不影响状态机。控制台唯一的写操作是给 HarnessGate 签发 decision。
+
+model HarnessProject {
+  id        String  @id @default(cuid())
+  userId    String
+  deviceId  String
+  /// 归一化后的 git remote；与 Project.repoKey 同口径，便于把用量与编排进度对上
+  repoKey   String
+  name      String
+  projectId String?
+
+  // ── progress.json 镜像（device agent 上报）──
+  status            String?
+  batch             String?
+  fixRounds         Int       @default(0)
+  completedCount    Int       @default(0)
+  totalCount        Int       @default(0)
+  headSha           String?
+  signoff           String?
+  dashboardUrl      String?
+  autonomyStatus    String?
+  lastHaltCondition String?
+  lastHaltDetail    String?
+  /// features.json 摘要：[{id,title,status,executor}]
+  features          Json?
+  reportedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device  Device        @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  project Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  gates   HarnessGate[]
+
+  @@unique([deviceId, repoKey])
+  @@index([userId])
+  @@index([reportedAt])
+}
+
+model HarnessGate {
+  id               String   @id @default(cuid())
+  userId           String
+  harnessProjectId String
+  /// progress.json 里 pending_gate.id —— 幂等键，decision 必须引用它
+  gateId           String
+  kind             String
+  batch            String
+  fromStatus       String?
+  toStatus         String?
+  detail           String
+  /// 取证指针数组（只放路径，不内联正文）
+  evidence         Json?
+  raisedAt         DateTime
+  raisedBy         String
+
+  // ── 决策（唯一的写操作；签名后经 device 通道下发）──
+  decisionAction String?
+  decisionBy     String?
+  decisionAt     DateTime?
+  decisionNote   String?
+  decisionOnce   Boolean   @default(true)
+  /// Ed25519 签名（base64）。载荷 = decision 除 sig 外全部字段，键排序 + 紧凑 JSON。
+  /// 机器侧用仓库里的 console.pub 验签——写代码的 agent 伪造不了。
+  decisionSig    String?
+  /// device agent 取走的时间
+  relayedAt      DateTime?
+  /// 机器侧消费并清空 pending_gate 的时间
+  consumedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  harnessProject HarnessProject @relation(fields: [harnessProjectId], references: [id], onDelete: Cascade)
+
+  @@unique([harnessProjectId, gateId])
+  @@index([userId])
+  @@index([decisionAt])
+  @@index([consumedAt])
 }

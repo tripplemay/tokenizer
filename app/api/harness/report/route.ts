@@ -1,0 +1,135 @@
+import { NextRequest } from "next/server";
+import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth";
+import { prisma } from "@/server/db";
+
+export const dynamic = "force-dynamic";
+
+/**
+ * device agent 上报 harness 编排状态（progress.json / features.json 的镜像）。
+ *
+ * ⚠️ 这是**只读镜像**：真相源永远是机器上仓库里的 progress.json。本表渲染出错不影响状态机。
+ * 上报是幂等的——按 (deviceId, repoKey) upsert，按 (harnessProjectId, gateId) 去重闸门。
+ */
+
+type ReportBody = {
+  repoKey?: string;
+  name?: string;
+  state?: {
+    status?: string | null;
+    batch?: string | null;
+    fixRounds?: number;
+    completed?: number;
+    total?: number;
+    headSha?: string | null;
+    signoff?: string | null;
+    dashboardUrl?: string | null;
+    autonomyStatus?: string | null;
+    lastHalt?: { condition?: string | null; detail?: string | null } | null;
+    features?: Array<{ id?: string; title?: string; status?: string; executor?: string }>;
+  };
+  gate?: {
+    id?: string;
+    kind?: string;
+    batch?: string;
+    from_status?: string | null;
+    to_status?: string | null;
+    detail?: string;
+    evidence?: string[];
+    raised_at?: string;
+    raised_by?: string;
+  } | null;
+};
+
+const GATE_KINDS = new Set([
+  "phase_advance", "l2_auth", "adjudication", "debias_conflict",
+  "scope_drift", "budget", "spec_lock", "other"
+]);
+
+export async function POST(request: NextRequest) {
+  const token = await authenticateDeviceToken(request);
+  if (!token) return unauthorized();
+
+  const body = (await request.json().catch(() => null)) as ReportBody | null;
+  const repoKey = body?.repoKey?.trim();
+  if (!repoKey) return Response.json({ error: "repoKey is required" }, { status: 400 });
+  if (!body?.name?.trim()) return Response.json({ error: "name is required" }, { status: 400 });
+
+  const s = body.state ?? {};
+  const now = new Date();
+
+  // 把编排进度挂到已有的 Project 上（同 repoKey 口径），使「用量」与「进度」能对上。
+  // 匹配不到不是错误——项目可能还没产生过用量事件。
+  const linked = await prisma.project.findFirst({
+    where: { userId: token.userId, repoKey },
+    select: { id: true }
+  });
+
+  const data = {
+    name: body.name.trim(),
+    projectId: linked?.id ?? null,
+    status: s.status ?? null,
+    batch: s.batch ?? null,
+    fixRounds: Number.isFinite(s.fixRounds) ? Number(s.fixRounds) : 0,
+    completedCount: Number.isFinite(s.completed) ? Number(s.completed) : 0,
+    totalCount: Number.isFinite(s.total) ? Number(s.total) : 0,
+    headSha: s.headSha ?? null,
+    signoff: s.signoff ?? null,
+    dashboardUrl: s.dashboardUrl ?? null,
+    autonomyStatus: s.autonomyStatus ?? null,
+    lastHaltCondition: s.lastHalt?.condition ?? null,
+    lastHaltDetail: s.lastHalt?.detail ?? null,
+    features: (s.features ?? []) as object,
+    reportedAt: now
+  };
+
+  const project = await prisma.harnessProject.upsert({
+    where: { deviceId_repoKey: { deviceId: token.deviceId, repoKey } },
+    create: { userId: token.userId, deviceId: token.deviceId, repoKey, ...data },
+    update: data
+  });
+
+  const gate = body.gate ?? null;
+  if (gate?.id && gate.kind && gate.detail) {
+    if (!GATE_KINDS.has(gate.kind)) {
+      return Response.json({ error: `unknown gate kind: ${gate.kind}` }, { status: 400 });
+    }
+    // 幂等：同一 gateId 只登记一次；已有决策的不覆盖（决策只由控制台写）
+    await prisma.harnessGate.upsert({
+      where: { harnessProjectId_gateId: { harnessProjectId: project.id, gateId: gate.id } },
+      create: {
+        userId: token.userId,
+        harnessProjectId: project.id,
+        gateId: gate.id,
+        kind: gate.kind,
+        batch: gate.batch ?? project.batch ?? "",
+        fromStatus: gate.from_status ?? null,
+        toStatus: gate.to_status ?? null,
+        detail: gate.detail,
+        evidence: (gate.evidence ?? []) as object,
+        raisedAt: gate.raised_at ? new Date(gate.raised_at) : now,
+        raisedBy: gate.raised_by ?? "autodriver"
+      },
+      update: { detail: gate.detail, evidence: (gate.evidence ?? []) as object }
+    });
+  } else {
+    // 机器侧已清空 pending_gate ⇒ 该项目所有已下发的闸门视为消费完毕。
+    // 只标记已中继过的，避免把「还没送到机器」的闸门误标成已消费。
+    await prisma.harnessGate.updateMany({
+      where: { harnessProjectId: project.id, consumedAt: null, relayedAt: { not: null } },
+      data: { consumedAt: now }
+    });
+  }
+
+  return Response.json({ ok: true, harnessProjectId: project.id, linkedProjectId: linked?.id ?? null });
+}
+
+export async function GET(request: NextRequest) {
+  const token = await authenticateDeviceToken(request);
+  if (!token) return unauthorized();
+  const repoKey = new URL(request.url).searchParams.get("repoKey");
+  if (!repoKey) return forbidden("repoKey is required");
+  const p = await prisma.harnessProject.findUnique({
+    where: { deviceId_repoKey: { deviceId: token.deviceId, repoKey } }
+  });
+  return Response.json({ project: p });
+}

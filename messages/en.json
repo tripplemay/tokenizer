@@ -1,9 +1,12 @@
 {
-  "app": { "name": "Tokenizer" },
+  "app": {
+    "name": "Tokenizer"
+  },
   "nav": {
     "overview": "Overview",
     "events": "Events",
-    "devices": "Devices"
+    "devices": "Devices",
+    "harness": "Harness"
   },
   "home": {
     "title": "Coding Token Usage",
@@ -238,11 +241,20 @@
       "queueDepth": "Local queue depth",
       "lastSyncStatus": "Last sync status",
       "lastError": "Last error",
-      "status": { "success": "success", "failed": "failed" }
+      "status": {
+        "success": "success",
+        "failed": "failed"
+      }
     },
-    "projects": { "title": "Project ranking (this device)" },
-    "models": { "title": "Model usage (this device)" },
-    "sources": { "title": "Sources (this device)" },
+    "projects": {
+      "title": "Project ranking (this device)"
+    },
+    "models": {
+      "title": "Model usage (this device)"
+    },
+    "sources": {
+      "title": "Sources (this device)"
+    },
     "recentEvents": "Recent Events",
     "col": {
       "project": "Project",
@@ -307,9 +319,15 @@
       "colModel": "Counterpart model",
       "note": "\"Fell back to\": segments this model streamed before the request was re-served by the counterpart model. \"Fell back from\": usage this model served after taking over such a request. Both sides are billed."
     },
-    "devices": { "title": "By device" },
-    "projects": { "title": "By project" },
-    "sources": { "title": "By source" },
+    "devices": {
+      "title": "By device"
+    },
+    "projects": {
+      "title": "By project"
+    },
+    "sources": {
+      "title": "By source"
+    },
     "recentEvents": "Recent Events",
     "col": {
       "device": "Device",
@@ -406,5 +424,30 @@
     "bar": "Bar",
     "line": "Line",
     "typeToggle": "Chart type"
+  },
+  "harness": {
+    "pendingGates": "Pending gates",
+    "projects": "Project progress",
+    "noGates": "No pending gates.",
+    "noProjects": "No project has reported orchestration state yet — install harness in a project and let the agent report.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "notePlaceholder": "Note (optional)",
+    "confirm": "Confirm {action} for this gate?\\n\\nThis only signs the decision — the machine picks it up on its next heartbeat and verifies the signature before it takes effect.",
+    "awaitingRelay": "Signed, awaiting pickup by the machine",
+    "relayed": "Delivered to the machine, awaiting consumption",
+    "signingKeyMissing": "HARNESS_CONSOLE_SIGNING_KEY is not configured — gate decisions cannot be signed. Machines reject unsigned approvals (fail-closed). Generate a keypair with gen-console-key.sh, inject the private key via env, and commit the public key to each project's .claude/console/console.pub.",
+    "kind": {
+      "phase_advance": "Phase advance",
+      "l2_auth": "L2 authorization",
+      "adjudication": "Spec adjudication",
+      "debias_conflict": "Debias conflict",
+      "scope_drift": "Scope drift",
+      "budget": "Budget breach",
+      "spec_lock": "Spec lock",
+      "other": "Other"
+    }
   }
 }

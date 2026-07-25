@@ -1,9 +1,12 @@
 {
-  "app": { "name": "Tokenizer" },
+  "app": {
+    "name": "Tokenizer"
+  },
   "nav": {
     "overview": "总览",
     "events": "事件",
-    "devices": "设备"
+    "devices": "设备",
+    "harness": "编排"
   },
   "home": {
     "title": "编程 Token 用量",
@@ -238,11 +241,20 @@
       "queueDepth": "本地队列深度",
       "lastSyncStatus": "上次同步状态",
       "lastError": "最近错误",
-      "status": { "success": "成功", "failed": "失败" }
+      "status": {
+        "success": "成功",
+        "failed": "失败"
+      }
     },
-    "projects": { "title": "本设备项目排名" },
-    "models": { "title": "本设备模型用量" },
-    "sources": { "title": "本设备来源拆分" },
+    "projects": {
+      "title": "本设备项目排名"
+    },
+    "models": {
+      "title": "本设备模型用量"
+    },
+    "sources": {
+      "title": "本设备来源拆分"
+    },
     "recentEvents": "最近事件",
     "col": {
       "project": "项目",
@@ -307,9 +319,15 @@
       "colModel": "对端模型",
       "note": "「降级至」:本模型先输出、随后请求改由对端模型完成的片段;「降级自」:本模型接手此类请求后产生的用量。两侧均计费。"
     },
-    "devices": { "title": "按设备" },
-    "projects": { "title": "按项目" },
-    "sources": { "title": "按来源" },
+    "devices": {
+      "title": "按设备"
+    },
+    "projects": {
+      "title": "按项目"
+    },
+    "sources": {
+      "title": "按来源"
+    },
     "recentEvents": "最近事件",
     "col": {
       "device": "设备",
@@ -406,5 +424,30 @@
     "bar": "柱状图",
     "line": "折线图",
     "typeToggle": "图表类型"
+  },
+  "harness": {
+    "pendingGates": "待批闸门",
+    "projects": "项目进度",
+    "noGates": "没有待批闸门。",
+    "noProjects": "还没有项目上报编排状态——在项目里装好 harness 并让 agent 上报后会出现在这里。",
+    "approve": "批准",
+    "reject": "驳回",
+    "approved": "已批准",
+    "rejected": "已驳回",
+    "notePlaceholder": "备注（可选）",
+    "confirm": "确认{action}这个闸门？\\n\\n这只是签发决策——机器要等下次心跳取走并验签后才真正生效。",
+    "awaitingRelay": "已签发，等待机器取走",
+    "relayed": "已下发到机器，等待其消费",
+    "signingKeyMissing": "未配置 HARNESS_CONSOLE_SIGNING_KEY —— 无法签发闸门决策。没有签名的批准机器不会接受（fail-closed）。请用 gen-console-key.sh 生成密钥对，私钥经环境变量注入，公钥提交到各项目的 .claude/console/console.pub。",
+    "kind": {
+      "phase_advance": "阶段推进",
+      "l2_auth": "L2 授权",
+      "adjudication": "规格裁决",
+      "debias_conflict": "去偏分歧",
+      "scope_drift": "越界稽核",
+      "budget": "预算触顶",
+      "spec_lock": "待锁 spec",
+      "other": "其他"
+    }
   }
 }
