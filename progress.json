@@ -37,6 +37,15 @@
       "docs/test-reports/BL-FWDRIFT-verdict-kimi.json",
       "docs/test-reports/BL-FWDRIFT-verdict-codex.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-FWDRIFT-debias-conflict-w1",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-26T18:55:32.875Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "SniH6cO2sMGSChMRR4TAaJvxxtwirohyoacVSTK1QHW3f4N7XktyOMVV3VA3pdNqmm1mwdhyQwM0Hjs3r1g2BQ=="
+    }
   }
 }
