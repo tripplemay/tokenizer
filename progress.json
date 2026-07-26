@@ -38,6 +38,15 @@
       "docs/test-reports/BL-FWDRIFT-verdict-kimi-r1.json",
       "docs/test-reports/BL-FWDRIFT-verdict-codex-r1.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-FWDRIFT-verifying-done-w2",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-26T19:19:44.298Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "f6NqCGQFGJPXGSz9PZmXlXy2QDYnaqf8m4X4Wv1g/ozG/FNO0zsGbUQ1cib7AHpHifaecKn/qxIfxFRSz5SYAA=="
+    }
   }
 }
