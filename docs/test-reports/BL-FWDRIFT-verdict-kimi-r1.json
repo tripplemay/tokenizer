@@ -1,0 +1,32 @@
+{
+  "batch_id": "BL-FWDRIFT",
+  "fix_round": 1,
+  "created_at": "2026-07-26T19:06:30Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "全部验收点由我实跑验证（npm ci 全新装依赖后）。(1) npx vitest run tests/shared/framework-version.test.ts → 1 file passed，13/13 tests passed。(2) 另写独立 tsx 探针直接 import src/shared/framework-version.ts 实测（验毕已删）：compareFrameworkVersion(\"1.0.3\",\"1.4.0\")=-4<0、(\"1.4.0\",\"1.4.0\")=0、(\"1.5.0\",\"1.4.0\")=1>0；versionsBehind(\"1.0.3\")=9，恰为发布次数（清单 13 项、\"1.0.3\" 在 index 3，13-1-3=9）而非数值差；versionsBehind 对 \"unknown\"/\"abc\"/\"1.4\"/null/\"\" 全部返回 null。(3) fix_round 1 前导零修复实测生效：parseFrameworkVersion(\"01.0.3\")/(\"1.00.3\")/(\"1.0.03\") 均 null，三者 versionsBehind 均 null、frameworkStanding().kind=\"unknown\"；合法单 0 段 \"1.0.0\"/\"0.9.1\" 仍正常解析，无误伤。根因修复点：src/shared/framework-version.ts:35 段校验正则收紧为 /^(0|[1-9]\\d*)$/。(4) versionsBehind(\"9.9.9\")=null 且 frameworkStanding(\"9.9.9\").kind=\"ahead\"（超前可识别、不谎报落后）。(5) FRAMEWORK_RELEASES 末位 \"1.4.0\"===LATEST_FRAMEWORK_VERSION（src/shared/framework-version.ts:26 直接取清单末位，另有自检测试 tests/shared/framework-version.test.ts:18-21 拦漂移）。",
+      "steps_to_reproduce": "1) npm ci。2) npx vitest run tests/shared/framework-version.test.ts → 13/13 过。3) 写 probe.mts：import { compareFrameworkVersion, versionsBehind, frameworkStanding, parseFrameworkVersion, FRAMEWORK_RELEASES, LATEST_FRAMEWORK_VERSION } from \"./src/shared/framework-version\"，逐条打印三组 compare、versionsBehind(\"1.0.3\")/(\"unknown\")/(\"01.0.3\")/(\"9.9.9\")、parseFrameworkVersion(\"01.0.3\")/(\"1.0.0\")、frameworkStanding(\"9.9.9\").kind、清单末位与 LATEST 是否相等，npx tsx probe.mts 对照上述数值。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "按订正后规格验收（判断逻辑留在 mode-badges.tsx，页面只传 modes）。(1) npx tsc --noEmit → exit 0，无任何输出。(2) 调用点唯一：grep 全仓 frameworkStanding，渲染链路上仅 app/harness/mode-badges.tsx:57 一处调用；app/harness/page.tsx:180 只有 <ModeBadges modes={p.modes} />，页面未 import 未调用 frameworkStanding（src/shared/framework-version.ts:94 是 versionsBehind 的同模块包装，非渲染链路判断点）。(3) modes 为 null 不抛错，运行时实证：我在仓库根临时目录建 vitest 探针（stub next-intl/server 后用 react-dom/server renderToString 真实渲染该组件，验毕已删目录），modes=null/undefined/42/\"x\" 四种输入均渲染出 noSnapshot 文案、零抛错；静态兜底 mode-badges.tsx:52-55 在访问任何属性前先 if (!modes || typeof modes !== \"object\") return，prisma/schema.prisma 中 modes 为 Json? 可空。",
+      "steps_to_reproduce": "1) npx tsc --noEmit → exit 0。2) grep -rn \"frameworkStanding\" app/ src/ → 渲染链路调用点应只有 app/harness/mode-badges.tsx:57；再看 app/harness/page.tsx:180 确认页面仅传 modes。3) 临时 vitest 探针：alias stub next-intl/server（getTranslations 返回 key 回显函数），const jsx = await ModeBadges({ modes: null }) 后 renderToString，断言含 noSnapshot 且不抛错；对 undefined/42/\"x\" 重复。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "(1) 键集合一致：node 脚本比对 messages/zh-CN.json 与 messages/en.json 的 harness.modes —— 顶层各 23 键、递归拍平各 26 键（含 execution.*），only-in-zh 与 only-in-en 均为空数组。(2) 四种状态独立文案：noFramework（无框架账本/no framework lock）、versionUnknown（版本未知/version unknown）、behindN（落后 {count} 版/{count} releases behind）、ahead（比服务端已知的最新还新/newer than the latest…），键与文案两两不同。(3) 落后指引含 harness.sh sync：mode-badges.tsx:36 SYNC_CMD=\"bash .claude/harness.sh sync --from <框架源树>\"，:119-123 仅在 standing.kind===\"behind\" 时渲染。(4) fix_round 1「未知」拆分实测：framework===null → adoptHint + ADOPT_CMD（mode-badges.tsx:37,:124-128，bash … harness.sh adopt … --as <当时版本>）；version===\"unknown\" → unknownBaselineHint + REBASE_CMD（:41-42,:129-134，rm harness.json harness.lock && bash … adopt --as <确认后的版本>）。(5) 渲染探针实证分支互斥：modes={framework:null} 渲染含 noFramework+adoptHint+harness.sh adopt、不含 rm harness.json；modes={framework:{version:\"unknown\"}} 渲染含 versionUnknown+unknownBaselineHint+rm harness.json harness.lock+--as、不含 adoptHint；v1.0.3 渲染含 behindN+harness.sh sync；v1.4.0 无任何指引噪声；9.9.9 含 ahead 不含 behindN/syncHint；非法的 01.0.3 落进重建账本分支而非落后。(6) 「命令真的能跑」成立：framework/templates/claude/harness.sh:389 证实 cmd_adopt 在 harness.lock 已存在时 die「无需 adopt」，故先 rm 再 adopt 的重建命令是唯一可执行路径，订正与代码事实一致。",
+      "steps_to_reproduce": "1) node -e 递归比对两份 messages 的 harness.modes 拍平键集合，应零差异。2) 临时 vitest 探针（stub next-intl/server，t 回显 key）用 renderToString 真实渲染 ModeBadges，分别喂 {framework:null}、{framework:{version:\"unknown\"}}、{version:\"1.0.3\"}/{version:\"1.4.0\"}/{version:\"9.9.9\"}/{version:\"01.0.3\"}，断言上述各分支文案键与命令串的出现/缺席。3) sed -n '386,391p' framework/templates/claude/harness.sh 确认 adopt 遇 lock 即 die。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "npm run test（npm ci 全新装依赖后实跑）→ Test Files 40 passed (40)，Tests 405 passed | 4 skipped (409)，0 failed。405 ≥ 规格基线 392，新增 13 条正好等于 tests/shared/framework-version.test.ts 的 13 个用例（单跑该文件 13/13 过）。新增用例覆盖 F001 全部分支：latest（:73-77）、behind 发布次数（:79-85）、ahead 超前（:87-91）、unknown 四种输入（:93-97）、清单外 0.9.1 不编次数（:99-103）、fix_round 1 新增前导零分支 01.0.3/1.00.3/1.0.03/0001.4.0 且不误伤 1.0.0/0.9.1（:45-54）、compare 语义比较与 1.10.0>1.9.0 字符串比较回归（:57-69）、parse 非法输入（:36-40）、清单末位与严格递增自检（:17-28）。",
+      "steps_to_reproduce": "1) npm ci && npm run test → 应 40 文件全过、405 passed / 4 skipped。2) npx vitest run tests/shared/framework-version.test.ts → 13/13 过。3) 通读 tests/shared/framework-version.test.ts 比对 F001 验收点逐条有用例。"
+    }
+  ]
+}

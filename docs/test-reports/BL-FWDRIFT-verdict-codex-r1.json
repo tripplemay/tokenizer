@@ -1,0 +1,32 @@
+{
+  "batch_id": "BL-FWDRIFT",
+  "fix_round": 1,
+  "created_at": "2026-07-26T19:15:56Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "实跑 `npx vitest run tests/shared/framework-version.test.ts --no-cache`：exit 0，1 file passed，13/13 tests passed。另实跑 Node TypeScript 边界探针：compare 结果依次为 -4/0/1；versionsBehind(\"1.0.3\")=9；01.0.3、1.00.3、1.0.03 的 parse/behind 均为 null；unknown 为 null；9.9.9 的 behind=null、kind=ahead；13 项清单末位与 LATEST_FRAMEWORK_VERSION 均为 1.4.0。实现证据：src/shared/framework-version.ts:35-42 严格拒绝前导零，:74-89 区分 unknown/ahead/latest/behind 并按清单位置计数。",
+      "steps_to_reproduce": "运行 `npx vitest run tests/shared/framework-version.test.ts --no-cache`；再查看 `tests/shared/framework-version.test.ts:17` 起的清单自检、非法输入、前导零、比较、四态及 versionsBehind 用例，预期 13/13 通过。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "实跑 `npx tsc --noEmit`：exit 0、无诊断。实跑 ModeBadges 服务器组件静态渲染探针：zh-CN/en 的 modes=null 均成功渲染 noSnapshot，exit 0。`rg -n \"frameworkStanding\\s*\\(\" app src` 显示唯一 UI 消费调用在 app/harness/mode-badges.tsx:57；src/shared/framework-version.ts:94 仅是同一共享模块内 versionsBehind 的包装调用，判断未散落到页面。app/harness/page.tsx:180 只传 `<ModeBadges modes={p.modes} />`；mode-badges.tsx:52-55 在 null/非对象时安全返回。",
+      "steps_to_reproduce": "运行 `npx tsc --noEmit`；查看 `app/harness/page.tsx:180` 与 `app/harness/mode-badges.tsx:50-57`；用 `rg -n \"frameworkStanding\\s*\\(\" app src` 核对 UI 消费点，并以 modes=null 调用 ModeBadges 后静态渲染，预期返回 noSnapshot 而不抛错。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "实跑 JSON 键集探针：messages/zh-CN.json 与 messages/en.json 的 harness.modes 均为 23 键，equal=true、zhOnly=[]、enOnly=[]。实跑 ModeBadges 中英文终点渲染探针：null、无账本、未知基准、behind、latest、ahead 全部断言通过；无账本仅显示 adopt，未知基准显示 rm 账本后 adopt，behind 显示 sync 与 9 releases，latest 无指引，ahead 有独立文案。并在 /tmp 临时 harness 项目实跑三条替换占位符后的命令：adopt exit 0、sync 从 v1.0.3 到 v1.4.0 exit 0、`rm harness.json harness.lock && ... adopt --as 1.0.3` exit 0。代码分支见 app/harness/mode-badges.tsx:95-134，双语文案见 messages/zh-CN.json:474-480 与 messages/en.json:474-480。",
+      "steps_to_reproduce": "解析两份 messages JSON 并比较 `Object.keys(json.harness.modes).sort()`；静态渲染 ModeBadges，依次传 `{framework:null}`、`{framework:{version:\"unknown\"}}`、1.0.3、1.4.0、1.5.0，核对最终 HTML 的 adopt/rebuild/sync/无指引/ahead 分支；在临时 harness 项目替换 `<框架源树>` 与版本占位符后执行页面给出的 adopt、sync、重建账本命令，预期均 exit 0。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "实跑 `PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin npm run test -- --no-cache`（显式使用支持 ED25519 的 Homebrew OpenSSL 3.6.2，并关闭只读共享依赖的 vitest cache）：exit 0，40/40 test files passed，405 tests passed、4 skipped、总计 409，无失败。目标文件 tests/shared/framework-version.test.ts 单独实跑 13/13 通过，覆盖清单一致性、合法/非法/前导零、三向比较、latest/behind/ahead/unknown、清单外旧版及 versionsBehind 全分支。",
+      "steps_to_reproduce": "确保 PATH 中 openssl 支持 ED25519 后运行 `npm run test`（本沙箱共享只读 node_modules 时追加 `-- --no-cache`），预期 40 files passed、405 passed、4 skipped；再运行 `npx vitest run tests/shared/framework-version.test.ts --no-cache`，预期 13/13 通过。"
+    }
+  ]
+}

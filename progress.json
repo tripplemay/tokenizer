@@ -6,23 +6,38 @@
   "fix_rounds": 1,
   "current_sprint": "BL-FWDRIFT",
   "dashboard_url": null,
-  "last_updated": "2026-07-26T19:20:00Z",
+  "last_updated": "2026-07-26T19:45:00Z",
   "reference_docs": [],
   "docs": {
     "spec": "docs/specs/BL-FWDRIFT-framework-drift-badge.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-FWDRIFT-signoff.md",
     "framework_reviewed": true
   },
   "role_assignments": {
     "generator": "main-claude",
     "evaluator": "reviewer-kimi"
   },
-  "evaluator_feedback": "两家外部 evaluator 结论不一致：Kimi=PASS/PASS/FAIL/PASS，Codex=FAIL×4。共识：F003（unknown 基准线未给 adopt 命令）。分歧点：F001 前导零（Codex 实测 01.0.3→behind=9，违反「非法输入返回 null」）、F002（规格描述要求页面算好再传，实现在组件内算；而 F002 的验收标准只写了 tsc+空值安全——规格自相矛盾）、F004（连带 F001 的测试覆盖）。",
+  "evaluator_feedback": "fix_round 1 复验：Kimi 与 Codex 独立结论一致，四条全 PASS。证据见两份 verdict 工件与 signoff。",
   "generator_handoff": "fix_round 1 处置完毕：①F001 前导零改为 SEGMENT 正则 /^(0|[1-9]\\d*)$/，01.0.3/1.00.3/1.0.03/0001.4.0 一律 null 且 versionsBehind 不给次数；②F004 新增该分支用例（13 例）；③F003 「未知」分两种——无账本给 adopt，有账本但基准未知给**重建账本**命令（rm 账本 + adopt --as），因为 adopt 在 lock 存在时会拒绝执行；④F002 裁决为保留组件内计算并订正规格描述。L1：tsc 干净、405 测试通过（原 404 + 1）。规格已同步订正三处并标注 fix_round 1。",
   "session_notes": {
     "local": "【BL-FWDRIFT verifying→fixing 2026-07-26】异厂商 fan-out 结论不一致，debias_conflict 闸门已由 tripplezhou@gmail.com 于 2026-07-26T18:55:32.875Z 在控制台批准（签名有效，中继落盘 commit d1b2dab）。处置：①F001 认 Codex，修前导零非法输入；②F003 认「实现对规格错」，改规格并给可执行的重建账本命令；③F002 认规格自相矛盾，保留组件内计算并订正描述；④F004 随 F001 补测试分支。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-FWDRIFT-verifying-done-w2",
+    "kind": "phase_advance",
+    "raised_at": "2026-07-26T19:45:00Z",
+    "raised_by": "verify",
+    "batch": "BL-FWDRIFT",
+    "from_status": "reverifying",
+    "to_status": "done",
+    "detail": "两家异厂商 evaluator 复验一致通过（各 4/4 PASS，独立跑 npm ci + 全量测试 + 真实组件渲染探针）。L1：tsc 干净、405 测试通过。批准 = 收批次进 done（整合项目记忆、处理 6 条框架沉淀提案、清 role_assignments）。",
+    "evidence": [
+      "docs/test-reports/BL-FWDRIFT-signoff.md",
+      "docs/test-reports/BL-FWDRIFT-verdict-kimi-r1.json",
+      "docs/test-reports/BL-FWDRIFT-verdict-codex-r1.json"
+    ],
+    "decision": null
+  }
 }
