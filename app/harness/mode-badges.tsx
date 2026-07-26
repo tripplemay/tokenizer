@@ -35,6 +35,11 @@ type Modes = {
 // 因为看这个页面的人未必在装着框架仓库的那台机器上。
 const SYNC_CMD = "bash .claude/harness.sh sync --from <框架源树>";
 const ADOPT_CMD = "bash <框架源树>/templates/claude/harness.sh adopt --from <框架源树> --as <当时版本>";
+// 「有账本但基准线未知」时**不能**给 adopt —— 它在 harness.lock 已存在时会直接拒绝执行，
+// 给了等于给一条跑不通的建议（两家外部 evaluator 都指出了这点）。真正可执行的是先删账本
+// 再以确认过的版本重建；把 rm 写在前面是刻意的：让人看清这条命令会丢掉现有账本。
+const REBASE_CMD =
+  "rm harness.json harness.lock && bash <框架源树>/templates/claude/harness.sh adopt --from <框架源树> --as <确认后的版本>";
 
 const PILL = "rounded-full px-2 py-0.5 text-xs";
 const NEUTRAL = `${PILL} bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300`;
@@ -123,7 +128,8 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
       ) : null}
       {standing.kind === "unknown" && m.framework !== null ? (
         <p className="text-[11px] text-gray-500 dark:text-gray-400">
-          {t("unknownBaselineHint")}
+          {t("unknownBaselineHint")}{" "}
+          <code className="rounded bg-gray-100 px-1 dark:bg-white/10">{REBASE_CMD}</code>
         </p>
       ) : null}
 

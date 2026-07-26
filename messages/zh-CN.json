@@ -477,7 +477,7 @@
       "ahead": "比服务端已知的最新（v{latest}）还新",
       "syncHint": "升级：",
       "adoptHint": "先补账本：",
-      "unknownBaselineHint": "adopt 时基准版本推断不出——升级前先人工确认它实际停在哪一版"
+      "unknownBaselineHint": "adopt 时基准版本推断不出——先人工确认它实际停在哪一版，再重建账本："
     }
   }
 }

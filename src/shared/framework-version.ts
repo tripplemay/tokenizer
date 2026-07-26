@@ -25,13 +25,21 @@ export const FRAMEWORK_RELEASES = [
 
 export const LATEST_FRAMEWORK_VERSION = FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1];
 
-/** 解析 "1.4.0" → [1,4,0]。非法输入（含字面量 "unknown"）返回 null，绝不猜。 */
+/**
+ * 解析 "1.4.0" → [1,4,0]。非法输入（含字面量 "unknown"）返回 null，绝不猜。
+ *
+ * 🔴 前导零属非法（`01.0.3` / `1.00.3`）。第一版只校验「全是数字」，`Number()` 随后把
+ * 前导零吞掉，`join(".")` 又正好命中发布清单 —— 于是一个非法版本号会被报成「落后 9 版」。
+ * 外部 evaluator（Codex）实测抓到这条：BL-FWDRIFT fix_round 1。
+ */
+const SEGMENT = /^(0|[1-9]\d*)$/;
+
 export function parseFrameworkVersion(version: string | null | undefined): number[] | null {
   if (!version) return null;
   const parts = version.trim().replace(/^v/, "").split(".");
   if (parts.length !== 3) return null;
-  const nums = parts.map((p) => (/^\d+$/.test(p) ? Number(p) : NaN));
-  return nums.some(Number.isNaN) ? null : nums;
+  if (!parts.every((p) => SEGMENT.test(p))) return null;
+  return parts.map(Number);
 }
 
 /** 语义比较：a < b 返回负数，相等 0，a > b 正数。任一不可解析返回 null。 */

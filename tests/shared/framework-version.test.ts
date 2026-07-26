@@ -38,6 +38,20 @@ describe("parseFrameworkVersion", () => {
       expect(parseFrameworkVersion(bad)).toBeNull();
     }
   });
+
+  // 🔴 fix_round 1：外部 evaluator（Codex）实测抓到的真 bug。原实现只校验「全是数字」，
+  // Number() 吞掉前导零、join 后又命中发布清单 —— 一个非法版本号被报成「落后 9 版」。
+  // 这一分支「三段全是数字」，前面那条用例的所有样例都覆盖不到它。
+  it("🔴 前导零属非法：01.0.3 / 1.00.3 / 1.0.03 一律 null，且不得被算出落后次数", () => {
+    for (const bad of ["01.0.3", "1.00.3", "1.0.03", "0001.4.0"]) {
+      expect(parseFrameworkVersion(bad)).toBeNull();
+      expect(versionsBehind(bad)).toBeNull();
+      expect(frameworkStanding(bad).kind).toBe("unknown");
+    }
+    // 单个 0 是合法段，不能误伤
+    expect(parseFrameworkVersion("1.0.0")).toEqual([1, 0, 0]);
+    expect(parseFrameworkVersion("0.9.1")).toEqual([0, 9, 1]);
+  });
 });
 
 describe("compareFrameworkVersion", () => {

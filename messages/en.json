@@ -477,7 +477,7 @@
       "ahead": "newer than the latest the server knows (v{latest})",
       "syncHint": "Upgrade:",
       "adoptHint": "Create the ledger first:",
-      "unknownBaselineHint": "adopt could not infer the baseline — confirm which release it actually sits on before upgrading"
+      "unknownBaselineHint": "adopt could not infer the baseline — confirm which release it actually sits on, then rebuild the ledger:"
     }
   }
 }

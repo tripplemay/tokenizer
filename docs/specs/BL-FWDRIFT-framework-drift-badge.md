@@ -19,7 +19,7 @@ P1 模式画像上线后，控制台能显示每个项目的框架版本（`v1.0
 
 - 落后：`v1.0.3 · 落后 8 版` + 升级命令
 - 最新：`v1.4.0`（无额外噪声）
-- 未知：`版本未知` + adopt 指引
+- 未知：`版本未知` + **重建账本**指引（**不是 adopt**——见 §4 F003 的修订说明）
 - 超前（项目比服务端已知的最新还新）：如实显示，不谎报落后
 
 ## 3. 非目标
@@ -38,22 +38,36 @@ P1 模式画像上线后，控制台能显示每个项目的框架版本（`v1.0
 - `compareFrameworkVersion("1.0.3", "1.4.0") < 0`；`("1.4.0","1.4.0") === 0`；`("1.5.0","1.4.0") > 0`
 - `versionsBehind("1.0.3")` 返回该版本在清单中距最新版的**发布次数**，不是数值差
 - `versionsBehind("unknown")` / 非法输入 → `null`（不猜、不报 0）
+- **（fix_round 1 新增）** 前导零属非法：`01.0.3` / `1.00.3` / `1.0.03` 一律 `null`，
+  且 `versionsBehind` 不得给出次数。初版只校验「全是数字」，`Number()` 吞掉前导零后
+  `join` 又命中发布清单 → 非法版本被报成「落后 9 版」（Codex 实测抓到）
 - `versionsBehind("9.9.9")`（超前/清单外）→ `null`，且 `isAhead` 为真
 - 清单末位必须等于 `LATEST_FRAMEWORK_VERSION`（防清单与常量漂移的自检测试）
 
-### F002 — 页面把落后信息算好后传给徽章
+### F002 — 版本判断接入渲染链路
 
-`app/harness/page.tsx` 不做展示逻辑，只负责把 `modes` 与版本判断结果一起交给组件。
+**（fix_round 1 订正）** 初版描述写「页面算好落后信息再传给徽章」，而验收标准只写了
+tsc + 空值安全——**描述与验收标准自相矛盾**，两家 evaluator 因此给出相反结论（Codex 按描述
+判 FAIL，Kimi 按验收判 PASS，两家都没错）。裁决：判断逻辑**留在徽章组件内**（它是唯一消费者，
+更内聚；页面不该承担展示分支），描述随之订正。
 
-**验收：** `npx tsc --noEmit` 通过；页面对 `modes` 为 `null`（老 agent）时不得抛错。
+`frameworkStanding()` 在 `app/harness/mode-badges.tsx` 内调用，页面只负责把 `modes` 传进来。
+
+**验收：** `npx tsc --noEmit` 通过；页面对 `modes` 为 `null`（老 agent）时不得抛错；
+版本判断不得散落在多处（`frameworkStanding` 的调用点有且只有一处）。
 
 ### F003 — 徽章渲染四种状态 + 指引（中英）
 
 **验收：**
 - 四种状态各有独立文案；`messages/zh-CN.json` 与 `messages/en.json` 的
   `harness.modes` 下键集合**完全一致**（缺键会在运行时抛 `MISSING_MESSAGE`）
-- 落后时给出可复制的升级命令；未知时给出 `adopt` 命令
-- 升级命令中必须出现 `harness.sh sync`，adopt 指引中必须出现 `harness.sh adopt`
+- 落后时给出可复制的升级命令（含 `harness.sh sync`）
+- **（fix_round 1 订正）** 「未知」要分两种，给的命令必须**真的能跑**：
+  - `framework === null`（无账本）→ `harness.sh adopt` 命令
+  - `version === "unknown"`（有账本但基准线推断不出）→ **重建账本**命令
+    （`rm harness.json harness.lock && … adopt --as <确认后的版本>`）。
+    初版要求这里也给 `adopt`，但 `adopt` 在 `harness.lock` 已存在时会直接拒绝执行——
+    **那是一条跑不通的建议**，两家 evaluator 都指出了这点。
 
 ### F004 — 回归测试
 
