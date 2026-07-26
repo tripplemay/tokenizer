@@ -1,0 +1,32 @@
+{
+  "batch_id": "BL-FWDRIFT",
+  "fix_round": 0,
+  "created_at": "2026-07-26T18:43:15Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "全部验收点由我本人跑命令验证，未复述提交信息。(1) npx vitest run tests/shared/framework-version.test.ts → 12/12 passed。(2) 自写 tsx 探针直接 import src/shared/framework-version.ts 实测：compareFrameworkVersion(\"1.0.3\",\"1.4.0\")=-4<0、(\"1.4.0\",\"1.4.0\")===0、(\"1.5.0\",\"1.4.0\")=1>0；versionsBehind(\"1.0.3\")=9，恰等于 FRAMEWORK_RELEASES 中排在其后的发布次数（13 项清单，1.0.3 在 index 3，13-1-3=9），是发布次数而非数值差；versionsBehind 对 \"unknown\"/\"\"/null/undefined/\"abc\"/\"1.4\" 全部返回 null；versionsBehind(\"9.9.9\")=null 且 frameworkStanding(\"9.9.9\").kind=\"ahead\"（超前可识别、不慌报）；清单末位 \"1.4.0\"===LATEST_FRAMEWORK_VERSION（src/shared/framework-version.ts:26 直接取清单末位，另有自检测试 tests/shared/framework-version.test.ts:18-21 拦截漂移）。两点如实备注：① §4 文中的 isAhead 在代码中无同名导出，超前谓词由 frameworkStanding().kind===\"ahead\" 承载，行为等价且已实测为真；② §2 示例写「v1.0.3 落后 8 版」，按清单实际为 9 次发布，§4 验收定义为发布次数，实测 9 正确，§2 散文数字陈旧不影响本项判定。",
+      "steps_to_reproduce": "1) npx vitest run tests/shared/framework-version.test.ts（12 条应全过）。2) 写 probe.ts：import { compareFrameworkVersion, versionsBehind, frameworkStanding, FRAMEWORK_RELEASES, LATEST_FRAMEWORK_VERSION } from \"<repo>/src/shared/framework-version\"，逐条打印 compareFrameworkVersion(\"1.0.3\",\"1.4.0\")/(\"1.4.0\",\"1.4.0\")/(\"1.5.0\",\"1.4.0\")、versionsBehind(\"1.0.3\")/(\"unknown\")/(\"9.9.9\")、frameworkStanding(\"9.9.9\")、FRAMEWORK_RELEASES 末位与 LATEST_FRAMEWORK_VERSION，npx tsx probe.ts 对照上述数值。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "(1) npx tsc --noEmit → exit 0，无任何输出（node_modules 由 npm ci 全新安装，prisma client 已生成）。(2) modes 为 null 不抛错，静态+运行时双重证据：prisma/schema.prisma:322 modes 为 Json? 可空；app/harness/page.tsx:180 把 p.modes 直传给 <ModeBadges>；app/harness/mode-badges.tsx:47-50 在访问任何属性前先 if (!modes || typeof modes !== \"object\") return noSnapshot 段。我在仓库根临时目录建 vitest 探针（mock next-intl/server 后用 react-dom/server renderToString 真实渲染该组件，验毕已删目录）：modes=null/undefined/42/\"x\" 四种输入均渲染出 noSnapshot 文案、无抛错。备注：规格特性名写「页面算好落后信息传给徽章」，实现实为页面只传 modes、版本判断在 ModeBadges 内部（mode-badges.tsx:52 调 frameworkStanding）——架构描述与实现有出入，但 §4 列的两条验收（tsc 通过、null 不抛错）均独立成立，不影响本项判定。",
+      "steps_to_reproduce": "1) npm ci && npx prisma generate && npx tsc --noEmit，应 exit 0。2) 运行时 null 安全：建临时 vitest 配置（alias @→src、esbuild jsx automatic），测试文件 mock \"next-intl/server\" 使 getTranslations 返回回显 key 的函数，import app/harness/mode-badges，对 modes=null/undefined/42/\"x\" 分别 await 组件并 renderToString，断言含 noSnapshot；验毕删除临时目录。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "FAIL",
+      "evidence": "通过的子项（均实测）：① messages/zh-CN.json 与 en.json 的 harness.modes 键集合用 python 比对：各 23 键，zh-only=[]、en-only=[]，完全一致；② 四态文案独立且渲染正确——临时 vitest 探针（mock getTranslations 回显 key 后 renderToString 真实 HTML，验毕目录已删）：behind→\"v1.0.3 · behindN{count:9}\"+syncHint+\"harness.sh sync\"；latest→\"v1.4.0\" 无 sync 指引；ahead→\"v9.9.9 · ahead{latest:1.4.0}\" 不慌报落后；清单外 0.9.1→behind（无次数）+sync 指引；③ SYNC_CMD 含 \"harness.sh sync\"、ADOPT_CMD 含 \"harness.sh adopt\"（mode-badges.tsx:36-37，渲染输出中亦实测出现）。未通过的验收点：§4 要求「未知时给出 adopt 命令」，§2 明确写「未知：版本未知 + adopt 指引」——而渲染探针实测 framework.version=\"unknown\"（有账本但基准未知，即 §1 所述 9 个项目里 5 个的真实状态）时，输出仅 versionUnknown 徽章 + unknownBaselineHint 文字，console 记录：含 \"harness.sh adopt\"? false、含 adoptHint? false；adopt 命令只在 framework=null（无账本，徽章为「无框架账本」而非「版本未知」）时出现（mode-badges.tsx:119-128 的两个互斥分支）。供裁决参考的缓解事实：framework/templates/claude/harness.sh:389 显示 adopt 在 harness.lock 已存在时直接 die「无需 adopt」，故对 version=unknown 项目展示该命令本会无效，unknownBaselineHint（升级前先人工确认实际版本）工程上或更合理——但这与 §2/§4 的字面验收不符，按「任一验收标准不满足即 FAIL、宁可判 FAIL 不放水」判 FAIL，交人裁决是改文案还是改实现。",
+      "steps_to_reproduce": "1) python3 比对 json.load 后 zh-CN['harness']['modes'] 与 en['harness']['modes'] 的 set(keys)，应相等。2) 读 app/harness/mode-badges.tsx:114-128：syncHint+SYNC_CMD 只在 standing.kind===\"behind\" 出现；adoptHint+ADOPT_CMD 只在 kind===\"unknown\" && framework===null 出现；version=\"unknown\" 走 unknownBaselineHint 分支无命令。3) 运行时复现：临时 vitest 探针 mock next-intl/server 后 renderToString(ModeBadges({modes:{framework:{version:\"unknown\",adopted:true},...}}))，检查输出不含 \"harness.sh adopt\"；framework:null 时则含。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "npm run test（npm ci 全新环境）实测：Test Files 40 passed (40)，Tests 404 passed | 4 skipped (408)，0 failed。4 个 skip 均为 Windows 平台条件跳过的存量用例（tests/cli/service-windows.test.ts:160 describeWindows、tests/cli/file-permissions.test.ts:29 skipIf win32），与本批无关。新增 tests/shared/framework-version.test.ts 12 条（我单独跑该文件 12/12 过），覆盖 F001 全部分支：清单与常量一致性自检、parse 非法输入（unknown/空/两段/四段/非数字）、compare 含字符串比较陷阱（1.10.0>1.9.0）、standing 四态 latest/behind/ahead/unknown、清单外旧版本（0.9.1→behind 无次数）、versionsBehind 全分支。总用例数 404 = 基线 392 + 新增 12，满足「不少于当前 392 + 新增数」（文件数 39+1=40 亦吻合）。",
+      "steps_to_reproduce": "1) npm ci && npm run test，尾部应显示 Test Files 40 passed、Tests 404 passed | 4 skipped (408)、无 failed。2) npx vitest run tests/shared/framework-version.test.ts 应为 12/12 passed，逐条对照其 describe/it 覆盖 unknown/超前/清单外分支。"
+    }
+  ]
+}

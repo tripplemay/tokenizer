@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-FWDRIFT",
   "dashboard_url": null,
-  "last_updated": "2026-07-26T18:30:00Z",
+  "last_updated": "2026-07-26T19:05:00Z",
   "reference_docs": [],
   "docs": {
     "spec": "docs/specs/BL-FWDRIFT-framework-drift-badge.md",
@@ -18,10 +18,25 @@
     "generator": "main-claude",
     "evaluator": "reviewer-kimi"
   },
-  "evaluator_feedback": null,
+  "evaluator_feedback": "两家外部 evaluator 结论不一致：Kimi=PASS/PASS/FAIL/PASS，Codex=FAIL×4。共识：F003（unknown 基准线未给 adopt 命令）。分歧点：F001 前导零（Codex 实测 01.0.3→behind=9，违反「非法输入返回 null」）、F002（规格描述要求页面算好再传，实现在组件内算；而 F002 的验收标准只写了 tsc+空值安全——规格自相矛盾）、F004（连带 F001 的测试覆盖）。",
   "generator_handoff": "F001-F004 全部实现完毕。新增 src/shared/framework-version.ts（版本清单+比较+落后计数）与 tests/shared/framework-version.test.ts（12 例）；app/harness/mode-badges.tsx 接入四态渲染与升级/adopt 指引；messages/{zh-CN,en}.json 各加 6 个键。本地 L1：tsc 干净、404 测试全绿（原 392 + 12）。待外部 evaluator 独立复核。",
   "session_notes": {
     "local": "【BL-FWDRIFT planning→building 2026-07-26】规格已确认落盘。车道=本地异构 + fan-out 对抗复核：generator=主实例(claude)，evaluator=Kimi 与 Codex 各跑一遍（两者 model_family 均≠claude，满足独立性铁则第 5 条）；结论不一致则举 debias_conflict 闸门停机。verifying→done 为 Class B，举 phase_advance 闸门由人在控制台批准。本批次同时是 harness 全链路在 tokenizer 自身上的首次实跑。"
   },
-  "features": []
+  "features": [],
+  "pending_gate": {
+    "id": "BL-FWDRIFT-debias-conflict-w1",
+    "kind": "debias_conflict",
+    "raised_at": "2026-07-26T19:05:00Z",
+    "raised_by": "verify",
+    "batch": "BL-FWDRIFT",
+    "from_status": "verifying",
+    "to_status": "fixing",
+    "detail": "两家异厂商 evaluator 结论不一致，需人类裁决处置方案。我的提议：①F001 认 Codex——前导零确属非法输入，修 parseFrameworkVersion 并补测试（F004 随之解决）；②F003 认「实现对、规格错」——adopt 在 harness.lock 已存在时会直接拒绝，给 adopt 命令等于给一条跑不通的建议，应改规格并给出真正可执行的重建账本命令；③F002 认规格自相矛盾——描述与验收标准打架，倾向保留组件内计算（更内聚）并订正规格描述。批准 = 按此三条处置进入 fixing；驳回 = 停下来先跟我讨论。",
+    "evidence": [
+      "docs/test-reports/BL-FWDRIFT-verdict-kimi.json",
+      "docs/test-reports/BL-FWDRIFT-verdict-codex.json"
+    ],
+    "decision": null
+  }
 }

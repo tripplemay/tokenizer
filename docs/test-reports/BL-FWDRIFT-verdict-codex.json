@@ -1,0 +1,32 @@
+{
+  "batch_id": "BL-FWDRIFT",
+  "fix_round": 0,
+  "created_at": "2026-07-26T18:45:38Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "FAIL",
+      "evidence": "实际运行 npx vitest run tests/shared/framework-version.test.ts：1 file passed，12/12 tests passed；常规 compare、unknown、超前、清单外与清单末位用例通过。但实际运行 node --import /Users/yixingzhou/project/tokenizer/node_modules/tsx/dist/loader.mjs --input-type=module -e <调用 parseFrameworkVersion/versionsBehind/frameworkStanding>，输出 01.0.3、1.00.3、1.0.03 均 parsed=[1,0,3]、behind=9，而语义版本的数字段带前导零属于非法输入，按 spec §4 应返回 null。根因见 src/shared/framework-version.ts:31-34：正则只校验全数字，Number() 随后吞掉前导零；src/shared/framework-version.ts:78-81 又把结果 join 后命中发布清单。其余实测：unknown/bad 的 behind=null，9.9.9 的 standing.kind=ahead 且 behind=null，0.9.1 的 behind=null；清单与 framework/CHANGELOG.md 的发布记录对应，1.0.3 到 1.4.0 的发布次数为 9。",
+      "steps_to_reproduce": "在仓库根运行：node --import /Users/yixingzhou/project/tokenizer/node_modules/tsx/dist/loader.mjs --input-type=module -e 'import {parseFrameworkVersion,versionsBehind} from \"./src/shared/framework-version.ts\"; console.log(parseFrameworkVersion(\"01.0.3\"), versionsBehind(\"01.0.3\"))'；实际得到 [1,0,3] 9，预期非法输入得到 null。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "FAIL",
+      "evidence": "实际运行 npx tsc --noEmit：exit 0，无类型错误；内存服务端渲染真实 ModeBadges，modes=null 输出 hasNoSnapshot=true 且未抛错。但 rg -n 'frameworkStanding|ModeBadges' app/harness/page.tsx app/harness/mode-badges.tsx 显示 app/harness/page.tsx:180 仍只有 <ModeBadges modes={p.modes} />，页面既未导入也未调用 frameworkStanding；判断实际在 app/harness/mode-badges.tsx:2、52 内计算。故类型检查与老 agent 空值路径通过，但 F002 明确要求的“页面算好并把 modes 与版本判断结果一起交给组件”未实现。",
+      "steps_to_reproduce": "运行 rg -n 'frameworkStanding|ModeBadges' app/harness/page.tsx app/harness/mode-badges.tsx；检查 app/harness/page.tsx:180 仅传 modes，再检查 app/harness/mode-badges.tsx:52 才调用 frameworkStanding，即可复现职责边界偏差。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "FAIL",
+      "evidence": "对真实 app/harness/mode-badges.tsx 做内存 renderToStaticMarkup（仅将 next-intl/server 换为确定性翻译桩）：latest 无 sync/adopt，behind hasSync=true，ahead hasAhead=true，noLedger hasAdopt=true；但 unknownVersion（modes.framework.version=\"unknown\"）输出 hasUnknown=true、hasAdopt=false。代码证据：app/harness/mode-badges.tsx:119-123 只在 m.framework===null 时渲染 ADOPT_CMD，字面量 unknown 在 :124-128 只渲染 unknownBaselineHint；违反 spec §4“未知时给出 adopt 命令”。另实际递归比较 messages/zh-CN.json 与 messages/en.json 的 harness.modes：两边各 26 个叶子键，zhOnly=[]、enOnly=[]；app/harness/mode-badges.tsx:36-37 的命令分别含 harness.sh sync 与 harness.sh adopt。",
+      "steps_to_reproduce": "以 React renderToStaticMarkup 渲染 ModeBadges({modes:{framework:{version:\"unknown\"}}}) 并检查 HTML：版本未知文案存在，但 html.includes(\"harness.sh adopt\") 为 false；对照渲染 ModeBadges({modes:{framework:null}}) 时该值为 true。静态最短定位可运行 nl -ba app/harness/mode-badges.tsx | sed -n '113,128p'。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "FAIL",
+      "evidence": "在同一 HEAD 08d46948685bf63a182c465eb2cfae4ad87f8dcf、临时挂接同 SHA repo 依赖并将 PATH 指向 OpenSSL 3.6.2 后，实际运行 npm run test：exit 0，40/40 files passed，404 passed、4 skipped（408 total）；实际运行 npx vitest run tests/shared/framework-version.test.ts：exit 0，12/12 passed。测试数量与全量回归达标。但 tests/shared/framework-version.test.ts:36-39 的非法输入仅覆盖空值、段数错误和非数字字符，未覆盖“三段均为数字但因前导零而非法”的语义分支；因此 12/12 全绿仍未拦住 F001 的 01.0.3 -> behind=9 契约违例，不满足“新增用例覆盖 F001 的全部分支”。默认沙箱 /usr/bin/openssl 为 LibreSSL 3.3.6，不支持 ed25519；用 /opt/homebrew/bin/openssl 3.6.2 复跑后无环境误报。",
+      "steps_to_reproduce": "先运行 PATH=/opt/homebrew/bin:$PATH npm run test，确认 40 files、404 passed、4 skipped；再运行 npx vitest run tests/shared/framework-version.test.ts，确认 12/12；最后运行 F001 的 01.0.3 复现命令并检查 tests/shared/framework-version.test.ts:36-39，验证现有新增用例全绿但漏掉该非法语义输入。"
+    }
+  ]
+}
