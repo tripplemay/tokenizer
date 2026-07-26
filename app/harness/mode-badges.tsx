@@ -81,7 +81,13 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
         </span>
 
         <span className={dirty > 0 ? WARN : NEUTRAL} title={`${m.framework?.managedCount ?? 0} managed`}>
-          {m.framework?.version ? `v${m.framework.version}` : t("noFramework")}
+          {/* adopt 时推断不出基准版本的项目版本号是字面量 "unknown" —— 渲染成 "vunknown" 会
+              让人以为那是个版本名。「无账本」与「有账本但版本推断不出」是两种不同状态，分开说。 */}
+          {!m.framework?.version
+            ? t("noFramework")
+            : m.framework.version === "unknown"
+              ? t("versionUnknown")
+              : `v${m.framework.version}`}
           {m.framework?.adopted ? " (adopted)" : ""}
           {dirty > 0 ? ` · ${t("drift", { count: dirty })}` : ""}
           {customized > 0 ? ` · ${t("customized", { count: customized })}` : ""}

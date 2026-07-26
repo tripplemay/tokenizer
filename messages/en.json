@@ -470,7 +470,8 @@
         "heterogeneous": "local heterogeneous",
         "slow": "cross-machine",
         "unknown": "unknown"
-      }
+      },
+      "versionUnknown": "version unknown"
     }
   }
 }

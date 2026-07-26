@@ -470,7 +470,8 @@
         "heterogeneous": "本地异构",
         "slow": "跨机器",
         "unknown": "形态未知"
-      }
+      },
+      "versionUnknown": "版本未知"
     }
   }
 }
