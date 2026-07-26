@@ -26,6 +26,8 @@ type ReportBody = {
     autonomyStatus?: string | null;
     lastHalt?: { condition?: string | null; detail?: string | null } | null;
     features?: Array<{ id?: string; title?: string; status?: string; executor?: string }>;
+    /** 模式指纹（agent 侧 harness-modes.ts 生成）。老 agent 不带这个字段，按 null 存。 */
+    modes?: Record<string, unknown> | null;
   };
   gate?: {
     id?: string;
@@ -79,6 +81,9 @@ export async function POST(request: NextRequest) {
     lastHaltCondition: s.lastHalt?.condition ?? null,
     lastHaltDetail: s.lastHalt?.detail ?? null,
     features: (s.features ?? []) as object,
+    // 老 agent 不上报 modes 时保持 null，而不是写成 {}——空对象会让页面误显示成
+    // 「这个项目所有模式都关着」，而事实是「这台机器的 agent 还没升级」。
+    modes: (s.modes ?? null) as object | null,
     reportedAt: now
   };
 

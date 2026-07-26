@@ -448,6 +448,29 @@
       "budget": "Budget breach",
       "spec_lock": "Spec lock",
       "other": "Other"
+    },
+    "modes": {
+      "noSnapshot": "This machine's agent hasn't reported modes yet (older version — upgrade to see)",
+      "noFramework": "no framework lock",
+      "roles": "roles",
+      "drift": "{count} drifted",
+      "customized": "{count} customized",
+      "denyListMissing": "autonomy deny-list not merged into settings.json — the guardrail is on paper only",
+      "hooksMissing": "missing guard hooks",
+      "autonomyOn": "autonomous",
+      "autonomyOff": "manual",
+      "autonomyInvalid": "autonomy policy invalid",
+      "dispatchOn": "cross-vendor dispatch",
+      "dispatchOff": "no dispatch",
+      "sameFamily": "same family",
+      "gateSignature": "gate: signature",
+      "gateHeadCompare": "gate: HEAD-compare",
+      "execution": {
+        "fast": "fast lane",
+        "heterogeneous": "local heterogeneous",
+        "slow": "cross-machine",
+        "unknown": "unknown"
+      }
     }
   }
 }

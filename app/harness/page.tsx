@@ -8,6 +8,7 @@ import { signingKeyReady } from "@/server/harness-sign";
 import { formatRelativeTime } from "@/shared/format";
 import { AutoRefresh } from "../_components/auto-refresh";
 import { GateActions } from "./gate-actions";
+import ModeBadges from "./mode-badges";
 
 export const dynamic = "force-dynamic";
 
@@ -175,6 +176,8 @@ export default async function HarnessPage() {
                       </span>
                     ) : null}
                   </div>
+
+                  <ModeBadges modes={p.modes} />
 
                   <div className="mt-3 flex flex-wrap gap-1">
                     {PHASES.map((s, i) => (

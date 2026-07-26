@@ -7,6 +7,7 @@ import { canonicalJson } from "@/server/harness-sign";
 import { normalizeGitRemote } from "./git";
 import { readCredentials, TokenizerConfig } from "./config";
 import { agentFetch } from "./fetch";
+import { buildModeSnapshot } from "./harness-modes";
 
 /**
  * harness（Triad Workflow）编排状态的上报与闸门决策中继。
@@ -130,7 +131,10 @@ export function buildReport(repo: HarnessRepo) {
         title: (f as { title?: string }).title,
         status: (f as { status?: string }).status,
         executor: (f as { executor?: string }).executor
-      }))
+      })),
+      // 模式指纹：六个维度的开关散在五个文件里，人要回答「这项目现在什么模式」得逐个翻。
+      // 只读镜像——算错只让控制台显示错，机器上的校验器一道不少。
+      modes: buildModeSnapshot(repo.path)
     },
     // 只上报还没有决策的闸门；已决策的以服务端记录为准，避免本机旧副本覆盖
     gate: gate && !gate.decision ? gate : null

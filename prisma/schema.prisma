@@ -317,6 +317,9 @@ model HarnessProject {
   lastHaltDetail    String?
   /// features.json 摘要：[{id,title,status,executor}]
   features          Json?
+  /// 模式指纹（harness-modes.ts）：框架版本与本地漂移 · 执行形态 · 自主 · dispatch · 闸门校验模式 · 机件在位。
+  /// 只读镜像：算错只影响这里的显示，机器上的校验器一道不少。
+  modes             Json?
   reportedAt        DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt

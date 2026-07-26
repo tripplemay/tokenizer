@@ -448,6 +448,29 @@
       "budget": "预算触顶",
       "spec_lock": "待锁 spec",
       "other": "其他"
+    },
+    "modes": {
+      "noSnapshot": "该机器的 agent 尚未上报模式（版本较旧，升级后可见）",
+      "noFramework": "无框架账本",
+      "roles": "角色指派",
+      "drift": "{count} 处漂移",
+      "customized": "{count} 处本地定制",
+      "denyListMissing": "自主模式 deny-list 未合入 settings.json —— 护栏是纸面的",
+      "hooksMissing": "缺守门 hook",
+      "autonomyOn": "自主",
+      "autonomyOff": "手动",
+      "autonomyInvalid": "自主策略失效",
+      "dispatchOn": "异厂商派活",
+      "dispatchOff": "无派活",
+      "sameFamily": "同 family",
+      "gateSignature": "闸门验签",
+      "gateHeadCompare": "闸门比对 HEAD",
+      "execution": {
+        "fast": "快车道",
+        "heterogeneous": "本地异构",
+        "slow": "跨机器",
+        "unknown": "形态未知"
+      }
     }
   }
 }
