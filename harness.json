@@ -1,0 +1,12 @@
+{
+  "framework": {
+    "source": "harness-template",
+    "source_url": "https://github.com/tripplemay/harness-template.git",
+    "version": "1.4.0",
+    "commit": "d376916",
+    "installed_from": "/Users/yixingzhou/project/harness-template"
+  },
+  "project": {
+    "name": "tokenizer"
+  }
+}

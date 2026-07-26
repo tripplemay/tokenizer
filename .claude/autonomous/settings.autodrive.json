@@ -1,0 +1,25 @@
+{
+  "_comment": "autonomous-mode.md 机件 #0/#1。自主运行期间叠加到 .claude/settings.json 的 permissions.deny（正常手动开发不叠加，否则会挡住合法 deploy）。⚠️ 权限模式语法需按当前 Claude Code 版本核对；prod 主机名 / 部署脚本名 / 花钱 MCP 工具清单按项目实际补全。宁可多拒，默认拒绝。",
+  "permissions": {
+    "deny": [
+      "Bash(gh workflow run:*)",
+      "Bash(prisma migrate deploy:*)",
+      "Bash(npx prisma migrate deploy:*)",
+      "Bash(vercel deploy:*)",
+      "Bash(vercel --prod:*)",
+      "Bash(flyctl deploy:*)",
+      "Bash(kubectl apply:*)",
+      "Bash(terraform apply:*)",
+      "Write(autonomy-policy.json)",
+      "Edit(autonomy-policy.json)",
+      "mcp__aigc-gateway__generate_image",
+      "mcp__aigc-gateway__run_action",
+      "mcp__aigc-gateway__run_template",
+      "mcp__aigc-gateway__chat",
+      "mcp__aigc-gateway__embed_text",
+      "mcp__aigc-gateway__create_api_key",
+      "mcp__aigc-gateway__create_action",
+      "mcp__aigc-gateway__activate_version"
+    ]
+  }
+}

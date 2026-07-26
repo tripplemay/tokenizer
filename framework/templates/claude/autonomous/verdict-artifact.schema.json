@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "verdict-artifact",
+  "description": "autonomous-mode.md 机件 #3 的验收工件 schema。verify 每轮必产 docs/test-reports/{BL-id}-verdict.json，喂沉淀引擎（§8.4）。存在≠真实：每 feature 的 evidence / steps_to_reproduce 必须非空，机械拒收空壳 PASS。v1.1 起兼作 dispatch-mode.md 的跨厂商交付契约（deliverable.schema），并承载 waiting 中断态。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["batch_id", "fix_round", "created_at", "verdicts"],
+  "properties": {
+    "batch_id": { "type": "string", "description": "= progress.json.current_sprint（BL-id）" },
+    "fix_round": { "type": "integer", "minimum": 0 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "waiting": {
+      "type": ["string", "null"],
+      "enum": ["auth", "adjudication", null],
+      "default": null,
+      "description": "dispatch-mode.md 的中断态降维表达（借 A2A AUTH_REQUIRED / INPUT_REQUIRED 语义）。一次性 CLI 进程无法「挂起等你」，故把中断态编码进产物：撞 L2 边界而未获授权 → 'auth'；规格歧义 / acceptance 无法客观判定 → 'adjudication'。写完照常 exit 0——不要用非零退出码表达「我需要人」，那会被回执推断判成 FAILED 并触发无意义重派。编排者读到非空即硬停交人类。"
+    },
+    "waiting_detail": {
+      "type": "string",
+      "minLength": 1,
+      "description": "waiting 非空时必填：卡在哪条 feature、需要什么授权或裁决。人类据此一眼判断如何解锁"
+    },
+    "verdicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["feature_id", "result", "evidence", "steps_to_reproduce"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "result": { "type": "string", "enum": ["PASS", "PARTIAL", "FAIL"] },
+          "evidence": { "type": "string", "minLength": 1, "description": "实测证据（测试输出/命令/staging 结果），非空——空 = 空壳，拒收" },
+          "steps_to_reproduce": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": { "waiting": { "type": "string", "enum": ["auth", "adjudication"] } },
+    "required": ["waiting"]
+  },
+  "then": {
+    "_comment": "中断态下允许 verdicts 为空或部分——被授权/裁决卡住时本就验不完，强行要求满额会逼出编造的证据",
+    "required": ["waiting_detail"],
+    "properties": { "verdicts": { "minItems": 0 } }
+  },
+  "else": {
+    "_comment": "非中断态：verdicts 必须非空，否则这轮验收没有产出，沉淀引擎无燃料",
+    "properties": { "verdicts": { "minItems": 1 } }
+  }
+}

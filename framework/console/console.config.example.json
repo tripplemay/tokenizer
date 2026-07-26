@@ -1,0 +1,9 @@
+{
+  "_comment": "harness console 配置。拷成 console.config.json 后按实际改。控制台在本机维护各项目的克隆，用 git 当传输——不依赖 GitHub API，任何 remote 都能用。",
+  "operator": "yixing",
+  "poll_interval_s": 60,
+  "projects": [
+    { "name": "kolmatrix", "path": "~/srv/repos/kolmatrix", "pull": true, "push": true },
+    { "name": "aigcgateway", "path": "~/srv/repos/aigcgateway", "pull": true, "push": true }
+  ]
+}

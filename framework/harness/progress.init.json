@@ -1,0 +1,22 @@
+{
+  "status": "new",
+  "user_goal": "",
+  "total_features": 0,
+  "completed_features": 0,
+  "fix_rounds": 0,
+  "current_sprint": null,
+  "dashboard_url": null,
+  "last_updated": "",
+  "reference_docs": [],
+  "docs": {
+    "spec": null,
+    "test_cases": null,
+    "signoff": null,
+    "framework_reviewed": false
+  },
+  "role_assignments": null,
+  "evaluator_feedback": null,
+  "generator_handoff": null,
+  "session_notes": {},
+  "features": []
+}

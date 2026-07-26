@@ -1,0 +1,218 @@
+<!-- 渲染模板 — /dashboard skill 用。自包含，禁 fetch / 禁外链 / 禁 CDN（Artifact CSP 会拦）。
+     harness 每次刷新时：复制本文件、用 progress.json/features.json/backlog.json 逐 {{TOKEN}} 填充、
+     REPEAT 块按条目重复、发布为 Artifact（url = progress.json.dashboard_url）。
+     约束：自包含，禁 fetch / 禁外链 / 禁 CDN（Artifact CSP 会拦）。<title>+<style> 保留，勿加 html/head/body。
+
+     TOKEN 速查：
+       {{PROJECT}} {{BATCH_ID}} {{BATCH_TITLE}} {{LANE}}                          顶栏
+       {{CI_CHIP_CLASS}}=ok|bad  {{CI_CHIP_TEXT}}  {{SIGNOFF_CHIP_TEXT}}
+       {{PHASE}}  {{FIX_ROUND}}  {{PHASE_ROLE}}                                   当前阶段
+       流水线 7 节点：每个 <div class="node {{CLS_*}}"> 里 {{CLS_new..done}} 取 done|cur|next
+       {{PCT}} {{COMPLETED}} {{TOTAL}} {{FIX_ROUNDS}} {{CI_STATE}} {{SIGNOFF_STATE}}  瓦片
+       REPEAT feature / verdict / backlog；{{NOTE_WHO}} {{NOTE_TEXT}}；{{COMMIT}} {{SNAPSHOT_DATE}} 脚注 -->
+<title>{{PROJECT}} · 项目进度看板</title>
+<style>
+  :root{
+    --ground:#f3f6f6; --panel:#ffffff; --panel-2:#eef2f2; --ink:#132120; --ink-dim:#5c6b6a;
+    --line:#dce2e2; --accent:#0e8f88; --accent-soft:#d6ecea;
+    --ok:#1f9d57; --warn:#bd830f; --bad:#cf3f54; --idle:#7b8a90;
+    --track:#e2e8e8; --shadow:0 1px 2px rgba(16,40,38,.06),0 8px 24px rgba(16,40,38,.05);
+    --font-ui:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+    --font-mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0c1312; --panel:#121d1c; --panel-2:#1a2726; --ink:#e6efed; --ink-dim:#8ba09e;
+      --line:#25332f; --accent:#3ecfc4; --accent-soft:#152f2c;
+      --ok:#3ecf7a; --warn:#e0a83a; --bad:#ee6b7e; --idle:#6e817f;
+      --track:#20302e; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#f3f6f6; --panel:#ffffff; --panel-2:#eef2f2; --ink:#132120; --ink-dim:#5c6b6a;
+    --line:#dce2e2; --accent:#0e8f88; --accent-soft:#d6ecea;
+    --ok:#1f9d57; --warn:#bd830f; --bad:#cf3f54; --idle:#7b8a90; --track:#e2e8e8;
+    --shadow:0 1px 2px rgba(16,40,38,.06),0 8px 24px rgba(16,40,38,.05);
+  }
+  :root[data-theme="dark"]{
+    --ground:#0c1312; --panel:#121d1c; --panel-2:#1a2726; --ink:#e6efed; --ink-dim:#8ba09e;
+    --line:#25332f; --accent:#3ecfc4; --accent-soft:#152f2c;
+    --ok:#3ecf7a; --warn:#e0a83a; --bad:#ee6b7e; --idle:#6e817f; --track:#20302e;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--font-ui);color:var(--ink);background:var(--ground);min-height:100vh;
+    padding:clamp(16px,3vw,32px);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .inner{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);font-weight:600}
+  .topbar{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;justify-content:space-between;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow)}
+  .topbar .id{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .proj{font-family:var(--font-mono);color:var(--accent);font-weight:600;font-size:13px;letter-spacing:.02em}
+  .batch{font-size:clamp(18px,2.4vw,24px);font-weight:650;letter-spacing:-.01em;text-wrap:balance}
+  .batch b{font-family:var(--font-mono);font-weight:650}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .phase-badge{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+  .phase-pill{font-family:var(--font-mono);font-weight:650;font-size:20px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--warn);display:flex;align-items:center;gap:9px}
+  .phase-pill::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--warn);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--warn) 22%,transparent);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  @media (prefers-reduced-motion:reduce){.phase-pill::before{animation:none}}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--ink-dim)}
+  .chip.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,var(--line));background:color-mix(in srgb,var(--ok) 10%,transparent)}
+  .chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,var(--line));background:color-mix(in srgb,var(--warn) 10%,transparent)}
+  .chip.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--line));background:color-mix(in srgb,var(--bad) 10%,transparent)}
+  .chip.accent{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,var(--line));background:var(--accent-soft)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .pipeline{padding:22px 12px 18px} .pipe-scroll{overflow-x:auto} .pipe{display:flex;min-width:560px}
+  .node{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 4px}
+  .node::before{content:"";position:absolute;top:9px;left:calc(-50% + 10px);width:calc(100% - 20px);height:2px;background:var(--line)}
+  .node:first-child::before{display:none}
+  .node .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);background:var(--panel);
+    display:grid;place-items:center;font-size:11px;color:var(--panel);z-index:1}
+  .node .nlab{font-family:var(--font-mono);font-size:12.5px;font-weight:600;letter-spacing:.01em}
+  .node .role{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
+  .node.done .dot{background:var(--ok);border-color:var(--ok)} .node.done .dot::after{content:"✓";color:#fff;font-weight:700}
+  .node.done::before{background:var(--ok)}
+  .node.cur .dot{border-color:var(--warn);background:var(--warn);box-shadow:0 0 0 4px color-mix(in srgb,var(--warn) 22%,transparent)}
+  .node.cur .nlab{color:var(--warn)}
+  .node.next .nlab,.node.next .role{color:var(--idle)} .node.next .dot{border-color:var(--line);border-style:dashed}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+  .tile{padding:16px 18px;display:flex;align-items:center;gap:16px}
+  .tile .tlab{font-size:12px;color:var(--ink-dim);font-weight:600;margin-bottom:6px}
+  .tile .tval{font-family:var(--font-mono);font-size:26px;font-weight:650;letter-spacing:-.01em;line-height:1}
+  .ring{position:relative;width:64px;height:64px;border-radius:50%;flex:none;background:conic-gradient(var(--ok) calc(var(--pct)*1%),var(--track) 0)}
+  .ring::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--panel)}
+  .ring .rv{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-mono);font-weight:650;font-size:15px}
+  .tico{width:44px;height:44px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:20px;background:var(--panel-2)}
+  .grid{display:grid;grid-template-columns:1.7fr 1fr;gap:20px;align-items:start}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 4px}
+  .sec-h h2{margin:0;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-dim);font-weight:700}
+  .count{font-family:var(--font-mono);font-size:12px;color:var(--ink-dim)}
+  .feat{display:flex;flex-direction:column;gap:10px;padding:6px 18px 18px}
+  .card{position:relative;border:1px solid var(--line);border-radius:11px;background:var(--panel-2);padding:13px 15px 13px 18px;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--idle)}
+  .card.ok::before{background:var(--ok)} .card.bad::before{background:var(--bad)} .card.warn::before{background:var(--warn)} .card.idle::before{background:var(--idle)}
+  .card .crow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+  .card .fid{font-family:var(--font-mono);font-weight:650;font-size:13px}
+  .card .ftitle{font-weight:600;margin:3px 0 0;font-size:15px}
+  .card .facc{font-size:12.5px;color:var(--ink-dim);margin-top:5px}
+  .exec{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:5px;
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim)}
+  .exec.gen{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
+  .stat{font-size:11.5px;font-weight:700;font-family:var(--font-mono);white-space:nowrap}
+  .stat.ok{color:var(--ok)} .stat.bad{color:var(--bad)} .stat.warn{color:var(--warn)} .stat.idle{color:var(--idle)}
+  .rail{display:flex;flex-direction:column;gap:20px}
+  .vlist{display:flex;flex-direction:column;gap:12px;padding:6px 18px 18px}
+  .verdict{border-left:3px solid var(--line);padding:2px 0 2px 12px}
+  .verdict.bad{border-color:var(--bad)} .verdict.warn{border-color:var(--warn)} .verdict.ok{border-color:var(--ok)}
+  .verdict .vh{display:flex;gap:8px;align-items:center} .verdict .vh .fid{font-family:var(--font-mono);font-weight:650;font-size:13px}
+  .verdict p{margin:5px 0 0;font-size:13px;color:var(--ink)}
+  .verdict .repro{margin-top:6px;font-family:var(--font-mono);font-size:11.5px;color:var(--ink-dim);
+    background:var(--panel-2);border-radius:7px;padding:7px 9px;white-space:pre-wrap}
+  .blist{display:flex;flex-direction:column;padding:2px 18px 16px}
+  .brow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)} .brow:first-child{border-top:none}
+  .brow .bid{font-family:var(--font-mono);font-weight:600;font-size:12.5px;color:var(--ink-dim)}
+  .brow .bt{flex:1;font-size:13.5px}
+  .prio{font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:var(--panel-2);color:var(--ink-dim)}
+  .note{padding:6px 18px 18px;font-size:13px;color:var(--ink)} .note .who{font-family:var(--font-mono);color:var(--accent);font-weight:600}
+  .empty{padding:6px 18px 18px;font-size:13px;color:var(--ink-dim)}
+  .prov{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;font-size:11.5px;color:var(--ink-dim);padding:6px 4px 2px;text-align:center}
+  .prov .mono{font-size:11px} .dotsep{width:3px;height:3px;border-radius:50%;background:var(--idle)}
+</style>
+
+<div class="wrap"><div class="inner">
+
+  <header class="topbar">
+    <div class="id">
+      <span class="proj">{{PROJECT}}</span>
+      <span class="batch">批次 <b>{{BATCH_ID}}</b> · {{BATCH_TITLE}}</span>
+      <div class="meta">
+        <span class="chip accent">{{LANE}}</span>
+        <span class="chip {{CI_CHIP_CLASS}}">CI {{CI_CHIP_TEXT}}</span>
+        <span class="chip">签收 {{SIGNOFF_CHIP_TEXT}}</span>
+      </div>
+    </div>
+    <div class="phase-badge">
+      <span class="eyebrow">当前阶段</span>
+      <span class="phase-pill">{{PHASE}}</span>
+      <span class="mono" style="font-size:12px;color:var(--ink-dim)">fix_round {{FIX_ROUND}} · {{PHASE_ROLE}}</span>
+    </div>
+  </header>
+
+  <!-- 流水线：每个节点的 class 追加 done|cur|next（按当前 status 之前/等于/之后判定） -->
+  <section class="panel pipeline"><div class="pipe-scroll"><div class="pipe">
+    <div class="node {{CLS_new}}"><span class="dot"></span><span class="nlab">new</span><span class="role">planner</span></div>
+    <div class="node {{CLS_planning}}"><span class="dot"></span><span class="nlab">planning</span><span class="role">planner</span></div>
+    <div class="node {{CLS_building}}"><span class="dot"></span><span class="nlab">building</span><span class="role">generator</span></div>
+    <div class="node {{CLS_verifying}}"><span class="dot"></span><span class="nlab">verifying</span><span class="role">evaluator</span></div>
+    <div class="node {{CLS_fixing}}"><span class="dot"></span><span class="nlab">fixing</span><span class="role">generator</span></div>
+    <div class="node {{CLS_reverifying}}"><span class="dot"></span><span class="nlab">reverifying</span><span class="role">evaluator</span></div>
+    <div class="node {{CLS_done}}"><span class="dot"></span><span class="nlab">done</span><span class="role">planner</span></div>
+  </div></div></section>
+
+  <section class="tiles">
+    <div class="panel tile">
+      <div class="ring" style="--pct:{{PCT}}"><span class="rv">{{COMPLETED}}/{{TOTAL}}</span></div>
+      <div><div class="tlab">功能 PASS</div><div class="tval">{{PCT}}<span style="font-size:15px;color:var(--ink-dim)">%</span></div></div>
+    </div>
+    <div class="panel tile"><div class="tico">🔁</div><div><div class="tlab">修复轮次</div><div class="tval">{{FIX_ROUNDS}}</div></div></div>
+    <div class="panel tile"><div class="tico">✓</div><div><div class="tlab">CI (lint + tsc)</div><div class="tval" style="font-size:20px">{{CI_STATE}}</div></div></div>
+    <div class="panel tile"><div class="tico">◷</div><div><div class="tlab">签收报告</div><div class="tval" style="font-size:20px">{{SIGNOFF_STATE}}</div></div></div>
+  </section>
+
+  <main class="grid">
+    <section class="panel">
+      <div class="sec-h"><h2>功能看板</h2><span class="count">{{FEATURE_SUMMARY}}</span></div>
+      <div class="feat">
+        <!-- REPEAT:feature — 每个 features.json 条目一张卡；{{CARD_CLASS}}/{{STAT_CLASS}}: PASS=ok FAIL=bad PARTIAL=warn pending=idle；{{EXEC_CLASS}}: generator=gen evaluator=(空) -->
+        <div class="card {{CARD_CLASS}}">
+          <div class="crow"><span class="fid">{{FID}}</span><span class="stat {{STAT_CLASS}}">{{STAT_TEXT}}</span></div>
+          <div class="crow"><div class="ftitle">{{FTITLE}}</div><span class="exec {{EXEC_CLASS}}">{{EXEC}}</span></div>
+          <div class="facc">{{FACC}}</div>
+        </div>
+        <!-- /REPEAT -->
+      </div>
+    </section>
+
+    <aside class="rail">
+      <section class="panel">
+        <div class="sec-h"><h2>最新验收结论</h2><span class="count">隔离 evaluator · 原样落盘</span></div>
+        <div class="vlist">
+          <!-- REPEAT:verdict — evaluator_feedback 中 FAIL/PARTIAL 优先；{{VCLASS}}: bad|warn|ok；无 repro 则删 .repro 行。无结论则整块换成 <div class="empty">尚无验收结论</div> -->
+          <div class="verdict {{VCLASS}}">
+            <div class="vh"><span class="fid">{{VFID}}</span><span class="stat {{VCLASS}}">{{VRESULT}}</span></div>
+            <p>{{VTEXT}}</p>
+            <div class="repro">{{VREPRO}}</div>
+          </div>
+          <!-- /REPEAT -->
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="sec-h"><h2>需求池 backlog</h2><span class="count">{{BACKLOG_COUNT}} 项待排</span></div>
+        <div class="blist">
+          <!-- REPEAT:backlog — 无条目则整块换成 <div class="empty">需求池为空</div> -->
+          <div class="brow"><span class="bid">{{BID}}</span><span class="bt">{{BT}}</span><span class="prio">{{PRIO}}</span></div>
+          <!-- /REPEAT -->
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="sec-h"><h2>会话上下文</h2></div>
+        <div class="note"><span class="who">{{NOTE_WHO}}:</span> {{NOTE_TEXT}}</div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="prov">
+    <span>由 Triad harness 从 <span class="mono">progress.json + features.json</span> 渲染</span>
+    <span class="dotsep"></span><span class="mono">{{COMMIT}} · {{SNAPSHOT_DATE}}</span>
+    <span class="dotsep"></span><span>阶段边界自动重发到同一 URL</span>
+  </footer>
+
+</div></div>

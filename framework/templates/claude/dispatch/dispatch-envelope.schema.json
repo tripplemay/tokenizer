@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "dispatch-envelope",
+  "description": "dispatch-mode.md L2 —— 跨 transport 统一的派活信封。⚠️ `additionalProperties: false` 是本 schema 的核心安全属性，不是风格选择：字段白名单意味着结构上塞不进「这些代码已充分测试」之类的实现叙述，harness-rules.md 铁律 12 由此从模型自觉变为机械强制。任何「补充说明 / 背景 / 提示」类自由文本字段的新增提案都应被拒绝。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "contract_version", "batch", "role", "repo", "l2_authorized", "contract", "deliverable"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 8,
+      "description": "幂等键。at-least-once 投递与超时重派的去重依据；同 task_id 重复派活必须被拒（沙箱以 worktree 同名冲突兜底）"
+    },
+    "contract_version": {
+      "const": "harness/1.1",
+      "description": "≈ A2A required profile extension。不认此契约版本的 agent 应当拒收整个任务，而不是尽力而为"
+    },
+    "batch": { "type": "string", "minLength": 1, "description": "= progress.json.current_sprint" },
+    "role": {
+      "type": "string",
+      "enum": ["generator", "evaluator"],
+      "description": "本次派发的角色。必须在被派 agent 的 descriptor.roles 白名单内（validate-dispatch.sh assignments 校验）"
+    },
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "ref"],
+      "description": "只传指针，不传内容——对方自行拉仓取证。这是 A2A Opaque Execution 与 harness「只认实物」的兼容解",
+      "properties": {
+        "url": { "type": "string", "description": "仓库地址；local-cli 下可为本地路径" },
+        "ref": { "type": "string", "minLength": 7, "description": "commit sha。锁定到 sha 而非分支名——验收对象必须是确定的一次快照" }
+      }
+    },
+    "spec": { "type": ["string", "null"], "description": "规格文档路径（仓内相对路径）。Bug 修复批次可为 null" },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "本次任务覆盖的 feature id 列表。空数组 = 全批次"
+    },
+    "l2_authorized": {
+      "type": "boolean",
+      "description": "L2（真实外部服务 / 计费 / 生产写入）是否已获用户授权。false 时对方撞到 L2 边界必须写 waiting:'auth' 并停，不得自行触达"
+    },
+    "contract": {
+      "type": "string",
+      "minLength": 40,
+      "description": "内联角色契约摘要。⚠️ 不依赖对方去读仓库里的 CLAUDE.md / AGENTS.md / GEMINI.md——那三份必然漂移，且无法验证对方是否读过。契约随信封走，产出是否合规由 deliverable.schema 机械兜底"
+    },
+    "deliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "schema"],
+      "description": "唯一交付契约。「不信任对方守规矩，只信任产出能过 schema」",
+      "properties": {
+        "artifact": { "type": "string", "description": "产物落盘路径（仓内相对），如 docs/test-reports/BL-XXX-verdict.json" },
+        "schema": { "type": "string", "description": "产物必须满足的 schema 路径。不合规 → 机械拒收 → 重跑上限 1 次 → 硬停" },
+        "commit_to": { "type": ["string", "null"], "description": "产物提交去向。外部实例恒为 null——由编排者校验 commit tag 归属后回流主仓（constraints.push=false）" }
+      }
+    },
+    "deadline_s": { "type": "integer", "minimum": 60, "description": "本任务的 wall-clock 期望上限；沙箱以 descriptor.timeout_s 硬封顶" }
+  }
+}

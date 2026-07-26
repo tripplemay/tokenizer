@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "autonomy-policy",
+  "description": "autonomous-mode.md 机件 #1 的策略 schema。书面预授权令牌（铁律 6 / orchestration §6）；只读——agent 禁写，只有人类可授权。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enabled", "batch_scope", "authorized_by", "expires_at", "auto_cross", "budget"],
+  "properties": {
+    "enabled": { "type": "boolean" },
+    "batch_scope": {
+      "type": "string",
+      "description": "锁定单批次 BL-id；spec-lock critic 用它判越界，Governor 用它判 scope_mismatch"
+    },
+    "authorized_by": {
+      "type": "string",
+      "const": "user",
+      "description": "只有人类可授权 / 写本文件（driver 及所有 subagent 禁写，deny-list 强制）"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "时间盒（ISO-8601 UTC，带 Z）；过期后 fail-closed 硬停"
+    },
+    "auto_cross": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["A", "B"] },
+      "description": "允许自动跨的闸门类。schema 层枚举只含 A/B——C（不可逆/花钱/外部）结构性不可授权"
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_tokens", "max_cost_usd", "max_wakes", "max_fix_rounds"],
+      "properties": {
+        "max_tokens": { "type": "integer", "minimum": 0 },
+        "max_cost_usd": { "type": "number", "minimum": 0 },
+        "max_wakes": { "type": "integer", "minimum": 1 },
+        "max_fix_rounds": { "type": "integer", "minimum": 0, "maximum": 5 }
+      }
+    },
+    "wake_interval_s": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 60 },
+      "description": "各阶段唤醒间隔秒；应设得比该阶段 p95 唤醒时长充分长（防并发唤醒，见 §9）"
+    },
+    "notify_on": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["halt", "done", "budget_80pct", "scope_drift", "ci_red"] }
+    }
+  }
+}

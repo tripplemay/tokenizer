@@ -1,0 +1,21 @@
+{
+  "sprint": "批次名称（如 P1-核心功能）",
+  "features": [
+    {
+      "id": "F001",
+      "title": "代码实现类功能（由 Generator 写代码）",
+      "priority": "high",
+      "executor": "generator",
+      "status": "pending",
+      "acceptance": "可验证的验收标准，描述用户视角下「完成」的状态"
+    },
+    {
+      "id": "F002",
+      "title": "执行/评估类功能（由 Evaluator 操作工具产出报告）",
+      "priority": "high",
+      "executor": "evaluator",
+      "status": "pending",
+      "acceptance": "报告文件已生成，包含所有场景数据和结论"
+    }
+  ]
+}

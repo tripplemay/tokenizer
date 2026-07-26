@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/validate-state-json.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/dispatch/validate-dispatch.sh hook"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/console/validate-pending-gate.sh hook"
+          }
+        ]
+      }
+    ]
+  }
+}

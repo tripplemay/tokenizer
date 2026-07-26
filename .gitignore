@@ -9,3 +9,6 @@ coverage
 prisma/*.db
 prisma/*.db-journal
 rollout-*.jsonl
+.agent-id
+.harness-dispatch/
+*.harness-new

@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "pending-gate",
+  "description": "console-mode.md 的闸门契约 —— progress.json 的 `pending_gate` 块。这是「机器停在闸门前」与「人类批准」之间唯一的机器可读通道。此前闸门只以散文记在 session_notes、last_halt 只是事后记录，没有可回写的决策槽位，控制台无从展示也无从批准。⚠️ 核心安全属性：`decision` 只能由人类/控制台写入，agent 侧一律不得写（validate-pending-gate.sh guard 在 commit 前机械拦截）。",
+  "type": [
+    "object",
+    "null"
+  ],
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "raised_at",
+    "raised_by",
+    "batch",
+    "detail"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 8,
+      "description": "幂等键，建议 `<batch>-<from>-<to>-w<wake_n>`。decision 必须引用它——防一张陈旧批准解锁另一个闸门"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "phase_advance",
+        "l2_auth",
+        "adjudication",
+        "debias_conflict",
+        "scope_drift",
+        "budget",
+        "spec_lock",
+        "other"
+      ],
+      "description": "闸门类型。phase_advance=阶段推进（Class B）· l2_auth=撞 L2 边界待授权 · adjudication=规格歧义待裁决 · debias_conflict=去偏抽检分歧 · scope_drift=越界稽核命中 · budget=预算触顶 · spec_lock=自主模式不自撰 spec"
+    },
+    "raised_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "raised_by": {
+      "type": "string",
+      "enum": [
+        "autodriver",
+        "verify",
+        "build",
+        "plan",
+        "dispatch"
+      ],
+      "description": "哪个入口把闸门举起来的"
+    },
+    "batch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "to_status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "批准后要迁移到的目标态；非迁移类闸门为 null"
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 1,
+      "description": "人类据此一眼判断怎么解锁"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "取证指针（verdict 工件 / 报告 / worktree 路径）。⚠️ 只放路径，不内联正文——控制台按需拉取"
+    },
+    "decision": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "gate_id",
+        "action",
+        "by",
+        "at"
+      ],
+      "description": "🔴 只有人类/控制台可写。两种守门模式，各自 fail-closed：①（默认）无公钥时——比对工作区与 HEAD，decision 若是本地新增/修改即拒（git 传输路径）；②（推荐）配了 .claude/console/console.pub 时——decision 必须带有效 Ed25519 签名，此时允许本地写入（因为伪造不了），从而支持「控制台签名 → device agent 中继 → 本机落盘」这条通道",
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "description": "必须等于本 gate 的 id，否则视为陈旧批准，拒绝生效"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "人类标识（控制台登录身份）"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "批准的边界。缺省 = 只批这一次这一个闸门（最小授权）",
+          "properties": {
+            "once": {
+              "type": "boolean",
+              "default": true
+            },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "sig": {
+          "type": "string",
+          "description": "Ed25519 签名（base64）。载荷 = decision 里**除 sig 外的全部字段**，键排序 + 紧凑分隔符（',' ':'）+ UTF-8。⚠️ 必须签全字段：只签 {action,at,by,gate_id} 会留下缺口——scope 等未签字段可被 agent 篡改（如把 once:true 改成永久授权）而签名依然有效。仓库配了 console.pub 时本字段必填"
+        }
+      }
+    }
+  }
+}

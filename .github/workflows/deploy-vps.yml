@@ -4,6 +4,27 @@ on:
   push:
     branches:
       - main
+    # harness 的状态类改动不触发部署/CI。装了 harness 之后，状态机每推进一个阶段就会
+    # 提交一次 progress.json —— 没有这张表的话，每一次状态推进都会重建镜像并部署生产。
+    paths-ignore:
+      - ".auto-memory/**"
+      - ".claude/**"
+      - "framework/**"
+      - "docs/specs/**"
+      - "docs/test-cases/**"
+      - "docs/test-reports/**"
+      - "progress.json"
+      - "features.json"
+      - "backlog.json"
+      - "harness.json"
+      - "harness.lock"
+      - "harness-rules.md"
+      - "planner.md"
+      - "generator.md"
+      - "evaluator.md"
+      - "orchestration-patterns.md"
+      - "CLAUDE.md"
+      - "AGENTS.md"
   pull_request:
     branches:
       - main
