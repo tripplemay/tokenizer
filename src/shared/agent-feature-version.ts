@@ -20,8 +20,13 @@
 //   2 — 2026-07-03: claude parser v2 (streamed-usage undercount fix + model
 //       fallback attribution); old agents keep uploading first-row snapshots
 //       that the corrected data would fight with, so prompt an upgrade.
-export const AGENT_FEATURE_VERSION = 2;
-export const MIN_AGENT_FEATURE_VERSION = 2;
+//   3 — 2026-07-26: harness orchestration reporting + signed gate relay +
+//       mode fingerprint. Prompting is not cosmetic here: on an agent below
+//       3 the console has nothing that pulls signed decisions down, so a
+//       human approval made on /harness never reaches the machine — the gate
+//       just sits there. Mode badges likewise render "not reported yet".
+export const AGENT_FEATURE_VERSION = 3;
+export const MIN_AGENT_FEATURE_VERSION = 3;
 
 // The ingest correction pass (updating an existing UsageEvent row in place
 // when a re-parse revises it) is only trusted from agents at or above this
