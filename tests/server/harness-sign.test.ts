@@ -98,6 +98,18 @@ describe("signDecision", () => {
     expect(verifyWithOpenssl({ ...payload, note: "改过的备注" }, sig)).toBe(false);
   });
 
+  // 部署路径只能走 base64：.env 不支持多行值，PEM 原文进去只剩第一行 —— 服务能起，
+  // 批准键却一直 503。这条钉住「两种形态签出同一把钥匙」。
+  it("私钥可用 PEM 的 base64 提供（部署经 .env 注入时的唯一可行形态）", () => {
+    const savedPem = process.env.HARNESS_CONSOLE_SIGNING_KEY!;
+    const fromPem = signDecision(CASES[0]);
+    process.env.HARNESS_CONSOLE_SIGNING_KEY = Buffer.from(savedPem, "utf8").toString("base64");
+    const fromB64 = signDecision(CASES[0]);
+    process.env.HARNESS_CONSOLE_SIGNING_KEY = savedPem;
+    expect(fromB64).toBe(fromPem);                       // Ed25519 确定性签名
+    expect(verifyWithOpenssl(CASES[0], fromB64)).toBe(true);
+  });
+
   it("未配置私钥时抛错而非静默产出空签名（fail-closed）", () => {
     const saved = process.env.HARNESS_CONSOLE_SIGNING_KEY;
     delete process.env.HARNESS_CONSOLE_SIGNING_KEY;

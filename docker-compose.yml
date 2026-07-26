@@ -46,6 +46,9 @@ services:
       AUTH_URL: ${AUTH_URL:-http://localhost:3000}
       AUTH_RESEND_KEY: ${AUTH_RESEND_KEY:-}
       AUTH_EMAIL_FROM: ${AUTH_EMAIL_FROM:-noreply@token.vpanel.cc}
+      # harness 闸门决策的 Ed25519 签名私钥（**PEM 的 base64**，见 harness-sign.ts）。
+      # 不配则批准接口 fail-closed 返回 503——闸门宁可卡住，也不签发无法验证来源的批准。
+      HARNESS_CONSOLE_SIGNING_KEY: ${HARNESS_CONSOLE_SIGNING_KEY:-}
       # Auto-pricing. Detection always runs; PRICING_AUTO_ENABLED gates the
       # outbound LiteLLM/OpenRouter/LLM lookups (ships off — dark launch).
       PRICING_AUTO_ENABLED: ${PRICING_AUTO_ENABLED:-0}

@@ -109,6 +109,10 @@ jobs:
       # AUTH_EMAIL_FROM are hardcoded sane defaults below.
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_RESEND_KEY: ${{ secrets.AUTH_RESEND_KEY }}
+      # harness 闸门决策签名私钥。**存的是 PEM 的 base64**（单行）——.env 不支持多行值，
+      # PEM 原文只会被读到第一行。生成：
+      #   bash .claude/console/gen-console-key.sh /tmp/k && base64 -i /tmp/k/console.key | tr -d '\n'
+      HARNESS_CONSOLE_SIGNING_KEY: ${{ secrets.HARNESS_CONSOLE_SIGNING_KEY }}
       # Auto-pricing (all optional; feature ships off). Toggle/URLs live in repo
       # Variables; the LLM-fallback key is a Secret.
       PRICING_AUTO_ENABLED: ${{ vars.PRICING_AUTO_ENABLED }}
@@ -171,6 +175,11 @@ jobs:
           if [ -z "${AUTH_RESEND_KEY:-}" ]; then
             echo "warning: AUTH_RESEND_KEY secret not set — magic-link emails won't send until you add it" >&2
           fi
+          # 同样只警告不阻断：运行时本来就 fail-closed（批准接口 503），
+          # 缺这把钥匙只是 harness 人闸门不可用，不该拖住整个部署。
+          if [ -z "${HARNESS_CONSOLE_SIGNING_KEY:-}" ]; then
+            echo "warning: HARNESS_CONSOLE_SIGNING_KEY secret not set — harness 闸门批准将返回 503" >&2
+          fi
 
           ENV_FILE="$(mktemp)"
           {
@@ -185,6 +194,8 @@ jobs:
             printf 'AUTH_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
             printf 'AUTH_RESEND_KEY=%s\n' "${AUTH_RESEND_KEY:-}"
             printf 'AUTH_EMAIL_FROM=noreply@token.vpanel.cc\n'
+            # harness 人闸门签名私钥（PEM 的 base64，单行——.env 放不下多行 PEM）
+            printf 'HARNESS_CONSOLE_SIGNING_KEY=%s\n' "${HARNESS_CONSOLE_SIGNING_KEY:-}"
             # Auto-pricing (feature ships off unless PRICING_AUTO_ENABLED=1)
             printf 'PRICING_AUTO_ENABLED=%s\n' "${PRICING_AUTO_ENABLED:-0}"
             printf 'LITELLM_PRICES_URL=%s\n' "${LITELLM_PRICES_URL:-}"

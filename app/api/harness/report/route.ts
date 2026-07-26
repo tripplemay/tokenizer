@@ -93,24 +93,44 @@ export async function POST(request: NextRequest) {
     if (!GATE_KINDS.has(gate.kind)) {
       return Response.json({ error: `unknown gate kind: ${gate.kind}` }, { status: 400 });
     }
-    // 幂等：同一 gateId 只登记一次；已有决策的不覆盖（决策只由控制台写）
-    await prisma.harnessGate.upsert({
-      where: { harnessProjectId_gateId: { harnessProjectId: project.id, gateId: gate.id } },
-      create: {
-        userId: token.userId,
-        harnessProjectId: project.id,
-        gateId: gate.id,
-        kind: gate.kind,
-        batch: gate.batch ?? project.batch ?? "",
-        fromStatus: gate.from_status ?? null,
-        toStatus: gate.to_status ?? null,
-        detail: gate.detail,
-        evidence: (gate.evidence ?? []) as object,
-        raisedAt: gate.raised_at ? new Date(gate.raised_at) : now,
-        raisedBy: gate.raised_by ?? "autodriver"
-      },
-      update: { detail: gate.detail, evidence: (gate.evidence ?? []) as object }
+    const raisedAt = gate.raised_at ? new Date(gate.raised_at) : now;
+    const shape = {
+      kind: gate.kind,
+      batch: gate.batch ?? project.batch ?? "",
+      fromStatus: gate.from_status ?? null,
+      toStatus: gate.to_status ?? null,
+      detail: gate.detail,
+      evidence: (gate.evidence ?? []) as object,
+      raisedAt,
+      raisedBy: gate.raised_by ?? "autodriver"
+    };
+    const existing = await prisma.harnessGate.findUnique({
+      where: { harnessProjectId_gateId: { harnessProjectId: project.id, gateId: gate.id } }
     });
+
+    if (existing?.consumedAt && raisedAt > existing.raisedAt) {
+      // 🔴 同一个 gate id 被**重新举起**（机器只上报还没有决策的闸门，所以这条上报就是
+      // 「我又卡在这道闸门上了」）。库里那行已盖过消费戳，而待批列表按 consumedAt is null
+      // 过滤——不重置的话控制台永远看不见它，人闸门死锁在一道谁也批不到的门上。
+      // 用 raisedAt 更新作判据：真正的重新举起会带新的 raised_at，而消费后仍在路上的
+      // 陈旧上报带的是同一个 raised_at，不会误把已消费的闸门复活成幽灵待批项。
+      await prisma.harnessGate.update({
+        where: { id: existing.id },
+        data: {
+          ...shape,
+          // 上一轮的批准不得顺延到这一轮：新的举起要有新的人类决策
+          decisionAction: null, decisionBy: null, decisionAt: null, decisionNote: null,
+          decisionOnce: true, decisionSig: null, relayedAt: null, consumedAt: null
+        }
+      });
+    } else {
+      // 幂等：同一 gateId 只登记一次；已有决策的不覆盖（决策只由控制台写）
+      await prisma.harnessGate.upsert({
+        where: { harnessProjectId_gateId: { harnessProjectId: project.id, gateId: gate.id } },
+        create: { userId: token.userId, harnessProjectId: project.id, gateId: gate.id, ...shape },
+        update: { detail: gate.detail, evidence: (gate.evidence ?? []) as object }
+      });
+    }
   } else {
     // 机器侧已清空 pending_gate ⇒ 该项目所有已下发的闸门视为消费完毕。
     // 只标记已中继过的，避免把「还没送到机器」的闸门误标成已消费。

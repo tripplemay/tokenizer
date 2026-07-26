@@ -47,9 +47,20 @@ export class HarnessSigningKeyMissingError extends Error {
   }
 }
 
+/**
+ * 读私钥。接受两种形态的同一把 PEM：
+ *   ① PEM 原文（本地开发直接 `export ...="$(cat console.key)"`）
+ *   ② PEM 的 base64（**部署路径必须用这个**）
+ *
+ * 为什么要 ②：PEM 是多行的，而部署把环境变量写进 `.env` 交给 docker compose——
+ * `.env` 不支持多行值，PEM 原文塞进去只会读到第一行 `-----BEGIN PRIVATE KEY-----`，
+ * 表现为服务起来了、批准键却一直 503。压成单行 base64 是绕开这个限制的最短路径，
+ * 也不必让部署脚本去做转义。
+ */
 function loadKey() {
-  const pem = process.env.HARNESS_CONSOLE_SIGNING_KEY?.trim();
-  if (!pem) throw new HarnessSigningKeyMissingError();
+  const raw = process.env.HARNESS_CONSOLE_SIGNING_KEY?.trim();
+  if (!raw) throw new HarnessSigningKeyMissingError();
+  const pem = raw.includes("-----BEGIN") ? raw : Buffer.from(raw, "base64").toString("utf8");
   return createPrivateKey(pem);
 }
 
