@@ -471,7 +471,13 @@
         "slow": "cross-machine",
         "unknown": "unknown"
       },
-      "versionUnknown": "version unknown"
+      "versionUnknown": "version unknown",
+      "behindN": "{count} releases behind",
+      "behind": "behind (version not in the released list)",
+      "ahead": "newer than the latest the server knows (v{latest})",
+      "syncHint": "Upgrade:",
+      "adoptHint": "Create the ledger first:",
+      "unknownBaselineHint": "adopt could not infer the baseline — confirm which release it actually sits on before upgrading"
     }
   }
 }

@@ -1,0 +1,20 @@
+{
+  "_comment": "BL-FWDRIFT 起启用。generator=主实例(claude)，evaluator 走外部 CLI —— 独立性铁则第 5 条要求 family 不同。local-cli 必须配 sandbox.home_dir（登录 shell 会经 .zshenv 还原被剥离的 env）。",
+  "version": "dispatch/1",
+  "agents": [
+    { "id": "main-claude", "roles": ["planner", "generator"], "transport": "subagent",
+      "agent_type": "generator-restricted", "model_family": "claude",
+      "capabilities": ["plan", "build", "fix"],
+      "constraints": { "l2": false, "write_src": true, "push": true } },
+    { "id": "reviewer-kimi", "roles": ["evaluator"], "transport": "local-cli", "adapter": "kimi",
+      "model_family": "kimi", "capabilities": ["verify", "l1_local"],
+      "constraints": { "l2": false, "write_src": false, "push": false },
+      "sandbox": { "home_dir": "~/.harness-sandbox/reviewer-kimi", "env_set": { "KIMI_CODE_HOME": "~/.kimi-code" }, "env_allow": [] },
+      "timeout_s": 1800 },
+    { "id": "reviewer-codex", "roles": ["evaluator"], "transport": "local-cli", "adapter": "codex",
+      "model_family": "codex", "capabilities": ["verify", "l1_local", "code_review"],
+      "constraints": { "l2": false, "write_src": false, "push": false },
+      "sandbox": { "home_dir": "~/.harness-sandbox/reviewer-codex", "env_set": { "CODEX_HOME": "~/.codex" }, "env_allow": [] },
+      "timeout_s": 2400 }
+  ]
+}

@@ -1,0 +1,100 @@
+import { describe, expect, it } from "vitest";
+import {
+  FRAMEWORK_RELEASES,
+  LATEST_FRAMEWORK_VERSION,
+  compareFrameworkVersion,
+  frameworkStanding,
+  parseFrameworkVersion,
+  versionsBehind
+} from "@/shared/framework-version";
+
+/**
+ * 这组测试保护的是「控制台说的话可不可信」。四种状态各自对应完全不同的处置
+ * （什么都不做 / 可以 sync / 服务端没跟上 / 得先 adopt），混淆任意两种都会误导人：
+ * 把 unknown 当 latest → 项目永远不会被升级；把 ahead 当 behind → 谎报落后。
+ */
+
+describe("清单与常量一致性", () => {
+  it("🔴 清单末位必须等于 LATEST_FRAMEWORK_VERSION", () => {
+    // 漂移的表现是「明明最新却显示落后一版」，在页面上几乎看不出来，只能靠这条拦。
+    expect(FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1]).toBe(LATEST_FRAMEWORK_VERSION);
+  });
+
+  it("清单严格递增且无重复", () => {
+    for (let i = 1; i < FRAMEWORK_RELEASES.length; i += 1) {
+      expect(compareFrameworkVersion(FRAMEWORK_RELEASES[i - 1], FRAMEWORK_RELEASES[i])).toBeLessThan(0);
+    }
+  });
+});
+
+describe("parseFrameworkVersion", () => {
+  it("解析三段式，允许 v 前缀", () => {
+    expect(parseFrameworkVersion("1.4.0")).toEqual([1, 4, 0]);
+    expect(parseFrameworkVersion("v1.0.3")).toEqual([1, 0, 3]);
+  });
+
+  it("非法输入一律 null，不猜", () => {
+    for (const bad of ["unknown", "", null, undefined, "1.4", "1.4.0.1", "1.x.0", "abc"]) {
+      expect(parseFrameworkVersion(bad)).toBeNull();
+    }
+  });
+});
+
+describe("compareFrameworkVersion", () => {
+  it("按段比较而非字符串比较", () => {
+    expect(compareFrameworkVersion("1.0.3", "1.4.0")).toBeLessThan(0);
+    expect(compareFrameworkVersion("1.4.0", "1.4.0")).toBe(0);
+    expect(compareFrameworkVersion("1.5.0", "1.4.0")).toBeGreaterThan(0);
+    // 字符串比较会把 1.10.0 判成小于 1.9.0 —— 回归保护
+    expect(compareFrameworkVersion("1.10.0", "1.9.0")).toBeGreaterThan(0);
+  });
+
+  it("任一侧不可解析 → null", () => {
+    expect(compareFrameworkVersion("unknown", "1.4.0")).toBeNull();
+    expect(compareFrameworkVersion("1.4.0", null)).toBeNull();
+  });
+});
+
+describe("frameworkStanding 四种状态", () => {
+  it("latest：与最新版一致", () => {
+    expect(frameworkStanding(LATEST_FRAMEWORK_VERSION)).toEqual({
+      kind: "latest", behind: null, latest: LATEST_FRAMEWORK_VERSION
+    });
+  });
+
+  it("behind：给出**发布次数**而不是数值差", () => {
+    const s = frameworkStanding("1.0.3");
+    expect(s.kind).toBe("behind");
+    // 1.0.3 在清单里之后还有 1.1.0/1.1.1/1.2.0/1.2.1/1.3.0/1.3.1/1.3.2/1.3.3/1.4.0
+    expect(s.behind).toBe(FRAMEWORK_RELEASES.length - 1 - FRAMEWORK_RELEASES.indexOf("1.0.3"));
+    expect(s.behind).toBe(9);
+  });
+
+  it("ahead：项目比服务端已知的最新还新时，不得谎报落后", () => {
+    const s = frameworkStanding("9.9.9");
+    expect(s.kind).toBe("ahead");
+    expect(s.behind).toBeNull();
+  });
+
+  it("unknown：adopt 推断不出基准线，或压根没有账本", () => {
+    for (const v of ["unknown", null, undefined, ""]) {
+      expect(frameworkStanding(v).kind).toBe("unknown");
+    }
+  });
+
+  it("清单外的旧版本：说「落后」但不编造次数", () => {
+    const s = frameworkStanding("0.9.1");     // 有 tag 但不在已发布清单里
+    expect(s.kind).toBe("behind");
+    expect(s.behind).toBeNull();
+  });
+});
+
+describe("versionsBehind", () => {
+  it("只有真正落后且在清单内才有数字，其余一律 null", () => {
+    expect(versionsBehind("1.0.3")).toBe(9);
+    expect(versionsBehind(LATEST_FRAMEWORK_VERSION)).toBeNull();
+    expect(versionsBehind("unknown")).toBeNull();
+    expect(versionsBehind("9.9.9")).toBeNull();
+    expect(versionsBehind("0.9.1")).toBeNull();
+  });
+});

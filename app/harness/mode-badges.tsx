@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { frameworkStanding } from "@/shared/framework-version";
 
 /**
  * 项目模式指纹的渲染（P1）。
@@ -30,6 +31,11 @@ type Modes = {
   machinery?: { denyListMerged?: boolean | null; hooks?: string[]; missing?: string[] };
 };
 
+// 指引里的命令是**可照抄的**：写成占位符（<框架源树>）而不是某台机器上的绝对路径，
+// 因为看这个页面的人未必在装着框架仓库的那台机器上。
+const SYNC_CMD = "bash .claude/harness.sh sync --from <框架源树>";
+const ADOPT_CMD = "bash <框架源树>/templates/claude/harness.sh adopt --from <框架源树> --as <当时版本>";
+
 const PILL = "rounded-full px-2 py-0.5 text-xs";
 const NEUTRAL = `${PILL} bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300`;
 const GOOD = `${PILL} bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300`;
@@ -43,6 +49,7 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
     return <p className="mt-2 text-xs text-gray-400">{t("noSnapshot")}</p>;
   }
   const m = modes as Modes;
+  const standing = frameworkStanding(m.framework?.version);
   const drift = m.framework?.drift;
   const dirty = (drift?.modified ?? 0) + (drift?.missing ?? 0);
   const customized = drift?.customized ?? 0;
@@ -80,7 +87,12 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
           {m.gate?.pubInstalled ? t("gateSignature") : t("gateHeadCompare")}
         </span>
 
-        <span className={dirty > 0 ? WARN : NEUTRAL} title={`${m.framework?.managedCount ?? 0} managed`}>
+        {/* 版本徽章的颜色由**落后与否**决定，而不是漂移数：一个改了 16 个文件但跑在最新
+            框架上的项目是健康的；一个零改动却落后 9 版的项目才是要处理的。 */}
+        <span
+          className={standing.kind === "behind" ? WARN : standing.kind === "unknown" ? BAD : NEUTRAL}
+          title={`${m.framework?.managedCount ?? 0} managed · latest v${standing.latest}`}
+        >
           {/* adopt 时推断不出基准版本的项目版本号是字面量 "unknown" —— 渲染成 "vunknown" 会
               让人以为那是个版本名。「无账本」与「有账本但版本推断不出」是两种不同状态，分开说。 */}
           {!m.framework?.version
@@ -89,10 +101,31 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
               ? t("versionUnknown")
               : `v${m.framework.version}`}
           {m.framework?.adopted ? " (adopted)" : ""}
+          {standing.kind === "behind"
+            ? ` · ${standing.behind !== null ? t("behindN", { count: standing.behind }) : t("behind")}`
+            : ""}
+          {standing.kind === "ahead" ? ` · ${t("ahead", { latest: standing.latest })}` : ""}
           {dirty > 0 ? ` · ${t("drift", { count: dirty })}` : ""}
           {customized > 0 ? ` · ${t("customized", { count: customized })}` : ""}
         </span>
       </div>
+
+      {/* 指引只在**有事可做**时出现：最新的项目不该被一行永远不变的提示占着位置。 */}
+      {standing.kind === "behind" ? (
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          {t("syncHint")} <code className="rounded bg-gray-100 px-1 dark:bg-white/10">{SYNC_CMD}</code>
+        </p>
+      ) : null}
+      {standing.kind === "unknown" && m.framework === null ? (
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          {t("adoptHint")} <code className="rounded bg-gray-100 px-1 dark:bg-white/10">{ADOPT_CMD}</code>
+        </p>
+      ) : null}
+      {standing.kind === "unknown" && m.framework !== null ? (
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          {t("unknownBaselineHint")}
+        </p>
+      ) : null}
 
       {pair ? (
         <p className="font-mono text-[11px] text-gray-500 dark:text-gray-400">

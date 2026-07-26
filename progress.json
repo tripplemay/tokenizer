@@ -1,22 +1,27 @@
 {
-  "status": "new",
-  "user_goal": "",
-  "total_features": 0,
-  "completed_features": 0,
+  "status": "verifying",
+  "user_goal": "在控制台把框架版本从「一个字符串」变成「一个判断」：落后多少、要不要升、怎么升——为下一步向其它项目推广 harness 提供依据",
+  "total_features": 4,
+  "completed_features": 4,
   "fix_rounds": 0,
-  "current_sprint": null,
+  "current_sprint": "BL-FWDRIFT",
   "dashboard_url": null,
-  "last_updated": "",
+  "last_updated": "2026-07-26T18:30:00Z",
   "reference_docs": [],
   "docs": {
-    "spec": null,
+    "spec": "docs/specs/BL-FWDRIFT-framework-drift-badge.md",
     "test_cases": null,
     "signoff": null,
-    "framework_reviewed": false
+    "framework_reviewed": true
   },
-  "role_assignments": null,
+  "role_assignments": {
+    "generator": "main-claude",
+    "evaluator": "reviewer-kimi"
+  },
   "evaluator_feedback": null,
-  "generator_handoff": null,
-  "session_notes": {},
+  "generator_handoff": "F001-F004 全部实现完毕。新增 src/shared/framework-version.ts（版本清单+比较+落后计数）与 tests/shared/framework-version.test.ts（12 例）；app/harness/mode-badges.tsx 接入四态渲染与升级/adopt 指引；messages/{zh-CN,en}.json 各加 6 个键。本地 L1：tsc 干净、404 测试全绿（原 392 + 12）。待外部 evaluator 独立复核。",
+  "session_notes": {
+    "local": "【BL-FWDRIFT planning→building 2026-07-26】规格已确认落盘。车道=本地异构 + fan-out 对抗复核：generator=主实例(claude)，evaluator=Kimi 与 Codex 各跑一遍（两者 model_family 均≠claude，满足独立性铁则第 5 条）；结论不一致则举 debias_conflict 闸门停机。verifying→done 为 Class B，举 phase_advance 闸门由人在控制台批准。本批次同时是 harness 全链路在 tokenizer 自身上的首次实跑。"
+  },
   "features": []
 }
