@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness-template 是唯一源；新增 mode intent 验签机件且 bootstrap/sync 可安装；/plan 只消费验签有效且未过期的 defaults；自主策略按签名字段生成并锁定新批次；local-cli 与 a2a 的 run-meta 都落在项目 .harness-dispatch；框架版本与 CHANGELOG 同步更新"
     },

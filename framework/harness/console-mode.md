@@ -156,6 +156,67 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 要把它拿回来，把私钥放进钥匙串并要求每次确认（`-T ""`，见脚本文末「加固」）：
 无人值守的 agent 过不了系统授权框，而你本人过得去。
 
+### 3.4 签名模式意图（v1.5；只影响下一批次）
+
+控制台可以签发人类 intent；tokenizer device agent 验签后只把它暂存在项目自己的
+`harness.json.project.mode_defaults`。控制台不写 `progress.json`、角色分配或自治策略，当前 active batch
+也绝不改变。完整落盘形状固定为：
+
+```json
+{
+  "intent": {
+    "intent_id": "intent-01",
+    "repo_key": "github.com/acme/project",
+    "expected_head_sha": "0123456789abcdef0123456789abcdef01234567",
+    "desired": {
+      "execution": {
+        "profile": "slow",
+        "role_assignments": {
+          "generator": "builder-codex",
+          "evaluator": "reviewer-kimi-a2a"
+        }
+      },
+      "autonomy": {
+        "enabled": true,
+        "expires_at": "2026-07-28T18:00:00Z",
+        "auto_cross": ["A", "B"],
+        "budget": {
+          "max_tokens": 50000,
+          "max_cost_usd": 10,
+          "max_wakes": 8,
+          "max_fix_rounds": 2
+        }
+      }
+    },
+    "issued_by": "human@example.com",
+    "issued_at": "2026-07-27T18:00:00Z",
+    "intent_expires_at": "2026-07-28T00:00:00Z",
+    "sig": "<base64 Ed25519>"
+  },
+  "staged_at": "2026-07-27T18:00:05Z"
+}
+```
+
+**签名载荷是 `intent` 中除 `sig` 外的全部字段**：递归键排序、紧凑 JSON separators
+`(',', ':')`、UTF-8、`ensure_ascii=false`。`staged_at` 是 device agent 写下的本机接收元数据，不在签名内；
+mode defaults 不接受其他字段。`.claude/console/validate-mode-intent.sh` 使用项目内
+`.claude/console/console.pub`，并拒绝签名篡改、过期、repo 身份不符或任何白名单外字段。
+
+profile 语义是机械护栏：`fast` 要求 `role_assignments=null`；`heterogeneous` 要求没有 a2a 且至少一方
+是 local-cli；`slow` 要求至少一方是 a2a，另一方明确可以是 local-cli。显式分配的两个 agent 必须 id 不同、
+角色白名单匹配且 model family 不同。
+
+自治关闭必须严格为 `{ "enabled": false }`，没有预算或其他 policy 字段；下一次 `/plan` 会保持手动模式并
+删除旧批次遗留的 `autonomy-policy.json`。自治开启才需要独立的绝对未来 `expires_at`、唯一 A/B
+`auto_cross`、四项有上下界的 budget，以及可选 intervals/notifications。
+
+**HEAD phase rule：** `expected_head_sha` 是 device agent 的一次性 staging 前置条件。device agent 只在原子写入
+并提交 `harness.json` 的前一刻比较真实 HEAD；这个 staging commit 随即改变 HEAD，之后状态机提交还会继续改变。
+因此 `/plan` 只复验签名、shape、期限、repo identity、Agent 和安全语义，绝不再要求当前 HEAD 相等。
+
+激活步骤见 `planner.md` §0c：仅 `status=new` 或完成态开始新批次时消费，并记录
+`progress.mode_intent={intent_id,applied_batch,applied_at}`。没有 mode intent 时仍走完整本机手工流程。
+
 ## 4. 组件
 
 | 组件 | 位置 | 随 bootstrap 铺入 | 状态 |
@@ -163,6 +224,7 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 | 闸门 schema | `.claude/console/pending-gate.schema.json` | ✅ | 已装 |
 | 闸门校验器（schema/guard/hook） | `.claude/console/validate-pending-gate.sh` | ✅ | 已装 ✅ 实测 |
 | 人类批准 CLI（两模式自足，含本机签名） | `.claude/console/approve-gate.sh` | ✅ | 已装 ✅ 实测 |
+| 模式意图 schema + `/plan` 验签器 | `.claude/console/mode-intent.schema.json` + `validate-mode-intent.sh` | ✅ | 已装 ✅ fixtures |
 | PostToolUse 接线 | `.claude/settings.json` | ✅ | 已接 |
 | 控制台服务（通道 A） | `console/server.py` + `ui.html` | ❌ 自托管，单独部署 | 已装 ✅ 实测 |
 | 密钥生成（验签模式） | `.claude/console/gen-console-key.sh` | ✅ | 已装 ✅ 实测 |
@@ -228,7 +290,8 @@ python3 console/server.py --config console/console.config.json --host 0.0.0.0 --
 
 ## 8. 红线
 
-1. 控制台不得写 `status` / `features` / `autonomy-policy.json`——推进键仍在机器侧
+1. 控制台不得写 `status` / `features` / `autonomy-policy.json`——推进键仍在机器侧。唯一新增能力是
+   签发 §3.4 的下一批次 intent；device agent 暂存、Planner 在新批次边界物化
 2. 控制台是只读镜像，渲染出错不影响状态机；真相永远在 `progress.json` / `features.json`
 3. `pending_gate.decision` 只有人类/控制台可写，agent 侧机械拒绝（§3.1）
 4. 沙箱（机件 #7）永远在执行机器上生效；控制台不执行任何批次工作
@@ -245,3 +308,4 @@ python3 console/server.py --config console/console.config.json --host 0.0.0.0 --
 | 2026-07-25 | v1.3.1：`decision` Ed25519 验签模式（§3.2）——信任从传输路径移到内容本身，中继通道的前提 | 实测 6 项；跨语言（Node × openssl）一致性已验 |
 | 2026-07-25 | v1.3.2：通道 B 实装 —— §2 改写为两条通道；§4 补中继行与契约边界；§5 说明 push 权限只在通道 A 需要 | tokenizer 工程按本契约接入；本机整栈 + 生产各跑通一次完整往返 |
 | 2026-07-25 | v1.3.3：`approve-gate.sh` 支持本机签名（`--key` / 钥匙串），新增 §0 与 §3.3、红线第 5 条 —— 本机批准与开发一律不依赖控制台 | 用户裁决：控制台只是辅助工具；修掉 v1.3.2 记录的验签模式缺陷 |
+| 2026-07-27 | v1.5：签名 `project.mode_defaults` 只在下一批次边界生效；HEAD 只在 device staging 前比较 | BL-HARNESS-DETAIL-MODEINTENT F001 |

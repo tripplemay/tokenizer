@@ -19,6 +19,51 @@
 - 选中的条目从 backlog.json 中移除（未选的保留）
 - 如果 backlog 为空且无用户反馈，直接询问用户新需求
 
+**0c. 仅在新批次边界消费签名模式意图（v1.5）**
+
+`harness.json.project.mode_defaults` 是人类签发的**下一批次默认值**，不是立即调度命令。按以下顺序激活：
+
+1. **先判阶段，不得影响 active batch。** 只有 `progress.status=new`，或 `status=done` 且用户已决定
+   创建下一批次时，才读取/消费 mode intent。`planning/building/verifying/fixing/reverifying` 都是 active
+   batch；这些阶段不得运行消费步骤，不得改 `role_assignments`、`autonomy-policy.json` 或
+   `progress.mode_intent`。若当前 `progress.mode_intent.intent_id` 已等于待消费的 `intent_id`，它已消费过，
+   不得在后续批次重复应用。
+2. **机械验证完整意图。** 在项目根运行：
+
+   ```bash
+   bash .claude/console/validate-mode-intent.sh harness.json .agents-registry.json
+   ```
+
+   脚本验证严格 shape、递归 canonical JSON Ed25519 签名、意图/自治绝对 UTC 有效期、`repo_key`
+   与规范化 origin 的身份一致性、Agent id/角色白名单、transport/profile 和 model family 互斥。
+   任一失败都 fail-closed，要求人类删除或重新签发；不可只套用部分字段。
+
+   **关键 phase rule：`intent.expected_head_sha` 只由 tokenizer device agent 在写入并提交
+   `harness.json` 的前一刻与真实 HEAD 比较一次。** staging commit 本身会改变 HEAD，之后还可能有状态提交，
+   因此 `/plan` 验证器绝对不得要求当前 HEAD 等于 `expected_head_sha`；此时该字段只是已完成 staging
+   前置检查的签名审计元数据。
+3. **按新 batch id 物化。** `fast` 写 `progress.role_assignments=null`；`heterogeneous` / `slow`
+   原样复制 `intent.desired.execution.role_assignments`。`slow` 至少一方为 a2a，另一方可以是 local-cli。
+4. **自治开启时**，以新 batch id 写 `autonomy-policy.json`：`enabled=true`、`batch_scope=<new batch>`、
+   `authorized_by="user"`，并原样复制签名内的绝对 `expires_at`、`auto_cross`、`budget` 和可选
+   `wake_interval_s` / `notify_on`。不得按当前时间续期。
+5. **自治关闭时**，`desired.autonomy` 必须严格等于 `{ "enabled": false }`。不要创建
+   `enabled=false` 的 `autonomy-policy.json`（现有 policy schema 只接受有效授权）；这条签名人类意图同时授权
+   Planner 删除上一批遗留的 `autonomy-policy.json`，确保新批次保持手动模式。
+6. **最后记录一次消费事实。** 选定新 batch id 后写：
+
+   ```json
+   "mode_intent": {
+     "intent_id": "<signed intent_id>",
+     "applied_batch": "<new batch id>",
+     "applied_at": "<current UTC ISO8601>"
+   }
+   ```
+
+   不把签名对象拆进 progress；完整可复验原文仍在 `harness.json.project.mode_defaults.intent`。
+
+`mode_defaults` 不存在或同一 `intent_id` 已消费时，完整保留下文的本机手工选择流程；Harness 不依赖控制台在线。
+
 ### 1. 深入理解需求
 向用户提出以下问题（如果 progress.json 中已有 user_goal 则跳过）：
 - 这个功能要解决什么问题？
@@ -91,6 +136,9 @@ executor:evaluator 的典型场景：压力测试执行、code review、安全�
 
 ### 5. 角色分配（多 agent 环境）
 
+步骤 0c 已消费合法 intent 时，不再询问默认分配，直接使用其 execution 值。以下是没有新 intent 时的
+本机手工路径，行为保持不变。
+
 如果项目根目录存在 `.agents-registry` 文件，读取可用 agent 列表，在写入 progress.json 前向用户展示并询问：
 
 ```
@@ -128,6 +176,7 @@ executor:evaluator 的典型场景：压力测试执行、code review、安全�
   "current_sprint": null,
   "last_updated": "当前时间",
   "role_assignments": null,
+  "mode_intent": null,
   "docs": {
     "spec": "specs/[批次名称]-spec.md",
     "test_cases": null,
@@ -148,7 +197,8 @@ executor:evaluator 的典型场景：压力测试执行、code review、安全�
 
 ### 6.5 确认执行车道与编排方式（v1.0 新增）
 
-status 写入前与用户确认两件事（默认值可直接沿用，不必逐条追问）：
+步骤 0c 没有消费新 intent 时，status 写入前与用户确认两件事（默认值可直接沿用，不必逐条追问）；
+已消费时按签名值执行，不重复询问：
 
 1. **车道选择**：默认快车道（同会话）；命中 harness-rules.md §车道选择规则任一条件（跨机器 role_assignments / 跨多日批次 / 用户要求独立实例验收）→ 慢车道
 2. **编排方式**：building 是否并行（独立 feature ≥2 条且文件集不重叠，见 `orchestration-patterns.md` §3）、verifying 是否 fan-out（features ≥4 条，见 §4）。判定结果一句话写入 spec §关键设计决策，让 Generator / Evaluator 开工时无歧义

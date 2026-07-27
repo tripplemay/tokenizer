@@ -10,11 +10,13 @@
 #
 # 用法：
 #   sandbox-profile.sh --agent <agent-id> --envelope <envelope.json> [--ref <sha>]
-#                      [--registry .agents-registry.json] [--adapters <dir>] [--workroot <dir>]
+#                      [--registry .agents-registry.json] [--adapters <dir>]
+#                      [--workroot <dir>] [--state .harness-dispatch]
 #
 # 输出：stdout **只有** run-meta JSON（outcome / exit_code / artifact / worktree / duration_s），
 #       供编排者机械解析；一切进度与告警走 stderr，不得污染 stdout；
-#       同一份落盘到 <worktree>/../run-meta-<task_id>.json 供编排者与取证使用。
+#       同一份耐久落盘到 <state>/run-meta-<task_id>.json（默认项目内
+#       .harness-dispatch）。日志仍只在 workroot，不上传。
 # 退出码：0 = 子进程正常结束（outcome 仍可能是 ARTIFACT_MISSING，判定归编排者）
 #         2 = 沙箱前置断言失败（fail-closed，未派活）
 #         124 = 超时
@@ -27,6 +29,7 @@ set -euo pipefail
 REGISTRY=".agents-registry.json"
 ADAPTERS=".claude/dispatch/transports/adapters"
 WORKROOT="../.harness-dispatch"
+STATE=".harness-dispatch"
 AGENT_ID=""
 ENVELOPE=""
 REF=""
@@ -39,6 +42,7 @@ while [ $# -gt 0 ]; do
     --registry) REGISTRY="$2"; shift 2 ;;
     --adapters) ADAPTERS="$2"; shift 2 ;;
     --workroot) WORKROOT="$2"; shift 2 ;;
+    --state)    STATE="$2"; shift 2 ;;
     *) echo "[sandbox] ⛔ 未知参数：$1" >&2; exit 2 ;;
   esac
 done
@@ -143,6 +147,8 @@ PY
 
 # ── 2. 独立 worktree（锁定到 sha，detach，不设 upstream）────────────────────
 mkdir -p "$WORKROOT"
+mkdir -p "$STATE"
+STATE_ROOT="$(cd "$STATE" && pwd)"
 WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${AGENT_ID}-${E_TASK_ID}"
 [ -e "$WT" ] && die "worktree 已存在：${WT}（同 task_id 重复派活？幂等键应去重）"
 # 🔴 写代码的角色不能用 worktree。git worktree 把元数据放在**主仓**的
@@ -275,7 +281,7 @@ elif [ ! -f "$ARTIFACT_ABS" ];                   then OUTCOME="ARTIFACT_MISSING"
 else                                                  OUTCOME="RETURNED"
 fi
 
-META="$WORKROOT/run-meta-${E_TASK_ID}.json"
+META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
 python3 - "$META" "$E_TASK_ID" "$AGENT_ID" "$D_ADAPTER" "$D_FAMILY" "$E_BATCH" \
                   "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" <<'PY'
 import json, sys

@@ -50,7 +50,8 @@ case "$TRANSPORT" in
     echo "[dispatch-run] transport=local-cli → 本机沙箱" >&2
     exec bash "$DISPATCH_DIR/sandbox-profile.sh" \
       --agent "$AGENT_ID" --envelope "$ENVELOPE" \
-      --registry "$REGISTRY" --workroot "$WORKROOT" ${EXTRA[@]+"${EXTRA[@]}"}
+      --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE" \
+      ${EXTRA[@]+"${EXTRA[@]}"}
     ;;
   a2a)
     echo "[dispatch-run] transport=a2a → 远端 runner（SSE 订阅至终态）" >&2

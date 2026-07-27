@@ -19,12 +19,17 @@
  │     ├ env -i <白名单>                    没凭据就花不了钱
  │     ├ GIT_CONFIG pushurl=DISABLED       禁 push（env 级覆盖，不污染主仓 config）
  │     └ timeout <timeout_s> <argv>        wall-clock 封顶
+ │       → 项目 .harness-dispatch/run-meta-<task>.json 耐久落盘
  ├ 4. validate-dispatch.sh receipt run-meta.json    → 回执推断（§4）
  ├ 5. COMPLETED → 产物过 deliverable.schema → 机械回写状态机（铁律 12 原样）
  │   WAITING     → 硬停交人类
  │   FAILED/CANCELED → 凭 task_id 幂等重派，上限 1 次
  └ 6. generator 类：校验 commit tag 归属 → spec-lock critic 稽核 → 回流主仓（§6）
 ```
+
+`dispatch-run.sh --state <dir>` 对两种 transport 语义相同：都把 run-meta 写进该目录，默认为
+当前项目的 `.harness-dispatch/`。local-cli 的一次性 clone/worktree 与 `run-<task>.log`
+仍放在 `--workroot` 下；取证清理 workroot 不会再把 run-meta 一起删掉，也没有新增任何日志上传。
 
 ## 2. 信封投递（`envelope_delivery`）
 

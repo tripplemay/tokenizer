@@ -1,0 +1,40 @@
+{
+  "batch_id": "BL-HARNESS-DETAIL-MODEINTENT",
+  "feature_id": "F001",
+  "generator": "builder-codex",
+  "transport": "local-cli",
+  "created_at": "2026-07-27T18:30:29Z",
+  "source_receipt": {
+    "task_id": "BL-HARNESS-MODEINTENT-framework-r2b-9a6c0cce2154",
+    "outcome": "COMPLETED",
+    "commits": [],
+    "note": "The external sandbox could not create .git/index.lock; the orchestrator independently validated and committed the scoped diff."
+  },
+  "integration": {
+    "repository": "harness-template",
+    "commit": "bd88e00",
+    "version": "1.5.0",
+    "tokenizer_sync_verified": true
+  },
+  "files_touched": [
+    "CHANGELOG.md",
+    "VERSION",
+    "harness/console-mode.md",
+    "harness/planner.md",
+    "harness/progress.init.json",
+    "templates/claude/console/mode-intent.schema.json",
+    "templates/claude/console/test-mode-intent.py",
+    "templates/claude/console/validate-mode-intent.sh",
+    "templates/claude/dispatch/dispatch-run.sh",
+    "templates/claude/dispatch/sandbox-profile.sh",
+    "templates/claude/dispatch/test-local-state.sh",
+    "templates/claude/dispatch/transports/a2a.md",
+    "templates/claude/dispatch/transports/local-cli.md"
+  ],
+  "l1_ran": {
+    "lint": "git diff --check and bash -n passed",
+    "typecheck": "python3 -m py_compile passed in the generator worktree",
+    "test": "30 mode-intent fixtures and 3 durable local-state fixtures passed; tokenizer sync/verify reports 133 managed files consistent"
+  },
+  "waiting": null
+}

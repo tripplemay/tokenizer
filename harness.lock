@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.4.6",
-    "commit": "9a6c0cc"
+    "version": "1.5.0",
+    "commit": "bd88e00"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -92,13 +92,13 @@
     },
     ".claude/dispatch/dispatch-run.sh": {
       "src": "templates/claude/dispatch/dispatch-run.sh",
-      "sha256": "8efa38388ecdf0288e028955d07b01eb01c3a8391e0815882c95797e3cb4394c",
-      "upstream": "8efa38388ecdf0288e028955d07b01eb01c3a8391e0815882c95797e3cb4394c"
+      "sha256": "c8e46ca27041d1b87ec656d6fe6b10486727685420014b525363a6b24a309b87",
+      "upstream": "c8e46ca27041d1b87ec656d6fe6b10486727685420014b525363a6b24a309b87"
     },
     ".claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84",
-      "upstream": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84"
+      "sha256": "567b8626be6e433ed9c2e1ab5713f911f27467f61a291013568af68a6a7d17a2",
+      "upstream": "567b8626be6e433ed9c2e1ab5713f911f27467f61a291013568af68a6a7d17a2"
     },
     ".claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -112,8 +112,8 @@
     },
     ".claude/dispatch/transports/a2a.md": {
       "src": "templates/claude/dispatch/transports/a2a.md",
-      "sha256": "98c86589a59c73f990c21f7cd2870ab72f4162d367c78144471aad72a4dcccb5",
-      "upstream": "98c86589a59c73f990c21f7cd2870ab72f4162d367c78144471aad72a4dcccb5"
+      "sha256": "cd88461d3d85ba77659468fb893baacba745e7cca7ad49cce01841bdb2e165d2",
+      "upstream": "cd88461d3d85ba77659468fb893baacba745e7cca7ad49cce01841bdb2e165d2"
     },
     ".claude/dispatch/transports/adapters/codex.json": {
       "src": "templates/claude/dispatch/transports/adapters/codex.json",
@@ -127,8 +127,8 @@
     },
     ".claude/dispatch/transports/local-cli.md": {
       "src": "templates/claude/dispatch/transports/local-cli.md",
-      "sha256": "851dc46c59e7a65762bce8a6b2428f144b5d0b2b509a290bfb7380f5d24b1bd5",
-      "upstream": "851dc46c59e7a65762bce8a6b2428f144b5d0b2b509a290bfb7380f5d24b1bd5"
+      "sha256": "04ea6acd4499794bdeead575140d95f59bb9fd1c7a1dc79b2d59c87aa431e8cd",
+      "upstream": "04ea6acd4499794bdeead575140d95f59bb9fd1c7a1dc79b2d59c87aa431e8cd"
     },
     ".claude/dispatch/validate-dispatch.sh": {
       "src": "templates/claude/dispatch/validate-dispatch.sh",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "6e8f177a6f9560a2722c44b9ea0f480ef37214a13e04644b6e1a52e28198b3f2",
-      "upstream": "6e8f177a6f9560a2722c44b9ea0f480ef37214a13e04644b6e1a52e28198b3f2"
+      "sha256": "442e63e79148cd6e165a7a981a2162ea9cdbb7f61829009e3046bc3f39488eee",
+      "upstream": "442e63e79148cd6e165a7a981a2162ea9cdbb7f61829009e3046bc3f39488eee"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "563d5c80c54e77e2f8454ecd5c14388f9ab3af77edc73b6f4736ada64527952c",
-      "upstream": "563d5c80c54e77e2f8454ecd5c14388f9ab3af77edc73b6f4736ada64527952c"
+      "sha256": "acb57a7135b2d7d6e665f67f056e21353023b93835f54def1ae523bf76f1bfb3",
+      "upstream": "acb57a7135b2d7d6e665f67f056e21353023b93835f54def1ae523bf76f1bfb3"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -252,8 +252,8 @@
     },
     "framework/harness/console-mode.md": {
       "src": "harness/console-mode.md",
-      "sha256": "b281240b32e9a3648fdf75dff206fcea0ac59b8ce641d41aa8ce53bbef51d3d2",
-      "upstream": "b281240b32e9a3648fdf75dff206fcea0ac59b8ce641d41aa8ce53bbef51d3d2"
+      "sha256": "edac36a47bb2ec5c1679f850166fd45fae2d6146d89f40a6accfa7e44f7ddf1f",
+      "upstream": "edac36a47bb2ec5c1679f850166fd45fae2d6146d89f40a6accfa7e44f7ddf1f"
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
@@ -287,8 +287,8 @@
     },
     "framework/harness/planner.md": {
       "src": "harness/planner.md",
-      "sha256": "b3fe138c65f2fa7affb8f6dbf412e5449b07125afc62296cc92f681c431b2d85",
-      "upstream": "b3fe138c65f2fa7affb8f6dbf412e5449b07125afc62296cc92f681c431b2d85"
+      "sha256": "da2f9e18443e25aafed395fd5d4f4a1697e495c55fafc9891328a865590cb431",
+      "upstream": "da2f9e18443e25aafed395fd5d4f4a1697e495c55fafc9891328a865590cb431"
     },
     "framework/harness/pre-impl-adjudication.md": {
       "src": "harness/pre-impl-adjudication.md",
@@ -297,8 +297,8 @@
     },
     "framework/harness/progress.init.json": {
       "src": "harness/progress.init.json",
-      "sha256": "30a8983d211cea8625960524d6118f1f4d6d27c61fcd7bab95ffee6a7e6e613b",
-      "upstream": "30a8983d211cea8625960524d6118f1f4d6d27c61fcd7bab95ffee6a7e6e613b"
+      "sha256": "29216e9268c3e7af516a4acbcd84120e1328539e6345c1ec2fe9ab2805270698",
+      "upstream": "29216e9268c3e7af516a4acbcd84120e1328539e6345c1ec2fe9ab2805270698"
     },
     "framework/memory/MEMORY.md": {
       "src": "memory/MEMORY.md",
@@ -482,13 +482,13 @@
     },
     "framework/templates/claude/dispatch/dispatch-run.sh": {
       "src": "templates/claude/dispatch/dispatch-run.sh",
-      "sha256": "8efa38388ecdf0288e028955d07b01eb01c3a8391e0815882c95797e3cb4394c",
-      "upstream": "8efa38388ecdf0288e028955d07b01eb01c3a8391e0815882c95797e3cb4394c"
+      "sha256": "c8e46ca27041d1b87ec656d6fe6b10486727685420014b525363a6b24a309b87",
+      "upstream": "c8e46ca27041d1b87ec656d6fe6b10486727685420014b525363a6b24a309b87"
     },
     "framework/templates/claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84",
-      "upstream": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84"
+      "sha256": "567b8626be6e433ed9c2e1ab5713f911f27467f61a291013568af68a6a7d17a2",
+      "upstream": "567b8626be6e433ed9c2e1ab5713f911f27467f61a291013568af68a6a7d17a2"
     },
     "framework/templates/claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -502,8 +502,8 @@
     },
     "framework/templates/claude/dispatch/transports/a2a.md": {
       "src": "templates/claude/dispatch/transports/a2a.md",
-      "sha256": "98c86589a59c73f990c21f7cd2870ab72f4162d367c78144471aad72a4dcccb5",
-      "upstream": "98c86589a59c73f990c21f7cd2870ab72f4162d367c78144471aad72a4dcccb5"
+      "sha256": "cd88461d3d85ba77659468fb893baacba745e7cca7ad49cce01841bdb2e165d2",
+      "upstream": "cd88461d3d85ba77659468fb893baacba745e7cca7ad49cce01841bdb2e165d2"
     },
     "framework/templates/claude/dispatch/transports/adapters/codex.json": {
       "src": "templates/claude/dispatch/transports/adapters/codex.json",
@@ -517,8 +517,8 @@
     },
     "framework/templates/claude/dispatch/transports/local-cli.md": {
       "src": "templates/claude/dispatch/transports/local-cli.md",
-      "sha256": "851dc46c59e7a65762bce8a6b2428f144b5d0b2b509a290bfb7380f5d24b1bd5",
-      "upstream": "851dc46c59e7a65762bce8a6b2428f144b5d0b2b509a290bfb7380f5d24b1bd5"
+      "sha256": "04ea6acd4499794bdeead575140d95f59bb9fd1c7a1dc79b2d59c87aa431e8cd",
+      "upstream": "04ea6acd4499794bdeead575140d95f59bb9fd1c7a1dc79b2d59c87aa431e8cd"
     },
     "framework/templates/claude/dispatch/validate-dispatch.sh": {
       "src": "templates/claude/dispatch/validate-dispatch.sh",
@@ -617,8 +617,8 @@
     },
     "planner.md": {
       "src": "harness/planner.md",
-      "sha256": "b3fe138c65f2fa7affb8f6dbf412e5449b07125afc62296cc92f681c431b2d85",
-      "upstream": "b3fe138c65f2fa7affb8f6dbf412e5449b07125afc62296cc92f681c431b2d85"
+      "sha256": "da2f9e18443e25aafed395fd5d4f4a1697e495c55fafc9891328a865590cb431",
+      "upstream": "da2f9e18443e25aafed395fd5d4f4a1697e495c55fafc9891328a865590cb431"
     },
     ".claude/dispatch/generator-handoff.schema.json": {
       "src": "templates/claude/dispatch/generator-handoff.schema.json",
@@ -629,6 +629,46 @@
       "src": "templates/claude/dispatch/generator-handoff.schema.json",
       "sha256": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de",
       "upstream": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de"
+    },
+    ".claude/console/mode-intent.schema.json": {
+      "src": "templates/claude/console/mode-intent.schema.json",
+      "sha256": "509b36f215e287fb4cd23b00a68b22c8be68bd2f50c164a47bba7aba9097f0aa",
+      "upstream": "509b36f215e287fb4cd23b00a68b22c8be68bd2f50c164a47bba7aba9097f0aa"
+    },
+    ".claude/console/test-mode-intent.py": {
+      "src": "templates/claude/console/test-mode-intent.py",
+      "sha256": "2b18432f7b0e2228df4a927ea898aed30d17cb9e0baf316c705d0da3c93b0f35",
+      "upstream": "2b18432f7b0e2228df4a927ea898aed30d17cb9e0baf316c705d0da3c93b0f35"
+    },
+    ".claude/console/validate-mode-intent.sh": {
+      "src": "templates/claude/console/validate-mode-intent.sh",
+      "sha256": "52c8400218a66b902bed744b264abe66ac6c93b711370e3793d9a35c90285a0f",
+      "upstream": "52c8400218a66b902bed744b264abe66ac6c93b711370e3793d9a35c90285a0f"
+    },
+    ".claude/dispatch/test-local-state.sh": {
+      "src": "templates/claude/dispatch/test-local-state.sh",
+      "sha256": "8c5894b3a21179c8789db38cd85b467cad286e8a29372abddbe77c7e2837548d",
+      "upstream": "8c5894b3a21179c8789db38cd85b467cad286e8a29372abddbe77c7e2837548d"
+    },
+    "framework/templates/claude/console/mode-intent.schema.json": {
+      "src": "templates/claude/console/mode-intent.schema.json",
+      "sha256": "509b36f215e287fb4cd23b00a68b22c8be68bd2f50c164a47bba7aba9097f0aa",
+      "upstream": "509b36f215e287fb4cd23b00a68b22c8be68bd2f50c164a47bba7aba9097f0aa"
+    },
+    "framework/templates/claude/console/test-mode-intent.py": {
+      "src": "templates/claude/console/test-mode-intent.py",
+      "sha256": "2b18432f7b0e2228df4a927ea898aed30d17cb9e0baf316c705d0da3c93b0f35",
+      "upstream": "2b18432f7b0e2228df4a927ea898aed30d17cb9e0baf316c705d0da3c93b0f35"
+    },
+    "framework/templates/claude/console/validate-mode-intent.sh": {
+      "src": "templates/claude/console/validate-mode-intent.sh",
+      "sha256": "52c8400218a66b902bed744b264abe66ac6c93b711370e3793d9a35c90285a0f",
+      "upstream": "52c8400218a66b902bed744b264abe66ac6c93b711370e3793d9a35c90285a0f"
+    },
+    "framework/templates/claude/dispatch/test-local-state.sh": {
+      "src": "templates/claude/dispatch/test-local-state.sh",
+      "sha256": "8c5894b3a21179c8789db38cd85b467cad286e8a29372abddbe77c7e2837548d",
+      "upstream": "8c5894b3a21179c8789db38cd85b467cad286e8a29372abddbe77c7e2837548d"
     }
   },
   "seeded": {

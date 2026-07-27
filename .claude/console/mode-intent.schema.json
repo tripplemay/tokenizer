@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "staged signed mode intent",
+  "description": "Exact harness.json project.mode_defaults contract. The Ed25519 payload is mode_defaults.intent without sig, recursively canonicalized with sorted keys, compact separators, and UTF-8. expected_head_sha is a signed staging precondition checked only by the device agent immediately before it writes harness.json; the /plan validator must not compare it with the later repository HEAD.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent", "staged_at"],
+  "properties": {
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intent_id",
+        "repo_key",
+        "expected_head_sha",
+        "desired",
+        "issued_by",
+        "issued_at",
+        "intent_expires_at",
+        "sig"
+      ],
+      "properties": {
+        "intent_id": { "type": "string", "minLength": 1 },
+        "repo_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tokenizer-normalized origin remote, for example github.com/owner/repo."
+        },
+        "expected_head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{40}$",
+          "description": "Signed device-staging precondition, not a /plan-time HEAD lock."
+        },
+        "desired": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["execution", "autonomy"],
+          "properties": {
+            "execution": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["profile", "role_assignments"],
+              "properties": {
+                "profile": {
+                  "type": "string",
+                  "enum": ["fast", "heterogeneous", "slow"]
+                },
+                "role_assignments": {
+                  "oneOf": [
+                    { "type": "null" },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["generator", "evaluator"],
+                      "properties": {
+                        "generator": { "type": "string", "minLength": 1 },
+                        "evaluator": { "type": "string", "minLength": 1 }
+                      }
+                    }
+                  ]
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": { "profile": { "const": "fast" } },
+                    "required": ["profile"]
+                  },
+                  "then": {
+                    "properties": { "role_assignments": { "type": "null" } }
+                  },
+                  "else": {
+                    "properties": { "role_assignments": { "type": "object" } }
+                  }
+                }
+              ]
+            },
+            "autonomy": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["enabled"],
+                  "properties": { "enabled": { "const": false } }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["enabled", "expires_at", "auto_cross", "budget"],
+                  "properties": {
+                    "enabled": { "const": true },
+                    "expires_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+                    },
+                    "auto_cross": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 2,
+                      "items": { "type": "string", "enum": ["A", "B"] }
+                    },
+                    "budget": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["max_tokens", "max_cost_usd", "max_wakes", "max_fix_rounds"],
+                      "properties": {
+                        "max_tokens": { "type": "integer", "minimum": 0, "maximum": 10000000 },
+                        "max_cost_usd": { "type": "number", "minimum": 0, "maximum": 10000 },
+                        "max_wakes": { "type": "integer", "minimum": 1, "maximum": 1000 },
+                        "max_fix_rounds": { "type": "integer", "minimum": 0, "maximum": 5 }
+                      }
+                    },
+                    "wake_interval_s": {
+                      "type": "object",
+                      "additionalProperties": { "type": "integer", "minimum": 60, "maximum": 86400 }
+                    },
+                    "notify_on": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 5,
+                      "items": {
+                        "type": "string",
+                        "enum": ["halt", "done", "budget_80pct", "scope_drift", "ci_red"]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "issued_by": { "type": "string", "minLength": 1 },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "intent_expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "sig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Base64 Ed25519 signature over every sibling field, excluding only sig."
+        }
+      }
+    },
+    "staged_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    }
+  }
+}

@@ -15,6 +15,7 @@
     "framework_reviewed": false
   },
   "role_assignments": null,
+  "mode_intent": null,
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {},

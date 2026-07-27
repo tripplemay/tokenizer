@@ -5,6 +5,30 @@
 
 ---
 
+## v1.5.0 — 2026-07-27（签名模式意图 + durable dispatch 摘要）
+
+**来源：** BL-HARNESS-DETAIL-MODEINTENT F001 correction。
+
+- 新增严格的 `harness.json.project.mode_defaults={intent,staged_at}` 契约。Ed25519 签名覆盖
+  `intent` 中除 `sig` 外全部字段，使用递归 canonical JSON；验签器兼容 macOS，通过
+  `HARNESS_OPENSSL` / PATH / Homebrew 路径选择支持 Ed25519 的 OpenSSL 3。
+- 机械校验非空 identity/repo、40 位 SHA、UTC 时间和两层未来 expiry；`fast`、`heterogeneous`、
+  `slow` profile 分别约束 null assignments、无 a2a + 至少一方 local-cli、至少一方 a2a（另一方可
+  local-cli）。所有显式 agent 都过角色白名单、不同 id 和不同 model family。
+- 自治关闭只接受 `{enabled:false}`；下一次 `/plan` 不创建非法 disabled policy，并按签名人类意图删除
+  stale `autonomy-policy.json`。自治开启要求自己的绝对 expiry、唯一 A/B gates 和四项有界预算。
+- **phase correction：** `expected_head_sha` 只由 tokenizer device agent 在写并提交 `harness.json`
+  前与真实 HEAD 比较。staging/status commit 会改变 HEAD，所以 `/plan` 只验签名、shape、expiry、repo、
+  agents 和安全语义，绝不要求当时 HEAD 相等。
+- `/plan` 只在新批次边界消费，记录
+  `progress.mode_intent={intent_id,applied_batch,applied_at}`；active batch 不变，无 intent 时保留手工模式。
+- local-cli 与 a2a 统一把 run-meta 耐久写进 `--state`（默认项目 `.harness-dispatch/`）。local-cli 日志和
+  clone/worktree 仍只在 disposable `--workroot`，没有新增日志上传。
+- 覆盖签名 metadata/nested tamper、非法 SHA、repo mismatch、mixed local-cli+a2a slow、disabled
+  autonomy、过期/预算/Agent 语义，以及 init/sync 管理和 local-cli `--state` 耐久性。
+
+---
+
 ## v1.4.6 — 2026-07-27（修：`sync` 会覆盖正在运行的自己）
 
 **来源：** 把 tokenizer 从 v1.4.4 同步到 v1.4.5 时，升级正常完成，紧接着蹦出

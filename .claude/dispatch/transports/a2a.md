@@ -67,6 +67,8 @@ runner 返回的 `state` 写进 run-meta 的 `remote_state_advisory` 字段，**
 
 **产物落盘位置、run-meta 字段、回执推断表、gate-arbiter、`/autodrive` 全部不变。**
 `dispatch-run.sh` 按 `descriptor.transport` 路由，两条路径输出同形 run-meta：
+两者也都把该记录耐久落在 `--state` 目录（默认项目 `.harness-dispatch/`）；
+local-cli 的日志仍在它的 workroot，不会被搬运或上传。
 
 | run-meta 字段 | local-cli | a2a |
 |---|---|---|
