@@ -1,10 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { canonicalJson, signDecision } from "@/server/harness-sign";
+import { canonicalJson, signDecision, signHarnessPayload } from "@/server/harness-sign";
 import type { HarnessDecisionPayload } from "@/server/harness-sign";
+import type { HarnessModeIntentPayload } from "@/shared/harness-mode-intent";
 
 /**
  * 闸门决策签名的跨语言契约测试。
@@ -18,13 +19,34 @@ import type { HarnessDecisionPayload } from "@/server/harness-sign";
 let dir: string;
 let priv: string;
 let pub: string;
+let openssl: string;
+
+function findOpenSsl(): string {
+  for (const candidate of [
+    process.env.HARNESS_OPENSSL,
+    "/opt/homebrew/bin/openssl",
+    "/opt/homebrew/opt/openssl@3/bin/openssl",
+    "/usr/local/bin/openssl",
+    "openssl"
+  ]) {
+    if (!candidate) continue;
+    try {
+      const algorithms = execFileSync(candidate, ["list", "-public-key-algorithms"], { stdio: ["ignore", "pipe", "ignore"] });
+      if (algorithms.toString().toUpperCase().includes("ED25519")) return candidate;
+    } catch {
+      // Try the next standard OpenSSL 3 location.
+    }
+  }
+  throw new Error("harness signing tests require an Ed25519-capable OpenSSL 3");
+}
 
 beforeAll(() => {
+  openssl = findOpenSsl();
   dir = mkdtempSync(join(tmpdir(), "harness-sign-"));
   priv = join(dir, "console.key");
   pub = join(dir, "console.pub");
-  execFileSync("openssl", ["genpkey", "-algorithm", "ed25519", "-out", priv]);
-  execFileSync("openssl", ["pkey", "-in", priv, "-pubout", "-out", pub]);
+  execFileSync(openssl, ["genpkey", "-algorithm", "ed25519", "-out", priv]);
+  execFileSync(openssl, ["pkey", "-in", priv, "-pubout", "-out", pub]);
   process.env.HARNESS_CONSOLE_SIGNING_KEY = execFileSync("cat", [priv]).toString();
 });
 
@@ -72,7 +94,7 @@ describe("signDecision", () => {
     writeFileSync(p, Buffer.from(canonicalJson(payload), "utf8"));
     writeFileSync(s, Buffer.from(sig, "base64"));
     try {
-      execFileSync("openssl", ["pkeyutl", "-verify", "-pubin", "-inkey", pub, "-rawin", "-in", p, "-sigfile", s], {
+      execFileSync(openssl, ["pkeyutl", "-verify", "-pubin", "-inkey", pub, "-rawin", "-in", p, "-sigfile", s], {
         stdio: "ignore"
       });
       return true;
@@ -115,5 +137,72 @@ describe("signDecision", () => {
     delete process.env.HARNESS_CONSOLE_SIGNING_KEY;
     expect(() => signDecision(CASES[0])).toThrow(/HARNESS_CONSOLE_SIGNING_KEY/);
     process.env.HARNESS_CONSOLE_SIGNING_KEY = saved;
+  });
+});
+
+describe("signHarnessPayload", () => {
+  const modeIntent: HarnessModeIntentPayload = {
+    intent_id: "intent-001",
+    repo_key: "github.com/acme/tokenizer",
+    expected_head_sha: "0123456789abcdef0123456789abcdef01234567",
+    desired: {
+      execution: {
+        profile: "heterogeneous",
+        role_assignments: { evaluator: "reviewer-kimi", generator: "builder-codex" }
+      },
+      autonomy: {
+        enabled: true,
+        expires_at: "2026-07-28T12:00:00Z",
+        auto_cross: ["B", "A"],
+        budget: { max_wakes: 8, max_tokens: 50_000, max_fix_rounds: 2, max_cost_usd: 10 },
+        wake_interval_s: { verifying: 120, building: 60 },
+        notify_on: ["done", "halt"]
+      }
+    },
+    issued_by: "人类@example.test",
+    issued_at: "2026-07-27T11:00:00Z",
+    intent_expires_at: "2026-07-29T12:00:00Z"
+  };
+
+  it("canonicalizes a nested mode intent exactly like the harness Python verifier", () => {
+    expect(canonicalJson(modeIntent)).toBe(pythonCanonical(modeIntent));
+  });
+
+  it("produces the same deterministic Ed25519 bytes as OpenSSL for a mode intent", () => {
+    const payloadPath = join(dir, "mode-intent.bin");
+    const opensslSigPath = join(dir, "mode-intent-openssl.sig");
+    writeFileSync(payloadPath, Buffer.from(canonicalJson(modeIntent), "utf8"));
+    execFileSync(openssl, [
+      "pkeyutl",
+      "-sign",
+      "-inkey",
+      priv,
+      "-rawin",
+      "-in",
+      payloadPath,
+      "-out",
+      opensslSigPath
+    ]);
+
+    const nodeSignature = Buffer.from(signHarnessPayload(modeIntent), "base64");
+    expect(nodeSignature).toEqual(readFileSync(opensslSigPath));
+    expect(() =>
+      execFileSync(openssl, [
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        pub,
+        "-rawin",
+        "-in",
+        payloadPath,
+        "-sigfile",
+        opensslSigPath
+      ])
+    ).not.toThrow();
+  });
+
+  it("keeps signDecision as a behavior-preserving wrapper", () => {
+    expect(signDecision(CASES[0])).toBe(signHarnessPayload(CASES[0]));
   });
 });

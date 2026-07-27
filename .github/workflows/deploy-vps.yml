@@ -16,6 +16,7 @@ on:
       - "progress.json"
       - "features.json"
       - "backlog.json"
+      - ".agents-registry.json"
       - "harness.json"
       - "harness.lock"
       - "harness-rules.md"

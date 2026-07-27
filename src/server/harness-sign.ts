@@ -64,10 +64,15 @@ function loadKey() {
   return createPrivateKey(pem);
 }
 
-/** 对决策载荷签名，返回 base64。载荷 = 除 `sig` 外的全部字段。 */
-export function signDecision(payload: HarnessDecisionPayload): string {
+/** 对任意 harness 载荷的递归 canonical JSON 签名，返回 base64。 */
+export function signHarnessPayload<T>(payload: T): string {
   const key = loadKey();
   return edSign(null, Buffer.from(canonicalJson(payload), "utf8"), key).toString("base64");
+}
+
+/** 对决策载荷签名，返回 base64。载荷 = 除 `sig` 外的全部字段。 */
+export function signDecision(payload: HarnessDecisionPayload): string {
+  return signHarnessPayload(payload);
 }
 
 /** 服务端自检：密钥是否已配置且可用。没配就别让人在 UI 上按下批准键。 */

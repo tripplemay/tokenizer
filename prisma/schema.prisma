@@ -23,17 +23,19 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts         Account[]
-  sessions         Session[]
-  projects         Project[]
-  devices          Device[]
-  usageEvents      UsageEvent[]
-  deviceTokens     DeviceToken[]
-  enrollmentTokens EnrollmentToken[]
-  collectorStates  CollectorState[]
-  quotaSnapshots   QuotaSnapshot[]
-  harnessProjects  HarnessProject[]
-  harnessGates     HarnessGate[]
+  accounts            Account[]
+  sessions            Session[]
+  projects            Project[]
+  devices             Device[]
+  usageEvents         UsageEvent[]
+  deviceTokens        DeviceToken[]
+  enrollmentTokens    EnrollmentToken[]
+  collectorStates     CollectorState[]
+  quotaSnapshots      QuotaSnapshot[]
+  harnessProjects     HarnessProject[]
+  harnessGates        HarnessGate[]
+  harnessModeIntents  HarnessModeIntent[]
+  harnessDispatchRuns HarnessDispatchRun[]
 }
 
 model Account {
@@ -324,10 +326,12 @@ model HarnessProject {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  device  Device        @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  project Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  gates   HarnessGate[]
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device       Device               @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  project      Project?             @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  gates        HarnessGate[]
+  modeIntents  HarnessModeIntent[]
+  dispatchRuns HarnessDispatchRun[]
 
   @@unique([deviceId, repoKey])
   @@index([userId])
@@ -374,4 +378,73 @@ model HarnessGate {
   @@index([userId])
   @@index([decisionAt])
   @@index([consumedAt])
+}
+
+model HarnessModeIntent {
+  id               String    @id @default(cuid())
+  userId           String
+  harnessProjectId String
+  intentId         String
+  /// Complete canonical signing payload. The signature is stored separately.
+  payload          Json
+  signature        String
+  /// issued | relayed | staged | applied | failed | superseded | expired
+  status           String    @default("issued")
+  issuedBy         String
+  issuedAt         DateTime
+  intentExpiresAt  DateTime
+  relayedAt        DateTime?
+  stagedAt         DateTime?
+  appliedAt        DateTime?
+  failedAt         DateTime?
+  appliedBatch     String?
+  stagedCommitSha  String?
+  failureCode      String?
+  failureDetail    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  harnessProject HarnessProject @relation(fields: [harnessProjectId], references: [id], onDelete: Cascade)
+
+  @@unique([harnessProjectId, intentId])
+  @@index([userId])
+  @@index([harnessProjectId, status])
+  @@index([intentExpiresAt])
+  @@index([issuedAt])
+}
+
+model HarnessDispatchRun {
+  id               String   @id @default(cuid())
+  userId           String
+  harnessProjectId String
+  runId            String
+  taskId           String
+  batch            String
+  feature          String?
+  role             String
+  agentId          String
+  modelFamily      String
+  transport        String
+  lockedSha        String
+  startedAt        DateTime
+  finishedAt       DateTime
+  durationMs       Int
+  outcome          String
+  exitCode         Int?
+  verdict          String?
+  artifactPath     String?
+  artifactSha256   String?
+  errorSummary     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  harnessProject HarnessProject @relation(fields: [harnessProjectId], references: [id], onDelete: Cascade)
+
+  @@unique([harnessProjectId, runId])
+  @@index([userId])
+  @@index([harnessProjectId, startedAt])
+  @@index([batch])
+  @@index([outcome])
 }
