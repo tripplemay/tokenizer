@@ -38,6 +38,15 @@
       "docs/test-reports/BL-MODESCMD-verdict-kimi.json",
       "docs/test-reports/BL-MODESCMD-handoff.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-MODESCMD-verifying-done-w1",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-27T04:54:55.480Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "0VbjY4reuIt7KOKYpE9gkQfAe829Gj8PnwxQCFBzt9tcgrXQULabf0q+698kX7tjwLlBY+dO4QGh883sxOuLCw=="
+    }
   }
 }
