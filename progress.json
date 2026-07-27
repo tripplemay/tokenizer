@@ -6,23 +6,38 @@
   "fix_rounds": 0,
   "current_sprint": "BL-MODESCMD",
   "dashboard_url": null,
-  "last_updated": "2026-07-27T05:00:00Z",
+  "last_updated": "2026-07-27T05:30:00Z",
   "reference_docs": [],
   "docs": {
     "spec": "docs/specs/BL-MODESCMD-harness-modes-cli.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-MODESCMD-signoff.md",
     "framework_reviewed": true
   },
   "role_assignments": {
     "generator": "builder-codex",
     "evaluator": "reviewer-kimi"
   },
-  "evaluator_feedback": null,
+  "evaluator_feedback": "Kimi 独立复核 F001 PASS（跨厂商，非同 family）。自建三项目受控 fixture 构造已知漂移数核对吻合；「不触发网络」追到唯一出口 agentFetch 只有 runHarnessSync 可达；回归给了 git diff + 新旧版 A/B 实跑双证据；tsc 干净、405 测试全绿。",
   "generator_handoff": "F001 由外部 generator（Codex，local-cli）实现，编排者回流：新增 src/cli/harness-modes-print.ts（43 行）+ src/cli/index.ts 加 --modes 旗标（6 行）。回流四步已过：越界文件 0、spec-lock 稽核通过（复用既有 buildModeSnapshot，--modes 提前 return 不触发网络）、L1 由编排者重跑（tsc 干净 + 405 测试 + 命令实跑）、提交由编排者按 features.json 打 tag（7bdd03c）。外部实例两轮均无法提交（厂商沙箱禁写 .git），如实上报未伪造，框架据此改设计（v1.4.4 待写）。",
   "session_notes": {
     "local": "【BL-FWDRIFT reverifying→done 2026-07-26】两家异厂商 evaluator 复验一致 4/4 PASS；phase_advance 闸门由 tripplezhou@gmail.com 于 2026-07-26T19:19:44.298Z 在控制台批准（签名有效，中继落盘 b416ff5）。本批次同时是 harness 全链路在 tokenizer 自身上的首次实跑：plan→build→异厂商 fan-out 验收→debias_conflict 闸门→fixing→复验→phase_advance 闸门→done，闸门两次均由人在控制台批准。外部验收抓到 1 个真 bug（前导零非法输入被报成落后 9 版）与 2 处规格缺陷。框架侧 6 条沉淀待用户确认，见 harness-template/proposed-learnings.md。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-MODESCMD-verifying-done-w1",
+    "kind": "phase_advance",
+    "raised_at": "2026-07-27T05:30:00Z",
+    "raised_by": "verify",
+    "batch": "BL-MODESCMD",
+    "from_status": "verifying",
+    "to_status": "done",
+    "detail": "外部 generator（Codex）写代码 + 跨厂商 evaluator（Kimi）复核，F001 单轮 PASS，无 fix_round。回流四步全过、四道锁事后核查干净。批准 = 收批次进 done，并把 dispatch 验证的 A/B 两阶段结论沉淀进框架（v1.4.4：回流四步的 tag 由编排者打、handoff commits 转可选、沙箱注入主仓路径）。",
+    "evidence": [
+      "docs/test-reports/BL-MODESCMD-signoff.md",
+      "docs/test-reports/BL-MODESCMD-verdict-kimi.json",
+      "docs/test-reports/BL-MODESCMD-handoff.json"
+    ],
+    "decision": null
+  }
 }

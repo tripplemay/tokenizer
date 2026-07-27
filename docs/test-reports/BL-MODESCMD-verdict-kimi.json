@@ -1,0 +1,14 @@
+{
+  "batch_id": "BL-MODESCMD",
+  "fix_round": 0,
+  "created_at": "2026-07-27T04:45:38Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "独立验收（evaluator=kimi，非 generator 同厂），五条标准逐条自跑核验，未复述提交信息。环境：worktree@b4476a8f，node v25.7.0，npm ci（637 包）成功。\n\n① `npx tsx src/cli/index.ts harness --modes` 退出码 0，每个被发现的项目恰好一行。受控 fixture（独立 HOME，projectRoots 指向 3 个目录：proj-full 全要素 / proj-bare 最小 / not-harness 缺 harness-rules.md）实测输出：\n  proj-bare · 无框架账本 · 漂移 0 · 定制 0 · 快车道 · 手动 · dispatch 关 · 闸门比对 HEAD · 机件 0/4  <path>\n  proj-full · v1.4.2 · 漂移 2 · 定制 1 · 本地异构 · 自主:running · dispatch 开 · 闸门验签 · 机件 4/4  <path>\nnot-harness 正确未被发现；fixture 的 drift 构造（ok1/modified1/missing1/customized1）与输出「漂移 2 · 定制 1」吻合，机件 4/4 与 settings.json 四个 hook 吻合。\n\n② 输出含框架版本 `v1.4.2`、漂移数（`漂移 2`）、`定制 1`、执行形态（`本地异构`/`快车道`）、闸门模式（`闸门验签`/`闸门比对 HEAD`），另含自主、dispatch、机件在位——字段齐全。\n\n③ --modes 不触发网络：代码路径上，index.ts:45-48 的 --modes 分支在 runHarnessSync（index.ts:51）之前 return；harness 流程唯一的网络出口是 agentFetch（harness.ts:166 上报 / harness.ts:227 拉决策），只有 runHarnessSync 可达。--modes 调用图 readConfig（config.ts:48，纯 readFileSync）→ discoverHarnessRepos（harness.ts:56，fs + 本地 git 子进程 rev-parse/remote get-url，只读 .git 不联网）→ formatHarnessModeLine → buildModeSnapshot（harness-modes.ts 仅 import node:crypto/fs/path，grep 无任何 fetch/http/net/request）；harness-modes-print.ts 对 harness.ts 是 type-only import（运行时擦除）。实证：HTTP(S)_PROXY/ALL_PROXY 全部指向 127.0.0.1:9（无监听）+ NODE_USE_ENV_PROXY=1（Node≥24.5 使全局 fetch 走 env 代理）重跑 --modes，输出与无代理时逐字节一致、退出码 0——若有任何 fetch 必失败或挂起。\n\n④ 回归双证据：(a) git diff 9e3d6b6..7bdd03c 显示 index.ts 唯一改动是新增 --modes option 与 5 行分支，--list 与无旗标路径逐字节未动；(b) 取出父提交 9e3d6b6 的旧 index.ts 与现版在同一 fixture 下 A/B 实跑：`harness --list` 输出 diff 为空、退出码均 0；无旗标 `harness` 输出 diff 为空、退出码均 0（两侧同为「Reported: 0  Relayed: 0」+ 相同 skip 行）。\n\n⑤ `npx tsc --noEmit` 退出码 0 无输出；`npm run test`（vitest run）：Test Files 40 passed (40)，Tests 405 passed | 4 skipped (409)，Duration 2.83s，全绿。\n\n边界核验：7bdd03c 仅改 src/cli/index.ts + 新增 src/cli/harness-modes-print.ts；harness.ts 与 harness-modes.ts 对该区间 diff 为空（既有导出签名未动）；app/ 与 prisma/ 未碰。附带说明：提交还含 docs/test-reports/BL-MODESCMD-handoff.json，属外部 generator 路径的取证工件（编排者要求入库），非代码改动，不影响五条验收。",
+      "steps_to_reproduce": "npm ci && npx tsc --noEmit && npm run test；再准备独立 HOME：~/.tokenizer/config.json 的 projectRoots 指向含 harness 项目（progress.json+harness-rules.md 的 git 仓库）的父目录，然后 `HOME=<该目录> npx tsx src/cli/index.ts harness --modes`（期望退出码 0、逐项目一行、含版本/漂移/形态/闸门字段）；无网络核验：`HTTP_PROXY=http://127.0.0.1:9 HTTPS_PROXY=http://127.0.0.1:9 ALL_PROXY=http://127.0.0.1:9 NODE_USE_ENV_PROXY=1` 下同跑 --modes，输出应不变且退出码 0；回归核验：`git show 9e3d6b6:src/cli/index.ts > src/cli/.verify-old-index.ts`，与现版分别跑 `harness --list` 和无旗标 `harness`，两次 diff 均为空。"
+    }
+  ]
+}
