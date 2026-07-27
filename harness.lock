@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.4.4",
-    "commit": "33d93f5"
+    "version": "1.4.5",
+    "commit": "d6a221a"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -107,8 +107,8 @@
     },
     ".claude/dispatch/transports/a2a-runner.py": {
       "src": "templates/claude/dispatch/transports/a2a-runner.py",
-      "sha256": "1ec72ac5520551c925d84a5d40fbb0738f1c4c8431bc17107f678276e8729178",
-      "upstream": "1ec72ac5520551c925d84a5d40fbb0738f1c4c8431bc17107f678276e8729178"
+      "sha256": "fe866f5bcbb3346184b3573a105b906337dd54aa5cdd1f126bbe5c62ac4953c1",
+      "upstream": "fe866f5bcbb3346184b3573a105b906337dd54aa5cdd1f126bbe5c62ac4953c1"
     },
     ".claude/dispatch/transports/a2a.md": {
       "src": "templates/claude/dispatch/transports/a2a.md",
@@ -137,8 +137,8 @@
     },
     ".claude/harness.sh": {
       "src": "templates/claude/harness.sh",
-      "sha256": "08db02642c1123311c084fd56ccad4ba2f81cf19fa5fa287e6f2bfffbb219c7e",
-      "upstream": "08db02642c1123311c084fd56ccad4ba2f81cf19fa5fa287e6f2bfffbb219c7e"
+      "sha256": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7",
+      "upstream": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7"
     },
     ".claude/hooks/session-start.sh": {
       "src": "templates/claude/hooks/session-start.sh",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "b0daa3d20a0d6c148ab67d5805bce6ae72692c82facd513df378ab6d40781b7e",
-      "upstream": "b0daa3d20a0d6c148ab67d5805bce6ae72692c82facd513df378ab6d40781b7e"
+      "sha256": "df7878d65beea3a03e4abc2bd4a3516c1a449f8a8f5661a430a06f69ae9e26e4",
+      "upstream": "df7878d65beea3a03e4abc2bd4a3516c1a449f8a8f5661a430a06f69ae9e26e4"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "d03d8b268b4171328ac2458ce8ca82d69a1fde38469d4e4faae4f8fa8d8a5e35",
-      "upstream": "d03d8b268b4171328ac2458ce8ca82d69a1fde38469d4e4faae4f8fa8d8a5e35"
+      "sha256": "f43a0292c674542a2d676a0f4f588a7ffbe1cbac25090df344b12ff1279f7820",
+      "upstream": "f43a0292c674542a2d676a0f4f588a7ffbe1cbac25090df344b12ff1279f7820"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -497,8 +497,8 @@
     },
     "framework/templates/claude/dispatch/transports/a2a-runner.py": {
       "src": "templates/claude/dispatch/transports/a2a-runner.py",
-      "sha256": "1ec72ac5520551c925d84a5d40fbb0738f1c4c8431bc17107f678276e8729178",
-      "upstream": "1ec72ac5520551c925d84a5d40fbb0738f1c4c8431bc17107f678276e8729178"
+      "sha256": "fe866f5bcbb3346184b3573a105b906337dd54aa5cdd1f126bbe5c62ac4953c1",
+      "upstream": "fe866f5bcbb3346184b3573a105b906337dd54aa5cdd1f126bbe5c62ac4953c1"
     },
     "framework/templates/claude/dispatch/transports/a2a.md": {
       "src": "templates/claude/dispatch/transports/a2a.md",
@@ -527,8 +527,8 @@
     },
     "framework/templates/claude/harness.sh": {
       "src": "templates/claude/harness.sh",
-      "sha256": "08db02642c1123311c084fd56ccad4ba2f81cf19fa5fa287e6f2bfffbb219c7e",
-      "upstream": "08db02642c1123311c084fd56ccad4ba2f81cf19fa5fa287e6f2bfffbb219c7e"
+      "sha256": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7",
+      "upstream": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7"
     },
     "framework/templates/claude/hooks/session-start.sh": {
       "src": "templates/claude/hooks/session-start.sh",

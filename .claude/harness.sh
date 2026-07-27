@@ -167,6 +167,55 @@ src_commit() {
   fi
 }
 
+
+# ── 部署触发自检（v1.4.5）────────────────────────────────────────────────────
+# 装 harness 会给项目带来一个**持续的副作用**：状态机每推进一个阶段就提交一次
+# progress.json。若该项目的 CI 是「push main 即部署」且没有 paths 过滤，那么**每一次
+# 状态推进都会重建镜像并部署生产**。tokenizer 与 grandtianfu 都是这形态，都是撞上了才发现
+# （joyce 的一次账本提交已经白跑过一次镜像构建）。
+# 这里只警告、不代改：改别人的 CI 触发条件是有后果的决定，得由人来做。
+check_deploy_trigger() {
+  local wf="$PROJECT/.github/workflows"
+  [ -d "$wf" ] || return 0
+  local hits
+  hits="$(python3 - "$wf" <<'PY'
+import os, re, sys
+d = sys.argv[1]
+bad = []
+for f in sorted(os.listdir(d)):
+    if not f.endswith((".yml", ".yaml")):
+        continue
+    txt = open(os.path.join(d, f), encoding="utf-8", errors="replace").read()
+    head = txt.split("jobs:")[0]
+    if not re.search(r"^on:", head, re.M):
+        continue
+    if "push" not in head or not re.search(r"branches:\s*\[?\s*-?\s*(main|master)", head):
+        continue
+    if "paths-ignore" in head or re.search(r"^\s+paths:", head, re.M):
+        continue          # 有过滤就不吵；是否覆盖 harness 路径由人自己核
+    bad.append(f)
+print("\n".join(bad))
+PY
+)"
+  [ -n "$hits" ] || return 0
+  echo ""
+  echo "⚠️  ============ 装 harness 带来的副作用，先看这个 ============"
+  echo "以下 workflow 是「push 到 main 即触发」且**没有 paths 过滤**："
+  echo "$hits" | sed 's/^/      /'
+  echo ""
+  echo "harness 的状态机每推进一个阶段就会提交一次 progress.json —— 上面每个 workflow"
+  echo "都会因此被触发一次。若其中含部署动作，就是**每次状态推进都部署一次生产**。"
+  echo ""
+  echo "建议把这些路径加进它们的 paths-ignore（改与不改由你决定，本脚本不代改）："
+  for p in ".auto-memory/**" ".claude/**" "framework/**" "progress.json" "features.json" \
+           "backlog.json" "harness.json" "harness.lock" "harness-rules.md" "planner.md" \
+           "generator.md" "evaluator.md" "orchestration-patterns.md"; do
+    echo "      - \"$p\""
+  done
+  echo "⚠️  =========================================================="
+  echo ""
+}
+
 # ── init ────────────────────────────────────────────────────────────────────
 cmd_init() {
   resolve_source
@@ -213,6 +262,7 @@ if kept:
         print(f"      …… 另 {len(kept)-10} 个")
 PY
   scaffold_project
+  check_deploy_trigger
 }
 
 # 项目骨架：状态机初值、docs 目录、.gitignore。**全部只在缺失时创建**——
@@ -428,6 +478,7 @@ if missing:
     print(f"   ⚠️ 参考版本有、本项目没有的文件 {len(missing)} 个（sync 时会补入）：")
     for d in missing[:10]: print(f"      {d}")
 PY
+  check_deploy_trigger
 }
 
 # ── resolve（冲突已人工合并）──────────────────────────────────────────────────

@@ -1,0 +1,14 @@
+{
+  "batch_id": "BL-A2A",
+  "fix_round": 0,
+  "created_at": "2026-07-27T05:30:35Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "src/shared/framework-version.ts:27 FRAMEWORK_RELEASES 末位元素为 \"1.4.4\"；src/shared/framework-version.ts:30 LATEST_FRAMEWORK_VERSION 定义为 FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1]，即恒等于清单末位，值为 \"1.4.4\"。两者相等。",
+      "steps_to_reproduce": "读 src/shared/framework-version.ts：第 10-28 行 FRAMEWORK_RELEASES 清单末位是 \"1.4.4\"（第 27 行）；第 30 行 LATEST_FRAMEWORK_VERSION = FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1]，由定义即取清单末位，故两者必相等（当前值均为 \"1.4.4\"）。"
+    }
+  ]
+}

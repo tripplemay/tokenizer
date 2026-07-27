@@ -436,6 +436,13 @@ def main():
     ap.add_argument("--adapters", default=".claude/dispatch/transports/adapters")
     ap.add_argument("--sse-heartbeat", type=float, default=15.0)
     ap.add_argument("--sse-timeout", type=float, default=86400.0)
+    # 生命周期管理（v1.4.5）。起因：一次演练留下的 runner 在本机挂了**整整两天**没人关，
+    # 直到下次要用同一端口才被撞见。runner 是长驻服务，而演练用的 runner 没有任何东西负责收尾。
+    ap.add_argument("--idle-exit", type=float, default=0.0,
+                    help="空闲这么多秒后自行退出（无 SUBMITTED/WORKING 任务且无新请求）。"
+                         "0=永不自退（长驻部署用）。**演练/临时用途请务必设**，如 --idle-exit 1800")
+    ap.add_argument("--stop", action="store_true",
+                    help="读 <state>/runner.pid 停掉正在跑的 runner 后退出")
     cfg = ap.parse_args()
 
     reg = json.load(open(cfg.registry))
@@ -457,6 +464,24 @@ def main():
     cfg.advertise = cfg.host if not loopback else "127.0.0.1"
     os.makedirs(cfg.state, exist_ok=True)
     store = TaskStore(os.path.join(cfg.state, "tasks"))
+    if cfg.stop:
+        pid_path = os.path.join(cfg.state, "runner.pid")
+        try:
+            pid = int(open(pid_path).read().strip())
+        except Exception:
+            print(f"[a2a-runner] 没有 pidfile（{pid_path}）—— 没有由本 state 目录启动的 runner", flush=True)
+            return
+        try:
+            os.kill(pid, signal.SIGTERM)
+            print(f"[a2a-runner] 已停 pid={pid}", flush=True)
+        except ProcessLookupError:
+            print(f"[a2a-runner] pid={pid} 已不存在，清理 pidfile", flush=True)
+        try:
+            os.remove(pid_path)
+        except OSError:
+            pass
+        return
+
     executor = Executor(cfg, store)
 
     # 重启后把「跑着跑着进程没了」的任务标记出来，而不是让它们永远 WORKING
@@ -468,14 +493,43 @@ def main():
             store.emit(t["taskId"], "status", {"state": "FAILED"})
             store.finish(t["taskId"])
 
+    # pidfile：让「关掉它」这件事有据可依，不必去 lsof 端口猜是谁
+    pid_path = os.path.join(cfg.state, "runner.pid")
+    os.makedirs(cfg.state, exist_ok=True)
+    with open(pid_path, "w") as fh:
+        fh.write(f"{os.getpid()}\n")
+
     srv = ThreadingHTTPServer((cfg.host, cfg.port), make_handler(cfg, store, executor, d))
     srv.daemon_threads = True
     print(f"[a2a-runner] {cfg.agent} ({d.get('model_family')}) 监听 http://{cfg.host}:{cfg.port}/"
           f"  鉴权={'Bearer' if cfg.token else '无（仅 loopback）'}  state={cfg.state}", flush=True)
+    if cfg.idle_exit and cfg.idle_exit > 0:
+        # 判据是「没活干」而不是「没请求」：正在跑的任务不能被空闲计时误杀，
+        # 而只轮询状态的客户端也不该无限续命。两者都看：有活 → 重置；无活且无请求 → 计时。
+        def idle_watch():
+            while True:
+                time.sleep(min(30.0, cfg.idle_exit / 2))
+                busy = any(t.get("state") in ("SUBMITTED", "WORKING") for t in store.list())
+                last = getattr(srv, "last_request_at", started_at)
+                if busy:
+                    srv.last_request_at = time.time()
+                    continue
+                if time.time() - last >= cfg.idle_exit:
+                    print(f"[a2a-runner] 空闲 {cfg.idle_exit:.0f}s 且无在跑任务 → 自行退出", flush=True)
+                    os._exit(0)
+        started_at = time.time()
+        srv.last_request_at = started_at
+        threading.Thread(target=idle_watch, daemon=True).start()
+
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
         print("[a2a-runner] 停止", flush=True)
+    finally:
+        try:
+            os.remove(pid_path)
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":
