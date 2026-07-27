@@ -1,33 +1,12 @@
 {
-  "sprint": "BL-FWDRIFT",
+  "sprint": "BL-MODESCMD",
   "features": [
     {
       "id": "F001",
-      "title": "框架版本比较工具（清单 + 语义比较 + 落后计数）",
-      "status": "completed",
+      "title": "harness --modes 终端子命令：打印各项目模式指纹",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "compare/versionsBehind 全分支；unknown 与超前返回 null；清单末位==LATEST 常量（自检测试）"
-    },
-    {
-      "id": "F002",
-      "title": "页面算好落后信息并传给徽章（展示逻辑不留在页面）",
-      "status": "completed",
-      "executor": "generator",
-      "acceptance": "tsc 通过；modes 为 null（老 agent）时不抛错"
-    },
-    {
-      "id": "F003",
-      "title": "徽章渲染四种状态 + 升级/adopt 指引（中英一致）",
-      "status": "completed",
-      "executor": "generator",
-      "acceptance": "四态文案独立；zh-CN 与 en 的 harness.modes 键集合完全一致；落后含 harness.sh sync，未知含 harness.sh adopt"
-    },
-    {
-      "id": "F004",
-      "title": "回归测试覆盖 F001 全分支",
-      "status": "completed",
-      "executor": "generator",
-      "acceptance": "npm run test 全绿；用例总数 > 392"
+      "acceptance": "退出码0且逐项目一行；含版本/漂移/形态/闸门；不触发网络；--list 与既有行为不变；tsc+test 全绿"
     }
   ]
 }

@@ -5,6 +5,26 @@
 
 ---
 
+## v1.4.2 — 2026-07-26（补：外部 generator 派活此前无 deliverable 契约可填）
+
+**来源：** tokenizer 上验证 dispatch 的**外部 generator** 路径（A 阶段）时卡住——发不出信封。
+
+**病灶：** 信封 schema 必填 `deliverable.artifact` + `deliverable.schema`，而 §6 对
+外部 generator 只规定「产物是 worktree 里的提交」，**没有任何工件 schema 可指**。
+于是 evaluator 派得出去、generator 派不出去：v1.1 放开外部 generator 时只想清楚了
+四道锁与回流四步，漏了它在 L2 信封层的落点。
+
+**新增 `generator-handoff.schema.json`：** 不是代码本身，而是一张**可与实物逐条对账的清单**
+——每条 feature 声明自己产生了哪些 commit、碰了哪些文件。编排者拿它去比对 `git log` 与
+实际 diff：commit tag 归属对不上就拒收（铁律 10 / §6 回流四步），`files_touched` 之外
+多出来的文件即 **scope 漂移信号**。
+
+**刻意不设结论性字段**（「已充分测试」「可以合并」之类）：外部 generator 无评估权，
+`l1_ran` 只记它自称跑了什么，**编排者必须自己重跑一遍才作数**。`waiting` 与 verdict
+工件同一套语义，回执推断直接复用，不必为 generator 再写一条分支。
+
+---
+
 ## v1.4.1 — 2026-07-26（修：macOS 上超时被误判成失败 —— 「幂等重派」承诺从未生效）
 
 **来源：** tokenizer 上验证 dispatch 的**失败路径**（此前四次派活全走成功路径）。

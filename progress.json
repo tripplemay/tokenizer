@@ -1,22 +1,25 @@
 {
-  "status": "done",
-  "user_goal": "在控制台把框架版本从「一个字符串」变成「一个判断」：落后多少、要不要升、怎么升——为下一步向其它项目推广 harness 提供依据",
-  "total_features": 4,
-  "completed_features": 4,
-  "fix_rounds": 1,
-  "current_sprint": "BL-FWDRIFT",
+  "status": "building",
+  "user_goal": "终端里也能看到模式指纹；同时验证 dispatch 的外部 generator 路径",
+  "total_features": 1,
+  "completed_features": 0,
+  "fix_rounds": 0,
+  "current_sprint": "BL-MODESCMD",
   "dashboard_url": null,
-  "last_updated": "2026-07-26T19:30:00Z",
+  "last_updated": "2026-07-26T20:30:00Z",
   "reference_docs": [],
   "docs": {
-    "spec": "docs/specs/BL-FWDRIFT-framework-drift-badge.md",
+    "spec": "docs/specs/BL-MODESCMD-harness-modes-cli.md",
     "test_cases": null,
-    "signoff": "docs/test-reports/BL-FWDRIFT-signoff.md",
+    "signoff": null,
     "framework_reviewed": true
   },
-  "role_assignments": null,
-  "evaluator_feedback": "fix_round 1 复验：Kimi 与 Codex 独立结论一致，四条全 PASS。证据见两份 verdict 工件与 signoff。",
-  "generator_handoff": "fix_round 1 处置完毕：①F001 前导零改为 SEGMENT 正则 /^(0|[1-9]\\d*)$/，01.0.3/1.00.3/1.0.03/0001.4.0 一律 null 且 versionsBehind 不给次数；②F004 新增该分支用例（13 例）；③F003 「未知」分两种——无账本给 adopt，有账本但基准未知给**重建账本**命令（rm 账本 + adopt --as），因为 adopt 在 lock 存在时会拒绝执行；④F002 裁决为保留组件内计算并订正规格描述。L1：tsc 干净、405 测试通过（原 404 + 1）。规格已同步订正三处并标注 fix_round 1。",
+  "role_assignments": {
+    "generator": "builder-codex",
+    "evaluator": "reviewer-kimi"
+  },
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
     "local": "【BL-FWDRIFT reverifying→done 2026-07-26】两家异厂商 evaluator 复验一致 4/4 PASS；phase_advance 闸门由 tripplezhou@gmail.com 于 2026-07-26T19:19:44.298Z 在控制台批准（签名有效，中继落盘 b416ff5）。本批次同时是 harness 全链路在 tokenizer 自身上的首次实跑：plan→build→异厂商 fan-out 验收→debias_conflict 闸门→fixing→复验→phase_advance 闸门→done，闸门两次均由人在控制台批准。外部验收抓到 1 个真 bug（前导零非法输入被报成落后 9 版）与 2 处规格缺陷。框架侧 6 条沉淀待用户确认，见 harness-template/proposed-learnings.md。"
   },
