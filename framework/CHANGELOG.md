@@ -5,6 +5,36 @@
 
 ---
 
+## v1.4.3 — 2026-07-26（外部 generator 路径三处修：产物路径 / 无法提交 / 诚实反受罚）
+
+**来源：** tokenizer 上首次真的派 Codex **写代码**（A 阶段）。它跑了 33 分钟、代码写完、
+L1 自测通过，却在三处同时撞墙——**只有真派一次才会撞到的三处**。
+
+**🔴 一、沙箱忽略信封的 `deliverable.artifact`。** 产物路径只认适配器的 `artifact_relpath`
+（默认 `<batch>-verdict.json`），信封里写的 `handoff.json` 被无视 → generator 的交付
+**永远被判 `ARTIFACT_MISSING`**。信封是「这一次任务」的契约，适配器只是「这家 CLI」的
+默认约定；契约必须压过约定。改为 **信封 > 适配器 > 默认**。
+
+**🔴 二、外部 generator 在厂商沙箱下根本无法提交。** `git worktree` 把元数据放在**主仓**的
+`.git/worktrees/<name>/`，而 Codex 的 `-s workspace-write` 只允许写 workspace 目录本身——
+`git commit` 连 `index.lock` 都建不出来（实测原话 `Operation not permitted`）。
+**四道锁的 L2（独立 worktree）与厂商自带沙箱在此相互不兼容**：v1.1 放开外部 generator 时
+没人真派过写代码的活，于是这条一直没暴露。
+改为：`constraints.write_src=true` 的角色用 **`git clone --shared`**（`.git` 落在沙箱目录内、
+可写；object 仍与主仓共享，不复制体积）。隔离性不降反升——不再与主仓共用 `.git`，
+主仓连元数据都不会被碰。evaluator 等只读角色仍用 worktree（更轻）。
+
+**三、我在 v1.4.2 引入的 schema 缺陷：诚实反而受罚。** `commits` 定成 `minItems: 1`，
+于是外部 generator 被挡住无法提交、**如实上报 `waiting` 并写空 commits** 时，产物必然
+违反 schema 被机械拒收。改为 `waiting` 非空时不强求 `features/commits`。
+**规则不能让「如实报告被阻塞」成为一条走不通的路**，否则就是在奖励编造。
+
+**顺带记一笔正面观察：** Codex 被挡住时的原话是「不会用替代 SHA 冒充原 worktree 提交，
+也不会触碰 push」——没有伪造、没有绕过，停手并如实说明。机件设计不该假设对方守规矩，
+但这次它守了。
+
+---
+
 ## v1.4.2 — 2026-07-26（补：外部 generator 派活此前无 deliverable 契约可填）
 
 **来源：** tokenizer 上验证 dispatch 的**外部 generator** 路径（A 阶段）时卡住——发不出信封。

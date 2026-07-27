@@ -91,7 +91,13 @@ task_id  = env.get("task_id") or fail("信封缺 task_id（幂等键）")
 ref      = (env.get("repo") or {}).get("ref") or ""
 
 sb       = d.get("sandbox") or {}
-artifact = (ad.get("artifact_relpath") or "docs/test-reports/{{batch}}-verdict.json").replace("{{batch}}", batch)
+# 产物路径的优先级：**信封 > 适配器 > 默认约定**。
+# 信封是「这一次任务」的契约，适配器只是「这家 CLI」的默认约定 —— 契约必须压过约定。
+# 原实现只读适配器（默认 `<batch>-verdict.json`），于是 generator 派活（交 handoff 工件）
+# 的产物永远被判 ARTIFACT_MISSING：它按信封写在 handoff.json，沙箱却去找 verdict.json。
+# 实测踩到（BL-MODESCMD，Codex 写完代码交了 handoff，回执仍报「产物缺失」）。
+_dl = (env.get("deliverable") or {}).get("artifact")
+artifact = (_dl or ad.get("artifact_relpath") or "docs/test-reports/{{batch}}-verdict.json").replace("{{batch}}", batch)
 
 def emit(k, v): print(f"{k}={shlex.quote(str(v))}")
 emit("D_ADAPTER", adapter_name)
@@ -110,6 +116,7 @@ if _home:
     _home = os.path.abspath(os.path.expanduser(_home))
 emit("D_HOME", _home)
 emit("D_ENVELOPE_DELIVERY", ad.get("envelope_delivery", "stdin"))
+emit("D_WRITE_SRC", "1" if (d.get("constraints") or {}).get("write_src") else "")
 emit("E_BATCH", batch)
 emit("E_TASK_ID", task_id)
 emit("E_REF", ref)
@@ -138,9 +145,27 @@ PY
 mkdir -p "$WORKROOT"
 WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${AGENT_ID}-${E_TASK_ID}"
 [ -e "$WT" ] && die "worktree 已存在：${WT}（同 task_id 重复派活？幂等键应去重）"
-git worktree add --detach "$WT" "$REF" >/dev/null 2>&1 \
-  || die "worktree 创建失败（ref=${REF}）"
-echo "[sandbox] worktree: $WT @ ${REF:0:12}" >&2
+# 🔴 写代码的角色不能用 worktree。git worktree 把元数据放在**主仓**的
+# `.git/worktrees/<name>/`，而外部 CLI 的厂商沙箱（Codex 的 -s workspace-write）只允许
+# 写 workspace 目录本身 —— 于是 `git commit` 连 index.lock 都建不出来（实测原话：
+# "Operation not permitted"）。四道锁的 L2 与厂商沙箱在这里相互不兼容：外部 generator
+# 拿不到任何提交能力，只能交出未提交的改动。
+# 改用 `git clone --shared`：.git 落在沙箱目录内（可写），object 仍与主仓共享（不复制体积）。
+# 隔离性不降反升 —— 不再与主仓共用 .git，主仓连元数据都不会被碰。
+if [ -n "${D_WRITE_SRC:-}" ]; then
+  git clone --shared --no-checkout "$(git rev-parse --show-toplevel)" "$WT" >/dev/null 2>&1 \
+    || die "沙箱克隆创建失败（ref=${REF}）"
+  git -C "$WT" checkout --detach "$REF" >/dev/null 2>&1 \
+    || die "沙箱克隆 checkout 失败（ref=${REF}）"
+  # origin 指向本机主仓，push 仍被 GIT_CONFIG 层的 pushurl 覆盖挡住（见下）；
+  # 另把 fetch url 也断掉，避免子进程从主仓拉到不该看的分支。
+  git -C "$WT" remote set-url origin DISABLED_BY_HARNESS_SANDBOX >/dev/null 2>&1 || true
+  echo "[sandbox] 独立克隆（write_src=true）: $WT @ ${REF:0:12}" >&2
+else
+  git worktree add --detach "$WT" "$REF" >/dev/null 2>&1 \
+    || die "worktree 创建失败（ref=${REF}）"
+  echo "[sandbox] worktree: $WT @ ${REF:0:12}" >&2
+fi
 
 ENVELOPE_ABS="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
 ENVELOPE_JSON="$(cat "$ENVELOPE_ABS")"
@@ -257,6 +282,11 @@ print(json.dumps(meta, ensure_ascii=False))
 PY
 
 echo "[sandbox] outcome=$OUTCOME exit=$EXIT ${DURATION}s · log=$LOG" >&2
-echo "[sandbox] 取证后清理：git worktree remove --force '$WT'" >&2
+# 清理命令按沙箱形态给：克隆是普通目录（worktree remove 对它无效，会报「不是 worktree」）
+if [ -n "${D_WRITE_SRC:-}" ]; then
+  echo "[sandbox] 取证后清理：rm -rf '$WT'（write_src 用的是独立克隆，不是 worktree）" >&2
+else
+  echo "[sandbox] 取证后清理：git worktree remove --force '$WT'" >&2
+fi
 [ "$OUTCOME" = "TIMEOUT" ] && exit 124
 exit 0

@@ -1,35 +1,58 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "generator handoff artifact",
-  "description": "dispatch-mode.md §6 —— 外部 generator 的交付契约。§6 规定产物是 worktree 里的提交，但信封 schema 必填 deliverable，此前 generator 派活因此无契约可填（v1.4.2 补）。\n\n这份工件**不是**代码本身，而是一张可与实物逐条对账的清单：编排者拿它去比对 git log 与 diff。它存在的理由是让「声称做了」与「实际做了」可机械比对 —— 外部实例说自己改了什么、跑了什么，回流时逐条核，对不上就拒收（§6 回流四步之一）。\n\n⚠️ 结论性字段（如「已充分测试」「可以合并」）刻意不设：外部 generator 无评估权，L1 是否真绿由编排者自己跑，不看它怎么说。",
+  "description": "dispatch-mode.md §6 —— 外部 generator 的交付契约。§6 规定产物是 worktree 里的提交，但信封 schema 必填 deliverable，此前 generator 派活因此无契约可填（v1.4.2 补）。\n\n这份工件**不是**代码本身，而是一张可与实物逐条对账的清单：编排者拿它去比对 git log 与 diff。它存在的理由是让「声称做了」与「实际做了」可机械比对 —— 外部实例说自己改了什么、跑了什么，回流时逐条核，对不上就拒收（§6 回流四步之一）。\n\n⚠️ 结论性字段（如「已充分测试」「可以合并」）刻意不设：外部 generator 无评估权，L1 是否真绿由编排者自己跑，不看它怎么说。\n\n⚠️ waiting 非空（被阻塞而停手）时不要求 features/commits —— 第一版把 commits 定成 minItems:1，结果外部 generator 被挡住无法提交时，如实上报的产物必然违反 schema、被机械拒收：**诚实反而受罚**（BL-MODESCMD 实测）。",
   "type": "object",
   "additionalProperties": false,
-  "required": ["batch_id", "created_at", "features"],
+  "required": [
+    "batch_id",
+    "created_at"
+  ],
   "properties": {
-    "batch_id": { "type": "string", "description": "= 信封 batch" },
-    "created_at": { "type": "string", "description": "ISO8601 UTC" },
+    "batch_id": {
+      "type": "string",
+      "description": "= 信封 batch"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO8601 UTC"
+    },
     "features": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["feature_id", "commits", "files_touched"],
+        "required": [
+          "feature_id",
+          "commits",
+          "files_touched"
+        ],
         "properties": {
-          "feature_id": { "type": "string", "description": "必须存在于 features.json；回流时校验归属（铁律 10）" },
+          "feature_id": {
+            "type": "string",
+            "description": "必须存在于 features.json；回流时校验归属（铁律 10）"
+          },
           "commits": {
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "本 feature 在 worktree 里产生的 commit sha（短或长）。空 = 没干活，拒收"
           },
           "files_touched": {
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "仓内相对路径。编排者用它与实际 diff 对账：多出来的文件即 scope 漂移信号"
           },
-          "notes": { "type": "string", "description": "实现取舍、踩到的坑。可空" }
+          "notes": {
+            "type": "string",
+            "description": "实现取舍、踩到的坑。可空"
+          }
         }
       }
     },
@@ -38,15 +61,58 @@
       "additionalProperties": false,
       "description": "自称跑过的 L1 命令与结果。**仅供参照**，编排者必须自己重跑一遍才作数",
       "properties": {
-        "lint": { "type": "string" },
-        "typecheck": { "type": "string" },
-        "test": { "type": "string" }
+        "lint": {
+          "type": "string"
+        },
+        "typecheck": {
+          "type": "string"
+        },
+        "test": {
+          "type": "string"
+        }
       }
     },
     "waiting": {
-      "enum": ["auth", "adjudication", null],
+      "enum": [
+        "auth",
+        "adjudication",
+        null
+      ],
       "description": "撞 L2 边界 / 规格歧义 → 停手并写这里，与 verdict 工件同一套语义（回执推断直接复用）"
     },
-    "waiting_detail": { "type": "string" }
-  }
+    "waiting_detail": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "waiting": {
+            "const": null
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "features"
+        ],
+        "properties": {
+          "features": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "commits": {
+                  "minItems": 1
+                },
+                "files_touched": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
