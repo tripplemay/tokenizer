@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.4.5",
-    "commit": "d6a221a"
+    "version": "1.4.6",
+    "commit": "9a6c0cc"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -137,8 +137,8 @@
     },
     ".claude/harness.sh": {
       "src": "templates/claude/harness.sh",
-      "sha256": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7",
-      "upstream": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7"
+      "sha256": "cd11364ddd3a218779d8a703b79e351509de691bf78c32250a210a738329122b",
+      "upstream": "cd11364ddd3a218779d8a703b79e351509de691bf78c32250a210a738329122b"
     },
     ".claude/hooks/session-start.sh": {
       "src": "templates/claude/hooks/session-start.sh",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "df7878d65beea3a03e4abc2bd4a3516c1a449f8a8f5661a430a06f69ae9e26e4",
-      "upstream": "df7878d65beea3a03e4abc2bd4a3516c1a449f8a8f5661a430a06f69ae9e26e4"
+      "sha256": "6e8f177a6f9560a2722c44b9ea0f480ef37214a13e04644b6e1a52e28198b3f2",
+      "upstream": "6e8f177a6f9560a2722c44b9ea0f480ef37214a13e04644b6e1a52e28198b3f2"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "f43a0292c674542a2d676a0f4f588a7ffbe1cbac25090df344b12ff1279f7820",
-      "upstream": "f43a0292c674542a2d676a0f4f588a7ffbe1cbac25090df344b12ff1279f7820"
+      "sha256": "563d5c80c54e77e2f8454ecd5c14388f9ab3af77edc73b6f4736ada64527952c",
+      "upstream": "563d5c80c54e77e2f8454ecd5c14388f9ab3af77edc73b6f4736ada64527952c"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -527,8 +527,8 @@
     },
     "framework/templates/claude/harness.sh": {
       "src": "templates/claude/harness.sh",
-      "sha256": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7",
-      "upstream": "b415aaf42beb71892dc591572b1ecec7269c785e40baf5f6b9a39b8f2a2642e7"
+      "sha256": "cd11364ddd3a218779d8a703b79e351509de691bf78c32250a210a738329122b",
+      "upstream": "cd11364ddd3a218779d8a703b79e351509de691bf78c32250a210a738329122b"
     },
     "framework/templates/claude/hooks/session-start.sh": {
       "src": "templates/claude/hooks/session-start.sh",

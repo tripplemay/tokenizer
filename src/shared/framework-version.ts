@@ -25,7 +25,8 @@ export const FRAMEWORK_RELEASES = [
   "1.4.2",
   "1.4.3",
   "1.4.4",
-  "1.4.5"
+  "1.4.5",
+  "1.4.6"
 ] as const;
 
 export const LATEST_FRAMEWORK_VERSION = FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1];

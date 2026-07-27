@@ -2,8 +2,8 @@
   "framework": {
     "source": "harness-template",
     "source_url": "https://github.com/tripplemay/harness-template.git",
-    "version": "1.4.5",
-    "commit": "d6a221a",
+    "version": "1.4.6",
+    "commit": "9a6c0cc",
     "installed_from": "/Users/yixingzhou/project/harness-template"
   },
   "project": {

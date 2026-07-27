@@ -28,6 +28,7 @@
 
 set -euo pipefail
 
+ALL_ARGS=("$@")          # 原样保存，供自我覆盖防护时重新 exec
 CMD="${1:-}"; shift || true
 SRC=""; REF=""; AS_VERSION=""; DRY_RUN=0
 PROJECT="$(pwd)"
@@ -48,8 +49,25 @@ done
 die() { echo "[harness] ⛔ $1" >&2; exit 2; }
 command -v python3 >/dev/null 2>&1 || die "需要 python3"
 
+# ── 🔴 自我覆盖防护（v1.4.6）────────────────────────────────────────────────
+# sync 会更新 `.claude/harness.sh` **自己**，而 bash 是边读边执行的：文件在运行中被替换后，
+# 它会按旧的字节偏移继续读新内容。实测表现是 `syntax error near unexpected token`（升级本身
+# 已完成，报错发生在收尾阶段）；换一个偏移就可能执行到半条语句，后果不可预期。
+# 故：先把自己复制到临时文件再 exec 过去，磁盘上那份随便被覆盖。
+if [ "$CMD" = "sync" ] && [ -z "${HARNESS_SELF_EXEC:-}" ]; then
+  _self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+  _tmp_self="$(mktemp)"
+  cat "$_self" > "$_tmp_self"
+  HARNESS_SELF_EXEC=1 exec bash "$_tmp_self" ${ALL_ARGS[@]+"${ALL_ARGS[@]}"}
+fi
+
 SNAPSHOT=""
-cleanup() { [ -n "$SNAPSHOT" ] && rm -rf "$SNAPSHOT"; true; }
+cleanup() {
+  [ -n "$SNAPSHOT" ] && rm -rf "$SNAPSHOT"
+  # 自我覆盖防护留下的临时副本由它自己收尾（$0 即那份副本）
+  [ -n "${HARNESS_SELF_EXEC:-}" ] && rm -f "$0"
+  true
+}
 trap cleanup EXIT
 
 # 源树一律先快照到临时目录再操作。存量项目的源就是自己的 framework/，不快照就会
