@@ -1,0 +1,55 @@
+{
+  "batch_id": "BL-HARNESS-DETAIL-MODEINTENT",
+  "feature_id": "F004",
+  "generator": "builder-codex",
+  "transport": "local-cli",
+  "attempts": [
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F004-8de1f50e8572",
+      "outcome": "TIMEOUT",
+      "duration_s": 2400,
+      "detail": "The implementation and 183 focused tests were available, but the dispatch run timed out before writing a compliant handoff; independent typecheck also identified one result-narrowing error."
+    },
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F004-r2-8de1f50e8572",
+      "outcome": "COMPLETED",
+      "duration_s": 1463,
+      "source_artifact": "generator-handoff-f004-r2.json",
+      "corrections": [
+        "Preserve old agent v3 read-only report compatibility while exact-validating every present v4 snapshot field.",
+        "Restore the original harness.json on every pre-commit failure and defer ACK instead of reporting failed after a confirmed commit.",
+        "Require signed pending defaults to match the repository's normalized origin identity before reporting them.",
+        "Read run-meta and repository-relative artifacts through stable no-follow file descriptors and reject symlink replacement."
+      ]
+    }
+  ],
+  "integration": {
+    "commit": "c6bcb9a",
+    "verify": "passed",
+    "typecheck": "passed",
+    "focused_tests": "214/214 passed",
+    "full_tests": "577 passed, 4 platform skips",
+    "production_build": "passed",
+    "lint": "passed",
+    "framework_verify": "133 managed files matched",
+    "diff_check": "passed"
+  },
+  "files_touched": [
+    "src/cli/agent.ts",
+    "src/cli/harness-dispatch.ts",
+    "src/cli/harness-mode-intents.ts",
+    "src/cli/harness-modes.ts",
+    "src/cli/harness.ts",
+    "src/cli/index.ts",
+    "src/server/harness-mode-intent-api.ts",
+    "src/shared/agent-feature-version.ts",
+    "tests/cli/harness-dispatch.test.ts",
+    "tests/cli/harness-mode-intents.test.ts",
+    "tests/cli/harness-modes.test.ts",
+    "tests/cli/harness.test.ts",
+    "tests/server/agent-version.test.ts",
+    "tests/server/harness-mode-intent-api.test.ts",
+    "tests/server/harness-report-mode-intent.test.ts"
+  ],
+  "waiting": null
+}

@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "device agent 验签、暂存 mode defaults、结果回报与能力版本升级",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "agent 验证签名/repoKey/完整 HEAD/有效期/目标文件干净；只原子修改 harness.json.project.mode_defaults 并定向 commit；失败有稳定错误码且不写文件；采集项目内 run-meta 的结构化脱敏摘要；AGENT_FEATURE_VERSION 与 MIN 同步升至 4；既有 gate relay 互不阻塞"
     },
