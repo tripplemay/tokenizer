@@ -1,0 +1,37 @@
+{
+  "batch_id": "BL-HARNESS-DETAIL-MODEINTENT",
+  "feature_id": "F002",
+  "generator": "builder-codex",
+  "transport": "local-cli",
+  "attempts": [
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F002-a2bd63ddf38b",
+      "outcome": "TIMEOUT",
+      "duration_s": 2400,
+      "detail": "Implementation and 74 focused tests completed, but the run timed out while preparing a writable Prisma dependency layer."
+    },
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F002-r2-a2bd63ddf38b",
+      "outcome": "COMPLETED",
+      "duration_s": 1875,
+      "source_artifact": "generator-handoff-f002-r2.json"
+    }
+  ],
+  "integration": {
+    "commit": "087990d",
+    "prisma_generate": "passed",
+    "typecheck": "passed",
+    "focused_tests": "74/74 passed",
+    "migration_schema_comparison": "passed"
+  },
+  "files_touched": [
+    ".github/workflows/deploy-vps.yml",
+    "prisma/schema.prisma",
+    "prisma/migrations/20260727000000_add_harness_mode_intents_dispatch_runs/migration.sql",
+    "src/shared/harness-mode-intent.ts",
+    "src/server/harness-sign.ts",
+    "tests/shared/harness-mode-intent.test.ts",
+    "tests/server/harness-sign.test.ts"
+  ],
+  "waiting": null
+}

@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "模式意图与 dispatch 摘要的数据模型、签名契约和纯函数校验",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "Prisma additive migration 可部署；意图保存完整签名载荷与 issued/relayed/staged/applied/failed/superseded/expired 状态；摘要按 project+runId 幂等；执行/Agent/family/autonomy 约束有单测；签名与 openssl 跨语言一致"
     },

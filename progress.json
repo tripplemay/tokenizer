@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "为 Harness 项目卡增加下钻页，同时开放执行/角色与自治模式调整；签名意图在下一次 /plan 生效，并持久化脱敏 dispatch 摘要；继续验证 dispatch 模式",
   "total_features": 6,
-  "completed_features": 1,
+  "completed_features": 2,
   "fix_rounds": 0,
   "current_sprint": "BL-HARNESS-DETAIL-MODEINTENT",
   "dashboard_url": null,
-  "last_updated": "2026-07-27T18:45:54Z",
+  "last_updated": "2026-07-27T20:15:07Z",
   "reference_docs": [
     "framework/harness/console-mode.md",
     "framework/harness/dispatch-mode.md",
@@ -24,12 +24,12 @@
   },
   "evaluator_feedback": null,
   "generator_handoff": {
-    "feature_id": "F001",
+    "feature_id": "F002",
     "agent": "builder-codex",
     "transport": "local-cli",
     "outcome": "COMPLETED",
-    "report": "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F001-handoff.json",
-    "integrated_commit": "bd88e00"
+    "report": "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F002-handoff.json",
+    "integrated_commit": "087990d"
   },
   "session_notes": {
     "local": "【BL-HARNESS-DETAIL-MODEINTENT planning→building 2026-07-27】用户确认同时开放执行/角色与自治策略；只在下一次 /plan 消费；dispatch 摘要必须持久化。控制台保持观测面：只签发 intent，device agent 验签后暂存到 harness.json，Git 仍是真相源。Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback。"
