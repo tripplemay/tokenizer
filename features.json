@@ -4,7 +4,7 @@
     {
       "id": "F001",
       "title": "harness --modes 终端子命令：打印各项目模式指纹",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "退出码0且逐项目一行；含版本/漂移/形态/闸门；不触发网络；--list 与既有行为不变；tsc+test 全绿"
     }

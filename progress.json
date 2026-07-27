@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "终端里也能看到模式指纹；同时验证 dispatch 的外部 generator 路径",
   "total_features": 1,
-  "completed_features": 0,
+  "completed_features": 1,
   "fix_rounds": 0,
   "current_sprint": "BL-MODESCMD",
   "dashboard_url": null,
-  "last_updated": "2026-07-26T20:30:00Z",
+  "last_updated": "2026-07-27T05:00:00Z",
   "reference_docs": [],
   "docs": {
     "spec": "docs/specs/BL-MODESCMD-harness-modes-cli.md",
@@ -19,7 +19,7 @@
     "evaluator": "reviewer-kimi"
   },
   "evaluator_feedback": null,
-  "generator_handoff": null,
+  "generator_handoff": "F001 由外部 generator（Codex，local-cli）实现，编排者回流：新增 src/cli/harness-modes-print.ts（43 行）+ src/cli/index.ts 加 --modes 旗标（6 行）。回流四步已过：越界文件 0、spec-lock 稽核通过（复用既有 buildModeSnapshot，--modes 提前 return 不触发网络）、L1 由编排者重跑（tsc 干净 + 405 测试 + 命令实跑）、提交由编排者按 features.json 打 tag（7bdd03c）。外部实例两轮均无法提交（厂商沙箱禁写 .git），如实上报未伪造，框架据此改设计（v1.4.4 待写）。",
   "session_notes": {
     "local": "【BL-FWDRIFT reverifying→done 2026-07-26】两家异厂商 evaluator 复验一致 4/4 PASS；phase_advance 闸门由 tripplezhou@gmail.com 于 2026-07-26T19:19:44.298Z 在控制台批准（签名有效，中继落盘 b416ff5）。本批次同时是 harness 全链路在 tokenizer 自身上的首次实跑：plan→build→异厂商 fan-out 验收→debias_conflict 闸门→fixing→复验→phase_advance 闸门→done，闸门两次均由人在控制台批准。外部验收抓到 1 个真 bug（前导零非法输入被报成落后 9 版）与 2 处规格缺陷。框架侧 6 条沉淀待用户确认，见 harness-template/proposed-learnings.md。"
   },
