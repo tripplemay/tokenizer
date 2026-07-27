@@ -1,0 +1,47 @@
+{
+  "batch_id": "BL-HARNESS-DETAIL-MODEINTENT",
+  "feature_id": "F003",
+  "generator": "builder-codex",
+  "transport": "local-cli",
+  "attempts": [
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F003-22b62c526aaa",
+      "outcome": "TIMEOUT",
+      "duration_s": 2400,
+      "detail": "The implementation and focused verification completed, but the dispatch run timed out before a compliant handoff was finalized."
+    },
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F003-r2-22b62c526aaa",
+      "outcome": "COMPLETED",
+      "duration_s": 1161,
+      "source_artifact": "generator-handoff-f003-r2.json",
+      "corrections": [
+        "Reject unknown report, state, feature, lastHalt, and mode snapshot fields before business queries.",
+        "Reject absolute paths, raw channels, credentials, and multiline text from persisted summaries.",
+        "Accept valid UTC timestamps with arbitrary fractional-second precision.",
+        "Verify tenant ownership inside the Serializable report transaction before upsert."
+      ]
+    }
+  ],
+  "integration": {
+    "commit": "a1d345c",
+    "verify": "passed",
+    "typecheck": "passed",
+    "focused_tests": "152/152 passed",
+    "full_tests": "546 passed, 4 platform skips",
+    "production_build": "passed",
+    "lint": "passed",
+    "diff_check": "passed"
+  },
+  "files_touched": [
+    "app/api/harness/mode-intents/route.ts",
+    "app/api/harness/mode-intents/relay/route.ts",
+    "app/api/harness/report/route.ts",
+    "src/server/harness-mode-intent-api.ts",
+    "tests/server/harness-mode-intent-api.test.ts",
+    "tests/server/harness-mode-intents-relay-route.test.ts",
+    "tests/server/harness-mode-intents-route.test.ts",
+    "tests/server/harness-report-mode-intent.test.ts"
+  ],
+  "waiting": null
+}
