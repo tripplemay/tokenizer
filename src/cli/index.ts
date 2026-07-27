@@ -9,6 +9,7 @@ import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
 import { discoverHarnessRepos, runHarnessSync } from "./harness";
+import { formatHarnessModeLine } from "./harness-modes-print";
 import { installService, serviceStatus, uninstallService } from "./service";
 
 const program = new Command();
@@ -34,11 +35,15 @@ program.command("enroll").description("Enroll this device with a one-time enroll
   console.log(`Credentials ready: ${credentialsPath}`);
 });
 
-program.command("harness").description("Report harness orchestration state and relay signed gate decisions").option("--list", "Only list discovered harness projects").action(async (options: { list?: boolean }) => {
+program.command("harness").description("Report harness orchestration state and relay signed gate decisions").option("--list", "Only list discovered harness projects").option("--modes", "Show local mode snapshots for discovered harness projects").action(async (options: { list?: boolean; modes?: boolean }) => {
   const config = readConfig();
   const repos = discoverHarnessRepos(config);
   if (repos.length === 0) {
     console.log("No harness projects found under projectRoots (need both progress.json and harness-rules.md).");
+    return;
+  }
+  if (options.modes) {
+    for (const repo of repos) console.log(formatHarnessModeLine(repo));
     return;
   }
   for (const repo of repos) console.log(`${repo.name}  ${repo.repoKey}  ${repo.path}`);
