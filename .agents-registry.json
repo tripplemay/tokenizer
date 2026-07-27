@@ -49,6 +49,28 @@
       "timeout_s": 1800
     },
     {
+      "id": "reviewer-kimi-a2a",
+      "roles": [
+        "evaluator"
+      ],
+      "transport": "a2a",
+      "endpoint": "http://127.0.0.1:41241",
+      "model_family": "kimi",
+      "capabilities": [
+        "verify",
+        "l1_local",
+        "e2e",
+        "security_audit"
+      ],
+      "constraints": {
+        "l2": false,
+        "write_src": false,
+        "push": false
+      },
+      "timeout_s": 2400,
+      "notes": "Loopback A2A client descriptor；runner 由 reviewer-kimi local-cli descriptor 承载，临时演练必须配置 --idle-exit。"
+    },
+    {
       "id": "reviewer-codex",
       "roles": [
         "evaluator"
