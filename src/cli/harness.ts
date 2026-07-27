@@ -4,10 +4,18 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { writeFileAtomic } from "@/cli/atomic-file";
 import { canonicalJson } from "@/server/harness-sign";
+import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 import { normalizeGitRemote } from "./git";
 import { readCredentials, TokenizerConfig } from "./config";
 import { agentFetch } from "./fetch";
 import { buildModeSnapshot } from "./harness-modes";
+import { scanHarnessDispatchRuns } from "./harness-dispatch";
+import {
+  parseModeIntentRelayResponse,
+  readModeDefaultsReportSummary,
+  stageHarnessModeIntent,
+  type StagedModeIntentResult
+} from "./harness-mode-intents";
 
 /**
  * harness（Triad Workflow）编排状态的上报与闸门决策中继。
@@ -98,10 +106,14 @@ type ProgressJson = {
   dashboard_url?: string | null;
   autonomy?: { status?: string | null; last_halt?: { condition?: string | null; detail?: string | null } | null };
   pending_gate?: Record<string, unknown> | null;
+  mode_intent?: { intent_id?: string; applied_batch?: string; applied_at?: string } | null;
   features?: Array<Record<string, unknown>>;
 };
 
-type FeaturesJson = { features?: Array<{ id?: string; title?: string; status?: string; executor?: string }> };
+type FeaturesJson = {
+  sprint?: string;
+  features?: Array<{ id?: string; title?: string; status?: string; executor?: string }>;
+};
 
 /** 组装一个 harness 项目的上报载荷。读不到 progress.json 就返回 null（该项目本轮跳过）。 */
 export function buildReport(repo: HarnessRepo) {
@@ -110,6 +122,25 @@ export function buildReport(repo: HarnessRepo) {
   const featuresFile = readJson<FeaturesJson>(join(repo.path, "features.json"));
   const features = featuresFile?.features ?? progress.features ?? [];
   const completed = features.filter((f) => (f as { status?: string }).status === "completed").length;
+  const batches = new Set(
+    [progress.current_sprint, featuresFile?.sprint].filter((value): value is string => typeof value === "string" && value.length > 0)
+  );
+  const knownFeatures = new Set(
+    features.map((feature) => (feature as { id?: unknown }).id).filter((id): id is string => typeof id === "string")
+  );
+  const modeDefaults = readModeDefaultsReportSummary(repo.path);
+  const modeIntent = progress.mode_intent;
+  const appliedModeIntent =
+    modeIntent &&
+    typeof modeIntent.intent_id === "string" &&
+    typeof modeIntent.applied_batch === "string" &&
+    typeof modeIntent.applied_at === "string"
+      ? {
+          intentId: modeIntent.intent_id,
+          appliedAt: modeIntent.applied_at,
+          appliedBatch: modeIntent.applied_batch
+        }
+      : null;
 
   const gate = progress.pending_gate ?? null;
   return {
@@ -121,7 +152,7 @@ export function buildReport(repo: HarnessRepo) {
       fixRounds: progress.fix_rounds ?? 0,
       completed,
       total: features.length,
-      headSha: git(["rev-parse", "--short", "HEAD"], repo.path),
+      headSha: git(["rev-parse", "HEAD"], repo.path),
       signoff: progress.docs?.signoff ?? null,
       dashboardUrl: progress.dashboard_url ?? null,
       autonomyStatus: progress.autonomy?.status ?? null,
@@ -134,11 +165,47 @@ export function buildReport(repo: HarnessRepo) {
       })),
       // 模式指纹：六个维度的开关散在五个文件里，人要回答「这项目现在什么模式」得逐个翻。
       // 只读镜像——算错只让控制台显示错，机器上的校验器一道不少。
-      modes: buildModeSnapshot(repo.path)
+      modes: buildModeSnapshot(repo.path),
+      modeDefaults,
+      modeIntent: appliedModeIntent
     },
     // 只上报还没有决策的闸门；已决策的以服务端记录为准，避免本机旧副本覆盖
-    gate: gate && !gate.decision ? gate : null
+    gate: gate && !gate.decision ? gate : null,
+    dispatchRuns: scanHarnessDispatchRuns(repo.path, batches, knownFeatures)
   };
+}
+
+type ModeIntentAck =
+  | {
+      projectId: string;
+      intentId: string;
+      status: "staged";
+      stagedAt: string;
+      stagedCommitSha: string;
+    }
+  | {
+      projectId: string;
+      intentId: string;
+      status: "applied";
+      appliedAt: string;
+      appliedBatch: string;
+    }
+  | {
+      projectId: string;
+      intentId: string;
+      status: "failed";
+      failedAt: string;
+      failureCode: string;
+    };
+
+async function postModeIntentAck(config: TokenizerConfig, deviceToken: string, ack: ModeIntentAck): Promise<void> {
+  const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/mode-intents/relay`, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Bearer ${deviceToken}` },
+    body: JSON.stringify(ack),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+  if (!response.ok) throw new Error(`mode intent ACK failed: ${response.status}`);
 }
 
 /**
@@ -150,10 +217,11 @@ export function buildReport(repo: HarnessRepo) {
  */
 export async function reportHarnessState(
   config: TokenizerConfig
-): Promise<{ reported: number; skippedReports: string[] }> {
+): Promise<{ reported: number; skippedReports: string[]; skippedAppliedAcks: string[] }> {
   const repos = discoverHarnessRepos(config);
   const credentials = readCredentials();
   const skippedReports: string[] = [];
+  const skippedAppliedAcks: string[] = [];
   let reported = 0;
 
   for (const repo of repos) {
@@ -170,8 +238,28 @@ export async function reportHarnessState(
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
       if (!response.ok) {
-        skippedReports.push(`${repo.name}: 上报失败 ${response.status} ${await response.text()}`);
+        skippedReports.push(`${repo.name}: 上报失败 ${response.status}`);
         continue;
+      }
+      const responseBody = (await response.json().catch(() => null)) as { harnessProjectId?: unknown } | null;
+      const modeIntent = body.state.modeIntent;
+      if (
+        modeIntent &&
+        typeof responseBody?.harnessProjectId === "string" &&
+        responseBody.harnessProjectId.length > 0 &&
+        responseBody.harnessProjectId.length <= 128
+      ) {
+        await postModeIntentAck(config, credentials.deviceToken, {
+          projectId: responseBody.harnessProjectId,
+          intentId: modeIntent.intentId,
+          status: "applied",
+          appliedAt: modeIntent.appliedAt,
+          appliedBatch: modeIntent.appliedBatch
+        }).catch((error) => {
+          skippedAppliedAcks.push(
+            `${repo.name}: applied ACK 失败 ${error instanceof Error ? error.message : String(error)}`
+          );
+        });
       }
     } catch (error) {
       skippedReports.push(`${repo.name}: 上报失败 ${error instanceof Error ? error.message : String(error)}`);
@@ -179,7 +267,83 @@ export async function reportHarnessState(
     }
     reported += 1;
   }
-  return { reported, skippedReports };
+  return { reported, skippedReports, skippedAppliedAcks };
+}
+
+function ackForStageResult(result: Exclude<StagedModeIntentResult, { status: "ack_pending" }>): ModeIntentAck {
+  return result.status === "staged"
+    ? {
+        projectId: result.projectId,
+        intentId: result.intentId,
+        status: "staged",
+        stagedAt: result.stagedAt,
+        stagedCommitSha: result.stagedCommitSha
+      }
+    : {
+        projectId: result.projectId,
+        intentId: result.intentId,
+        status: "failed",
+        failedAt: result.failedAt,
+        failureCode: result.failureCode
+      };
+}
+
+/** Pull, validate, stage, and ACK signed defaults without touching progress or gate state. */
+export async function applyHarnessModeIntents(
+  config: TokenizerConfig
+): Promise<{ stagedIntents: number; skippedModeIntents: string[] }> {
+  const credentials = readCredentials();
+  const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/mode-intents/relay`, {
+    headers: { authorization: `Bearer ${credentials.deviceToken}` },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+  if (!response.ok) throw new Error(`harness mode intents failed: ${response.status}`);
+  const intents = parseModeIntentRelayResponse(await response.text());
+  if (intents.length === 0) return { stagedIntents: 0, skippedModeIntents: [] };
+
+  const repos = discoverHarnessRepos(config);
+  const byRepoKey = new Map<string, HarnessRepo>();
+  for (const repo of repos) {
+    try {
+      byRepoKey.set(normalizeHarnessRepoKey(repo.repoKey), repo);
+    } catch {
+      /* A local-only repo cannot be a valid signed relay target. */
+    }
+  }
+
+  let stagedIntents = 0;
+  const skippedModeIntents: string[] = [];
+  for (const item of intents) {
+    let repo: HarnessRepo | undefined;
+    try {
+      repo = byRepoKey.get(normalizeHarnessRepoKey(item.repoKey));
+    } catch {
+      repo = undefined;
+    }
+    const now = new Date();
+    const result = repo
+      ? stageHarnessModeIntent(repo, item, now)
+      : {
+          status: "failed" as const,
+          projectId: item.projectId,
+          intentId: item.intent.intent_id,
+          failedAt: now.toISOString(),
+          failureCode: "repo_not_found"
+        };
+    if (result.status === "staged") stagedIntents += 1;
+    else if (result.status === "ack_pending") {
+      stagedIntents += 1;
+      skippedModeIntents.push(`${result.intentId}: staged ACK deferred until exact retry`);
+      continue;
+    } else skippedModeIntents.push(`${result.intentId}: ${result.failureCode}`);
+
+    await postModeIntentAck(config, credentials.deviceToken, ackForStageResult(result)).catch((error) => {
+      skippedModeIntents.push(
+        `${result.intentId}: ACK 失败 ${error instanceof Error ? error.message : String(error)}`
+      );
+    });
+  }
+  return { stagedIntents, skippedModeIntents };
 }
 
 type RelayedDecision = {
@@ -289,17 +453,25 @@ export async function applyHarnessDecisions(
 export async function runHarnessSync(config: TokenizerConfig): Promise<{
   reported: number;
   skippedReports: string[];
+  skippedAppliedAcks: string[];
   applied: number;
   skipped: string[];
+  stagedIntents: number;
+  skippedModeIntents: string[];
 }> {
   const fail = (error: unknown) => (error instanceof Error ? error.message : String(error));
   const report = await reportHarnessState(config).catch((error) => ({
     reported: 0,
-    skippedReports: [`report: ${fail(error)}`]
+    skippedReports: [`report: ${fail(error)}`],
+    skippedAppliedAcks: []
+  }));
+  const modeIntents = await applyHarnessModeIntents(config).catch((error) => ({
+    stagedIntents: 0,
+    skippedModeIntents: [`mode-intent: ${fail(error)}`]
   }));
   const relay = await applyHarnessDecisions(config).catch((error) => ({
     applied: 0,
     skipped: [`relay: ${fail(error)}`]
   }));
-  return { ...report, ...relay };
+  return { ...report, ...relay, ...modeIntents };
 }

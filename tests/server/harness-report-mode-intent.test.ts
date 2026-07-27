@@ -49,7 +49,8 @@ function modes() {
       issues: []
     },
     gate: { pubInstalled: true, guardMode: "signature", pendingGateId: null },
-    machinery: { denyListMerged: true, hooks: ["dispatch"], missing: [] }
+    machinery: { denyListMerged: true, hooks: ["dispatch"], missing: [] },
+    pendingDefaults: null
   };
 }
 

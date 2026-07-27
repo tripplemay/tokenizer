@@ -18,9 +18,13 @@ function log(message: string) {
 // 跳过的原因**逐条落日志**：闸门中继一旦长期跳过（比如仓库缺 console.pub），
 // 现象是「网页上批了、机器却没动」——这条日志是唯一能解释它的线索。
 function logHarness(h: Awaited<ReturnType<typeof runHarnessSync>>) {
-  if (h.reported > 0 || h.applied > 0) log(`harness reported=${h.reported} relayed=${h.applied}`);
+  if (h.reported > 0 || h.applied > 0 || h.stagedIntents > 0) {
+    log(`harness reported=${h.reported} relayed=${h.applied} mode_intents=${h.stagedIntents}`);
+  }
   for (const reason of h.skippedReports) log(`harness report skip ${reason}`);
+  for (const reason of h.skippedAppliedAcks) log(`harness applied ACK skip ${reason}`);
   for (const reason of h.skipped) log(`harness relay skip ${reason}`);
+  for (const reason of h.skippedModeIntents) log(`harness mode intent skip ${reason}`);
 }
 
 export async function runOnce() {

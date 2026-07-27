@@ -49,9 +49,11 @@ program.command("harness").description("Report harness orchestration state and r
   for (const repo of repos) console.log(`${repo.name}  ${repo.repoKey}  ${repo.path}`);
   if (options.list) return;
   const result = await runHarnessSync(config);
-  console.log(`Reported: ${result.reported}  Relayed: ${result.applied}`);
+  console.log(`Reported: ${result.reported}  Relayed: ${result.applied}  Mode intents: ${result.stagedIntents}`);
   for (const reason of result.skippedReports) console.log(`  report skip ${reason}`);
+  for (const reason of result.skippedAppliedAcks) console.log(`  applied ACK skip ${reason}`);
   for (const reason of result.skipped) console.log(`  relay skip  ${reason}`);
+  for (const reason of result.skippedModeIntents) console.log(`  mode skip   ${reason}`);
 });
 
 program.command("collect").description("Collect local usage events into queue").action(() => {

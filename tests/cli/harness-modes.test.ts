@@ -1,9 +1,11 @@
-import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import { createHash, generateKeyPairSync, sign as edSign } from "node:crypto";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildModeSnapshot, readFramework } from "@/cli/harness-modes";
+import { canonicalJson } from "@/server/harness-sign";
 
 /**
  * 模式指纹是控制台「看一眼就知道这项目跑在什么模式」的唯一数据来源。
@@ -27,7 +29,7 @@ const REGISTRY = {
     { id: "main-claude", roles: ["generator"], transport: "subagent", model_family: "claude" },
     { id: "reviewer-claude", roles: ["evaluator"], transport: "subagent", model_family: "claude" },
     { id: "builder-codex", roles: ["generator"], transport: "local-cli", adapter: "codex",
-      model_family: "codex", sandbox: { home_dir: "~/x" } },
+      model_family: "codex", capabilities: ["build", "fix"], sandbox: { home_dir: "~/x" } },
     { id: "reviewer-kimi", roles: ["evaluator"], transport: "local-cli", adapter: "kimi",
       model_family: "kimi", sandbox: { home_dir: "~/y" } }
   ]
@@ -69,6 +71,49 @@ describe("执行形态", () => {
 });
 
 describe("独立性与沙箱", () => {
+  it("上报 registry capabilities 与有界待生效 defaults 摘要", () => {
+    const now = Date.parse("2026-07-27T12:00:00.000Z");
+    const { privateKey, publicKey } = generateKeyPairSync("ed25519");
+    const payload = {
+      intent_id: "intent-1",
+      repo_key: "github.com/acme/repo",
+      expected_head_sha: "a".repeat(40),
+      desired: {
+        execution: {
+          profile: "heterogeneous",
+          role_assignments: { generator: "builder-codex", evaluator: "reviewer-kimi" }
+        },
+        autonomy: { enabled: false }
+      },
+      issued_by: "owner@example.test",
+      issued_at: "2026-07-27T11:00:00.000Z",
+      intent_expires_at: "2026-07-28T12:00:00.000Z"
+    } as const;
+    const intent = {
+      ...payload,
+      sig: edSign(null, Buffer.from(canonicalJson(payload)), privateKey).toString("base64")
+    };
+    write(".agents-registry.json", JSON.stringify(REGISTRY));
+    execFileSync("git", ["init", "-q", repo]);
+    execFileSync("git", ["remote", "add", "origin", "https://github.com/acme/repo.git"], { cwd: repo });
+    write(".claude/console/console.pub", publicKey.export({ type: "spki", format: "pem" }).toString());
+    write("harness.json", JSON.stringify({
+      framework: {},
+      project: { name: "fixture", mode_defaults: { intent, staged_at: "2026-07-27T11:05:00.000Z" } }
+    }));
+
+    const snapshot = buildModeSnapshot(repo, now);
+    expect(snapshot.dispatch.agents.find((agent) => agent.id === "builder-codex")?.capabilities).toEqual(["build", "fix"]);
+    expect(snapshot.pendingDefaults).toMatchObject({
+      intentId: "intent-1",
+      execution: {
+        profile: "heterogeneous",
+        roleAssignments: { generator: "builder-codex", evaluator: "reviewer-kimi" }
+      },
+      autonomy: { enabled: false, expiresAt: null }
+    });
+  });
+
   it("🔴 generator 与 evaluator 同 family 必须报出来", () => {
     write(".agents-registry.json", JSON.stringify(REGISTRY));
     write("progress.json", JSON.stringify({

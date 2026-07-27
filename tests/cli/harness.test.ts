@@ -14,7 +14,13 @@ vi.mock("@/cli/config", async (importOriginal) => {
   return { ...actual, readCredentials: () => credentialsMock };
 });
 
-import { applyHarnessDecisions, buildReport, discoverHarnessRepos, runHarnessSync } from "@/cli/harness";
+import {
+  applyHarnessDecisions,
+  buildReport,
+  discoverHarnessRepos,
+  reportHarnessState,
+  runHarnessSync
+} from "@/cli/harness";
 import { canonicalJson } from "@/server/harness-sign";
 import { sign as edSign, createPrivateKey } from "node:crypto";
 
@@ -64,6 +70,7 @@ beforeEach(() => {
   git(["init", "-q", repo], root);
   git(["config", "user.email", "t@t"]);
   git(["config", "user.name", "t"]);
+  git(["remote", "add", "origin", "https://github.com/acme/myproject.git"]);
 
   const keyDir = mkdtempSync(join(tmpdir(), "harness-key-"));
   const privPath = join(keyDir, "console.key");
@@ -72,6 +79,7 @@ beforeEach(() => {
   privPem = readFileSync(privPath, "utf8");
 
   writeFileSync(join(repo, "harness-rules.md"), "# harness\n");
+  writeFileSync(join(repo, "harness.json"), `${JSON.stringify({ framework: {}, project: { name: "myproject" } }, null, 2)}\n`);
   writeFileSync(
     join(repo, "features.json"),
     JSON.stringify({ features: [
@@ -96,14 +104,39 @@ function mockDecisions(decisions: unknown[]) {
 
 /** 分别桩住两个端点 —— 上报与中继必须能各自失败，才测得出「一步失败不拖住另一步」。 */
 function mockRoutes(options: { reportOk?: boolean; decisions?: unknown[] }) {
-  fetchMock.mockImplementation(async (url: unknown) => {
+  fetchMock.mockImplementation(async (url: unknown, init?: { method?: string }) => {
     if (String(url).includes("/api/harness/report")) {
       return options.reportOk === false
         ? { ok: false, status: 500, text: async () => "server exploded" }
-        : { ok: true, json: async () => ({ ok: true }) };
+        : { ok: true, json: async () => ({ ok: true, harnessProjectId: "project-1" }) };
+    }
+    if (String(url).includes("/api/harness/mode-intents/relay")) {
+      return init?.method === "POST"
+        ? { ok: true, status: 200 }
+        : { ok: true, text: async () => JSON.stringify({ intents: [] }) };
     }
     return { ok: true, json: async () => ({ decisions: options.decisions ?? [] }) };
   });
+}
+
+function signedModeIntent(expectedHead = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo, encoding: "utf8" }).trim()) {
+  const payload = {
+    intent_id: "intent-mode-1",
+    repo_key: "github.com/acme/myproject",
+    expected_head_sha: expectedHead,
+    desired: { execution: { profile: "fast", role_assignments: null }, autonomy: { enabled: false } },
+    issued_by: "owner@example.test",
+    issued_at: "2026-07-27T11:00:00.000Z",
+    intent_expires_at: "2099-07-28T12:00:00.000Z"
+  };
+  return {
+    projectId: "project-1",
+    repoKey: "github.com/acme/myproject",
+    intent: {
+      ...payload,
+      sig: edSign(null, Buffer.from(canonicalJson(payload), "utf8"), createPrivateKey(privPem)).toString("base64")
+    }
+  };
 }
 
 /** 在同一个 projectRoots 下再造一个 harness 项目（无待批闸门）。 */
@@ -134,12 +167,55 @@ describe("buildReport", () => {
     expect(body.state.completed).toBe(2);
     expect(body.state.total).toBe(3);
     expect(body.state.fixRounds).toBe(1);
+    expect(body.state.headSha).toMatch(/^[0-9a-f]{40}$/);
     expect((body.gate as { id: string }).id).toBe("BL-042-verifying-done-w7");
   });
 
   it("已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖", () => {
     writeProgress({ ...makeGate(), decision: { action: "approve" } });
     expect(buildReport(discoverHarnessRepos(config())[0])!.gate).toBeNull();
+  });
+});
+
+describe("mode intent report ACK", () => {
+  it("reports progress.mode_intent as applied and sends the identical applied ACK", async () => {
+    writeFileSync(
+      join(repo, "progress.json"),
+      `${JSON.stringify({
+        status: "building",
+        current_sprint: "BL-NEXT",
+        pending_gate: null,
+        mode_intent: {
+          intent_id: "intent-mode-1",
+          applied_batch: "BL-NEXT",
+          applied_at: "2026-07-27T12:00:00.000Z"
+        }
+      }, null, 2)}\n`
+    );
+    git(["commit", "-qam", "applied mode"]);
+    const posted: unknown[] = [];
+    fetchMock.mockImplementation(async (url: unknown, init?: { method?: string; body?: string }) => {
+      if (String(url).includes("/api/harness/report")) {
+        return { ok: true, json: async () => ({ harnessProjectId: "project-1" }) };
+      }
+      if (String(url).includes("/api/harness/mode-intents/relay") && init?.method === "POST") {
+        posted.push(JSON.parse(init.body ?? "null"));
+        return { ok: false, status: 503 };
+      }
+      throw new Error("unexpected endpoint");
+    });
+
+    const result = await reportHarnessState(config());
+    expect(result.reported).toBe(1);
+    expect(result.skippedReports).toEqual([]);
+    expect(result.skippedAppliedAcks).toHaveLength(1);
+    expect(posted).toEqual([{
+      projectId: "project-1",
+      intentId: "intent-mode-1",
+      status: "applied",
+      appliedAt: "2026-07-27T12:00:00.000Z",
+      appliedBatch: "BL-NEXT"
+    }]);
   });
 });
 
@@ -218,6 +294,80 @@ describe("applyHarnessDecisions", () => {
     expect(result.skippedReports[0]).toContain("上报失败");
     expect(result.applied).toBe(1);
     expect(JSON.parse(readFileSync(join(repo, "progress.json"), "utf8")).pending_gate.decision.action).toBe("approve");
+  });
+
+  it("report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit", async () => {
+    const mode = signedModeIntent();
+    const decision = signedDecision("BL-042-verifying-done-w7");
+    const calls: string[] = [];
+    fetchMock.mockImplementation(async (url: unknown, init?: { method?: string; body?: string }) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) {
+        calls.push("report");
+        throw new Error("report unavailable");
+      }
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        if (init?.method === "POST") {
+          calls.push(`mode-ack:${JSON.parse(init.body ?? "{}").status}`);
+          return { ok: true, status: 200 };
+        }
+        calls.push("mode-get");
+        return { ok: true, text: async () => JSON.stringify({ intents: [mode] }) };
+      }
+      calls.push("gate-get");
+      return {
+        ok: true,
+        json: async () => ({
+          decisions: [{
+            repoKey: "github.com/acme/myproject",
+            gate_id: "BL-042-verifying-done-w7",
+            decision
+          }]
+        })
+      };
+    });
+
+    const result = await runHarnessSync(config());
+    expect(result.reported).toBe(0);
+    expect(result.stagedIntents).toBe(1);
+    expect(result.applied).toBe(1);
+    expect(calls).toEqual(["report", "mode-get", "mode-ack:staged", "gate-get"]);
+    expect(JSON.parse(readFileSync(join(repo, "harness.json"), "utf8")).project.mode_defaults.intent.intent_id)
+      .toBe("intent-mode-1");
+    expect(JSON.parse(readFileSync(join(repo, "progress.json"), "utf8")).pending_gate.decision.action)
+      .toBe("approve");
+  });
+
+  it.each(["mode", "gate"] as const)("%s relay 失败不阻塞另外两步", async (failedStep) => {
+    const mode = signedModeIntent();
+    const decision = signedDecision("BL-042-verifying-done-w7");
+    fetchMock.mockImplementation(async (url: unknown, init?: { method?: string }) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) {
+        return { ok: true, json: async () => ({ harnessProjectId: "project-1" }) };
+      }
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        if (init?.method === "POST") return { ok: true, status: 200 };
+        if (failedStep === "mode") throw new Error("mode relay unavailable");
+        return { ok: true, text: async () => JSON.stringify({ intents: [mode] }) };
+      }
+      if (failedStep === "gate") throw new Error("gate relay unavailable");
+      return {
+        ok: true,
+        json: async () => ({
+          decisions: [{
+            repoKey: "github.com/acme/myproject",
+            gate_id: "BL-042-verifying-done-w7",
+            decision
+          }]
+        })
+      };
+    });
+
+    const result = await runHarnessSync(config());
+    expect(result.reported).toBe(1);
+    expect(result.stagedIntents).toBe(failedStep === "mode" ? 0 : 1);
+    expect(result.applied).toBe(failedStep === "gate" ? 0 : 1);
   });
 
   it("本机闸门已有决策时不覆盖", async () => {

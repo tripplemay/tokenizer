@@ -41,14 +41,25 @@ function modeSnapshot() {
           transport: "local-cli",
           modelFamily: "codex",
           adapter: "codex",
-          sandboxed: true
+          sandboxed: true,
+          capabilities: ["build", "fix"]
         }
       ],
       familyExclusive: true,
       issues: []
     },
     gate: { pubInstalled: true, guardMode: "signature", pendingGateId: null },
-    machinery: { denyListMerged: true, hooks: ["dispatch"], missing: [] }
+    machinery: { denyListMerged: true, hooks: ["dispatch"], missing: [] },
+    pendingDefaults: {
+      intentId: "intent-1",
+      stagedAt: "2026-07-27T12:00:00.000Z",
+      intentExpiresAt: "2026-07-28T12:00:00.000Z",
+      execution: {
+        profile: "heterogeneous",
+        roleAssignments: { generator: "builder-codex", evaluator: "reviewer-kimi" }
+      },
+      autonomy: { enabled: false, expiresAt: null }
+    }
   };
 }
 
@@ -88,7 +99,8 @@ describe("mode snapshot extraction", () => {
             transport: "local-cli",
             modelFamily: "codex",
             adapter: "codex",
-            sandboxed: true
+            sandboxed: true,
+            capabilities: ["build", "fix"]
           },
           {
             id: "reviewer-kimi",
@@ -164,6 +176,40 @@ describe("persisted mode snapshot validation", () => {
 
   it("rejects unknown nested mode keys instead of silently stripping them", () => {
     expect(() => parseModeSnapshot({ ...modeSnapshot(), stdout: "raw" })).toThrow(/unsupported/);
+  });
+
+  it("keeps accepting old agent v3 snapshots without F004 fields", () => {
+    const { pendingDefaults: _pendingDefaults, ...oldSnapshot } = modeSnapshot();
+    delete (oldSnapshot.dispatch.agents[0] as { capabilities?: string[] }).capabilities;
+    expect(parseModeSnapshot(oldSnapshot)).toBe(oldSnapshot);
+  });
+
+  it("fully validates every present F004 field", () => {
+    const sensitive = modeSnapshot();
+    sensitive.dispatch.agents[0].capabilities = ["env=secret"];
+    expect(() => parseModeSnapshot(sensitive)).toThrow(/may not be persisted/);
+
+    const tooManyCapabilities = modeSnapshot();
+    tooManyCapabilities.dispatch.agents[0].capabilities = Array.from({ length: 33 }, (_, index) => `cap-${index}`);
+    expect(() => parseModeSnapshot(tooManyCapabilities)).toThrow(/bounded array/);
+
+    const unknownDefaultsField = modeSnapshot();
+    Object.assign(unknownDefaultsField.pendingDefaults, { stdout: "raw" });
+    expect(() => parseModeSnapshot(unknownDefaultsField)).toThrow(/unsupported/);
+  });
+
+  it("enforces pending profile assignments and staging-before-expiry ordering", () => {
+    const fastWithAssignments = modeSnapshot();
+    fastWithAssignments.pendingDefaults.execution.profile = "fast";
+    expect(() => parseModeSnapshot(fastWithAssignments)).toThrow(/fast profile requires null/);
+
+    const heterogeneousWithoutAssignments = modeSnapshot();
+    heterogeneousWithoutAssignments.pendingDefaults.execution.roleAssignments = null;
+    expect(() => parseModeSnapshot(heterogeneousWithoutAssignments)).toThrow(/require roleAssignments/);
+
+    const reversedWindow = modeSnapshot();
+    reversedWindow.pendingDefaults.stagedAt = reversedWindow.pendingDefaults.intentExpiresAt;
+    expect(() => parseModeSnapshot(reversedWindow)).toThrow(/must precede/);
   });
 });
 

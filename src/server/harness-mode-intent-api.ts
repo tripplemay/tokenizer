@@ -414,7 +414,14 @@ function modeCount(value: unknown, label: string): void {
 
 export function parseModeSnapshot(value: unknown): UnknownRecord | null {
   if (value === undefined || value === null) return null;
-  const modes = exactRecord(value, "state.modes", ["framework", "execution", "autonomy", "dispatch", "gate", "machinery"]);
+  const modes = exactRecord(value, "state.modes", [
+    "framework",
+    "execution",
+    "autonomy",
+    "dispatch",
+    "gate",
+    "machinery"
+  ], ["pendingDefaults"]);
 
   if (modes.framework !== null) {
     const framework = exactRecord(modes.framework, "state.modes.framework", [
@@ -488,13 +495,16 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
       "modelFamily",
       "adapter",
       "sandboxed"
-    ]);
+    ], ["capabilities"]);
     modeString(agent.id, "state.modes.dispatch agent id", 128);
     modeStrings(agent.roles, "state.modes.dispatch agent roles", 8, 64);
     modeString(agent.transport, "state.modes.dispatch agent transport", 32);
     modeString(agent.modelFamily, "state.modes.dispatch agent modelFamily", 128, true);
     modeString(agent.adapter, "state.modes.dispatch agent adapter", 128, true);
     modeBoolean(agent.sandboxed, "state.modes.dispatch agent sandboxed");
+    if (agent.capabilities !== undefined) {
+      modeStrings(agent.capabilities, "state.modes.dispatch agent capabilities", 32, 64);
+    }
   }
   modeStrings(dispatch.issues, "state.modes.dispatch.issues", 100, 1_000);
 
@@ -510,6 +520,74 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
   modeBoolean(machinery.denyListMerged, "state.modes.machinery.denyListMerged", true);
   modeStrings(machinery.hooks, "state.modes.machinery.hooks", 100, 128);
   modeStrings(machinery.missing, "state.modes.machinery.missing", 100, 128);
+
+  if (modes.pendingDefaults !== undefined && modes.pendingDefaults !== null) {
+    const defaults = exactRecord(modes.pendingDefaults, "state.modes.pendingDefaults", [
+      "intentId",
+      "stagedAt",
+      "intentExpiresAt",
+      "execution",
+      "autonomy"
+    ]);
+    modeString(defaults.intentId, "state.modes.pendingDefaults.intentId", 128);
+    const stagedAt = parseUtcDate(defaults.stagedAt, "state.modes.pendingDefaults.stagedAt");
+    const intentExpiresAt = parseUtcDate(
+      defaults.intentExpiresAt,
+      "state.modes.pendingDefaults.intentExpiresAt"
+    );
+    if (stagedAt.getTime() >= intentExpiresAt.getTime()) {
+      return reject(
+        "invalid_mode_snapshot",
+        "state.modes.pendingDefaults.stagedAt must precede intentExpiresAt"
+      );
+    }
+
+    const pendingExecution = exactRecord(defaults.execution, "state.modes.pendingDefaults.execution", [
+      "profile",
+      "roleAssignments"
+    ]);
+    const pendingProfile = modeString(
+      pendingExecution.profile,
+      "state.modes.pendingDefaults.execution.profile",
+      32
+    );
+    if (!new Set(["fast", "heterogeneous", "slow"]).has(pendingProfile!)) {
+      return reject("invalid_mode_snapshot", "state.modes.pendingDefaults.execution.profile is not recognized");
+    }
+    if (pendingProfile === "fast" && pendingExecution.roleAssignments !== null) {
+      return reject(
+        "invalid_mode_snapshot",
+        "state.modes.pendingDefaults fast profile requires null roleAssignments"
+      );
+    }
+    if (pendingProfile !== "fast" && pendingExecution.roleAssignments === null) {
+      return reject(
+        "invalid_mode_snapshot",
+        "state.modes.pendingDefaults heterogeneous and slow profiles require roleAssignments"
+      );
+    }
+    if (pendingExecution.roleAssignments !== null) {
+      const assignments = exactRecord(
+        pendingExecution.roleAssignments,
+        "state.modes.pendingDefaults.execution.roleAssignments",
+        ["generator", "evaluator"]
+      );
+      modeString(assignments.generator, "state.modes.pendingDefaults.execution.roleAssignments.generator", 128);
+      modeString(assignments.evaluator, "state.modes.pendingDefaults.execution.roleAssignments.evaluator", 128);
+    }
+
+    const pendingAutonomy = exactRecord(defaults.autonomy, "state.modes.pendingDefaults.autonomy", [
+      "enabled",
+      "expiresAt"
+    ]);
+    modeBoolean(pendingAutonomy.enabled, "state.modes.pendingDefaults.autonomy.enabled");
+    if (pendingAutonomy.expiresAt !== null) {
+      parseUtcDate(pendingAutonomy.expiresAt, "state.modes.pendingDefaults.autonomy.expiresAt");
+    }
+    if ((pendingAutonomy.enabled === true) !== (pendingAutonomy.expiresAt !== null)) {
+      return reject("invalid_mode_snapshot", "state.modes.pendingDefaults.autonomy expiry does not match enabled");
+    }
+  }
   return modes;
 }
 

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { readPendingModeDefaults, type PendingModeDefaultsSummary } from "./harness-mode-intents";
 
 /**
  * harness 项目的**模式指纹** —— 「这个项目现在到底跑在什么模式下」的只读快照。
@@ -32,6 +33,7 @@ export type ModeSnapshot = {
   dispatch: { enabled: boolean; assignments: Record<string, string>; agents: DispatchAgent[]; familyExclusive: boolean | null; issues: string[] };
   gate: { pubInstalled: boolean; guardMode: "signature" | "head-compare"; pendingGateId: string | null };
   machinery: { denyListMerged: boolean | null; hooks: string[]; missing: string[] };
+  pendingDefaults: PendingModeDefaultsSummary | null;
 };
 
 export type DispatchAgent = {
@@ -41,6 +43,7 @@ export type DispatchAgent = {
   modelFamily: string | null;
   adapter: string | null;
   sandboxed: boolean;
+  capabilities: string[];
 };
 
 function readJson<T>(path: string): T | null {
@@ -126,8 +129,20 @@ type Registry = {
     model_family?: string;
     adapter?: string;
     sandbox?: unknown;
+    capabilities?: unknown;
   }>;
 };
+
+function safeCapabilities(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [
+    ...new Set(
+      value
+        .filter((item): item is string => typeof item === "string" && /^[A-Za-z0-9._-]{1,64}$/.test(item))
+        .slice(0, 32)
+    )
+  ];
+}
 
 export function readDispatch(repoPath: string, assignments: Record<string, string>): ModeSnapshot["dispatch"] {
   const registry = readJson<Registry>(join(repoPath, ".agents-registry.json"));
@@ -140,7 +155,8 @@ export function readDispatch(repoPath: string, assignments: Record<string, strin
     transport: a.transport ?? "unknown",
     modelFamily: a.model_family ?? null,
     adapter: a.adapter ?? null,
-    sandboxed: Boolean(a.sandbox)
+    sandboxed: Boolean(a.sandbox),
+    capabilities: safeCapabilities(a.capabilities)
   }));
   const byId = new Map(agents.map((a) => [a.id, a]));
   const issues: string[] = [];
@@ -246,6 +262,7 @@ export function buildModeSnapshot(repoPath: string, now: number = Date.now()): M
       guardMode: pubInstalled ? "signature" : "head-compare",
       pendingGateId: progress.pending_gate?.id ?? null
     },
-    machinery: readMachinery(repoPath)
+    machinery: readMachinery(repoPath),
+    pendingDefaults: readPendingModeDefaults(repoPath, new Date(now))
   };
 }
