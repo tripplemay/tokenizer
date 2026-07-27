@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.4.0",
-    "commit": "d376916"
+    "version": "1.4.1",
+    "commit": "9b63b81"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -97,8 +97,8 @@
     },
     ".claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "99f31395b2bcc122f839b1f6d3be301b60776039043acdafc8d5fecdef9bf123",
-      "upstream": "99f31395b2bcc122f839b1f6d3be301b60776039043acdafc8d5fecdef9bf123"
+      "sha256": "d0381012467e6e24d8e9c1d49614cc5c24595071b7460d511bd6830b60da92e8",
+      "upstream": "d0381012467e6e24d8e9c1d49614cc5c24595071b7460d511bd6830b60da92e8"
     },
     ".claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "3c18f926a3dd9475b27e5ecc6db5d198ea76948296c7acc4fe6fe9ea9f8085c7",
-      "upstream": "3c18f926a3dd9475b27e5ecc6db5d198ea76948296c7acc4fe6fe9ea9f8085c7"
+      "sha256": "7e8c4fb5c49fa75c8ad142776a32deab01f3fbec4c0b79b44253a342402b1bdf",
+      "upstream": "7e8c4fb5c49fa75c8ad142776a32deab01f3fbec4c0b79b44253a342402b1bdf"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "78b591400c56b7b67b8cb3b2b8a8e65e9093897f02ce0878e6b5405c68620fa7",
-      "upstream": "78b591400c56b7b67b8cb3b2b8a8e65e9093897f02ce0878e6b5405c68620fa7"
+      "sha256": "7d072b48526b023950e4c48db01e8c273554a6401119f5691e7589ba9bc65d9d",
+      "upstream": "7d072b48526b023950e4c48db01e8c273554a6401119f5691e7589ba9bc65d9d"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -487,8 +487,8 @@
     },
     "framework/templates/claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "99f31395b2bcc122f839b1f6d3be301b60776039043acdafc8d5fecdef9bf123",
-      "upstream": "99f31395b2bcc122f839b1f6d3be301b60776039043acdafc8d5fecdef9bf123"
+      "sha256": "d0381012467e6e24d8e9c1d49614cc5c24595071b7460d511bd6830b60da92e8",
+      "upstream": "d0381012467e6e24d8e9c1d49614cc5c24595071b7460d511bd6830b60da92e8"
     },
     "framework/templates/claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",

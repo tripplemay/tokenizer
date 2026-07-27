@@ -5,6 +5,34 @@
 
 ---
 
+## v1.4.1 — 2026-07-26（修：macOS 上超时被误判成失败 —— 「幂等重派」承诺从未生效）
+
+**来源：** tokenizer 上验证 dispatch 的**失败路径**（此前四次派活全走成功路径）。
+
+**病灶：** `sandbox-profile.sh` 的 wall-clock 封顶在无 GNU `timeout` 时走 bash watchdog，
+watchdog 用 SIGTERM 杀子进程 → `wait` 返回 **143**；而 outcome 判定只映射 124/137，
+143 落进 `FAILED`。**macOS 默认没有 GNU timeout，于是这条路径在本机永远被误判。**
+
+后果不是标签好看与否：文档承诺「TIMEOUT → 回执 CANCELED → **凭 task_id 幂等重派**」，
+实际得到「FAILED → 重派上限 1 次后硬停」；`dispatch-run` 本该退 124 也退了 0，
+上层同样分辨不出。跑得慢的外部 CLI 会被当成跑挂的。
+
+**🔴 修法不是「把 143 也算超时」。** 143 同样来自「外部把整条命令 kill 了」——编排者所在
+会话超时就是这样（本次验证中实际发生过一次）。只看退出码则两种情形不可区分：要么漏判超时，
+要么把外部中断误判成超时而去自动重派。故让 watchdog **留下自己开过枪的凭据**（marker 文件），
+命中即把 rc 归一成 124，与 GNU timeout 分支共用同一套判据。
+
+**实测（同一场景修前修后各跑一次）：**
+修前 `outcome=FAILED exit=143` → 回执 `FAILED`；修后 `outcome=TIMEOUT exit=124` →
+回执 `CANCELED`，`dispatch-run` 退 124。四处对齐。
+
+**同批验证的其余失败路径（均符合文档，无需修）：** exit 0 但产物缺失 → `FAILED`
+（「礼貌地失败」不会被当成通过）· `waiting:"auth"` → `AUTH_REQUIRED` 硬停（退出码 3）·
+空证据 verdict → 回执层 COMPLETED 但机件 #3 内容门拒收 → `ARTIFACT_INVALID`（退出码 4）·
+`waiting` 取值非法 → `ARTIFACT_INVALID`。
+
+---
+
 ## v1.4.0 — 2026-07-26（框架版本化：从「复制模板」到「有版本、可对账、可升级」）
 
 **来源：** 用户要把控制台做成完整的 agent 编排产品体验——看得到模式、切得动模式、能建项目、

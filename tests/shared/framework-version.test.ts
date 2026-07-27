@@ -79,9 +79,11 @@ describe("frameworkStanding 四种状态", () => {
   it("behind：给出**发布次数**而不是数值差", () => {
     const s = frameworkStanding("1.0.3");
     expect(s.kind).toBe("behind");
-    // 1.0.3 在清单里之后还有 1.1.0/1.1.1/1.2.0/1.2.1/1.3.0/1.3.1/1.3.2/1.3.3/1.4.0
+    // 断言必须**相对于清单**表达。第一版还写了 `toBe(9)`，结果发布 v1.4.1 当天就碎了——
+    // 把「当前恰好隔几次发布」钉进测试，等于每次发版都要改测试，而它保护的根本不是这个。
     expect(s.behind).toBe(FRAMEWORK_RELEASES.length - 1 - FRAMEWORK_RELEASES.indexOf("1.0.3"));
-    expect(s.behind).toBe(9);
+    // 真正要钉的是语义：清单里排在它后面的每一次发布都算一次落后
+    expect(s.behind).toBeGreaterThan(0);
   });
 
   it("ahead：项目比服务端已知的最新还新时，不得谎报落后", () => {
@@ -105,7 +107,9 @@ describe("frameworkStanding 四种状态", () => {
 
 describe("versionsBehind", () => {
   it("只有真正落后且在清单内才有数字，其余一律 null", () => {
-    expect(versionsBehind("1.0.3")).toBe(9);
+    expect(versionsBehind("1.0.3")).toBe(
+      FRAMEWORK_RELEASES.length - 1 - FRAMEWORK_RELEASES.indexOf("1.0.3")
+    );
     expect(versionsBehind(LATEST_FRAMEWORK_VERSION)).toBeNull();
     expect(versionsBehind("unknown")).toBeNull();
     expect(versionsBehind("9.9.9")).toBeNull();

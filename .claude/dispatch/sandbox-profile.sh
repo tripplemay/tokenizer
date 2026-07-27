@@ -200,10 +200,22 @@ run_with_timeout() {
     # ⚠️ `<&0` 不可省：无 job control 时，后台命令的 stdin 会被 bash 默认接到 /dev/null，
     # 把 stdin 投递的信封整个吞掉（macOS 无 GNU timeout 时恒命中本分支）。
     # 实测：缺此重定向 → 子进程收到空信封 → 产物写不出 → 回执 ARTIFACT_MISSING。
+    #
+    # 🔴 watchdog 必须**留下自己开过枪的凭据**，不能靠退出码反推。
+    # SIGTERM 杀掉的子进程退出码是 143，而 143 同样来自「外部把整条命令 kill 了」
+    # （编排者所在会话超时就是这样）。只看退出码 → 两种情形无法区分：
+    # 要么漏判超时（实测：本机无 GNU timeout，超时被判成 FAILED，于是文档承诺的
+    # 「TIMEOUT → 凭 task_id 幂等重派」永远不会发生，变成「重派上限 1 次后硬停」），
+    # 要么把外部中断误判成超时而去自动重派。故用 marker 文件记录**是我开的枪**。
+    local marker; marker="$(mktemp)"
     "$@" <&0 & local pid=$!
-    ( sleep "$secs"; kill -TERM "$pid" 2>/dev/null; sleep 10; kill -KILL "$pid" 2>/dev/null ) & local wd=$!
+    ( sleep "$secs"; kill -TERM "$pid" 2>/dev/null && echo fired > "$marker"; \
+      sleep 10; kill -KILL "$pid" 2>/dev/null ) & local wd=$!
     local rc=0; wait "$pid" || rc=$?
     kill "$wd" 2>/dev/null || true
+    # 对齐 GNU timeout 的约定：超时一律 124，上层判定逻辑两条分支共用一套判据
+    [ -s "$marker" ] && rc=124
+    rm -f "$marker"
     return $rc
   fi
 }
