@@ -85,6 +85,38 @@ schema 见 `dispatch-envelope.schema.json`。两个关键设计：
 必须是确定的一次快照）。这是 A2A 的 Opaque Execution 与 harness「只认实物」的兼容解：
 A2A 管交接信道，git 管证据与持久化。
 
+**可直接复制的合法信封（两个角色各一）：**
+
+```jsonc
+// evaluator：验收一次快照，产物是 verdict 工件
+{ "task_id": "BL-XXX-verify-<sha12>",       // 幂等键，重复派活会被拒
+  "contract_version": "harness/1.1",
+  "batch": "BL-XXX", "role": "evaluator",
+  "repo": { "url": "/abs/path/or/git-url", "ref": "<40 位 sha，不接受分支名>" },
+  "spec": "docs/specs/BL-XXX.md", "features": ["F001"], "l2_authorized": false,
+  "contract": { "task": "……逐条按规格 §4 验收；自己跑命令；不要复述提交信息……" },
+  "deliverable": { "artifact": "docs/test-reports/BL-XXX-verdict.json",
+                   "schema": ".claude/autonomous/verdict-artifact.schema.json",
+                   "commit_to": null } }
+
+// generator：写代码，产物是 handoff 清单（代码本身以未提交 diff 形式留在沙箱里）
+{ "task_id": "BL-XXX-build-<sha12>", "contract_version": "harness/1.1",
+  "batch": "BL-XXX", "role": "generator",
+  "repo": { "url": "/abs/path", "ref": "<sha>" },
+  "spec": "docs/specs/BL-XXX.md", "features": ["F001"], "l2_authorized": false,
+  "contract": { "task": "……只许动哪些文件；不得 push；跑不动 L1 就如实写未跑……" },
+  "deliverable": { "artifact": "docs/test-reports/BL-XXX-handoff.json",
+                   "schema": ".claude/dispatch/generator-handoff.schema.json",
+                   "commit_to": null } }
+```
+
+⚠️ **`deliverable.artifact` 由信封说了算**（v1.4.3 修）：适配器的 `artifact_relpath` 只是
+该 CLI 的默认约定，信封是这一次任务的契约，契约压过约定。
+
+⚠️ **`local-cli` 派活必须后台运行 + 轮询**：`dispatch-run.sh` 是阻塞式的，而 `timeout_s`
+常以千秒计；在会超时的前台里等，会被外部 SIGTERM 打断并留下孤儿工作目录（同 `task_id`
+重派又会被幂等守门拒，只能人工清理）。
+
 ### 3.4 L3 — 回执推断（中断态的降维）
 
 A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，一次性 CLI 进程做不到。
@@ -158,6 +190,20 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 3. ⚠️ **显式传厂商自己的沙箱参数。** Codex 的 `-s/--sandbox` 若不显式传，会读 `~/.codex/config.toml`——
    用户若在那里设了 `danger-full-access`，我们的沙箱被静默削弱。适配器显式传 `-s workspace-write` 覆盖之。
 
+**这四道锁**不**保证什么（同样要说清）：**
+
+- **不是文件系统沙箱。** 四道锁是 env 白名单 / 独立工作目录 / 禁 push / 时间封顶——
+  没有一条阻止外部 CLI **读**主仓，也不阻止它写工作目录之外的路径。
+  实测：Codex 主动 `ls` 过主仓的 `node_modules` 并复用了它（只读，且如实披露）。
+  Codex 自带 `-s workspace-write` 作为第二道防线；**Kimi 在非交互模式下没有任何权限层**。
+  真要文件系统隔离得靠 OS 层（macOS `sandbox-exec`、Linux bwrap/容器），那是另一档成本。
+  当前设计是**用产物 schema 与回流校验兜底，不是用隔离兜底**。
+- **不保证对方能跑 L1。** 一次性工作目录里没有 `node_modules`，而 Codex 的沙箱禁网
+  （`npm ci` 装不了）。沙箱注入 `HARNESS_MAIN_REPO=<主仓绝对路径>` 供对方只读复用依赖；
+  跑不动就该在产物里如实写「未跑」——**编排者本来就要自己重跑**（回流第 3 步）。
+- **不保证超时能被重派。** 见 v1.4.1：watchdog 必须留下自己开枪的凭据，否则超时会被
+  误判成失败（macOS 无 GNU `timeout` 时恒中）。
+
 **残余风险（诚实列明）：**
 
 - ~~**R1 — HOME 凭据外溢**~~ **已关闭**：`home_dir` 升为硬性前置 + `env_set` 精确投喂认证目录后，
@@ -186,14 +232,35 @@ Claude 读 `CLAUDE.md`，Codex 读 `AGENTS.md`，Gemini 读 `GEMINI.md`。给每
 v1.1 放开外部 CLI 承担 generator（v1.0 原规则是「外部工具只能 evaluator」）。前提是四道锁全部装配：
 
 1. `descriptor.roles` 白名单含 generator
-2. 独立 worktree 且 `constraints.push=false`
+2. 独立沙箱且 `constraints.push=false`（`write_src=true` 的角色用 **`git clone --shared`**
+   而非 worktree —— 见下方「为什么外部 generator 不提交」）
 3. **spec-lock critic 稽核 diff**（机件 #2），稽核时机从「writeback 前」前移到**「拉回主仓前」**——
    产物还在 worktree 里，拦得住才不会污染 main
 4. L1（lint / tsc / test）全绿 —— 代码 diff 比 verdict 更好机械核验，这是外部 generator 的硬证据
 
 **回流四步（编排者执行，外部实例永不直接 push）：**
-tag 归属校验（`feat(<batch>-F<num>):` 必须映射 features.json 真实条目，铁律 10；外部 CLI 未必守此格式
-→ 不合规就 rewrite 或拒收）→ spec-lock critic → L1 全绿 → cherry-pick/merge 进 main 统一 push。
+
+1. **diff 与 handoff 清单对账** —— 实际改动的文件必须落在 `generator-handoff.json` 的
+   `files_touched` 与规格边界之内；多出来的即 **scope 漂移**，拒收
+2. **spec-lock critic 稽核**（机件 #2）
+3. **L1 全绿，由编排者亲自重跑** —— handoff 里的 `l1_ran` 只是对方的自称，不作数
+4. **编排者按 `features.json` 打 tag 并提交**（`feat(<batch>-F<num>):`，铁律 10），统一 push
+
+### 🔴 为什么外部 generator **不提交**（v1.4.4 设计订正）
+
+v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合规就拒收」。**首次真派 Codex
+写代码时才发现这条根本走不通**：厂商沙箱（Codex `-s workspace-write`）禁止写 `.git`，
+`git commit` 连 `index.lock` 都建不出（实测原话 `Operation not permitted`）；改用独立克隆
+把 `.git` 挪进沙箱内**同样被拒**——它禁的是 `.git` 本身，与位置无关。
+
+要求外部 CLI 提交，等于**把交付能力绑死在厂商沙箱策略上**，而这条绑定换不来任何安全收益：
+它本来就 `push=false`，提交与否不改变任何风险面。真正防 scope 漂移的是「diff 与清单对账」，
+那件事编排者做得更好，也更难被绕过（对方写什么 commit message 都不影响实际 diff）。
+
+故：**外部 generator 交未提交的改动 + handoff 清单；tag 与提交归编排者。**
+`handoff.commits` 因此转为可选字段（多数厂商沙箱下它必然为空）。
+
+> **副产品：** 一次 30 分钟的实现不会再因为 commit message 写错格式而被整轮拒收。
 
 **机件未装齐时仍按 v1.0 从严，只许 evaluator。**
 

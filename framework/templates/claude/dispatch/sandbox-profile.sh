@@ -201,6 +201,12 @@ ENV_ARGS+=("HOME=$D_HOME")
 echo "[sandbox] 专用 HOME: ${D_HOME}（已确认无 shell 初始化文件）" >&2
 ENV_ARGS+=("HARNESS_ENVELOPE=$ENVELOPE_ABS")
 ENV_ARGS+=("HARNESS_ARTIFACT=$E_ARTIFACT" "HARNESS_BATCH=$E_BATCH" "HARNESS_TASK_ID=$E_TASK_ID")
+# 主仓绝对路径：一次性工作目录里没有 node_modules 之类的依赖，而厂商沙箱可能禁网
+# （Codex 实测 npm ci 装不了）。与其让对方自己去猜，不如明确告诉它「同 HEAD 的依赖在这儿，
+# 只读复用」——实测中 Codex 正是自己摸到主仓 node_modules 才跑通 L1 的，且如实披露了。
+# ⚠️ 这不放宽任何权限：四道锁本来就不含文件系统隔离（§5.1），对方读得到主仓是既成事实；
+# 明写出来只是把「靠猜」变成「有契约」，并让它知道**不该写**这个路径。
+ENV_ARGS+=("HARNESS_MAIN_REPO=$(git rev-parse --show-toplevel)")
 
 # ── 4. 渲染 argv 模板 ──────────────────────────────────────────────────────
 ARGV=()

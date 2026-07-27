@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.4.3",
-    "commit": "5d2a48f"
+    "version": "1.4.4",
+    "commit": "33d93f5"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -97,8 +97,8 @@
     },
     ".claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "10904c5032e9527fbf43888f42f354a253a0bb3b379131763913a2a9e1214cc7",
-      "upstream": "10904c5032e9527fbf43888f42f354a253a0bb3b379131763913a2a9e1214cc7"
+      "sha256": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84",
+      "upstream": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84"
     },
     ".claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "7218b9ecbbb7af3d10d91873c4b71c63ed19a0a56e58a07e5d6b36e7a58ae281",
-      "upstream": "7218b9ecbbb7af3d10d91873c4b71c63ed19a0a56e58a07e5d6b36e7a58ae281"
+      "sha256": "b0daa3d20a0d6c148ab67d5805bce6ae72692c82facd513df378ab6d40781b7e",
+      "upstream": "b0daa3d20a0d6c148ab67d5805bce6ae72692c82facd513df378ab6d40781b7e"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "bd31e8d9cf8d14a1e9e3fdf3b9f6a524819aed0d1b14627523c6765767c7d8f1",
-      "upstream": "bd31e8d9cf8d14a1e9e3fdf3b9f6a524819aed0d1b14627523c6765767c7d8f1"
+      "sha256": "d03d8b268b4171328ac2458ce8ca82d69a1fde38469d4e4faae4f8fa8d8a5e35",
+      "upstream": "d03d8b268b4171328ac2458ce8ca82d69a1fde38469d4e4faae4f8fa8d8a5e35"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -257,8 +257,8 @@
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
-      "sha256": "a27e2438e92bd44a75a333105bca4b08be9eca2a07fe5fe6535e0781ca5a0d3a",
-      "upstream": "a27e2438e92bd44a75a333105bca4b08be9eca2a07fe5fe6535e0781ca5a0d3a"
+      "sha256": "03d76005d431d01f529b09ced70def7bd2e508fffd49a4a125d1646036127d52",
+      "upstream": "03d76005d431d01f529b09ced70def7bd2e508fffd49a4a125d1646036127d52"
     },
     "framework/harness/evaluator.md": {
       "src": "harness/evaluator.md",
@@ -487,8 +487,8 @@
     },
     "framework/templates/claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "10904c5032e9527fbf43888f42f354a253a0bb3b379131763913a2a9e1214cc7",
-      "upstream": "10904c5032e9527fbf43888f42f354a253a0bb3b379131763913a2a9e1214cc7"
+      "sha256": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84",
+      "upstream": "0398758f740f126b1f5e28dc7e3df54c6346ed0dc6bc387dbf99638d0c03dd84"
     },
     "framework/templates/claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -622,13 +622,13 @@
     },
     ".claude/dispatch/generator-handoff.schema.json": {
       "src": "templates/claude/dispatch/generator-handoff.schema.json",
-      "sha256": "f5fbd464bfcc0f621bd691cc53c7ee279f658c6b665c4d9be66fbc769d4d47b3",
-      "upstream": "f5fbd464bfcc0f621bd691cc53c7ee279f658c6b665c4d9be66fbc769d4d47b3"
+      "sha256": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de",
+      "upstream": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de"
     },
     "framework/templates/claude/dispatch/generator-handoff.schema.json": {
       "src": "templates/claude/dispatch/generator-handoff.schema.json",
-      "sha256": "f5fbd464bfcc0f621bd691cc53c7ee279f658c6b665c4d9be66fbc769d4d47b3",
-      "upstream": "f5fbd464bfcc0f621bd691cc53c7ee279f658c6b665c4d9be66fbc769d4d47b3"
+      "sha256": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de",
+      "upstream": "f42f0548bbcfdc4bfc434d0b05596907b6e0ae0b7b500f5d3293361b990278de"
     }
   },
   "seeded": {
