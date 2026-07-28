@@ -438,6 +438,10 @@
     "confirm": "确认{action}这个闸门？\\n\\n这只是签发决策——机器要等下次心跳取走并验签后才真正生效。",
     "awaitingRelay": "已签发，等待机器取走",
     "relayed": "已下发到机器，等待其消费",
+    "openProject": "打开 Harness 项目 {name}",
+    "fixRoundsCompact": "修复 ×{count}",
+    "autonomyStatusCompact": "自主推进：{status}",
+    "haltCompact": "停机：{condition}",
     "signingKeyMissing": "未配置 HARNESS_CONSOLE_SIGNING_KEY —— 无法签发闸门决策。没有签名的批准机器不会接受（fail-closed）。请用 gen-console-key.sh 生成密钥对，私钥经环境变量注入，公钥提交到各项目的 .claude/console/console.pub。",
     "kind": {
       "phase_advance": "阶段推进",
@@ -478,6 +482,226 @@
       "syncHint": "升级：",
       "adoptHint": "先补账本：",
       "unknownBaselineHint": "adopt 时基准版本推断不出——先人工确认它实际停在哪一版，再重建账本："
+    },
+    "detail": {
+      "back": "返回 Harness",
+      "tabsLabel": "Harness 项目视图",
+      "tabs": {
+        "overview": "概览",
+        "modes": "模式与 Agent",
+        "activity": "活动"
+      },
+      "notReported": "尚未上报",
+      "notLinked": "未关联",
+      "notFoundTitle": "找不到 Harness 项目",
+      "notFoundBody": "该项目不可用，或不属于当前账户。",
+      "overview": {
+        "identity": "项目标识",
+        "project": "Harness 项目",
+        "device": "设备",
+        "repoKey": "仓库键",
+        "linkedProject": "关联用量项目",
+        "head": "完整 HEAD",
+        "reportFreshness": "上报新鲜度",
+        "progress": "当前进度",
+        "batch": "当前批次",
+        "status": "当前状态",
+        "completion": "完成度",
+        "fixRounds": "修复轮次",
+        "trajectory": "阶段轨迹",
+        "features": "功能项",
+        "noFeatures": "尚未上报功能快照。",
+        "featureId": "编号",
+        "featureTitle": "功能",
+        "featureExecutor": "执行角色",
+        "featureStatus": "状态",
+        "outcomes": "结果与闸门",
+        "signoff": "签收",
+        "lastHalt": "最近停机",
+        "noHalt": "没有上报停机",
+        "pendingGate": "待处理闸门",
+        "noPendingGate": "没有待处理闸门"
+      },
+      "modes": {
+        "compare": "当前模式与下次规划模式",
+        "current": "当前实际模式",
+        "pendingNextPlan": "下次 /plan 待生效模式",
+        "noCurrent": "尚未上报可读取的当前模式。",
+        "noPending": "没有等待下次 /plan 的模式。",
+        "staged": "暂存于 {at}；授权于 {expires} 到期",
+        "execution": "执行形态",
+        "roles": "角色指派",
+        "defaultRoles": "快车道默认指派",
+        "rolesUnavailable": "尚未上报角色指派",
+        "autonomy": "自主模式",
+        "autonomyOn": "已开启",
+        "autonomyOff": "已关闭",
+        "profile": {
+          "fast": "快车道",
+          "heterogeneous": "本地异构",
+          "slow": "慢车道"
+        },
+        "agents": "已上报 Agent",
+        "noAgents": "尚未上报可读取的 Agent 快照。",
+        "agent": {
+          "roles": "角色",
+          "capabilities": "能力",
+          "modelFamily": "模型家族",
+          "transport": "传输方式",
+          "adapter": "适配器",
+          "sandbox": "沙箱声明"
+        },
+        "health": "只读机件健康事实",
+        "healthFacts": {
+          "frameworkDrift": "框架漂移",
+          "familyExclusive": "家族互斥",
+          "hooks": "守门 Hook",
+          "denyList": "自主 deny-list",
+          "gateSignature": "闸门签名模式",
+          "hookCount": "已安装 {installed} · 缺失 {missing}",
+          "notScanned": "尚未上报漂移扫描",
+          "driftCounts": "修改 {modified} · 缺失 {missing} · 定制 {customized}"
+        }
+      }
+    },
+    "editor": {
+      "title": "签发下次规划模式意图",
+      "nextPlanNotice": "这里创建的是签名请求，只会在下一次 /plan 应用，绝不会立即改变当前批次。",
+      "pendingIntent": "当前待处理意图",
+      "noPendingIntent": "没有待处理的模式意图。",
+      "issuedAt": "签发于 {value}",
+      "expiresAt": "到期于 {value}",
+      "cancel": "撤销意图",
+      "canceling": "正在撤销…",
+      "cannotCancelStaged": "该意图已经暂存，不能再从控制台撤销。",
+      "confirmCancel": "确认撤销这条待处理模式意图？",
+      "execution": "执行形态",
+      "profile": {
+        "fast": "快车道",
+        "heterogeneous": "本地异构",
+        "slow": "慢车道"
+      },
+      "generator": "Generator",
+      "evaluator": "Evaluator",
+      "selectAgent": "选择 Agent",
+      "intentExpiresAt": "意图绝对到期时间",
+      "autonomy": "为下一批次开启自主模式",
+      "autonomyExpiresAt": "自主授权绝对到期时间",
+      "maxTokens": "最大 token 数",
+      "maxCostUsd": "最大费用（美元）",
+      "maxWakes": "最大唤醒次数",
+      "maxFixRounds": "最大修复轮次",
+      "autoCross": "预授权闸门",
+      "gate": {
+        "A": "A · 可逆内环",
+        "B": "B · 进入完成状态"
+      },
+      "notifications": "通知",
+      "notification": {
+        "halt": "停机",
+        "done": "完成",
+        "budget_80pct": "预算达到 80%",
+        "scope_drift": "范围漂移",
+        "ci_red": "CI 失败"
+      },
+      "submit": "签发请求",
+      "submitting": "正在签发…",
+      "disabled": {
+        "signingKeyUnavailable": "控制台签名密钥不可用，已禁止签发。",
+        "reportStale": "项目上报已过期，已禁止签发；请等待设备重新上报。",
+        "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 4，已禁止签发。",
+        "headNotFull": "项目没有上报完整的 40 位 HEAD SHA，已禁止签发。",
+        "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照，已禁止签发。"
+      },
+      "errors": {
+        "invalidProject": "项目标识无效。",
+        "invalidProfile": "请选择有效的执行形态。",
+        "missingAgent": "请选择 Generator 和 Evaluator。",
+        "sameAgent": "Generator 和 Evaluator 不能是同一个 Agent。",
+        "unknownAgent": "所选 Agent 不在已上报快照中。",
+        "roleMismatch": "所选 Agent 不允许承担指定角色。",
+        "sameFamily": "Generator 和 Evaluator 必须使用不同模型家族。",
+        "transportMismatch": "所选传输方式与执行形态不匹配。",
+        "invalidDate": "请输入有效的绝对到期时间。",
+        "expiredIntent": "意图到期时间必须晚于当前时间。",
+        "expiredAutonomy": "自主授权到期时间必须晚于当前时间。",
+        "invalidBudget": "一项或多项预算超出允许范围。",
+        "invalidGate": "只能预授权 A、B 闸门。",
+        "invalidNotification": "一项或多项通知选择无效。",
+        "reportStale": "项目上报已过期，请等待设备重新上报。",
+        "agentUpgradeRequired": "需要 Agent 功能版本 4 或更高版本。",
+        "headNotFull": "需要完整的 40 位 HEAD SHA。",
+        "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照。",
+        "signingKeyUnavailable": "控制台签名密钥不可用。",
+        "cannotCancel": "只能撤销 issued 或 relayed 状态的意图。",
+        "stateConflict": "请求期间意图状态发生变化，请刷新后重试。",
+        "requestFailed": "请求未能完成。"
+      }
+    },
+    "activity": {
+      "modeIntents": "模式意图时间线",
+      "noModeIntents": "还没有签发模式意图。",
+      "expires": "到期",
+      "relayed": "下发",
+      "staged": "暂存",
+      "applied": "应用",
+      "appliedBatch": "应用批次",
+      "gates": "闸门历史",
+      "noGates": "没有闸门历史。",
+      "dispatch": "最近 dispatch 摘要",
+      "noDispatch": "尚未上报 dispatch 摘要。",
+      "exitCode": "退出码",
+      "durationMs": "{value} 毫秒",
+      "durationSeconds": "{value} 秒",
+      "col": {
+        "time": "开始时间",
+        "batch": "批次",
+        "feature": "功能 / 角色",
+        "agent": "Agent / 家族",
+        "execution": "传输 / 锁定 SHA",
+        "outcome": "结果 / 判定",
+        "duration": "耗时",
+        "failure": "失败摘要"
+      }
+    },
+    "status": {
+      "phase": {
+        "new": "新建",
+        "planning": "规划中",
+        "building": "构建中",
+        "verifying": "验收中",
+        "fixing": "修复中",
+        "reverifying": "复验中",
+        "done": "已完成"
+      },
+      "feature": {
+        "pending": "待处理",
+        "completed": "已完成",
+        "failed": "失败",
+        "skipped": "已跳过"
+      },
+      "intent": {
+        "issued": "已签发",
+        "relayed": "已下发",
+        "staged": "已暂存",
+        "applied": "已应用",
+        "failed": "失败",
+        "superseded": "已替代",
+        "expired": "已过期"
+      },
+      "gate": {
+        "pending": "等待决策",
+        "signed": "决策已签名",
+        "relayed": "已下发到设备",
+        "consumed": "项目已消费",
+        "approved": "已批准",
+        "rejected": "已驳回"
+      },
+      "health": {
+        "installed": "已安装",
+        "missing": "缺失",
+        "unknown": "未知"
+      }
     }
   }
 }

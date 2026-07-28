@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MdGavel, MdAccountTree, MdWarning } from "react-icons/md";
+import { MdGavel, MdAccountTree, MdArrowForward, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { prisma } from "@/server/db";
 import { requireSession } from "@/server/auth-session";
@@ -24,8 +25,8 @@ const PHASES = ["new", "planning", "building", "verifying", "fixing", "reverifyi
 export default async function HarnessPage() {
   const session = await requireSession();
   const t = await getTranslations("harness");
-  const tRelative = await getTranslations("relative");
-  const userId = session.user!.id!;
+  const tRelative = await getTranslations();
+  const userId = session.user.id;
   const tz = await getUserTimezone(userId);
 
   const [projects, gates] = await Promise.all([
@@ -100,7 +101,7 @@ export default async function HarnessPage() {
 
                 {Array.isArray(g.evidence) && g.evidence.length > 0 ? (
                   <ul className="mt-2 list-inside list-disc font-mono text-xs text-gray-500 dark:text-gray-400">
-                    {(g.evidence as string[]).map((e) => (
+                    {g.evidence.filter((item): item is string => typeof item === "string").map((e) => (
                       <li key={e}>{e}</li>
                     ))}
                   </ul>
@@ -149,67 +150,75 @@ export default async function HarnessPage() {
               const pct = p.totalCount > 0 ? Math.round((p.completedCount / p.totalCount) * 100) : 0;
               const idx = PHASES.indexOf(p.status ?? "");
               return (
-                <Card key={p.id} extra="!p-5">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-navy-700 dark:text-white">{p.name}</span>
-                    <span className="ml-auto font-mono text-xs text-gray-400">{p.headSha}</span>
-                  </div>
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    {p.device.name} · {p.reportedAt ? formatRelativeTime(p.reportedAt, tRelative, tz) : "—"}
-                  </p>
-
-                  <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                      {p.batch ?? "—"}
-                    </span>
-                    <span className="rounded-full bg-brand-50 px-2 py-0.5 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
-                      {p.status ?? "—"}
-                    </span>
-                    {p.fixRounds > 0 ? (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
-                        fix ×{p.fixRounds}
-                      </span>
-                    ) : null}
-                    {p.autonomyStatus ? (
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                        autodrive:{p.autonomyStatus}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <ModeBadges modes={p.modes} />
-
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {PHASES.map((s, i) => (
-                      <span
-                        key={s}
-                        className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${
-                          s === p.status
-                            ? "bg-brand-500 text-white"
-                            : i < idx
-                              ? "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300"
-                              : "bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500"
-                        }`}
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-                    <div className="h-full bg-brand-500" style={{ width: `${pct}%` }} />
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {p.completedCount}/{p.totalCount} · {pct}%
-                  </p>
-
-                  {p.lastHaltCondition ? (
-                    <p className="mt-2 text-xs text-red-500">
-                      halt: {p.lastHaltCondition}
-                      {p.lastHaltDetail ? ` — ${p.lastHaltDetail}` : ""}
+                <Link
+                  key={p.id}
+                  href={`/harness/${encodeURIComponent(p.id)}`}
+                  aria-label={t("openProject", { name: p.name })}
+                  className="group block rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-900"
+                >
+                  <Card extra="h-full !p-5 transition duration-200 group-hover:-translate-y-0.5 group-hover:shadow-xl">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="min-w-0 break-words font-bold text-navy-700 dark:text-white">{p.name}</span>
+                      <span className="ml-auto max-w-32 truncate font-mono text-xs text-gray-400" title={p.headSha ?? undefined}>{p.headSha}</span>
+                      <MdArrowForward className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-gray-600" />
+                    </div>
+                    <p className="mt-0.5 text-xs text-gray-400">
+                      {p.device.name} · {p.reportedAt ? formatRelativeTime(p.reportedAt, tRelative, tz) : "—"}
                     </p>
-                  ) : null}
-                </Card>
+
+                    <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+                      <span className="max-w-full break-all rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                        {p.batch ?? "—"}
+                      </span>
+                      <span className="rounded-full bg-brand-50 px-2 py-0.5 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
+                        {p.status ?? "—"}
+                      </span>
+                      {p.fixRounds > 0 ? (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+                          {t("fixRoundsCompact", { count: p.fixRounds })}
+                        </span>
+                      ) : null}
+                      {p.autonomyStatus ? (
+                        <span className="max-w-full break-all rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                          {t("autonomyStatusCompact", { status: p.autonomyStatus })}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <ModeBadges modes={p.modes} />
+
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {PHASES.map((s, i) => (
+                        <span
+                          key={s}
+                          className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${
+                            s === p.status
+                              ? "bg-brand-500 text-white"
+                              : i < idx
+                                ? "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300"
+                                : "bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500"
+                          }`}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+                      <div className="h-full bg-brand-500" style={{ width: `${pct}%` }} />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {p.completedCount}/{p.totalCount} · {pct}%
+                    </p>
+
+                    {p.lastHaltCondition ? (
+                      <p className="mt-2 break-words text-xs text-red-500">
+                        {t("haltCompact", { condition: p.lastHaltCondition })}
+                        {p.lastHaltDetail ? ` — ${p.lastHaltDetail}` : ""}
+                      </p>
+                    ) : null}
+                  </Card>
+                </Link>
               );
             })}
           </div>

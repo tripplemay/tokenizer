@@ -438,6 +438,10 @@
     "confirm": "Confirm {action} for this gate?\\n\\nThis only signs the decision — the machine picks it up on its next heartbeat and verifies the signature before it takes effect.",
     "awaitingRelay": "Signed, awaiting pickup by the machine",
     "relayed": "Delivered to the machine, awaiting consumption",
+    "openProject": "Open Harness project {name}",
+    "fixRoundsCompact": "fix ×{count}",
+    "autonomyStatusCompact": "autodrive:{status}",
+    "haltCompact": "halt: {condition}",
     "signingKeyMissing": "HARNESS_CONSOLE_SIGNING_KEY is not configured — gate decisions cannot be signed. Machines reject unsigned approvals (fail-closed). Generate a keypair with gen-console-key.sh, inject the private key via env, and commit the public key to each project's .claude/console/console.pub.",
     "kind": {
       "phase_advance": "Phase advance",
@@ -478,6 +482,226 @@
       "syncHint": "Upgrade:",
       "adoptHint": "Create the ledger first:",
       "unknownBaselineHint": "adopt could not infer the baseline — confirm which release it actually sits on, then rebuild the ledger:"
+    },
+    "detail": {
+      "back": "Back to Harness",
+      "tabsLabel": "Harness project views",
+      "tabs": {
+        "overview": "Overview",
+        "modes": "Modes & Agents",
+        "activity": "Activity"
+      },
+      "notReported": "Not reported",
+      "notLinked": "Not linked",
+      "notFoundTitle": "Harness project not found",
+      "notFoundBody": "This project is unavailable or does not belong to the current account.",
+      "overview": {
+        "identity": "Project identity",
+        "project": "Harness project",
+        "device": "Device",
+        "repoKey": "Repository key",
+        "linkedProject": "Linked usage project",
+        "head": "Full HEAD",
+        "reportFreshness": "Report freshness",
+        "progress": "Current progress",
+        "batch": "Current batch",
+        "status": "Current status",
+        "completion": "Completion",
+        "fixRounds": "Fix rounds",
+        "trajectory": "Phase trajectory",
+        "features": "Features",
+        "noFeatures": "No feature snapshot was reported.",
+        "featureId": "ID",
+        "featureTitle": "Feature",
+        "featureExecutor": "Executor",
+        "featureStatus": "Status",
+        "outcomes": "Outcome and gates",
+        "signoff": "Signoff",
+        "lastHalt": "Last halt",
+        "noHalt": "No halt reported",
+        "pendingGate": "Pending gate",
+        "noPendingGate": "No pending gate"
+      },
+      "modes": {
+        "compare": "Current and next-plan modes",
+        "current": "Current actual mode",
+        "pendingNextPlan": "Pending next-plan mode",
+        "noCurrent": "No readable current mode was reported.",
+        "noPending": "No pending mode is waiting for the next /plan.",
+        "staged": "Staged {at}; authorization expires {expires}",
+        "execution": "Execution profile",
+        "roles": "Role assignments",
+        "defaultRoles": "Default fast-lane assignments",
+        "rolesUnavailable": "Role assignments were not reported",
+        "autonomy": "Autonomy",
+        "autonomyOn": "Enabled",
+        "autonomyOff": "Disabled",
+        "profile": {
+          "fast": "Fast",
+          "heterogeneous": "Heterogeneous",
+          "slow": "Slow"
+        },
+        "agents": "Reported agents",
+        "noAgents": "No readable agent snapshot was reported.",
+        "agent": {
+          "roles": "Roles",
+          "capabilities": "Capabilities",
+          "modelFamily": "Model family",
+          "transport": "Transport",
+          "adapter": "Adapter",
+          "sandbox": "Sandbox declaration"
+        },
+        "health": "Read-only machinery health",
+        "healthFacts": {
+          "frameworkDrift": "Framework drift",
+          "familyExclusive": "Family exclusivity",
+          "hooks": "Guard hooks",
+          "denyList": "Autonomy deny-list",
+          "gateSignature": "Gate signature mode",
+          "hookCount": "{installed} installed · {missing} missing",
+          "notScanned": "No drift scan reported",
+          "driftCounts": "{modified} modified · {missing} missing · {customized} customized"
+        }
+      }
+    },
+    "editor": {
+      "title": "Issue next-plan mode intent",
+      "nextPlanNotice": "This creates a signed request. It is applied only on the next /plan and never changes the current batch immediately.",
+      "pendingIntent": "Current pending intent",
+      "noPendingIntent": "No mode intent is pending.",
+      "issuedAt": "Issued {value}",
+      "expiresAt": "Expires {value}",
+      "cancel": "Cancel intent",
+      "canceling": "Canceling...",
+      "cannotCancelStaged": "This intent has already been staged and can no longer be canceled from the console.",
+      "confirmCancel": "Cancel this pending mode intent?",
+      "execution": "Execution profile",
+      "profile": {
+        "fast": "Fast",
+        "heterogeneous": "Heterogeneous",
+        "slow": "Slow"
+      },
+      "generator": "Generator",
+      "evaluator": "Evaluator",
+      "selectAgent": "Select an agent",
+      "intentExpiresAt": "Absolute intent expiry",
+      "autonomy": "Enable autonomy for the next batch",
+      "autonomyExpiresAt": "Absolute autonomy expiry",
+      "maxTokens": "Maximum tokens",
+      "maxCostUsd": "Maximum cost (USD)",
+      "maxWakes": "Maximum wakes",
+      "maxFixRounds": "Maximum fix rounds",
+      "autoCross": "Pre-authorized gates",
+      "gate": {
+        "A": "A · reversible inner loop",
+        "B": "B · transition to done"
+      },
+      "notifications": "Notifications",
+      "notification": {
+        "halt": "Halt",
+        "done": "Done",
+        "budget_80pct": "Budget at 80%",
+        "scope_drift": "Scope drift",
+        "ci_red": "CI failure"
+      },
+      "submit": "Issue signed request",
+      "submitting": "Issuing...",
+      "disabled": {
+        "signingKeyUnavailable": "Issuance is disabled because the console signing key is unavailable.",
+        "reportStale": "Issuance is disabled because the project report is stale. Wait for a fresh device report.",
+        "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below 4.",
+        "headNotFull": "Issuance is disabled because the project did not report a full 40-character HEAD SHA.",
+        "agentSnapshotUnavailable": "Issuance is disabled because no usable reported agent snapshot is available."
+      },
+      "errors": {
+        "invalidProject": "The project identifier is invalid.",
+        "invalidProfile": "Choose a valid execution profile.",
+        "missingAgent": "Choose both a generator and an evaluator.",
+        "sameAgent": "Generator and evaluator must be different agents.",
+        "unknownAgent": "A selected agent is not present in the reported snapshot.",
+        "roleMismatch": "A selected agent does not allow the assigned role.",
+        "sameFamily": "Generator and evaluator must use different model families.",
+        "transportMismatch": "The selected transports do not match this execution profile.",
+        "invalidDate": "Enter valid absolute expiry dates.",
+        "expiredIntent": "The intent expiry must be in the future.",
+        "expiredAutonomy": "The autonomy expiry must be in the future.",
+        "invalidBudget": "One or more budget values are outside the allowed range.",
+        "invalidGate": "Only A and B gates can be pre-authorized.",
+        "invalidNotification": "One or more notification selections are invalid.",
+        "reportStale": "The project report became stale. Wait for a fresh device report.",
+        "agentUpgradeRequired": "Agent feature version 4 or newer is required.",
+        "headNotFull": "A full 40-character HEAD SHA is required.",
+        "agentSnapshotUnavailable": "No usable reported agent snapshot is available.",
+        "signingKeyUnavailable": "The console signing key is unavailable.",
+        "cannotCancel": "Only issued or relayed intents can be canceled.",
+        "stateConflict": "The intent changed while the request was running. Refresh and retry.",
+        "requestFailed": "The request could not be completed."
+      }
+    },
+    "activity": {
+      "modeIntents": "Mode-intent timeline",
+      "noModeIntents": "No mode intents have been issued.",
+      "expires": "Expires",
+      "relayed": "Relayed",
+      "staged": "Staged",
+      "applied": "Applied",
+      "appliedBatch": "Applied batch",
+      "gates": "Gate history",
+      "noGates": "No gate history is available.",
+      "dispatch": "Recent dispatch summaries",
+      "noDispatch": "No dispatch summaries have been reported.",
+      "exitCode": "Exit code",
+      "durationMs": "{value} ms",
+      "durationSeconds": "{value} s",
+      "col": {
+        "time": "Started",
+        "batch": "Batch",
+        "feature": "Feature / role",
+        "agent": "Agent / family",
+        "execution": "Transport / locked SHA",
+        "outcome": "Outcome / verdict",
+        "duration": "Duration",
+        "failure": "Failure summary"
+      }
+    },
+    "status": {
+      "phase": {
+        "new": "New",
+        "planning": "Planning",
+        "building": "Building",
+        "verifying": "Verifying",
+        "fixing": "Fixing",
+        "reverifying": "Reverifying",
+        "done": "Done"
+      },
+      "feature": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "intent": {
+        "issued": "Issued",
+        "relayed": "Relayed",
+        "staged": "Staged",
+        "applied": "Applied",
+        "failed": "Failed",
+        "superseded": "Superseded",
+        "expired": "Expired"
+      },
+      "gate": {
+        "pending": "Awaiting decision",
+        "signed": "Decision signed",
+        "relayed": "Relayed to device",
+        "consumed": "Consumed by project",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "health": {
+        "installed": "Installed",
+        "missing": "Missing",
+        "unknown": "Unknown"
+      }
     }
   }
 }
