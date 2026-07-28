@@ -28,6 +28,7 @@ vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 import { POST } from "../../app/api/harness/report/route";
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
+const F001_TITLE = "Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点";
 
 function modes() {
   return {
@@ -89,7 +90,7 @@ function report(overrides: Record<string, unknown> = {}) {
       completed: 2,
       total: 6,
       headSha: HEAD,
-      features: [{ id: "F003", title: "API", status: "pending", executor: "generator" }],
+      features: [{ id: "F001", title: F001_TITLE, status: "completed", executor: "generator" }],
       modes: modes(),
       modeDefaults: {
         intentId: "intent-1",
@@ -151,6 +152,34 @@ describe("harness report mode activation and dispatch summaries", () => {
       expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
       expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
     }
+  });
+
+  it("accepts a full report containing the live F001 title and phase gate", async () => {
+    const response = await POST(
+      request(
+        report({
+          gate: {
+            id: "gate-1",
+            kind: "phase_advance",
+            batch: "BL-HARNESS-DETAIL-MODEINTENT",
+            detail: "Awaiting verification",
+            evidence: ["docs/test-reports/evidence.json"],
+            raised_at: "2026-07-27T12:00:00.000Z",
+            raised_by: "autodriver"
+          }
+        })
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].create.features).toEqual([
+      { id: "F001", title: F001_TITLE, status: "completed", executor: "generator" }
+    ]);
+    expect(mocks.tx.harnessGate.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ gateId: "gate-1", kind: "phase_advance" })
+      })
+    );
   });
 
   it("rejects unknown report, state, feature, and lastHalt fields before the first business query", async () => {

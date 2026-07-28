@@ -7,7 +7,8 @@ import {
   parseModeSnapshot,
   parseRelayModeIntentAck,
   parseUtcDate,
-  relayAckSourceStatuses
+  relayAckSourceStatuses,
+  safePersistedSummary
 } from "@/server/harness-mode-intent-api";
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
@@ -155,6 +156,56 @@ describe("report timestamp validation", () => {
   );
 });
 
+describe("persisted feature title redaction", () => {
+  it("accepts the live F001 title with its exact Harness command reference", () => {
+    expect(
+      safePersistedSummary(
+        "Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点",
+        "feature.title",
+        256
+      )
+    ).toBe("Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点");
+  });
+
+  it.each(["/plan", "/build", "/verify", "/dashboard", "/autodrive"])(
+    "accepts the exact known Harness command %s in a feature title",
+    (command) => {
+      expect(safePersistedSummary(`Harness command ${command} reference`, "feature.title", 256)).toBe(
+        `Harness command ${command} reference`
+      );
+    }
+  );
+
+  it.each([
+    ["nested path", "Harness command /plan/private"],
+    ["path-shaped extension", "Harness command /plan.txt"],
+    ["path-shaped suffix", "Harness command /plan-private"],
+    ["unknown slash command", "Harness command /unknown"],
+    ["arbitrary absolute path", "Harness command /tmp"],
+    ["POSIX path beside command", "Harness /plan state at /srv/private/repo"],
+    ["Windows path beside command", "Harness /plan state at D:\\private\\repo"],
+    ["UNC path beside command", "Harness /plan state at \\\\server\\share\\repo"],
+    ["file URL beside command", "Harness /plan state at file:///private/repo"],
+    ["raw prompt beside command", "Harness /plan prompt: raw input"],
+    ["raw channel beside command", "Harness /plan stdout: raw output"],
+    ["raw stderr beside command", "Harness /plan stderr=raw error"],
+    ["raw env beside command", "Harness /plan env: SECRET=value"],
+    ["raw log beside command", "Harness /plan log: raw output"],
+    ["raw source beside command", "Harness /plan source: raw code"],
+    ["credential beside command", "Harness /plan password=top-secret-value"],
+    ["newline beside command", "Harness /plan\nraw output"]
+  ])("rejects %s", (_label, title) => {
+    expect(() => safePersistedSummary(title, "feature.title", 256)).toThrow(/may not be persisted/);
+  });
+
+  it.each(["errorSummary", "verdict", "state.modes.dispatch.issues item"])(
+    "does not allow the same command reference in strict %s data",
+    (label) => {
+      expect(() => safePersistedSummary("/plan", label, 256)).toThrow(/may not be persisted/);
+    }
+  );
+});
+
 describe("persisted mode snapshot validation", () => {
   it("preserves the complete existing ModeSnapshot shape", () => {
     const snapshot = modeSnapshot();
@@ -163,6 +214,7 @@ describe("persisted mode snapshot validation", () => {
 
   it.each([
     ["raw output", "stdout: full command output"],
+    ["Harness command reference", "/plan"],
     ["Unix absolute path", "failed under /srv/private/repo"],
     ["Windows absolute path", "failed under D:\\private\\repo"],
     ["UNC absolute path", "failed under \\\\server\\share\\repo"],
@@ -294,7 +346,9 @@ describe("dispatch summary allowlist and redaction", () => {
     ["path traversal", dispatchRun({ artifactPath: "docs/../secret.json" })],
     ["worktree path", dispatchRun({ artifactPath: ".worktrees/task/result.json" })],
     ["raw env summary", dispatchRun({ errorSummary: "env: API_KEY=secret" })],
+    ["Harness command error summary", dispatchRun({ errorSummary: "/plan" })],
     ["absolute path summary", dispatchRun({ errorSummary: "failed at /home/alice/repo" })],
+    ["Harness command verdict", dispatchRun({ verdict: "/plan" })],
     ["absolute path verdict", dispatchRun({ verdict: "failed at /srv/agent/repo" })],
     ["Windows path verdict", dispatchRun({ verdict: "failed at D:\\agent\\repo" })],
     ["UNC path verdict", dispatchRun({ verdict: "failed at \\\\server\\share\\repo" })],

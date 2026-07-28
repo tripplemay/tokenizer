@@ -24,6 +24,9 @@ const CREDENTIAL_PATTERN =
   /-----BEGIN [^-]*PRIVATE KEY-----|\b(?:Bearer|Basic)\s+\S+|(?:api[_-]?key|(?:(?:access|auth|refresh|id)[_-]?)?token|auth(?:orization)?|password|passwd|secrets?|credentials?|client[_-]?secret)\s*[:=]\s*\S+|\b(?:gh[pousr]_[A-Za-z0-9]{20,}|AKIA[A-Z0-9]{16}|sk-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,})\b/i;
 const SENSITIVE_FIELD_PATTERN =
   /^(?:prompt|stdout|stderr|logs?|env(?:ironment)?|worktrees?|source|credentials?)$/i;
+const HARNESS_COMMAND_REFERENCE_LABELS = new Set(["feature.title"]);
+const KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN =
+  /(^|[^A-Za-z0-9_/])\/(?:plan|build|verify|dashboard|autodrive)(?=$|[\s,;:!)\]}"'`，。、；：！）】》」』]|\.(?=$|\s))/g;
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -180,12 +183,15 @@ export function safePersistedSummary(value: unknown, label: string, max: number)
   if (!summary || value.length > max) {
     return reject("invalid_string", `${label} must contain between 1 and ${max} characters`);
   }
+  const pathScanValue = HARNESS_COMMAND_REFERENCE_LABELS.has(label)
+    ? summary.replace(KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN, "$1")
+    : summary;
   const containsAbsolutePath =
-    /(^|[^A-Za-z0-9_/])\/(?!\/)[^\s,;)\]}"']*/.test(summary) ||
-    /\b[A-Za-z]:[\\/][^\s]*/.test(summary) ||
-    /(^|[^A-Za-z0-9_\\])\\\\[^\\\s]+\\[^\\\s]+/.test(summary) ||
-    /(^|[^A-Za-z0-9_/:])\/\/[^/\s]+\/[^\s]*/.test(summary) ||
-    /\bfile:\/\//i.test(summary);
+    /(^|[^A-Za-z0-9_/])\/(?!\/)[^\s,;)\]}"']*/.test(pathScanValue) ||
+    /\b[A-Za-z]:[\\/][^\s]*/.test(pathScanValue) ||
+    /(^|[^A-Za-z0-9_\\])\\\\[^\\\s]+\\[^\\\s]+/.test(pathScanValue) ||
+    /(^|[^A-Za-z0-9_/:])\/\/[^/\s]+\/[^\s]*/.test(pathScanValue) ||
+    /\bfile:\/\//i.test(pathScanValue);
   if (containsAbsolutePath || RAW_CHANNEL_PATTERN.test(summary) || CREDENTIAL_PATTERN.test(summary)) {
     return reject("sensitive_summary_data", `${label} contains data that may not be persisted`);
   }
