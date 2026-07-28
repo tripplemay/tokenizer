@@ -5,11 +5,11 @@ type: project
 ---
 ## 当前批次
 
-- **BL-HARNESS-DETAIL-MODEINTENT（building）**：Harness 项目卡下钻、签名模式意图、下一次 `/plan` 消费、脱敏 dispatch 历史。
+- **BL-HARNESS-DETAIL-MODEINTENT（verifying，6/6 PASS）**：Harness 项目卡下钻、签名模式意图、下一次 `/plan` 消费、脱敏 dispatch 历史。
 - 用户已确认：执行/角色与自治策略同时开放；不影响当前批次；dispatch 摘要需要持久化。
 - Generator=`builder-codex` local-cli；Evaluator=`reviewer-kimi-a2a` loopback，family 互斥成立。
-- F001 先在 harness-template 建通用契约并同步；F002-F005 落 tokenizer；F006 独立验收。
-- Spec：`docs/specs/BL-HARNESS-DETAIL-MODEINTENT-spec.md`。
+- Kimi 锁定 `91d3d2f` 独立验收 F006 PASS；receipt、L1、迁移与双视口 Playwright 均通过。
+- Signoff 已落盘；`verifying -> done` phase_advance 闸门等待人类批准。
 
 ## 上一批次
 
@@ -17,7 +17,8 @@ type: project
 
 ## 生产状态
 
-- 本批尚未部署；新增 migration 计划为 additive。源代码推 main 会触发 CI，部署仍由用户手动触发。
+- F005 产品提交已部署到 `https://token.vpanel.cc`；GitHub Actions run `30317964879` 三段成功。
+- F006 仅新增验收报告、截图和状态机证据，不触发产品部署。
 
 ## 已知 gap
 
