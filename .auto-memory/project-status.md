@@ -5,24 +5,22 @@ type: project
 ---
 ## 当前批次
 
-- **BL-HARNESS-DETAIL-MODEINTENT（done，6/6 completed，fix_round 1）**：Harness 项目卡下钻、签名模式意图、下一次 `/plan` 消费、脱敏 dispatch 历史。
-- 用户已确认：执行/角色与自治策略同时开放；不影响当前批次；dispatch 摘要需要持久化。
-- Generator=`builder-codex` local-cli；修复轮 Evaluator=`reviewer-kimi` local-cli fallback，family 互斥成立。
-- Kimi 最终锁定 `4aa801f`：F004/F006 PASS，31/31 聚焦；前序 r1b 的 90/90 与 22/22 对抗探测也通过。
-- Signoff 后真实 agent 上报发现 `/plan` 被敏感路径误判，原 gate/signoff 已撤回。
-- F003 脱敏修复 `41b64dd` 与 F004 gate 白名单修复 `4aa801f` 已部署；签名人工 gate 已批准并消费。
+- **BL-DISPATCH-LIFECYCLE（building，0/6，fix_round 0）**：deadline、portable watchdog、A2A cancel/stop、终态 receipt 与 soak。
+- 用户明确同意把上一批发现的 dispatch 基础设施问题作为下一批。
+- 源码唯一源=`/Users/yixingzhou/project/harness-template`；tokenizer 只经 `harness.sh sync` 更新托管副本。
+- Generator=`builder-codex` local-cli；Evaluator=`reviewer-kimi-a2a` loopback；自治关闭，family 互斥成立。
+- building 串行；verifying 跑 deterministic lifecycle matrix + 真实 Kimi A2A 短时 soak。
 
 ## 上一批次
 
-- **BL-MODESCMD ✅ done（2026-07-27）**：`tokenizer harness --modes`；Codex 外部 generator + Kimi evaluator，单轮 PASS。
+- **BL-HARNESS-DETAIL-MODEINTENT ✅ done（2026-07-27）**：项目下钻、签名下一次 `/plan` 模式意图与 dispatch 历史；6/6，fix round 1。
 
 ## 生产状态
 
-- 修复链已部署到 `https://token.vpanel.cc`；GitHub Actions run `30326679863` 的 Linux、Windows、VPS Deploy 三段成功。
-- 部署后 `npm run cli -- harness` 为 `Reported: 6`，tokenizer 不再出现在 400 skip 列表。
-- 最终全量验证：49 files，619 passed / 4 skipped；verify、targeted lint、production build 全绿。
+- tokenizer 产品仍为 `de10a16`/`4aa801f` 修复链；本批不改产品 API/UI/DB，也不访问生产。
+- Harness framework 当前 v1.5.0；本批目标 v1.5.1，先改模板源再同步 tokenizer。
 
 ## 已知 gap
 
-- A2A 首轮 loopback 成功；修复轮暴露 runner/watchdog 超时不收束，Kimi local-cli fallback 成功，需另批修复传输层。
+- 已复现风险：envelope deadline 未执行、macOS 单次 sleep/单 PID watchdog、runner stop 留孤儿、client connection refused 无终态。
 - Harness 详情页无既有 Stitch/design-draft 原型，本批按现有控制台视觉系统新增布局并做 Playwright 双 viewport 验证。

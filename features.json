@@ -1,53 +1,53 @@
 {
-  "sprint": "BL-HARNESS-DETAIL-MODEINTENT",
+  "sprint": "BL-DISPATCH-LIFECYCLE",
   "features": [
     {
       "id": "F001",
-      "title": "Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点",
+      "title": "统一 envelope deadline 与 agent timeout 的硬上限契约",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "harness-template 是唯一源；新增 mode intent 验签机件且 bootstrap/sync 可安装；/plan 只消费验签有效且未过期的 defaults；自主策略按签名字段生成并锁定新批次；local-cli 与 a2a 的 run-meta 都落在项目 .harness-dispatch；框架版本与 CHANGELOG 同步更新"
+      "acceptance": "deadline_s 由 validator 严格校验且成为每任务硬上限；实际 timeout=min(envelope deadline_s, descriptor timeout_s)，缺 deadline 时保持 descriptor 行为；local-cli 与 a2a 使用同一规则并有快速 fixture 证明"
     },
     {
       "id": "F002",
-      "title": "模式意图与 dispatch 摘要的数据模型、签名契约和纯函数校验",
+      "title": "可移植 wall-clock watchdog 与完整进程树回收",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "Prisma additive migration 可部署；意图保存完整签名载荷与 issued/relayed/staged/applied/failed/superseded/expired 状态；摘要按 project+runId 幂等；执行/Agent/family/autonomy 约束有单测；签名与 openssl 跨语言一致"
+      "acceptance": "macOS/Linux 不依赖 GNU timeout；watchdog 按绝对 wall clock 在 suspend/resume 后立即到期；超时先 TERM 再 KILL 整个子进程组，返回 124 且只由自身超时标记；正常退出与外部取消不误判 TIMEOUT"
     },
     {
       "id": "F003",
-      "title": "控制台与 device agent 的 mode intent API、ACK 和 dispatch 摘要上报",
+      "title": "A2A cancel/stop 的终态、事件与 runner 生命周期收束",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "会话 API 仅能操作本人项目且签名失败时不落库；过旧/离线/旧 agent/非法角色或同 family 请求被拒；device API 仅向所属设备下发未过期签名意图并幂等 ACK；report upsert 脱敏摘要且不保存 prompt/stdout/env/绝对路径"
+      "acceptance": "CancelTask 和 --stop 都回收活动 sandbox/CLI 子进程组；任务原子进入 CANCELED、finished_at/events_complete 齐全、终态事件不重复；runner 在客户端可取得终态后退出，pidfile 清理且无孤儿进程"
     },
     {
       "id": "F004",
-      "title": "device agent 验签、暂存 mode defaults、结果回报与能力版本升级",
+      "title": "A2A client 有界等待与可恢复的终态 receipt",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "agent 验证签名/repoKey/完整 HEAD/有效期/目标文件干净；只原子修改 harness.json.project.mode_defaults 并定向 commit；失败有稳定错误码且不写文件；采集项目内 run-meta 的结构化脱敏摘要；AGENT_FEATURE_VERSION 与 MIN 同步升至 4；既有 gate relay 互不阻塞"
+      "acceptance": "run/subscribe 不再固定等待 7200 秒；按任务/descriptor deadline 加有界 grace，超限走 CancelTask；SSE 中断可续订，正常 stop/cancel 不以 GetTask connection refused 收尾；本地 run-meta/receipt 准确区分 CANCELED、FAILED 与 RETURNED"
     },
     {
       "id": "F005",
-      "title": "Harness 项目卡下钻页、Agent 卡和模式编辑面板",
+      "title": "dispatch 生命周期回归矩阵、文档与框架发布",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "项目卡可进入 /harness/[id]；Overview/Modes & Agents/Activity 信息齐全；可同时编辑执行角色与完整自治策略；明确区分当前/待生效并提示下一次 /plan；展示意图、gate、dispatch 历史；中英文齐全；桌面与移动端无重叠；安全机件只读"
+      "acceptance": "新增无真实模型依赖的 deadline/timeout/cancel/stop/orphan/SSE 回归脚本；bootstrap/init/sync 管理全部新机件；VERSION 升至 1.5.1，CHANGELOG 与 local-cli/a2a/dispatch-mode 文档写清新语义；tokenizer 通过 harness sync 获得零漂移副本"
     },
     {
       "id": "F006",
-      "title": "独立安全验收、A2A dispatch 复核与浏览器端到端验证",
+      "title": "真实 local-cli + A2A loopback 独立验收与短时 soak",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "Kimi 通过 A2A loopback 验收锁定 SHA；覆盖篡改/越权/过期/HEAD 漂移/脏文件/重复意图/family 冲突；证明当前批次不变且下一次 /plan 才消费；Playwright 检查桌面和移动端交互；lint/verify/test/build 全绿并输出原样 verdict 与 signoff"
+      "acceptance": "Kimi 在锁定提交独立复核；真实执行正常完成、任务 deadline 超时、CancelTask、活动任务下 --stop、SSE 终态/重订阅和 idle-exit；每例检查 receipt/schema/task store/进程组，无孤儿、无无限 WORKING、无原始日志或凭据回流"
     }
   ]
 }
