@@ -37,7 +37,7 @@
       "id": "F005",
       "title": "Harness 项目卡下钻页、Agent 卡和模式编辑面板",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "项目卡可进入 /harness/[id]；Overview/Modes & Agents/Activity 信息齐全；可同时编辑执行角色与完整自治策略；明确区分当前/待生效并提示下一次 /plan；展示意图、gate、dispatch 历史；中英文齐全；桌面与移动端无重叠；安全机件只读"
     },

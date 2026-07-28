@@ -1,0 +1,51 @@
+{
+  "batch_id": "BL-HARNESS-DETAIL-MODEINTENT",
+  "feature_id": "F005",
+  "generator": "builder-codex",
+  "transport": "local-cli",
+  "attempts": [
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F005-229f22949c18",
+      "outcome": "TIMEOUT",
+      "duration_s": 2400,
+      "detail": "The implementation, schema-valid handoff, focused tests, typecheck, targeted lint, locale parity, and Next build were present, but the process reached the dispatch deadline and the receipt was rejected from completion."
+    },
+    {
+      "task_id": "BL-HARNESS-MODEINTENT-F005-r2-229f22949c18",
+      "outcome": "COMPLETED",
+      "duration_s": 1767,
+      "source_artifact": "generator-handoff-f005-r2.json",
+      "corrections": [
+        "Keep raw mode-intent payloads and dispatch artifact path/hash fields out of the detail query result.",
+        "Render incomplete legacy assignments and transports as unreported while disabling intent issuance.",
+        "Route role, family, transport, date, and budget validation through the shared strict mode-intent validator.",
+        "Isolate legacy-snapshot test fixtures so mutations cannot contaminate later validation cases."
+      ]
+    }
+  ],
+  "integration": {
+    "commit": "92c0ee4",
+    "typecheck": "passed",
+    "focused_tests": "166/166 passed",
+    "full_tests": "588 passed, 4 platform skips",
+    "production_build": "passed",
+    "lint": "passed",
+    "locale_parity": "521 English and Chinese leaf keys matched",
+    "diff_check": "passed",
+    "browser": "reserved for F006 independent evaluator"
+  },
+  "files_touched": [
+    "app/harness/page.tsx",
+    "app/harness/[id]/mode-editor.tsx",
+    "app/harness/[id]/not-found.tsx",
+    "app/harness/[id]/page.tsx",
+    "app/harness/[id]/views.tsx",
+    "messages/en.json",
+    "messages/zh-CN.json",
+    "src/server/harness-detail.ts",
+    "src/shared/harness-detail.ts",
+    "tests/server/harness-detail.test.ts",
+    "tests/shared/harness-detail.test.ts"
+  ],
+  "waiting": null
+}
