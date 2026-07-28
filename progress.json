@@ -57,6 +57,15 @@
       "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-desktop.png",
       "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-mobile.png"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-HARNESS-DETAIL-MODEINTENT-reverifying-done-w2",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-28T06:01:30.704Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "idxe4+xr3Vu7dOFLxM+aAIvC31g9lDNZEys0kR3pKWBdEdz7Srs4P+nvcjYxuLs9ccKPkVY/1gzmRgVwiLcFCg=="
+    }
   }
 }
