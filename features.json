@@ -45,7 +45,7 @@
       "id": "F006",
       "title": "独立安全验收、A2A dispatch 复核与浏览器端到端验证",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "Kimi 通过 A2A loopback 验收锁定 SHA；覆盖篡改/越权/过期/HEAD 漂移/脏文件/重复意图/family 冲突；证明当前批次不变且下一次 /plan 才消费；Playwright 检查桌面和移动端交互；lint/verify/test/build 全绿并输出原样 verdict 与 signoff"
     }

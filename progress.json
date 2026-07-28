@@ -2,11 +2,11 @@
   "status": "reverifying",
   "user_goal": "为 Harness 项目卡增加下钻页，同时开放执行/角色与自治模式调整；签名意图在下一次 /plan 生效，并持久化脱敏 dispatch 摘要；继续验证 dispatch 模式",
   "total_features": 6,
-  "completed_features": 5,
+  "completed_features": 6,
   "fix_rounds": 1,
   "current_sprint": "BL-HARNESS-DETAIL-MODEINTENT",
   "dashboard_url": null,
-  "last_updated": "2026-07-28T02:30:28Z",
+  "last_updated": "2026-07-28T03:34:00Z",
   "reference_docs": [
     "framework/harness/console-mode.md",
     "framework/harness/dispatch-mode.md",
@@ -15,14 +15,14 @@
   "docs": {
     "spec": "docs/specs/BL-HARNESS-DETAIL-MODEINTENT-spec.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-signoff-r1-2026-07-27.md",
     "framework_reviewed": true
   },
   "role_assignments": {
     "generator": "builder-codex",
-    "evaluator": "reviewer-kimi-a2a"
+    "evaluator": "reviewer-kimi"
   },
-  "evaluator_feedback": "reviewer-kimi-a2a 在锁定 SHA 91d3d2fc4924 上的原始 F006 verdict 为 PASS，原样保留在 docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-verdict.json；但 signoff 后真实运行 npm run cli -- harness 发现 tokenizer 上报持续 400（sensitive_summary_data）：合法 feature.title 中的 /plan 被误判为本机绝对路径，导致 phase gate 无法进入控制台。F003/F006 退回 pending，必须修复、部署并复验。",
+  "evaluator_feedback": "修复轮 evaluator 锁定 697d4a4de949：reviewer-kimi A2A 任务因 runner/watchdog 越过 deadline 后仍停在 WORKING 而人工终止，未接收 artifact；同一 Kimi 通过 local-cli fallback 794 秒返回合法 verdict，独立重跑 90/90 聚焦测试、targeted lint 和 22/22 对抗探测，F003/F006 均 PASS、waiting=null。编排者另确认 CI run 30323387595 三段成功，部署后真实 npm run cli -- harness 为 Reported: 6 且 tokenizer 不在 skip 列表。",
   "generator_handoff": {
     "feature_id": "F003",
     "agent": "builder-codex",
@@ -36,8 +36,26 @@
     "f004": "首轮 builder-codex dispatch 在 2400 秒超时但留下可复用实现；唯一纠偏轮在锁定 SHA 上补齐旧 agent 兼容、暂存事务恢复、repo identity 与 no-follow 文件读取，1463 秒正常返回。主线 577 tests passed/4 skipped，verify、lint、build 全绿。",
     "f005": "首轮 builder-codex dispatch 完成 UI、handoff 和聚焦检查，但在 2400 秒硬截止处按 TIMEOUT 拒收；唯一纠偏轮复用产物并收紧原始 payload/artifact 字段边界，1767 秒正常返回。主线聚焦 166/166、全量 588 passed/4 skipped，typecheck、targeted lint、locale parity、diff check 与 Next production build 全绿；浏览器双视口保留给 F006 独立 evaluator。",
     "f006": "reviewer-kimi-a2a 锁定 91d3d2f，经 A2A loopback 595 秒返回 PASS；本地 receipt 与 verdict schema 通过。编排者侧生产模式 Playwright 双视口、30 个签名 fixture、127 个聚焦测试、588/4 全量测试、lint/verify/build 和空库 18 migration deploy 全绿。随后真实 agent 上报抓到 feature.title=/plan 被敏感路径误报，原 signoff/gate 已撤回。",
-    "f003_fix1": "builder-codex 锁定 86a076d 在 928 秒返回窄修复：只对 feature.title 的 5 个已知 Harness slash-command 做路径扫描豁免，strict 摘要与危险近邻继续拒绝；90/90 聚焦、618 passed/4 skipped、verify、targeted lint、build 全绿。产品提交 41b64dd，进入 reverifying。"
+    "f003_fix1": "builder-codex 锁定 86a076d 在 928 秒返回窄修复：只对 feature.title 的 5 个已知 Harness slash-command 做路径扫描豁免，strict 摘要与危险近邻继续拒绝；90/90 聚焦、618 passed/4 skipped、verify、targeted lint、build 全绿。产品提交 41b64dd，进入 reverifying。",
+    "f006_fix1": "修复提交链已部署：GitHub Actions 30323387595 的 Linux、Windows、VPS Deploy 全绿；部署后真实 harness 镜像上报 Reported: 6，tokenizer 不再 400。Kimi A2A 修复轮暴露 runner/watchdog 超时未收束；终止孤立进程组后，Kimi local-cli fallback 锁定 697d4a4，794 秒返回 F003/F006 PASS。receipt/verdict schema、90/90 聚焦、targeted lint、22/22 对抗输入均通过；原浏览器证据因本轮无 UI 变更继续有效。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-HARNESS-DETAIL-MODEINTENT-reverifying-done-w2",
+    "kind": "phase_advance",
+    "raised_at": "2026-07-28T03:34:00Z",
+    "raised_by": "verify",
+    "batch": "BL-HARNESS-DETAIL-MODEINTENT",
+    "from_status": "reverifying",
+    "to_status": "done",
+    "detail": "修复轮已完成独立验收、部署和真实 device 上报复验；请人工审阅 r1 signoff 后决定是否将批次推进为 done。",
+    "evidence": [
+      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-signoff-r1-2026-07-27.md",
+      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-verdict-r1b.json",
+      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F003-fix1-handoff.json",
+      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-desktop.png",
+      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-mobile.png"
+    ],
+    "decision": null
+  }
 }
