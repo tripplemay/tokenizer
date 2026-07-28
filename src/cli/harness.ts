@@ -143,6 +143,20 @@ export function buildReport(repo: HarnessRepo) {
       : null;
 
   const gate = progress.pending_gate ?? null;
+  const reportGate =
+    gate && !gate.decision
+      ? {
+          id: gate.id,
+          kind: gate.kind,
+          batch: gate.batch,
+          from_status: gate.from_status,
+          to_status: gate.to_status,
+          detail: gate.detail,
+          evidence: gate.evidence,
+          raised_at: gate.raised_at,
+          raised_by: gate.raised_by
+        }
+      : null;
   return {
     repoKey: repo.repoKey,
     name: repo.name,
@@ -170,7 +184,7 @@ export function buildReport(repo: HarnessRepo) {
       modeIntent: appliedModeIntent
     },
     // 只上报还没有决策的闸门；已决策的以服务端记录为准，避免本机旧副本覆盖
-    gate: gate && !gate.decision ? gate : null,
+    gate: reportGate,
     dispatchRuns: scanHarnessDispatchRuns(repo.path, batches, knownFeatures)
   };
 }

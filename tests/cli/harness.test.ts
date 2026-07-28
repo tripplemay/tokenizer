@@ -168,7 +168,25 @@ describe("buildReport", () => {
     expect(body.state.total).toBe(3);
     expect(body.state.fixRounds).toBe(1);
     expect(body.state.headSha).toMatch(/^[0-9a-f]{40}$/);
-    expect((body.gate as { id: string }).id).toBe("BL-042-verifying-done-w7");
+    expect(body.gate).toEqual({
+      id: "BL-042-verifying-done-w7",
+      kind: "phase_advance",
+      raised_at: "2026-07-25T13:00:00Z",
+      raised_by: "autodriver",
+      batch: "BL-042",
+      from_status: "verifying",
+      to_status: "done",
+      detail: "等人类批准",
+      evidence: []
+    });
+    expect(body.gate).not.toHaveProperty("decision");
+  });
+
+  it("待批闸门只上报 API 白名单字段", () => {
+    writeProgress({ ...makeGate(), local_only: "must-not-leave-device" });
+    const gate = buildReport(discoverHarnessRepos(config())[0])!.gate;
+    expect(gate).not.toHaveProperty("decision");
+    expect(gate).not.toHaveProperty("local_only");
   });
 
   it("已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖", () => {
