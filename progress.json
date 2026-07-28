@@ -2,11 +2,11 @@
   "status": "verifying",
   "user_goal": "将上批发现的 dispatch deadline、macOS watchdog、A2A stop/孤儿进程与终态回执问题作为独立批次修复并做真实 loopback 验收",
   "total_features": 6,
-  "completed_features": 5,
+  "completed_features": 6,
   "fix_rounds": 0,
   "current_sprint": "BL-DISPATCH-LIFECYCLE",
   "dashboard_url": null,
-  "last_updated": "2026-07-28T07:10:24Z",
+  "last_updated": "2026-07-28T07:33:11Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -15,14 +15,14 @@
   "docs": {
     "spec": "docs/specs/BL-DISPATCH-LIFECYCLE-spec.md",
     "test_cases": ".claude/dispatch/test-lifecycle.py",
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-DISPATCH-LIFECYCLE-signoff-2026-07-28.md",
     "framework_reviewed": true
   },
   "role_assignments": {
     "generator": "builder-codex",
     "evaluator": "reviewer-kimi-a2a"
   },
-  "evaluator_feedback": null,
+  "evaluator_feedback": "reviewer-kimi-a2a 锁定 tokenizer 441a4c4，经真实 loopback 在 466 秒返回合法 verdict，F001-F006 全部 PASS、waiting=null；事件完整经过 SUBMITTED→WORKING→artifact→COMPLETED，resume-from=2 只重放 3/4。本地 receipt/schema 通过。编排者另用真实 v1.5.1 runner/client/sandbox/helper 完成 3-task soak、60 秒 hard timeout、CancelTask 与 active stop：三类取消均终态唯一、events_complete/finished_at 齐全，父子 PGID、runner、pidfile 与端口全收束。生命周期 18/18、Vitest 619/4、Prisma/TS、bootstrap/sync 全通过。",
   "generator_handoff": {
     "feature_id": "F001-F005",
     "agent": "builder-codex",
@@ -33,8 +33,24 @@
   },
   "session_notes": {
     "planning": "【BL-DISPATCH-LIFECYCLE plan 2026-07-27】用户明确同意把上批暴露的 dispatch 基础设施问题作为下一批。源码唯一源为 /Users/yixingzhou/project/harness-template，tokenizer 托管副本只能 sync。Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback；自治关闭。building 因核心文件重叠串行，verifying 跑 deterministic matrix + 真实 Kimi A2A 短时 soak。",
-    "building": "前两次 preflight 在启动 agent 前分别暴露 repo.url/CWD 克隆错仓与 adapter 默认路径耦合，已纳入 F001。第三次 builder-codex 锁定 bd88e00 正常返回，2093 秒、receipt COMPLETED，handoff 结构/feature/文件清单机械对账通过。独立复跑发现 active-stop fixture 的 2 秒观察窗短于 2.25 秒 cancel grace，并审出 deadline/complete 与既有 runner cancel 的客户端竞态；集成侧修正并扩至 18 项矩阵。harness-template v1.5.1 提交 9fb6ffc 已推送，tokenizer 经 sync 升级且 139 个受管文件零漂移。生命周期 18/18、local-state 3/3、mode-intent 30/30、Vitest 619 passed/4 skipped、Prisma/TS verify、shell/Python syntax 与 bootstrap init/verify/sync smoke 全通过。"
+    "building": "前两次 preflight 在启动 agent 前分别暴露 repo.url/CWD 克隆错仓与 adapter 默认路径耦合，已纳入 F001。第三次 builder-codex 锁定 bd88e00 正常返回，2093 秒、receipt COMPLETED，handoff 结构/feature/文件清单机械对账通过。独立复跑发现 active-stop fixture 的 2 秒观察窗短于 2.25 秒 cancel grace，并审出 deadline/complete 与既有 runner cancel 的客户端竞态；集成侧修正并扩至 18 项矩阵。harness-template v1.5.1 提交 9fb6ffc 已推送，tokenizer 经 sync 升级且 139 个受管文件零漂移。生命周期 18/18、local-state 3/3、mode-intent 30/30、Vitest 619 passed/4 skipped、Prisma/TS verify、shell/Python syntax 与 bootstrap init/verify/sync smoke 全通过。",
+    "f006": "reviewer-kimi-a2a 锁定 441a4c4，经真实 A2A loopback 466 秒返回 F001-F006 全 PASS；receipt/verdict schema 合法，事件 1-4 与 resume-from=2 重放正确。编排者 exact fixture 串行跑 3 个正常任务、60 秒 hard timeout、CancelTask 与 active runner stop：deadline/124、external_signal/143、cancel_task/runner_stop 原因准确，所有 terminal event 唯一，父子 PGID、runner、pidfile 和 41241 端口均收束。无模型 fixture、生产访问、部署或 DB ops。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-DISPATCH-LIFECYCLE-verifying-done-w1",
+    "kind": "phase_advance",
+    "raised_at": "2026-07-28T07:33:11Z",
+    "raised_by": "verify",
+    "batch": "BL-DISPATCH-LIFECYCLE",
+    "from_status": "verifying",
+    "to_status": "done",
+    "detail": "dispatch v1.5.1 已完成异厂商独立验收与真实 local/A2A 生命周期取证；请人工审阅 signoff 后决定是否推进为 done。",
+    "evidence": [
+      "docs/test-reports/BL-DISPATCH-LIFECYCLE-signoff-2026-07-28.md",
+      "docs/test-reports/BL-DISPATCH-LIFECYCLE-verdict.json",
+      "docs/test-reports/BL-DISPATCH-LIFECYCLE-generator-handoff.json"
+    ],
+    "decision": null
+  }
 }

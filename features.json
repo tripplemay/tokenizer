@@ -45,7 +45,7 @@
       "id": "F006",
       "title": "真实 local-cli + A2A loopback 独立验收与短时 soak",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "Kimi 在锁定提交独立复核；真实执行正常完成、任务 deadline 超时、CancelTask、活动任务下 --stop、SSE 终态/重订阅和 idle-exit；每例检查 receipt/schema/task store/进程组，无孤儿、无无限 WORKING、无原始日志或凭据回流"
     }
