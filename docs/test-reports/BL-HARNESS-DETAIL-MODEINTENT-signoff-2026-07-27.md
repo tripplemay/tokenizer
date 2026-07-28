@@ -1,5 +1,9 @@
 # BL-HARNESS-DETAIL-MODEINTENT 验收签署
 
+> **已撤回（2026-07-28T01:54:40Z）：** signoff 后的真实 device 上报发现合法 feature title 中的
+> `/plan` 被敏感路径检测误报，tokenizer `/api/harness/report` 持续返回 400，phase gate 无法显示。
+> `progress.json` 已回到 `fixing`，本文件仅保留首轮验收审计，不可作为批准依据。
+
 **批次：** Harness 项目下钻、模式意图与 dispatch 历史  
 **车道：** Generator=`builder-codex`（Codex/local-cli）· Evaluator=`reviewer-kimi-a2a`（Kimi/A2A loopback）  
 **结论：** F001-F006 全部 PASS，首轮通过，`fix_rounds=0`
