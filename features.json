@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "控制台与 device agent 的 mode intent API、ACK 和 dispatch 摘要上报",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "会话 API 仅能操作本人项目且签名失败时不落库；过旧/离线/旧 agent/非法角色或同 family 请求被拒；device API 仅向所属设备下发未过期签名意图并幂等 ACK；report upsert 脱敏摘要且不保存 prompt/stdout/env/绝对路径"
     },
