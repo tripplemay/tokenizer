@@ -88,7 +88,7 @@
               }
             }
           },
-          "timeout_s": { "type": "integer", "minimum": 60, "default": 3600, "description": "wall-clock 封顶，沙箱第四道锁" },
+          "timeout_s": { "type": "integer", "minimum": 60, "maximum": 86400, "default": 3600, "description": "agent wall-clock 上限；任务 deadline_s 只能收紧，不能突破此上限" },
           "auth": {
             "type": "object",
             "additionalProperties": false,

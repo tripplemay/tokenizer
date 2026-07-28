@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "统一目标仓库、envelope deadline 与 agent timeout 的前置契约",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "本地 repo.url 与调用仓不一致时在创建沙箱目录前明确拒绝，不能静默克隆 CWD；adapter/validator/helper 默认路径按 dispatch 机件目录解析，不与目标仓 CWD 耦合；deadline_s 由 validator 严格校验且成为每任务硬上限；实际 timeout=min(envelope deadline_s, descriptor timeout_s)，缺 deadline 时保持 descriptor 行为；local-cli 与 a2a 使用同一规则并有快速 fixture 证明"
     },
@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "可移植 wall-clock watchdog 与完整进程树回收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "macOS/Linux 不依赖 GNU timeout；watchdog 按绝对 wall clock 在 suspend/resume 后立即到期；超时先 TERM 再 KILL 整个子进程组，返回 124 且只由自身超时标记；正常退出与外部取消不误判 TIMEOUT"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "A2A cancel/stop 的终态、事件与 runner 生命周期收束",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "CancelTask 和 --stop 都回收活动 sandbox/CLI 子进程组；任务原子进入 CANCELED、finished_at/events_complete 齐全、终态事件不重复；runner 在客户端可取得终态后退出，pidfile 清理且无孤儿进程"
     },
@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "A2A client 有界等待与可恢复的终态 receipt",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "run/subscribe 不再固定等待 7200 秒；按任务/descriptor deadline 加有界 grace，超限走 CancelTask；SSE 中断可续订，正常 stop/cancel 不以 GetTask connection refused 收尾；本地 run-meta/receipt 准确区分 CANCELED、FAILED 与 RETURNED"
     },
@@ -37,7 +37,7 @@
       "id": "F005",
       "title": "dispatch 生命周期回归矩阵、文档与框架发布",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "新增无真实模型依赖的 deadline/timeout/cancel/stop/orphan/SSE 回归脚本；bootstrap/init/sync 管理全部新机件；VERSION 升至 1.5.1，CHANGELOG 与 local-cli/a2a/dispatch-mode 文档写清新语义；tokenizer 通过 harness sync 获得零漂移副本"
     },

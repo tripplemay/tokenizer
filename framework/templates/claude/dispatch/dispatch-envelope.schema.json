@@ -57,6 +57,6 @@
         "commit_to": { "type": ["string", "null"], "description": "产物提交去向。外部实例恒为 null——由编排者校验 commit tag 归属后回流主仓（constraints.push=false）" }
       }
     },
-    "deadline_s": { "type": "integer", "minimum": 60, "description": "本任务的 wall-clock 期望上限；沙箱以 descriptor.timeout_s 硬封顶" }
+    "deadline_s": { "type": "integer", "minimum": 60, "maximum": 86400, "description": "本任务的 wall-clock 硬上限；有效值为 min(deadline_s, descriptor.timeout_s)，缺省保持 descriptor 上限" }
   }
 }

@@ -15,10 +15,11 @@
  ├ 1. 解析 descriptor（.agents-registry.json）→ 确认 transport=local-cli、roles 含目标角色
  ├ 2. 组装信封 → validate-dispatch.sh envelope（字段白名单校验）
  ├ 3. sandbox-profile.sh --agent <id> --envelope <f>
+ │     ├ repo.url top-level == invocation top-level（创建目录前 fail closed）
  │     ├ worktree add --detach @sha        独立工作副本
  │     ├ env -i <白名单>                    没凭据就花不了钱
  │     ├ GIT_CONFIG pushurl=DISABLED       禁 push（env 级覆盖，不污染主仓 config）
- │     └ timeout <timeout_s> <argv>        wall-clock 封顶
+ │     └ process-timeout.py <effective>    绝对 wall-clock + 完整进程组封顶
  │       → 项目 .harness-dispatch/run-meta-<task>.json 耐久落盘
  ├ 4. validate-dispatch.sh receipt run-meta.json    → 回执推断（§4）
  ├ 5. COMPLETED → 产物过 deliverable.schema → 机械回写状态机（铁律 12 原样）
@@ -68,7 +69,9 @@
 | **exit 0 但产物缺失** | **`FAILED`** | 重派上限 1 次 |
 | exit 0 + 产物 JSON 非法 / 不合 schema | `ARTIFACT_INVALID` | 重派上限 1 次 |
 | 非零退出 | `FAILED` | 重派上限 1 次 |
-| 超时（124/137） | `CANCELED` | 凭 `task_id` 幂等重派 |
+| helper 自身到期（status=`deadline`，exit 124） | `CANCELED` | 凭 `task_id` 幂等重派 |
+| 外部 TERM/Cancel | `CANCELED` | 不伪装成 timeout |
+| 子命令自行 exit 124 / 137 | `FAILED` | 普通非零退出 |
 
 **加粗那行是这张表存在的理由。** 退出码 0 不等于活干完了——外部 CLI「礼貌地失败」
 （打印一段说明然后正常退出）是常态。不写死这条，礼貌失败会被当成验收通过。
@@ -85,7 +88,14 @@
 | env 白名单 | `env -i` + descriptor 显式列名 **+ 专用空 HOME（必填）** | prod 凭据 / 部署 token / 他家 API key |
 | 独立 worktree | `git worktree add --detach <sha>` | 污染工作区、并行互踩 |
 | 禁 push | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 直接改 main |
-| wall-clock 封顶 | `timeout -k 10 <timeout_s>` | 跑飞挂死 |
+| wall-clock 封顶 | `process-timeout.py`：绝对 wall clock、独立 session/process group、TERM→有界 KILL、reap | 跑飞挂死与 suspend/resume 超期 |
+
+`deadline_s` 与 descriptor `timeout_s` 都是 `60..86400` 的整数；boolean/float/string 拒绝。
+有效值是两者最小值，信封缺 deadline 时保持 descriptor cap（缺省 3600）。helper 通过独立 status
+区分自己到期、外部 signal 与普通退出，因此 child 自行返回 124 不会被运输层误判成 TIMEOUT。
+
+adapter、timeout helper 等默认路径从 `sandbox-profile.sh` 自身目录解析；从其他 CWD 绝对调用入口
+不会改成去目标仓找机件。`--adapters` 与 `--timeout-helper` 显式覆盖继续支持。
 
 🔴 **子进程 CWD 一律固定为 worktree。** 不依赖各家 CLI 的 `--cd`/`-C` 是否存在、是否被遵守——
 Kimi **根本没有工作根参数**，完全靠这条约束在 worktree 内活动。（实测价值：Kimi 曾因 HOME 未展开
@@ -102,16 +112,13 @@ Kimi **根本没有工作根参数**，完全靠这条约束在 worktree 内活�
 
 ## 6. generator 类产物的回流（v1.1 放开外部 generator 后新增）
 
-外部 generator 的 `constraints.push` 恒为 `false`，产物是 worktree 里的 commit。回流四步：
+外部 generator 的 `constraints.push` 恒为 `false`，交付是沙箱里的未提交 diff + handoff 清单。回流四步：
 
-1. **tag 归属校验**：`feat(<batch>-F<num>):` 必须映射 `features.json` 真实条目（铁律 10）。
-   外部 CLI 未必守这个格式 → **不合规一律拒收 + 硬停，不 rewrite**。
-   理由：替对方断言「这个 commit 属于 F003」是一次未经取证的归属判定，与铁律 10
-   「无归属的代码修改 = 越界」的精神相悖，且会掩盖 scope 漂移信号。代价只是一次唤醒
+1. **diff 与 handoff 对账**：实际改动必须落在 `files_touched` 与 spec scope，超出即拒收
 2. **spec-lock critic 稽核**：跑机件 #2（`.claude/agents/spec-lock-critic.md`）比对 diff 与 scope，
    稽核时机从「writeback 前」前移到「拉回主仓前」
 3. **L1 全绿**：`lint / tsc / test` 是外部 generator 唯一的硬证据——代码 diff 比 verdict 更好机械核验
-4. 通过后由编排者 cherry-pick / merge 进 main 并统一 push
+4. 通过后由编排者按 feature 归属提交并统一 push
 
 ## 7. 新增一家 CLI 的核对清单
 

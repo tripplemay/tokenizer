@@ -5,6 +5,34 @@
 
 ---
 
+## v1.5.1 — 2026-07-27（dispatch deadline 与生命周期收束）
+
+**来源：** BL-DISPATCH-LIFECYCLE F001-F005。
+
+- local `repo.url` 在创建 state/workroot/clone/worktree 前规范化到 git top-level，并与调用入口仓库
+  做身份等值检查；不匹配或非 git 目标会同时报告两侧身份并 fail closed。框架默认 adapter、validator、
+  timeout helper 与 runner 资源改为相对 dispatch 脚本解析，显式 CLI 覆盖仍保留。
+- `deadline_s` 与 descriptor `timeout_s` 统一为 `60..86400` 的非 boolean 整数；有效任务上限是
+  `min(deadline_s, timeout_s)`，缺少 deadline 时保持 descriptor cap（缺省 3600 秒）。schema、手工
+  校验器、local-cli 和 a2a client 共用同一常量与算法。
+- 新增 stdlib timeout helper：使用绝对 wall clock、独立 session/process group、TERM 后有界 KILL、
+  子进程收尸和终止来源 status。只有 helper 自己到期才被 sandbox 判为 TIMEOUT；外部 TERM 与子命令
+  自行返回 124 都不会伪装成 helper deadline。
+- A2A task store 和 Executor 的终态、事件与 process map 由锁协调。CancelTask 幂等，终态只写一次；
+  runner `--stop` 先取消并回收活动进程组，持久化 `finished_at`/终态事件/`events_complete`，在有界 drain
+  内继续提供 GetTask/SSE，再移除 pidfile 退出。pidfile 带进程起始身份，避免向复用 PID 发信号。
+- a2a client 的 `run`/`subscribe` 使用 effective timeout + 5 秒 transport grace；超限主动 CancelTask，
+  断线重订阅携带最后 seq。Cancel 已确认后即使最终 GetTask 连接失败，仍保留可解释的本地 CANCELED
+  run-meta。远端 state 继续只作 advisory，本地产物与 receipt/schema 继续权威。
+- 新增 deterministic lifecycle matrix，覆盖 repo target、跨 CWD 默认资源、deadline 类型/范围/min/缺省、
+  正常退出、自身 timeout、外部取消、父孙进程回收、注入 wall clock、Cancel/重复 Cancel、active stop、
+  终态顺序与唯一性、SSE replay、idle exit、restart、task-id 去重及 pid/process 清理。loopback 不可绑定的
+  托管沙箱会跳过 HTTP exact-port 子集，同时执行无 socket 的同契约 runner-core 矩阵。
+
+**残余边界：** 自建 A2A 仍是 JSON-RPC/SSE 子集；真实跨物理机、OAuth/mTLS、签名 Card、Windows
+原生进程树语义与 OS 级文件系统/网络隔离不在本版范围。客户端重试全部受任务 deadline 约束，框架仍不
+自动无限重派，phase gate 仍由人或既有 policy 推进。
+
 ## v1.5.0 — 2026-07-27（签名模式意图 + durable dispatch 摘要）
 
 **来源：** BL-HARNESS-DETAIL-MODEINTENT F001 correction。

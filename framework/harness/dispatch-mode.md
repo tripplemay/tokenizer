@@ -113,9 +113,14 @@ A2A 管交接信道，git 管证据与持久化。
 ⚠️ **`deliverable.artifact` 由信封说了算**（v1.4.3 修）：适配器的 `artifact_relpath` 只是
 该 CLI 的默认约定，信封是这一次任务的契约，契约压过约定。
 
-⚠️ **`local-cli` 派活必须后台运行 + 轮询**：`dispatch-run.sh` 是阻塞式的，而 `timeout_s`
-常以千秒计；在会超时的前台里等，会被外部 SIGTERM 打断并留下孤儿工作目录（同 `task_id`
-重派又会被幂等守门拒，只能人工清理）。
+**v1.5.1 的目标与 deadline 前置契约：** `repo.url` 是本地路径时，入口在创建任何 state/workroot/
+clone/worktree 前把它与当前 invocation 的 git top-level 都做 realpath 规范化；两者不等或任一不是 git
+仓库即拒收，并同时报告两侧身份。不会再静默克隆 CWD、到 checkout 才失败。remote URL 不在这项本地
+等值检查内；真实跨物理机 clone 仍是残余边界。
+
+`deadline_s` 可省；存在时必须是 `60..86400` 的整数（boolean/float/string 均拒绝）。descriptor
+`timeout_s` 同范围，缺省 3600。**effective timeout = min(deadline_s, descriptor timeout_s)**；缺少
+deadline 时保持 descriptor cap。local-cli 执行上限与 a2a client 等待上限共用这个算法。
 
 ### 3.4 L3 — 回执推断（中断态的降维）
 
@@ -174,7 +179,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 | **L1 env 白名单** | `env -i` + descriptor 显式列名 **+ 专用空 HOME（硬性前置）** | prod 凭据 / 部署 token / 他家 key | ✅ 日志中 `SECRET_TOKEN` / `DATABASE_URL` 零出现 |
 | **L2 独立 worktree** | `git worktree add --detach <sha>` | 污染工作区、并行互踩 | ✅ 主仓零改动，产物只落 worktree |
 | **L3 禁 push** | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 直接改 main | ✅ 9 条子进程命令中无 push |
-| **L4 wall-clock 封顶** | `timeout -k 10 <timeout_s>`（无 GNU timeout 时 bash watchdog） | 跑飞挂死 | ✅ 267s 正常收敛 |
+| **L4 wall-clock 封顶** | 单一 `process-timeout.py`；绝对时钟 + 独立进程组 + TERM→KILL | 跑飞挂死、suspend/resume 后继续超期 | deterministic matrix |
 
 **三个实现陷阱（都是实测踩出来的，不是推演）：**
 
@@ -201,8 +206,8 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 - **不保证对方能跑 L1。** 一次性工作目录里没有 `node_modules`，而 Codex 的沙箱禁网
   （`npm ci` 装不了）。沙箱注入 `HARNESS_MAIN_REPO=<主仓绝对路径>` 供对方只读复用依赖；
   跑不动就该在产物里如实写「未跑」——**编排者本来就要自己重跑**（回流第 3 步）。
-- **不保证超时能被重派。** 见 v1.4.1：watchdog 必须留下自己开枪的凭据，否则超时会被
-  误判成失败（macOS 无 GNU `timeout` 时恒中）。
+- **子命令 exit 124 不等于 helper timeout。** helper 另写有界 termination status；只有
+  `reason=deadline` 才判 TIMEOUT。外部 TERM 是取消，子命令自行 exit 124 是普通非零退出。
 
 **残余风险（诚实列明）：**
 
@@ -326,12 +331,14 @@ v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合�
 **新增件（`bootstrap.sh` 默认铺入 `.claude/dispatch/`）：**
 
 > - `sandbox-profile.sh` — 机件 #7 四道锁
+> - `dispatch_common.py` + `process-timeout.py` — repo/deadline 单一契约与 portable process-group timeout
 > - `agents-registry.schema.json` + `agents-registry.example.json` — L1
 > - `dispatch-envelope.schema.json` — L2
 > - `validate-dispatch.sh` — registry / envelope / assignments / receipt / hook 五合一校验器
 > - `dispatch-run.sh` — 统一派活入口，按 transport 路由
 > - `transports/local-cli.md` + `transports/adapters/codex.json` — 首家适配器
 > - `transports/a2a.md` + `a2a-runner.py` + `a2a-client.py` — a2a transport（已实装）
+> - `test-local-state.sh` + `test-lifecycle.py` — durable state 与 deadline/lifecycle deterministic matrix
 >
 > 另修改：`verdict-artifact.schema.json`（+`waiting`）、`gate-arbiter.workflow.js`（dispatch 分支）、
 > `harness-rules.md`（三形态 / 独立性铁则第 5 条 / 角色约束修订 / 守门表）。
@@ -345,3 +352,4 @@ v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合�
 | 2026-07-25 | 初版（v1.1）：四层设计 / 机件 #7 沙箱 / 回执推断 / waiting 中断态 / family 互斥 / 外部 generator 放开 / gate-arbiter 接线 | A2A 协议研究（`docs/a2a-harness-research-2026-07-25.md`）+ 用户四项裁决 |
 | 2026-07-25 | v1.2：`a2a` transport 实装（自建 runner + client + SSE + 落盘 task store + 幂等 + 断线重放）；`dispatch-run.sh` 统一入口使引擎 transport 无关；R4 对自建 runner 不成立 | 真实 Codex 经 a2a 演练（198s） |
 | 2026-07-25 | v1.1.1：Codex 适配器实测转正；**发现登录 shell 经 .zshenv/.zprofile 还原被剥离变量 → `sandbox.home_dir` 升为硬性前置**（R1 关闭）；新增 `sandbox.env_set`；`/autodrive` 四职责接线；tag 策略定为拒收不重写 | codex-cli 0.145.0 端到端演练 |
+| 2026-07-27 | v1.5.1：repo target preflight、effective deadline、portable process-group timeout、A2A Cancel/stop/drain/client deadline 与 deterministic lifecycle matrix | BL-DISPATCH-LIFECYCLE |

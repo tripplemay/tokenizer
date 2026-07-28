@@ -1,0 +1,71 @@
+{
+  "batch_id": "BL-DISPATCH-LIFECYCLE",
+  "created_at": "2026-07-28T06:21:36Z",
+  "features": [
+    {
+      "feature_id": "F001",
+      "commits": [],
+      "files_touched": [
+        "templates/claude/dispatch/agents-registry.schema.json",
+        "templates/claude/dispatch/dispatch-envelope.schema.json",
+        "templates/claude/dispatch/dispatch-run.sh",
+        "templates/claude/dispatch/dispatch_common.py",
+        "templates/claude/dispatch/sandbox-profile.sh",
+        "templates/claude/dispatch/transports/a2a-client.py",
+        "templates/claude/dispatch/validate-dispatch.sh"
+      ],
+      "notes": "Local repo.url is checked against the invocation git top-level before sandbox directories are created. Deadline and descriptor caps share a 60..86400 integer contract and one effective-timeout function; framework resource defaults are script-relative while CLI overrides remain available."
+    },
+    {
+      "feature_id": "F002",
+      "commits": [],
+      "files_touched": [
+        "templates/claude/dispatch/process-timeout.py",
+        "templates/claude/dispatch/sandbox-profile.sh",
+        "templates/claude/dispatch/test-lifecycle.py"
+      ],
+      "notes": "The portable helper uses absolute wall clock, an independent command session, TERM-to-KILL escalation, process-group cleanup, signal-origin metadata, and distinct external-cancel handling."
+    },
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "templates/claude/dispatch/test-lifecycle.py",
+        "templates/claude/dispatch/transports/a2a-runner.py",
+        "templates/claude/dispatch/validate-dispatch.sh"
+      ],
+      "notes": "Task persistence, events, process registration, cancel, restart recovery, idle exit, and graceful shutdown use lock-owned terminal finalization. Stop cancels active groups before a bounded readable drain and pidfile removal."
+    },
+    {
+      "feature_id": "F004",
+      "commits": [],
+      "files_touched": [
+        "templates/claude/dispatch/dispatch_common.py",
+        "templates/claude/dispatch/test-lifecycle.py",
+        "templates/claude/dispatch/transports/a2a-client.py"
+      ],
+      "notes": "Run and subscribe are bounded by effective timeout plus transport grace, preserve SSE sequence resume, request CancelTask at the client deadline, and retain confirmed cancellation if the final GetTask connection is unavailable."
+    },
+    {
+      "feature_id": "F005",
+      "commits": [],
+      "files_touched": [
+        "CHANGELOG.md",
+        "VERSION",
+        "generator-handoff.json",
+        "harness/dispatch-mode.md",
+        "templates/claude/dispatch/test-lifecycle.py",
+        "templates/claude/dispatch/transports/a2a.md",
+        "templates/claude/dispatch/transports/local-cli.md"
+      ],
+      "notes": "Version is 1.5.1. Documentation records exact deadline, target identity, timeout, cancel/drain semantics and residual POSIX/A2A/cross-machine boundaries. The deterministic matrix uses fake processes, temporary repositories, injected time, and exact loopback port 0 when the host permits binding."
+    }
+  ],
+  "l1_ran": {
+    "lint": "while IFS= read -r script; do bash -n \"$script\"; done < <(rg --files -g '*.sh' | sort); git diff --check; test \"$(cat VERSION)\" = '1.5.1' (exit 0)",
+    "typecheck": "PYTHONPYCACHEPREFIX=/tmp/harness-pycache python3 -m py_compile $(rg --files templates console -g '*.py' | sort) (exit 0)",
+    "test": "python3 templates/claude/console/test-mode-intent.py; bash templates/claude/dispatch/validate-dispatch.sh registry templates/claude/dispatch/agents-registry.example.json; bash templates/claude/dispatch/test-local-state.sh; PYTHONPYCACHEPREFIX=/tmp/harness-pycache python3 templates/claude/dispatch/test-lifecycle.py; isolated bootstrap.sh init plus .claude/harness.sh verify/sync smoke (exit 0; four HTTP exact-port cases skipped because this managed host denied loopback bind, while runner-core equivalents executed)"
+  },
+  "waiting": null,
+  "waiting_detail": ""
+}

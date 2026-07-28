@@ -14,6 +14,7 @@
 
 set -euo pipefail
 MODE="${1:-all}"
+DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── PostToolUse hook：从 stdin 的 tool_input 取 file_path，命中相关文件才校验 ──
 if [ "$MODE" = "hook" ]; then
@@ -35,9 +36,11 @@ case "$MODE" in
 registry)
   REG="${2:-.agents-registry.json}"
   [ -f "$REG" ] || { echo "[dispatch] ⛔ 注册表不存在：$REG"; exit 2; }
-  python3 - "$REG" <<'PY'
+  python3 - "$REG" "$DISPATCH_DIR" <<'PY'
 import json, sys
-p = sys.argv[1]
+p, dispatch_dir = sys.argv[1:3]
+sys.path.insert(0, dispatch_dir)
+from dispatch_common import DispatchContractError, effective_timeout
 try: reg = json.load(open(p))
 except Exception as e: print(f"[dispatch] ⛔ 注册表 JSON 非法：{e}"); sys.exit(2)
 
@@ -71,6 +74,10 @@ for a in agents:
         errs.append(f"[{aid}] transport=a2a 必须声明 endpoint")
     if t == "subagent" and not a.get("agent_type"):
         errs.append(f"[{aid}] transport=subagent 必须声明 agent_type")
+    try:
+        effective_timeout(None, a.get("timeout_s"))
+    except DispatchContractError as ex:
+        errs.append(f"[{aid}] {ex}")
 
     c = a.get("constraints") or {}
     # 硬约束：evaluator 恒不得改产品代码；外部实例恒不得直接 push
@@ -95,9 +102,11 @@ PY
 envelope)
   ENV_F="${2:?用法: validate-dispatch.sh envelope <envelope.json>}"
   [ -f "$ENV_F" ] || { echo "[dispatch] ⛔ 信封不存在：$ENV_F"; exit 2; }
-  python3 - "$ENV_F" <<'PY'
+  python3 - "$ENV_F" "$DISPATCH_DIR" <<'PY'
 import json, sys
-p = sys.argv[1]
+p, dispatch_dir = sys.argv[1:3]
+sys.path.insert(0, dispatch_dir)
+from dispatch_common import DispatchContractError, bounded_seconds
 try: e = json.load(open(p))
 except Exception as ex: print(f"[dispatch] ⛔ 信封 JSON 非法：{ex}"); sys.exit(2)
 
@@ -123,6 +132,11 @@ if len(str(e.get("contract", ""))) < 40:
     errs.append("contract 内联契约摘要过短 —— 外部 CLI 不读仓内指令文件，契约必须随信封走")
 if len(str(e.get("task_id", ""))) < 8:
     errs.append("task_id 过短 —— 幂等键须足够唯一")
+if "deadline_s" in e:
+    try:
+        bounded_seconds(e.get("deadline_s"), "deadline_s")
+    except DispatchContractError as ex:
+        errs.append(str(ex))
 
 repo = e.get("repo") or {}
 if not repo.get("url"): errs.append("repo.url 缺失")
@@ -212,6 +226,7 @@ def emit(state, reason, **kw):
                       "artifact":art, **kw}, ensure_ascii=False)); sys.exit(0)
 
 if out == "TIMEOUT":         emit("CANCELED", f"wall-clock 超时（{m.get('duration_s')}s）—— 凭 task_id 幂等重派")
+if out == "CANCELED":        emit("CANCELED", f"外部取消（{m.get('termination_reason') or 'cancel'}）—— 不伪装成 timeout")
 if out == "FAILED":          emit("FAILED", f"子进程非零退出（exit={m.get('exit_code')}）")
 # ⚠️ 关键：退出码 0 不等于活干完了。外部 CLI「礼貌地失败」是常态，
 #    不写死这条，礼貌失败会被当成验收通过。
@@ -233,7 +248,7 @@ PY
   case "$STATE" in
     COMPLETED)
       ART=$(printf '%s' "$RC_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('artifact') or '')")
-      VVA=".claude/autonomous/validate-verdict-artifact.sh"
+      VVA="$DISPATCH_DIR/../autonomous/validate-verdict-artifact.sh"
       # verdict 类产物再过机件 #3 的内容门（证据非空，拒收空壳）
       if [ -n "$ART" ] && [ -x "$VVA" ] && case "$ART" in *-verdict.json) true ;; *) false ;; esac; then
         "$VVA" "$ART" >&2 || { echo "[dispatch] ⛔ 产物未过 verdict schema → ARTIFACT_INVALID"; exit 4; }

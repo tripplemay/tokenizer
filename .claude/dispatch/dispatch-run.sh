@@ -38,6 +38,9 @@ die() { echo "[dispatch-run] ⛔ $1" >&2; exit 2; }
 
 # 信封白名单校验前置到这里，两条 transport 共用（铁律 12 的机械强制）
 bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE" >&2 || die "信封校验未过，不派活"
+# 本地 repo.url 必须与调用入口所在 git 仓一致。此检查发生在任何 state/workroot 目录创建之前。
+python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
+  --envelope "$ENVELOPE" --cwd "$PWD" >/dev/null || die "repo.url 前置校验未过，不派活"
 
 TRANSPORT="$(python3 -c "
 import json,sys

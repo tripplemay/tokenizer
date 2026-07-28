@@ -11,6 +11,7 @@
 # 用法：
 #   sandbox-profile.sh --agent <agent-id> --envelope <envelope.json> [--ref <sha>]
 #                      [--registry .agents-registry.json] [--adapters <dir>]
+#                      [--timeout-helper <file>]
 #                      [--workroot <dir>] [--state .harness-dispatch]
 #
 # 输出：stdout **只有** run-meta JSON（outcome / exit_code / artifact / worktree / duration_s），
@@ -27,7 +28,9 @@
 set -euo pipefail
 
 REGISTRY=".agents-registry.json"
-ADAPTERS=".claude/dispatch/transports/adapters"
+DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ADAPTERS="$DISPATCH_DIR/transports/adapters"
+TIMEOUT_HELPER="$DISPATCH_DIR/process-timeout.py"
 WORKROOT="../.harness-dispatch"
 STATE=".harness-dispatch"
 AGENT_ID=""
@@ -41,6 +44,7 @@ while [ $# -gt 0 ]; do
     --ref)      REF="$2"; shift 2 ;;
     --registry) REGISTRY="$2"; shift 2 ;;
     --adapters) ADAPTERS="$2"; shift 2 ;;
+    --timeout-helper) TIMEOUT_HELPER="$2"; shift 2 ;;
     --workroot) WORKROOT="$2"; shift 2 ;;
     --state)    STATE="$2"; shift 2 ;;
     *) echo "[sandbox] ⛔ 未知参数：$1" >&2; exit 2 ;;
@@ -56,11 +60,19 @@ die() { echo "[sandbox] ⛔ $1" >&2; exit 2; }
 [ -f "$REGISTRY" ]   || die "注册表不存在：${REGISTRY}（机件未装，不许开车）"
 command -v python3 >/dev/null 2>&1 || die "python3 不可用"
 command -v git     >/dev/null 2>&1 || die "git 不可用"
+[ -f "$TIMEOUT_HELPER" ] || die "timeout helper 不存在：$TIMEOUT_HELPER"
+
+# repo.url 的本地目标身份必须在创建 workroot/state/clone/worktree 之前确定。
+ENVELOPE_ABS="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
+MAIN_REPO="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
+  --envelope "$ENVELOPE_ABS" --cwd "$PWD")" || die "repo.url 前置校验未过，不创建沙箱"
 
 # ── 1. 解析 descriptor + adapter（合并为一份 shell 变量清单）───────────────
-eval "$(python3 - "$REGISTRY" "$AGENT_ID" "$ADAPTERS" "$ENVELOPE" <<'PY'
+eval "$(python3 - "$REGISTRY" "$AGENT_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" <<'PY'
 import json, sys, shlex, os
-reg_path, agent_id, adapters_dir, env_path = sys.argv[1:5]
+reg_path, agent_id, adapters_dir, env_path, dispatch_dir = sys.argv[1:6]
+sys.path.insert(0, dispatch_dir)
+from dispatch_common import DispatchContractError, effective_timeout
 
 def fail(msg):
     print(f'echo "[sandbox] ⛔ {msg}" >&2; exit 2'); sys.exit(0)
@@ -106,7 +118,14 @@ artifact = (_dl or ad.get("artifact_relpath") or "docs/test-reports/{{batch}}-ve
 def emit(k, v): print(f"{k}={shlex.quote(str(v))}")
 emit("D_ADAPTER", adapter_name)
 emit("D_FAMILY", d.get("model_family", ""))
-emit("D_TIMEOUT", d.get("timeout_s", 3600))
+try:
+    timeout_cap = effective_timeout(None, d.get("timeout_s"))
+    timeout = effective_timeout(env.get("deadline_s"), timeout_cap)
+except DispatchContractError as e:
+    fail(str(e))
+emit("D_TIMEOUT_CAP", timeout_cap)
+emit("D_TIMEOUT", timeout)
+emit("E_DEADLINE", env.get("deadline_s", ""))
 # home_dir 必须展开 ~ 并绝对化。相对/未展开的 HOME 有两层危害（实测踩到）：
 # ① 子进程把 HOME 当相对路径 → 在 CWD 下造出字面量 `~/` 垃圾目录；
 # ② 下面的 dotfile fail-closed 断言会去检查一个**不存在的相对路径**，
@@ -143,7 +162,7 @@ PY
 )"
 
 [ -n "$REF" ] || REF="$E_REF"
-[ -n "$REF" ] || REF="$(git rev-parse HEAD)"
+[ -n "$REF" ] || REF="$(git -C "$MAIN_REPO" rev-parse HEAD)"
 
 # ── 2. 独立 worktree（锁定到 sha，detach，不设 upstream）────────────────────
 mkdir -p "$WORKROOT"
@@ -159,7 +178,7 @@ WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${AGENT_ID}-${E_TASK_ID}"
 # 改用 `git clone --shared`：.git 落在沙箱目录内（可写），object 仍与主仓共享（不复制体积）。
 # 隔离性不降反升 —— 不再与主仓共用 .git，主仓连元数据都不会被碰。
 if [ -n "${D_WRITE_SRC:-}" ]; then
-  git clone --shared --no-checkout "$(git rev-parse --show-toplevel)" "$WT" >/dev/null 2>&1 \
+  git clone --shared --no-checkout "$MAIN_REPO" "$WT" >/dev/null 2>&1 \
     || die "沙箱克隆创建失败（ref=${REF}）"
   git -C "$WT" checkout --detach "$REF" >/dev/null 2>&1 \
     || die "沙箱克隆 checkout 失败（ref=${REF}）"
@@ -173,7 +192,6 @@ else
   echo "[sandbox] worktree: $WT @ ${REF:0:12}" >&2
 fi
 
-ENVELOPE_ABS="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
 ENVELOPE_JSON="$(cat "$ENVELOPE_ABS")"
 
 # ── 3. env 白名单（构造子进程环境；未列出的一律不传）────────────────────────
@@ -212,7 +230,7 @@ ENV_ARGS+=("HARNESS_ARTIFACT=$E_ARTIFACT" "HARNESS_BATCH=$E_BATCH" "HARNESS_TASK
 # 只读复用」——实测中 Codex 正是自己摸到主仓 node_modules 才跑通 L1 的，且如实披露了。
 # ⚠️ 这不放宽任何权限：四道锁本来就不含文件系统隔离（§5.1），对方读得到主仓是既成事实；
 # 明写出来只是把「靠猜」变成「有契约」，并让它知道**不该写**这个路径。
-ENV_ARGS+=("HARNESS_MAIN_REPO=$(git rev-parse --show-toplevel)")
+ENV_ARGS+=("HARNESS_MAIN_REPO=$MAIN_REPO" "HARNESS_EFFECTIVE_TIMEOUT_S=$D_TIMEOUT")
 
 # ── 4. 渲染 argv 模板 ──────────────────────────────────────────────────────
 ARGV=()
@@ -228,54 +246,55 @@ for tok in "${D_ARGV_TEMPLATE[@]}"; do
 done
 command -v "${ARGV[0]}" >/dev/null 2>&1 || die "适配器可执行文件不在 PATH：${ARGV[0]}"
 
-# ── 5. wall-clock 封顶执行（portable：timeout / gtimeout / bash watchdog）───
-run_with_timeout() {
-  local secs="$1"; shift
-  if command -v timeout >/dev/null 2>&1; then timeout -k 10 "$secs" "$@"
-  elif command -v gtimeout >/dev/null 2>&1; then gtimeout -k 10 "$secs" "$@"
-  else
-    # ⚠️ `<&0` 不可省：无 job control 时，后台命令的 stdin 会被 bash 默认接到 /dev/null，
-    # 把 stdin 投递的信封整个吞掉（macOS 无 GNU timeout 时恒命中本分支）。
-    # 实测：缺此重定向 → 子进程收到空信封 → 产物写不出 → 回执 ARTIFACT_MISSING。
-    #
-    # 🔴 watchdog 必须**留下自己开过枪的凭据**，不能靠退出码反推。
-    # SIGTERM 杀掉的子进程退出码是 143，而 143 同样来自「外部把整条命令 kill 了」
-    # （编排者所在会话超时就是这样）。只看退出码 → 两种情形无法区分：
-    # 要么漏判超时（实测：本机无 GNU timeout，超时被判成 FAILED，于是文档承诺的
-    # 「TIMEOUT → 凭 task_id 幂等重派」永远不会发生，变成「重派上限 1 次后硬停」），
-    # 要么把外部中断误判成超时而去自动重派。故用 marker 文件记录**是我开的枪**。
-    local marker; marker="$(mktemp)"
-    "$@" <&0 & local pid=$!
-    ( sleep "$secs"; kill -TERM "$pid" 2>/dev/null && echo fired > "$marker"; \
-      sleep 10; kill -KILL "$pid" 2>/dev/null ) & local wd=$!
-    local rc=0; wait "$pid" || rc=$?
-    kill "$wd" 2>/dev/null || true
-    # 对齐 GNU timeout 的约定：超时一律 124，上层判定逻辑两条分支共用一套判据
-    [ -s "$marker" ] && rc=124
-    rm -f "$marker"
-    return $rc
-  fi
-}
-
+# ── 5. 绝对 wall-clock 封顶执行（单一 portable helper）────────────────────
 LOG="$(cd "$WORKROOT" && pwd)/run-${E_TASK_ID}.log"
+TIMEOUT_STATUS="$(cd "$WORKROOT" && pwd)/timeout-${E_TASK_ID}.json"
 START=$(date +%s)
+HELPER_PID=""
+forward_signal() {
+  local sig="$1"
+  [ -n "$HELPER_PID" ] && kill -"$sig" "$HELPER_PID" 2>/dev/null || true
+}
+trap 'forward_signal TERM' TERM
+trap 'forward_signal INT' INT
+wait_for_helper() {
+  local rc=0
+  while true; do
+    wait "$HELPER_PID" || rc=$?
+    kill -0 "$HELPER_PID" 2>/dev/null || return "$rc"
+  done
+}
 set +e
 # 子进程一律在 worktree 内启动（子 shell cd，不影响本脚本）。
 # 不依赖各家 CLI 的 --cd/-C 是否存在、是否被遵守；Kimi 无此类参数，完全靠这条。
 # 封顶对两种投递方式都必须生效——重定向套在 timeout 之外，stdin 透传给子进程，不影响封顶。
 if [ "$D_ENVELOPE_DELIVERY" = "stdin" ]; then
-  ( cd "$WT" && run_with_timeout "$D_TIMEOUT" env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < "$ENVELOPE_ABS" > "$LOG" 2>&1 )
+  ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
+      --status-file "$TIMEOUT_STATUS" -- \
+      env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < "$ENVELOPE_ABS" > "$LOG" 2>&1 ) &
 else
   # argv 投递：信封路径或内容已渲染进 argv，另有 HARNESS_ENVELOPE env 兜底
-  ( cd "$WT" && run_with_timeout "$D_TIMEOUT" env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < /dev/null > "$LOG" 2>&1 )
+  ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
+      --status-file "$TIMEOUT_STATUS" -- \
+      env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < /dev/null > "$LOG" 2>&1 ) &
 fi
+HELPER_PID=$!
+wait_for_helper
 EXIT=$?
+trap - TERM INT
 set -e
 DURATION=$(( $(date +%s) - START ))
 
 # ── 6. 回执原始事实（不做语义判定）─────────────────────────────────────────
 ARTIFACT_ABS="$WT/$E_ARTIFACT"
-if   [ "$EXIT" -eq 124 ] || [ "$EXIT" -eq 137 ]; then OUTCOME="TIMEOUT"
+TERMINATION_REASON="$(python3 - "$TIMEOUT_STATUS" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("reason") or "unknown")
+except Exception: print("unknown")
+PY
+)"
+if   [ "$EXIT" -eq 124 ] && [ "$TERMINATION_REASON" = deadline ]; then OUTCOME="TIMEOUT"
+elif [ "$TERMINATION_REASON" = external_signal ];       then OUTCOME="CANCELED"
 elif [ "$EXIT" -ne 0 ];                          then OUTCOME="FAILED"
 elif [ ! -f "$ARTIFACT_ABS" ];                   then OUTCOME="ARTIFACT_MISSING"
 else                                                  OUTCOME="RETURNED"
@@ -283,12 +302,15 @@ fi
 
 META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
 python3 - "$META" "$E_TASK_ID" "$AGENT_ID" "$D_ADAPTER" "$D_FAMILY" "$E_BATCH" \
-                  "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" <<'PY'
+                  "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
+                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" <<'PY'
 import json, sys
-p, task, agent, adapter, family, batch, wt, art, log, outcome, code, dur, ref = sys.argv[1:14]
+p, task, agent, adapter, family, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason = sys.argv[1:17]
 meta = {"task_id": task, "agent_id": agent, "adapter": adapter, "model_family": family,
         "batch": batch, "ref": ref, "worktree": wt, "artifact": art, "log": log,
-        "outcome": outcome, "exit_code": int(code), "duration_s": int(dur)}
+        "outcome": outcome, "exit_code": int(code), "duration_s": int(dur),
+        "effective_timeout_s": int(effective), "descriptor_timeout_s": int(cap),
+        "termination_reason": reason}
 json.dump(meta, open(p, "w"), ensure_ascii=False, indent=2)
 print(json.dumps(meta, ensure_ascii=False))
 PY
@@ -301,4 +323,5 @@ else
   echo "[sandbox] 取证后清理：git worktree remove --force '$WT'" >&2
 fi
 [ "$OUTCOME" = "TIMEOUT" ] && exit 124
+[ "$OUTCOME" = "CANCELED" ] && exit "$EXIT"
 exit 0

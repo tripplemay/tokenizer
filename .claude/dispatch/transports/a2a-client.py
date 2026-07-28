@@ -1,239 +1,457 @@
 #!/usr/bin/env python3
-"""dispatch-mode.md `a2a` transport —— 编排者侧客户端（hub 形态：我们是 client，对端是 server）。
+"""Bounded A2A-shaped client for harness dispatch (stdlib-only JSON-RPC + SSE)."""
 
-设计要点：
-- **状态机永远在编排者手里。** A2A 是点对点委托、无全局工作流概念；链式转委托会导致
-  没人持有全局真相。故本客户端只负责「派出去、拿回来」，不碰 progress.json。
-- **远端自述的 state 只是参考，权威判定在本地。** 客户端把产物写到本地后，
-  由调用方对本地副本重跑 `validate-dispatch.sh receipt`——我们校验实际收到的东西，
-  不采信远端的结论。这也是跨机器场景下唯一诚实的做法。
-- **输出与 local-cli 完全同形。** 落盘一份 run-meta JSON，字段与 `sandbox-profile.sh` 一致，
-  于是回执推断表、gate-arbiter、/autodrive 一行都不用改。
+import argparse
+import json
+import os
+import socket
+import sys
+import time
+import urllib.error
+import urllib.request
 
-用法：
-  a2a-client.py run       --agent <id> --envelope <f>   # 派活 + 订阅 + 落盘（阻塞，local-cli 的等价物）
-  a2a-client.py send      --agent <id> --envelope <f>   # 只派活，立刻返回 taskId（真异步）
-  a2a-client.py subscribe --agent <id> --task <id>      # SSE 订阅（支持 --resume-from 断线重放）
-  a2a-client.py get       --agent <id> --task <id>      # 轮询一次
-  a2a-client.py cancel    --agent <id> --task <id>
-  a2a-client.py card      --agent <id>
-  a2a-client.py ls        --agent <id>
 
-stdout 只有机器可读 JSON；进度与告警走 stderr。
-"""
+DISPATCH_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, DISPATCH_DIR)
+from dispatch_common import DispatchContractError, effective_timeout  # noqa: E402
 
-import argparse, json, os, sys, time, urllib.error, urllib.request
 
 STATE_DIR_DEFAULT = ".harness-dispatch"
+TRANSPORT_GRACE_S = 5.0
+TERMINAL = {
+    "COMPLETED", "FAILED", "CANCELED", "REJECTED",
+    "INPUT_REQUIRED", "AUTH_REQUIRED",
+}
 
 
-def log(msg):
-    sys.stderr.write(f"[a2a-client] {msg}\n")
+class ClientError(RuntimeError):
+    pass
 
 
-def die(msg, code=2):
-    log(f"⛔ {msg}")
-    sys.exit(code)
+def log(message):
+    sys.stderr.write(f"[a2a-client] {message}\n")
+
+
+def die(message, code=2):
+    log(f"error: {message}")
+    raise SystemExit(code)
 
 
 def load_descriptor(registry, agent):
     try:
-        reg = json.load(open(registry))
-    except Exception as e:
-        die(f"注册表不可读（{registry}）：{e}")
-    d = next((a for a in reg.get("agents", []) if a.get("id") == agent), None)
-    if d is None:
-        die(f"注册表中无此 agent：{agent}")
-    if d.get("transport") != "a2a":
-        die(f"{agent} 的 transport={d.get('transport')}，本客户端只处理 a2a")
-    if not d.get("endpoint"):
-        die(f"{agent} 未声明 endpoint")
-    return d
-
-
-def auth_header(d):
-    a = d.get("auth") or {}
-    if a.get("type") != "bearer":
-        return {}
-    env_name = a.get("env")
-    if not env_name:
-        die("auth.type=bearer 但未声明 auth.env（持有 token 的环境变量名）")
-    tok = os.environ.get(env_name, "").strip()
-    if not tok:
-        die(f"环境变量 {env_name} 未设置或为空 —— 无法通过对端鉴权")
-    return {"Authorization": f"Bearer {tok}"}
-
-
-def rpc(d, method, params, timeout=30):
-    url = d["endpoint"].rstrip("/") + "/"
-    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method,
-                       "params": params}, ensure_ascii=False).encode()
-    req = urllib.request.Request(url, data=body, method="POST",
-                                 headers={"Content-Type": "application/json", **auth_header(d)})
+        with open(registry, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception as exc:
+        raise ClientError(f"registry unreadable ({registry}): {exc}")
+    descriptor = next(
+        (item for item in data.get("agents", []) if item.get("id") == agent), None
+    )
+    if descriptor is None:
+        raise ClientError(f"agent not found: {agent}")
+    if descriptor.get("transport") != "a2a":
+        raise ClientError(
+            f"{agent} uses transport={descriptor.get('transport')}; a2a is required"
+        )
+    if not descriptor.get("endpoint"):
+        raise ClientError(f"{agent} has no endpoint")
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            out = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        die(f"{method} HTTP {e.code}：{e.read()[:300].decode(errors='replace')}")
-    except Exception as e:
-        die(f"{method} 连接失败：{e}（对端 runner 是否在跑？）")
-    if "error" in out:
-        die(f"{method} 返回错误：{out['error']}")
-    return out.get("result")
+        effective_timeout(None, descriptor.get("timeout_s"))
+    except DispatchContractError as exc:
+        raise ClientError(str(exc))
+    return descriptor
 
 
-def write_artifact_local(rec):
-    """把内联产物写到本地 deliverable.artifact 相对路径 —— 与 local-cli 落盘位置一致。"""
-    art = rec.get("artifact")
-    rel = ((rec.get("deliverable") or {}).get("artifact")
-           or f"docs/test-reports/{rec.get('batch')}-verdict.json")
-    if art is None:
+def auth_header(descriptor):
+    auth = descriptor.get("auth") or {}
+    if auth.get("type") != "bearer":
+        return {}
+    env_name = auth.get("env")
+    if not env_name:
+        raise ClientError("auth.type=bearer requires auth.env")
+    token = os.environ.get(env_name, "").strip()
+    if not token:
+        raise ClientError(f"environment variable {env_name} is empty")
+    return {"Authorization": f"Bearer {token}"}
+
+
+def rpc(descriptor, method, params, timeout=30.0):
+    url = descriptor["endpoint"].rstrip("/") + "/"
+    body = json.dumps(
+        {"jsonrpc": "2.0", "id": 1, "method": method, "params": params},
+        ensure_ascii=False,
+    ).encode()
+    request = urllib.request.Request(
+        url,
+        data=body,
+        method="POST",
+        headers={"Content-Type": "application/json", **auth_header(descriptor)},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=max(0.05, timeout)) as response:
+            result = json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read()[:300].decode(errors="replace")
+        raise ClientError(f"{method} HTTP {exc.code}: {detail}")
+    except Exception as exc:
+        raise ClientError(f"{method} connection failed: {exc}")
+    if "error" in result:
+        raise ClientError(f"{method} returned error: {result['error']}")
+    return result.get("result")
+
+
+def write_artifact_local(record):
+    artifact = record.get("artifact")
+    relative = (
+        (record.get("deliverable") or {}).get("artifact")
+        or f"docs/test-reports/{record.get('batch')}-verdict.json"
+    )
+    if artifact is None:
         return None
-    os.makedirs(os.path.dirname(rel) or ".", exist_ok=True)
-    with open(rel, "w") as fh:
-        json.dump(art, fh, ensure_ascii=False, indent=2)
-    log(f"产物已落本地：{rel}")
-    return rel
+    os.makedirs(os.path.dirname(relative) or ".", exist_ok=True)
+    with open(relative, "w", encoding="utf-8") as fh:
+        json.dump(artifact, fh, ensure_ascii=False, indent=2)
+    log(f"artifact written locally: {relative}")
+    return relative
 
 
-def synth_run_meta(d, rec, state_dir):
-    """合成与 sandbox-profile.sh 同形的 run-meta，交给 validate-dispatch.sh receipt 本地判定。
-
-    outcome 只表达**运输层事实**（拿到没拿到、进程怎么结束的），语义（PASS/waiting/空壳）
-    一律由本地 receipt 推断表在产物副本上重新得出。
-    """
-    local_artifact = write_artifact_local(rec)
-    st = rec.get("state")
+def synth_run_meta(descriptor, record, state_dir, *, effective_timeout_s=None):
+    """Write the local authoritative receipt input; remote state remains advisory."""
+    local_artifact = write_artifact_local(record)
+    state = record.get("state")
+    reason = record.get("termination_reason")
     if local_artifact:
         outcome = "RETURNED"
-    elif st == "CANCELED":
-        outcome = "TIMEOUT"                       # 回执表把 TIMEOUT 映射为 CANCELED → 幂等重派
-    elif st in ("FAILED", "REJECTED") and rec.get("exit_code") in (0, None):
-        outcome = "ARTIFACT_MISSING"              # 远端说完成了却没产物 —— exit 0 ≠ 完成
+    elif state == "CANCELED" and reason in ("deadline", "client_deadline"):
+        outcome = "TIMEOUT"
+    elif state == "CANCELED":
+        outcome = "CANCELED"
+    elif state in ("FAILED", "REJECTED") and record.get("exit_code") in (0, None):
+        outcome = "ARTIFACT_MISSING"
     else:
         outcome = "FAILED"
 
-    rm = rec.get("run_meta") or {}
+    remote_meta = record.get("run_meta") or {}
     meta = {
-        "task_id": rec.get("taskId"), "agent_id": rec.get("agent") or d["id"],
-        "adapter": rm.get("adapter") or "a2a", "model_family": rec.get("model_family"),
-        "batch": rec.get("batch"), "ref": rm.get("ref"),
-        "worktree": rm.get("worktree"),           # 远端路径，仅供取证
+        "task_id": record.get("taskId"),
+        "agent_id": record.get("agent") or descriptor["id"],
+        "adapter": remote_meta.get("adapter") or "a2a",
+        "model_family": record.get("model_family") or descriptor.get("model_family"),
+        "batch": record.get("batch"),
+        "ref": remote_meta.get("ref"),
+        "worktree": remote_meta.get("worktree"),
         "artifact": local_artifact or "",
-        "log": rm.get("log") or "", "outcome": outcome,
-        "exit_code": rec.get("exit_code") if rec.get("exit_code") is not None else 0,
-        "duration_s": rec.get("duration_s") or 0,
-        "transport": "a2a", "endpoint": d["endpoint"],
-        "remote_state_advisory": st,              # 远端自述，仅参考
+        "log": "",
+        "outcome": outcome,
+        "exit_code": record.get("exit_code") if record.get("exit_code") is not None else 0,
+        "duration_s": record.get("duration_s") or 0,
+        "effective_timeout_s": effective_timeout_s,
+        "termination_reason": reason or "remote_terminal",
+        "transport": "a2a",
+        "endpoint": descriptor["endpoint"],
+        "remote_state_advisory": state,
     }
     os.makedirs(state_dir, exist_ok=True)
     path = os.path.join(state_dir, f"run-meta-{meta['task_id']}.json")
-    with open(path, "w") as fh:
+    with open(path, "w", encoding="utf-8") as fh:
         json.dump(meta, fh, ensure_ascii=False, indent=2)
-    log(f"run-meta 已落盘：{path} —— 下一步用 `validate-dispatch.sh receipt {path}` 做权威判定")
+    log(f"run-meta written: {path}; validate the local receipt next")
     print(json.dumps(meta, ensure_ascii=False))
     return meta
 
 
-TERMINAL = {"COMPLETED", "FAILED", "CANCELED", "REJECTED", "INPUT_REQUIRED", "AUTH_REQUIRED"}
+def _event_record(base, event_name, payload):
+    if event_name == "status":
+        base["state"] = payload.get("state")
+    elif event_name == "artifact":
+        base["artifact"] = payload.get("artifact")
 
 
-def stream(d, task_id, resume_from=0, idle_timeout=7200):
-    """SSE 订阅。返回终态时的 task 记录。断线由调用方重试并用 --resume-from 续。"""
-    url = d["endpoint"].rstrip("/") + "/"
-    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "SubscribeToTask",
-                       "params": {"taskId": task_id}}).encode()
-    headers = {"Content-Type": "application/json", "Accept": "text/event-stream", **auth_header(d)}
-    if resume_from:
-        headers["Last-Event-ID"] = str(resume_from)
-    req = urllib.request.Request(url, data=body, method="POST", headers=headers)
+def _stream_once(descriptor, task_id, last_seq, deadline, advisory):
+    remaining = deadline - time.time()
+    if remaining <= 0:
+        return False, last_seq
+    url = descriptor["endpoint"].rstrip("/") + "/"
+    body = json.dumps(
+        {"jsonrpc": "2.0", "id": 1, "method": "SubscribeToTask",
+         "params": {"taskId": task_id}}
+    ).encode()
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream",
+        **auth_header(descriptor),
+    }
+    if last_seq:
+        headers["Last-Event-ID"] = str(last_seq)
+    request = urllib.request.Request(url, data=body, method="POST", headers=headers)
+    timeout = max(0.05, min(20.0, remaining))
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        event_id = event_name = data = None
+        for raw in response:
+            if time.time() >= deadline:
+                return False, last_seq
+            line = raw.decode("utf-8", "replace").rstrip("\n")
+            if line.startswith(":"):
+                continue
+            if line == "":
+                if event_name == "done":
+                    return True, last_seq
+                if event_name and data is not None:
+                    payload = json.loads(data)
+                    if event_id:
+                        last_seq = int(event_id)
+                    _event_record(advisory, event_name, payload)
+                    log(f"event #{event_id} {event_name}: {payload.get('state') or 'artifact'}")
+                event_id = event_name = data = None
+                continue
+            if line.startswith("id: "):
+                event_id = line[4:].strip()
+            elif line.startswith("event: "):
+                event_name = line[7:].strip()
+            elif line.startswith("data: "):
+                data = line[6:]
+    return False, last_seq
+
+
+def wait_for_terminal(
+    descriptor,
+    task_id,
+    deadline,
+    *,
+    resume_from=0,
+    poll_interval=5.0,
+    base_record=None,
+    max_stream_reconnects=3,
+):
+    """Return (record, last_seq); all retries are bounded by the absolute deadline."""
+    advisory = dict(base_record or {})
+    advisory.setdefault("taskId", task_id)
     last_seq = resume_from
+    reconnects = 0
+    while time.time() < deadline and reconnects <= max_stream_reconnects:
+        try:
+            done, last_seq = _stream_once(
+                descriptor, task_id, last_seq, deadline, advisory
+            )
+            if done:
+                try:
+                    remaining = max(0.05, min(5.0, deadline - time.time()))
+                    return rpc(descriptor, "GetTask", {"taskId": task_id}, remaining), last_seq
+                except ClientError:
+                    if advisory.get("state") in TERMINAL:
+                        return advisory, last_seq
+            reconnects += 1
+        except (urllib.error.URLError, socket.timeout, TimeoutError, OSError, ValueError) as exc:
+            reconnects += 1
+            log(f"stream interrupted ({exc}); resuming after event {last_seq}")
+
+    while time.time() < deadline:
+        remaining = deadline - time.time()
+        try:
+            record = rpc(
+                descriptor,
+                "GetTask",
+                {"taskId": task_id},
+                timeout=max(0.05, min(5.0, remaining)),
+            )
+            if record.get("state") in TERMINAL:
+                return record, last_seq
+        except ClientError as exc:
+            log(f"bounded GetTask retry failed: {exc}")
+        time.sleep(max(0.0, min(poll_interval, deadline - time.time())))
+    return None, last_seq
+
+
+def cancel_at_deadline(descriptor, task_id, grace_s, base_record):
+    cancel = rpc(
+        descriptor,
+        "CancelTask",
+        {"taskId": task_id},
+        timeout=max(0.05, grace_s),
+    )
+    synthetic = dict(base_record or {})
+    synthetic.update(cancel or {})
+    cancel_reason = (cancel or {}).get("termination_reason")
+    local_reason = (
+        cancel_reason
+        if (cancel or {}).get("deduplicated") and cancel_reason
+        else "client_deadline"
+    )
+    synthetic.update(
+        taskId=task_id,
+        agent=synthetic.get("agent") or descriptor["id"],
+        state=(cancel or {}).get("state") or "CANCELED",
+        termination_reason=local_reason,
+        events_complete=(cancel or {}).get("events_complete", True),
+    )
+    if synthetic.get("state") == "CANCELED":
+        try:
+            record = rpc(
+                descriptor, "GetTask", {"taskId": task_id}, timeout=max(0.05, grace_s)
+            )
+            record["termination_reason"] = local_reason
+            return record
+        except ClientError as exc:
+            log(f"cancel was confirmed; preserving CANCELED despite final GetTask failure: {exc}")
+            return synthetic
+    return rpc(
+        descriptor, "GetTask", {"taskId": task_id}, timeout=max(0.05, grace_s)
+    )
+
+
+def deadline_exit_code(record):
+    return 124 if (
+        record.get("state") == "CANCELED"
+        and record.get("termination_reason") == "client_deadline"
+    ) else 0
+
+
+def _load_envelope(path):
     try:
-        with urllib.request.urlopen(req, timeout=idle_timeout) as r:
-            ev_id, ev_name, data = None, None, None
-            for raw in r:
-                line = raw.decode("utf-8", "replace").rstrip("\n")
-                if line.startswith(":"):
-                    continue                                     # keepalive
-                if line == "":
-                    if ev_name == "done":
-                        break
-                    if ev_name and data is not None:
-                        if ev_id:
-                            last_seq = int(ev_id)
-                        payload = json.loads(data)
-                        log(f"事件 #{ev_id} {ev_name}: {payload.get('state') or 'artifact'}")
-                    ev_id, ev_name, data = None, None, None
-                    continue
-                if line.startswith("id: "):     ev_id = line[4:].strip()
-                elif line.startswith("event: "): ev_name = line[7:].strip()
-                elif line.startswith("data: "):  data = line[6:]
-    except Exception as e:
-        log(f"⚠️ 流中断（{e}）；事件已在对端落盘，可用 --resume-from {last_seq} 续订")
-    return rpc(d, "GetTask", {"taskId": task_id})
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception as exc:
+        raise ClientError(f"envelope unreadable ({path}): {exc}")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["run", "send", "subscribe", "get", "cancel", "card", "ls"])
-    ap.add_argument("--agent", required=True)
-    ap.add_argument("--envelope")
-    ap.add_argument("--task")
-    ap.add_argument("--registry", default=".agents-registry.json")
-    ap.add_argument("--state", default=STATE_DIR_DEFAULT)
-    ap.add_argument("--resume-from", type=int, default=0)
-    ap.add_argument("--poll-interval", type=float, default=5.0)
-    a = ap.parse_args()
-    d = load_descriptor(a.registry, a.agent)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cmd", choices=["run", "send", "subscribe", "get", "cancel", "card", "ls"])
+    parser.add_argument("--agent", required=True)
+    parser.add_argument("--envelope")
+    parser.add_argument("--task")
+    parser.add_argument("--registry", default=".agents-registry.json")
+    parser.add_argument("--state", default=STATE_DIR_DEFAULT)
+    parser.add_argument("--resume-from", type=int, default=0)
+    parser.add_argument("--poll-interval", type=float, default=5.0)
+    parser.add_argument("--transport-grace", type=float, default=TRANSPORT_GRACE_S)
+    parser.add_argument("--max-stream-reconnects", type=int, default=3)
+    args = parser.parse_args()
+    if args.poll_interval < 0 or args.transport_grace <= 0 or args.max_stream_reconnects < 0:
+        parser.error("wait controls must be non-negative and transport grace must be positive")
 
-    if a.cmd == "card":
-        url = d["endpoint"].rstrip("/") + "/.well-known/a2a-agent-card"
-        req = urllib.request.Request(url, headers=auth_header(d))
-        try:
-            with urllib.request.urlopen(req, timeout=15) as r:
-                print(json.dumps(json.loads(r.read()), ensure_ascii=False, indent=2))
-        except Exception as e:
-            die(f"取 Agent Card 失败：{e}")
-        return
+    try:
+        descriptor = load_descriptor(args.registry, args.agent)
 
-    if a.cmd == "ls":
-        print(json.dumps(rpc(d, "ListTasks", {}), ensure_ascii=False, indent=2)); return
+        if args.cmd == "card":
+            url = descriptor["endpoint"].rstrip("/") + "/.well-known/a2a-agent-card"
+            request = urllib.request.Request(url, headers=auth_header(descriptor))
+            with urllib.request.urlopen(request, timeout=15) as response:
+                print(json.dumps(json.loads(response.read()), ensure_ascii=False, indent=2))
+            return 0
+        if args.cmd == "ls":
+            print(json.dumps(rpc(descriptor, "ListTasks", {}), ensure_ascii=False, indent=2))
+            return 0
 
-    if a.cmd in ("send", "run"):
-        if not a.envelope:
-            die("缺 --envelope")
-        env = json.load(open(a.envelope))
-        res = rpc(d, "SendMessage", {"envelope": env})
-        tid = res["taskId"]
-        if res.get("deduplicated"):
-            log(f"幂等命中：task {tid} 已存在（state={res.get('state')}），不重复派活")
-        else:
-            log(f"已派活 task={tid} → {d['endpoint']}")
-        if a.cmd == "send":
-            print(json.dumps({"taskId": tid, "state": res.get("state"),
-                              "agent": a.agent, "endpoint": d["endpoint"]}, ensure_ascii=False))
-            return
-        rec = stream(d, tid, a.resume_from)
-        return synth_run_meta(d, rec, a.state) and None
+        if args.cmd in ("send", "run"):
+            if not args.envelope:
+                raise ClientError("--envelope is required")
+            envelope = _load_envelope(args.envelope)
+            timeout_s = effective_timeout(
+                envelope.get("deadline_s"), descriptor.get("timeout_s")
+            )
+            started = time.time()
+            deadline = started + timeout_s + args.transport_grace
+            result = rpc(
+                descriptor,
+                "SendMessage",
+                {"envelope": envelope},
+                timeout=max(0.05, min(30.0, deadline - time.time())),
+            )
+            task_id = result["taskId"]
+            if result.get("deduplicated"):
+                log(f"task {task_id} deduplicated at state={result.get('state')}")
+            else:
+                log(f"task {task_id} submitted to {descriptor['endpoint']}")
+            if args.cmd == "send":
+                print(json.dumps({
+                    "taskId": task_id,
+                    "state": result.get("state"),
+                    "agent": args.agent,
+                    "endpoint": descriptor["endpoint"],
+                }, ensure_ascii=False))
+                return 0
+            base = {
+                "taskId": task_id,
+                "agent": args.agent,
+                "model_family": descriptor.get("model_family"),
+                "batch": envelope.get("batch"),
+                "role": envelope.get("role"),
+                "deliverable": envelope.get("deliverable"),
+            }
+            record, _last = wait_for_terminal(
+                descriptor,
+                task_id,
+                deadline,
+                resume_from=args.resume_from,
+                poll_interval=args.poll_interval,
+                base_record=base,
+                max_stream_reconnects=args.max_stream_reconnects,
+            )
+            if record is None:
+                record = cancel_at_deadline(descriptor, task_id, args.transport_grace, base)
+                synth_run_meta(
+                    descriptor, record, args.state, effective_timeout_s=timeout_s
+                )
+                return deadline_exit_code(record)
+            synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+            return 0
 
-    if not a.task:
-        die("缺 --task")
-
-    if a.cmd == "cancel":
-        print(json.dumps(rpc(d, "CancelTask", {"taskId": a.task}), ensure_ascii=False)); return
-
-    if a.cmd == "subscribe":
-        rec = stream(d, a.task, a.resume_from)
-        return synth_run_meta(d, rec, a.state) and None
-
-    if a.cmd == "get":
-        rec = rpc(d, "GetTask", {"taskId": a.task})
-        if rec.get("state") in TERMINAL:
-            return synth_run_meta(d, rec, a.state) and None
-        log(f"task {a.task} 仍在 {rec.get('state')}，尚无产物")
-        print(json.dumps({k: rec.get(k) for k in ("taskId", "state", "batch", "role",
-                                                  "submitted_at", "started_at")}, ensure_ascii=False))
+        if not args.task:
+            raise ClientError("--task is required")
+        if args.cmd == "cancel":
+            print(json.dumps(
+                rpc(descriptor, "CancelTask", {"taskId": args.task}), ensure_ascii=False
+            ))
+            return 0
+        if args.cmd == "get":
+            record = rpc(descriptor, "GetTask", {"taskId": args.task})
+            if record.get("state") in TERMINAL:
+                synth_run_meta(descriptor, record, args.state)
+            else:
+                log(f"task {args.task} remains {record.get('state')}")
+                print(json.dumps({key: record.get(key) for key in
+                                  ("taskId", "state", "batch", "role",
+                                   "submitted_at", "started_at")}, ensure_ascii=False))
+            return 0
+        if args.cmd == "subscribe":
+            envelope = _load_envelope(args.envelope) if args.envelope else None
+            timeout_s = effective_timeout(
+                envelope.get("deadline_s") if envelope else None,
+                descriptor.get("timeout_s"),
+            )
+            deadline = time.time() + timeout_s + args.transport_grace
+            base = {
+                "taskId": args.task,
+                "agent": args.agent,
+                "model_family": descriptor.get("model_family"),
+            }
+            if envelope:
+                base.update(
+                    batch=envelope.get("batch"),
+                    role=envelope.get("role"),
+                    deliverable=envelope.get("deliverable"),
+                )
+            record, _last = wait_for_terminal(
+                descriptor,
+                args.task,
+                deadline,
+                resume_from=args.resume_from,
+                poll_interval=args.poll_interval,
+                base_record=base,
+                max_stream_reconnects=args.max_stream_reconnects,
+            )
+            if record is None:
+                record = cancel_at_deadline(
+                    descriptor, args.task, args.transport_grace, base
+                )
+                synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+                return deadline_exit_code(record)
+            synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+            return 0
+    except (ClientError, DispatchContractError, urllib.error.URLError, OSError, ValueError) as exc:
+        die(str(exc))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

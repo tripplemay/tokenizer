@@ -1,0 +1,880 @@
+#!/usr/bin/env python3
+"""Fast deterministic dispatch deadline and A2A lifecycle regression matrix."""
+
+import importlib.util
+import json
+import os
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+import unittest
+import urllib.request
+from pathlib import Path
+from unittest import mock
+
+
+DISPATCH = Path(__file__).resolve().parent
+RUNNER = DISPATCH / "transports" / "a2a-runner.py"
+CLIENT = DISPATCH / "transports" / "a2a-client.py"
+TIMEOUT = DISPATCH / "process-timeout.py"
+VALIDATOR = DISPATCH / "validate-dispatch.sh"
+sys.path.insert(0, str(DISPATCH))
+from dispatch_common import (  # noqa: E402
+    DispatchContractError,
+    MAX_TIMEOUT_S,
+    MIN_TIMEOUT_S,
+    effective_timeout,
+)
+
+
+def wait_until(predicate, timeout=4.0, interval=0.02):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        value = predicate()
+        if value:
+            return value
+        time.sleep(interval)
+    return None
+
+
+def pid_alive(pid):
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+
+
+def assert_pids_gone(testcase, pids, timeout=3.0):
+    remaining = wait_until(
+        lambda: all(not pid_alive(pid) for pid in pids), timeout=timeout
+    )
+    testcase.assertTrue(remaining, f"processes still alive: {[p for p in pids if pid_alive(p)]}")
+
+
+def write_executable(path, text):
+    Path(path).write_text(text, encoding="utf-8")
+    os.chmod(path, 0o755)
+
+
+class DeadlineAndPreflightTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.repo = self.root / "project"
+        self.repo.mkdir()
+        subprocess.run(["git", "-C", str(self.repo), "init", "-q"], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.repo), "config", "user.email", "fixture@example.invalid"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.repo), "config", "user.name", "fixture"], check=True
+        )
+        (self.repo / "README.md").write_text("fixture\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(self.repo), "add", "README.md"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "commit", "-qm", "fixture"], check=True)
+        self.ref = subprocess.check_output(
+            ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def envelope(self, repo_url=None, deadline_marker="missing"):
+        envelope = {
+            "task_id": "lifecycle-fixture",
+            "contract_version": "harness/1.1",
+            "batch": "BL-LIFECYCLE-FIXTURE",
+            "role": "evaluator",
+            "repo": {"url": str(repo_url or self.repo), "ref": self.ref},
+            "l2_authorized": False,
+            "contract": "Deterministic fixture contract with enough detail for validation.",
+            "deliverable": {
+                "artifact": "artifact.json",
+                "schema": "artifact.schema.json",
+                "commit_to": None,
+            },
+        }
+        if deadline_marker != "missing":
+            envelope["deadline_s"] = deadline_marker
+        return envelope
+
+    def validate(self, envelope):
+        path = self.root / "envelope.json"
+        path.write_text(json.dumps(envelope), encoding="utf-8")
+        return subprocess.run(
+            ["bash", str(VALIDATOR), "envelope", str(path)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+    def test_deadline_schema_manual_and_effective_timeout_agree(self):
+        schema = json.loads((DISPATCH / "dispatch-envelope.schema.json").read_text())
+        deadline_schema = schema["properties"]["deadline_s"]
+        self.assertEqual(deadline_schema["type"], "integer")
+        self.assertEqual(deadline_schema["minimum"], MIN_TIMEOUT_S)
+        self.assertEqual(deadline_schema["maximum"], MAX_TIMEOUT_S)
+
+        for value in ("missing", MIN_TIMEOUT_S, 90, MAX_TIMEOUT_S):
+            self.assertEqual(self.validate(self.envelope(deadline_marker=value)).returncode, 0)
+        for value in (True, 60.0, "60", MIN_TIMEOUT_S - 1, -1, MAX_TIMEOUT_S + 1):
+            self.assertEqual(
+                self.validate(self.envelope(deadline_marker=value)).returncode,
+                2,
+                repr(value),
+            )
+
+        self.assertEqual(effective_timeout(None, 90), 90)
+        self.assertEqual(effective_timeout(60, 90), 60)
+        self.assertEqual(effective_timeout(90, 90), 90)
+        self.assertEqual(effective_timeout(120, 90), 90)
+        for value in (True, 60.0, "60", 59, -1, MAX_TIMEOUT_S + 1):
+            with self.assertRaises(DispatchContractError):
+                effective_timeout(value, 90)
+
+    def _sandbox_inputs(self, repo_url):
+        adapters = self.root / "adapters"
+        adapters.mkdir(exist_ok=True)
+        fake = self.root / "fake-cli.sh"
+        write_executable(
+            fake,
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            "printf '{\"waiting\":null}\\n' > \"$HARNESS_ARTIFACT\"\n",
+        )
+        (adapters / "fixture.json").write_text(json.dumps({
+            "name": "fixture",
+            "model_family": "fixture",
+            "argv": ["bash", str(fake)],
+            "envelope_delivery": "stdin",
+            "artifact_relpath": "artifact.json",
+        }), encoding="utf-8")
+        safe_home = self.root / "safe-home"
+        safe_home.mkdir(exist_ok=True)
+        registry = self.repo / ".agents-registry.json"
+        registry.write_text(json.dumps({
+            "version": "dispatch/1",
+            "agents": [{
+                "id": "fixture-agent",
+                "roles": ["evaluator"],
+                "transport": "local-cli",
+                "adapter": "fixture",
+                "model_family": "fixture",
+                "constraints": {"l2": False, "write_src": False, "push": False},
+                "sandbox": {"home_dir": str(safe_home), "env_allow": []},
+                "timeout_s": 90,
+            }],
+        }), encoding="utf-8")
+        envelope = self.repo / "envelope.json"
+        envelope.write_text(json.dumps(self.envelope(repo_url, 60)), encoding="utf-8")
+        return registry, envelope, adapters
+
+    def test_repo_mismatch_and_non_git_leave_no_partial_sandbox(self):
+        other = self.root / "other"
+        other.mkdir()
+        subprocess.run(["git", "-C", str(other), "init", "-q"], check=True)
+        nongit = self.root / "not-a-repository"
+        nongit.mkdir()
+        for repo_url in (other, nongit):
+            registry, envelope, adapters = self._sandbox_inputs(repo_url)
+            workroot = self.root / f"work-{repo_url.name}"
+            state = self.root / f"state-{repo_url.name}"
+            result = subprocess.run([
+                "bash", str(DISPATCH / "sandbox-profile.sh"),
+                "--agent", "fixture-agent",
+                "--envelope", str(envelope),
+                "--registry", str(registry),
+                "--adapters", str(adapters),
+                "--workroot", str(workroot),
+                "--state", str(state),
+            ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(str(self.repo.resolve()), result.stderr)
+            self.assertIn(str(repo_url.resolve()), result.stderr)
+            self.assertFalse(workroot.exists())
+            self.assertFalse(state.exists())
+
+    def test_repo_match_and_script_relative_defaults_work_cross_cwd(self):
+        installed = self.root / "installed-dispatch"
+        shutil.copytree(DISPATCH, installed)
+        registry, envelope, _unused = self._sandbox_inputs(self.repo)
+        fake = self.root / "fake-cli.sh"
+        adapters = installed / "transports" / "adapters"
+        (adapters / "fixture.json").write_text(json.dumps({
+            "name": "fixture",
+            "model_family": "fixture",
+            "argv": ["bash", str(fake)],
+            "envelope_delivery": "stdin",
+            "artifact_relpath": "artifact.json",
+        }), encoding="utf-8")
+        workroot = self.root / "work-match"
+        state = self.root / "state-match"
+        result = subprocess.run([
+            "bash", str(installed / "dispatch-run.sh"),
+            "--agent", "fixture-agent",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        meta = json.loads(result.stdout)
+        self.assertEqual(meta["outcome"], "RETURNED")
+        self.assertEqual(meta["effective_timeout_s"], 60)
+        self.assertEqual(meta["descriptor_timeout_s"], 90)
+
+    def test_direct_sandbox_term_is_external_cancel_and_reaps_tree(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        pids_path = self.root / "sandbox-cancel-pids.json"
+        tree = self.root / "sandbox-tree.py"
+        tree.write_text(
+            "import json, os, signal, subprocess, sys, time\n"
+            "if sys.argv[1] == 'child':\n"
+            " signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            " while True: time.sleep(1)\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "child = subprocess.Popen([sys.executable, __file__, 'child', sys.argv[2]])\n"
+            "open(sys.argv[2], 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "while True: time.sleep(1)\n",
+            encoding="utf-8",
+        )
+        (adapters / "fixture.json").write_text(json.dumps({
+            "name": "fixture",
+            "model_family": "fixture",
+            "argv": [sys.executable, str(tree), "parent", str(pids_path)],
+            "envelope_delivery": "stdin",
+            "artifact_relpath": "artifact.json",
+        }), encoding="utf-8")
+        workroot = self.root / "cancel-work"
+        state = self.root / "cancel-state"
+        proc = subprocess.Popen([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "fixture-agent",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--adapters", str(adapters),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        proc.send_signal(signal.SIGTERM)
+        stdout, stderr = proc.communicate(timeout=7)
+        self.assertEqual(proc.returncode, 143, stderr)
+        meta = json.loads(stdout)
+        self.assertEqual(meta["outcome"], "CANCELED")
+        self.assertEqual(meta["termination_reason"], "external_signal")
+        assert_pids_gone(self, pids)
+
+
+class ProcessTimeoutTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.fixture = self.root / "tree.py"
+        self.fixture.write_text(
+            "import json, os, signal, subprocess, sys, time\n"
+            "mode, path = sys.argv[1:3]\n"
+            "if mode == 'child':\n"
+            "    signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "    while True: time.sleep(1)\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "child = subprocess.Popen([sys.executable, __file__, 'child', path])\n"
+            "open(path, 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "while True: time.sleep(1)\n",
+            encoding="utf-8",
+        )
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def _tree_command(self, pids):
+        return [sys.executable, str(self.fixture), "parent", str(pids)]
+
+    def test_normal_exit_is_propagated(self):
+        status = self.root / "normal-status.json"
+        result = subprocess.run([
+            sys.executable, str(TIMEOUT), "--timeout", "2", "--status-file", str(status), "--",
+            sys.executable, "-c", "raise SystemExit(7)",
+        ])
+        self.assertEqual(result.returncode, 7)
+        self.assertEqual(json.loads(status.read_text())["reason"], "process_exit")
+
+        child_124 = self.root / "child-124-status.json"
+        result = subprocess.run([
+            sys.executable, str(TIMEOUT), "--timeout", "2",
+            "--status-file", str(child_124), "--",
+            sys.executable, "-c", "raise SystemExit(124)",
+        ])
+        self.assertEqual(result.returncode, 124)
+        self.assertEqual(json.loads(child_124.read_text())["reason"], "process_exit")
+
+    def test_timeout_reaps_parent_and_grandchild(self):
+        pids_path = self.root / "timeout-pids.json"
+        result = subprocess.run([
+            sys.executable, str(TIMEOUT), "--timeout", "1", "--term-grace", "0.1", "--",
+            *self._tree_command(pids_path),
+        ])
+        self.assertEqual(result.returncode, 124)
+        pids = json.loads(pids_path.read_text())
+        assert_pids_gone(self, pids)
+
+    def test_external_term_is_not_reported_as_timeout(self):
+        pids_path = self.root / "external-pids.json"
+        proc = subprocess.Popen([
+            sys.executable, str(TIMEOUT), "--timeout", "30", "--term-grace", "0.1", "--",
+            *self._tree_command(pids_path),
+        ])
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        proc.send_signal(signal.SIGTERM)
+        self.assertEqual(proc.wait(timeout=4), 143)
+        assert_pids_gone(self, pids)
+
+    def test_injected_wall_clock_simulates_suspend_gap(self):
+        pids_path = self.root / "clock-pids.json"
+        clock = self.root / "clock"
+        clock.write_text("100\n")
+        proc = subprocess.Popen([
+            sys.executable, str(TIMEOUT), "--timeout", "60", "--term-grace", "0.1",
+            "--clock-file", str(clock), "--", *self._tree_command(pids_path),
+        ])
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        clock.write_text("160\n")
+        self.assertEqual(proc.wait(timeout=4), 124)
+        assert_pids_gone(self, pids)
+
+
+class RunnerFixture:
+    def __init__(self, testcase, *, idle_exit=0.0, seed_working=False):
+        probe = socket.socket()
+        try:
+            probe.bind(("127.0.0.1", 0))
+        except PermissionError:
+            probe.close()
+            testcase.skipTest("managed sandbox denies loopback binds; runner-core tests remain active")
+        finally:
+            probe.close()
+        self.testcase = testcase
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.state = self.root / "state"
+        self.workroot = self.root / "work"
+        self.registry = self.root / "registry.json"
+        self.registry.write_text(json.dumps({
+            "version": "dispatch/1",
+            "agents": [{
+                "id": "fixture-agent",
+                "roles": ["evaluator"],
+                "transport": "local-cli",
+                "adapter": "fixture",
+                "model_family": "fixture",
+                "constraints": {"l2": False, "write_src": False, "push": False},
+                "sandbox": {"home_dir": str(self.root / "home")},
+                "timeout_s": 60,
+            }],
+        }), encoding="utf-8")
+        self.validator = self.root / "validator.sh"
+        write_executable(
+            self.validator,
+            "#!/usr/bin/env bash\n"
+            "if [ \"${1:-}\" = receipt ]; then printf '{\"state\":\"COMPLETED\"}\\n'; fi\n"
+            "exit 0\n",
+        )
+        self.slow_child = self.root / "slow-child.py"
+        self.slow_child.write_text(
+            "import signal, time\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "while True: time.sleep(1)\n",
+            encoding="utf-8",
+        )
+        self.fake_python = self.root / "fake-sandbox.py"
+        self.fake_python.write_text(
+            "import json, os, signal, subprocess, sys, time\n"
+            "args = sys.argv[1:]\n"
+            "env_path = args[args.index('--envelope') + 1]\n"
+            "root = sys.argv[0].rsplit('/', 1)[0]\n"
+            "env = json.load(open(env_path))\n"
+            "tid = env['task_id']\n"
+            "open(os.path.join(root, 'count-' + tid), 'a').write('1\\n')\n"
+            "if env.get('contract') == 'slow':\n"
+            "    signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "    child = subprocess.Popen([sys.executable, os.path.join(root, 'slow-child.py')])\n"
+            "    open(os.path.join(root, 'pids-' + tid + '.json'), 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "    while True: time.sleep(1)\n"
+            "artifact = os.path.join(root, 'artifact-' + tid + '.json')\n"
+            "json.dump({'waiting': None, 'task': tid}, open(artifact, 'w'))\n"
+            "print(json.dumps({'task_id': tid, 'agent_id': 'fixture-agent', 'adapter': 'fixture', "
+            "'model_family': 'fixture', 'batch': env['batch'], 'ref': env['repo']['ref'], "
+            "'worktree': root, 'artifact': artifact, 'log': '', 'outcome': 'RETURNED', "
+            "'exit_code': 0, 'duration_s': 0}))\n",
+            encoding="utf-8",
+        )
+        self.sandbox = self.root / "sandbox.sh"
+        write_executable(
+            self.sandbox,
+            f"#!/usr/bin/env bash\nexec {sys.executable!r} {str(self.fake_python)!r} \"$@\"\n",
+        )
+        (self.root / "adapters").mkdir()
+        if seed_working:
+            tasks = self.state / "tasks"
+            tasks.mkdir(parents=True)
+            (tasks / "restart-task.json").write_text(json.dumps({
+                "taskId": "restart-task",
+                "state": "WORKING",
+                "agent": "fixture-agent",
+                "batch": "BL-FIXTURE",
+                "role": "evaluator",
+                "submitted_at": "2026-07-27T00:00:00Z",
+                "started_at": "2026-07-27T00:00:01Z",
+            }), encoding="utf-8")
+            (tasks / "restart-task.events.jsonl").write_text(
+                json.dumps({"seq": 1, "kind": "status", "payload": {"state": "SUBMITTED"}}) + "\n"
+                + json.dumps({"seq": 2, "kind": "status", "payload": {"state": "WORKING"}}) + "\n",
+                encoding="utf-8",
+            )
+        command = [
+            sys.executable, str(RUNNER),
+            "--registry", str(self.registry),
+            "--agent", "fixture-agent",
+            "--port", "0",
+            "--state", str(self.state),
+            "--workroot", str(self.workroot),
+            "--sandbox", str(self.sandbox),
+            "--validator", str(self.validator),
+            "--adapters", str(self.root / "adapters"),
+            "--sse-heartbeat", "0.05",
+            "--sse-timeout", "5",
+            "--cancel-grace", "2.25",
+            "--shutdown-timeout", "5",
+            "--drain-timeout", "0.4",
+            "--idle-exit", str(idle_exit),
+        ]
+        self.proc = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            start_new_session=True,
+        )
+        pidfile = self.state / "runner.pid"
+        ready = wait_until(lambda: pidfile.exists() and pidfile.stat().st_size > 0)
+        if not ready:
+            out, err = self.proc.communicate(timeout=1)
+            testcase.fail(f"runner did not start: {out} {err}")
+        self.pid_record = json.loads(pidfile.read_text())
+        self.port = self.pid_record["port"]
+
+    def envelope(self, tid, contract="normal"):
+        return {
+            "task_id": tid,
+            "contract_version": "harness/1.1",
+            "batch": "BL-FIXTURE",
+            "role": "evaluator",
+            "repo": {"url": str(self.root), "ref": "1234567"},
+            "l2_authorized": False,
+            "contract": contract,
+            "deliverable": {"artifact": "artifact.json", "schema": "schema.json"},
+        }
+
+    def rpc(self, method, params, timeout=3.0):
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/",
+            data=json.dumps({"jsonrpc": "2.0", "id": 1, "method": method,
+                             "params": params}).encode(),
+            method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            result = json.loads(response.read())
+        if "error" in result:
+            raise RuntimeError(result["error"])
+        return result["result"]
+
+    def send(self, tid, contract="normal"):
+        return self.rpc("SendMessage", {"envelope": self.envelope(tid, contract)})
+
+    def wait_terminal(self, tid):
+        return wait_until(
+            lambda: (lambda rec: rec if rec.get("state") in {
+                "COMPLETED", "FAILED", "CANCELED", "REJECTED",
+            } else None)(self.rpc("GetTask", {"taskId": tid})),
+            timeout=4,
+        )
+
+    def events(self, tid):
+        path = self.state / "tasks" / f"{tid}.events.jsonl"
+        return [json.loads(line) for line in path.read_text().splitlines()]
+
+    def sse(self, tid, last=0):
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/",
+            data=json.dumps({"jsonrpc": "2.0", "id": 1, "method": "SubscribeToTask",
+                             "params": {"taskId": tid}}).encode(),
+            method="POST",
+            headers={"Content-Type": "application/json", "Accept": "text/event-stream",
+                     "Last-Event-ID": str(last)},
+        )
+        with urllib.request.urlopen(request, timeout=3) as response:
+            return response.read().decode()
+
+    def close(self):
+        if self.proc.poll() is None:
+            self.proc.send_signal(signal.SIGTERM)
+            try:
+                self.proc.wait(timeout=4)
+            except subprocess.TimeoutExpired:
+                os.killpg(self.proc.pid, signal.SIGKILL)
+                self.proc.wait(timeout=2)
+        self.proc.communicate()
+        self.temp.cleanup()
+
+
+class A2ALifecycleTests(unittest.TestCase):
+    def setUp(self):
+        self.runner = RunnerFixture(self)
+
+    def tearDown(self):
+        self.runner.close()
+
+    def test_terminal_order_sse_replay_and_task_id_dedupe(self):
+        self.runner.send("normal-task")
+        record = self.runner.wait_terminal("normal-task")
+        self.assertEqual(record["state"], "COMPLETED")
+        self.assertTrue(record["events_complete"])
+        self.assertTrue(record.get("finished_at"))
+        events = self.runner.events("normal-task")
+        self.assertEqual(
+            [(event["kind"], event["payload"].get("state")) for event in events],
+            [("status", "SUBMITTED"), ("status", "WORKING"),
+             ("artifact", None), ("status", "COMPLETED")],
+        )
+        replay = self.runner.sse("normal-task", last=2)
+        self.assertNotIn("id: 1\n", replay)
+        self.assertNotIn("id: 2\n", replay)
+        self.assertIn("id: 3\n", replay)
+        self.assertIn("id: 4\n", replay)
+        self.assertIn("event: done", replay)
+
+        duplicate = self.runner.send("normal-task")
+        self.assertTrue(duplicate["deduplicated"])
+        count = (self.runner.root / "count-normal-task").read_text().splitlines()
+        self.assertEqual(len(count), 1)
+
+    def test_cancel_and_duplicate_cancel_are_one_terminal_sequence(self):
+        self.runner.send("cancel-task", "slow")
+        pids_path = self.runner.root / "pids-cancel-task.json"
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        first = self.runner.rpc("CancelTask", {"taskId": "cancel-task"})
+        second = self.runner.rpc("CancelTask", {"taskId": "cancel-task"})
+        self.assertEqual(first["state"], "CANCELED")
+        self.assertEqual(second["state"], "CANCELED")
+        self.assertEqual(first["finished_at"], second["finished_at"])
+        self.assertTrue(second["deduplicated"])
+        states = [event["payload"].get("state") for event in self.runner.events("cancel-task")]
+        self.assertEqual(states.count("CANCELED"), 1)
+        self.assertEqual(states, ["SUBMITTED", "WORKING", "CANCELED"])
+        assert_pids_gone(self, pids)
+
+    def test_active_stop_persists_cancel_during_drain_and_cleans_pidfile(self):
+        self.runner.send("stop-task", "slow")
+        pids_path = self.runner.root / "pids-stop-task.json"
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        stop = subprocess.Popen([
+            sys.executable, str(RUNNER),
+            "--agent", "fixture-agent",
+            "--state", str(self.runner.state),
+            "--shutdown-timeout", "2",
+            "--drain-timeout", "0.4",
+            "--stop",
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        observed = None
+        # The runner deliberately gives the sandbox 2.25s to forward TERM and
+        # reap its nested CLI group before publishing CANCELED.
+        deadline = time.monotonic() + 3.5
+        while time.monotonic() < deadline and stop.poll() is None:
+            try:
+                candidate = self.runner.rpc("GetTask", {"taskId": "stop-task"}, timeout=0.2)
+                if candidate.get("state") == "CANCELED":
+                    observed = candidate
+                    break
+            except Exception:
+                pass
+            time.sleep(0.02)
+        self.assertIsNotNone(observed, "terminal state was not fetchable during drain")
+        self.assertTrue(observed["events_complete"])
+        stop_out, stop_err = stop.communicate(timeout=5)
+        self.assertEqual(stop.returncode, 0, stop_out + stop_err)
+        self.assertEqual(self.runner.proc.wait(timeout=2), 0)
+        self.assertFalse((self.runner.state / "runner.pid").exists())
+        states = [event["payload"].get("state") for event in self.runner.events("stop-task")]
+        self.assertEqual(states.count("CANCELED"), 1)
+        assert_pids_gone(self, pids)
+
+    def test_runner_restart_recovers_working_and_idle_exit_removes_pidfile(self):
+        self.runner.close()
+        self.runner = RunnerFixture(self, idle_exit=0.3, seed_working=True)
+        record = self.runner.rpc("GetTask", {"taskId": "restart-task"})
+        self.assertEqual(record["state"], "FAILED")
+        self.assertEqual(record["termination_reason"], "runner_restart")
+        self.assertTrue(record["events_complete"])
+        states = [event["payload"].get("state") for event in self.runner.events("restart-task")]
+        self.assertEqual(states, ["SUBMITTED", "WORKING", "FAILED"])
+        self.assertEqual(self.runner.proc.wait(timeout=3), 0)
+        self.assertFalse((self.runner.state / "runner.pid").exists())
+
+
+class A2AClientTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location("a2a_client", CLIENT)
+        cls.client = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.client)
+
+    def test_confirmed_deadline_cancel_survives_final_get_failure(self):
+        descriptor = {
+            "id": "remote",
+            "endpoint": "http://127.0.0.1:1",
+            "model_family": "fixture",
+        }
+        responses = [
+            {"taskId": "task-1", "state": "CANCELED", "events_complete": True,
+             "finished_at": "2026-07-27T00:00:00Z"},
+            self.client.ClientError("connection refused"),
+        ]
+
+        def fake_rpc(*_args, **_kwargs):
+            value = responses.pop(0)
+            if isinstance(value, Exception):
+                raise value
+            return value
+
+        with mock.patch.object(self.client, "rpc", side_effect=fake_rpc):
+            record = self.client.cancel_at_deadline(
+                descriptor, "task-1", 0.1,
+                {"taskId": "task-1", "batch": "BL-FIXTURE"},
+            )
+        self.assertEqual(record["state"], "CANCELED")
+        self.assertEqual(record["termination_reason"], "client_deadline")
+        self.assertTrue(record["events_complete"])
+        self.assertEqual(self.client.deadline_exit_code(record), 124)
+
+    def test_deadline_preserves_an_existing_runner_cancel(self):
+        descriptor = {
+            "id": "remote",
+            "endpoint": "http://127.0.0.1:1",
+            "model_family": "fixture",
+        }
+        responses = [
+            {"taskId": "task-1", "state": "CANCELED", "events_complete": True,
+             "termination_reason": "runner_stop", "deduplicated": True},
+            {"taskId": "task-1", "state": "CANCELED", "events_complete": True,
+             "termination_reason": "runner_stop"},
+        ]
+
+        with mock.patch.object(self.client, "rpc", side_effect=responses):
+            record = self.client.cancel_at_deadline(
+                descriptor, "task-1", 0.1,
+                {"taskId": "task-1", "batch": "BL-FIXTURE"},
+            )
+        self.assertEqual(record["termination_reason"], "runner_stop")
+        self.assertEqual(self.client.deadline_exit_code(record), 0)
+
+    def test_completion_race_at_deadline_is_not_reported_as_timeout(self):
+        descriptor = {
+            "id": "remote",
+            "endpoint": "http://127.0.0.1:1",
+            "model_family": "fixture",
+        }
+        responses = [
+            {"taskId": "task-1", "state": "COMPLETED", "events_complete": True,
+             "deduplicated": True},
+            {"taskId": "task-1", "state": "COMPLETED", "events_complete": True,
+             "termination_reason": "process_exit", "artifact": {"waiting": None}},
+        ]
+
+        with mock.patch.object(self.client, "rpc", side_effect=responses):
+            record = self.client.cancel_at_deadline(
+                descriptor, "task-1", 0.1,
+                {"taskId": "task-1", "batch": "BL-FIXTURE"},
+            )
+        self.assertEqual(record["state"], "COMPLETED")
+        self.assertEqual(self.client.deadline_exit_code(record), 0)
+
+
+class RunnerCoreTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location("a2a_runner", RUNNER)
+        cls.runner_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.runner_module)
+
+    def setUp(self):
+        from types import SimpleNamespace
+
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.state = self.root / "state"
+        self.state.mkdir()
+        self.validator = self.root / "validator.sh"
+        write_executable(
+            self.validator,
+            "#!/usr/bin/env bash\n"
+            "if [ \"${1:-}\" = receipt ]; then printf '{\"state\":\"COMPLETED\"}\\n'; fi\n"
+            "exit 0\n",
+        )
+        child = self.root / "child.py"
+        child.write_text(
+            "import signal, time\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "while True: time.sleep(1)\n",
+            encoding="utf-8",
+        )
+        fake = self.root / "fake.py"
+        fake.write_text(
+            "import json, os, signal, subprocess, sys, time\n"
+            "args = sys.argv[1:]\n"
+            "env = json.load(open(args[args.index('--envelope') + 1]))\n"
+            "root = os.path.dirname(__file__); tid = env['task_id']\n"
+            "if env.get('contract') == 'slow':\n"
+            " signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            " child = subprocess.Popen([sys.executable, os.path.join(root, 'child.py')])\n"
+            " open(os.path.join(root, 'pids-' + tid), 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            " while True: time.sleep(1)\n"
+            "artifact = os.path.join(root, 'artifact-' + tid)\n"
+            "json.dump({'waiting': None}, open(artifact, 'w'))\n"
+            "print(json.dumps({'task_id': tid, 'artifact': artifact, 'outcome': 'RETURNED', 'exit_code': 0}))\n",
+            encoding="utf-8",
+        )
+        self.sandbox = self.root / "sandbox.sh"
+        write_executable(
+            self.sandbox,
+            f"#!/usr/bin/env bash\nexec {sys.executable!r} {str(fake)!r} \"$@\"\n",
+        )
+        self.cfg = SimpleNamespace(
+            state=str(self.state),
+            validator=str(self.validator),
+            sandbox=str(self.sandbox),
+            agent="fixture-agent",
+            registry=str(self.root / "registry.json"),
+            adapters=str(self.root / "adapters"),
+            workroot=str(self.root / "work"),
+            cancel_grace=0.1,
+            shutdown_timeout=2.0,
+        )
+        Path(self.cfg.registry).write_text("{}", encoding="utf-8")
+        Path(self.cfg.adapters).mkdir()
+        self.store = self.runner_module.TaskStore(str(self.state / "tasks"))
+        self.executor = self.runner_module.Executor(self.cfg, self.store)
+
+    def tearDown(self):
+        self.executor.shutdown_all("test_cleanup")
+        self.temp.cleanup()
+
+    def envelope(self, tid, contract="normal"):
+        return {
+            "task_id": tid,
+            "batch": "BL-FIXTURE",
+            "role": "evaluator",
+            "repo": {"url": str(self.root), "ref": "1234567"},
+            "contract": contract,
+            "deliverable": {"artifact": "artifact.json", "schema": "schema.json"},
+        }
+
+    def create_and_start(self, tid, contract="normal"):
+        envelope = self.envelope(tid, contract)
+        self.store.create(tid, {
+            "taskId": tid,
+            "state": "SUBMITTED",
+            "agent": "fixture-agent",
+            "batch": "BL-FIXTURE",
+            "role": "evaluator",
+            "submitted_at": "2026-07-27T00:00:00Z",
+            "deliverable": envelope["deliverable"],
+        })
+        self.assertTrue(self.executor.start(tid, envelope))
+
+    def test_terminal_finalize_is_unique_and_events_replay_in_order(self):
+        self.create_and_start("normal-core")
+        record = wait_until(
+            lambda: (lambda value: value if value.get("state") == "COMPLETED" else None)(
+                self.store.get("normal-core")
+            )
+        )
+        self.assertIsNotNone(record)
+        events = self.store.events_since("normal-core", 0)
+        self.assertEqual(
+            [(event["kind"], event["payload"].get("state")) for event in events],
+            [("status", "SUBMITTED"), ("status", "WORKING"),
+             ("artifact", None), ("status", "COMPLETED")],
+        )
+        self.assertEqual([event["seq"] for event in self.store.events_since("normal-core", 2)], [3, 4])
+        same, changed = self.store.finalize("normal-core", "CANCELED")
+        self.assertFalse(changed)
+        self.assertEqual(same["state"], "COMPLETED")
+        self.assertEqual(len(self.store.events_since("normal-core", 0)), 4)
+
+    def test_cancel_race_and_shutdown_reap_complete_process_groups(self):
+        self.create_and_start("race-core", "slow")
+        # Cancel may arrive while validation is still running or just after process registration.
+        canceled = self.executor.cancel("race-core", "cancel_task")
+        self.assertEqual(canceled["state"], "CANCELED")
+        self.assertTrue(canceled["events_complete"])
+        race_states = [
+            event["payload"].get("state")
+            for event in self.store.events_since("race-core", 0)
+        ]
+        self.assertEqual(race_states.count("CANCELED"), 1)
+
+        self.create_and_start("shutdown-core", "slow")
+        pids_path = self.root / "pids-shutdown-core"
+        self.assertTrue(wait_until(pids_path.exists))
+        pids = json.loads(pids_path.read_text())
+        self.executor.shutdown_all("runner_stop")
+        record = self.store.get("shutdown-core")
+        self.assertEqual(record["state"], "CANCELED")
+        self.assertTrue(record["finished_at"])
+        self.assertTrue(record["events_complete"])
+        states = [
+            event["payload"].get("state")
+            for event in self.store.events_since("shutdown-core", 0)
+        ]
+        self.assertEqual(states.count("CANCELED"), 1)
+        assert_pids_gone(self, pids)
+
+    def test_restart_recovery_terminal_is_durable(self):
+        self.store.create("restart-core", {
+            "taskId": "restart-core",
+            "state": "SUBMITTED",
+            "agent": "fixture-agent",
+            "submitted_at": "2026-07-27T00:00:00Z",
+        })
+        self.assertTrue(self.store.transition_working("restart-core"))
+        record, changed = self.store.finalize(
+            "restart-core",
+            "FAILED",
+            termination_reason="runner_restart",
+            error="execution process was lost",
+        )
+        self.assertTrue(changed)
+        self.assertEqual(record["state"], "FAILED")
+        reloaded = self.runner_module.TaskStore(str(self.state / "tasks"))
+        self.assertEqual(reloaded.get("restart-core")["termination_reason"], "runner_restart")
+        self.assertEqual(
+            [event["payload"].get("state") for event in reloaded.events_since("restart-core", 0)],
+            ["SUBMITTED", "WORKING", "FAILED"],
+        )
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

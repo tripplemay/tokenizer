@@ -20,6 +20,11 @@
 | **服务端推送** | SSE `SubscribeToTask` 实时推 `TaskStatusUpdateEvent` / `TaskArtifactUpdateEvent`，无轮询延迟 |
 | （附带）**跨机器** | runner 绑 `0.0.0.0` + Bearer，编排者在另一台机器上派活 |
 
+`run`/`subscribe` 不是无限等待：使用与 local-cli 相同的 effective timeout
+`min(envelope.deadline_s, descriptor.timeout_s)`，缺 deadline 时用 descriptor cap，再加 5 秒 transport
+grace。到点先 `CancelTask`；确认 CANCELED 后，即使 runner 在 drain 结束后令最终 GetTask 连接失败，
+本地仍落可解释的 CANCELED run-meta，不把已确认事实降级成未知错误。
+
 对 `/autodrive` 心跳模型尤其合适：唤醒周期不必再等外部 CLI 跑完，
 `ScheduleWakeup` 间隔与外部任务时长彻底解耦——`autonomous-mode.md` §9 那个
 「长 verify 跑超间隔导致并发唤醒抢跑」的未决问题顺手解掉。
@@ -99,7 +104,14 @@ python3 .claude/dispatch/transports/a2a-client.py get  --agent reviewer-codex-a2
 #   → 终态时写产物 + 落 run-meta；未完成则报当前 state
 python3 .claude/dispatch/transports/a2a-client.py subscribe --agent reviewer-codex-a2a \
         --task <taskId> --resume-from <seq>            ← 断线从第 seq 个事件后重放，不丢事件
+
+# graceful stop：先收束 active task，终态在 drain 内仍可 Get/SSE，最后清 pidfile
+python3 .claude/dispatch/transports/a2a-runner.py --agent reviewer-codex \
+        --state .harness-dispatch/a2a --stop
 ```
+
+runner 的 `--cancel-grace` 下限是 2.25 秒：默认 sandbox timeout helper 先给 CLI group 2 秒 TERM
+窗口，再由 runner 回收外层 sandbox group。缩得更短会让 helper 来不及清理它创建的独立 group，故拒绝启动。
 
 ## 6. 演练记录（2026-07-25）
 
@@ -114,6 +126,8 @@ python3 .claude/dispatch/transports/a2a-client.py subscribe --agent reviewer-cod
 | `--resume-from 0` 断线重放 | ✅ 完整重放 |
 | `CancelTask` | ✅ |
 | runner 重启 | ✅ 任务记录存活；孤儿 WORKING 标 FAILED 而非永远挂着 |
+| duplicate CancelTask | ✅ 幂等返回同一终态，只有一个 CANCELED status event |
+| active `--stop` | ✅ TERM→KILL 完整 sandbox/CLI 组，持久化终态后有界 drain |
 | **真实 Codex 经 a2a**（198s 长任务） | ✅ SSE 全程保活、4 事件完整、产物落本地、本地判定 COMPLETED |
 
 **一个实测修掉的协议瑕疵：** 执行侧「先写终态记录、再发事件」，若 SSE 以 `state` 为收流判据，
@@ -128,3 +142,5 @@ python3 .claude/dispatch/transports/a2a-client.py subscribe --agent reviewer-cod
 - Push webhook（`pushNotifications: false`）；当前只有 SSE 与轮询
 - OAuth / mTLS
 - **真实跨机器演练**：本次全部在 loopback 完成，网络路径与鉴权已验证，但未在两台物理机之间跑过
+- Windows 原生进程树终止；当前 timeout/runner lifecycle 以 POSIX process group/session 为契约
+- 自动无限重试/重派；SSE resume 与 GetTask retry 均受 effective deadline 约束，task-id 重派仍由上层限 1 次

@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "将上批发现的 dispatch deadline、macOS watchdog、A2A stop/孤儿进程与终态回执问题作为独立批次修复并做真实 loopback 验收",
   "total_features": 6,
-  "completed_features": 0,
+  "completed_features": 5,
   "fix_rounds": 0,
   "current_sprint": "BL-DISPATCH-LIFECYCLE",
   "dashboard_url": null,
-  "last_updated": "2026-07-28T06:09:53Z",
+  "last_updated": "2026-07-28T07:10:24Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -14,7 +14,7 @@
   ],
   "docs": {
     "spec": "docs/specs/BL-DISPATCH-LIFECYCLE-spec.md",
-    "test_cases": null,
+    "test_cases": ".claude/dispatch/test-lifecycle.py",
     "signoff": null,
     "framework_reviewed": true
   },
@@ -23,9 +23,17 @@
     "evaluator": "reviewer-kimi-a2a"
   },
   "evaluator_feedback": null,
-  "generator_handoff": null,
+  "generator_handoff": {
+    "feature_id": "F001-F005",
+    "agent": "builder-codex",
+    "transport": "local-cli",
+    "outcome": "COMPLETED",
+    "report": "docs/test-reports/BL-DISPATCH-LIFECYCLE-generator-handoff.json",
+    "integrated_commit": "9fb6ffc"
+  },
   "session_notes": {
-    "planning": "【BL-DISPATCH-LIFECYCLE plan 2026-07-27】用户明确同意把上批暴露的 dispatch 基础设施问题作为下一批。源码唯一源为 /Users/yixingzhou/project/harness-template，tokenizer 托管副本只能 sync。Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback；自治关闭。building 因核心文件重叠串行，verifying 跑 deterministic matrix + 真实 Kimi A2A 短时 soak。"
+    "planning": "【BL-DISPATCH-LIFECYCLE plan 2026-07-27】用户明确同意把上批暴露的 dispatch 基础设施问题作为下一批。源码唯一源为 /Users/yixingzhou/project/harness-template，tokenizer 托管副本只能 sync。Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback；自治关闭。building 因核心文件重叠串行，verifying 跑 deterministic matrix + 真实 Kimi A2A 短时 soak。",
+    "building": "前两次 preflight 在启动 agent 前分别暴露 repo.url/CWD 克隆错仓与 adapter 默认路径耦合，已纳入 F001。第三次 builder-codex 锁定 bd88e00 正常返回，2093 秒、receipt COMPLETED，handoff 结构/feature/文件清单机械对账通过。独立复跑发现 active-stop fixture 的 2 秒观察窗短于 2.25 秒 cancel grace，并审出 deadline/complete 与既有 runner cancel 的客户端竞态；集成侧修正并扩至 18 项矩阵。harness-template v1.5.1 提交 9fb6ffc 已推送，tokenizer 经 sync 升级且 139 个受管文件零漂移。生命周期 18/18、local-state 3/3、mode-intent 30/30、Vitest 619 passed/4 skipped、Prisma/TS verify、shell/Python syntax 与 bootstrap init/verify/sync smoke 全通过。"
   },
   "features": [],
   "pending_gate": null
