@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "done",
   "user_goal": "为 Harness 项目卡增加下钻页，同时开放执行/角色与自治模式调整；签名意图在下一次 /plan 生效，并持久化脱敏 dispatch 摘要；继续验证 dispatch 模式",
   "total_features": 6,
   "completed_features": 6,
   "fix_rounds": 1,
   "current_sprint": "BL-HARNESS-DETAIL-MODEINTENT",
   "dashboard_url": null,
-  "last_updated": "2026-07-28T03:52:34Z",
+  "last_updated": "2026-07-28T06:04:37Z",
   "reference_docs": [
     "framework/harness/console-mode.md",
     "framework/harness/dispatch-mode.md",
@@ -18,10 +18,7 @@
     "signoff": "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-signoff-r1-2026-07-27.md",
     "framework_reviewed": true
   },
-  "role_assignments": {
-    "generator": "builder-codex",
-    "evaluator": "reviewer-kimi"
-  },
+  "role_assignments": null,
   "evaluator_feedback": "修复轮先由 reviewer-kimi local-cli 锁定 697d4a4，794 秒返回 F003/F006 PASS；随后真实 gate 上报发现 decision:null 被原样发送并触发 unknown_field，device 投影修复提交为 4aa801f。最终 Kimi r1c 锁定 4aa801f，412 秒返回合法 verdict，独立重跑 31/31 聚焦测试与 targeted lint，F004/F006 均 PASS、waiting=null。全量 619 passed/4 skipped，verify/build 通过；CI run 30326679863 三段成功，最终部署后 npm run cli -- harness 为 Reported: 6 且 tokenizer 不在 skip 列表。A2A 修复轮的 runner/watchdog 超时未收束问题另记为基础设施 gap。",
   "generator_handoff": {
     "feature_id": "F003",
@@ -37,35 +34,9 @@
     "f005": "首轮 builder-codex dispatch 完成 UI、handoff 和聚焦检查，但在 2400 秒硬截止处按 TIMEOUT 拒收；唯一纠偏轮复用产物并收紧原始 payload/artifact 字段边界，1767 秒正常返回。主线聚焦 166/166、全量 588 passed/4 skipped，typecheck、targeted lint、locale parity、diff check 与 Next production build 全绿；浏览器双视口保留给 F006 独立 evaluator。",
     "f006": "reviewer-kimi-a2a 锁定 91d3d2f，经 A2A loopback 595 秒返回 PASS；本地 receipt 与 verdict schema 通过。编排者侧生产模式 Playwright 双视口、30 个签名 fixture、127 个聚焦测试、588/4 全量测试、lint/verify/build 和空库 18 migration deploy 全绿。随后真实 agent 上报抓到 feature.title=/plan 被敏感路径误报，原 signoff/gate 已撤回。",
     "f003_fix1": "builder-codex 锁定 86a076d 在 928 秒返回窄修复：只对 feature.title 的 5 个已知 Harness slash-command 做路径扫描豁免，strict 摘要与危险近邻继续拒绝；90/90 聚焦、618 passed/4 skipped、verify、targeted lint、build 全绿。产品提交 41b64dd，进入 reverifying。",
-    "f006_fix1": "第一处 /plan 脱敏修复部署后，无 gate 的真实上报成功；举 gate 后又暴露 device 将 decision:null 原样发送导致 unknown_field。4aa801f 改为只上报 9 个 API 白名单字段，并丢弃 decision 与本地扩展字段。全量 619/4、verify、targeted lint、build 和 CI 30326679863 全绿；最终部署后真实上报 Reported: 6。Kimi r1b 锁定 697d4a4 在 794 秒返回 F003/F006 PASS，r1c 锁定 4aa801f 在 412 秒返回 F004/F006 PASS；原浏览器证据因两次修复均无 UI 变更继续有效。A2A runner/watchdog 超时未收束另记 gap。"
+    "f006_fix1": "第一处 /plan 脱敏修复部署后，无 gate 的真实上报成功；举 gate 后又暴露 device 将 decision:null 原样发送导致 unknown_field。4aa801f 改为只上报 9 个 API 白名单字段，并丢弃 decision 与本地扩展字段。全量 619/4、verify、targeted lint、build 和 CI 30326679863 全绿；最终部署后真实上报 Reported: 6。Kimi r1b 锁定 697d4a4 在 794 秒返回 F003/F006 PASS，r1c 锁定 4aa801f 在 412 秒返回 F004/F006 PASS；原浏览器证据因两次修复均无 UI 变更继续有效。A2A runner/watchdog 超时未收束另记 gap。",
+    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-28T06:01:30.704Z 对 BL-HARNESS-DETAIL-MODEINTENT-reverifying-done-w2 签发一次性 approve；OpenSSL 3 验签通过，机器于 2026-07-28T06:04:37Z 消费批准并进入 done。"
   },
   "features": [],
-  "pending_gate": {
-    "id": "BL-HARNESS-DETAIL-MODEINTENT-reverifying-done-w2",
-    "kind": "phase_advance",
-    "raised_at": "2026-07-28T03:34:00Z",
-    "raised_by": "verify",
-    "batch": "BL-HARNESS-DETAIL-MODEINTENT",
-    "from_status": "reverifying",
-    "to_status": "done",
-    "detail": "修复轮已完成独立验收、部署和真实 device 上报复验；请人工审阅 r1 signoff 后决定是否将批次推进为 done。",
-    "evidence": [
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-signoff-r1-2026-07-27.md",
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-verdict-r1c.json",
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-verdict-r1b.json",
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F003-fix1-handoff.json",
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-desktop.png",
-      "docs/test-reports/BL-HARNESS-DETAIL-MODEINTENT-F006-mobile.png"
-    ],
-    "decision": {
-      "gate_id": "BL-HARNESS-DETAIL-MODEINTENT-reverifying-done-w2",
-      "action": "approve",
-      "by": "tripplezhou@gmail.com",
-      "at": "2026-07-28T06:01:30.704Z",
-      "scope": {
-        "once": true
-      },
-      "sig": "idxe4+xr3Vu7dOFLxM+aAIvC31g9lDNZEys0kR3pKWBdEdz7Srs4P+nvcjYxuLs9ccKPkVY/1gzmRgVwiLcFCg=="
-    }
-  }
+  "pending_gate": null
 }

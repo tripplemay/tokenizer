@@ -5,12 +5,12 @@ type: project
 ---
 ## 当前批次
 
-- **BL-HARNESS-DETAIL-MODEINTENT（reverifying，6/6 completed，fix_round 1）**：Harness 项目卡下钻、签名模式意图、下一次 `/plan` 消费、脱敏 dispatch 历史。
+- **BL-HARNESS-DETAIL-MODEINTENT（done，6/6 completed，fix_round 1）**：Harness 项目卡下钻、签名模式意图、下一次 `/plan` 消费、脱敏 dispatch 历史。
 - 用户已确认：执行/角色与自治策略同时开放；不影响当前批次；dispatch 摘要需要持久化。
 - Generator=`builder-codex` local-cli；修复轮 Evaluator=`reviewer-kimi` local-cli fallback，family 互斥成立。
 - Kimi 最终锁定 `4aa801f`：F004/F006 PASS，31/31 聚焦；前序 r1b 的 90/90 与 22/22 对抗探测也通过。
 - Signoff 后真实 agent 上报发现 `/plan` 被敏感路径误判，原 gate/signoff 已撤回。
-- F003 脱敏修复 `41b64dd` 与 F004 gate 白名单修复 `4aa801f` 已部署；`reverifying -> done` 人工 gate 待批准。
+- F003 脱敏修复 `41b64dd` 与 F004 gate 白名单修复 `4aa801f` 已部署；签名人工 gate 已批准并消费。
 
 ## 上一批次
 
