@@ -7,7 +7,7 @@
       "priority": "high",
       "status": "pending",
       "executor": "generator",
-      "acceptance": "本地 repo.url 与调用仓不一致时在创建沙箱目录前明确拒绝，不能静默克隆 CWD；deadline_s 由 validator 严格校验且成为每任务硬上限；实际 timeout=min(envelope deadline_s, descriptor timeout_s)，缺 deadline 时保持 descriptor 行为；local-cli 与 a2a 使用同一规则并有快速 fixture 证明"
+      "acceptance": "本地 repo.url 与调用仓不一致时在创建沙箱目录前明确拒绝，不能静默克隆 CWD；adapter/validator/helper 默认路径按 dispatch 机件目录解析，不与目标仓 CWD 耦合；deadline_s 由 validator 严格校验且成为每任务硬上限；实际 timeout=min(envelope deadline_s, descriptor timeout_s)，缺 deadline 时保持 descriptor 行为；local-cli 与 a2a 使用同一规则并有快速 fixture 证明"
     },
     {
       "id": "F002",

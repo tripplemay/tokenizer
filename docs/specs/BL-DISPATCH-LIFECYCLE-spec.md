@@ -19,6 +19,7 @@
    timeout/A2A 生命周期层，而不是 evaluator 模型或产品代码。
 5. 本批首次从 tokenizer 调用入口、把 envelope 指向 harness-template 时，sandbox 仍按调用者 CWD 克隆
    tokenizer，直到 checkout harness-template SHA 才失败。`repo.url` 没有参与目标仓库选择或前置一致性校验。
+   切到 harness-template CWD 后，adapter 默认路径又被相对目标仓解析，证明机件路径也与 CWD 错误耦合。
 
 系统休眠是否发生不能只凭 elapsed 反推，因此本批不把单次现场现象当实现结论；验收必须用可注入时钟和
 可控假进程机械复现，再用真实 Kimi loopback 做短时 soak。
@@ -36,6 +37,7 @@
 
 1. **目标仓库先验。** local path `repo.url` 必须规范化到 git top-level，并在 clone/worktree 创建前与实际
    调用仓一致；不一致时给出明确错误，不得克隆 CWD 后靠 checkout 偶然失败。真实跨机器 remote clone 仍非本批目标。
+   adapter、validator、timeout helper 等框架资源的默认路径必须相对 dispatch 脚本自身目录解析，而不是目标仓 CWD。
 2. **effective timeout = min(envelope deadline, descriptor cap)。** `deadline_s` 存在时是本任务硬上限；
    descriptor `timeout_s` 是 agent 级不可突破上限。缺 `deadline_s` 时保持旧行为。两者必须是有界正整数。
 3. **单一可移植 timeout helper。** 不再让 GNU timeout 与 macOS bash watchdog产生不同语义。
@@ -69,10 +71,12 @@ run-meta 可增加有界的 effective timeout/termination reason，但不得保�
 
 - dispatch/sandbox 在创建 workroot 子目录前校验本地 `repo.url` 与当前 git top-level 一致；错误必须指出两者，
   且不得留下半 clone。调用方可切换到正确仓库后用同一 task id 重试。
+- `dispatch-run.sh`/`sandbox-profile.sh` 的 adapter、validator 与 helper 默认路径从脚本目录解析；从模板源或
+  其他目标仓用绝对入口调用时行为一致，显式 `--adapters` 仍可覆盖。
 - `dispatch-envelope.schema.json` 与 `validate-dispatch.sh envelope` 对 `deadline_s` 做同样的类型/范围校验。
 - `sandbox-profile.sh` 解析 descriptor cap 与 envelope deadline，计算 effective timeout；缺省兼容旧信封。
 - a2a client 的等待上限使用同一算法，不得重新发明第三套默认值。
-- 测试覆盖 repo match/mismatch/非 git 路径，以及 deadline 小于/等于/大于 descriptor、缺省、
+- 测试覆盖 repo match/mismatch/非 git路径、跨 CWD 默认资源解析，以及 deadline 小于/等于/大于 descriptor、缺省、
   boolean/float/string/过小/负数。
 
 ## F002 — Portable process timeout helper
