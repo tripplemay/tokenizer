@@ -51,6 +51,15 @@
       "docs/test-reports/BL-DISPATCH-LIFECYCLE-verdict.json",
       "docs/test-reports/BL-DISPATCH-LIFECYCLE-generator-handoff.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-DISPATCH-LIFECYCLE-verifying-done-w1",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-28T16:56:36.226Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "y+ulpDASRbEe/2CQy75ZF19cqJOZ5PcfwdhVOZ+Z++OCqyL9aaVhHgyXSy1M/pEez2luLBQ514etSto1kkVsCQ=="
+    }
   }
 }
