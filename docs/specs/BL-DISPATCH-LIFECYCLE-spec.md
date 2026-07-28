@@ -17,6 +17,8 @@
    被重新挂到 PID 1；客户端随后以 `GetTask connection refused` 结束，拿不到可验证终态。
 4. 同一 Kimi 改走直接 local-cli 后 794 秒正常完成，后续窄任务 412 秒正常完成，说明主要故障在
    timeout/A2A 生命周期层，而不是 evaluator 模型或产品代码。
+5. 本批首次从 tokenizer 调用入口、把 envelope 指向 harness-template 时，sandbox 仍按调用者 CWD 克隆
+   tokenizer，直到 checkout harness-template SHA 才失败。`repo.url` 没有参与目标仓库选择或前置一致性校验。
 
 系统休眠是否发生不能只凭 elapsed 反推，因此本批不把单次现场现象当实现结论；验收必须用可注入时钟和
 可控假进程机械复现，再用真实 Kimi loopback 做短时 soak。
@@ -24,6 +26,7 @@
 ## 目标
 
 - 让 `deadline_s` 从“说明字段”变成 local-cli 与 a2a 共用的每任务硬上限。
+- 消除 envelope `repo.url` 与调用者 CWD 的目标歧义，在创建任何隔离目录前 fail-closed。
 - 在 macOS/Linux 上可靠回收 CLI 完整进程树，并准确区分自身超时、外部取消和普通失败。
 - 让 CancelTask、runner `--stop`、SSE/轮询和 durable task store 对同一终态达成一致。
 - 任何路径都不得无限 `WORKING`、遗留孤儿进程，或因 runner 先退出而丢失终态 receipt。
@@ -31,19 +34,21 @@
 
 ## 关键设计决策
 
-1. **effective timeout = min(envelope deadline, descriptor cap)。** `deadline_s` 存在时是本任务硬上限；
+1. **目标仓库先验。** local path `repo.url` 必须规范化到 git top-level，并在 clone/worktree 创建前与实际
+   调用仓一致；不一致时给出明确错误，不得克隆 CWD 后靠 checkout 偶然失败。真实跨机器 remote clone 仍非本批目标。
+2. **effective timeout = min(envelope deadline, descriptor cap)。** `deadline_s` 存在时是本任务硬上限；
    descriptor `timeout_s` 是 agent 级不可突破上限。缺 `deadline_s` 时保持旧行为。两者必须是有界正整数。
-2. **单一可移植 timeout helper。** 不再让 GNU timeout 与 macOS bash watchdog产生不同语义。
+3. **单一可移植 timeout helper。** 不再让 GNU timeout 与 macOS bash watchdog产生不同语义。
    helper 以绝对 wall clock 判断到期，子命令在独立 process group/session 中运行；到期先 TERM，短 grace
    后 KILL 整组。只有 helper 自己到期才返回 124；外部 SIGTERM/CANCEL 不伪装成 timeout。
-3. **终态先持久化，runner 后退出。** Cancel/stop 必须先让每个活动任务进入 `CANCELED`，写
+4. **终态先持久化，runner 后退出。** Cancel/stop 必须先让每个活动任务进入 `CANCELED`，写
    `finished_at`、status event 与 `events_complete`，回收进程组并提供短暂 drain 窗口，最后清 pidfile 退出。
-4. **client 等待也有上限。** `run` 按 effective timeout + transport grace 等待；到点主动 CancelTask。
+5. **client 等待也有上限。** `run` 按 effective timeout + transport grace 等待；到点主动 CancelTask。
    `subscribe` 没有 envelope 时使用 descriptor cap。SSE 中断保留 resume seq；若 cancel 已确认，不依赖一次
    可能失败的 GetTask 才能生成 CANCELED 事实。
-5. **幂等和状态所有权不变。** 同一 task id 不重复执行；transport 不推进 `progress.json`；远端 state 仍是
+6. **幂等和状态所有权不变。** 同一 task id 不重复执行；transport 不推进 `progress.json`；远端 state 仍是
    advisory，本地 receipt/schema 仍是权威。不得自动无限重派。
-6. **building 串行。** F001-F004 都触及 timeout/runner/client 契约，避免并行分支各写一套语义。
+7. **building 串行。** F001-F004 都触及 timeout/runner/client 契约，避免并行分支各写一套语义。
    verifying 用 deterministic matrix 打底，再运行真实 A2A loopback；真实跨物理机仍非目标。
 
 ## 状态与回执契约
@@ -62,10 +67,13 @@ run-meta 可增加有界的 effective timeout/termination reason，但不得保�
 
 ## F001 — Deadline 契约与校验
 
+- dispatch/sandbox 在创建 workroot 子目录前校验本地 `repo.url` 与当前 git top-level 一致；错误必须指出两者，
+  且不得留下半 clone。调用方可切换到正确仓库后用同一 task id 重试。
 - `dispatch-envelope.schema.json` 与 `validate-dispatch.sh envelope` 对 `deadline_s` 做同样的类型/范围校验。
 - `sandbox-profile.sh` 解析 descriptor cap 与 envelope deadline，计算 effective timeout；缺省兼容旧信封。
 - a2a client 的等待上限使用同一算法，不得重新发明第三套默认值。
-- 测试覆盖 deadline 小于/等于/大于 descriptor、缺省、boolean/float/string/过小/负数。
+- 测试覆盖 repo match/mismatch/非 git 路径，以及 deadline 小于/等于/大于 descriptor、缺省、
+  boolean/float/string/过小/负数。
 
 ## F002 — Portable process timeout helper
 
