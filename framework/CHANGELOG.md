@@ -5,6 +5,20 @@
 
 ---
 
+## v1.5.2 — 2026-07-29（macOS pending-gate Ed25519 验签兼容）
+
+**来源：** tokenizer `BL-DISPATCH-LIFECYCLE` 的 `verifying → done` 批准已由设备 agent
+中继，但 macOS 系统 `LibreSSL 3.3.6` 不支持 Ed25519，`validate-pending-gate.sh guard`
+把「算法不可用」误报成「签名无效」，导致有效批准无法被可靠消费。
+
+- pending-gate guard 与 mode-intent validator 统一 OpenSSL 选择语义：依次检查
+  `HARNESS_OPENSSL` 显式覆盖、PATH 中的 `openssl` 和 Homebrew OpenSSL 3 标准路径，
+  只选择宣告 Ed25519 支持的实现。
+- 无可用 OpenSSL 3 时明确报「运行时不支持」；只有在可用实现上验签失败才报
+  「签名无效」，避免把环境缺口误判为批准被篡改。
+- 新增 pending-gate 回归 fixture，覆盖有效签名放行、签名字段篡改拒绝和闸门消费后
+  无需密码学运行时的收尾路径。
+
 ## v1.5.1 — 2026-07-27（dispatch deadline 与生命周期收束）
 
 **来源：** BL-DISPATCH-LIFECYCLE F001-F005。

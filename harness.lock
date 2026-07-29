@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.5.1",
-    "commit": "9fb6ffc"
+    "version": "1.5.2",
+    "commit": "473ecd0"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -72,8 +72,8 @@
     },
     ".claude/console/validate-pending-gate.sh": {
       "src": "templates/claude/console/validate-pending-gate.sh",
-      "sha256": "d792d9adceb0113daee65915d3d056e05fa0970295f445e7aacdedb41b2742ea",
-      "upstream": "d792d9adceb0113daee65915d3d056e05fa0970295f445e7aacdedb41b2742ea"
+      "sha256": "be07af6d70982dbab23bc4413c29cf032f4d7dfb3b31a579be61c91d5e50bf06",
+      "upstream": "be07af6d70982dbab23bc4413c29cf032f4d7dfb3b31a579be61c91d5e50bf06"
     },
     ".claude/dispatch/agents-registry.example.json": {
       "src": "templates/claude/dispatch/agents-registry.example.json",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "b2febaa0717617e205572c09f131964bea292dfc04360f42ffa1962e0bfb0e41",
-      "upstream": "b2febaa0717617e205572c09f131964bea292dfc04360f42ffa1962e0bfb0e41"
+      "sha256": "743aa432b83164dda158feece2b271d1477a541acc87e70aedd2dce66231d639",
+      "upstream": "743aa432b83164dda158feece2b271d1477a541acc87e70aedd2dce66231d639"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "dfe7d71b3f428eb73ed853f8fded65e2986896e21d69f45ebf06bb623b450e14",
-      "upstream": "dfe7d71b3f428eb73ed853f8fded65e2986896e21d69f45ebf06bb623b450e14"
+      "sha256": "ded1b601e81d31ca1f65c4f3ccf2ebd7992b6390e37bc2a86f3837282f1e00cf",
+      "upstream": "ded1b601e81d31ca1f65c4f3ccf2ebd7992b6390e37bc2a86f3837282f1e00cf"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -252,8 +252,8 @@
     },
     "framework/harness/console-mode.md": {
       "src": "harness/console-mode.md",
-      "sha256": "edac36a47bb2ec5c1679f850166fd45fae2d6146d89f40a6accfa7e44f7ddf1f",
-      "upstream": "edac36a47bb2ec5c1679f850166fd45fae2d6146d89f40a6accfa7e44f7ddf1f"
+      "sha256": "31ffe340e8f829fcfe91bf6e8561d0fea7fb33c0f6dae4f5c53bb5eff61ffbb3",
+      "upstream": "31ffe340e8f829fcfe91bf6e8561d0fea7fb33c0f6dae4f5c53bb5eff61ffbb3"
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
@@ -462,8 +462,8 @@
     },
     "framework/templates/claude/console/validate-pending-gate.sh": {
       "src": "templates/claude/console/validate-pending-gate.sh",
-      "sha256": "d792d9adceb0113daee65915d3d056e05fa0970295f445e7aacdedb41b2742ea",
-      "upstream": "d792d9adceb0113daee65915d3d056e05fa0970295f445e7aacdedb41b2742ea"
+      "sha256": "be07af6d70982dbab23bc4413c29cf032f4d7dfb3b31a579be61c91d5e50bf06",
+      "upstream": "be07af6d70982dbab23bc4413c29cf032f4d7dfb3b31a579be61c91d5e50bf06"
     },
     "framework/templates/claude/dispatch/agents-registry.example.json": {
       "src": "templates/claude/dispatch/agents-registry.example.json",
@@ -699,6 +699,16 @@
       "src": "templates/claude/dispatch/test-lifecycle.py",
       "sha256": "a4d056e61e7a2dcbec9215d7ee79c60db32bd2cf345ab3e3b74ed4bb95f21cb4",
       "upstream": "a4d056e61e7a2dcbec9215d7ee79c60db32bd2cf345ab3e3b74ed4bb95f21cb4"
+    },
+    ".claude/console/test-pending-gate.py": {
+      "src": "templates/claude/console/test-pending-gate.py",
+      "sha256": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b",
+      "upstream": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b"
+    },
+    "framework/templates/claude/console/test-pending-gate.py": {
+      "src": "templates/claude/console/test-pending-gate.py",
+      "sha256": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b",
+      "upstream": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b"
     }
   },
   "seeded": {

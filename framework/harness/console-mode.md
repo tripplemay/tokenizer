@@ -119,6 +119,9 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 
 **跨语言一致性已验证：** Node（tokenizer 服务端）与 openssl（校验器）对同一载荷产生
 **逐字节相同**的签名（Ed25519 是确定性签名），互相可验。
+验签器在 macOS 上会跳过不支持 Ed25519 的系统 LibreSSL，依次尝试
+`HARNESS_OPENSSL`、PATH 和 Homebrew OpenSSL 3 标准路径；无可用实现时报运行时缺失，
+不冒充为「签名无效」。
 
 密钥生成：`bash .claude/console/gen-console-key.sh <outdir>`。
 两种模式各自 fail-closed：配了公钥 → 无签名/签名无效一律拒；未配公钥 → 回退比对 HEAD。

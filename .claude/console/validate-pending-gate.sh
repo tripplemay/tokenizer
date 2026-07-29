@@ -105,7 +105,6 @@ guard)
   # 「控制台签名 → device agent 中继 → 本机落盘」这条通道才成立（不需要 git push 权限）。
   PUB="$(dirname "${BASH_SOURCE[0]}")/console.pub"
   if [ -f "$PUB" ]; then
-    command -v openssl >/dev/null 2>&1 || { echo "[gate] ⛔ 配了 console.pub 但无 openssl，无法验签"; exit 2; }
     PAY="$(mktemp)"; SIG="$(mktemp)"; trap 'rm -f "$PAY" "$SIG"' EXIT
     RC=$(python3 - "$PROG" "$PAY" "$SIG" <<'PY'
 import base64, json, sys
@@ -134,7 +133,25 @@ PY
       SKIP*) echo "[gate] ✓ guard（验签模式）：${RC#SKIP }"; exit 0 ;;
       ERR*)  echo "[gate] ⛔ guard（验签模式）：${RC#ERR }"; exit 2 ;;
     esac
-    if openssl pkeyutl -verify -pubin -inkey "$PUB" -rawin -in "$PAY" -sigfile "$SIG" >/dev/null 2>&1; then
+
+    # macOS /usr/bin/openssl 通常是不支持 Ed25519 的 LibreSSL。与签名模式意图
+    # 校验器保持同一选择顺序：显式覆盖、PATH，然后 Homebrew 标准位置。
+    OPENSSL_BIN=""
+    for candidate in "${HARNESS_OPENSSL:-}" "$(command -v openssl 2>/dev/null || true)" \
+        /opt/homebrew/bin/openssl /opt/homebrew/opt/openssl@3/bin/openssl \
+        /usr/local/bin/openssl /usr/local/opt/openssl@3/bin/openssl; do
+      [ -n "$candidate" ] && [ -x "$candidate" ] || continue
+      if "$candidate" list -public-key-algorithms 2>/dev/null | grep -qi 'ED25519'; then
+        OPENSSL_BIN="$candidate"
+        break
+      fi
+    done
+    if [ -z "$OPENSSL_BIN" ]; then
+      echo "[gate] ⛔ guard（验签模式）：需要支持 Ed25519 的 OpenSSL 3（可用 HARNESS_OPENSSL 指定）"
+      exit 2
+    fi
+
+    if "$OPENSSL_BIN" pkeyutl -verify -pubin -inkey "$PUB" -rawin -in "$PAY" -sigfile "$SIG" >/dev/null 2>&1; then
       # 说「持私钥者」而非「控制台」：签名只证明签发者持有私钥，而私钥有两个合法持有者
       # ——控制台服务端，和用 approve-gate.sh --key 在本机批准的人类。
       echo "[gate] ✓ guard（验签模式）：decision 签名有效（由持私钥者签发）"; exit 0
