@@ -1,38 +1,32 @@
 {
-  "status": "done",
-  "user_goal": "将上批发现的 dispatch deadline、macOS watchdog、A2A stop/孤儿进程与终态回执问题作为独立批次修复并做真实 loopback 验收",
+  "status": "building",
+  "user_goal": "为 tokenizer 增加 harness 同步健康、失败分类和控制台诊断，并继续用异构 dispatch 验证 harness",
   "total_features": 6,
-  "completed_features": 6,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-DISPATCH-LIFECYCLE",
+  "current_sprint": "BL-HARNESS-SYNC-HEALTH",
   "dashboard_url": null,
-  "last_updated": "2026-07-29T09:47:21Z",
+  "last_updated": "2026-07-30T14:21:45Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
-    "framework/harness/autonomous-mode.md"
+    "framework/harness/console-mode.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-DISPATCH-LIFECYCLE-spec.md",
-    "test_cases": ".claude/dispatch/test-lifecycle.py",
-    "signoff": "docs/test-reports/BL-DISPATCH-LIFECYCLE-signoff-2026-07-28.md",
-    "framework_reviewed": true
+    "spec": "docs/specs/BL-HARNESS-SYNC-HEALTH-spec.md",
+    "test_cases": null,
+    "signoff": null,
+    "framework_reviewed": false
   },
-  "role_assignments": null,
-  "evaluator_feedback": "reviewer-kimi-a2a 锁定 tokenizer 441a4c4，经真实 loopback 在 466 秒返回合法 verdict，F001-F006 全部 PASS、waiting=null；事件完整经过 SUBMITTED→WORKING→artifact→COMPLETED，resume-from=2 只重放 3/4。本地 receipt/schema 通过。编排者另用真实 v1.5.1 runner/client/sandbox/helper 完成 3-task soak、60 秒 hard timeout、CancelTask 与 active stop：三类取消均终态唯一、events_complete/finished_at 齐全，父子 PGID、runner、pidfile 与端口全收束。生命周期 18/18、Vitest 619/4、Prisma/TS、bootstrap/sync 全通过。",
-  "generator_handoff": {
-    "feature_id": "F001-F005",
-    "agent": "builder-codex",
-    "transport": "local-cli",
-    "outcome": "COMPLETED",
-    "report": "docs/test-reports/BL-DISPATCH-LIFECYCLE-generator-handoff.json",
-    "integrated_commit": "9fb6ffc"
+  "role_assignments": {
+    "generator": "builder-codex",
+    "evaluator": "reviewer-kimi-a2a"
   },
+  "mode_intent": null,
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-DISPATCH-LIFECYCLE plan 2026-07-27】用户明确同意把上批暴露的 dispatch 基础设施问题作为下一批。源码唯一源为 /Users/yixingzhou/project/harness-template，tokenizer 托管副本只能 sync。Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback；自治关闭。building 因核心文件重叠串行，verifying 跑 deterministic matrix + 真实 Kimi A2A 短时 soak。",
-    "building": "前两次 preflight 在启动 agent 前分别暴露 repo.url/CWD 克隆错仓与 adapter 默认路径耦合，已纳入 F001。第三次 builder-codex 锁定 bd88e00 正常返回，2093 秒、receipt COMPLETED，handoff 结构/feature/文件清单机械对账通过。独立复跑发现 active-stop fixture 的 2 秒观察窗短于 2.25 秒 cancel grace，并审出 deadline/complete 与既有 runner cancel 的客户端竞态；集成侧修正并扩至 18 项矩阵。harness-template v1.5.1 提交 9fb6ffc 已推送，tokenizer 经 sync 升级且 139 个受管文件零漂移。生命周期 18/18、local-state 3/3、mode-intent 30/30、Vitest 619 passed/4 skipped、Prisma/TS verify、shell/Python syntax 与 bootstrap init/verify/sync smoke 全通过。",
-    "f006": "reviewer-kimi-a2a 锁定 441a4c4，经真实 A2A loopback 466 秒返回 F001-F006 全 PASS；receipt/verdict schema 合法，事件 1-4 与 resume-from=2 重放正确。编排者 exact fixture 串行跑 3 个正常任务、60 秒 hard timeout、CancelTask 与 active runner stop：deadline/124、external_signal/143、cancel_task/runner_stop 原因准确，所有 terminal event 唯一，父子 PGID、runner、pidfile 和 41241 端口均收束。无模型 fixture、生产访问、部署或 DB ops。",
-    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-28T16:56:36.226Z 对 BL-DISPATCH-LIFECYCLE-verifying-done-w1 签发一次性 approve；修复 macOS LibreSSL 选择后由 OpenSSL 3 验签通过，机器于 2026-07-29T09:47:21Z 消费批准并进入 done。"
+    "planning": "【BL-HARNESS-SYNC-HEALTH plan 2026-07-30】基于 7/28 人工闸门未上报与 7/30 agent 日志中 3 个项目持续 400 的实物，新增 tokenizer 产品侧 harness 同步健康诊断。mode_defaults 不存在，手工选择本地异构：Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback，family 互斥；自治关闭。F001-F005 因共享类型/agent/schema/UI 重叠串行实现，F006 锁 SHA 独立验收；不改 harness-template、不访问生产、不部署。"
   },
   "features": [],
   "pending_gate": null
