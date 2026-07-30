@@ -10,6 +10,7 @@ import { formatRelativeTime } from "@/shared/format";
 import { AutoRefresh } from "../_components/auto-refresh";
 import { GateActions } from "./gate-actions";
 import ModeBadges from "./mode-badges";
+import { HarnessHealthBadge, type HarnessHealthLabels } from "../_components/harness-health-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,16 @@ export default async function HarnessPage() {
   const [projects, gates] = await Promise.all([
     prisma.harnessProject.findMany({
       where: { userId },
-      include: { device: { select: { name: true } } },
+      include: {
+        device: {
+          select: {
+            id: true,
+            name: true,
+            lastHarnessSyncAt: true,
+            harnessSyncStatus: true
+          }
+        }
+      },
       orderBy: [{ reportedAt: "desc" }]
     }),
     prisma.harnessGate.findMany({
@@ -45,6 +55,15 @@ export default async function HarnessPage() {
   const canSign = signingKeyReady();
   const pending = gates.filter((g) => !g.decisionAction);
   const signed = gates.filter((g) => g.decisionAction);
+  const nowMs = Date.now();
+  const harnessLabels: HarnessHealthLabels = {
+    idle: t("syncHealth.status.idle"),
+    success: t("syncHealth.status.success"),
+    degraded: t("syncHealth.status.degraded"),
+    failed: t("syncHealth.status.failed"),
+    stale: t("syncHealth.status.stale"),
+    "not-reported": t("syncHealth.status.notReported")
+  };
 
   return (
     <div className="mt-3 flex flex-col gap-5">
@@ -150,21 +169,31 @@ export default async function HarnessPage() {
               const pct = p.totalCount > 0 ? Math.round((p.completedCount / p.totalCount) * 100) : 0;
               const idx = PHASES.indexOf(p.status ?? "");
               return (
-                <Link
-                  key={p.id}
-                  href={`/harness/${encodeURIComponent(p.id)}`}
-                  aria-label={t("openProject", { name: p.name })}
-                  className="group block rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-900"
-                >
-                  <Card extra="h-full !p-5 transition duration-200 group-hover:-translate-y-0.5 group-hover:shadow-xl">
+                <Card key={p.id} extra="h-full !p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl">
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="min-w-0 break-words font-bold text-navy-700 dark:text-white">{p.name}</span>
+                      <Link
+                        href={`/harness/${encodeURIComponent(p.id)}`}
+                        aria-label={t("openProject", { name: p.name })}
+                        className="group inline-flex min-w-0 flex-1 items-center gap-1 font-bold text-navy-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-white"
+                      >
+                        <span className="min-w-0 break-words">{p.name}</span>
+                        <MdArrowForward className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-gray-600" />
+                      </Link>
                       <span className="ml-auto max-w-32 truncate font-mono text-xs text-gray-400" title={p.headSha ?? undefined}>{p.headSha}</span>
-                      <MdArrowForward className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-gray-600" />
                     </div>
-                    <p className="mt-0.5 text-xs text-gray-400">
-                      {p.device.name} · {p.reportedAt ? formatRelativeTime(p.reportedAt, tRelative, tz) : "—"}
-                    </p>
+                    <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-gray-400">
+                      <Link href={`/devices/${encodeURIComponent(p.device.id)}`} className="min-w-0 break-words hover:text-brand-500 hover:underline">
+                        {p.device.name}
+                      </Link>
+                      <span>·</span>
+                      <span>{p.reportedAt ? formatRelativeTime(p.reportedAt, tRelative, tz) : "—"}</span>
+                      <HarnessHealthBadge
+                        status={p.device.harnessSyncStatus}
+                        attemptedAt={p.device.lastHarnessSyncAt}
+                        nowMs={nowMs}
+                        labels={harnessLabels}
+                      />
+                    </div>
 
                     <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
                       <span className="max-w-full break-all rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
@@ -217,8 +246,7 @@ export default async function HarnessPage() {
                         {p.lastHaltDetail ? ` — ${p.lastHaltDetail}` : ""}
                       </p>
                     ) : null}
-                  </Card>
-                </Link>
+                </Card>
               );
             })}
           </div>

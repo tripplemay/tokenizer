@@ -4,6 +4,7 @@ import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth"
 import { prisma } from "@/server/db";
 import { updateUserTimezoneIfValid } from "@/server/timezone";
 import { DeviceInput } from "@/shared/usage";
+import { harnessDiagnosticsFromSnapshot, parseHarnessSyncSnapshot } from "@/shared/harness-health";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,18 @@ export async function POST(request: NextRequest) {
   // Diagnostics are optional — old clients won't send them. We only set the
   // diagnostic columns when the payload actually carries values so a missing
   // field doesn't clobber the last-known-good value with null.
-  const diag = body.device.diagnostics ?? {};
+  const rawDiag = body.device.diagnostics;
+  if (rawDiag !== undefined && (typeof rawDiag !== "object" || rawDiag === null || Array.isArray(rawDiag))) {
+    return Response.json({ error: "invalid diagnostics", code: "invalid_diagnostics" }, { status: 400 });
+  }
+  const diag = (rawDiag ?? {}) as NonNullable<DeviceInput["diagnostics"]> & Record<string, unknown>;
+  const harness = "harness" in diag ? parseHarnessSyncSnapshot(diag.harness) : null;
+  if ("harness" in diag && !harness) {
+    return Response.json(
+      { error: "invalid harness diagnostics", code: "invalid_harness_diagnostics" },
+      { status: 400 }
+    );
+  }
   const data: Prisma.DeviceUpdateInput = {
     name: body.device.name,
     hostname: body.device.hostname ?? null,
@@ -37,6 +49,11 @@ export async function POST(request: NextRequest) {
     data.lastErrorAt = diag.lastError ? now : null;
   }
   if ("lastSyncStatus" in diag) data.lastSyncStatus = diag.lastSyncStatus ?? null;
+  if (harness) {
+    data.lastHarnessSyncAt = new Date(harness.attemptedAt);
+    data.harnessSyncStatus = harness.status;
+    data.harnessDiagnostics = harnessDiagnosticsFromSnapshot(harness) as Prisma.InputJsonValue;
+  }
 
   await prisma.$transaction([
     prisma.device.update({ where: { id: body.device.id }, data }),

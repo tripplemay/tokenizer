@@ -9,9 +9,18 @@ vi.mock("@/cli/fetch", () => ({ agentFetch: (...args: unknown[]) => fetchMock(..
 vi.mock("../../src/cli/fetch", () => ({ agentFetch: (...args: unknown[]) => fetchMock(...args) }));
 
 const credentialsMock = { deviceToken: "device-token" };
+const stateMocks = vi.hoisted(() => ({ state: {} as Record<string, unknown>, updateState: vi.fn() }));
 vi.mock("@/cli/config", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/cli/config")>();
-  return { ...actual, readCredentials: () => credentialsMock };
+  return {
+    ...actual,
+    readCredentials: () => credentialsMock,
+    readState: () => stateMocks.state,
+    updateState: (patch: Record<string, unknown>) => {
+      stateMocks.state = { ...stateMocks.state, ...patch };
+      stateMocks.updateState(patch);
+    }
+  };
 });
 
 import {
@@ -22,7 +31,8 @@ import {
   runHarnessSync
 } from "@/cli/harness";
 import { canonicalJson } from "@/server/harness-sign";
-import { sign as edSign, createPrivateKey } from "node:crypto";
+import { formatHarnessLogLines } from "@/cli/agent";
+import { sign as edSign, createPrivateKey, generateKeyPairSync } from "node:crypto";
 
 let root: string;
 let repo: string;
@@ -72,11 +82,12 @@ beforeEach(() => {
   git(["config", "user.name", "t"]);
   git(["remote", "add", "origin", "https://github.com/acme/myproject.git"]);
 
-  const keyDir = mkdtempSync(join(tmpdir(), "harness-key-"));
-  const privPath = join(keyDir, "console.key");
-  execFileSync("openssl", ["genpkey", "-algorithm", "ed25519", "-out", privPath]);
-  execFileSync("openssl", ["pkey", "-in", privPath, "-pubout", "-out", join(repo, ".claude/console/console.pub")]);
-  privPem = readFileSync(privPath, "utf8");
+  const keyPair = generateKeyPairSync("ed25519");
+  privPem = keyPair.privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+  writeFileSync(
+    join(repo, ".claude/console/console.pub"),
+    keyPair.publicKey.export({ type: "spki", format: "pem" }).toString()
+  );
 
   writeFileSync(join(repo, "harness-rules.md"), "# harness\n");
   writeFileSync(join(repo, "harness.json"), `${JSON.stringify({ framework: {}, project: { name: "myproject" } }, null, 2)}\n`);
@@ -92,6 +103,8 @@ beforeEach(() => {
   git(["add", "-A"]);
   git(["commit", "-qm", "init"]);
   fetchMock.mockReset();
+  stateMocks.state = {};
+  stateMocks.updateState.mockReset();
 });
 
 afterEach(() => rmSync(root, { recursive: true, force: true }));
@@ -396,5 +409,150 @@ describe("applyHarnessDecisions", () => {
     const result = await applyHarnessDecisions(config());
     expect(result.applied).toBe(0);
     expect(JSON.parse(readFileSync(join(repo, "progress.json"), "utf8")).pending_gate.decision.action).toBe("reject");
+  });
+});
+
+describe("structured Harness sync health", () => {
+  it("applies the exact HTTP retryability matrix", async () => {
+    for (const [status, retryable] of [[408, true], [429, true], [500, true], [503, true], [400, false], [404, false]] as const) {
+      fetchMock.mockImplementation(async (url: unknown) => {
+        const path = String(url);
+        if (path.includes("/api/harness/report")) return { ok: false, status };
+        if (path.includes("/api/harness/mode-intents/relay")) {
+          return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+        }
+        return { ok: true, json: async () => ({ decisions: [] }) };
+      });
+      const result = await runHarnessSync(config());
+      expect(result.issues[0]).toMatchObject({ code: `http_${status}`, retryable });
+    }
+  });
+
+  it("classifies safe server codes and never retains response bodies in the snapshot", async () => {
+    fetchMock.mockImplementation(async (url: unknown) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) {
+        return {
+          ok: false,
+          status: 429,
+          json: async () => ({ code: "quota_exhausted", detail: "Bearer secret at /Users/alice/private?token=x" })
+        };
+      }
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+
+    const result = await runHarnessSync(config());
+    expect(result.snapshot).toMatchObject({ status: "failed", reported: 0, failed: 1 });
+    expect(result.issues).toEqual([{
+      operation: "report",
+      project: "myproject",
+      code: "quota_exhausted",
+      retryable: true
+    }]);
+    const serialized = JSON.stringify(result.snapshot);
+    expect(serialized).not.toContain("Bearer secret");
+    expect(serialized).not.toContain("/Users/alice");
+    expect(stateMocks.updateState).toHaveBeenCalledWith({ harness: result.snapshot });
+  });
+
+  it("falls back to http status when a response code is not normalized", async () => {
+    fetchMock.mockImplementation(async (url: unknown) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) {
+        return { ok: false, status: 400, json: async () => ({ code: "token=secret&path=/tmp/private" }) };
+      }
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+
+    const result = await runHarnessSync(config());
+    expect(result.issues[0]).toMatchObject({ code: "http_400", retryable: false });
+    expect(JSON.stringify(result.snapshot)).not.toContain("secret");
+    expect(JSON.stringify(result.snapshot)).not.toContain("/tmp/private");
+  });
+
+  it("classifies timeouts for all independent subchains without short-circuiting", async () => {
+    const timeout = Object.assign(new Error("Bearer raw-secret /absolute/path"), { name: "TimeoutError" });
+    fetchMock.mockRejectedValue(timeout);
+
+    const result = await runHarnessSync(config());
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(result.snapshot.status).toBe("failed");
+    expect(result.issues.map((issue) => issue.operation)).toEqual(["report", "mode_intent", "relay"]);
+    expect(result.issues.every((issue) => issue.code === "timeout" && issue.retryable)).toBe(true);
+    expect(JSON.stringify(result.snapshot)).not.toContain("raw-secret");
+    expect(JSON.stringify(result.snapshot)).not.toContain("/absolute/path");
+  });
+
+  it("caps structured issues at 20 while retaining the full failed-project count", async () => {
+    for (let index = 0; index < 22; index += 1) makeSecondRepo(`other-${index}`);
+    fetchMock.mockImplementation(async (url: unknown) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) return { ok: false, status: 500 };
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+
+    const result = await runHarnessSync(config());
+    expect(result.failed).toBe(23);
+    expect(result.issues).toHaveLength(20);
+    expect(result.snapshot.issues).toHaveLength(20);
+  });
+
+  it("writes idle, success, degraded, and failed snapshots from actual outcomes", async () => {
+    fetchMock.mockImplementation(async (url: unknown) => {
+      if (String(url).includes("/api/harness/mode-intents/relay")) {
+        return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+    const emptyConfig = {
+      serverUrl: "https://example.test",
+      projectRoots: [join(root, "missing")],
+      sources: {}
+    } as never;
+    expect((await runHarnessSync(emptyConfig)).snapshot.status).toBe("idle");
+
+    mockRoutes({ reportOk: true, decisions: [] });
+    expect((await runHarnessSync(config())).snapshot.status).toBe("success");
+
+    mockRoutes({
+      reportOk: false,
+      decisions: [{
+        repoKey: discoverHarnessRepos(config())[0].repoKey,
+        gate_id: "BL-042-verifying-done-w7",
+        decision: signedDecision("BL-042-verifying-done-w7")
+      }]
+    });
+    expect((await runHarnessSync(config())).snapshot.status).toBe("degraded");
+
+    fetchMock.mockRejectedValue(new TypeError("network body must not persist"));
+    expect((await runHarnessSync(config())).snapshot.status).toBe("failed");
+  });
+
+  it("deduplicates unchanged issue details and logs recovery", async () => {
+    fetchMock.mockImplementation(async (url: unknown) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) return { ok: false, status: 400 };
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        return { ok: true, text: async () => JSON.stringify({ intents: [] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+    const first = await runHarnessSync(config());
+    const second = await runHarnessSync(config());
+    expect(formatHarnessLogLines(first).some((line) => line.startsWith("harness issue"))).toBe(true);
+    expect(formatHarnessLogLines(second).some((line) => line.startsWith("harness issue"))).toBe(false);
+
+    mockRoutes({ reportOk: true, decisions: [] });
+    const recovered = await runHarnessSync(config());
+    expect(formatHarnessLogLines(recovered)).toContain("harness issues recovered");
   });
 });

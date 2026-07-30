@@ -35,6 +35,8 @@ npm run cli -- enroll --enroll-token <enroll-token>
 npm run cli -- collect
 npm run cli -- sync
 npm run cli -- diagnose opencode
+npm run cli -- harness --status
+npm run cli -- harness --json
 ```
 
 Or link it globally:
@@ -44,6 +46,23 @@ npm link
 tokenizer init
 tokenizer run
 ```
+
+Harness sync diagnostics are stored locally in `~/.tokenizer/state.json`. Use
+`tokenizer harness --status` to read the latest snapshot without making any
+network request. Use `tokenizer harness --json` to run one sync and emit only
+the resulting JSON snapshot on stdout, which is suitable for scripts.
+
+Snapshot status meanings:
+
+- `idle`: no Harness projects were found and no sync issue occurred.
+- `success`: at least one Harness operation succeeded and none failed.
+- `degraded`: at least one operation succeeded and at least one issue occurred.
+- `failed`: issues occurred and no Harness operation succeeded.
+
+The console additionally marks a snapshot `stale` when its last attempt is
+more than three minutes old. Structured issues contain only operation, bounded
+project name, normalized code, and retryability; response bodies and local
+paths are not included.
 
 ## Installing on a client machine
 

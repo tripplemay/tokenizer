@@ -5,6 +5,7 @@ import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } fr
 import { getAgentVersion } from "./agent-version";
 import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { agentFetch } from "./fetch";
+import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -81,11 +82,15 @@ async function syncEventsInBatches(config: TokenizerConfig, events: UsageEventIn
   return total;
 }
 
-function readDiagnostics(): DeviceDiagnostics {
+export function readDiagnostics(
+  paths: { queue?: string; state?: string } = {}
+): DeviceDiagnostics {
+  const queueFile = paths.queue ?? queuePath;
+  const stateFile = paths.state ?? statePath;
   let queueDepth = 0;
   try {
-    if (existsSync(queuePath)) {
-      const text = readFileSync(queuePath, "utf8");
+    if (existsSync(queueFile)) {
+      const text = readFileSync(queueFile, "utf8");
       queueDepth = text.split(/\r?\n/).filter(Boolean).length;
     }
   } catch {
@@ -93,13 +98,15 @@ function readDiagnostics(): DeviceDiagnostics {
   }
   let lastError: string | null = null;
   let lastSyncStatus: DeviceDiagnostics["lastSyncStatus"] = null;
+  let harness: DeviceDiagnostics["harness"];
   try {
-    if (existsSync(statePath)) {
-      const state = JSON.parse(readFileSync(statePath, "utf8")) as Record<string, unknown>;
+    if (existsSync(stateFile)) {
+      const state = JSON.parse(readFileSync(stateFile, "utf8")) as Record<string, unknown>;
       const err = state.lastError;
       lastError = typeof err === "string" && err.length ? err.slice(0, 500) : null;
       const status = state.lastSyncStatus;
       if (status === "success" || status === "failed") lastSyncStatus = status;
+      harness = parseHarnessSyncSnapshot(state.harness) ?? undefined;
     }
   } catch {
     /* corrupted state file shouldn't block heartbeat */
@@ -109,7 +116,8 @@ function readDiagnostics(): DeviceDiagnostics {
     agentFeatureVersion: AGENT_FEATURE_VERSION,
     queueDepth,
     lastError,
-    lastSyncStatus
+    lastSyncStatus,
+    ...(harness ? { harness } : {})
   };
 }
 

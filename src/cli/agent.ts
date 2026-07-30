@@ -6,7 +6,7 @@ import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
-import { runHarnessSync } from "./harness";
+import { runHarnessSync, type HarnessSyncResult } from "./harness";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -15,16 +15,23 @@ function log(message: string) {
   appendFileSync(logPath, `[${new Date().toISOString()}] ${message}\n`);
 }
 
-// 跳过的原因**逐条落日志**：闸门中继一旦长期跳过（比如仓库缺 console.pub），
-// 现象是「网页上批了、机器却没动」——这条日志是唯一能解释它的线索。
-function logHarness(h: Awaited<ReturnType<typeof runHarnessSync>>) {
-  if (h.reported > 0 || h.applied > 0 || h.stagedIntents > 0) {
-    log(`harness reported=${h.reported} relayed=${h.applied} mode_intents=${h.stagedIntents}`);
+export function formatHarnessLogLines(h: HarnessSyncResult): string[] {
+  const lines = [
+    `harness status=${h.snapshot.status} reported=${h.reported} failed=${h.failed} relayed=${h.applied} mode_intents=${h.stagedIntents} issues=${h.issues.length}`
+  ];
+  if (h.issueDetailsChanged) {
+    for (const issue of h.issues) {
+      lines.push(
+        `harness issue operation=${issue.operation} project=${issue.project ?? "-"} code=${issue.code} retryable=${issue.retryable}`
+      );
+    }
   }
-  for (const reason of h.skippedReports) log(`harness report skip ${reason}`);
-  for (const reason of h.skippedAppliedAcks) log(`harness applied ACK skip ${reason}`);
-  for (const reason of h.skipped) log(`harness relay skip ${reason}`);
-  for (const reason of h.skippedModeIntents) log(`harness mode intent skip ${reason}`);
+  if (h.recovered) lines.push("harness issues recovered");
+  return lines;
+}
+
+function logHarness(h: HarnessSyncResult) {
+  for (const line of formatHarnessLogLines(h)) log(line);
 }
 
 export async function runOnce() {

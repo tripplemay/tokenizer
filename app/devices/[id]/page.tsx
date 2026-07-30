@@ -15,6 +15,8 @@ import { ProjectIcon } from "../../_components/project-icon";
 import { SourcePill } from "../../_components/source-pill";
 import { ModelLink } from "../../_components/model-link";
 import { PageBanner } from "../../_components/page-banner";
+import { HarnessHealthBadge, type HarnessHealthLabels } from "../../_components/harness-health-badge";
+import { harnessSnapshotFromPersisted } from "@/shared/harness-health";
 
 export const dynamic = "force-dynamic";
 
@@ -104,8 +106,20 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
   }
 
   const { device, totals, events, byProject, byModel, bySource } = detail;
-  const hasDiagnostics = device.agentVersion != null || device.queueDepth != null || device.lastError != null || device.lastSyncStatus != null;
   const { key: statusKey, color: statusColor } = deviceStatusBadge(device.lastSeenAt?.toISOString() ?? null, Date.now());
+  const harness = harnessSnapshotFromPersisted(
+    device.lastHarnessSyncAt,
+    device.harnessSyncStatus,
+    device.harnessDiagnostics
+  );
+  const harnessLabels: HarnessHealthLabels = {
+    idle: t("device.diagnostics.harness.status.idle"),
+    success: t("device.diagnostics.harness.status.success"),
+    degraded: t("device.diagnostics.harness.status.degraded"),
+    failed: t("device.diagnostics.harness.status.failed"),
+    stale: t("device.diagnostics.harness.status.stale"),
+    "not-reported": t("device.diagnostics.harness.status.notReported")
+  };
 
   return (
     <div className="space-y-5">
@@ -153,30 +167,82 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
         <Widget icon={<MdCached className="h-7 w-7" />} title={t("device.metric.events")} subtitle={formatFullNumber(totals.eventCount)} />
       </div>
 
-      {hasDiagnostics ? (
-        <Card extra="p-6">
-          <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("device.diagnostics.title")}</h3>
-          <div className="grid gap-4 md:grid-cols-4">
-            <DiagItem label={t("device.diagnostics.agentVersion")} value={device.agentVersion ?? "—"} mono />
-            <DiagItem
-              label={t("device.diagnostics.queueDepth")}
-              value={device.queueDepth == null ? "—" : String(device.queueDepth)}
-              valueClass={device.queueDepth && device.queueDepth > 0 ? "text-yellow-600 dark:text-yellow-400" : undefined}
+      <Card extra="p-6">
+        <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("device.diagnostics.title")}</h3>
+        <div className="grid gap-4 md:grid-cols-4">
+          <DiagItem label={t("device.diagnostics.agentVersion")} value={device.agentVersion ?? "—"} mono />
+          <DiagItem
+            label={t("device.diagnostics.queueDepth")}
+            value={device.queueDepth == null ? "—" : String(device.queueDepth)}
+            valueClass={device.queueDepth && device.queueDepth > 0 ? "text-yellow-600 dark:text-yellow-400" : undefined}
+          />
+          <DiagItem
+            label={t("device.diagnostics.lastSyncStatus")}
+            value={device.lastSyncStatus ? t(`device.diagnostics.status.${device.lastSyncStatus}`) : "—"}
+            valueClass={device.lastSyncStatus === "failed" ? "text-red-600 dark:text-red-400" : device.lastSyncStatus === "success" ? "text-green-600 dark:text-green-400" : undefined}
+          />
+          <DiagItem
+            label={t("device.diagnostics.lastError")}
+            value={device.lastError ?? "—"}
+            valueClass={device.lastError ? "text-red-600 dark:text-red-400" : undefined}
+            wrap
+          />
+        </div>
+
+        <div className="mt-6 border-t border-gray-200 pt-5 dark:border-white/10">
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="text-sm font-bold text-navy-700 dark:text-white">
+              {t("device.diagnostics.harness.title")}
+            </h4>
+            <HarnessHealthBadge
+              status={device.harnessSyncStatus}
+              attemptedAt={device.lastHarnessSyncAt}
+              nowMs={Date.now()}
+              labels={harnessLabels}
             />
-            <DiagItem
-              label={t("device.diagnostics.lastSyncStatus")}
-              value={device.lastSyncStatus ? t(`device.diagnostics.status.${device.lastSyncStatus}`) : "—"}
-              valueClass={device.lastSyncStatus === "failed" ? "text-red-600 dark:text-red-400" : device.lastSyncStatus === "success" ? "text-green-600 dark:text-green-400" : undefined}
-            />
-            <DiagItem
-              label={t("device.diagnostics.lastError")}
-              value={device.lastError ?? "—"}
-              valueClass={device.lastError ? "text-red-600 dark:text-red-400" : undefined}
-              wrap
-            />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {device.lastHarnessSyncAt
+                ? formatRelativeTime(device.lastHarnessSyncAt, tRelative, tz)
+                : t("device.diagnostics.harness.never")}
+            </span>
           </div>
-        </Card>
-      ) : null}
+          {harness ? (
+            <>
+              <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+                <DiagItem label={t("device.diagnostics.harness.reported")} value={String(harness.reported)} />
+                <DiagItem label={t("device.diagnostics.harness.failedProjects")} value={String(harness.failed)} />
+                <DiagItem label={t("device.diagnostics.harness.relayed")} value={String(harness.relayed)} />
+                <DiagItem label={t("device.diagnostics.harness.modeIntents")} value={String(harness.modeIntents)} />
+              </div>
+              {harness.issues.length > 0 ? (
+                <div className="mt-5">
+                  <h5 className="text-xs font-bold uppercase text-gray-500">
+                    {t("device.diagnostics.harness.issues", { count: harness.issues.length })}
+                  </h5>
+                  <ul className="mt-2 divide-y divide-gray-200 dark:divide-white/10">
+                    {harness.issues.map((issue, index) => (
+                      <li
+                        key={`${issue.operation}-${issue.project ?? "none"}-${issue.code}-${index}`}
+                        className="grid min-w-0 gap-1 py-2 text-xs sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+                      >
+                        <span className="min-w-0 break-words text-gray-700 dark:text-gray-200">
+                          {issue.project ?? t("device.diagnostics.harness.unknownProject")} · {t(`device.diagnostics.harness.operation.${issue.operation}`)} ·{" "}
+                          <span className="break-all font-mono">{issue.code}</span>
+                        </span>
+                        <span className="text-gray-500 dark:text-gray-400">
+                          {issue.retryable
+                            ? t("device.diagnostics.harness.retryable")
+                            : t("device.diagnostics.harness.notRetryable")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </div>
+      </Card>
 
       <Card extra="p-6">
         <div className="mb-3">

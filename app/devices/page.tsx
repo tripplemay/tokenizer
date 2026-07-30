@@ -16,6 +16,7 @@ import { AddDeviceSection } from "../_components/add-device-section";
 import { CopyInstallCommand } from "../_components/copy-install-command";
 import { OutdatedBadge } from "../_components/outdated-badge";
 import { PageBanner } from "../_components/page-banner";
+import { HarnessHealthBadge, type HarnessHealthLabels } from "../_components/harness-health-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -147,6 +148,14 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
   const [t, devices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, range)]);
   const tRelative = t as (key: string, values?: Record<string, string | number>) => string;
   const nowMs = Date.now();
+  const harnessLabels: HarnessHealthLabels = {
+    idle: t("devices.diag.harnessStatus.idle"),
+    success: t("devices.diag.harnessStatus.success"),
+    degraded: t("devices.diag.harnessStatus.degraded"),
+    failed: t("devices.diag.harnessStatus.failed"),
+    stale: t("devices.diag.harnessStatus.stale"),
+    "not-reported": t("devices.diag.harnessStatus.notReported")
+  };
   return (
     <Card extra="p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -199,7 +208,14 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
                   <td className="py-2.5 pr-4 text-right text-gray-600 dark:text-gray-300">{(device.cacheHitRate * 100).toFixed(1)}%</td>
                   <td className="py-2.5 pr-4 text-right">{formatFullNumber(device.events)}</td>
                   <td className="py-2.5 pr-4 text-right">
-                    <DiagnosticsBadges device={device} reportedNoData={t("devices.diag.notReported")} queueLabel={t("devices.diag.queued")} errorLabel={t("devices.diag.lastError")} />
+                    <DiagnosticsBadges
+                      device={device}
+                      nowMs={nowMs}
+                      harnessLabels={harnessLabels}
+                      reportedNoData={t("devices.diag.notReported")}
+                      queueLabel={t("devices.diag.queued")}
+                      errorLabel={t("devices.diag.lastError")}
+                    />
                   </td>
                   <td className="py-2.5 pr-4 text-right whitespace-nowrap text-gray-500">{formatRelativeTime(device.lastSeenAt, tRelative, tz)}</td>
                 </tr>
@@ -243,25 +259,35 @@ type DiagnosticsDevice = {
   queueDepth: number | null;
   lastError: string | null;
   lastSyncStatus: string | null;
+  lastHarnessSyncAt: string | null;
+  harnessSyncStatus: string | null;
 };
 
 function DiagnosticsBadges({
   device,
+  nowMs,
+  harnessLabels,
   reportedNoData,
   queueLabel,
   errorLabel
 }: {
   device: DiagnosticsDevice;
+  nowMs: number;
+  harnessLabels: HarnessHealthLabels;
   reportedNoData: string;
   queueLabel: string;
   errorLabel: string;
 }) {
   const nothing = device.agentVersion == null && device.queueDepth == null && device.lastError == null;
-  if (nothing) {
-    return <span className="text-xs text-gray-400" title="Diagnostics will populate once the device upgrades to the agent build that pushes them.">{reportedNoData}</span>;
-  }
   return (
-    <span className="inline-flex items-center gap-1.5">
+    <span className="inline-flex max-w-72 flex-wrap items-center justify-end gap-1.5">
+      <HarnessHealthBadge
+        status={device.harnessSyncStatus}
+        attemptedAt={device.lastHarnessSyncAt}
+        nowMs={nowMs}
+        labels={harnessLabels}
+      />
+      {nothing ? <span className="text-xs text-gray-400">{reportedNoData}</span> : null}
       {device.lastError ? (
         <span className="inline-flex items-center gap-0.5 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300" title={`${errorLabel}: ${device.lastError}`}>
           <MdWarning className="h-3 w-3" />

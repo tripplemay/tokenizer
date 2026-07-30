@@ -6,10 +6,19 @@ import { writeFileAtomic } from "@/cli/atomic-file";
 import { canonicalJson } from "@/server/harness-sign";
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 import { normalizeGitRemote } from "./git";
-import { readCredentials, TokenizerConfig } from "./config";
+import { readCredentials, readState, updateState, TokenizerConfig } from "./config";
 import { agentFetch } from "./fetch";
 import { buildModeSnapshot } from "./harness-modes";
 import { scanHarnessDispatchRuns } from "./harness-dispatch";
+import {
+  HARNESS_SYNC_ISSUE_LIMIT,
+  parseHarnessSyncSnapshot,
+  safeHarnessCode,
+  safeHarnessProject,
+  type HarnessSyncIssue,
+  type HarnessSyncOperation,
+  type HarnessSyncSnapshot
+} from "@/shared/harness-health";
 import {
   parseModeIntentRelayResponse,
   readModeDefaultsReportSummary,
@@ -31,6 +40,67 @@ import {
  */
 
 const REQUEST_TIMEOUT_MS = 30_000;
+
+class HarnessRequestError extends Error {
+  constructor(
+    readonly code: string,
+    readonly retryable: boolean
+  ) {
+    super(code);
+  }
+}
+
+function appendIssue(issues: HarnessSyncIssue[], issue: HarnessSyncIssue): void {
+  if (issues.length < HARNESS_SYNC_ISSUE_LIMIT) issues.push(issue);
+}
+
+function makeIssue(
+  operation: HarnessSyncOperation,
+  project: string | null,
+  code: string,
+  retryable: boolean
+): HarnessSyncIssue {
+  return {
+    operation,
+    project: safeHarnessProject(project),
+    code: safeHarnessCode(code) ?? "local_error",
+    retryable
+  };
+}
+
+function isRetryableHttp(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+async function requestError(response: Response): Promise<HarnessRequestError> {
+  let responseCode: string | null = null;
+  try {
+    const body = (await response.json()) as { code?: unknown };
+    responseCode = safeHarnessCode(body?.code);
+  } catch {
+    /* Response bodies never enter diagnostics; malformed or absent JSON uses the status fallback. */
+  }
+  return new HarnessRequestError(responseCode ?? `http_${response.status}`, isRetryableHttp(response.status));
+}
+
+function issueFromError(
+  operation: HarnessSyncOperation,
+  project: string | null,
+  error: unknown
+): HarnessSyncIssue {
+  if (error instanceof HarnessRequestError) return makeIssue(operation, project, error.code, error.retryable);
+  const name = error instanceof Error ? error.name : "";
+  if (name === "TimeoutError" || name === "AbortError") return makeIssue(operation, project, "timeout", true);
+  const code = (error as { code?: unknown; cause?: { code?: unknown } })?.code ??
+    (error as { cause?: { code?: unknown } })?.cause?.code;
+  if (
+    error instanceof TypeError ||
+    (typeof code === "string" && ["ECONNRESET", "ECONNREFUSED", "ENETUNREACH", "EHOSTUNREACH", "ETIMEDOUT"].includes(code))
+  ) {
+    return makeIssue(operation, project, "network_error", true);
+  }
+  return makeIssue(operation, project, "local_error", false);
+}
 
 export type HarnessRepo = {
   path: string;
@@ -219,7 +289,7 @@ async function postModeIntentAck(config: TokenizerConfig, deviceToken: string, a
     body: JSON.stringify(ack),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
-  if (!response.ok) throw new Error(`mode intent ACK failed: ${response.status}`);
+  if (!response.ok) throw await requestError(response);
 }
 
 /**
@@ -231,20 +301,30 @@ async function postModeIntentAck(config: TokenizerConfig, deviceToken: string, a
  */
 export async function reportHarnessState(
   config: TokenizerConfig
-): Promise<{ reported: number; skippedReports: string[]; skippedAppliedAcks: string[] }> {
+): Promise<{
+  reported: number;
+  failedReports: number;
+  skippedReports: string[];
+  skippedAppliedAcks: string[];
+  issues: HarnessSyncIssue[];
+}> {
   const repos = discoverHarnessRepos(config);
   const credentials = readCredentials();
   const skippedReports: string[] = [];
   const skippedAppliedAcks: string[] = [];
+  const issues: HarnessSyncIssue[] = [];
   let reported = 0;
+  let failedReports = 0;
 
   for (const repo of repos) {
-    const body = buildReport(repo);
-    if (!body) {
-      skippedReports.push(`${repo.name}: progress.json 读不出来，本轮跳过`);
-      continue;
-    }
     try {
+      const body = buildReport(repo);
+      if (!body) {
+        failedReports += 1;
+        skippedReports.push(`${repo.name}: progress.json 读不出来，本轮跳过`);
+        appendIssue(issues, makeIssue("report", repo.name, "local_error", false));
+        continue;
+      }
       const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/report`, {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${credentials.deviceToken}` },
@@ -252,7 +332,10 @@ export async function reportHarnessState(
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
       if (!response.ok) {
+        const error = await requestError(response);
+        failedReports += 1;
         skippedReports.push(`${repo.name}: 上报失败 ${response.status}`);
+        appendIssue(issues, issueFromError("report", repo.name, error));
         continue;
       }
       const responseBody = (await response.json().catch(() => null)) as { harnessProjectId?: unknown } | null;
@@ -273,15 +356,18 @@ export async function reportHarnessState(
           skippedAppliedAcks.push(
             `${repo.name}: applied ACK 失败 ${error instanceof Error ? error.message : String(error)}`
           );
+          appendIssue(issues, issueFromError("applied_ack", repo.name, error));
         });
       }
     } catch (error) {
+      failedReports += 1;
       skippedReports.push(`${repo.name}: 上报失败 ${error instanceof Error ? error.message : String(error)}`);
+      appendIssue(issues, issueFromError("report", repo.name, error));
       continue;
     }
     reported += 1;
   }
-  return { reported, skippedReports, skippedAppliedAcks };
+  return { reported, failedReports, skippedReports, skippedAppliedAcks, issues };
 }
 
 function ackForStageResult(result: Exclude<StagedModeIntentResult, { status: "ack_pending" }>): ModeIntentAck {
@@ -305,15 +391,15 @@ function ackForStageResult(result: Exclude<StagedModeIntentResult, { status: "ac
 /** Pull, validate, stage, and ACK signed defaults without touching progress or gate state. */
 export async function applyHarnessModeIntents(
   config: TokenizerConfig
-): Promise<{ stagedIntents: number; skippedModeIntents: string[] }> {
+): Promise<{ stagedIntents: number; skippedModeIntents: string[]; issues: HarnessSyncIssue[] }> {
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/mode-intents/relay`, {
     headers: { authorization: `Bearer ${credentials.deviceToken}` },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
-  if (!response.ok) throw new Error(`harness mode intents failed: ${response.status}`);
+  if (!response.ok) throw await requestError(response);
   const intents = parseModeIntentRelayResponse(await response.text());
-  if (intents.length === 0) return { stagedIntents: 0, skippedModeIntents: [] };
+  if (intents.length === 0) return { stagedIntents: 0, skippedModeIntents: [], issues: [] };
 
   const repos = discoverHarnessRepos(config);
   const byRepoKey = new Map<string, HarnessRepo>();
@@ -327,6 +413,7 @@ export async function applyHarnessModeIntents(
 
   let stagedIntents = 0;
   const skippedModeIntents: string[] = [];
+  const issues: HarnessSyncIssue[] = [];
   for (const item of intents) {
     let repo: HarnessRepo | undefined;
     try {
@@ -348,16 +435,24 @@ export async function applyHarnessModeIntents(
     else if (result.status === "ack_pending") {
       stagedIntents += 1;
       skippedModeIntents.push(`${result.intentId}: staged ACK deferred until exact retry`);
+      appendIssue(issues, makeIssue("mode_intent", repo?.name ?? null, "ack_pending", true));
       continue;
-    } else skippedModeIntents.push(`${result.intentId}: ${result.failureCode}`);
+    } else {
+      skippedModeIntents.push(`${result.intentId}: ${result.failureCode}`);
+      appendIssue(
+        issues,
+        makeIssue("mode_intent", repo?.name ?? null, safeHarnessCode(result.failureCode) ?? "local_error", false)
+      );
+    }
 
     await postModeIntentAck(config, credentials.deviceToken, ackForStageResult(result)).catch((error) => {
       skippedModeIntents.push(
         `${result.intentId}: ACK 失败 ${error instanceof Error ? error.message : String(error)}`
       );
+      appendIssue(issues, issueFromError("mode_intent", repo?.name ?? null, error));
     });
   }
-  return { stagedIntents, skippedModeIntents };
+  return { stagedIntents, skippedModeIntents, issues };
 }
 
 type RelayedDecision = {
@@ -400,62 +495,74 @@ function verifyDecision(repoPath: string, decision: Record<string, unknown>): bo
  */
 export async function applyHarnessDecisions(
   config: TokenizerConfig
-): Promise<{ applied: number; skipped: string[] }> {
+): Promise<{ applied: number; skipped: string[]; issues: HarnessSyncIssue[] }> {
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/decisions`, {
     headers: { authorization: `Bearer ${credentials.deviceToken}` },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) {
-    throw new Error(`harness decisions failed: ${response.status} ${await response.text()}`);
+    throw await requestError(response);
   }
   const { decisions } = (await response.json()) as { decisions: RelayedDecision[] };
-  if (!decisions?.length) return { applied: 0, skipped: [] };
+  if (!decisions?.length) return { applied: 0, skipped: [], issues: [] };
 
   const byKey = new Map(discoverHarnessRepos(config).map((r) => [r.repoKey, r]));
   const skipped: string[] = [];
+  const issues: HarnessSyncIssue[] = [];
   let applied = 0;
 
   for (const item of decisions) {
     const repo = byKey.get(item.repoKey);
     if (!repo) {
       skipped.push(`${item.gate_id}: 本机没有 repoKey=${item.repoKey} 的 harness 项目`);
+      appendIssue(issues, makeIssue("relay", null, "repo_not_found", false));
       continue;
     }
     if (!verifyDecision(repo.path, item.decision)) {
       // 不写。仓库缺 console.pub，或签名对不上——两种情况都不该让它落盘。
       skipped.push(`${item.gate_id}: 验签失败或仓库缺 .claude/console/console.pub`);
+      appendIssue(issues, makeIssue("relay", repo.name, "signature_invalid", false));
       continue;
     }
     const progressPath = join(repo.path, "progress.json");
     const dirty = git(["status", "--porcelain", "--", "progress.json"], repo.path);
     if (dirty) {
       skipped.push(`${item.gate_id}: progress.json 有未提交改动，本轮不写（下次再试）`);
+      appendIssue(issues, makeIssue("relay", repo.name, "local_write_rejected", false));
       continue;
     }
     const progress = readJson<ProgressJson>(progressPath);
     const gate = progress?.pending_gate as { id?: string; decision?: unknown } | null | undefined;
     if (!gate?.id) {
       skipped.push(`${item.gate_id}: 本机已无待批闸门`);
+      appendIssue(issues, makeIssue("relay", repo.name, "gate_not_pending", false));
       continue;
     }
     if (gate.id !== item.gate_id) {
       skipped.push(`${item.gate_id}: 本机当前闸门是 ${gate.id}，不匹配`);
+      appendIssue(issues, makeIssue("relay", repo.name, "gate_mismatch", false));
       continue;
     }
     if (gate.decision) {
       skipped.push(`${item.gate_id}: 本机闸门已有决策，不覆盖`);
+      appendIssue(issues, makeIssue("relay", repo.name, "already_decided", false));
       continue;
     }
 
-    gate.decision = item.decision;
-    writeFileAtomic(progressPath, `${JSON.stringify(progress, null, 2)}\n`);
-    // 只提交 progress.json 这一个文件——绝不 `git add -A`，那会把用户正在写的东西一起卷进来
-    git(["add", "--", "progress.json"], repo.path);
-    git(["commit", "-m", `chore(gate): relay ${item.gate_id} from console`, "--", "progress.json"], repo.path);
-    applied += 1;
+    try {
+      gate.decision = item.decision;
+      writeFileAtomic(progressPath, `${JSON.stringify(progress, null, 2)}\n`);
+      // 只提交 progress.json 这一个文件——绝不 `git add -A`，那会把用户正在写的东西一起卷进来
+      git(["add", "--", "progress.json"], repo.path);
+      git(["commit", "-m", `chore(gate): relay ${item.gate_id} from console`, "--", "progress.json"], repo.path);
+      applied += 1;
+    } catch {
+      skipped.push(`${item.gate_id}: 本机写入失败`);
+      appendIssue(issues, makeIssue("relay", repo.name, "local_write_rejected", false));
+    }
   }
-  return { applied, skipped };
+  return { applied, skipped, issues };
 }
 
 /**
@@ -464,28 +571,84 @@ export async function applyHarnessDecisions(
  * **两步互不阻塞**：任一步失败都只记进它自己的 skip 列表，另一步照跑。
  * 上报只是镜像，中继才是人在等的那条路——不能让镜像的问题卡住批准。
  */
-export async function runHarnessSync(config: TokenizerConfig): Promise<{
+export type HarnessSyncResult = {
   reported: number;
+  failed: number;
   skippedReports: string[];
   skippedAppliedAcks: string[];
   applied: number;
   skipped: string[];
   stagedIntents: number;
   skippedModeIntents: string[];
-}> {
+  issues: HarnessSyncIssue[];
+  snapshot: HarnessSyncSnapshot;
+  issueDetailsChanged: boolean;
+  recovered: boolean;
+};
+
+function issueFingerprint(issues: HarnessSyncIssue[]): string {
+  return JSON.stringify(
+    issues
+      .map((issue) => `${issue.operation}\u0000${issue.project ?? ""}\u0000${issue.code}\u0000${issue.retryable}`)
+      .sort()
+  );
+}
+
+export function readHarnessSyncSnapshot(): HarnessSyncSnapshot | null {
+  return parseHarnessSyncSnapshot(readState().harness);
+}
+
+export async function runHarnessSync(config: TokenizerConfig): Promise<HarnessSyncResult> {
+  const attemptedAt = new Date().toISOString();
+  const previous = readHarnessSyncSnapshot();
+  const discoveredCount = discoverHarnessRepos(config).length;
   const fail = (error: unknown) => (error instanceof Error ? error.message : String(error));
   const report = await reportHarnessState(config).catch((error) => ({
     reported: 0,
+    failedReports: discoveredCount,
     skippedReports: [`report: ${fail(error)}`],
-    skippedAppliedAcks: []
+    skippedAppliedAcks: [],
+    issues: [issueFromError("report", null, error)]
   }));
   const modeIntents = await applyHarnessModeIntents(config).catch((error) => ({
     stagedIntents: 0,
-    skippedModeIntents: [`mode-intent: ${fail(error)}`]
+    skippedModeIntents: [`mode-intent: ${fail(error)}`],
+    issues: [issueFromError("mode_intent", null, error)]
   }));
   const relay = await applyHarnessDecisions(config).catch((error) => ({
     applied: 0,
-    skipped: [`relay: ${fail(error)}`]
+    skipped: [`relay: ${fail(error)}`],
+    issues: [issueFromError("relay", null, error)]
   }));
-  return { ...report, ...relay, ...modeIntents };
+  const issues = [...report.issues, ...modeIntents.issues, ...relay.issues].slice(0, HARNESS_SYNC_ISSUE_LIMIT);
+  const successfulOperations = report.reported + modeIntents.stagedIntents + relay.applied;
+  const status = issues.length > 0
+    ? successfulOperations > 0 ? "degraded" : "failed"
+    : successfulOperations > 0 ? "success" : "idle";
+  const snapshot: HarnessSyncSnapshot = {
+    attemptedAt,
+    status,
+    reported: report.reported,
+    failed: report.failedReports,
+    relayed: relay.applied,
+    modeIntents: modeIntents.stagedIntents,
+    issues
+  };
+  const issueDetailsChanged = issues.length > 0 && issueFingerprint(issues) !== issueFingerprint(previous?.issues ?? []);
+  const recovered = issues.length === 0 && (previous?.issues.length ?? 0) > 0;
+  updateState({ harness: snapshot });
+  return {
+    reported: report.reported,
+    failed: report.failedReports,
+    skippedReports: report.skippedReports,
+    skippedAppliedAcks: report.skippedAppliedAcks,
+    applied: relay.applied,
+    skipped: relay.skipped,
+    stagedIntents: modeIntents.stagedIntents,
+    skippedModeIntents: modeIntents.skippedModeIntents,
+    issues,
+    snapshot,
+    issueDetailsChanged,
+    recovered
+  };
 }

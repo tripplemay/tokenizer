@@ -28,8 +28,10 @@
 //   4 — 2026-07-27: signed mode-intent staging/ACK, pending defaults and agent
 //       capability snapshots, plus bounded dispatch run summaries. Older
 //       agents cannot safely receive mode changes and leave detail views stale.
-export const AGENT_FEATURE_VERSION = 4;
-export const MIN_AGENT_FEATURE_VERSION = 4;
+//   5 — 2026-07-30: bounded Harness sync health in local state and heartbeat.
+//       Older agents cannot report whether orchestration transport is healthy.
+export const AGENT_FEATURE_VERSION = 5;
+export const MIN_AGENT_FEATURE_VERSION = 5;
 
 // The ingest correction pass (updating an existing UsageEvent row in place
 // when a re-parse revises it) is only trusted from agents at or above this

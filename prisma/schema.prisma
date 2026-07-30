@@ -115,6 +115,9 @@ model Device {
   lastError           String?
   lastErrorAt         DateTime?
   lastSyncStatus      String?
+  lastHarnessSyncAt   DateTime?
+  harnessSyncStatus   String?
+  harnessDiagnostics  Json?
   usageEvents         UsageEvent[]
   tokens              DeviceToken[]
   quotaSnapshots      QuotaSnapshot[]

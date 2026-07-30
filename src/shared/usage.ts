@@ -1,3 +1,5 @@
+import type { HarnessSyncSnapshot } from "@/shared/harness-health";
+
 export type UsageSource = "claude-code" | "codex" | "opencode" | "aider" | "kimicode";
 
 export type UsageEventInput = {
@@ -45,6 +47,7 @@ export type DeviceDiagnostics = {
   queueDepth?: number;
   lastError?: string | null;
   lastSyncStatus?: "success" | "failed" | null;
+  harness?: HarnessSyncSnapshot;
 };
 
 export type DeviceInput = {

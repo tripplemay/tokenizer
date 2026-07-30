@@ -141,11 +141,11 @@ export function readState(): TokenizerState {
   }
 }
 
-export function updateState(patch: Record<string, unknown>) {
+export function updateState(patch: Record<string, unknown>, path = statePath) {
   // Read and write under one lock: the scheduled task and a manual
   // `tokenizer run` genuinely overlap, and the old unlocked
   // read-then-write silently dropped one side's update.
-  updateFileAtomic(statePath, (current) => {
+  updateFileAtomic(path, (current) => {
     let parsed: Record<string, unknown> = {};
     if (current) {
       // Tolerate a torn file the same way readState does, so one bad write

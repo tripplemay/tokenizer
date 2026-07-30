@@ -3,9 +3,9 @@ import { isDeviceOutdated } from "@/server/agent-version";
 import { AGENT_FEATURE_VERSION, MIN_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 describe("isDeviceOutdated", () => {
-  it("advertises the F004 mode-intent capability level", () => {
-    expect(AGENT_FEATURE_VERSION).toBe(4);
-    expect(MIN_AGENT_FEATURE_VERSION).toBe(4);
+  it("advertises the Harness sync-health heartbeat capability level", () => {
+    expect(AGENT_FEATURE_VERSION).toBe(5);
+    expect(MIN_AGENT_FEATURE_VERSION).toBe(5);
   });
 
   it("AGENT_FEATURE_VERSION and MIN_AGENT_FEATURE_VERSION are positive integers", () => {

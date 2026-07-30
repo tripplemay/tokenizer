@@ -203,7 +203,15 @@
     "diag": {
       "notReported": "无上报",
       "queued": "队列",
-      "lastError": "错误"
+      "lastError": "错误",
+      "harnessStatus": {
+        "idle": "Harness 空闲",
+        "success": "Harness 正常",
+        "degraded": "Harness 部分失败",
+        "failed": "Harness 失败",
+        "stale": "Harness 陈旧",
+        "notReported": "Harness 未上报"
+      }
     },
     "dailyByDevice": {
       "title": "每日成本按设备拆分",
@@ -244,6 +252,32 @@
       "status": {
         "success": "成功",
         "failed": "失败"
+      },
+      "harness": {
+        "title": "Harness 同步",
+        "never": "从未上报",
+        "reported": "成功项目",
+        "failedProjects": "失败项目",
+        "relayed": "已中继闸门",
+        "modeIntents": "模式意图",
+        "issues": "{count} 个问题",
+        "unknownProject": "未知项目",
+        "retryable": "可重试",
+        "notRetryable": "不可重试",
+        "status": {
+          "idle": "空闲",
+          "success": "正常",
+          "degraded": "部分失败",
+          "failed": "失败",
+          "stale": "陈旧",
+          "notReported": "未上报"
+        },
+        "operation": {
+          "report": "项目上报",
+          "applied_ack": "应用确认",
+          "mode_intent": "模式意图",
+          "relay": "闸门中继"
+        }
       }
     },
     "projects": {
@@ -443,6 +477,16 @@
     "autonomyStatusCompact": "自主推进：{status}",
     "haltCompact": "停机：{condition}",
     "signingKeyMissing": "未配置 HARNESS_CONSOLE_SIGNING_KEY —— 无法签发闸门决策。没有签名的批准机器不会接受（fail-closed）。请用 gen-console-key.sh 生成密钥对，私钥经环境变量注入，公钥提交到各项目的 .claude/console/console.pub。",
+    "syncHealth": {
+      "status": {
+        "idle": "同步空闲",
+        "success": "同步正常",
+        "degraded": "同步部分失败",
+        "failed": "同步失败",
+        "stale": "同步陈旧",
+        "notReported": "同步未上报"
+      }
+    },
     "kind": {
       "phase_advance": "阶段推进",
       "l2_auth": "L2 授权",
@@ -609,7 +653,7 @@
       "disabled": {
         "signingKeyUnavailable": "控制台签名密钥不可用，已禁止签发。",
         "reportStale": "项目上报已过期，已禁止签发；请等待设备重新上报。",
-        "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 4，已禁止签发。",
+        "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 5，已禁止签发。",
         "headNotFull": "项目没有上报完整的 40 位 HEAD SHA，已禁止签发。",
         "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照，已禁止签发。"
       },
@@ -629,7 +673,7 @@
         "invalidGate": "只能预授权 A、B 闸门。",
         "invalidNotification": "一项或多项通知选择无效。",
         "reportStale": "项目上报已过期，请等待设备重新上报。",
-        "agentUpgradeRequired": "需要 Agent 功能版本 4 或更高版本。",
+        "agentUpgradeRequired": "需要 Agent 功能版本 5 或更高版本。",
         "headNotFull": "需要完整的 40 位 HEAD SHA。",
         "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照。",
         "signingKeyUnavailable": "控制台签名密钥不可用。",

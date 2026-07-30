@@ -203,7 +203,15 @@
     "diag": {
       "notReported": "no data",
       "queued": "Queue",
-      "lastError": "Error"
+      "lastError": "Error",
+      "harnessStatus": {
+        "idle": "Harness idle",
+        "success": "Harness healthy",
+        "degraded": "Harness partial",
+        "failed": "Harness failed",
+        "stale": "Harness stale",
+        "notReported": "Harness not reported"
+      }
     },
     "dailyByDevice": {
       "title": "Daily cost by device",
@@ -244,6 +252,32 @@
       "status": {
         "success": "success",
         "failed": "failed"
+      },
+      "harness": {
+        "title": "Harness sync",
+        "never": "Never reported",
+        "reported": "Reported projects",
+        "failedProjects": "Failed projects",
+        "relayed": "Relayed gates",
+        "modeIntents": "Mode intents",
+        "issues": "{count} issues",
+        "unknownProject": "Unknown project",
+        "retryable": "retryable",
+        "notRetryable": "not retryable",
+        "status": {
+          "idle": "idle",
+          "success": "healthy",
+          "degraded": "partial failure",
+          "failed": "failed",
+          "stale": "stale",
+          "notReported": "not reported"
+        },
+        "operation": {
+          "report": "report",
+          "applied_ack": "applied ACK",
+          "mode_intent": "mode intent",
+          "relay": "gate relay"
+        }
       }
     },
     "projects": {
@@ -443,6 +477,16 @@
     "autonomyStatusCompact": "autodrive:{status}",
     "haltCompact": "halt: {condition}",
     "signingKeyMissing": "HARNESS_CONSOLE_SIGNING_KEY is not configured — gate decisions cannot be signed. Machines reject unsigned approvals (fail-closed). Generate a keypair with gen-console-key.sh, inject the private key via env, and commit the public key to each project's .claude/console/console.pub.",
+    "syncHealth": {
+      "status": {
+        "idle": "sync idle",
+        "success": "sync healthy",
+        "degraded": "sync partial",
+        "failed": "sync failed",
+        "stale": "sync stale",
+        "notReported": "sync not reported"
+      }
+    },
     "kind": {
       "phase_advance": "Phase advance",
       "l2_auth": "L2 authorization",
@@ -609,7 +653,7 @@
       "disabled": {
         "signingKeyUnavailable": "Issuance is disabled because the console signing key is unavailable.",
         "reportStale": "Issuance is disabled because the project report is stale. Wait for a fresh device report.",
-        "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below 4.",
+        "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below 5.",
         "headNotFull": "Issuance is disabled because the project did not report a full 40-character HEAD SHA.",
         "agentSnapshotUnavailable": "Issuance is disabled because no usable reported agent snapshot is available."
       },
@@ -629,7 +673,7 @@
         "invalidGate": "Only A and B gates can be pre-authorized.",
         "invalidNotification": "One or more notification selections are invalid.",
         "reportStale": "The project report became stale. Wait for a fresh device report.",
-        "agentUpgradeRequired": "Agent feature version 4 or newer is required.",
+        "agentUpgradeRequired": "Agent feature version 5 or newer is required.",
         "headNotFull": "A full 40-character HEAD SHA is required.",
         "agentSnapshotUnavailable": "No usable reported agent snapshot is available.",
         "signingKeyUnavailable": "The console signing key is unavailable.",

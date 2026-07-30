@@ -8,8 +8,7 @@ import { diagnoseOpenCode } from "@/parsers/opencode";
 import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
-import { discoverHarnessRepos, runHarnessSync } from "./harness";
-import { formatHarnessModeLine } from "./harness-modes-print";
+import { runHarnessCommand } from "./harness-command";
 import { installService, serviceStatus, uninstallService } from "./service";
 
 const program = new Command();
@@ -35,26 +34,13 @@ program.command("enroll").description("Enroll this device with a one-time enroll
   console.log(`Credentials ready: ${credentialsPath}`);
 });
 
-program.command("harness").description("Report harness orchestration state and relay signed gate decisions").option("--list", "Only list discovered harness projects").option("--modes", "Show local mode snapshots for discovered harness projects").action(async (options: { list?: boolean; modes?: boolean }) => {
-  const config = readConfig();
-  const repos = discoverHarnessRepos(config);
-  if (repos.length === 0) {
-    console.log("No harness projects found under projectRoots (need both progress.json and harness-rules.md).");
-    return;
-  }
-  if (options.modes) {
-    for (const repo of repos) console.log(formatHarnessModeLine(repo));
-    return;
-  }
-  for (const repo of repos) console.log(`${repo.name}  ${repo.repoKey}  ${repo.path}`);
-  if (options.list) return;
-  const result = await runHarnessSync(config);
-  console.log(`Reported: ${result.reported}  Relayed: ${result.applied}  Mode intents: ${result.stagedIntents}`);
-  for (const reason of result.skippedReports) console.log(`  report skip ${reason}`);
-  for (const reason of result.skippedAppliedAcks) console.log(`  applied ACK skip ${reason}`);
-  for (const reason of result.skipped) console.log(`  relay skip  ${reason}`);
-  for (const reason of result.skippedModeIntents) console.log(`  mode skip   ${reason}`);
-});
+program.command("harness")
+  .description("Report harness orchestration state and relay signed gate decisions")
+  .option("--list", "Only list discovered harness projects")
+  .option("--modes", "Show local mode snapshots for discovered harness projects")
+  .option("--status", "Read the latest local harness health snapshot without syncing")
+  .option("--json", "Run one sync and print only its health snapshot as JSON")
+  .action((options) => runHarnessCommand(options));
 
 program.command("collect").description("Collect local usage events into queue").action(() => {
   const config = readConfig();
