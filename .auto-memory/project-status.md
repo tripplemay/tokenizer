@@ -5,11 +5,12 @@ type: project
 ---
 ## 当前批次
 
-- **BL-HARNESS-SYNC-HEALTH（verifying，5/6，fix_round 0）**：harness 同步健康已进入本地 state、heartbeat、Device schema 和三处控制台视图。
+- **BL-HARNESS-SYNC-HEALTH（verifying，6/6，fix_round 0）**：Kimi A2A 全 PASS，等待 `verifying -> done` 人工闸门。
 - 真实触发：7/28 本机有人闸门但控制台未见；7/30 agent 恢复后 6 项目成功、3 项目确定性 400 每分钟重复。
 - Generator=`builder-codex` local-cli；Evaluator=`reviewer-kimi-a2a` loopback；自治关闭，family 互斥成立。
-- F001-F005 已锁本地 SHA `446d319`；F006 由 Kimi A2A 跑 test/verify/build、四轮同步模拟与敏感信息负例。
+- F001-F006 已完成；Kimi 锁 `fc923fa` 跑 verify/lint/build、71 focused、667 full 与六轮同步模拟，verdict 全 PASS。
 - Generator 在 2400s 截止前完成实现和 build 但未产 handoff，receipt=CANCELED；orchestrator 接管并修复真实 CLI 接线缺陷。
+- 人工闸门 `BL-HARNESS-SYNC-HEALTH-verifying-done-w1` 已举起；批准只收束状态机，不包含部署。
 - 本批改 tokenizer 产品类型、agent、Device schema/heartbeat 和现有诊断 UI；不改 harness-template，不访问生产或部署。
 
 ## 上一批次

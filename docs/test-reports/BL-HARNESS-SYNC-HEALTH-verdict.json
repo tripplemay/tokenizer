@@ -1,0 +1,44 @@
+{
+  "batch_id": "BL-HARNESS-SYNC-HEALTH",
+  "fix_round": 0,
+  "created_at": "2026-07-30T16:02:18Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "锁定 SHA fc923fa 全量 npm test 667 passed/4 skipped，其中 tests/cli/harness.test.ts 23 例覆盖 HTTP 重试矩阵（408/429/5xx=retryable，其余 4xx=false）、规范化 code 接受与回退、20 条 issue 上限且 failed 计数保留、四条子链失败隔离。独立六轮模拟实测分类：400+安全 code 落 sensitive_summary_data/retryable=false；400+非法 code 回退 http_400；429 落安全 code 且 retryable=true；500 落 http_500/retryable=true；服务器全关时 report×3+mode_intent+relay 各自独立落 network_error/retryable=true，互不阻塞。泄漏负例：mock 服务端在 400/429/500 响应体中埋入 Bearer 令牌、原始正文标记、绝对路径与 query 串，state.json、--json stdout、agent.log、心跳上传体四处 grep 均为 0 命中，结构化结果只含 operation/project(显示名≤200)/code/retryable 白名单字段。",
+      "steps_to_reproduce": "1) npx vitest run tests/cli/harness.test.ts；2) 临时 HOME 写 config.json 指向 127.0.0.1 mock server，projectRoots 下放 3 个带 progress.json+harness-rules.md 的 git 仓库；3) mock 对 /api/harness/report 按轮次返回 200/400/429/500（响应体含敏感标记），逐轮执行 node node_modules/tsx/dist/cli.mjs src/cli/index.ts harness --json；4) 校验 stdout 单 JSON、state.json issues 白名单、grep 敏感标记为 0。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "快照判定实测：R1 部分失败落 degraded(reported=2 failed=1)；R4 服务器全关落 failed(reported=0 failed=3 issues=5) 且覆盖旧 degraded 状态；R5 恢复落 success；idle 分支由 tests/cli/harness.test.ts『writes idle, success, degraded, and failed snapshots』覆盖。三个入口均原子写 state.json：CLI harness --json、runOnce（tokenizer run）、常驻 scheduler（tokenizer agent 首个 tick 即触发 harness 同步并写摘要日志，日志时间戳独立于 syncEvents 失败路径）。日志去重实测：R2 与 R1 指纹相同只新增 1 行摘要、无逐条详情；R3 issue 变化后详情行恢复；R5 出现『harness issues recovered』一行；R6 持续健康只有摘要无恢复复读。损坏 state 恢复与原子写由 tests/cli/harness-heartbeat.test.ts『atomically recovers a corrupt state file』覆盖，667 全量通过。",
+      "steps_to_reproduce": "1) 同上临时 HOME+mock server 环境；2) 依次跑两轮相同 400（diff agent.log 仅多 1 行摘要）、一轮变化 issue（详情行重现）、杀服务器跑 harness --json 与 tokenizer agent 约 13 秒（state 落 failed、scheduler 写摘要）、恢复全 200 两轮（首轮有 recovered 行、次轮无）；3) 每轮 cp state.json 与 agent.log 比对。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "迁移 prisma/migrations/20260730000000_add_harness_sync_diagnostics/migration.sql 仅含 3 条 ALTER TABLE Device ADD COLUMN（lastHarnessSyncAt TIMESTAMP(3)、harnessSyncStatus TEXT、harnessDiagnostics JSONB），全部可空、无 UPDATE/INSERT/DELETE 回fill，与 schema.prisma Device 三列一致（单测机械断言通过）；prisma generate + tsc --noEmit(npm run verify) PASS。心跳端 tests/server/heartbeat-harness.test.ts 13 例通过：合法快照写三列且 JSON 只含计数+issues；10 类非法载荷（嵌套多余字段、非 UTC 时间、非法 status、负/非安全整数、21 条 issues、未知 operation、不安全 code、绝对路径 project、null）全部 400 fail-closed 且 deviceUpdate/transaction 零调用、错误响应不回显敏感值；老 payload 不带 harness 键时三列不出现在 update data 中（历史值保留）。损坏本地 state 不阻塞心跳：readDiagnostics 解析失败仅省略 harness 字段（harness-heartbeat 测试）。src/shared/agent-feature-version.ts AGENT_FEATURE_VERSION=MIN=5 且补 v5 history 注释；agent-version 测试 7 例通过；实测心跳上传体 agentFeatureVersion=5 且 harness 字段恰为 7 键白名单快照。",
+      "steps_to_reproduce": "1) cat 迁移 SQL 与 schema.prisma 比对；2) npm run verify；3) npx vitest run tests/server/heartbeat-harness.test.ts tests/server/agent-version.test.ts tests/cli/harness-heartbeat.test.ts；4) 模拟环境逐轮抓 POST /api/devices/heartbeat 请求体，断言 diagnostics.harness 键集合与 agentFeatureVersion=5。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "三处页面共用 app/_components/harness-health-badge.tsx，其 freshness 判定唯一来自 src/shared/harness-health.ts 的 harnessHealthKey/HARNESS_SYNC_STALE_MS=3min；tests/shared/harness-health.test.ts 机械断言三个页面源码均含 HarnessHealthBadge 且不含本地 3 分钟阈值，并用 renderToStaticMarkup 覆盖 success/degraded/failed/stale/not-reported 全部分支（21 例通过）。设备列表诊断列加 badge（max-w-72 flex-wrap 容器）；设备详情新增 Harness 小节：badge+相对时间+reported/failed/relayed/modeIntents 四项计数+最多 20 条白名单问题列表（项目/操作/code/是否可重试，经 harnessSnapshotFromPersisted 运行时校验，非法持久值整体不渲染）；Harness 项目卡显示关联设备快照 badge 并新增设备详情链接，闸门区块 diff 未触碰、保持原视觉优先级。i18n：en/zh-CN 各 553 键路径完全对称（机械比对 0 差异），新增命名空间 device.diagnostics.harness/devices.diag.harnessStatus/harness.syncHealth 经测试逐键+placeholder 对称断言；唯一 placeholder shape 差异是批次前既有的 devices.count ICU plural（zh 无 =1 分支，中文语义等价，非本批引入）。窄屏：badge max-w-full+truncate、问题列表 min-w-0/break-words/break-all、grid sm:grid-cols-[minmax(0,1fr)_auto]，未引入固定宽度。说明：本地无数据库未起页面服务器，UI 证据为静态审查+SSR markup 单测，符合 spec F006 第 5 条定义的静态检查口径。",
+      "steps_to_reproduce": "1) npx vitest run tests/shared/harness-health.test.ts；2) grep 三个页面确认 HarnessHealthBadge 引用与无本地阈值；3) python 机械比对 messages/en.json 与 zh-CN.json 键路径与 placeholder；4) git show 446d319 -- app/ 审查三处 diff 的 class 与字段来源。"
+    },
+    {
+      "feature_id": "F005",
+      "result": "PASS",
+      "evidence": "实测 CLI 契约（临时 HOME、mock server 已杀）：harness --status 退出码 0、stderr 为空、stdout 单个 JSON 且与 state.json 快照逐字节相等——零网络只读本地成立。harness --json 六轮每轮 stdout 均为单个可 JSON.parse 对象，无项目列表或散文混入；429 响应体中埋入的敏感 detail 未出现在 stdout。默认无参输出保持兼容：三行『name repoKey path』项目列表+『Reported: 2  Failed: 1  Relayed: 0  Mode intents: 0』汇总+skip 原因行+仅白名单字段的 issue 摘要行，stderr 为空。README.md 新增 --status/--json 用法、state.json 位置说明、idle/success/degraded/failed 四态释义、stale 三分钟规则与结构化 issue 白名单声明。测试覆盖分类/上限/原子写/损坏恢复/日志去重/新旧心跳/非法载荷/freshness helper/CLI stdout 契约/UI 渲染分支：聚焦 6 文件 71 例全过，含 Commander action 接线进程级回归（真实 spawn CLI）。",
+      "steps_to_reproduce": "1) 临时 HOME 下 node node_modules/tsx/dist/cli.mjs src/cli/index.ts harness --json/--status/无参各跑一次，server 关闭状态再跑 --status；2) 对 stdout 做 JSON.parse 与 state.json 相等断言；3) npx vitest run tests/cli/harness-command.test.ts tests/cli/harness.test.ts tests/cli/harness-heartbeat.test.ts；4) 读 README.md Harness 段。"
+    },
+    {
+      "feature_id": "F006",
+      "result": "PASS",
+      "evidence": "Evaluator 独立执行：HEAD==锁定 SHA fc923fa88738a550ebcd572d9290019b81ca7973 且工作树干净；npm ci 后 npm run verify(prisma generate+tsc --noEmit) PASS、npm run lint 0 errors 0 warnings、聚焦 6 测试文件 71/71、全量 npm test 667 passed/4 skipped、npm run build(prisma generate+next build) PASS。临时 HOME+127.0.0.1 mock server 完成六轮连续同步模拟：稳定重复 issue(去重)→变化 issue(详情重记)→全网络失败(failed 覆盖旧态、五处 network_error)→恢复(recovered 记录)→持续健康(无复读)，另以 tokenizer agent 常驻路径与 server 关闭下 --status 各补一条证据。敏感面审计：持久 state、心跳上传体(键集合断言)、--json/--status/默认 stdout、agent.log、三处 UI 渲染字段全部不含响应正文/凭证/URL query/绝对路径/stack；迁移可空无回fill、老心跳保留历史、损坏 state 不阻塞心跳、agent v5 双常量+history、en/zh-CN 553/553 对称、共享 3 分钟 freshness、窄屏无固定宽度、默认 CLI 兼容均逐项核对。全程未访问生产/staging/外网/L2，未修改源/测试/framework/迁移/状态/配置/文档/commit/ref（npm ci 与构建产物为 gitignored）。waiting=null：无授权或裁决边界阻塞。",
+      "steps_to_reproduce": "1) git rev-parse HEAD 比对锁定 SHA；2) npm ci && npm run verify && npm run lint && npm test && npm run build；3) 按 F001-F005 的复现步骤搭建临时 HOME 六轮模拟并做泄漏 grep；4) 本工件按 .claude/autonomous/verdict-artifact.schema.json 校验。"
+    }
+  ]
+}

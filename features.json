@@ -45,7 +45,7 @@
       "id": "F006",
       "title": "Kimi A2A 独立安全与端到端验收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "锁定实现 SHA，经 reviewer-kimi-a2a 自行执行目标/全量测试、verify、build、CLI 临时状态与四轮同步模拟；确认不泄漏原始正文或本机敏感信息；输出 schema 合法 verdict 并逐项裁决 F001-F006"
     }
