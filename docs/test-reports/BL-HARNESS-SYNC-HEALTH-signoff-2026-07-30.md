@@ -1,6 +1,6 @@
 # BL-HARNESS-SYNC-HEALTH Signoff 2026-07-30
 
-> 状态：Evaluator 全部 PASS，待人工闸门批准 `verifying -> done`
+> 状态：Evaluator 全部 PASS，人工闸门已批准并消费，`progress.json status=done`
 > 锁定 SHA：`fc923fa88738a550ebcd572d9290019b81ca7973`
 
 ## 变更范围
@@ -57,6 +57,7 @@ URL query、绝对路径或 stack。
 
 ## 人工闸门
 
-当前 `progress.json` 保持 `status=verifying`。人工批准
-`BL-HARNESS-SYNC-HEALTH-verifying-done-w1` 后才可进入 `done`；该批准不包含生产
-部署或数据库迁移授权。
+`tripplezhou@gmail.com` 于 `2026-07-30T16:37:55.431Z` 一次性批准
+`BL-HARNESS-SYNC-HEALTH-verifying-done-w1`。设备 agent 以 commit `64b9efe`
+中继决策，Ed25519 guard 验签通过；批准已消费，`pending_gate=null`。该批准不包含
+生产部署或数据库迁移授权。

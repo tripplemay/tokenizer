@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "done",
   "user_goal": "为 tokenizer 增加 harness 同步健康、失败分类和控制台诊断，并继续用异构 dispatch 验证 harness",
   "total_features": 6,
   "completed_features": 6,
   "fix_rounds": 0,
   "current_sprint": "BL-HARNESS-SYNC-HEALTH",
   "dashboard_url": null,
-  "last_updated": "2026-07-30T16:09:28Z",
+  "last_updated": "2026-07-30T17:40:02Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -16,7 +16,7 @@
     "spec": "docs/specs/BL-HARNESS-SYNC-HEALTH-spec.md",
     "test_cases": "docs/test-reports/BL-HARNESS-SYNC-HEALTH-verdict.json",
     "signoff": "docs/test-reports/BL-HARNESS-SYNC-HEALTH-signoff-2026-07-30.md",
-    "framework_reviewed": false
+    "framework_reviewed": true
   },
   "role_assignments": {
     "generator": "builder-codex",
@@ -45,32 +45,9 @@
   "session_notes": {
     "planning": "【BL-HARNESS-SYNC-HEALTH plan 2026-07-30】基于 7/28 人工闸门未上报与 7/30 agent 日志中 3 个项目持续 400 的实物，新增 tokenizer 产品侧 harness 同步健康诊断。mode_defaults 不存在，手工选择本地异构：Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback，family 互斥；自治关闭。F001-F005 因共享类型/agent/schema/UI 重叠串行实现，F006 锁 SHA 独立验收；不改 harness-template、不访问生产、不部署。",
     "building": "【2026-07-30 orchestrator recovery】builder-codex 在 2400s 截止前完成实现、lint/verify/test/build，但未写 handoff，权威 receipt=CANCELED。Orchestrator 从隔离副本精确回放 26 文件，真实 CLI 发现并修复 Commander action 注入缺陷，新增进程级回归；最终 667 passed/4 skipped、verify/lint/build PASS。实现锁定在本地 commit 446d319；因 push 产品路径会自动部署生产，按本批非部署边界未 push。",
-    "verifying": "【2026-07-30 Kimi A2A】锁定 fc923fa，1429s 经 SUBMITTED→WORKING→artifact→COMPLETED 返回合法 verdict；F001-F006 全 PASS、waiting=null。独立 verify/lint/71 focused/667 full/build 与六轮同步模拟全绿。状态保持 verifying，等待 BL-HARNESS-SYNC-HEALTH-verifying-done-w1 人工批准；批准不含部署。"
+    "verifying": "【2026-07-30 Kimi A2A】锁定 fc923fa，1429s 经 SUBMITTED→WORKING→artifact→COMPLETED 返回合法 verdict；F001-F006 全 PASS、waiting=null。独立 verify/lint/71 focused/667 full/build 与六轮同步模拟全绿。状态保持 verifying，等待 BL-HARNESS-SYNC-HEALTH-verifying-done-w1 人工批准；批准不含部署。",
+    "done": "【2026-07-30 human gate】tripplezhou@gmail.com 于 2026-07-30T16:37:55.431Z 一次性批准 BL-HARNESS-SYNC-HEALTH-verifying-done-w1；agent 中继 commit 64b9efe，Ed25519 guard 验签通过。已消费批准：status=done、pending_gate=null。未 push、未迁移、未部署。"
   },
   "features": [],
-  "pending_gate": {
-    "id": "BL-HARNESS-SYNC-HEALTH-verifying-done-w1",
-    "kind": "phase_advance",
-    "raised_at": "2026-07-30T16:09:28Z",
-    "raised_by": "verify",
-    "batch": "BL-HARNESS-SYNC-HEALTH",
-    "from_status": "verifying",
-    "to_status": "done",
-    "detail": "Kimi A2A 已在锁定 SHA fc923fa 独立验收 F001-F006 全部 PASS。请决定是否批准本批从 verifying 进入 done；批准仅完成状态机，不部署生产。",
-    "evidence": [
-      "docs/test-reports/BL-HARNESS-SYNC-HEALTH-verdict.json",
-      "docs/test-reports/BL-HARNESS-SYNC-HEALTH-signoff-2026-07-30.md",
-      "docs/test-reports/BL-HARNESS-SYNC-HEALTH-generator-timeout-recovery.md"
-    ],
-    "decision": {
-      "gate_id": "BL-HARNESS-SYNC-HEALTH-verifying-done-w1",
-      "action": "approve",
-      "by": "tripplezhou@gmail.com",
-      "at": "2026-07-30T16:37:55.431Z",
-      "scope": {
-        "once": true
-      },
-      "sig": "eRmumSEcL2Ax0BK4eq2yLJnI/6M1cSXfWUrF7jc33/3Tk1qPyCjkMVM8AskoswpWzGNfUuEEM1+FYAwkJmwcBg=="
-    }
-  }
+  "pending_gate": null
 }
