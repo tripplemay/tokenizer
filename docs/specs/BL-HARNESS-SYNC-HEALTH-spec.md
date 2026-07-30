@@ -162,6 +162,24 @@ retryable；不得上传自由文本 detail。CLI JSON 同样使用这一白名�
 - 自治关闭；不访问生产、不执行部署、不运行 `prisma migrate deploy`，不使用真实付费模型 API。
 - 实现 commit 由编排者机械回流、复跑 L1 后推送；跨 `verifying -> done` 必须人工批准。
 
+### D6 - i18n 命名空间扩展计划
+
+**扩展命名空间：** `device.diagnostics`、`devices.diag`、`harness`，不新增顶层 namespace。
+
+**翻译策略：**
+
+- 仓库当前只有 `messages/en.json` 与 `messages/zh-CN.json`，两份由 Generator 同 commit 手填。
+- `Harness` 是产品功能名，英文与中文允许保持相同字面；项目没有 locale-coverage allowlist 脚本，
+  因此本批不新增虚假的 CI 白名单。
+- 本批新 key 不使用 ICU plural；若实现中引入 `{count, plural, ...}`，两种 locale 必须保持相同 shape。
+- 新增 key 的路径与 placeholder 集合必须在两份 locale 中逐项对称，并由测试机械比较。
+
+### D7 - Prisma JSON 写入
+
+`harnessDiagnostics` 写入值必须先完成运行时白名单解析，并以 `Prisma.InputJsonValue` 类型落库；不使用
+`Record<string, unknown>` 直接赋值，也不以 `@ts-ignore` 绕过。迁移只给既有 `Device` 加列，不创建
+新表，故不触发新表 RLS policy 条款。
+
 ## 5. 数据与接口
 
 ### Prisma
