@@ -2,6 +2,7 @@
 
 > 状态：Evaluator 全部 PASS，人工闸门已批准并消费，`progress.json status=done`
 > 锁定 SHA：`fc923fa88738a550ebcd572d9290019b81ca7973`
+> 生产部署 SHA：`95eb927b7fca3dab57aed2ef672de6a6046af3c8`
 
 ## 变更范围
 
@@ -35,9 +36,14 @@ URL query、绝对路径或 stack。
 
 ## 数据与 Ops
 
-- 迁移只新增三个可空 Device 列，无 backfill；未执行 `prisma migrate deploy`。
-- 未访问生产或 staging 数据库，未执行外部付费调用。
-- 产品提交仍只在本地；远端 push 会触发生产部署，因此本批未 push/deploy。
+- 用户于人工闸门消费后另行明确授权生产发布；`main` 已推送至
+  `95eb927b7fca3dab57aed2ef672de6a6046af3c8`。
+- GitHub Actions `Deploy VPS` run `30568649559` 全部成功：Linux/Windows 验证通过，
+  `20260730000000_add_harness_sync_diagnostics` 已由 `prisma migrate deploy` 应用，
+  PostgreSQL healthy、应用容器重建并通过 `/api/health`。
+- 生产健康接口回报 `commit=95eb927b7fca3dab57aed2ef672de6a6046af3c8`。
+- 本机客户端从 `9197bd4` 升级至 `95eb927`，复用既有设备凭据并重启 launchd；
+  v5 心跳与 Harness `degraded` 快照已成功上报生产。
 
 ## Dispatch 运行记录
 
@@ -52,12 +58,12 @@ URL query、绝对路径或 stack。
 
 | ID | 描述 | 风险 | 处置 |
 |---|---|---|---|
-| S1 | 无本地测试数据库/会话，三处数据页未做带真实设备数据的浏览器验收 | low | 本批按 spec 以静态审查 + SSR 分支测试验收；在用户单独授权 migration/deploy 后做生产 smoke |
-| S2 | 当前安装 agent 仍是 v4，生产控制台尚无本批字段 | medium | 保持未部署；由后续显式 ops 授权负责迁移、发布 agent v5 与页面 smoke |
+| S1 | 独立浏览器没有生产登录会话，未自动点击带真实设备数据的下钻面板 | low | 已验证 `/harness` 未登录时正确 307 至 `/login`；服务端、迁移、心跳和数据上报均已 smoke，登录态视觉验收留作人工查看 |
+| S2 | 三个历史项目的摘要触发 `sensitive_summary_data`，Harness 总体为 `degraded` | medium | 新诊断已正确分类并显示具体项目；这是下一批基础设施修复输入，不阻断本批发布 |
 
 ## 人工闸门
 
 `tripplezhou@gmail.com` 于 `2026-07-30T16:37:55.431Z` 一次性批准
 `BL-HARNESS-SYNC-HEALTH-verifying-done-w1`。设备 agent 以 commit `64b9efe`
 中继决策，Ed25519 guard 验签通过；批准已消费，`pending_gate=null`。该批准不包含
-生产部署或数据库迁移授权。
+生产部署或数据库迁移授权；生产操作来自随后用户对“提交推送部署”的单独明确授权。

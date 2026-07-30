@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-HARNESS-SYNC-HEALTH",
   "dashboard_url": null,
-  "last_updated": "2026-07-30T17:40:02Z",
+  "last_updated": "2026-07-30T18:18:02Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -46,7 +46,7 @@
     "planning": "【BL-HARNESS-SYNC-HEALTH plan 2026-07-30】基于 7/28 人工闸门未上报与 7/30 agent 日志中 3 个项目持续 400 的实物，新增 tokenizer 产品侧 harness 同步健康诊断。mode_defaults 不存在，手工选择本地异构：Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback，family 互斥；自治关闭。F001-F005 因共享类型/agent/schema/UI 重叠串行实现，F006 锁 SHA 独立验收；不改 harness-template、不访问生产、不部署。",
     "building": "【2026-07-30 orchestrator recovery】builder-codex 在 2400s 截止前完成实现、lint/verify/test/build，但未写 handoff，权威 receipt=CANCELED。Orchestrator 从隔离副本精确回放 26 文件，真实 CLI 发现并修复 Commander action 注入缺陷，新增进程级回归；最终 667 passed/4 skipped、verify/lint/build PASS。实现锁定在本地 commit 446d319；因 push 产品路径会自动部署生产，按本批非部署边界未 push。",
     "verifying": "【2026-07-30 Kimi A2A】锁定 fc923fa，1429s 经 SUBMITTED→WORKING→artifact→COMPLETED 返回合法 verdict；F001-F006 全 PASS、waiting=null。独立 verify/lint/71 focused/667 full/build 与六轮同步模拟全绿。状态保持 verifying，等待 BL-HARNESS-SYNC-HEALTH-verifying-done-w1 人工批准；批准不含部署。",
-    "done": "【2026-07-30 human gate】tripplezhou@gmail.com 于 2026-07-30T16:37:55.431Z 一次性批准 BL-HARNESS-SYNC-HEALTH-verifying-done-w1；agent 中继 commit 64b9efe，Ed25519 guard 验签通过。已消费批准：status=done、pending_gate=null。未 push、未迁移、未部署。"
+    "done": "【2026-07-30 human gate + deploy】tripplezhou@gmail.com 于 2026-07-30T16:37:55.431Z 一次性批准 BL-HARNESS-SYNC-HEALTH-verifying-done-w1；agent 中继 commit 64b9efe，Ed25519 guard 验签通过。批准消费后，用户另行明确要求提交推送部署：main 产品 SHA 95eb927 已由 GitHub Actions run 30568649559 成功部署，生产迁移 20260730000000_add_harness_sync_diagnostics 已应用，/api/health 回报同一 SHA；本机 agent 已升级 v5、launchd running，并成功上报 Harness degraded 快照。"
   },
   "features": [],
   "pending_gate": null
