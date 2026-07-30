@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "为 tokenizer 增加 harness 同步健康、失败分类和控制台诊断，并继续用异构 dispatch 验证 harness",
   "total_features": 6,
-  "completed_features": 0,
+  "completed_features": 5,
   "fix_rounds": 0,
   "current_sprint": "BL-HARNESS-SYNC-HEALTH",
   "dashboard_url": null,
-  "last_updated": "2026-07-30T14:21:45Z",
+  "last_updated": "2026-07-30T15:35:54Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -24,9 +24,18 @@
   },
   "mode_intent": null,
   "evaluator_feedback": null,
-  "generator_handoff": null,
+  "generator_handoff": {
+    "task_id": "BL-HARNESS-SYNC-HEALTH-build-fb7b46a28adc",
+    "outcome": "TIMEOUT",
+    "receipt_state": "CANCELED",
+    "artifact": null,
+    "recovered_by": "orchestrator",
+    "implementation_commit": "446d3194ab5e95599f1d5569e7781480337005e5",
+    "report": "docs/test-reports/BL-HARNESS-SYNC-HEALTH-generator-timeout-recovery.md"
+  },
   "session_notes": {
-    "planning": "【BL-HARNESS-SYNC-HEALTH plan 2026-07-30】基于 7/28 人工闸门未上报与 7/30 agent 日志中 3 个项目持续 400 的实物，新增 tokenizer 产品侧 harness 同步健康诊断。mode_defaults 不存在，手工选择本地异构：Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback，family 互斥；自治关闭。F001-F005 因共享类型/agent/schema/UI 重叠串行实现，F006 锁 SHA 独立验收；不改 harness-template、不访问生产、不部署。"
+    "planning": "【BL-HARNESS-SYNC-HEALTH plan 2026-07-30】基于 7/28 人工闸门未上报与 7/30 agent 日志中 3 个项目持续 400 的实物，新增 tokenizer 产品侧 harness 同步健康诊断。mode_defaults 不存在，手工选择本地异构：Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a loopback，family 互斥；自治关闭。F001-F005 因共享类型/agent/schema/UI 重叠串行实现，F006 锁 SHA 独立验收；不改 harness-template、不访问生产、不部署。",
+    "building": "【2026-07-30 orchestrator recovery】builder-codex 在 2400s 截止前完成实现、lint/verify/test/build，但未写 handoff，权威 receipt=CANCELED。Orchestrator 从隔离副本精确回放 26 文件，真实 CLI 发现并修复 Commander action 注入缺陷，新增进程级回归；最终 667 passed/4 skipped、verify/lint/build PASS。实现锁定在本地 commit 446d319；因 push 产品路径会自动部署生产，按本批非部署边界未 push。"
   },
   "features": [],
   "pending_gate": null
