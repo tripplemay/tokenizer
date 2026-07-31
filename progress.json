@@ -1,21 +1,22 @@
 {
-  "status": "done",
-  "user_goal": "修复 Harness report 对无远端本地仓库身份和合法 feature 标题斜杠语法的确定性 400，并继续用异构 dispatch 验证 harness",
+  "status": "building",
+  "user_goal": "根治 Harness 框架版本、控制台发布清单与同步产物可独立漂移，消除 tokenizer 项目被误标为服务端未知超前的状态",
   "total_features": 4,
-  "completed_features": 4,
-  "fix_rounds": 1,
-  "current_sprint": "BL-HARNESS-REPORT-COMPAT",
+  "completed_features": 0,
+  "fix_rounds": 0,
+  "current_sprint": "BL-FW-RELEASE-CONTRACT",
   "dashboard_url": null,
-  "last_updated": "2026-07-31T03:44:27Z",
+  "last_updated": "2026-07-31T04:02:20Z",
   "reference_docs": [
+    "framework/harness/framework-versioning.md",
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
-    "docs/specs/BL-HARNESS-SYNC-HEALTH-spec.md"
+    "docs/specs/BL-FWDRIFT-framework-drift-badge.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-HARNESS-REPORT-COMPAT-spec.md",
-    "test_cases": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-verdict.json",
-    "signoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-signoff-2026-07-30.md",
+    "spec": "docs/specs/BL-FW-RELEASE-CONTRACT-spec.md",
+    "test_cases": null,
+    "signoff": null,
     "framework_reviewed": true
   },
   "role_assignments": {
@@ -23,13 +24,10 @@
     "evaluator": "reviewer-kimi-a2a"
   },
   "mode_intent": null,
-  "evaluator_feedback": "Kimi A2A fresh fix_round 1：锁定 9974815，F001-F004 全 PASS、waiting=null，receipt 与 verdict schema 均合法。独立执行 focused 141/141、全量 53 files / 695 passed / 4 skipped、verify/lint/build；临时 HOME fixture 验证 remote/local opaque key 与无路径泄漏，真实 9 项目 84 标题 0 拒绝；正斜杠 UNC 回归在 Prisma 前 fail-closed。首次 OAuth 中断前发现的 //server/share 绕过已由 4cc4b4f 修复并经本轮重新裁决。",
-  "generator_handoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-fix1-generator-handoff.json",
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-HARNESS-REPORT-COMPAT verifying fix_round 1 2026-07-31】Kimi A2A 首轮在 OAuth 中断前确认 F002 forward-slash UNC 回归。builder-codex 修复轮次锁定 80f7ef3，仅改 validator 与两处回归；主仓应用为 4cc4b4f：raw summary 先检测 //server/share 形状，再执行 feature.title slash 掩码。新 unit/route Prisma 前拒绝覆盖 //server/share、//api/x、x //host/share y；focused 117/117、全量 53 files / 695 passed / 4 skipped、verify/lint/build、真实 9 项目离线字段检查 0 failures。F001-F003 已完成，F004 等待 fresh Kimi A2A schema-valid verdict；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。",
-    "verifying": "【BL-HARNESS-REPORT-COMPAT Kimi A2A r1 2026-07-31】fresh context 锁定 9974815，674 秒经 SUBMITTED→WORKING→artifact→COMPLETED 返回 schema-valid verdict；F001-F004 全 PASS、waiting=null。独立 focused 141/141、全量 53 files / 695 passed / 4 skipped、verify/lint/build，temp HOME remote+2 local fixture，无路径泄漏；真实 9 项目/84 标题均接收，//server/share、//api/x、x //host/share y 在 Prisma 前拒绝。状态保持 verifying，等待 BL-HARNESS-REPORT-COMPAT-verifying-done-w1 人工批准；批准仅完成状态机，不部署生产。",
-    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-31T03:30:28.901Z 对 BL-HARNESS-REPORT-COMPAT-verifying-done-w1 签发一次性 approve；中继提交 4344a18，Ed25519 签名已通过本机校验，机器于 2026-07-31T03:32:00Z 消费批准并进入 done。",
-    "deploy": "【BL-HARNESS-REPORT-COMPAT deploy 2026-07-30】用户在闸门消费后另行明确“提交推送部署”；main 100b1479854ef4a06fefd108cbd3dc20cecea761 的 Actions 30601984523 中 Linux Verify、Windows Verify、Deploy 全部成功。VPS 检出目标 SHA，19 个迁移无待执行，PostgreSQL healthy、应用启动并通过 /api/health；公开 health 回报同一 commit。"
+    "planning": "【BL-FW-RELEASE-CONTRACT 2026-07-31】用户已批准启动。根因已核实：harness-template 与 tokenizer 镜像均为 v1.5.2，但服务端静态 FRAMEWORK_RELEASES 停在 v1.4.6；页面的 ahead 分支正确，发布契约维护遗漏才是 bug。批次采用 builder-codex(local-cli) + reviewer-kimi-a2a 的异构 dispatch；先改源仓发布 manifest/validator/CI 与分发，再同步 tokenizer 并接入 consumer。当前仅本地实现、验证与闸门准备，不 push/deploy。"
   },
   "features": [],
   "pending_gate": null

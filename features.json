@@ -1,37 +1,37 @@
 {
-  "sprint": "BL-HARNESS-REPORT-COMPAT",
+  "sprint": "BL-FW-RELEASE-CONTRACT",
   "features": [
     {
       "id": "F001",
-      "title": "无远端 Harness 仓库的匿名稳定 repoKey",
+      "title": "框架发布清单唯一事实源与源仓校验",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "有 remote 的规范化身份完全不变；无 remote 时生成 local:sha256:<64位小写hex>，同路径稳定、不同路径不同；任何上报体、状态或输出均不含原始绝对路径、用户名或目录片段"
+      "acceptance": "harness-template 以 harness/framework-releases.json 记录 v1 正式发行历史至 v1.5.3，版本严格递增且无重复；VERSION 必须等于 manifest 末项，CHANGELOG 的 v1 标题与 manifest 双向一致，缺失的 v1.1.0/v1.2.0/v1.3.0 历史条目一并回填；校验器在任一漂移、非法 SemVer、空清单或重复时非零退出，且不修改文件；源仓 CI 在 PR/push 自动运行该校验。"
     },
     {
       "id": "F002",
-      "title": "feature 标题斜杠语法的精确安全校验",
+      "title": "发布清单随 Harness init 与 sync 可靠分发",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "feature.title 接受合法 Harness 命令、/api 与 /vN route、词内和自然语言斜杠；继续拒绝本机绝对路径、未知 path-shaped slash command、Windows/UNC/file URL、换行、raw channel 和凭据；例外不扩散到其他字段"
+      "acceptance": "harness/framework-releases.json 经既有 framework/harness 递归受管镜像随 init、sync、adopt 与 nested/flat bootstrap 分发，harness.lock 记录其校验和；临时源仓/项目 fixture 验证首次安装、升级和 bootstrap 均得到与源字节一致的 manifest，且不破坏既有 VERSION、CHANGELOG、harness.json 或自我覆盖防护。"
     },
     {
       "id": "F003",
-      "title": "真实 sensitive_summary_data 失败形状回归与兼容证明",
+      "title": "Tokenizer 控制台消费发布清单并消除静态漂移",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "测试覆盖三个真实项目的 repoKey/标题形状、服务端首次查询前 fail-closed、客户端 payload 路径泄漏负例；聚焦与全量 test、verify、lint、build 全绿；不改 Prisma、UI、i18n、framework 或 agent feature version"
+      "acceptance": "tokenizer 经受控 sync 更新到 framework v1.5.3，src/shared/framework-version.ts 从 framework/harness/framework-releases.json 派生 FRAMEWORK_RELEASES 与 latest，不再维护第二份发行数组；保留 public helper 与 latest/behind/ahead/unknown 四态及 v0.x 的无计数兼容语义。v1.5.3=latest、v1.5.2=behind one、未来 v9.9.9=ahead、非法版本=unknown；模式徽章不再把当前已同步项目误标为服务端未知超前。"
     },
     {
       "id": "F004",
-      "title": "Kimi A2A 独立兼容与安全验收",
+      "title": "跨仓独立发布契约验收",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "锁定实现 SHA 后由 reviewer-kimi-a2a fresh context 自行审查 diff，运行聚焦/全量测试、verify、lint、build和临时 HOME 端到端 fixture；输出 schema 合法 verdict，逐项裁决 F001-F004 且不复述 handoff"
+      "acceptance": "reviewer-kimi-a2a 在锁定 SHA 上 fresh context 独立验证 harness-template validator/fixture 与 tokenizer focused/full test、verify、lint、build；审查两仓 diff、manifest/VERSION/CHANGELOG 的一致性、同步字节一致性和版本四态，产出 schema 合法 verdict（waiting=null）。不触达生产、不推送。"
     }
   ]
 }
