@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import frameworkReleasesManifest from "../../framework/harness/framework-releases.json";
 import {
   FRAMEWORK_RELEASES,
   LATEST_FRAMEWORK_VERSION,
@@ -14,7 +17,25 @@ import {
  * 把 unknown 当 latest → 项目永远不会被升级；把 ahead 当 behind → 谎报落后。
  */
 
+const MANIFEST_RELEASE_VERSIONS = frameworkReleasesManifest.releases.map((release) => release.version);
+const FRAMEWORK_VERSION_SOURCE = fileURLToPath(new URL("../../src/shared/framework-version.ts", import.meta.url));
+
 describe("清单与常量一致性", () => {
+  it("从 framework manifest 派生发布清单，manifest 最新版本是 1.5.3", () => {
+    expect(FRAMEWORK_RELEASES).toEqual(MANIFEST_RELEASE_VERSIONS);
+    expect(MANIFEST_RELEASE_VERSIONS.at(-1)).toBe("1.5.3");
+    expect(LATEST_FRAMEWORK_VERSION).toBe("1.5.3");
+  });
+
+  it("不再维护手写的 FRAMEWORK_RELEASES 数组副本", () => {
+    const source = readFileSync(FRAMEWORK_VERSION_SOURCE, "utf8");
+    const implementation = source.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+
+    expect(source).toContain("framework-releases.json");
+    expect(source).not.toMatch(/FRAMEWORK_RELEASES\s*=\s*\[/);
+    expect(implementation).not.toMatch(/=\s*\[\s*["']\d+\.\d+\.\d+["']/);
+  });
+
   it("🔴 清单末位必须等于 LATEST_FRAMEWORK_VERSION", () => {
     // 漂移的表现是「明明最新却显示落后一版」，在页面上几乎看不出来，只能靠这条拦。
     expect(FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1]).toBe(LATEST_FRAMEWORK_VERSION);
@@ -71,8 +92,14 @@ describe("compareFrameworkVersion", () => {
 
 describe("frameworkStanding 四种状态", () => {
   it("latest：与最新版一致", () => {
-    expect(frameworkStanding(LATEST_FRAMEWORK_VERSION)).toEqual({
-      kind: "latest", behind: null, latest: LATEST_FRAMEWORK_VERSION
+    expect(frameworkStanding("1.5.3")).toEqual({
+      kind: "latest", behind: null, latest: "1.5.3"
+    });
+  });
+
+  it("behind：1.5.2 比 manifest 最新 1.5.3 落后一版", () => {
+    expect(frameworkStanding("1.5.2")).toEqual({
+      kind: "behind", behind: 1, latest: "1.5.3"
     });
   });
 
@@ -87,13 +114,13 @@ describe("frameworkStanding 四种状态", () => {
   });
 
   it("ahead：项目比服务端已知的最新还新时，不得谎报落后", () => {
-    const s = frameworkStanding("9.9.9");
-    expect(s.kind).toBe("ahead");
-    expect(s.behind).toBeNull();
+    expect(frameworkStanding("9.9.9")).toEqual({
+      kind: "ahead", behind: null, latest: "1.5.3"
+    });
   });
 
   it("unknown：adopt 推断不出基准线，或压根没有账本", () => {
-    for (const v of ["unknown", null, undefined, ""]) {
+    for (const v of ["unknown", null, undefined, "", "malformed", "1.5", "1.5.x", "v1.5"]) {
       expect(frameworkStanding(v).kind).toBe("unknown");
     }
   });

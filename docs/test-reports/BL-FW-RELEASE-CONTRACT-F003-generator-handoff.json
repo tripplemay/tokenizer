@@ -1,0 +1,22 @@
+{
+  "batch_id": "BL-FW-RELEASE-CONTRACT",
+  "created_at": "2026-07-31T04:33:25Z",
+  "features": [
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "src/shared/framework-version.ts",
+        "tests/shared/framework-version.test.ts",
+        "docs/test-reports/BL-FW-RELEASE-CONTRACT-F003-generator-handoff.json"
+      ],
+      "notes": "FRAMEWORK_RELEASES and LATEST_FRAMEWORK_VERSION now derive from the static JSON import of framework/harness/framework-releases.json. Public helper names and four-state behavior are preserved. No framework, harness state, Prisma, API, UI/i18n, package/config, credential, deployment, or production files were changed."
+    }
+  ],
+  "l1_ran": {
+    "test": "npx vitest run tests/shared/framework-version.test.ts -> exit 1; local node_modules absent and npm registry DNS unavailable. Temporary local node_modules symlink without --no-cache -> exit 1 after executing 1 file / 16 tests; cache write was blocked through the symlink. ./node_modules/.bin/vitest run --cache.dir .vitest-cache tests/shared/framework-version.test.ts -> exit 1; option deprecated. ./node_modules/.bin/vitest run --no-cache tests/shared/framework-version.test.ts -> exit 0; 1 file, 16 tests.",
+    "typecheck": "./node_modules/.bin/tsc --noEmit --pretty false --incremental false -> exit 0; no diagnostics."
+  },
+  "waiting": null,
+  "waiting_detail": ""
+}

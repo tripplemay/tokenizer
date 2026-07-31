@@ -1,33 +1,12 @@
+import frameworkReleasesManifest from "../../framework/harness/framework-releases.json";
+
 // harness 框架版本的比较与「落后几版」判断。
 //
-// 为什么把已发布版本清单写成常量：服务端没有框架仓库，无法读 tag；而「落后几版」问的是
-// **发布次数**，不是数值差——v1.0.3 到 v1.4.0 之间隔着 8 次发布，光看数字看不出来。
-// 与 AGENT_FEATURE_VERSION 同一套做法：发版时手动加一行，代价小且不会悄悄漂。
-//
-// 维护约定：发布新版本时在 FRAMEWORK_RELEASES 末尾追加，并同步 LATEST_FRAMEWORK_VERSION。
-// 两者不一致会被 tests/shared/framework-version.test.ts 当场拦下（清单与常量漂移
-// 的表现是「明明最新却显示落后一版」，极难在页面上看出来）。
-export const FRAMEWORK_RELEASES = [
-  "1.0.0",
-  "1.0.1",
-  "1.0.2",
-  "1.0.3",
-  "1.1.0",
-  "1.1.1",
-  "1.2.0",
-  "1.2.1",
-  "1.3.0",
-  "1.3.1",
-  "1.3.2",
-  "1.3.3",
-  "1.4.0",
-  "1.4.1",
-  "1.4.2",
-  "1.4.3",
-  "1.4.4",
-  "1.4.5",
-  "1.4.6"
-] as const;
+// 已发布版本清单来自受管 framework 镜像中的 manifest。服务端没有框架仓库，无法读 tag；
+// 而「落后几版」问的是**发布次数**，不是数值差。
+export const FRAMEWORK_RELEASES = Object.freeze(
+  frameworkReleasesManifest.releases.map((release) => release.version)
+);
 
 export const LATEST_FRAMEWORK_VERSION = FRAMEWORK_RELEASES[FRAMEWORK_RELEASES.length - 1];
 
