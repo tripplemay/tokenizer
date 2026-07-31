@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "框架发布清单唯一事实源与源仓校验",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness-template 以 harness/framework-releases.json 记录 v1 正式发行历史至 v1.5.3，版本严格递增且无重复；VERSION 必须等于 manifest 末项，CHANGELOG 的 v1 标题与 manifest 双向一致，缺失的 v1.1.0/v1.2.0/v1.3.0 历史条目一并回填；校验器在任一漂移、非法 SemVer、空清单或重复时非零退出，且不修改文件；源仓 CI 在 PR/push 自动运行该校验。"
     },
@@ -13,9 +13,9 @@
       "id": "F002",
       "title": "发布清单随 Harness init 与 sync 可靠分发",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
-      "acceptance": "harness/framework-releases.json 经既有 framework/harness 递归受管镜像随 init、sync、adopt 与 nested/flat bootstrap 分发，harness.lock 记录其校验和；临时源仓/项目 fixture 验证首次安装、升级和 bootstrap 均得到与源字节一致的 manifest，且不破坏既有 VERSION、CHANGELOG、harness.json 或自我覆盖防护。"
+      "acceptance": "harness/framework-releases.json 经既有 framework/harness 递归受管镜像随 init、sync、nested/flat bootstrap 分发，harness.lock 记录其校验和；adopt 继续只记录现状，旧项目缺清单时由后续 sync 作为新增受管文件补入。临时源仓/项目 fixture 验证首次安装、升级、adopt 后 sync 和 bootstrap 均得到与源字节一致的 manifest，且不破坏既有 VERSION、CHANGELOG、harness.json 或自我覆盖防护。"
     },
     {
       "id": "F003",

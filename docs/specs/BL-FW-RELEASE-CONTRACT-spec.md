@@ -96,7 +96,7 @@ tokenizer 项目完成 sync/heartbeat 上报 `v1.5.3` 后显示 latest。这是�
 
 **验收：**
 
-- 新 init、已有项目 sync/adopt、nested 与 flat bootstrap 都将 manifest 写入 `framework/harness/framework-releases.json`。
+- 新 init、已有项目 sync、nested 与 flat bootstrap 都将 manifest 写入 `framework/harness/framework-releases.json`；adopt 保持只记录，旧项目缺清单时由后续 sync 补入。
 - `harness.lock` 管理该文件；字节、SHA 与源树一致。
 - 临时目录 fixture 不修改真实项目，且回归确认 VERSION、CHANGELOG、harness.json 和已有自我覆盖
   逻辑仍有效。
