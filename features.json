@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "Tokenizer 控制台消费发布清单并消除静态漂移",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "tokenizer 经受控 sync 更新到 framework v1.5.3，src/shared/framework-version.ts 从 framework/harness/framework-releases.json 派生 FRAMEWORK_RELEASES 与 latest，不再维护第二份发行数组；保留 public helper 与 latest/behind/ahead/unknown 四态及 v0.x 的无计数兼容语义。v1.5.3=latest、v1.5.2=behind one、未来 v9.9.9=ahead、非法版本=unknown；模式徽章不再把当前已同步项目误标为服务端未知超前。"
     },
