@@ -14,6 +14,7 @@ import {
   type HarnessDetailAgent,
   type HarnessModeIssuanceBlocker
 } from "@/shared/harness-detail";
+import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import {
   HARNESS_AUTONOMY_GATES,
   HARNESS_AUTONOMY_NOTIFICATIONS,
@@ -231,7 +232,7 @@ export function ModeEditor({
 
         {blocker ? (
           <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-            {t(`disabled.${blocker}`)}
+            {t(`disabled.${blocker}`, { version: MIN_MODE_INTENT_AGENT_FEATURE_VERSION })}
           </p>
         ) : null}
 
@@ -325,7 +326,7 @@ export function ModeEditor({
             ) : null}
           </fieldset>
 
-          {errorKey ? <p role="alert" className="text-sm text-red-600 dark:text-red-300">{t(`errors.${errorKey}`)}</p> : null}
+          {errorKey ? <p role="alert" className="text-sm text-red-600 dark:text-red-300">{t(`errors.${errorKey}`, { version: MIN_MODE_INTENT_AGENT_FEATURE_VERSION })}</p> : null}
 
           <button
             type="submit"

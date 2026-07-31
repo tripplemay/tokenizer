@@ -9,7 +9,8 @@ import { getLocale, getMessages } from "next-intl/server";
 import { AdminShell } from "./admin-shell";
 import { AuthProvider } from "./session-provider";
 import { auth } from "@/auth";
-import { countOutdatedDevices, INSTALL_COMMANDS } from "@/server/agent-version";
+import { getAgentUpdateSummary, INSTALL_COMMANDS } from "@/server/agent-version";
+import { latestAgentReleaseHighlights } from "@/shared/agent-release-version";
 import { UpgradeBanner } from "./_components/upgrade-banner";
 
 export const metadata: Metadata = {
@@ -21,11 +22,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const messages = await getMessages();
   const session = await auth();
-  const outdatedCount = session?.user?.id
-    ? await countOutdatedDevices(session.user.id)
-    : 0;
-  const banner = outdatedCount > 0
-    ? <UpgradeBanner count={outdatedCount} commands={INSTALL_COMMANDS} />
+  const updateSummary = session?.user?.id
+    ? await getAgentUpdateSummary(session.user.id)
+    : null;
+  const banner = updateSummary && updateSummary.outdatedCount > 0
+    ? (
+      <UpgradeBanner
+        count={updateSummary.outdatedCount}
+        unknownCount={updateSummary.unknownCount}
+        latestRelease={updateSummary.latestRelease}
+        highlights={latestAgentReleaseHighlights(locale)}
+        commands={INSTALL_COMMANDS}
+      />
+    )
     : null;
   return (
     <html lang={locale}>

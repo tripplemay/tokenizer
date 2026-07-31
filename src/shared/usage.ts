@@ -40,6 +40,10 @@ export type UsageEventInput = {
 // as "no update" rather than overwriting with null.
 export type DeviceDiagnostics = {
   agentVersion?: string | null;
+  // Immutable application release reported by the running process. This is
+  // separate from agentVersion (Git SHA diagnostics) and featureVersion
+  // (compatibility capability level).
+  agentReleaseVersion?: string | null;
   // Numeric capability version; lets the server compare with a simple
   // `featureVersion < MIN` without enumerating git SHAs. See
   // src/shared/agent-feature-version.ts for the bump policy.

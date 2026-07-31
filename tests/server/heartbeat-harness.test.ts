@@ -89,6 +89,35 @@ describe("device heartbeat Harness diagnostics", () => {
     expect(data).not.toHaveProperty("lastHarnessSyncAt");
     expect(data).not.toHaveProperty("harnessSyncStatus");
     expect(data).not.toHaveProperty("harnessDiagnostics");
+    expect(data).not.toHaveProperty("agentReleaseVersion");
+  });
+
+  it("normalizes and persists a valid Agent release without replacing the diagnostic SHA", async () => {
+    const response = await POST(request({ agentVersion: "commit-sha", agentReleaseVersion: "v1.0.0", agentFeatureVersion: 5 }));
+    expect(response.status).toBe(200);
+    expect(mocks.deviceUpdate).toHaveBeenCalledWith({
+      where: { id: "device-1" },
+      data: expect.objectContaining({
+        agentVersion: "commit-sha",
+        agentReleaseVersion: "1.0.0",
+        agentFeatureVersion: 5
+      })
+    });
+  });
+
+  it.each([
+    ["pre-release", { agentReleaseVersion: "1.0.0-beta" }, "invalid_agent_release_version"],
+    ["leading-zero release", { agentReleaseVersion: "01.0.0" }, "invalid_agent_release_version"],
+    ["negative capability", { agentFeatureVersion: -1 }, "invalid_agent_feature_version"],
+    ["fractional capability", { agentFeatureVersion: 1.5 }, "invalid_agent_feature_version"],
+    ["unsafe capability", { agentFeatureVersion: Number.MAX_SAFE_INTEGER + 1 }, "invalid_agent_feature_version"]
+  ])("rejects %s before any write", async (_label, diagnostics, code) => {
+    const response = await POST(request(diagnostics));
+    expect(response.status).toBe(400);
+    expect((await response.json()).code).toBe(code);
+    expect(mocks.deviceUpdate).not.toHaveBeenCalled();
+    expect(mocks.tokenUpdate).not.toHaveBeenCalled();
+    expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -126,6 +155,20 @@ describe("Harness health migration", () => {
     expect(schema).toContain("harnessSyncStatus   String?");
     expect(schema).toContain("harnessDiagnostics  Json?");
     expect(migration.match(/ALTER TABLE "Device" ADD COLUMN/g)).toHaveLength(3);
+    expect(migration).not.toMatch(/\b(?:UPDATE|INSERT|DELETE)\b/i);
+  });
+});
+
+describe("Agent release migration", () => {
+  it("adds one nullable release column without a data backfill", () => {
+    const schema = readFileSync("prisma/schema.prisma", "utf8");
+    const migration = readFileSync(
+      "prisma/migrations/20260731000000_add_agent_release_version/migration.sql",
+      "utf8"
+    );
+    expect(schema).toContain("agentReleaseVersion String?");
+    expect(migration.match(/ALTER TABLE \"Device\" ADD COLUMN/g)).toHaveLength(1);
+    expect(migration).toContain('"agentReleaseVersion" TEXT');
     expect(migration).not.toMatch(/\b(?:UPDATE|INSERT|DELETE)\b/i);
   });
 });

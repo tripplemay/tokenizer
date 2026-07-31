@@ -221,7 +221,11 @@
       "title": "升级所有设备",
       "subtitle": "在每台设备上运行以下命令，自动 pull 最新代码并重启 agent。"
     },
-    "outdatedBadge": "过期"
+    "agentReleaseBadge": {
+      "upgrade": "v{current} -> v{latest}",
+      "unknown": "版本未确认",
+      "ahead": "v{current} 比服务端新"
+    }
   },
   "device": {
     "back": "返回设备列表",
@@ -246,6 +250,7 @@
     "diagnostics": {
       "title": "客户端诊断",
       "agentVersion": "Agent 版本",
+      "agentReleaseVersion": "Agent 发布版本",
       "queueDepth": "本地队列深度",
       "lastSyncStatus": "上次同步状态",
       "lastError": "最近错误",
@@ -423,7 +428,9 @@
     }
   },
   "upgradeBanner": {
-    "message": "{count} 台设备运行较早的客户端代码。升级以启用最新功能（时区采集、Codex 配额追踪、Claude tier 徽章等）。",
+    "message": "{count} 台设备需要升级到 Agent v{version}。",
+    "latest": "v{version} 的新增内容：",
+    "unknown": "另有 {count} 台设备尚未上报可确认的发布版本；请在设备列表中检查。",
     "copy": "复制",
     "copied": "已复制"
   },
@@ -653,7 +660,7 @@
       "disabled": {
         "signingKeyUnavailable": "控制台签名密钥不可用，已禁止签发。",
         "reportStale": "项目上报已过期，已禁止签发；请等待设备重新上报。",
-        "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 5，已禁止签发。",
+        "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 {version}，已禁止签发。",
         "headNotFull": "项目没有上报完整的 40 位 HEAD SHA，已禁止签发。",
         "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照，已禁止签发。"
       },
@@ -673,7 +680,7 @@
         "invalidGate": "只能预授权 A、B 闸门。",
         "invalidNotification": "一项或多项通知选择无效。",
         "reportStale": "项目上报已过期，请等待设备重新上报。",
-        "agentUpgradeRequired": "需要 Agent 功能版本 5 或更高版本。",
+        "agentUpgradeRequired": "需要 Agent 功能版本 {version} 或更高版本。",
         "headNotFull": "需要完整的 40 位 HEAD SHA。",
         "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照。",
         "signingKeyUnavailable": "控制台签名密钥不可用。",

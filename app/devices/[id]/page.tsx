@@ -169,8 +169,13 @@ export default async function DeviceDetailPage({ params, searchParams }: { param
 
       <Card extra="p-6">
         <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("device.diagnostics.title")}</h3>
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <DiagItem label={t("device.diagnostics.agentVersion")} value={device.agentVersion ?? "—"} mono />
+          <DiagItem
+            label={t("device.diagnostics.agentReleaseVersion")}
+            value={device.agentReleaseVersion ? `v${device.agentReleaseVersion}` : "—"}
+            mono
+          />
           <DiagItem
             label={t("device.diagnostics.queueDepth")}
             value={device.queueDepth == null ? "—" : String(device.queueDepth)}

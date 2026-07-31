@@ -19,6 +19,7 @@ import {
   type HarnessModeIntentPayload
 } from "@/shared/harness-mode-intent";
 import { DEVICE_ONLINE_MS } from "@/shared/device-status";
+import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 export const dynamic = "force-dynamic";
 
@@ -128,9 +129,9 @@ export async function POST(request: Request) {
       { status: 409 }
     );
   }
-  if ((project.device.agentFeatureVersion ?? 0) < 4) {
+  if ((project.device.agentFeatureVersion ?? 0) < MIN_MODE_INTENT_AGENT_FEATURE_VERSION) {
     return Response.json(
-      { error: "device agent feature version 4 or newer is required", code: "agent_upgrade_required" },
+      { error: `device agent feature version ${MIN_MODE_INTENT_AGENT_FEATURE_VERSION} or newer is required`, code: "agent_upgrade_required" },
       { status: 409 }
     );
   }

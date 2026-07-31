@@ -12,6 +12,7 @@ import {
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
 import { DEVICE_ONLINE_MS } from "@/shared/device-status";
+import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -289,7 +290,7 @@ export function modeIssuanceBlocker(input: {
     reportedAt > now + 5 * 60 * 1000 ||
     now - reportedAt >= DEVICE_ONLINE_MS
   ) return "reportStale";
-  if ((input.agentFeatureVersion ?? 0) < 4) return "agentUpgradeRequired";
+  if ((input.agentFeatureVersion ?? 0) < MIN_MODE_INTENT_AGENT_FEATURE_VERSION) return "agentUpgradeRequired";
   if (!input.headSha || !/^[0-9a-fA-F]{40}$/.test(input.headSha)) return "headNotFull";
   if (!input.modes?.dispatch.agentSnapshotUsable) return "agentSnapshotUnavailable";
   return null;

@@ -21,6 +21,7 @@ vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 vi.mock("@/server/harness-sign", () => ({ signHarnessPayload: mocks.signHarnessPayload }));
 
 import { DELETE, GET, POST } from "../../app/api/harness/mode-intents/route";
+import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
 
@@ -39,7 +40,7 @@ function project(overrides: Record<string, unknown> = {}) {
         ]
       }
     },
-    device: { userId: "user-1", agentFeatureVersion: 4 },
+    device: { userId: "user-1", agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION },
     ...overrides
   };
 }
@@ -114,7 +115,7 @@ describe("session mode intent route", () => {
 
   it.each([
     ["stale report", project({ reportedAt: new Date(Date.now() - 21 * 60 * 1000) }), "stale_report"],
-    ["old agent", project({ device: { userId: "user-1", agentFeatureVersion: 3 } }), "agent_upgrade_required"],
+    ["old agent", project({ device: { userId: "user-1", agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION - 1 } }), "agent_upgrade_required"],
     ["short HEAD", project({ headSha: "0123456" }), "invalid_project_head"],
     ["missing snapshot", project({ modes: null }), "invalid_mode_snapshot"]
   ])("rejects %s before signing or writing", async (_label, fixture, code) => {

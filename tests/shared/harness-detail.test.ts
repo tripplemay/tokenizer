@@ -9,6 +9,7 @@ import {
   type HarnessDetailAgent,
   type HarnessModeEditorDraft
 } from "@/shared/harness-detail";
+import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 const NOW = new Date("2026-07-27T12:00:00.000Z");
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
@@ -137,7 +138,7 @@ describe("Harness detail snapshot helpers", () => {
     const ready = {
       signingKeyReady: true,
       reportedAt: new Date("2026-07-27T11:55:00.000Z"),
-      agentFeatureVersion: 4,
+      agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
       headSha: HEAD,
       modes,
       now: NOW
@@ -145,7 +146,7 @@ describe("Harness detail snapshot helpers", () => {
     expect(modeIssuanceBlocker(ready)).toBeNull();
     expect(modeIssuanceBlocker({ ...ready, signingKeyReady: false })).toBe("signingKeyUnavailable");
     expect(modeIssuanceBlocker({ ...ready, reportedAt: new Date("2026-07-27T11:30:00.000Z") })).toBe("reportStale");
-    expect(modeIssuanceBlocker({ ...ready, agentFeatureVersion: 3 })).toBe("agentUpgradeRequired");
+    expect(modeIssuanceBlocker({ ...ready, agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION - 1 })).toBe("agentUpgradeRequired");
     expect(modeIssuanceBlocker({ ...ready, headSha: "short" })).toBe("headNotFull");
     expect(modeIssuanceBlocker({ ...ready, modes: null })).toBe("agentSnapshotUnavailable");
   });

@@ -9,9 +9,15 @@ import { CopyInstallCommand, type InstallCommandOption } from "./copy-install-co
 // paint.
 export async function UpgradeBanner({
   count,
+  unknownCount,
+  latestRelease,
+  highlights,
   commands,
 }: {
   count: number;
+  unknownCount: number;
+  latestRelease: string;
+  highlights: readonly string[];
   commands: InstallCommandOption[];
 }) {
   const t = await getTranslations();
@@ -21,8 +27,21 @@ export async function UpgradeBanner({
         <MdWarningAmber className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
-            {t("upgradeBanner.message", { count })}
+            {t("upgradeBanner.message", { count, version: latestRelease })}
           </p>
+          <div className="mt-1 text-sm text-amber-800 dark:text-amber-100">
+            <span className="font-medium">{t("upgradeBanner.latest", { version: latestRelease })}</span>
+            {highlights.length > 0 ? (
+              <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                {highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+              </ul>
+            ) : null}
+          </div>
+          {unknownCount > 0 ? (
+            <p className="mt-1 text-xs text-amber-800 dark:text-amber-100">
+              {t("upgradeBanner.unknown", { count: unknownCount, version: latestRelease })}
+            </p>
+          ) : null}
           <div className="mt-2">
             <CopyInstallCommand commands={commands} variant="banner" />
           </div>

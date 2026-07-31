@@ -110,6 +110,7 @@ model Device {
   lastSeenAt          DateTime?
   lastSyncAt          DateTime?
   agentVersion        String?
+  agentReleaseVersion String?
   agentFeatureVersion Int?
   queueDepth          Int?
   lastError           String?

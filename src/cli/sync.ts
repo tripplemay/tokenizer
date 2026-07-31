@@ -4,6 +4,7 @@ import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } fr
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
 import { getAgentVersion } from "./agent-version";
 import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
 import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 
@@ -113,6 +114,7 @@ export function readDiagnostics(
   }
   return {
     agentVersion: getAgentVersion(),
+    agentReleaseVersion: CURRENT_AGENT_RELEASE_VERSION,
     agentFeatureVersion: AGENT_FEATURE_VERSION,
     queueDepth,
     lastError,

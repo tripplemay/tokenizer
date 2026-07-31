@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "releases": [
+    {
+      "version": "1.0.0",
+      "released_on": "2026-07-30",
+      "agent_feature_version": 5,
+      "highlights": {
+        "zh-CN": [
+          "上报 Harness 同步健康状态，让控制台显示编排上报、闸门中继和模式意图的运行状况。"
+        ],
+        "en": [
+          "Reports Harness sync health so the console can show orchestration reporting, gate relay, and mode-intent health."
+        ]
+      }
+    }
+  ]
+}

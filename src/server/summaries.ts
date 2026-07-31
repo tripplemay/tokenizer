@@ -217,6 +217,7 @@ async function getDeviceSummaryImpl(tenantId: string, range: RangeOption = "all"
       lastSyncAt: device?.lastSyncAt?.toISOString() ?? null,
       lastEventAt: row?._max.occurredAt?.toISOString() ?? null,
       agentVersion: device?.agentVersion ?? null,
+      agentReleaseVersion: device?.agentReleaseVersion ?? null,
       agentFeatureVersion: device?.agentFeatureVersion ?? null,
       queueDepth: device?.queueDepth ?? null,
       lastError: device?.lastError ?? null,

@@ -1,7 +1,8 @@
 // Numeric agent capability version, baked into the build at release time.
 // The agent sends AGENT_FEATURE_VERSION in every heartbeat; the server
-// compares it against MIN_AGENT_FEATURE_VERSION to decide whether to flag
-// the device as outdated on the dashboard.
+// compares it against compatibility thresholds for capability-gated behavior.
+// Strict "latest Agent release" checks use src/shared/agent-release-version.ts
+// instead, because a capability level cannot identify a particular release.
 //
 // Why a number (not a git SHA): the server can't order SHAs without the
 // repo, and maintaining a hand-curated "acceptable SHAs" set every release
@@ -32,6 +33,10 @@
 //       Older agents cannot report whether orchestration transport is healthy.
 export const AGENT_FEATURE_VERSION = 5;
 export const MIN_AGENT_FEATURE_VERSION = 5;
+
+// Signed Harness mode intent issuance was added at capability level 4. Keep
+// this separate from the global update threshold so the API and UI never drift.
+export const MIN_MODE_INTENT_AGENT_FEATURE_VERSION = 4;
 
 // The ingest correction pass (updating an existing UsageEvent row in place
 // when a re-parse revises it) is only trusted from agents at or above this

@@ -10,11 +10,11 @@ import type { RangeOption } from "@/server/summaries";
 import { formatFullNumber, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
 import { deviceStatusBadge } from "@/shared/device-status";
 import { AutoRefresh } from "../_components/auto-refresh";
-import { INSTALL_COMMANDS, isDeviceOutdated } from "@/server/agent-version";
+import { deviceAgentUpdateStatus, INSTALL_COMMANDS } from "@/server/agent-version";
 import { DailyDeviceCostChart } from "./daily-device-cost-chart";
 import { AddDeviceSection } from "../_components/add-device-section";
 import { CopyInstallCommand } from "../_components/copy-install-command";
-import { OutdatedBadge } from "../_components/outdated-badge";
+import { AgentReleaseBadge } from "../_components/outdated-badge";
 import { PageBanner } from "../_components/page-banner";
 import { HarnessHealthBadge, type HarnessHealthLabels } from "../_components/harness-health-badge";
 
@@ -181,6 +181,10 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
           <tbody>
             {devices.map((device) => {
               const { key, color } = deviceStatusBadge(device.lastSeenAt, nowMs);
+              const agentStatus = deviceAgentUpdateStatus({
+                featureVersion: device.agentFeatureVersion,
+                releaseVersion: device.agentReleaseVersion
+              });
               return (
                 <tr key={device.deviceId} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
                   <td className="py-2.5 pr-4">
@@ -196,8 +200,8 @@ async function DevicesTableSection({ range, tz }: { range: RangeOption; tz: stri
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>
                         {t(`clientStatus.${key}`)}
                       </span>
-                      {isDeviceOutdated(device.agentFeatureVersion) && (
-                        <OutdatedBadge agentVersion={device.agentVersion} />
+                      {agentStatus.kind !== "latest" && (
+                        <AgentReleaseBadge status={agentStatus} />
                       )}
                     </span>
                   </td>
@@ -256,6 +260,7 @@ function DevicesTableSkeleton() {
 
 type DiagnosticsDevice = {
   agentVersion: string | null;
+  agentReleaseVersion: string | null;
   queueDepth: number | null;
   lastError: string | null;
   lastSyncStatus: string | null;
@@ -278,7 +283,7 @@ function DiagnosticsBadges({
   queueLabel: string;
   errorLabel: string;
 }) {
-  const nothing = device.agentVersion == null && device.queueDepth == null && device.lastError == null;
+  const nothing = device.agentVersion == null && device.agentReleaseVersion == null && device.queueDepth == null && device.lastError == null;
   return (
     <span className="inline-flex max-w-72 flex-wrap items-center justify-end gap-1.5">
       <HarnessHealthBadge
@@ -302,6 +307,9 @@ function DiagnosticsBadges({
       ) : null}
       {device.agentVersion ? (
         <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600 dark:bg-white/10 dark:text-gray-300" title={`agent ${device.agentVersion}`}>{device.agentVersion.slice(0, 7)}</span>
+      ) : null}
+      {device.agentReleaseVersion ? (
+        <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600 dark:bg-white/10 dark:text-gray-300" title={`Agent release v${device.agentReleaseVersion}`}>v{device.agentReleaseVersion}</span>
       ) : null}
     </span>
   );

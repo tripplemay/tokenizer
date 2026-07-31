@@ -5,6 +5,7 @@ import { prisma } from "@/server/db";
 import { updateUserTimezoneIfValid } from "@/server/timezone";
 import { DeviceInput } from "@/shared/usage";
 import { harnessDiagnosticsFromSnapshot, parseHarnessSyncSnapshot } from "@/shared/harness-health";
+import { normalizeAgentReleaseVersion } from "@/shared/agent-release-version";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,26 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+  const releaseVersion = "agentReleaseVersion" in diag
+    ? normalizeAgentReleaseVersion(diag.agentReleaseVersion)
+    : undefined;
+  if ("agentReleaseVersion" in diag && diag.agentReleaseVersion !== null && !releaseVersion) {
+    return Response.json(
+      { error: "invalid agent release version", code: "invalid_agent_release_version" },
+      { status: 400 }
+    );
+  }
+  const featureVersion = "agentFeatureVersion" in diag ? diag.agentFeatureVersion : undefined;
+  if (
+    featureVersion !== undefined &&
+    featureVersion !== null &&
+    (typeof featureVersion !== "number" || !Number.isSafeInteger(featureVersion) || featureVersion < 0)
+  ) {
+    return Response.json(
+      { error: "invalid agent feature version", code: "invalid_agent_feature_version" },
+      { status: 400 }
+    );
+  }
   const data: Prisma.DeviceUpdateInput = {
     name: body.device.name,
     hostname: body.device.hostname ?? null,
@@ -40,8 +61,9 @@ export async function POST(request: NextRequest) {
     lastSeenAt: now
   };
   if ("agentVersion" in diag) data.agentVersion = diag.agentVersion ?? null;
+  if ("agentReleaseVersion" in diag) data.agentReleaseVersion = releaseVersion ?? null;
   if ("agentFeatureVersion" in diag) {
-    data.agentFeatureVersion = typeof diag.agentFeatureVersion === "number" ? diag.agentFeatureVersion : null;
+    data.agentFeatureVersion = featureVersion ?? null;
   }
   if ("queueDepth" in diag) data.queueDepth = typeof diag.queueDepth === "number" ? diag.queueDepth : null;
   if ("lastError" in diag) {

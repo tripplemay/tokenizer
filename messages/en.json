@@ -221,7 +221,11 @@
       "title": "Upgrade all devices",
       "subtitle": "Run this on each device to pull the latest code and restart the agent."
     },
-    "outdatedBadge": "outdated"
+    "agentReleaseBadge": {
+      "upgrade": "v{current} -> v{latest}",
+      "unknown": "release unverified",
+      "ahead": "v{current} newer than server"
+    }
   },
   "device": {
     "back": "Back to devices",
@@ -246,6 +250,7 @@
     "diagnostics": {
       "title": "Client diagnostics",
       "agentVersion": "Agent version",
+      "agentReleaseVersion": "Agent release",
       "queueDepth": "Local queue depth",
       "lastSyncStatus": "Last sync status",
       "lastError": "Last error",
@@ -423,7 +428,9 @@
     }
   },
   "upgradeBanner": {
-    "message": "{count} devices are running outdated agents. Upgrade to enable the latest features (timezone capture, Codex quota tracking, service-tier badges).",
+    "message": "{count} devices need an Agent update to v{version}.",
+    "latest": "What's new in v{version}:",
+    "unknown": "Another {count} devices have not reported a verifiable release; check them in Devices.",
     "copy": "Copy",
     "copied": "Copied"
   },
@@ -653,7 +660,7 @@
       "disabled": {
         "signingKeyUnavailable": "Issuance is disabled because the console signing key is unavailable.",
         "reportStale": "Issuance is disabled because the project report is stale. Wait for a fresh device report.",
-        "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below 5.",
+        "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below {version}.",
         "headNotFull": "Issuance is disabled because the project did not report a full 40-character HEAD SHA.",
         "agentSnapshotUnavailable": "Issuance is disabled because no usable reported agent snapshot is available."
       },
@@ -673,7 +680,7 @@
         "invalidGate": "Only A and B gates can be pre-authorized.",
         "invalidNotification": "One or more notification selections are invalid.",
         "reportStale": "The project report became stale. Wait for a fresh device report.",
-        "agentUpgradeRequired": "Agent feature version 5 or newer is required.",
+        "agentUpgradeRequired": "Agent feature version {version} or newer is required.",
         "headNotFull": "A full 40-character HEAD SHA is required.",
         "agentSnapshotUnavailable": "No usable reported agent snapshot is available.",
         "signingKeyUnavailable": "The console signing key is unavailable.",
