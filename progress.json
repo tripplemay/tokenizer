@@ -53,6 +53,15 @@
       "docs/test-reports/BL-FW-RELEASE-CONTRACT-verdict.json",
       "docs/test-reports/BL-FW-RELEASE-CONTRACT-F003-generator-handoff.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-FW-RELEASE-CONTRACT-verifying-done-w1",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-31T05:12:46.088Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "+MNAjHG9fC+B5fWgN2lOJ1GvE3S05rYs75Yk2DBGLCR1mf1jIFzSX/ek5rGvZ0Di6+E+ma/h8kJ3eGf6vJFgAw=="
+    }
   }
 }
