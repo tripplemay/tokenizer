@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "跨仓独立发布契约验收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "reviewer-kimi-a2a 在锁定 SHA 上 fresh context 独立验证 harness-template validator/fixture 与 tokenizer focused/full test、verify、lint、build；审查两仓 diff、manifest/VERSION/CHANGELOG 的一致性、同步字节一致性和版本四态，产出 schema 合法 verdict（waiting=null）。不触达生产、不推送。"
     }
