@@ -97,7 +97,13 @@
                           "additionalProperties": false,
                           "required": ["planner", "generator", "evaluator"],
                           "properties": {
-                            "planner": { "$ref": "#/definitions/tool_binding" },
+                            "planner": {
+                              "description": "null keeps planning with the non-configurable Coordinator.",
+                              "oneOf": [
+                                { "type": "null" },
+                                { "$ref": "#/definitions/tool_binding" }
+                              ]
+                            },
                             "generator": { "$ref": "#/definitions/tool_binding" },
                             "evaluator": { "$ref": "#/definitions/tool_binding" }
                           }

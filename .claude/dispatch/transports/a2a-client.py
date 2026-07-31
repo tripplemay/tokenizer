@@ -14,6 +14,7 @@ import urllib.request
 
 
 DISPATCH_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_ADAPTERS_DIR = os.path.join(DISPATCH_DIR, "transports", "adapters")
 sys.path.insert(0, DISPATCH_DIR)
 from dispatch_common import (  # noqa: E402
     A2A_AUTH_UNSET,
@@ -29,12 +30,19 @@ TERMINAL = {
     "COMPLETED", "FAILED", "CANCELED", "REJECTED",
     "INPUT_REQUIRED", "AUTH_REQUIRED",
 }
+TOOL_INTEGRATIONS_VERSION = "tool-integrations/1"
+A2A_TARGET_PREFIX = "a2a--"
+A2A_ROLES = ("planner", "evaluator")
 SAFE_TASK_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,127}\Z")
 SAFE_BATCH = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 SAFE_ARTIFACT = re.compile(
     r"[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*\Z"
 )
 CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+SAFE_CONFIG_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+SAFE_TOOL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+SAFE_CAPABILITY = re.compile(r"[A-Za-z0-9._-]{1,64}\Z")
+CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 _MISSING = object()
 _LOCAL_TERMINAL_MARKER = object()
 
@@ -52,12 +60,237 @@ def die(message, code=2):
     raise SystemExit(code)
 
 
-def load_descriptor(registry, agent):
+def _load_registry(registry):
     try:
         with open(registry, encoding="utf-8") as fh:
-            data = json.load(fh)
+            return json.load(fh)
     except Exception as exc:
         raise ClientError(f"registry unreadable ({registry}): {exc}")
+
+
+def _safe_config_id(value, label):
+    if not isinstance(value, str) or not SAFE_CONFIG_ID.fullmatch(value):
+        raise ClientError(f"{label} must be a safe stable id")
+    return value
+
+
+def _safe_tool_id(value, label):
+    if not isinstance(value, str) or not SAFE_TOOL_ID.fullmatch(value):
+        raise ClientError(f"{label} must be a safe stable tool id")
+    return value
+
+
+def _nonempty_string(value, label):
+    if not isinstance(value, str) or not value.strip():
+        raise ClientError(f"{label} must be a non-empty string")
+    return value
+
+
+def _bounded_text(value, label, maximum):
+    normalized = _nonempty_string(value, label).strip()
+    if len(normalized) > maximum or CONTROL_CHARACTERS.search(value):
+        raise ClientError(
+            f"{label} must be a non-empty string of at most {maximum} characters "
+            "without control characters"
+        )
+    return normalized
+
+
+def _capabilities(value, label):
+    if value is None:
+        return []
+    if not isinstance(value, list) or len(value) > 64:
+        raise ClientError(f"{label} must be a string array")
+    parsed = []
+    for index, item in enumerate(value):
+        capability = _bounded_text(item, f"{label}[{index}]", 64)
+        if not SAFE_CAPABILITY.fullmatch(capability):
+            raise ClientError(
+                f"{label}[{index}] must match {SAFE_CAPABILITY.pattern!r}"
+            )
+        parsed.append(capability)
+    return sorted(set(parsed))
+
+
+def _lookup_id(items, item_id, label):
+    if not isinstance(items, list):
+        raise ClientError(f"{label} must be an array")
+    matches = []
+    for item in items:
+        if not isinstance(item, dict):
+            raise ClientError(f"{label} entries must be objects")
+        candidate_id = _safe_tool_id(item.get("id"), f"{label}.id")
+        if candidate_id == item_id:
+            matches.append(item)
+    if len(matches) != 1:
+        if not matches:
+            raise ClientError(f"{label} id not found: {item_id}")
+        raise ClientError(f"{label} id is duplicated: {item_id}")
+    return matches[0]
+
+
+def _target_selector(requested):
+    """Return (target id, fixed role) for a generated or compatibility id."""
+    value = requested[len(A2A_TARGET_PREFIX):] if requested.startswith(A2A_TARGET_PREFIX) else requested
+    if not isinstance(value, str):
+        raise ClientError("A2A target id must be a safe stable tool id")
+    for role in A2A_ROLES:
+        suffix = f"--{role}"
+        if value.endswith(suffix):
+            target_id = value[:-len(suffix)]
+            return _safe_tool_id(target_id, "A2A target id"), role
+    if value.endswith("--generator"):
+        raise ClientError(
+            "a2a transport does not support generator until a source-handoff "
+            "protocol can return implementation changes safely"
+        )
+    return _safe_tool_id(value, "A2A target id"), None
+
+
+def _preflight_canonical_target(registry_path, adapters_dir, target_id, fixed_role):
+    """Reuse the catalog before this client can contact a configured endpoint.
+
+    Canonical A2A targets are backed by a local CLI integration.  The catalog
+    owns its adapter verification, tool/family matching, and role policy, so a
+    direct client must not reimplement a weaker subset and potentially forward
+    a bearer token before discovering a bad adapter.
+    """
+    catalog = os.path.join(DISPATCH_DIR, "tool-catalog.py")
+    if not os.path.isfile(catalog):
+        raise ClientError(f"framework tool catalog missing: {catalog}")
+    roles = (fixed_role,) if fixed_role else A2A_ROLES
+    for role in roles:
+        generated_target = f"{A2A_TARGET_PREFIX}{target_id}--{role}"
+        command = [
+            sys.executable,
+            catalog,
+            "target",
+            "--registry",
+            os.fspath(registry_path),
+            "--adapters",
+            os.fspath(adapters_dir),
+            "--target-id",
+            generated_target,
+        ]
+        try:
+            result = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise ClientError(
+                f"A2A target {generated_target!r} catalog preflight could not run: {exc}"
+            ) from exc
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout or "tool catalog failed").strip()
+            raise ClientError(
+                f"A2A target {generated_target!r} catalog preflight failed: {detail[:600]}"
+            )
+        try:
+            target = json.loads(result.stdout)
+        except (TypeError, ValueError) as exc:
+            raise ClientError(
+                f"A2A target {generated_target!r} catalog preflight returned invalid JSON: {exc}"
+            ) from exc
+        if (
+            not isinstance(target, dict)
+            or target.get("target_id") != generated_target
+            or target.get("invocation") != "a2a"
+            or role not in (target.get("roles") or [])
+        ):
+            raise ClientError(
+                f"A2A target {generated_target!r} catalog preflight returned an incompatible target"
+            )
+
+
+def _integration_target_descriptor(data, requested, *, registry_path, adapters_dir):
+    """Normalize one non-user-facing A2A target into the legacy descriptor shape."""
+    if data.get("version") != TOOL_INTEGRATIONS_VERSION:
+        raise ClientError(
+            f"tool integration registry version must be {TOOL_INTEGRATIONS_VERSION!r}"
+        )
+    target_id, fixed_role = _target_selector(requested)
+    _preflight_canonical_target(registry_path, adapters_dir, target_id, fixed_role)
+    target = _lookup_id(data.get("a2a_targets"), target_id, "a2a_targets")
+    integration_id = _safe_tool_id(
+        target.get("integration_id"), f"a2a target {target_id!r}.integration_id"
+    )
+    integration = _lookup_id(
+        data.get("integrations"), integration_id, "integrations"
+    )
+    local_cli = integration.get("local_cli")
+    if not isinstance(local_cli, dict):
+        raise ClientError(
+            f"integration {integration_id!r}.local_cli must be an object for A2A"
+        )
+    _safe_tool_id(
+        local_cli.get("adapter"), f"integration {integration_id!r}.local_cli.adapter"
+    )
+    if not isinstance(local_cli.get("sandbox"), dict):
+        raise ClientError(
+            f"integration {integration_id!r}.local_cli.sandbox must be an object"
+        )
+    timeout_s = local_cli.get("timeout_s")
+    try:
+        effective_timeout(None, timeout_s)
+    except DispatchContractError as exc:
+        raise ClientError(
+            f"integration {integration_id!r}.local_cli.timeout_s: {exc}"
+        ) from exc
+
+    endpoint = _bounded_text(target.get("endpoint"), f"a2a target {target_id!r}.endpoint", 2048)
+    remote_runner_id = _safe_config_id(
+        target.get("remote_runner_id"),
+        f"a2a target {target_id!r}.remote_runner_id",
+    )
+    tool = _safe_tool_id(
+        integration.get("tool"), f"integration {integration_id!r}.tool"
+    )
+    model_family = _bounded_text(
+        integration.get("model_family"), f"integration {integration_id!r}.model_family", 128
+    )
+    try:
+        a2a_auth_config(
+            target.get("auth", A2A_AUTH_UNSET), f"a2a target {target_id!r}.auth"
+        )
+    except DispatchContractError as exc:
+        raise ClientError(str(exc)) from exc
+
+    integration_capabilities = _capabilities(
+        integration.get("capabilities", []), f"integration {integration_id!r}.capabilities"
+    )
+    target_capabilities = _capabilities(
+        target.get("capabilities", []), f"a2a target {target_id!r}.capabilities"
+    )
+    capabilities = sorted(set(integration_capabilities) | set(target_capabilities))
+    descriptor_id = (
+        f"{A2A_TARGET_PREFIX}{target_id}--{fixed_role}"
+        if fixed_role else f"{A2A_TARGET_PREFIX}{target_id}"
+    )
+    return {
+        "id": descriptor_id,
+        "target_id": target_id,
+        "integration_id": integration_id,
+        "remote_runner_id": remote_runner_id,
+        "tool": tool,
+        "model_family": model_family,
+        "roles": [fixed_role] if fixed_role else list(A2A_ROLES),
+        "capabilities": capabilities,
+        "transport": "a2a",
+        "endpoint": endpoint,
+        "auth": target.get("auth", A2A_AUTH_UNSET),
+        "timeout_s": timeout_s,
+        # New targets are bound to an identity-bearing Agent Card before work
+        # is sent. Legacy descriptors retain their historic no-card behavior.
+        "remote_card_required": True,
+    }
+
+
+def _legacy_descriptor(data, agent):
     descriptor = next(
         (item for item in data.get("agents", []) if item.get("id") == agent), None
     )
@@ -67,8 +300,18 @@ def load_descriptor(registry, agent):
         raise ClientError(
             f"{agent} uses transport={descriptor.get('transport')}; a2a is required"
         )
-    if not descriptor.get("endpoint"):
-        raise ClientError(f"{agent} has no endpoint")
+    descriptor = dict(descriptor)
+    descriptor["endpoint"] = _bounded_text(
+        descriptor.get("endpoint"), f"agent {agent!r}.endpoint", 2048
+    )
+    if "model_family" in descriptor:
+        descriptor["model_family"] = _bounded_text(
+            descriptor.get("model_family"), f"agent {agent!r}.model_family", 128
+        )
+    if "capabilities" in descriptor:
+        descriptor["capabilities"] = _capabilities(
+            descriptor.get("capabilities"), f"agent {agent!r}.capabilities"
+        )
     try:
         effective_timeout(None, descriptor.get("timeout_s"))
         a2a_auth_config(
@@ -77,6 +320,17 @@ def load_descriptor(registry, agent):
     except DispatchContractError as exc:
         raise ClientError(str(exc))
     return descriptor
+
+
+def load_descriptor(registry, agent, *, adapters=DEFAULT_ADAPTERS_DIR):
+    data = _load_registry(registry)
+    if not isinstance(data, dict):
+        raise ClientError("registry root must be an object")
+    if data.get("version") == TOOL_INTEGRATIONS_VERSION:
+        return _integration_target_descriptor(
+            data, agent, registry_path=registry, adapters_dir=adapters
+        )
+    return _legacy_descriptor(data, agent)
 
 
 def auth_header(descriptor):
@@ -119,6 +373,59 @@ def rpc(descriptor, method, params, timeout=30.0):
     if "error" in result:
         raise ClientError(f"{method} returned error: {result['error']}")
     return result.get("result")
+
+
+def fetch_agent_card(descriptor, timeout=15.0):
+    """Load the remote card through the same constrained auth boundary as RPC."""
+    url = descriptor["endpoint"].rstrip("/") + "/.well-known/a2a-agent-card"
+    request = urllib.request.Request(url, headers=auth_header(descriptor))
+    try:
+        with urllib.request.urlopen(request, timeout=max(0.05, timeout)) as response:
+            card = json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read()[:300].decode(errors="replace")
+        raise ClientError(f"AgentCard HTTP {exc.code}: {detail}")
+    except Exception as exc:
+        raise ClientError(f"AgentCard connection failed: {exc}")
+    if not isinstance(card, dict):
+        raise ClientError("AgentCard response must be an object")
+    return card
+
+
+def validate_remote_card(descriptor, role, *, timeout=15.0):
+    """Bind an integration target to the runner that will execute the work.
+
+    Legacy agent descriptors predate targets and intentionally preserve their
+    original behavior. A tool-integrations target is not allowed to rely only
+    on a configured URL: its card must prove the declared tool/family/role.
+    """
+    if not descriptor.get("remote_card_required"):
+        return
+    if role not in A2A_ROLES:
+        raise ClientError(
+            "a2a transport does not support generator until a source-handoff "
+            "protocol can return implementation changes safely"
+        )
+    card = fetch_agent_card(descriptor, timeout=timeout)
+    if card.get("name") != descriptor.get("remote_runner_id"):
+        raise ClientError("AgentCard name does not match target remote_runner_id")
+    provider = card.get("provider")
+    if not isinstance(provider, dict) or provider.get("modelFamily") != descriptor.get("model_family"):
+        raise ClientError("AgentCard model family does not match target integration")
+    roles = card.get("roles")
+    if not isinstance(roles, list) or role not in roles:
+        raise ClientError(f"AgentCard does not declare role={role!r}")
+    harness = card.get("x-harness")
+    if not isinstance(harness, dict):
+        raise ClientError("AgentCard is missing x-harness metadata")
+    if harness.get("contract_version") != "harness/1.1":
+        raise ClientError("AgentCard harness contract version is incompatible")
+    if harness.get("sandboxed") is not True:
+        raise ClientError("AgentCard does not attest sandboxed execution")
+    if harness.get("tool") != descriptor.get("tool"):
+        raise ClientError("AgentCard tool does not match target integration")
+    if harness.get("integration_id") != descriptor.get("integration_id"):
+        raise ClientError("AgentCard integration id does not match target")
 
 
 def _safe_artifact_destination(project_root, relative):
@@ -523,14 +830,14 @@ def _load_envelope(path):
 
 def validate_dispatchable_role(descriptor, envelope):
     role = envelope.get("role")
-    if role not in (descriptor.get("roles") or []):
-        raise ClientError(
-            f"{descriptor.get('id')} does not declare envelope role={role!r}"
-        )
     if role == "generator":
         raise ClientError(
             "a2a transport does not support generator until a source-handoff "
             "protocol can return implementation changes safely"
+        )
+    if role not in (descriptor.get("roles") or []):
+        raise ClientError(
+            f"{descriptor.get('id')} does not declare envelope role={role!r}"
         )
 
 
@@ -555,6 +862,16 @@ def commissioned_base_record(descriptor, commission):
     }
 
 
+def validate_remote_card_before_deadline(descriptor, role, deadline):
+    """Verify the remote identity without allowing Agent Card I/O to extend a task."""
+    remaining = deadline - time.time()
+    if remaining <= 0:
+        raise ClientError("A2A task deadline elapsed before Agent Card verification")
+    validate_remote_card(descriptor, role, timeout=max(0.05, min(15.0, remaining)))
+    if time.time() >= deadline:
+        raise ClientError("A2A task deadline elapsed during Agent Card verification")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("cmd", choices=["run", "send", "subscribe", "get", "cancel", "card", "ls"])
@@ -562,6 +879,7 @@ def main():
     parser.add_argument("--envelope")
     parser.add_argument("--task")
     parser.add_argument("--registry", default=".agents-registry.json")
+    parser.add_argument("--adapters", default=DEFAULT_ADAPTERS_DIR)
     parser.add_argument("--state", default=STATE_DIR_DEFAULT)
     parser.add_argument("--project-root")
     parser.add_argument("--resume-from", type=int, default=0)
@@ -573,13 +891,10 @@ def main():
         parser.error("wait controls must be non-negative and transport grace must be positive")
 
     try:
-        descriptor = load_descriptor(args.registry, args.agent)
+        descriptor = load_descriptor(args.registry, args.agent, adapters=args.adapters)
 
         if args.cmd == "card":
-            url = descriptor["endpoint"].rstrip("/") + "/.well-known/a2a-agent-card"
-            request = urllib.request.Request(url, headers=auth_header(descriptor))
-            with urllib.request.urlopen(request, timeout=15) as response:
-                print(json.dumps(json.loads(response.read()), ensure_ascii=False, indent=2))
+            print(json.dumps(fetch_agent_card(descriptor), ensure_ascii=False, indent=2))
             return 0
         if args.cmd == "ls":
             print(json.dumps(rpc(descriptor, "ListTasks", {}), ensure_ascii=False, indent=2))
@@ -597,6 +912,9 @@ def main():
             )
             started = time.time()
             deadline = started + timeout_s + args.transport_grace
+            validate_remote_card_before_deadline(
+                descriptor, commission["role"], deadline
+            )
             result = rpc(
                 descriptor,
                 "SendMessage",
@@ -663,6 +981,7 @@ def main():
             envelope, commission = load_commissioned_envelope(
                 descriptor, args.envelope, project_root=args.project_root
             )
+            validate_remote_card(descriptor, commission["role"])
             if args.task != commission["task_id"]:
                 raise ClientError("--task must equal the local envelope task_id")
             record = rpc(descriptor, "GetTask", {"taskId": args.task})
@@ -692,6 +1011,9 @@ def main():
                 descriptor.get("timeout_s"),
             )
             deadline = time.time() + timeout_s + args.transport_grace
+            validate_remote_card_before_deadline(
+                descriptor, commission["role"], deadline
+            )
             base = commissioned_base_record(descriptor, commission)
             record, _last = wait_for_terminal(
                 descriptor,

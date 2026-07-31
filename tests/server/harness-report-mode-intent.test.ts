@@ -182,6 +182,27 @@ describe("harness report mode activation and dispatch summaries", () => {
     );
   });
 
+  it("accepts the persisted Coordinator Planner assignment and rejects null external roles", async () => {
+    const coordinatorReport: any = report();
+    coordinatorReport.state.modes.dispatch.assignments = {
+      planner: null,
+      generator: "builder-codex",
+      evaluator: "reviewer-kimi"
+    };
+    const accepted = await POST(request(coordinatorReport));
+    expect(accepted.status).toBe(200);
+
+    const invalidReport: any = report();
+    invalidReport.state.modes.dispatch.assignments = {
+      planner: null,
+      generator: null,
+      evaluator: "reviewer-kimi"
+    };
+    const rejected = await POST(request(invalidReport));
+    expect(rejected.status).toBe(400);
+    expect(await rejected.json()).toMatchObject({ code: "invalid_mode_snapshot" });
+  });
+
   it("accepts an opaque local repoKey and the live slash title shapes", async () => {
     const titles = [
       "REST /v1/images/generations",

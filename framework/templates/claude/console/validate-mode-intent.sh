@@ -316,6 +316,11 @@ else:
         invocation_by_role = {}
         for role in ("planner", "generator", "evaluator"):
             binding = bindings[role]
+            if role == "planner" and binding is None:
+                # An explicit null is the signed Coordinator route. It is not
+                # an unconfigured external role and must not enter catalog
+                # resolution or transport-profile checks.
+                continue
             exact_keys(binding, ("tool", "invocation"), label=f"role_bindings.{role}")
             tool = binding["tool"]
             if not isinstance(tool, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", tool):
@@ -328,7 +333,7 @@ else:
         invocations = list(invocation_by_role.values())
         if profile == "heterogeneous":
             if "a2a" in invocations or "local-cli" not in invocations:
-                reject("profile=heterogeneous 要求三角色均非 a2a 且至少一方为 local-cli")
+                reject("profile=heterogeneous 要求所有外部角色均非 a2a 且至少一方为 local-cli")
         if profile == "slow" and "a2a" not in invocations:
             reject("profile=slow 要求至少一个角色为 a2a")
 
@@ -522,7 +527,12 @@ EXECUTION_VERSION="${MODE_META#*$'\n'}"
 RESOLUTION='null'
 if [ "$EXECUTION_VERSION" = "v2" ] && [ "$PROFILE" != "fast" ]; then
   [ -f "$DISPATCH_VALIDATOR" ] || fail "框架缺少 validate-dispatch.sh，不能预检 v2 注册表；请升级 harness"
-  REGISTRY_CHECK="$(bash "$DISPATCH_VALIDATOR" registry "$REGISTRY" 2>&1)" \
+  REGISTRY_ARGS=(registry "$REGISTRY")
+  if [ -n "$ADAPTERS" ]; then
+    [ -d "$ADAPTERS" ] || fail "adapter 目录不存在：$ADAPTERS"
+    REGISTRY_ARGS+=(--adapters "$ADAPTERS")
+  fi
+  REGISTRY_CHECK="$(bash "$DISPATCH_VALIDATOR" "${REGISTRY_ARGS[@]}" 2>&1)" \
     || fail "v2 注册表未满足可安全派发条件：${REGISTRY_CHECK:0:400}"
   [ -f "$TOOL_CATALOG" ] || fail "框架缺少 tool-catalog.py，不能解析 v2 工具绑定；请升级 harness"
   RESOLVE_COMMAND=(python3 "$TOOL_CATALOG" resolve --registry "$REGISTRY" --bindings "$BINDINGS")

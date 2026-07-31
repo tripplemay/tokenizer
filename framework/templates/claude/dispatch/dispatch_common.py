@@ -15,6 +15,7 @@ MAX_TIMEOUT_S = 86400
 DEFAULT_TIMEOUT_S = 3600
 CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 POSIX_ENV_KEY = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 _PROTECTED_ENV_KEYS = {
     "BASH_ENV",
     "CDPATH",
@@ -91,6 +92,10 @@ def external_environment_set(value, label):
         key = external_environment_key(key, f"{label}.{key}")
         if not isinstance(item, str):
             raise DispatchContractError(f"{label}.{key} must be a string")
+        if CONTROL_CHARACTERS.search(item):
+            raise DispatchContractError(
+                f"{label}.{key} must not contain control characters"
+            )
         result[key] = item
     return result
 

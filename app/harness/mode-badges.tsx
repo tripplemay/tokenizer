@@ -4,7 +4,7 @@ import { frameworkStanding } from "@/shared/framework-version";
 /**
  * 项目模式指纹的渲染（P1）。
  *
- * harness 有六个正交维度，每个维度的开关散在项目里不同的文件中。这个组件把 agent 上报的
+ * harness 有六个正交维度，每个维度的开关散在项目里不同的文件中。这个组件把设备上报的
  * 快照压成一行徽章 + 一段「不对劲的地方」，让人看一眼就知道这个项目现在跑在什么模式下。
  *
  * ⚠️ 只读镜像。徽章画错不影响机器上的任何守门——那些校验器在机器侧独立执行。
@@ -19,10 +19,16 @@ type Modes = {
     drift?: { ok?: number; modified?: number; missing?: number; customized?: number };
   } | null;
   execution?: string;
+  current?: {
+    roleBindings?: {
+      generator?: { tool?: string } | null;
+      evaluator?: { tool?: string } | null;
+    };
+  } | null;
   autonomy?: { enabled?: boolean; policyValid?: boolean | null; status?: string | null; expiresAt?: string | null };
   dispatch?: {
     enabled?: boolean;
-    assignments?: Record<string, string>;
+    assignments?: Record<string, string | null>;
     agents?: Array<{ id: string; transport: string; modelFamily: string | null }>;
     familyExclusive?: boolean | null;
     issues?: string[];
@@ -62,8 +68,20 @@ export default async function ModeBadges({ modes }: { modes: unknown }) {
   if (m.machinery?.denyListMerged === false) issues.push(t("denyListMissing"));
   if ((m.machinery?.missing ?? []).length > 0) issues.push(`${t("hooksMissing")}: ${m.machinery!.missing!.join(", ")}`);
 
-  const assignments = m.dispatch?.assignments ?? {};
-  const pair = [assignments.generator, assignments.evaluator].filter(Boolean).join(" → ");
+  const pairFor = (generator: unknown, evaluator: unknown): string =>
+    typeof generator === "string" && generator.length > 0 &&
+    typeof evaluator === "string" && evaluator.length > 0
+      ? `${generator} → ${evaluator}`
+      : "";
+  const currentPair = pairFor(
+    m.current?.roleBindings?.generator?.tool,
+    m.current?.roleBindings?.evaluator?.tool
+  );
+  const legacyPair = pairFor(
+    m.dispatch?.assignments?.generator,
+    m.dispatch?.assignments?.evaluator
+  );
+  const pair = currentPair || legacyPair;
 
   return (
     <div className="mt-2 space-y-1.5">

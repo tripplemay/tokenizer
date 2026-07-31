@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # dispatch-mode.md 的 fail-closed 校验器。四种用途，一个入口：
 #
-#   validate-dispatch.sh registry    [.agents-registry.json]        L1 descriptor 合法性
+#   validate-dispatch.sh registry    [.agents-registry.json] [--progress progress.json] [--adapters <dir>]
+#                                                              L1 descriptor 合法性
 #   validate-dispatch.sh envelope    <envelope.json>                L2 信封（字段白名单 = 铁律 12 强制）
-#   validate-dispatch.sh assignments [progress.json] [registry]     ⚠️ 独立性互斥：generator/evaluator 的 model_family 必须不同
+#   validate-dispatch.sh assignments [progress.json] [registry] [--adapters <dir>]
+#                                                              ⚠️ 独立性互斥：generator/evaluator 的 model_family 必须不同
 #   validate-dispatch.sh receipt     <run-meta.json>                L3 回执推断（exit code + 产物 + waiting → 状态）
 #   validate-dispatch.sh hook                                       PostToolUse：stdin 取 file_path，命中即校验
 #
@@ -15,6 +17,33 @@
 set -euo pipefail
 MODE="${1:-all}"
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
+
+resolve_active_adapters() {
+  local progress_path="$1"
+  local requested="$2"
+  local default_adapters="$DISPATCH_DIR/transports/adapters"
+  local args=(--progress "$progress_path" --default "$default_adapters")
+  [ -z "$requested" ] || args+=(--adapters "$requested")
+  [ -x "$MODE_ADAPTERS" ] || {
+    echo "[dispatch] ⛔ resolve-mode-adapters.sh 不存在或不可执行" >&2
+    return 2
+  }
+  if [ -f "$progress_path" ]; then
+    bash "$MODE_ADAPTERS" "${args[@]}"
+    return
+  fi
+  local selected="${requested:-$default_adapters}"
+  [ -d "$selected" ] || {
+    echo "[dispatch] ⛔ 适配器目录不存在：$selected" >&2
+    return 2
+  }
+  python3 - "$selected" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+}
 
 # ── PostToolUse hook：从 stdin 的 tool_input 取 file_path，命中相关文件才校验 ──
 if [ "$MODE" = "hook" ]; then
@@ -34,11 +63,44 @@ fi
 case "$MODE" in
 
 registry)
-  REG="${2:-.agents-registry.json}"
+  shift
+  REG=".agents-registry.json"
+  if [ "${1:-}" != "" ] && [ "${1#--}" = "$1" ]; then
+    REG="$1"
+    shift
+  fi
+  PROGRESS="${HARNESS_PROGRESS:-progress.json}"
+  REQUESTED_ADAPTERS=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --adapters)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ registry --adapters 缺值"; exit 2; }
+        REQUESTED_ADAPTERS="$2"
+        shift 2
+        ;;
+      --progress)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ registry --progress 缺值"; exit 2; }
+        PROGRESS="$2"
+        shift 2
+        ;;
+      *)
+        # Keep the historical positional adapter directory accepted by the
+        # old registry entrypoint while new callers use the explicit flag.
+        if [ -z "$REQUESTED_ADAPTERS" ] && [ "${1#--}" = "$1" ]; then
+          REQUESTED_ADAPTERS="$1"
+          shift
+        else
+          echo "[dispatch] ⛔ registry 未知参数：$1"
+          exit 2
+        fi
+        ;;
+    esac
+  done
   [ -f "$REG" ] || { echo "[dispatch] ⛔ 注册表不存在：$REG"; exit 2; }
-  python3 - "$REG" "$DISPATCH_DIR" <<'PY'
-import json, re, sys
-p, dispatch_dir = sys.argv[1:3]
+  ADAPTERS="$(resolve_active_adapters "$PROGRESS" "$REQUESTED_ADAPTERS")" || exit 2
+  python3 - "$REG" "$DISPATCH_DIR" "$ADAPTERS" <<'PY'
+import json, os, re, subprocess, sys
+p, dispatch_dir, adapters_dir = sys.argv[1:4]
 sys.path.insert(0, dispatch_dir)
 from dispatch_common import (
     A2A_AUTH_UNSET,
@@ -50,6 +112,41 @@ from dispatch_common import (
 )
 try: reg = json.load(open(p))
 except Exception as e: print(f"[dispatch] ⛔ 注册表 JSON 非法：{e}"); sys.exit(2)
+
+# tool-integrations/1 intentionally stores neutral CLI integrations rather
+# than user-selectable role descriptors.  The catalog is the single place that
+# derives role-specific execution targets, validates verified adapters and
+# applies the no-A2A-Generator policy. Reuse it here so the runtime preflight
+# cannot drift from what the Console advertised and signed.
+if reg.get("version") == "tool-integrations/1":
+    catalog = os.path.join(dispatch_dir, "tool-catalog.py")
+    try:
+        result = subprocess.run(
+            [sys.executable, catalog, "catalog", "--registry", p, "--adapters", adapters_dir],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except OSError as exc:
+        print(f"[dispatch] ⛔ 无法启动 tool-catalog.py：{exc}")
+        sys.exit(2)
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        print(f"[dispatch] ⛔ CLI integration 注册表校验失败（{p}）：{detail[:800]}")
+        sys.exit(2)
+    try:
+        catalog_value = json.loads(result.stdout)
+        role_entries = catalog_value.get("roles") if isinstance(catalog_value, dict) else None
+        target_count = sum(len(role_entries.get(role, [])) for role in ("planner", "generator", "evaluator")) if isinstance(role_entries, dict) else 0
+    except (TypeError, ValueError):
+        print("[dispatch] ⛔ tool-catalog.py 返回了非法 catalog")
+        sys.exit(2)
+    if target_count == 0:
+        print("[dispatch] ⛔ CLI integration 注册表没有可执行的角色能力")
+        sys.exit(2)
+    print(f"[dispatch] ✓ CLI integration 注册表合法（{target_count} 个角色能力）")
+    sys.exit(0)
 
 errs = []
 if reg.get("version") != "dispatch/1":
@@ -305,9 +402,17 @@ assignments)
   REG="${3:-.agents-registry.json}"
   [ -f "$PROG" ] || { echo "[dispatch] ⛔ progress.json 不存在：$PROG"; exit 2; }
   [ -f "$REG" ]  || { echo "[dispatch] ⚠️ 无注册表，跳过 dispatch 层校验"; exit 0; }
-  python3 - "$PROG" "$REG" <<'PY'
-import json, sys
-prog_p, reg_p = sys.argv[1:3]
+  REQUESTED_ADAPTERS=""
+  if [ "${4:-}" = "--adapters" ]; then
+    [ -n "${5:-}" ] || { echo "[dispatch] ⛔ assignments --adapters 缺值"; exit 2; }
+    REQUESTED_ADAPTERS="$5"
+  elif [ -n "${4:-}" ]; then
+    REQUESTED_ADAPTERS="$4"
+  fi
+  ADAPTERS="$(resolve_active_adapters "$PROG" "$REQUESTED_ADAPTERS")" || exit 2
+  python3 - "$PROG" "$REG" "$DISPATCH_DIR" "$ADAPTERS" <<'PY'
+import json, os, subprocess, sys
+prog_p, reg_p, dispatch_dir, adapters_dir = sys.argv[1:5]
 try:
     prog = json.load(open(prog_p)); reg = json.load(open(reg_p))
 except Exception as e:
@@ -316,17 +421,74 @@ except Exception as e:
 ra = prog.get("role_assignments")
 if not ra:
     print("[dispatch] ✓ 无 role_assignments（默认映射，快车道），跳过"); sys.exit(0)
+if not isinstance(ra, dict):
+    print("[dispatch] ⛔ role_assignments 必须为 object 或 null"); sys.exit(2)
 
-by_id = {a.get("id"): a for a in reg.get("agents", [])}
+allowed_roles = {"planner", "generator", "evaluator"}
 errs = []
-for role, aid in ra.items():
-    if aid is None: continue
-    d = by_id.get(aid)
-    if d is None:
-        errs.append(f"role_assignments.{role}={aid!r} 在注册表中不存在 —— 编排者无法解析派活方式")
-        continue
-    if role not in (d.get("roles") or []):
-        errs.append(f"{aid} 的 roles={d.get('roles')} 不含 {role} —— 越权分配")
+if unknown := sorted(set(ra) - allowed_roles):
+    errs.append(f"role_assignments 含未知角色：{unknown}")
+
+by_id = {}
+if reg.get("version") == "tool-integrations/1":
+    catalog = os.path.join(dispatch_dir, "tool-catalog.py")
+    for role, aid in ra.items():
+        if role not in allowed_roles:
+            continue
+        if aid is None:
+            if role != "planner":
+                errs.append(f"role_assignments.{role} 不得为 null")
+            continue
+        if not isinstance(aid, str):
+            errs.append(f"role_assignments.{role} 必须是稳定目标 id 或 null")
+            continue
+        try:
+            result = subprocess.run(
+                [sys.executable, catalog, "target", "--registry", reg_p,
+                 "--adapters", adapters_dir, "--target-id", aid],
+                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                check=False, timeout=15,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            errs.append(f"role_assignments.{role} 无法解析目标 {aid!r}：{exc}")
+            continue
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout or "tool catalog failed").strip()
+            errs.append(f"role_assignments.{role}={aid!r} 不是可执行 canonical 目标：{detail[:400]}")
+            continue
+        try:
+            target = json.loads(result.stdout)
+        except (TypeError, ValueError) as exc:
+            errs.append(f"role_assignments.{role}={aid!r} 的 catalog 输出非法：{exc}")
+            continue
+        if not isinstance(target, dict) or target.get("target_id") != aid:
+            errs.append(f"role_assignments.{role}={aid!r} 的 catalog 目标不一致")
+            continue
+        if role not in target.get("roles", []):
+            errs.append(f"{aid} 的 roles={target.get('roles')!r} 不含 {role} —— 越权分配")
+            continue
+        family = target.get("model_family")
+        if not isinstance(family, str) or not family:
+            errs.append(f"{aid} 的 model_family 非法")
+            continue
+        by_id[aid] = target
+elif reg.get("version") == "dispatch/1":
+    by_id = {a.get("id"): a for a in reg.get("agents", []) if isinstance(a, dict)}
+    for role, aid in ra.items():
+        if role not in allowed_roles:
+            continue
+        if aid is None:
+            if role != "planner":
+                errs.append(f"role_assignments.{role} 不得为 null")
+            continue
+        d = by_id.get(aid)
+        if d is None:
+            errs.append(f"role_assignments.{role}={aid!r} 在注册表中不存在 —— 编排者无法解析派活方式")
+            continue
+        if role not in (d.get("roles") or []):
+            errs.append(f"{aid} 的 roles={d.get('roles')} 不含 {role} —— 越权分配")
+else:
+    errs.append(f"不支持的 registry version：{reg.get('version')!r}")
 
 g, ev = ra.get("generator"), ra.get("evaluator")
 if g and ev:

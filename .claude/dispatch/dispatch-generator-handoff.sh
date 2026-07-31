@@ -14,6 +14,7 @@
 set -euo pipefail
 
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 PROGRESS="progress.json"
 PROGRESS_EXPLICIT=false
 FEATURES="features.json"
@@ -84,6 +85,11 @@ PY
 else
   die "progress file does not exist: $CANONICAL_PROGRESS"
 fi
+[ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh is missing or not executable"
+MODE_ADAPTER_ARGS=(--progress "$PROGRESS" --default "$DISPATCH_DIR/transports/adapters")
+[ -z "$ADAPTERS" ] || MODE_ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
+  || die "cannot restore the active mode adapter directory"
 [ -f "$FEATURES" ] || die "features file does not exist: $FEATURES"
 [ -f "$DISPATCH_DIR/dispatch-run.sh" ] || die "dispatch-run.sh is missing"
 [ -f "$DISPATCH_DIR/validate-dispatch.sh" ] || die "validate-dispatch.sh is missing"
@@ -107,7 +113,7 @@ PY
 )" || die "cannot inspect mode checkpoint"
 if [ -f "$REGISTRY" ]; then
   ACTIVE_ARGS=(--role generator --progress "$PROGRESS" --registry "$REGISTRY")
-  [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
   ACTIVE_ROLE="$(bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}")" \
     || die "active Generator mode role 复验失败"
@@ -161,7 +167,8 @@ case "$ASSIGNMENT_ROUTE" in
     ;;
   assigned)
     [ -f "$REGISTRY" ] || die "registry does not exist: $REGISTRY"
-    bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2 || \
+    bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" \
+      --progress "$PROGRESS" --adapters "$ADAPTERS" >&2 || \
       die "registry preflight failed; fail closed without local fallback"
     ;;
   *)
@@ -172,13 +179,24 @@ esac
 # Resolve only the runtime assignment already materialized by /plan. The
 # Console's signed tool binding is intentionally not reinterpreted here.
 CONTEXT="$(mktemp)"
-if ! python3 - "$PROGRESS" "$FEATURES" "$REGISTRY" "$PROJECT_ROOT" "$CONTEXT" "$ACTIVE_AGENT" \
+if ! python3 - "$PROGRESS" "$FEATURES" "$REGISTRY" "$PROJECT_ROOT" "$CONTEXT" "$ACTIVE_AGENT" "$DISPATCH_DIR" "$ADAPTERS" \
   ${REQUESTED_FEATURES[@]+"${REQUESTED_FEATURES[@]}"} <<'PY'
 import json
 import os
+import subprocess
 import sys
 
-progress_path, features_path, registry_path, project_root, output_path, verified_agent, *requested = sys.argv[1:]
+(
+    progress_path,
+    features_path,
+    registry_path,
+    project_root,
+    output_path,
+    verified_agent,
+    dispatch_dir,
+    adapters_dir,
+    *requested,
+) = sys.argv[1:]
 
 def fail(message):
     print(f"[generator-dispatch] {message}", file=sys.stderr)
@@ -187,7 +205,6 @@ def fail(message):
 try:
     progress = json.load(open(progress_path, encoding="utf-8"))
     feature_doc = json.load(open(features_path, encoding="utf-8"))
-    registry = json.load(open(registry_path, encoding="utf-8"))
 except Exception as exc:
     fail(f"cannot read build state: {exc}")
 
@@ -203,16 +220,37 @@ else:
     agent_id = assignments.get("generator")
     if not isinstance(agent_id, str) or not agent_id:
         fail("progress.role_assignments.generator 必须是非空 string")
-agents = registry.get("agents") if isinstance(registry, dict) else None
-if not isinstance(agents, list):
-    fail("registry.agents must be an array")
-descriptor = next((item for item in agents if isinstance(item, dict) and item.get("id") == agent_id), None)
-if descriptor is None:
-    fail(f"assigned Generator {agent_id!r} is absent from the registry")
-if "generator" not in (descriptor.get("roles") or []):
+try:
+    command = [
+        sys.executable,
+        os.path.join(dispatch_dir, "tool-catalog.py"),
+        "target",
+        "--registry",
+        registry_path,
+        "--target-id",
+        agent_id,
+    ]
+    if adapters_dir:
+        command.extend(["--adapters", adapters_dir])
+    resolved = subprocess.run(
+        command,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+except OSError as exc:
+    fail(f"cannot start tool target resolver: {exc}")
+if resolved.returncode != 0:
+    fail(f"assigned Generator {agent_id!r} is no longer an eligible target: {(resolved.stderr or resolved.stdout).strip()[:600]}")
+try:
+    descriptor = json.loads(resolved.stdout)
+except (TypeError, ValueError) as exc:
+    fail(f"target resolver returned invalid JSON: {exc}")
+if not isinstance(descriptor, dict) or "generator" not in (descriptor.get("roles") or []):
     fail(f"assigned Generator {agent_id!r} does not permit the generator role")
 
-transport = descriptor.get("transport")
+transport = descriptor.get("invocation")
 if transport == "subagent":
     agent_type = descriptor.get("agent_type")
     if not isinstance(agent_type, str) or not agent_type:
@@ -225,14 +263,8 @@ if transport == "a2a":
     raise SystemExit(0)
 if transport != "local-cli":
     fail(f"assigned Generator {agent_id!r} has unsupported transport {transport!r}")
-
-constraints = descriptor.get("constraints") or {}
-if constraints.get("write_src") is not True:
-    fail(f"local-cli Generator {agent_id!r} must have constraints.write_src=true")
-if constraints.get("push") is not False:
-    fail(f"local-cli Generator {agent_id!r} must have constraints.push=false")
-if constraints.get("l2") is not False:
-    fail(f"local-cli Generator {agent_id!r} must have constraints.l2=false")
+if not isinstance(descriptor.get("adapter"), str) or not isinstance(descriptor.get("sandbox"), dict):
+    fail(f"local-cli Generator {agent_id!r} lacks its verified adapter or sandbox")
 
 batch = progress.get("current_sprint")
 if not isinstance(batch, str) or not batch.strip():
@@ -401,9 +433,7 @@ DISPATCH_ARGS=(
   --agent "$AGENT" --envelope "$ENVELOPE" --registry "$REGISTRY"
   --workroot "$WORKROOT" --state "$STATE_ROOT"
 )
-if [ -n "$ADAPTERS" ]; then
-  DISPATCH_ARGS+=(--adapters "$ADAPTERS")
-fi
+DISPATCH_ARGS+=(--adapters "$ADAPTERS")
 [ -z "$PUB" ] || DISPATCH_ARGS+=(--pub "$PUB")
 DISPATCH_ARGS+=(--progress "$PROGRESS")
 

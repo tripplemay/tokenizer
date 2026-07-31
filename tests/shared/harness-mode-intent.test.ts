@@ -279,6 +279,20 @@ describe("v2 execution profiles and tool bindings", () => {
     expect(JSON.stringify(result.desired.execution)).not.toContain("builder-codex");
   });
 
+  it("allows a null Planner binding to delegate planning to the Coordinator", () => {
+    const value = toolBindingIntent();
+    value.desired.execution.role_bindings.planner = null;
+    const result = normalizeHarnessModeIntentPayload(value, { now: NOW, tools: TOOLS });
+    expect(result.desired.execution).toEqual({
+      profile: "heterogeneous",
+      role_bindings: {
+        planner: null,
+        generator: { tool: "codex", invocation: "local-cli" },
+        evaluator: { tool: "kimi", invocation: "local-cli" }
+      }
+    });
+  });
+
   it("requires an exact, role-complete tool capability catalog", () => {
     const missingPlanner = toolBindingIntent();
     delete missingPlanner.desired.execution.role_bindings.planner;

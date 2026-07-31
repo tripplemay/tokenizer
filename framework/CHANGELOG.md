@@ -5,6 +5,20 @@
 
 ---
 
+## v1.6.1 — 2026-07-31（dispatch 适配器持久化与 A2A 安全修正）
+
+**来源：** tokenizer 工具路由角色批次的框架合同审查与加固。
+
+- 将已签名的项目内 `adapter_dir` 固化到 active mode checkpoint；`/plan`、`/build`、`/verify`、autodrive、
+  PostToolUse 与 direct A2A client 都恢复同一受控目录。目录必须是仓库内的非软链相对路径，避免新增 CLI
+  在下一阶段回退到默认适配器集。
+- direct A2A 在发起网络请求或转发 bearer 凭据前，先用 canonical integration、verified adapter、工具与
+  model family 预检目标；Agent Card 请求计入任务 deadline。runner 的默认超时与目录一致为 3600 秒，
+  保持 legacy 65--128 位 dispatch agent id 的兼容，并拒绝启动不支持 Generator 的 legacy runner。
+- sandbox 的 `env_set` 拒绝全部控制字符，封闭 NUL 数组桥接注入路径；Gate 对 model family 使用与 catalog
+  相同的 Unicode strip 规范化，避免错误的 resolution drift 停机。
+- 补全 A2A `get` / `subscribe` 调用的 envelope 文档与 adapter 回归覆盖。
+
 ## v1.6.0 — 2026-07-31（工具绑定角色、Coordinator 控制面与可扩展 CLI 目录）
 
 **来源：** tokenizer dispatch 演练批次。原有控制台把角色直接绑定到注册的 agent，用户无法表达

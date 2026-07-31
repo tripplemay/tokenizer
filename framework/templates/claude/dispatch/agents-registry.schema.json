@@ -1,184 +1,279 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "agents-registry",
-  "description": "dispatch-mode.md L1 —— harness 版 Agent Card（A2A Agent Card 的最小可用子集）。把 role_assignments 里的字符串 id 解析为「怎么找到它 + 能干什么 + 不许干什么」。`transport` 字段是车道的技术实现：subagent=快车道 · local-cli=本地异构 · a2a=已实装的远端 Planner/Evaluator transport；Generator 因未定义 source-handoff protocol 被拒。",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["version", "agents"],
-  "properties": {
-    "_comment": { "type": "string", "description": "注释槽（可选）" },
-    "version": {
-      "const": "dispatch/1",
-      "description": "注册表格式版本；与 dispatch-envelope 的 contract_version 各自演进"
+  "title": "harness dispatch registry",
+  "description": "The framework accepts legacy dispatch/1 agent descriptors and the role-neutral tool-integrations/1 catalog. New projects should use tool-integrations/1: an integration describes one CLI tool and invocation configuration; the framework derives role permissions and opaque runtime target ids.",
+  "oneOf": [
+    { "$ref": "#/definitions/legacy_registry" },
+    { "$ref": "#/definitions/integration_registry" }
+  ],
+  "definitions": {
+    "tool_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
     },
-    "agents": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["id", "roles", "transport", "model_family"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
-            "description": "= progress.json.role_assignments 里引用的 id，也 = .agents-registry 历史格式里的 myId。它会进入受控 shell 参数和 state 路径，故只允许稳定 ASCII 标识。"
-          },
-          "tool": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
-            "description": "可选的稳定工具标识。优先于 local-cli adapter.tool / adapter.name；subagent 未声明时回退 claude-code；其他 transport 回退 model_family。控制台按此值展示和签发工具，而非 agent id。"
-          },
-          "priority": {
-            "type": "integer",
-            "minimum": 0,
-            "default": 1000,
-            "description": "同一 role + tool + transport 候选池的确定性调度优先级；数值越小越优先，平局按 id 字典序。"
-          },
-          "roles": {
-            "type": "array",
-            "minItems": 1,
-            "items": { "type": "string", "enum": ["planner", "generator", "evaluator"] },
-            "description": "可被分配的角色白名单。外部 CLI 可含 generator（v1.1 起放开），但受 constraints + spec-lock critic + 无 push 权限三重约束"
-          },
-          "transport": {
-            "type": "string",
-            "enum": ["subagent", "local-cli", "a2a"],
-            "description": "subagent=同会话隔离 subagent · local-cli=独立进程（机件 #7 沙箱）· a2a=远程 A2A server（Planner/Evaluator 已实装；Generator 无 source-handoff protocol，registry 校验拒绝）"
-          },
-          "model_family": {
-            "type": "string",
-            "minLength": 1,
-            "description": "去偏轮换与独立性互斥校验的判据。generator 与 evaluator 的 model_family 必须不同——否则同一模型实现完自己验收，铁律 4 的独立性形同虚设。示例：claude / codex / gemini"
-          },
-          "adapter": {
-            "type": "string",
-            "description": "local-cli 必填。指向 transports/adapters/<name>.json（argv 模板 + 信封投递方式 + 产物约定）"
-          },
-          "endpoint": {
-            "type": "string",
-            "description": "a2a 必填。A2A server 基址；Agent Card 默认在 <endpoint>/.well-known/a2a-agent-card"
-          },
-          "agent_type": {
-            "type": "string",
-            "description": "subagent 必填。对应 .claude/agents/<name>.md，如 evaluator / generator-restricted"
-          },
-          "capabilities": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "≈ A2A skills。编排者据此判断能否承接某类活，如 verify / l1_local / e2e / security_audit"
-          },
-          "constraints": {
-            "type": "object",
-            "additionalProperties": false,
-            "description": "硬约束。沙箱与信封据此裁剪授权——声明为 false 的能力不会出现在信封里，也不会有对应凭据进 env 白名单",
-            "properties": {
-              "l2": { "type": "boolean", "default": false, "description": "是否允许触达真实外部服务 / 计费 / 生产写入。默认 false" },
-              "write_src": { "type": "boolean", "default": false, "description": "是否允许改产品代码。evaluator 恒为 false（铁律：只写测试产物）" },
-              "push": { "type": "boolean", "default": false, "description": "是否允许直接 git push。外部实例恒为 false——产物由编排者校验 tag 归属后回流主仓" }
-            }
-          },
-          "sandbox": {
-            "type": "object",
-            "additionalProperties": false,
-            "description": "机件 #7 沙箱参数（仅 local-cli 有意义）",
-            "properties": {
-              "home_dir": {
-                "type": "string",
-                "description": "🔴 transport=local-cli 时**必填**。专用 HOME，且其中不得含 shell 初始化文件。原因（实测）：外部 CLI 普遍用登录 shell 执行命令（Codex 用 /bin/zsh -lc），登录 shell 会 source ~/.zshenv 与 ~/.zprofile——其中任何 export 都会把 env -i 剥掉的变量原样还回子进程，静默击穿 env 白名单。顺带也隔离了 ~/.aws、~/.config/gcloud 等凭据"
-              },
-              "env_allow": {
-                "type": "array",
-                "items": { "type": "string" },
-                "description": "在基础白名单之外额外放行的环境变量名（从父进程继承其值）。白名单制——未列出的一律不传，prod DATABASE_URL / 各家 API key 结构上到不了子进程"
-              },
-              "env_set": {
-                "type": "object",
-                "additionalProperties": { "type": "string" },
-                "description": "字面注入的环境变量（值支持 ~ 展开）。R1 残余风险的正确缓解形态：只投喂该 CLI 的认证目录（如 {\"CODEX_HOME\": \"~/.codex\"}），而不是把整个真实 HOME 放进白名单、连带暴露 ~/.aws、~/.config/gcloud"
-              }
-            }
-          },
-          "timeout_s": { "type": "integer", "minimum": 60, "maximum": 86400, "default": 3600, "description": "agent wall-clock 上限；任务 deadline_s 只能收紧，不能突破此上限" },
-          "auth": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "type": { "type": "string", "enum": ["none", "bearer"] },
-              "env": { "type": "string", "pattern": "^REMOTE_A2A_[A-Za-z0-9_]+$", "description": "持有编排端 A2A bearer 凭据的专用变量名（值不入 git）。只允许 REMOTE_A2A_*，防止 descriptor 将任意宿主密钥转发给远端；运行时还会拒绝所有 harness 受保护名称" }
-            },
-            "oneOf": [
-              {
-                "required": ["type"],
-                "properties": { "type": { "const": "none" } },
-                "not": { "required": ["env"] }
-              },
-              {
-                "required": ["type", "env"],
-                "properties": { "type": { "const": "bearer" } }
-              }
-            ]
-          },
-          "notes": { "type": "string" }
+    "agent_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "safe_text_128": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001F\\u007F]+$"
+    },
+    "endpoint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "^[^\\u0000-\\u001F\\u007F]+$"
+    },
+    "capability": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["none", "bearer"] },
+        "env": {
+          "type": "string",
+          "pattern": "^REMOTE_A2A_[A-Za-z0-9_]+$",
+          "description": "Only a dedicated REMOTE_A2A_* variable may be forwarded to an A2A endpoint."
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["type"],
+          "properties": { "type": { "const": "none" } },
+          "not": { "required": ["env"] }
         },
-        "allOf": [
-          {
-            "if": { "properties": { "transport": { "const": "local-cli" } }, "required": ["transport"] },
-            "then": {
-              "required": ["adapter", "sandbox"],
-              "properties": { "sandbox": { "required": ["home_dir"] } }
-            }
-          },
-          {
-            "if": { "properties": { "transport": { "const": "a2a" } }, "required": ["transport"] },
-            "then": { "required": ["endpoint"] }
-          },
-          {
-            "if": {
-              "properties": { "transport": { "not": { "const": "a2a" } } },
-              "required": ["transport"]
+        {
+          "required": ["type", "env"],
+          "properties": { "type": { "const": "bearer" } }
+        }
+      ]
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "home_dir": {
+          "type": "string",
+          "description": "Dedicated HOME for local-cli. It must be an absolute path or begin with ~."
+        },
+        "env_allow": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "env_set": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "legacy_agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "roles", "transport", "model_family"],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/agent_id",
+          "description": "Legacy runtime agent id. New tool-integrations/1 does not expose agent ids for selection."
+        },
+        "tool": {
+          "$ref": "#/definitions/tool_id",
+          "description": "Optional stable tool identity."
+        },
+        "priority": { "type": "integer", "minimum": 0, "default": 1000 },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["planner", "generator", "evaluator"] }
+        },
+        "transport": { "type": "string", "enum": ["subagent", "local-cli", "a2a"] },
+        "model_family": { "$ref": "#/definitions/safe_text_128" },
+        "adapter": { "$ref": "#/definitions/tool_id" },
+        "endpoint": { "$ref": "#/definitions/endpoint" },
+        "agent_type": { "type": "string", "minLength": 1 },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/definitions/capability" }
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "l2": { "type": "boolean", "default": false },
+            "write_src": { "type": "boolean", "default": false },
+            "push": { "type": "boolean", "default": false }
+          }
+        },
+        "sandbox": { "$ref": "#/definitions/sandbox" },
+        "timeout_s": { "type": "integer", "minimum": 60, "maximum": 86400, "default": 3600 },
+        "auth": { "$ref": "#/definitions/auth" },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "transport": { "const": "local-cli" } }, "required": ["transport"] },
+          "then": {
+            "required": ["adapter", "sandbox"],
+            "properties": { "sandbox": { "required": ["home_dir"] } }
+          }
+        },
+        {
+          "if": { "properties": { "transport": { "const": "a2a" } }, "required": ["transport"] },
+          "then": { "required": ["endpoint"] }
+        },
+        {
+          "if": { "properties": { "transport": { "not": { "const": "a2a" } } }, "required": ["transport"] },
+          "then": { "not": { "required": ["auth"] } }
+        },
+        {
+          "if": {
+            "properties": {
+              "transport": { "const": "a2a" },
+              "roles": { "contains": { "const": "generator" } }
             },
-            "then": { "not": { "required": ["auth"] } }
+            "required": ["transport", "roles"]
           },
-          {
-            "if": { "properties": { "transport": { "const": "subagent" } }, "required": ["transport"] },
-            "then": { "required": ["agent_type"] }
-          },
-          {
-            "if": {
-              "properties": {
-                "transport": { "const": "a2a" },
-                "roles": { "contains": { "const": "generator" } }
-              },
-              "required": ["transport", "roles"]
+          "then": false
+        },
+        {
+          "if": {
+            "properties": {
+              "transport": { "const": "subagent" },
+              "roles": { "contains": { "const": "planner" } }
             },
-            "then": false
+            "required": ["transport", "roles"]
           },
-          {
-            "if": {
-              "properties": {
-                "transport": { "const": "subagent" },
-                "roles": { "contains": { "const": "planner" } }
-              },
-              "required": ["transport", "roles"]
-            },
-            "then": {
-              "required": ["agent_type"],
-              "properties": {
-                "agent_type": { "const": "planner-proposal" },
-                "roles": {
-                  "minItems": 1,
-                  "maxItems": 1,
-                  "items": { "const": "planner" }
-                }
-              }
+          "then": {
+            "required": ["agent_type"],
+            "properties": {
+              "agent_type": { "const": "planner-proposal" },
+              "roles": { "minItems": 1, "maxItems": 1, "items": { "const": "planner" } }
             }
           }
-        ]
+        }
+      ]
+    },
+    "legacy_registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "agents"],
+      "properties": {
+        "_comment": { "type": "string" },
+        "version": { "const": "dispatch/1" },
+        "agents": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/legacy_agent" }
+        }
+      }
+    },
+    "local_cli": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "sandbox"],
+      "properties": {
+        "adapter": { "$ref": "#/definitions/tool_id" },
+        "sandbox": {
+          "allOf": [
+            { "$ref": "#/definitions/sandbox" },
+            { "required": ["home_dir"] }
+          ]
+        },
+        "timeout_s": { "type": "integer", "minimum": 60, "maximum": 86400, "default": 3600 }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "tool", "model_family"],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/tool_id",
+          "description": "Stable internal integration identity. It is not an agent-selection UI value."
+        },
+        "tool": { "$ref": "#/definitions/tool_id" },
+        "label": { "$ref": "#/definitions/safe_text_128" },
+        "model_family": { "$ref": "#/definitions/safe_text_128" },
+        "priority": { "type": "integer", "minimum": 0, "default": 1000 },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/capability" }
+        },
+        "local_cli": {
+          "$ref": "#/definitions/local_cli",
+          "description": "When present, the framework automatically offers this CLI for Planner, Generator, and Evaluator with fixed role contracts."
+        },
+        "subagent": {
+          "const": true,
+          "description": "When true, the framework offers fixed Planner/Generator/Evaluator subagent personas for this integration."
+        },
+        "notes": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["local_cli"] },
+        { "required": ["subagent"] }
+      ]
+    },
+    "a2a_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "integration_id", "remote_runner_id", "endpoint"],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/tool_id",
+          "description": "Stable remote target identity. The runtime creates a2a--<id>--planner/evaluator target ids."
+        },
+        "integration_id": {
+          "$ref": "#/definitions/tool_id",
+          "description": "Must reference an integrations[].id; enforced by the catalog resolver."
+        },
+        "remote_runner_id": {
+          "$ref": "#/definitions/agent_id",
+          "description": "Exact A2A Agent Card name advertised by the self-hosted runner."
+        },
+        "endpoint": { "$ref": "#/definitions/endpoint" },
+        "auth": { "$ref": "#/definitions/auth" },
+        "priority": { "type": "integer", "minimum": 0 },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/capability" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "integration_registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "integrations", "a2a_targets"],
+      "properties": {
+        "_comment": { "type": "string" },
+        "version": { "const": "tool-integrations/1" },
+        "integrations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/integration" }
+        },
+        "a2a_targets": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/a2a_target" }
+        }
       }
     }
   }

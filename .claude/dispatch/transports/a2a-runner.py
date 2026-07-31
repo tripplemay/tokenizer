@@ -14,6 +14,272 @@ import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 MIN_CANCEL_GRACE_S = 2.25  # sandbox helper uses a 2s TERM grace before killing its CLI group
+DEFAULT_TIMEOUT_S = 3600
+TOOL_INTEGRATIONS_VERSION = "tool-integrations/1"
+LOCAL_CLI_PREFIX = "local-cli--"
+A2A_ROLES = ("planner", "evaluator")
+SAFE_CONFIG_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+SAFE_TOOL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+SAFE_CAPABILITY = re.compile(r"[A-Za-z0-9._-]{1,64}\Z")
+CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+class RunnerConfigError(RuntimeError):
+    pass
+
+
+def _safe_config_id(value, label):
+    if not isinstance(value, str) or not SAFE_CONFIG_ID.fullmatch(value):
+        raise RunnerConfigError(f"{label} must be a safe stable id")
+    return value
+
+
+def _safe_tool_id(value, label):
+    if not isinstance(value, str) or not SAFE_TOOL_ID.fullmatch(value):
+        raise RunnerConfigError(f"{label} must be a safe stable tool id")
+    return value
+
+
+def _nonempty_string(value, label):
+    if not isinstance(value, str) or not value.strip():
+        raise RunnerConfigError(f"{label} must be a non-empty string")
+    return value
+
+
+def _bounded_text(value, label, maximum):
+    normalized = _nonempty_string(value, label).strip()
+    if len(normalized) > maximum or CONTROL_CHARACTERS.search(value):
+        raise RunnerConfigError(
+            f"{label} must be a non-empty string of at most {maximum} characters "
+            "without control characters"
+        )
+    return normalized
+
+
+def _capabilities(value, label):
+    if value is None:
+        return []
+    if not isinstance(value, list) or len(value) > 64:
+        raise RunnerConfigError(f"{label} must be a string array")
+    parsed = []
+    for index, item in enumerate(value):
+        capability = _bounded_text(item, f"{label}[{index}]", 64)
+        if not SAFE_CAPABILITY.fullmatch(capability):
+            raise RunnerConfigError(
+                f"{label}[{index}] must match {SAFE_CAPABILITY.pattern!r}"
+            )
+        parsed.append(capability)
+    return sorted(set(parsed))
+
+
+def _lookup_id(items, item_id, label, *, id_validator=_safe_tool_id):
+    if not isinstance(items, list):
+        raise RunnerConfigError(f"{label} must be an array")
+    matches = []
+    for item in items:
+        if not isinstance(item, dict):
+            raise RunnerConfigError(f"{label} entries must be objects")
+        if id_validator(item.get("id"), f"{label}.id") == item_id:
+            matches.append(item)
+    if len(matches) != 1:
+        if not matches:
+            raise RunnerConfigError(f"{label} id not found: {item_id}")
+        raise RunnerConfigError(f"{label} id is duplicated: {item_id}")
+    return matches[0]
+
+
+def _valid_timeout(value, label):
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or not 60 <= value <= 86400:
+        raise RunnerConfigError(f"{label} must be an integer in 60..86400")
+    return value
+
+
+def load_execution_descriptor(registry_path, *, agent=None, integration=None, runner_id=None):
+    """Load an execution-side local CLI profile from either supported registry.
+
+    The old dispatch/1 registry continues to identify its profile with
+    `--agent`. tool-integrations/1 intentionally keeps roles out of a CLI
+    integration; a single verified CLI runner can only receive the centrally
+    permitted remote roles (Planner/Evaluator), never Generator.
+    """
+    try:
+        with open(registry_path, encoding="utf-8") as fh:
+            registry = json.load(fh)
+    except Exception as exc:
+        raise RunnerConfigError(f"registry unreadable: {exc}") from exc
+    if not isinstance(registry, dict):
+        raise RunnerConfigError("registry root must be an object")
+
+    if integration is not None:
+        integration_id = _safe_tool_id(integration, "integration")
+        if registry.get("version") != TOOL_INTEGRATIONS_VERSION:
+            raise RunnerConfigError(
+                f"--integration requires registry version {TOOL_INTEGRATIONS_VERSION!r}"
+            )
+        item = _lookup_id(registry.get("integrations"), integration_id, "integrations")
+        local_cli = item.get("local_cli")
+        if not isinstance(local_cli, dict):
+            raise RunnerConfigError(
+                f"integration {integration_id!r}.local_cli must be an object"
+            )
+        adapter = _safe_tool_id(
+            local_cli.get("adapter"),
+            f"integration {integration_id!r}.local_cli.adapter",
+        )
+        sandbox = local_cli.get("sandbox")
+        if not isinstance(sandbox, dict):
+            raise RunnerConfigError(
+                f"integration {integration_id!r}.local_cli.sandbox must be an object"
+            )
+        timeout_s = _valid_timeout(
+            local_cli.get("timeout_s"),
+            f"integration {integration_id!r}.local_cli.timeout_s",
+        ) or DEFAULT_TIMEOUT_S
+        tool = _safe_tool_id(item.get("tool"), f"integration {integration_id!r}.tool")
+        label = _bounded_text(
+            item.get("label", tool), f"integration {integration_id!r}.label", 128
+        )
+        family = _bounded_text(
+            item.get("model_family"), f"integration {integration_id!r}.model_family", 128
+        )
+        capabilities = _capabilities(
+            item.get("capabilities", []), f"integration {integration_id!r}.capabilities"
+        )
+        notes = item.get("notes")
+        if notes is not None:
+            notes = _bounded_text(notes, f"integration {integration_id!r}.notes", 4096)
+        exposed_id = runner_id or f"{LOCAL_CLI_PREFIX}{integration_id}"
+        exposed_id = _safe_config_id(exposed_id, "runner id")
+        return {
+            "id": exposed_id,
+            "integration_id": integration_id,
+            "tool": tool,
+            "model_family": family,
+            "roles": list(A2A_ROLES),
+            "capabilities": capabilities,
+            "transport": "local-cli",
+            "adapter": adapter,
+            "sandbox": sandbox,
+            "timeout_s": timeout_s,
+            "constraints": {"l2": False, "write_src": False, "push": False},
+            "notes": label or notes or "",
+        }
+
+    agent_id = _safe_config_id(agent, "agent")
+    descriptor = _lookup_id(
+        registry.get("agents"), agent_id, "agents", id_validator=_safe_config_id
+    )
+    if descriptor.get("transport") != "local-cli":
+        raise RunnerConfigError(
+            f"agent {agent_id!r} uses transport={descriptor.get('transport')!r}; "
+            "a runner must execute a local-cli profile"
+        )
+    descriptor = dict(descriptor)
+    roles = descriptor.get("roles")
+    if isinstance(roles, list) and "generator" in roles:
+        raise RunnerConfigError(
+            "a2a runner cannot expose generator until a source-handoff protocol exists"
+        )
+    descriptor["id"] = _safe_config_id(runner_id or agent_id, "runner id")
+    if "model_family" in descriptor:
+        descriptor["model_family"] = _bounded_text(
+            descriptor.get("model_family"), f"agent {agent_id!r}.model_family", 128
+        )
+    if "capabilities" in descriptor:
+        descriptor["capabilities"] = _capabilities(
+            descriptor.get("capabilities"), f"agent {agent_id!r}.capabilities"
+        )
+    if "notes" in descriptor and descriptor["notes"] is not None:
+        descriptor["notes"] = _bounded_text(
+            descriptor["notes"], f"agent {agent_id!r}.notes", 4096
+        )
+    descriptor.setdefault("integration_id", None)
+    return descriptor
+
+
+def validate_integration_preflight(catalog_path, registry_path, adapters_dir, descriptor):
+    """Fail before listening unless every exposed integration role is executable.
+
+    ``sandbox-profile.sh`` resolves these same generated local-cli targets at
+    task time. Exercise the catalog now so a missing, unverified, or divergent
+    adapter cannot turn the first remote task into a delayed configuration
+    failure after an Agent Card has already been advertised.
+    """
+    integration_id = descriptor.get("integration_id")
+    if integration_id is None:
+        return
+    integration_id = _safe_tool_id(integration_id, "integration")
+    if not os.path.isfile(catalog_path):
+        raise RunnerConfigError(f"framework tool catalog missing: {catalog_path}")
+
+    expected = {
+        "integration_id": integration_id,
+        "invocation": "local-cli",
+        "tool": descriptor.get("tool"),
+        "model_family": descriptor.get("model_family"),
+        "adapter": descriptor.get("adapter"),
+        "sandbox": descriptor.get("sandbox"),
+        "timeout_s": descriptor.get("timeout_s"),
+        "capabilities": descriptor.get("capabilities", []),
+    }
+    for role in A2A_ROLES:
+        target_id = f"{LOCAL_CLI_PREFIX}{integration_id}--{role}"
+        command = [
+            sys.executable,
+            catalog_path,
+            "target",
+            "--registry",
+            registry_path,
+            "--adapters",
+            adapters_dir,
+            "--target-id",
+            target_id,
+        ]
+        try:
+            result = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise RunnerConfigError(
+                f"integration {integration_id!r} preflight could not run for "
+                f"{target_id!r}: {exc}"
+            ) from exc
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout or "tool catalog failed").strip()
+            raise RunnerConfigError(
+                f"integration {integration_id!r} preflight failed for {target_id!r}: "
+                f"{detail[:600]}"
+            )
+        try:
+            target = json.loads(result.stdout)
+        except (TypeError, ValueError) as exc:
+            raise RunnerConfigError(
+                f"integration {integration_id!r} preflight returned invalid JSON for "
+                f"{target_id!r}: {exc}"
+            ) from exc
+        if not isinstance(target, dict):
+            raise RunnerConfigError(
+                f"integration {integration_id!r} preflight returned a non-object for "
+                f"{target_id!r}"
+            )
+        mismatches = [
+            key for key, value in expected.items()
+            if target.get(key, [] if key == "capabilities" else None) != value
+        ]
+        if target.get("target_id") != target_id or role not in target.get("roles", []):
+            mismatches.extend(["target_id", "roles"])
+        if mismatches:
+            raise RunnerConfigError(
+                f"integration {integration_id!r} preflight descriptor disagrees with "
+                f"catalog target {target_id!r}: {', '.join(sorted(set(mismatches)))}"
+            )
 
 
 def _now():
@@ -264,13 +530,16 @@ class Executor:
 
             command = [
                 "bash", cfg.sandbox,
-                "--agent", cfg.agent,
                 "--envelope", env_path,
                 "--registry", cfg.registry,
                 "--adapters", cfg.adapters,
                 "--workroot", cfg.workroot,
                 "--state", cfg.state,
             ]
+            if getattr(cfg, "integration", None):
+                command.extend(["--integration", cfg.integration])
+            else:
+                command.extend(["--agent", cfg.agent])
             started = time.time()
             proc = subprocess.Popen(
                 command,
@@ -502,7 +771,7 @@ def make_handler(cfg, store, executor, descriptor):
         def do_GET(self):
             self._touch()
             if self.path == "/health":
-                return self._json(200, {"ok": True, "agent": cfg.agent, "ts": _now()})
+                return self._json(200, {"ok": True, "agent": cfg.runner_id, "ts": _now()})
             if self.path.rstrip("/") == "/.well-known/a2a-agent-card":
                 if not self._authed():
                     return self._json(401, {"error": "unauthorized"})
@@ -530,23 +799,23 @@ def make_handler(cfg, store, executor, descriptor):
                 if not tid:
                     return self._rpc_error(request_id, -32602, "envelope.task_id is required")
                 role = envelope.get("role")
-                if role not in (descriptor.get("roles") or []):
-                    return self._rpc_error(
-                        request_id,
-                        -32602,
-                        f"agent does not declare envelope role={role!r}",
-                    )
                 if role == "generator":
                     return self._rpc_error(
                         request_id,
                         -32602,
                         "a2a generator is disabled until a source-handoff protocol exists",
                     )
+                if role not in (descriptor.get("roles") or []):
+                    return self._rpc_error(
+                        request_id,
+                        -32602,
+                        f"agent does not declare envelope role={role!r}",
+                    )
                 rec = {
                     "taskId": tid,
                     "contextId": params.get("contextId") or str(uuid.uuid4()),
                     "state": "SUBMITTED",
-                    "agent": cfg.agent,
+                    "agent": cfg.runner_id,
                     "model_family": descriptor.get("model_family"),
                     "batch": envelope.get("batch"),
                     "role": envelope.get("role"),
@@ -650,8 +919,8 @@ def make_handler(cfg, store, executor, descriptor):
 def agent_card(cfg, descriptor):
     return {
         "protocolVersion": "1.0",
-        "name": cfg.agent,
-        "description": descriptor.get("notes") or f"harness dispatch agent {cfg.agent}",
+        "name": cfg.runner_id,
+        "description": descriptor.get("notes") or f"harness dispatch agent {cfg.runner_id}",
         "provider": {"organization": "harness-dispatch",
                      "modelFamily": descriptor.get("model_family")},
         "url": f"http://{cfg.advertise}:{cfg.port}/",
@@ -666,6 +935,9 @@ def agent_card(cfg, descriptor):
             "contract_version": "harness/1.1",
             "constraints": descriptor.get("constraints") or {},
             "sandboxed": True,
+            "tool": descriptor.get("tool"),
+            "integration_id": descriptor.get("integration_id"),
+            "runner_id": cfg.runner_id,
             "conformance": "subset: JSON-RPC only; no gRPC/REST, extension negotiation, or signed card",
         },
     }
@@ -741,7 +1013,13 @@ def main():
     dispatch_dir = os.path.dirname(script_dir)
     parser = argparse.ArgumentParser()
     parser.add_argument("--registry", default=".agents-registry.json")
-    parser.add_argument("--agent", required=True)
+    selector = parser.add_mutually_exclusive_group(required=True)
+    selector.add_argument("--agent")
+    selector.add_argument("--integration")
+    parser.add_argument(
+        "--runner-id",
+        help="Stable remote Agent Card identity; defaults to the legacy agent id or local-cli--<integration>.",
+    )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=41241)
     parser.add_argument("--state", default=".harness-dispatch/a2a")
@@ -776,20 +1054,28 @@ def main():
         )
 
     try:
-        with open(cfg.registry, encoding="utf-8") as fh:
-            registry = json.load(fh)
-    except Exception as exc:
-        sys.exit(f"[a2a-runner] registry unreadable: {exc}")
-    descriptor = next(
-        (item for item in registry.get("agents", []) if item.get("id") == cfg.agent), None
-    )
-    if descriptor is None:
-        sys.exit(f"[a2a-runner] agent not found: {cfg.agent}")
-    if descriptor.get("transport") not in ("local-cli", "a2a"):
-        sys.exit(f"[a2a-runner] unsupported transport: {descriptor.get('transport')}")
+        descriptor = load_execution_descriptor(
+            cfg.registry,
+            agent=cfg.agent,
+            integration=cfg.integration,
+            runner_id=cfg.runner_id,
+        )
+    except RunnerConfigError as exc:
+        sys.exit(f"[a2a-runner] {exc}")
+    cfg.runner_id = descriptor["id"]
     for path in (cfg.sandbox, cfg.validator):
         if not os.path.isfile(path):
             sys.exit(f"[a2a-runner] framework resource missing: {path}")
+    if cfg.integration:
+        try:
+            validate_integration_preflight(
+                os.path.join(dispatch_dir, "tool-catalog.py"),
+                cfg.registry,
+                cfg.adapters,
+                descriptor,
+            )
+        except RunnerConfigError as exc:
+            sys.exit(f"[a2a-runner] {exc}")
 
     cfg.token = os.environ.get("HARNESS_A2A_TOKEN", "").strip()
     loopback = cfg.host in ("127.0.0.1", "::1", "localhost")
@@ -831,6 +1117,8 @@ def main():
             "pid": os.getpid(),
             "state": cfg.state,
             "port": cfg.port,
+            "runner_id": cfg.runner_id,
+            "integration_id": descriptor.get("integration_id"),
             "process_started": process_started,
             "started_at": _now(),
         }, fh, ensure_ascii=False, indent=2)
@@ -871,7 +1159,7 @@ def main():
         threading.Thread(target=idle_watch, daemon=True).start()
 
     print(
-        f"[a2a-runner] {cfg.agent} listening on http://{cfg.host}:{cfg.port}/ "
+        f"[a2a-runner] {cfg.runner_id} listening on http://{cfg.host}:{cfg.port}/ "
         f"state={cfg.state}",
         flush=True,
     )

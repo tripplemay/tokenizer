@@ -11,7 +11,9 @@ CONSOLE_DIR="$(cd "$DISPATCH_DIR/../console" && pwd)"
 VALIDATOR="$CONSOLE_DIR/validate-mode-intent.sh"
 PROGRESS="progress.json"
 REGISTRY=".agents-registry.json"
-ADAPTERS="$DISPATCH_DIR/transports/adapters"
+DEFAULT_ADAPTERS="$DISPATCH_DIR/transports/adapters"
+ADAPTERS=""
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 PUB="$CONSOLE_DIR/console.pub"
 CHECKPOINT="$(mktemp)"
 AUDIT="$(mktemp)"
@@ -37,6 +39,15 @@ done
 
 [ -f "$PROGRESS" ] || die "progress 不存在：$PROGRESS"
 [ -f "$REGISTRY" ] || die "registry 不存在：$REGISTRY"
+[ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+
+# A v2 checkpoint may own an explicit project-local adapter directory. Resolve
+# it before either registry preflight or signed-binding replay; an explicit
+# caller override is accepted only when it names that same durable directory.
+ADAPTER_ARGS=(--progress "$PROGRESS" --default "$DEFAULT_ADAPTERS")
+[ -z "$ADAPTERS" ] || ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+ADAPTERS="$(bash "$MODE_ADAPTERS" "${ADAPTER_ARGS[@]}")" \
+  || die "无法恢复 active mode 的 adapter 目录"
 
 # Freeze the progress facts once. Old v1/v2-fast records intentionally have no
 # checkpoint and preserve the historical {} path. A partial checkpoint fails
@@ -80,10 +91,16 @@ if not isinstance(mode, dict):
     print("none")
     raise SystemExit(0)
 if "signed_intent" not in mode and "resolution" not in mode:
+    if "adapter_dir" in mode:
+        fail("mode_intent.adapter_dir 只能用于 active v2 checkpoint")
     print("none")
     raise SystemExit(0)
-if set(mode) != {"intent_id", "applied_batch", "applied_at", "signed_intent", "resolution"}:
-    fail("v2 mode_intent checkpoint 必须恰含 intent_id/applied_batch/applied_at/signed_intent/resolution")
+required_mode_fields = {"intent_id", "applied_batch", "applied_at", "signed_intent", "resolution"}
+allowed_mode_fields = required_mode_fields | {"adapter_dir"}
+if not required_mode_fields.issubset(mode) or set(mode) - allowed_mode_fields:
+    fail("v2 mode_intent checkpoint 必须包含 intent_id/applied_batch/applied_at/signed_intent/resolution，且只可额外带 adapter_dir")
+if "adapter_dir" in mode and (not isinstance(mode["adapter_dir"], str) or not mode["adapter_dir"]):
+    fail("mode_intent.adapter_dir 必须是非空字符串")
 if not isinstance(mode["intent_id"], str) or not SAFE_ID.fullmatch(mode["intent_id"]):
     fail("mode_intent.intent_id 非法")
 if not isinstance(mode["applied_batch"], str) or not SAFE_BATCH.fullmatch(mode["applied_batch"]):
@@ -107,6 +124,10 @@ if not isinstance(assignments, dict) or not isinstance(resolution, dict) or set(
 for role in ROLES:
     binding = bindings[role]
     record = resolution[role]
+    if role == "planner" and binding is None:
+        if record is not None or assignments.get(role) is not None:
+            fail("Coordinator Planner 不得拥有外部 resolution 或 assignment")
+        continue
     if not isinstance(binding, dict) or set(binding) != {"tool", "invocation"}:
         fail(f"checkpoint role_bindings.{role} shape 非法")
     if not isinstance(record, dict) or set(record) != RECORD_FIELDS:
@@ -149,7 +170,7 @@ PROJECT_DIR="$(cd "$(dirname "$PROGRESS")" && pwd)"
 PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
   || die "无法从 progress 所在目录确定 git 项目根；不能复验 checkpoint repo_key"
 
-if ! bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2; then
+if ! bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" --adapters "$ADAPTERS" >&2; then
   die "registry 未通过安全预检"
 fi
 
@@ -196,6 +217,10 @@ if not isinstance(bindings, dict) or not isinstance(stored, dict) or not isinsta
     fail("复验 bindings/resolution/assignments 非法")
 for role in ROLES:
     binding, before, after = bindings.get(role), stored.get(role), current.get(role)
+    if role == "planner" and binding is None:
+        if before is not None or after is not None or assignments.get(role) is not None:
+            fail("Coordinator Planner 的审计记录必须保持 null")
+        continue
     if not isinstance(binding, dict) or not isinstance(before, dict) or not isinstance(after, dict):
         fail(f"{role} 复验记录缺失")
     if set(before) != FIELDS or set(after) != FIELDS:

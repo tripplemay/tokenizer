@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { readDispatchToolCatalog } from "./harness-tool-catalog";
-import type { HarnessToolCatalogEntry } from "@/shared/harness-tool-catalog";
+import { readDispatchToolCatalog, readDispatchToolIntegrations } from "./harness-tool-catalog";
+import type { HarnessToolCatalogEntry, HarnessToolIntegration } from "@/shared/harness-tool-catalog";
 import {
   HARNESS_MODE_ROLES,
   HARNESS_TRANSPORTS,
@@ -39,13 +39,14 @@ export type ModeSnapshot = {
   execution: "fast" | "heterogeneous" | "slow" | "unknown";
   current: {
     profile: "heterogeneous" | "slow";
-    roleBindings: Record<HarnessModeRole, { tool: string; invocation: HarnessTransport; modelFamily: string }>;
+    roleBindings: CurrentRoleBindings;
   } | null;
   autonomy: { enabled: boolean; policyValid: boolean | null; authorizedBy: string | null; expiresAt: string | null; status: string | null };
   dispatch: {
     enabled: boolean;
-    assignments: Record<string, string>;
+    assignments: DispatchAssignments;
     agents: DispatchAgent[];
+    integrations: DispatchIntegration[];
     toolCatalog: DispatchToolCapability[];
     familyExclusive: boolean | null;
     issues: string[];
@@ -54,6 +55,9 @@ export type ModeSnapshot = {
   machinery: { denyListMerged: boolean | null; hooks: string[]; missing: string[] };
   pendingDefaults: PendingModeDefaultsSummary | null;
 };
+
+/** A null Planner assignment is the persisted Coordinator route in v2. */
+export type DispatchAssignments = Record<string, string | null>;
 
 export type DispatchAgent = {
   id: string;
@@ -66,6 +70,14 @@ export type DispatchAgent = {
 };
 
 export type DispatchToolCapability = HarnessToolCatalogEntry;
+export type DispatchIntegration = HarnessToolIntegration;
+
+type CurrentRoleBinding = { tool: string; invocation: HarnessTransport; modelFamily: string };
+type CurrentRoleBindings = {
+  planner: CurrentRoleBinding | null;
+  generator: CurrentRoleBinding;
+  evaluator: CurrentRoleBinding;
+};
 
 function readJson<T>(path: string): T | null {
   try {
@@ -143,6 +155,7 @@ export function readFramework(repoPath: string, now: number = Date.now()): Frame
 
 // ── dispatch ────────────────────────────────────────────────────────────────
 type Registry = {
+  version?: string;
   agents?: Array<{
     id?: string;
     roles?: string[];
@@ -165,12 +178,35 @@ function safeCapabilities(value: unknown): string[] {
   ];
 }
 
-export function readDispatch(repoPath: string, assignments: Record<string, string>): ModeSnapshot["dispatch"] {
-  const registry = readJson<Registry>(join(repoPath, ".agents-registry.json"));
-  if (!registry?.agents) {
-    return { enabled: false, assignments: {}, agents: [], toolCatalog: [], familyExclusive: null, issues: [] };
+export function readDispatch(repoPath: string, assignments: DispatchAssignments): ModeSnapshot["dispatch"] {
+  const registryPath = join(repoPath, ".agents-registry.json");
+  const registryPresent = existsSync(registryPath);
+  const registry = readJson<Registry>(registryPath);
+  const legacyAgents = Array.isArray(registry?.agents)
+    ? registry.agents
+    : [];
+  const catalog = readDispatchToolCatalog(repoPath);
+  const integrationCatalog = readDispatchToolIntegrations(repoPath);
+  const enabled = legacyAgents.length > 0 || integrationCatalog.issue === null;
+  if (!enabled) {
+    const issues = [...new Set([catalog.issue, integrationCatalog.issue].filter(
+      (issue): issue is string => typeof issue === "string"
+    ))];
+    // A present but invalid registry is a configuration failure, not the same
+    // state as a project that has never opted into dispatch.
+    if (registryPresent && issues.length === 0) issues.push("dispatch tool catalog is unavailable");
+    return {
+      enabled: false,
+      assignments: {},
+      agents: [],
+      integrations: [],
+      toolCatalog: [],
+      familyExclusive: null,
+      issues
+    };
   }
-  const agents: DispatchAgent[] = registry.agents.map((a) => ({
+
+  const agents: DispatchAgent[] = legacyAgents.map((a) => ({
     id: a.id ?? "",
     roles: a.roles ?? [],
     transport: a.transport ?? "unknown",
@@ -183,7 +219,11 @@ export function readDispatch(repoPath: string, assignments: Record<string, strin
   const issues: string[] = [];
 
   for (const [role, id] of Object.entries(assignments)) {
-    if (!byId.has(id)) issues.push(`role_assignments.${role}=${id} 不在注册表里`);
+    if (id === null) {
+      if (role !== "planner") issues.push(`role_assignments.${role}=null 非法`);
+      continue;
+    }
+    if (legacyAgents.length > 0 && !byId.has(id)) issues.push(`role_assignments.${role}=${id} 不在注册表里`);
   }
   // 独立性铁则第 5 条：generator 与 evaluator 的 model_family 必须不同。
   // 这里只是复算给人看；机器上的 PostToolUse hook 才是那道拦得住写入的门。
@@ -198,9 +238,17 @@ export function readDispatch(repoPath: string, assignments: Record<string, strin
   for (const a of agents) {
     if (a.transport === "local-cli" && !a.sandboxed) issues.push(`${a.id} 是 local-cli 却没配 sandbox —— env 白名单形同虚设`);
   }
-  const catalog = readDispatchToolCatalog(repoPath);
   if (catalog.issue) issues.push(catalog.issue);
-  return { enabled: true, assignments, agents, toolCatalog: catalog.entries, familyExclusive, issues };
+  if (integrationCatalog.issue && integrationCatalog.issue !== catalog.issue) issues.push(integrationCatalog.issue);
+  return {
+    enabled: true,
+    assignments,
+    agents,
+    integrations: integrationCatalog.integrations,
+    toolCatalog: catalog.entries,
+    familyExclusive,
+    issues
+  };
 }
 
 // ── 机件在位 ─────────────────────────────────────────────────────────────────
@@ -241,7 +289,7 @@ export function readMachinery(repoPath: string): ModeSnapshot["machinery"] {
 
 // ── 汇总 ─────────────────────────────────────────────────────────────────────
 type Progress = {
-  role_assignments?: Record<string, string>;
+  role_assignments?: DispatchAssignments;
   mode_intent?: unknown;
   autonomy?: { status?: string | null };
   pending_gate?: { id?: string } | null;
@@ -269,7 +317,7 @@ function boundedCurrentText(value: unknown, max: number): string | null {
  */
 function currentResolvedMode(
   value: unknown,
-  assignments: Record<string, string>
+  assignments: DispatchAssignments
 ): ModeSnapshot["current"] {
   const intent = plainRecord(value);
   const resolution = plainRecord(intent?.resolution);
@@ -277,6 +325,11 @@ function currentResolvedMode(
 
   const roleBindings = {} as NonNullable<ModeSnapshot["current"]>["roleBindings"];
   for (const role of HARNESS_MODE_ROLES) {
+    if (role === "planner" && resolution[role] === null) {
+      if (assignments.planner !== null) return null;
+      roleBindings.planner = null;
+      continue;
+    }
     const entry = plainRecord(resolution[role]);
     if (!entry || Object.keys(entry).sort().join("\u0000") !== "agent_id\u0000invocation\u0000model_family\u0000priority\u0000tool") return null;
     const agentId = boundedCurrentText(entry.agent_id, 128);
@@ -298,7 +351,10 @@ function currentResolvedMode(
     roleBindings[role] = { tool, invocation: invocation as HarnessTransport, modelFamily };
   }
 
-  const invocations = HARNESS_MODE_ROLES.map((role) => roleBindings[role].invocation);
+  const invocations = HARNESS_MODE_ROLES.flatMap((role) => {
+    const binding = roleBindings[role];
+    return binding === null ? [] : [binding.invocation];
+  });
   if (invocations.includes("a2a")) return { profile: "slow", roleBindings };
   return invocations.includes("local-cli") ? { profile: "heterogeneous", roleBindings } : null;
 }
@@ -308,6 +364,14 @@ export function buildModeSnapshot(repoPath: string, now: number = Date.now()): M
   const assignments = progress.role_assignments ?? {};
   const dispatch = readDispatch(repoPath, assignments);
   const current = currentResolvedMode(progress.mode_intent, assignments);
+  if (current) {
+    dispatch.familyExclusive = current.roleBindings.generator.modelFamily !== current.roleBindings.evaluator.modelFamily;
+    if (!dispatch.familyExclusive) {
+      dispatch.issues.push(
+        `generator 与 evaluator 同为 ${current.roleBindings.generator.modelFamily} family —— 独立性形同虚设`
+      );
+    }
+  }
 
   // 已解析的 v2 binding 是当前配置的权威审计事实。旧项目没有它时才从
   // role_assignments 回退推断；只要含 A2A，慢车道优先于 local-cli。
@@ -315,7 +379,7 @@ export function buildModeSnapshot(repoPath: string, now: number = Date.now()): M
   if (!current && dispatch.enabled) {
     const byId = new Map(dispatch.agents.map((a) => [a.id, a]));
     const transports = Object.values(assignments)
-      .map((id) => byId.get(id)?.transport)
+      .map((id) => typeof id === "string" ? byId.get(id)?.transport : undefined)
       .filter(Boolean) as string[];
     if (transports.some((t) => t === "a2a")) execution = "slow";
     else if (transports.some((t) => t === "local-cli")) execution = "heterogeneous";

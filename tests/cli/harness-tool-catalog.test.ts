@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { readDispatchToolCatalog } from "@/cli/harness-tool-catalog";
+import { readDispatchToolCatalog, readDispatchToolIntegrations } from "@/cli/harness-tool-catalog";
 
 let repo: string;
 
@@ -99,6 +99,288 @@ beforeEach(() => {
 afterEach(() => rmSync(repo, { recursive: true, force: true }));
 
 describe("data-only dispatch tool catalog", () => {
+  it("accepts a subagent-only integration while requiring local-cli for A2A targets", () => {
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "claude-subagent",
+          tool: "claude-code",
+          label: "Claude Code",
+          model_family: "claude",
+          priority: 100,
+          capabilities: ["plan", "build", "verify"],
+          subagent: true
+        }
+      ],
+      a2a_targets: []
+    });
+
+    expect(readDispatchToolCatalog(repo)).toMatchObject({
+      issue: null,
+      entries: expect.arrayContaining([
+        expect.objectContaining({ role: "planner", tool: "claude-code", invocation: "subagent" }),
+        expect.objectContaining({ role: "generator", tool: "claude-code", invocation: "subagent" }),
+        expect.objectContaining({ role: "evaluator", tool: "claude-code", invocation: "subagent" })
+      ])
+    });
+    expect(readDispatchToolIntegrations(repo)).toMatchObject({
+      issue: null,
+      integrations: [expect.objectContaining({
+        id: "claude-subagent",
+        invocations: ["subagent"],
+        localCli: false,
+        sandboxed: false,
+        a2aTargetCount: 0
+      })]
+    });
+
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "claude-subagent",
+          tool: "claude-code",
+          label: "Claude Code",
+          model_family: "claude",
+          priority: 100,
+          capabilities: ["plan", "build", "verify"],
+          subagent: true
+        }
+      ],
+      a2a_targets: [
+        {
+          id: "invalid-remote",
+          integration_id: "claude-subagent",
+          endpoint: "https://example.invalid/a2a",
+          remote_runner_id: "invalid-runner",
+          priority: 100,
+          auth: { type: "none" }
+        }
+      ]
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("mirrors framework defaults and merges integration capabilities into A2A routes", () => {
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "future-defaults",
+          tool: "future-cli",
+          model_family: "future",
+          local_cli: {
+            adapter: "future-cli",
+            sandbox: { home_dir: "~/.harness-sandbox/future" }
+          }
+        },
+        {
+          id: "kimi-remote",
+          tool: "kimi",
+          label: "Kimi",
+          model_family: "kimi",
+          capabilities: ["plan"],
+          local_cli: {
+            adapter: "kimi",
+            sandbox: { home_dir: "~/.harness-sandbox/kimi" }
+          }
+        }
+      ],
+      a2a_targets: [
+        {
+          id: "kimi-remote-target",
+          integration_id: "kimi-remote",
+          endpoint: "https://example.invalid/a2a",
+          remote_runner_id: "kimi-runner"
+        }
+      ]
+    });
+
+    const catalog = readDispatchToolCatalog(repo);
+    expect(catalog.issue).toBeNull();
+    expect(catalog.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        role: "generator",
+        tool: "future-cli",
+        label: "future-cli",
+        invocation: "local-cli",
+        capabilities: []
+      }),
+      expect.objectContaining({
+        role: "planner",
+        tool: "kimi",
+        invocation: "a2a",
+        capabilities: ["plan"]
+      })
+    ]));
+    expect(readDispatchToolIntegrations(repo)).toMatchObject({
+      issue: null,
+      integrations: expect.arrayContaining([
+        expect.objectContaining({
+          id: "future-defaults",
+          label: "future-cli",
+          capabilities: [],
+          localCli: true,
+          sandboxed: true
+        })
+      ])
+    });
+  });
+
+  it("requires the framework-owned a2a_targets array", () => {
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "claude-subagent",
+          tool: "claude-code",
+          model_family: "claude",
+          subagent: true
+        }
+      ]
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it.each([false, [], "not-a-profile", null])(
+    "fails closed when a declared local_cli is not an object (%j)",
+    (local_cli) => {
+      write(".agents-registry.json", {
+        version: "tool-integrations/1",
+        integrations: [{
+          id: "claude-subagent",
+          tool: "claude-code",
+          model_family: "claude",
+          subagent: true,
+          local_cli
+        }],
+        a2a_targets: []
+      });
+      expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+    }
+  );
+
+  it("uses framework-length tool ids for integrations and A2A targets", () => {
+    const overlong = "x".repeat(65);
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [{
+        id: overlong,
+        tool: "claude-code",
+        model_family: "claude",
+        subagent: true
+      }],
+      a2a_targets: []
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [{
+        id: "future",
+        tool: "future-cli",
+        model_family: "future",
+        local_cli: {
+          adapter: "future-cli",
+          sandbox: { home_dir: "~/.harness-sandbox/future" },
+          timeout_s: 1800
+        }
+      }],
+      a2a_targets: [{
+        id: overlong,
+        integration_id: "future",
+        endpoint: "https://example.invalid/a2a",
+        remote_runner_id: "future-runner"
+      }]
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("derives tool routes and integration cards from tool-integrations/1 without exposing A2A target ids", () => {
+    write(".claude/dispatch/transports/adapters/codex.json", {
+      name: "codex",
+      tool: "codex",
+      display_name: "Codex",
+      model_family: "codex",
+      argv: ["codex"],
+      envelope_delivery: "stdin",
+      _verified: true
+    });
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "codex-local",
+          tool: "codex",
+          label: "Codex CLI",
+          model_family: "codex",
+          priority: 100,
+          capabilities: ["build", "verify"],
+          local_cli: {
+            adapter: "codex",
+            sandbox: { home_dir: "~/.harness-sandbox/codex", env_set: { CODEX_HOME: "~/.codex" } },
+            timeout_s: 2400
+          },
+          subagent: true
+        },
+        {
+          id: "kimi-local",
+          tool: "kimi",
+          label: "Kimi CLI",
+          model_family: "kimi",
+          priority: 110,
+          capabilities: ["plan", "verify"],
+          local_cli: {
+            adapter: "kimi",
+            sandbox: { home_dir: "~/.harness-sandbox/kimi" },
+            timeout_s: 1800
+          }
+        }
+      ],
+      a2a_targets: [
+        {
+          id: "codex-planner-remote",
+          integration_id: "codex-local",
+          endpoint: "https://example.invalid/a2a",
+          remote_runner_id: "codex-runner-1",
+          priority: 90,
+          auth: { type: "bearer", env: "REMOTE_A2A_CODEX" },
+          capabilities: ["plan", "verify"]
+        }
+      ]
+    });
+
+    const catalog = readDispatchToolCatalog(repo);
+    const integrations = readDispatchToolIntegrations(repo);
+
+    expect(catalog.issue).toBeNull();
+    expect(catalog.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({ role: "planner", tool: "codex", invocation: "local-cli" }),
+      expect.objectContaining({ role: "planner", tool: "codex", invocation: "subagent" }),
+      expect.objectContaining({ role: "planner", tool: "codex", invocation: "a2a" }),
+      expect.objectContaining({ role: "generator", tool: "codex", invocation: "local-cli" }),
+      expect.objectContaining({ role: "generator", tool: "codex", invocation: "subagent" }),
+      expect.objectContaining({ role: "evaluator", tool: "codex", invocation: "a2a" })
+    ]));
+    expect(catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ role: "generator", tool: "codex", invocation: "a2a" })
+    ]));
+    expect(integrations.issue).toBeNull();
+    expect(integrations.integrations).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          id: "codex-local",
+          tool: "codex",
+          invocations: ["local-cli", "subagent", "a2a"],
+          a2aTargetCount: 1
+        })
+      ]));
+    const publicInventory = JSON.stringify(integrations);
+    expect(publicInventory).not.toContain("codex-planner-remote");
+    expect(publicInventory).not.toContain("codex-runner-1");
+    expect(publicInventory).not.toContain("example.invalid/a2a");
+  });
+
   it("discovers a compatible env-delivery adapter without executing repository helpers", () => {
     // A project may contain arbitrary code at this familiar path. The parser
     // does not inspect or run it; only registry and adapter data are consumed.
@@ -111,6 +393,51 @@ describe("data-only dispatch tool catalog", () => {
       expect.objectContaining({ role: "planner", tool: "kimi", label: "Kimi", invocation: "local-cli" })
     ]));
     expect(JSON.stringify(catalog.entries)).not.toContain("builder-future");
+  });
+
+  it("enforces bounded text and safe capability formats", () => {
+    const makeRegistry = () => ({
+      version: "tool-integrations/1",
+      integrations: [{
+        id: "future",
+        tool: "future-cli",
+        label: "Future CLI",
+        model_family: "future",
+        capabilities: ["build"],
+        local_cli: {
+          adapter: "future-cli",
+          sandbox: { home_dir: "~/future" }
+        }
+      }],
+      a2a_targets: [{
+        id: "future-remote",
+        integration_id: "future",
+        endpoint: "https://example.invalid/a2a",
+        remote_runner_id: "future-runner"
+      }]
+    });
+    const cases: Array<[string, (registry: ReturnType<typeof makeRegistry>) => void]> = [
+      ["model family length", (registry) => { registry.integrations[0].model_family = "x".repeat(129); }],
+      ["model family control", (registry) => { registry.integrations[0].model_family = "future\nfamily"; }],
+      ["model family edge control", (registry) => { registry.integrations[0].model_family = "\nfuture"; }],
+      ["label length", (registry) => { registry.integrations[0].label = "x".repeat(129); }],
+      ["label control", (registry) => { registry.integrations[0].label = "Future\nCLI"; }],
+      ["capability format", (registry) => { registry.integrations[0].capabilities = ["unsafe capability"]; }],
+      ["capability length", (registry) => { registry.integrations[0].capabilities = ["x".repeat(65)]; }],
+      ["endpoint length", (registry) => { registry.a2a_targets[0].endpoint = `https://example.invalid/${"x".repeat(2025)}`; }],
+      ["endpoint control", (registry) => { registry.a2a_targets[0].endpoint = "https://example.invalid/a2a\nnext"; }],
+      ["endpoint edge control", (registry) => { registry.a2a_targets[0].endpoint = "\nhttps://example.invalid/a2a"; }]
+    ];
+
+    for (const [label, mutate] of cases) {
+      const registry = makeRegistry();
+      mutate(registry);
+      write(".agents-registry.json", registry);
+      expect(readDispatchToolCatalog(repo), label).toEqual({
+        entries: [],
+        issue: "dispatch tool catalog is unavailable"
+      });
+    }
   });
 
   it.each([

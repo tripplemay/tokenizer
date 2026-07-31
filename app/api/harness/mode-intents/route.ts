@@ -159,12 +159,12 @@ export async function POST(request: Request) {
     );
   }
 
-  let agents;
-  let tools;
+  let agents: ReturnType<typeof modeAgentsFromSnapshot> | undefined;
+  let tools: ReturnType<typeof modeToolCatalogFromSnapshot> | undefined;
   try {
-    // The agent snapshot remains a separate device-health check. It must not,
-    // however, be used to infer tool ids for v2 bindings.
-    agents = modeAgentsFromSnapshot(project.modes);
+    // v2 binds a tool, not a concrete device-local agent. Legacy v1 intents
+    // retain the old descriptor snapshot for backwards-compatible validation.
+    if (!isV2ToolBindingIntent) agents = modeAgentsFromSnapshot(project.modes);
     tools = needsToolCatalog ? modeToolCatalogFromSnapshot(project.modes) : undefined;
   } catch (error) {
     return harnessInputErrorResponse(error);

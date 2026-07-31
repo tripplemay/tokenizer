@@ -48,7 +48,7 @@ type RoleBindingContext = {
   tool: string;
   invocation: HarnessTransport;
   modelFamily?: string;
-} | null;
+} | null | undefined;
 
 const ERROR_KEYS: Record<string, string> = {
   invalid_project: "invalidProject",
@@ -124,16 +124,23 @@ export function ModeEditor({
   const statusT = useTranslations("harness.status.intent");
   const router = useRouter();
   const [refreshing, startTransition] = useTransition();
-  const [profile, setProfile] = useState<HarnessExecutionProfile>(() => modeEditorInitialProfile(selectedRole));
+  const initialProfile = modeEditorInitialProfile(selectedRole);
+  const [profile, setProfile] = useState<HarnessExecutionProfile>(() => initialProfile);
   const plannerOptions = roleToolOptions(tools, "planner");
   const generatorOptions = roleToolOptions(tools, "generator");
   const evaluatorOptions = roleToolOptions(tools, "evaluator");
-  const [plannerTool, setPlannerTool] = useState(plannerOptions[0]?.tool ?? "");
-  const [plannerInvocation, setPlannerInvocation] = useState(plannerOptions[0]?.invocation ?? "");
-  const [generatorTool, setGeneratorTool] = useState(generatorOptions[0]?.tool ?? "");
-  const [generatorInvocation, setGeneratorInvocation] = useState(generatorOptions[0]?.invocation ?? "");
-  const [evaluatorTool, setEvaluatorTool] = useState(evaluatorOptions[0]?.tool ?? "");
-  const [evaluatorInvocation, setEvaluatorInvocation] = useState(evaluatorOptions[0]?.invocation ?? "");
+  const initialBindings = initialNonFastBindingsForProfile(
+    tools,
+    initialProfile === "slow" ? "slow" : "heterogeneous"
+  );
+  // Planner defaults to the harness Coordinator. Choosing a tool opts into a
+  // delegated planner at the next planning boundary.
+  const [plannerTool, setPlannerTool] = useState<string>(initialBindings?.plannerTool ?? "");
+  const [plannerInvocation, setPlannerInvocation] = useState<string>(initialBindings?.plannerInvocation ?? "");
+  const [generatorTool, setGeneratorTool] = useState(initialBindings?.generatorTool ?? "");
+  const [generatorInvocation, setGeneratorInvocation] = useState(initialBindings?.generatorInvocation ?? "");
+  const [evaluatorTool, setEvaluatorTool] = useState(initialBindings?.evaluatorTool ?? "");
+  const [evaluatorInvocation, setEvaluatorInvocation] = useState(initialBindings?.evaluatorInvocation ?? "");
   const [intentExpiresAt, setIntentExpiresAt] = useState("");
   const [autonomyEnabled, setAutonomyEnabled] = useState(false);
   const [autonomyExpiresAt, setAutonomyExpiresAt] = useState("");
@@ -145,6 +152,34 @@ export function ModeEditor({
   const [notifyOn, setNotifyOn] = useState<HarnessAutonomyNotification[]>(["halt", "done"]);
   const [busy, setBusy] = useState<"submit" | "delete" | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
+
+  function applyInitialBindings(bindings: InitialNonFastBindings) {
+    setPlannerTool(bindings.plannerTool);
+    setPlannerInvocation(bindings.plannerInvocation);
+    setGeneratorTool(bindings.generatorTool);
+    setGeneratorInvocation(bindings.generatorInvocation);
+    setEvaluatorTool(bindings.evaluatorTool);
+    setEvaluatorInvocation(bindings.evaluatorInvocation);
+  }
+
+  function selectProfile(nextProfile: HarnessExecutionProfile) {
+    setProfile(nextProfile);
+    if (nextProfile === "fast") return;
+    if (nonFastBindingsAreSignable(
+      nextProfile,
+      plannerOptions,
+      generatorOptions,
+      evaluatorOptions,
+      plannerTool,
+      plannerInvocation,
+      generatorTool,
+      generatorInvocation,
+      evaluatorTool,
+      evaluatorInvocation
+    )) return;
+    const bindings = initialNonFastBindingsForProfile(tools, nextProfile);
+    if (bindings) applyInitialBindings(bindings);
+  }
 
   useEffect(() => {
     if (!selectedRole) return;
@@ -162,11 +197,12 @@ export function ModeEditor({
   }, [profile, selectedRole]);
 
   const baseDisabled = blocker !== null || busy !== null || refreshing;
+  const supportsToolBindings = (agentFeatureVersion ?? 0) >= MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION;
   const toolBindingBlocker: HarnessModeIssuanceBlocker | null = profile === "fast"
     ? null
-    : (agentFeatureVersion ?? 0) < MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+    : !supportsToolBindings
       ? "toolBindingAgentUpgradeRequired"
-      : plannerOptions.length === 0 || generatorOptions.length === 0 || evaluatorOptions.length === 0
+      : generatorOptions.length === 0 || evaluatorOptions.length === 0
         ? "toolCatalogUnavailable"
         : null;
   const submitDisabled = baseDisabled || toolBindingBlocker !== null;
@@ -219,7 +255,8 @@ export function ModeEditor({
           notifyOn
         },
         tools,
-        new Date()
+        new Date(),
+        { useToolBindings: supportsToolBindings }
       );
       const response = await fetch("/api/harness/mode-intents", {
         method: "POST",
@@ -322,10 +359,10 @@ export function ModeEditor({
               <div className="grid grid-cols-3 overflow-hidden rounded-md border border-gray-200 dark:border-white/10">
                 {HARNESS_EXECUTION_PROFILES.map((item) => (
                   <button
-                    key={item}
-                    type="button"
-                    aria-pressed={profile === item}
-                    onClick={() => setProfile(item)}
+                  key={item}
+                  type="button"
+                  aria-pressed={profile === item}
+                    onClick={() => selectProfile(item)}
                     className={`min-h-10 px-2 py-2 text-xs font-semibold transition focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:text-sm ${
                       profile === item
                         ? "bg-brand-500 text-white"
@@ -346,11 +383,12 @@ export function ModeEditor({
                   tool={plannerTool}
                   invocation={plannerInvocation}
                   options={plannerOptions}
+                  allowCoordinator
                   disabled={toolBindingBlocker !== null}
                   selected={selectedRole === "planner"}
                   onToolChange={(nextTool) => {
                     setPlannerTool(nextTool);
-                    setPlannerInvocation(firstInvocation(plannerOptions, nextTool));
+                    setPlannerInvocation(nextTool ? firstInvocation(plannerOptions, nextTool) : "");
                   }}
                   onInvocationChange={setPlannerInvocation}
                   t={t}
@@ -458,7 +496,22 @@ export function ModeEditor({
   );
 }
 
-type RoleToolOption = { tool: string; label: string; invocation: HarnessTransport; capabilities: string[] };
+type RoleToolOption = {
+  tool: string;
+  label: string;
+  invocation: HarnessTransport;
+  capabilities: string[];
+  modelFamilies: string[];
+};
+
+export type InitialNonFastBindings = {
+  plannerTool: "";
+  plannerInvocation: "";
+  generatorTool: string;
+  generatorInvocation: HarnessTransport;
+  evaluatorTool: string;
+  evaluatorInvocation: HarnessTransport;
+};
 
 function SelectedRoleContext({
   role,
@@ -511,10 +564,10 @@ function SelectedRoleContext({
         <RoleContextFact label={t("modelFamilies")} value={modelFamilies.join(" · ") || t("notAvailable")} />
         <RoleContextFact label={t("capabilities")} value={availableCapabilities.join(" · ") || t("notAvailable")} />
         <RoleContextFact label={t("currentBinding")}>
-          <BindingSummary binding={currentBinding} unavailable={t("notAvailable")} />
+          <BindingSummary binding={currentBinding} unavailable={t("notAvailable")} coordinator={role === "planner" ? t("coordinator") : null} />
         </RoleContextFact>
         <RoleContextFact label={t("nextPlanBinding")}>
-          <BindingSummary binding={pendingBinding} unavailable={t("notAvailable")} />
+          <BindingSummary binding={pendingBinding} unavailable={t("notAvailable")} coordinator={role === "planner" ? t("coordinator") : null} />
         </RoleContextFact>
       </dl>
     </section>
@@ -530,8 +583,9 @@ function RoleContextFact({ label, value, children }: { label: string; value?: st
   );
 }
 
-function BindingSummary({ binding, unavailable }: { binding: RoleBindingContext; unavailable: string }) {
-  if (!binding) return <span className="text-gray-500 dark:text-gray-400">{unavailable}</span>;
+function BindingSummary({ binding, unavailable, coordinator }: { binding: RoleBindingContext; unavailable: string; coordinator: string | null }) {
+  if (binding === undefined) return <span className="text-gray-500 dark:text-gray-400">{unavailable}</span>;
+  if (binding === null) return <span className="text-gray-500 dark:text-gray-400">{coordinator ?? unavailable}</span>;
   return (
     <span className="font-mono text-navy-700 dark:text-white">
       {binding.tool} · {binding.invocation}{binding.modelFamily ? ` · ${binding.modelFamily}` : ""}
@@ -547,13 +601,91 @@ function roleToolOptions(tools: readonly HarnessDetailToolCapability[], role: Ha
       tool: capability.tool,
       label: capability.label,
       invocation: capability.invocation,
-      capabilities: capability.capabilities
+      capabilities: capability.capabilities,
+      modelFamilies: capability.modelFamilies
     };
     options.set(`${option.tool}\u0000${option.invocation}`, option);
   }
   return [...options.values()].sort((left, right) =>
     `${left.tool}\u0000${left.invocation}`.localeCompare(`${right.tool}\u0000${right.invocation}`)
   );
+}
+
+function independentModelFamilies(left: RoleToolOption, right: RoleToolOption): boolean {
+  return left.modelFamilies.some((generator) =>
+    right.modelFamilies.some((evaluator) => generator !== evaluator)
+  );
+}
+
+function transportsMatchProfile(
+  profile: Exclude<HarnessExecutionProfile, "fast">,
+  invocations: readonly HarnessTransport[]
+): boolean {
+  if (profile === "heterogeneous") {
+    return !invocations.includes("a2a") && invocations.includes("local-cli");
+  }
+  return invocations.includes("a2a");
+}
+
+function selectedOption(
+  options: readonly RoleToolOption[],
+  tool: string,
+  invocation: string
+): RoleToolOption | null {
+  return options.find((option) => option.tool === tool && option.invocation === invocation) ?? null;
+}
+
+export function initialNonFastBindingsForProfile(
+  tools: readonly HarnessDetailToolCapability[],
+  profile: Exclude<HarnessExecutionProfile, "fast">
+): InitialNonFastBindings | null {
+  const generatorOptions = roleToolOptions(tools, "generator");
+  const evaluatorOptions = roleToolOptions(tools, "evaluator");
+  for (const generator of generatorOptions) {
+    for (const evaluator of evaluatorOptions) {
+      if (
+        independentModelFamilies(generator, evaluator) &&
+        transportsMatchProfile(profile, [generator.invocation, evaluator.invocation])
+      ) {
+        return {
+          plannerTool: "",
+          plannerInvocation: "",
+          generatorTool: generator.tool,
+          generatorInvocation: generator.invocation,
+          evaluatorTool: evaluator.tool,
+          evaluatorInvocation: evaluator.invocation
+        };
+      }
+    }
+  }
+  return null;
+}
+
+function nonFastBindingsAreSignable(
+  profile: Exclude<HarnessExecutionProfile, "fast">,
+  plannerOptions: readonly RoleToolOption[],
+  generatorOptions: readonly RoleToolOption[],
+  evaluatorOptions: readonly RoleToolOption[],
+  plannerTool: string,
+  plannerInvocation: string,
+  generatorTool: string,
+  generatorInvocation: string,
+  evaluatorTool: string,
+  evaluatorInvocation: string
+): boolean {
+  const generator = selectedOption(generatorOptions, generatorTool, generatorInvocation);
+  const evaluator = selectedOption(evaluatorOptions, evaluatorTool, evaluatorInvocation);
+  if (!generator || !evaluator || !independentModelFamilies(generator, evaluator)) return false;
+
+  const planner = plannerTool || plannerInvocation
+    ? selectedOption(plannerOptions, plannerTool, plannerInvocation)
+    : null;
+  if ((plannerTool || plannerInvocation) && !planner) return false;
+  return transportsMatchProfile(profile, [
+    ...(planner ? [planner.invocation] : []),
+    generator.invocation,
+    evaluator.invocation
+  ]);
 }
 
 function firstInvocation(options: readonly RoleToolOption[], tool: string): HarnessTransport | "" {
@@ -566,6 +698,7 @@ function RoleToolBinding({
   tool,
   invocation,
   options,
+  allowCoordinator = false,
   disabled,
   selected,
   onToolChange,
@@ -577,6 +710,7 @@ function RoleToolBinding({
   tool: string;
   invocation: string;
   options: readonly RoleToolOption[];
+  allowCoordinator?: boolean;
   disabled: boolean;
   selected: boolean;
   onToolChange: (tool: string) => void;
@@ -594,6 +728,7 @@ function RoleToolBinding({
     };
   });
   const invocations = options.filter((option) => option.tool === tool).map((option) => option.invocation);
+  const coordinatorSelected = allowCoordinator && !tool;
   const toolId = `mode-binding-${role}-tool`;
   const invocationId = `mode-binding-${role}-invocation`;
   return (
@@ -607,7 +742,7 @@ function RoleToolBinding({
       <label htmlFor={toolId} className="block text-xs font-medium text-gray-500 dark:text-gray-400">
         {t("tool")}
         <select id={toolId} aria-label={`${label}: ${t("tool")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={tool} disabled={disabled} onChange={(event) => onToolChange(event.target.value)} className={`${INPUT} mt-1`}>
-          <option value="">{t("selectTool")}</option>
+          <option value="">{allowCoordinator ? t("coordinator") : t("selectTool")}</option>
           {tools.map((option) => (
             <option key={option.tool} value={option.tool}>
               {option.label === option.tool ? option.label : `${option.label} (${option.tool})`}
@@ -617,8 +752,8 @@ function RoleToolBinding({
       </label>
       <label htmlFor={invocationId} className="block text-xs font-medium text-gray-500 dark:text-gray-400">
         {t("invocation")}
-        <select id={invocationId} aria-label={`${label}: ${t("invocation")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={invocation} disabled={disabled} onChange={(event) => onInvocationChange(event.target.value)} className={`${INPUT} mt-1`}>
-          <option value="">{t("selectInvocation")}</option>
+        <select id={invocationId} aria-label={`${label}: ${t("invocation")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={invocation} disabled={disabled || coordinatorSelected} onChange={(event) => onInvocationChange(event.target.value)} className={`${INPUT} mt-1`}>
+          <option value="">{coordinatorSelected ? t("coordinator") : t("selectInvocation")}</option>
           {invocations.map((value) => <option key={value} value={value}>{value}</option>)}
         </select>
       </label>

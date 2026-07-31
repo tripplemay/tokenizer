@@ -1,184 +1,91 @@
 {
-  "_comment": "v2 tool-bound dispatch。Planner 是 proposal-only 的独立 descriptor；Generator 与 Evaluator 分离，且 generator/evaluator 必须使用不同 model family。local-cli 必须配 sandbox.home_dir。",
-  "version": "dispatch/1",
-  "agents": [
+  "_comment": "tool-integrations/1: the console selects tools and invocation modes; the device resolver chooses concrete runners. A2A exposes Planner/Evaluator only until a source-handoff protocol exists for Generator.",
+  "version": "tool-integrations/1",
+  "integrations": [
     {
-      "id": "planner-claude",
+      "id": "claude-code",
       "tool": "claude-code",
-      "priority": 100,
-      "roles": [
-        "planner"
-      ],
-      "transport": "subagent",
-      "agent_type": "planner-proposal",
+      "label": "Claude Code",
       "model_family": "claude",
-      "capabilities": [
-        "plan"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "notes": "只返回结构化 proposal；Coordinator 负责验签、派发、向人类转交和确认后的落盘。"
-    },
-    {
-      "id": "planner-kimi",
-      "tool": "kimi",
       "priority": 100,
-      "roles": [
-        "planner"
-      ],
-      "transport": "local-cli",
-      "adapter": "kimi",
-      "model_family": "kimi",
-      "capabilities": [
-        "plan"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/planner-kimi",
-        "env_set": {
-          "KIMI_CODE_HOME": "~/.kimi-code"
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local", "security_audit"],
+      "subagent": true,
+      "local_cli": {
+        "adapter": "claude-code",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/claude-code",
+          "env_set": {},
+          "env_allow": ["ANTHROPIC_API_KEY", "CLAUDE_CONFIG_DIR"]
         },
-        "env_allow": []
+        "timeout_s": 2400
       },
-      "timeout_s": 1800,
-      "notes": "只返回受限结构化 Planner proposal；Coordinator 验收回执并在人工确认后物化。"
+      "notes": "The framework applies fixed planner-proposal, generator-restricted, and evaluator personas. Runtime Claude credentials remain an explicit precondition."
     },
     {
-      "id": "main-claude",
-      "tool": "claude-code",
+      "id": "kimi",
+      "tool": "kimi",
+      "label": "Kimi Code",
+      "model_family": "kimi",
       "priority": 100,
-      "roles": [
-        "generator"
-      ],
-      "transport": "subagent",
-      "agent_type": "generator-restricted",
-      "model_family": "claude",
-      "capabilities": [
-        "build",
-        "fix"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": true,
-        "push": true
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local", "e2e", "security_audit"],
+      "local_cli": {
+        "adapter": "kimi",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/kimi",
+          "env_set": { "KIMI_CODE_HOME": "~/.kimi-code" },
+          "env_allow": []
+        },
+        "timeout_s": 2400
       }
     },
     {
-      "id": "reviewer-kimi",
-      "tool": "kimi",
+      "id": "codex",
+      "tool": "codex",
+      "label": "Codex",
+      "model_family": "codex",
       "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "local-cli",
-      "adapter": "kimi",
-      "model_family": "kimi",
-      "capabilities": [
-        "verify",
-        "l1_local"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/reviewer-kimi",
-        "env_set": {
-          "KIMI_CODE_HOME": "~/.kimi-code"
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local", "code_review"],
+      "local_cli": {
+        "adapter": "codex",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/codex",
+          "env_set": { "CODEX_HOME": "~/.codex" },
+          "env_allow": []
         },
-        "env_allow": []
-      },
-      "timeout_s": 1800
+        "timeout_s": 2400
+      }
+    }
+  ],
+  "a2a_targets": [
+    {
+      "id": "claude-code-loopback",
+      "integration_id": "claude-code",
+      "endpoint": "http://127.0.0.1:41243",
+      "remote_runner_id": "claude-code-loopback",
+      "priority": 100,
+      "auth": { "type": "none" },
+      "capabilities": ["plan", "verify", "l1_local", "security_audit"],
+      "notes": "Start a2a-runner.py with --integration claude-code --runner-id claude-code-loopback."
     },
     {
-      "id": "reviewer-kimi-a2a",
-      "tool": "kimi",
+      "id": "codex-loopback",
+      "integration_id": "codex",
+      "endpoint": "http://127.0.0.1:41242",
+      "remote_runner_id": "codex-loopback",
       "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "a2a",
+      "auth": { "type": "none" },
+      "capabilities": ["plan", "verify", "l1_local", "code_review"],
+      "notes": "Start a2a-runner.py with --integration codex --runner-id codex-loopback."
+    },
+    {
+      "id": "kimi-reviewer-a2a",
+      "integration_id": "kimi",
       "endpoint": "http://127.0.0.1:41241",
-      "model_family": "kimi",
-      "capabilities": [
-        "verify",
-        "l1_local",
-        "e2e",
-        "security_audit"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "timeout_s": 2400,
-      "notes": "Loopback A2A client descriptor；runner 由 reviewer-kimi local-cli descriptor 承载，临时演练必须配置 --idle-exit。"
-    },
-    {
-      "id": "reviewer-codex",
-      "tool": "codex",
+      "remote_runner_id": "reviewer-kimi",
       "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "local-cli",
-      "adapter": "codex",
-      "model_family": "codex",
-      "capabilities": [
-        "verify",
-        "l1_local",
-        "code_review"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/reviewer-codex",
-        "env_set": {
-          "CODEX_HOME": "~/.codex"
-        },
-        "env_allow": []
-      },
-      "timeout_s": 2400
-    },
-    {
-      "id": "builder-codex",
-      "tool": "codex",
-      "priority": 100,
-      "roles": [
-        "generator"
-      ],
-      "transport": "local-cli",
-      "adapter": "codex",
-      "model_family": "codex",
-      "capabilities": [
-        "build",
-        "fix"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": true,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/builder-codex",
-        "env_set": {
-          "CODEX_HOME": "~/.codex"
-        },
-        "env_allow": []
-      },
-      "timeout_s": 2400,
-      "notes": "v1.1 放开的外部 generator。四道锁：roles 白名单 + 独立 worktree 无 push + spec-lock 稽核 + L1 全绿硬证据。与之配对的 evaluator 必须非 codex family。"
+      "auth": { "type": "none" },
+      "capabilities": ["verify", "l1_local", "e2e", "security_audit"],
+      "notes": "Start a2a-runner.py with --integration kimi --runner-id reviewer-kimi."
     }
   ]
 }

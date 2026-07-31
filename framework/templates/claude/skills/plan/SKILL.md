@@ -17,7 +17,10 @@ description: Coordinator 的 /plan 入口。它在 new / planning / done 阶段�
      bash .claude/dispatch/resolve-active-mode-role.sh --role planner > /tmp/harness-active-planner.json
      ```
 
-     输出 `{}` 才表示 fast、v1 或未启用签名 v2 checkpoint，可沿用历史本机路径并继续 planner.md §1–§6。
+     输出 `{}` 表示由 Coordinator 规划：可能是 fast、v1、未启用签名 v2 checkpoint，或已签名 v2 non-fast 的
+     `role_bindings.planner=null`。后一种仍保留 Generator / Evaluator 的已解析外部绑定；仅 Planner 固定由
+     Coordinator 执行。此时不要创建外部 Planner envelope 或调用 proposal wrapper，沿用本机规划路径并继续
+     planner.md §1–§6。
    - 输出五字段 `{agent_id,tool,invocation,model_family,priority}` 时是已消费的 **v2 non-fast**：它已从
      `progress.mode_intent.signed_intent` 重验 Ed25519、repo identity、签名 role_bindings，并重解当前
      registry/verified adapter。此 JSON 是唯一可用的 Planner descriptor 来源。**不得**读取

@@ -46,7 +46,8 @@ export type HarnessModeRoleBinding = {
 };
 
 export type HarnessModeRoleBindings = {
-  planner: HarnessModeRoleBinding;
+  /** null delegates planning to the harness Coordinator. */
+  planner: HarnessModeRoleBinding | null;
   generator: HarnessModeRoleBinding;
   evaluator: HarnessModeRoleBinding;
 };
@@ -426,6 +427,10 @@ function normalizeToolBindingExecution(
   );
   const bindings = {} as HarnessModeRoleBindings;
   for (const role of HARNESS_MODE_ROLES) {
+    if (role === "planner" && bindingsValue[role] === null) {
+      bindings.planner = null;
+      continue;
+    }
     const binding = exactObject(bindingsValue[role], `desired.execution.role_bindings.${role}`, ["tool", "invocation"]);
     const invocation = nonBlankString(binding.invocation, `desired.execution.role_bindings.${role}.invocation`);
     if (!TRANSPORTS.has(invocation)) {
@@ -457,14 +462,18 @@ function normalizeToolBindingExecution(
 
   const familiesFor = (role: HarnessModeRole): Set<string> => {
     const binding = bindings[role];
+    if (binding === null) return new Set<string>();
     return candidateFamilies.get(`${role}\u0000${binding.tool}\u0000${binding.invocation}`) ?? new Set<string>();
   };
   for (const role of HARNESS_MODE_ROLES) {
+    if (role === "planner" && bindings.planner === null) continue;
+    const binding = bindings[role];
+    if (binding === null) continue;
     if (familiesFor(role).size === 0) {
       return reject(
         "unknown_tool",
         `desired.execution.role_bindings.${role}`,
-        `tool ${bindings[role].tool} cannot be invoked as ${bindings[role].invocation} for ${role}`
+        `tool ${binding.tool} cannot be invoked as ${binding.invocation} for ${role}`
       );
     }
   }
@@ -482,7 +491,13 @@ function normalizeToolBindingExecution(
     );
   }
 
-  validateProfileTransports(profile, HARNESS_MODE_ROLES.map((role) => bindings[role].invocation));
+  validateProfileTransports(
+    profile,
+    HARNESS_MODE_ROLES.flatMap((role) => {
+      const binding = bindings[role];
+      return binding === null ? [] : [binding.invocation];
+    })
+  );
   return { profile, role_bindings: bindings };
 }
 

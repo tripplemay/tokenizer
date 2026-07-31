@@ -334,6 +334,55 @@ describe("persisted mode snapshot validation", () => {
     expect(() => parseModeSnapshot(leakedAgentId)).toThrow(/unsupported fields/);
   });
 
+  it("accepts the integration inventory shape with a Coordinator Planner", () => {
+    const snapshot: any = modeSnapshot();
+    snapshot.execution = "slow";
+    snapshot.dispatch.assignments = {
+      planner: null,
+      generator: "builder-codex",
+      evaluator: "reviewer-kimi"
+    };
+    delete snapshot.dispatch.agents;
+    snapshot.dispatch.integrations = [
+      {
+        id: "codex-local",
+        tool: "codex",
+        label: "Codex CLI",
+        modelFamily: "codex",
+        roles: ["planner", "generator", "evaluator"],
+        invocations: ["local-cli", "a2a"],
+        capabilities: ["build", "verify"],
+        localCli: true,
+        subagent: false,
+        a2aTargetCount: 1,
+        sandboxed: true
+      }
+    ];
+    snapshot.current = {
+      profile: "slow",
+      roleBindings: {
+        planner: null,
+        generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+        evaluator: { tool: "codex", invocation: "a2a", modelFamily: "codex" }
+      }
+    };
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+  });
+
+  it("allows a null dispatch assignment only for the Coordinator Planner", () => {
+    const snapshot: any = modeSnapshot();
+    snapshot.dispatch.assignments = {
+      planner: null,
+      generator: "builder-codex",
+      evaluator: "reviewer-kimi"
+    };
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+
+    const invalid = structuredClone(snapshot);
+    invalid.dispatch.assignments.generator = null;
+    expect(() => parseModeSnapshot(invalid)).toThrow(/only Planner may use a null Coordinator assignment/);
+  });
+
   it.each([
     ["raw output", "stdout: full command output"],
     ["Harness command reference", "/plan"],

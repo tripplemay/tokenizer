@@ -230,17 +230,22 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 }
 ```
 
-`fast` 的 v2 `role_bindings` 必须为 null，保留本机默认路径。非 fast 的 v2 bindings 必须完整含
-Planner、Generator、Evaluator；其解析出的 agent id 只记录在 `progress.role_assignments` 和
+Planner 下拉框的第一项是不可配置的 **Coordinator**，对应签名值 `planner: null`。这表示当前主会话负责
+规划；它不生成内部 target，也不进入 `progress.role_assignments`。如果用户选择 CLI Planner，才填写
+`{ "tool": "...", "invocation": "..." }`，并在下一次 `/plan` 走受限 proposal 路径。
+
+`fast` 的 v2 `role_bindings` 必须为 null，保留本机默认路径。非 fast 的 v2 bindings 必须含
+Planner、Generator、Evaluator 三个键，其中 Planner 可以是 `null`；其余解析出的 agent id 只记录在 `progress.role_assignments` 和
 `progress.mode_intent.resolution` 中，绝不可回写进签名 intent。消费者还必须把**完整原始 signed
 intent（含 `sig`）**写入 `progress.mode_intent.signed_intent`：它是 active batch 的 checkpoint；随后可为
 下一批替换的 `harness.json.project.mode_defaults` 绝不能改变本批执行者。运行路径从 checkpoint 重验后取得
 五字段 active record，`role_assignments` 与 `resolution` 只保留审计用途。
 
-设备在**可信端**解析 registry 与已验证 adapter 的 data-only `tool-catalog/1` 契约，生成按角色分组、
+设备在**可信端**解析 `tool-integrations/1` registry 与已验证 adapter 的 data-only `tool-catalog/1` 契约，生成按角色分组、
 只含 `{tool, label, invocation, agent_count, model_families, capabilities}` 的能力目录。目录不含 agent id；
-新的 CLI 在 registry 中声明角色、并为 local-cli 提供已验证 adapter 后，无需修改控制台 schema 或 UI 即会
-进入对应角色的选择器。目录不可生成或安全校验失败时，控制台必须禁用 v2 签发，而不是猜测工具名。
+新的 CLI 只需在 `integrations` 中声明工具，并为 `local_cli` 提供已验证 adapter；框架会自动派生三角色的
+候选，`a2a_targets` 自动派生 Planner/Evaluator 目标，无需修改控制台 schema 或 UI。目录不可生成或安全
+校验失败时，控制台必须禁用 v2 签发，而不是猜测工具名。
 
 **Coordinator 是固定控制面。** 当前主会话负责验签、解析、派发、校验 proposal/handoff/verdict、展示
 需要人类确认的内容并在确认后落盘。它不在上述三个 selector 中，不可配置，也不得替代已经绑定的执行角色。
@@ -251,9 +256,9 @@ mode defaults 不接受其他字段。`.claude/console/validate-mode-intent.sh` 
 `.claude/console/console.pub`，并拒绝签名篡改、过期、repo 身份不符或任何白名单外字段。
 
 profile 语义是机械护栏：v1 的 `fast` 要求 `role_assignments=null`；v2 的 `fast` 要求
-`role_bindings=null`。v2 的 `heterogeneous` 要求三个执行角色均非 a2a 且至少一方是 local-cli；`slow`
-要求三者中至少一方是 a2a。Generator / Evaluator 必须能解析出不同 model family；Planner 可以与任一方
-同 family。v1 仍按其原有的 Generator/Evaluator agent-id 规则验证，兼容既有签名。
+`role_bindings=null`。v2 的 `heterogeneous` 要求所有已配置外部角色均非 a2a 且至少一方为 local-cli；`slow`
+要求所有已配置角色中至少一方为 a2a。Generator / Evaluator 必须能解析出不同 model family；Planner 可以
+为 Coordinator 或与任一方同 family。v1 仍按其原有的 Generator/Evaluator agent-id 规则验证，兼容既有签名。
 
 自治关闭必须严格为 `{ "enabled": false }`，没有预算或其他 policy 字段；下一次 `/plan` 会保持手动模式并
 删除旧批次遗留的 `autonomy-policy.json`。自治开启才需要独立的绝对未来 `expires_at`、唯一 A/B
@@ -264,8 +269,9 @@ profile 语义是机械护栏：v1 的 `fast` 要求 `role_assignments=null`；v
 因此 `/plan` 只复验签名、shape、期限、repo identity、Agent 和安全语义，绝不再要求当前 HEAD 相等。
 
 激活步骤见 `planner.md` §0c：仅 `status=new` 或完成态开始新批次时消费，并记录
-`progress.mode_intent={intent_id,applied_batch,applied_at,signed_intent,resolution}`（后两项只用于 v2 non-fast）。
-没有 mode intent 时仍走完整本机手工流程。
+`progress.mode_intent={intent_id,applied_batch,applied_at,signed_intent,resolution,adapter_dir?}`（`signed_intent`/
+`resolution` 只用于 v2 non-fast；`adapter_dir` 只在消费命令显式传入项目内 `--adapters` 时出现）。该目录不是
+人类可选角色或签名字段，active 命令只可恢复同一路径，不能用另一个 adapter 目录覆盖。没有 mode intent 时仍走完整本机手工流程。
 
 ## 4. 组件
 

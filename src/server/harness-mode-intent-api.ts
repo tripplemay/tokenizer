@@ -576,6 +576,7 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     const bindings = exactRecord(current.roleBindings, "state.modes.current.roleBindings", ["planner", "generator", "evaluator"]);
     const invocations: string[] = [];
     for (const role of HARNESS_MODE_ROLES) {
+      if (role === "planner" && bindings[role] === null) continue;
       const binding = exactRecord(bindings[role], `state.modes.current.roleBindings.${role}`, [
         "tool",
         "invocation",
@@ -616,10 +617,9 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
   const dispatch = exactRecord(modes.dispatch, "state.modes.dispatch", [
     "enabled",
     "assignments",
-    "agents",
     "familyExclusive",
     "issues"
-  ], ["toolCatalog"]);
+  ], ["agents", "integrations", "toolCatalog"]);
   modeBoolean(dispatch.enabled, "state.modes.dispatch.enabled");
   modeBoolean(dispatch.familyExclusive, "state.modes.dispatch.familyExclusive", true);
   const assignments = record(dispatch.assignments, "state.modes.dispatch.assignments");
@@ -629,29 +629,104 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
       return reject("sensitive_summary_data", "state.modes contains data that may not be persisted");
     }
     modeString(role, "state.modes.dispatch assignment role", 64);
+    if (agentId === null) {
+      if (role !== "planner") {
+        return reject("invalid_mode_snapshot", "only Planner may use a null Coordinator assignment");
+      }
+      continue;
+    }
     modeString(agentId, "state.modes.dispatch assignment agent", 128);
   }
-  if (!Array.isArray(dispatch.agents) || dispatch.agents.length > 50) {
-    return reject("invalid_mode_snapshot", "state.modes.dispatch.agents must be a bounded array");
-  }
-  for (const rawAgent of dispatch.agents) {
-    const agent = exactRecord(rawAgent, "state.modes.dispatch agent", [
-      "id",
-      "roles",
-      "transport",
-      "modelFamily",
-      "adapter",
-      "sandboxed"
-    ], ["capabilities"]);
-    modeString(agent.id, "state.modes.dispatch agent id", 128);
-    modeStrings(agent.roles, "state.modes.dispatch agent roles", 8, 64);
-    modeString(agent.transport, "state.modes.dispatch agent transport", 32);
-    modeString(agent.modelFamily, "state.modes.dispatch agent modelFamily", 128, true);
-    modeString(agent.adapter, "state.modes.dispatch agent adapter", 128, true);
-    modeBoolean(agent.sandboxed, "state.modes.dispatch agent sandboxed");
-    if (agent.capabilities !== undefined) {
-      modeStrings(agent.capabilities, "state.modes.dispatch agent capabilities", 32, 64);
+  if (dispatch.agents !== undefined) {
+    if (!Array.isArray(dispatch.agents) || dispatch.agents.length > 50) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch.agents must be a bounded array");
     }
+    for (const rawAgent of dispatch.agents) {
+      const agent = exactRecord(rawAgent, "state.modes.dispatch agent", [
+        "id",
+        "roles",
+        "transport",
+        "modelFamily",
+        "adapter",
+        "sandboxed"
+      ], ["capabilities"]);
+      modeString(agent.id, "state.modes.dispatch agent id", 128);
+      modeStrings(agent.roles, "state.modes.dispatch agent roles", 8, 64);
+      modeString(agent.transport, "state.modes.dispatch agent transport", 32);
+      modeString(agent.modelFamily, "state.modes.dispatch agent modelFamily", 128, true);
+      modeString(agent.adapter, "state.modes.dispatch agent adapter", 128, true);
+      modeBoolean(agent.sandboxed, "state.modes.dispatch agent sandboxed");
+      if (agent.capabilities !== undefined) {
+        modeStrings(agent.capabilities, "state.modes.dispatch agent capabilities", 32, 64);
+      }
+    }
+  }
+  if (dispatch.integrations !== undefined) {
+    if (!Array.isArray(dispatch.integrations) || dispatch.integrations.length > 50) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch.integrations must be a bounded array");
+    }
+    const seenIntegrations = new Set<string>();
+    for (const rawIntegration of dispatch.integrations) {
+      const integration = exactRecord(rawIntegration, "state.modes.dispatch integration", [
+        "id",
+        "tool",
+        "label",
+        "modelFamily",
+        "roles",
+        "invocations",
+        "capabilities",
+        "localCli",
+        "subagent",
+        "a2aTargetCount",
+        "sandboxed"
+      ]);
+      const id = modeString(integration.id, "state.modes.dispatch integration id", 64)!;
+      const tool = modeString(integration.tool, "state.modes.dispatch integration tool", 64)!;
+      if (seenIntegrations.has(id) || !TOOL_ID_PATTERN.test(id) || !TOOL_ID_PATTERN.test(tool)) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration is not recognized");
+      }
+      seenIntegrations.add(id);
+      modeString(integration.label, "state.modes.dispatch integration label", 128);
+      modeString(integration.modelFamily, "state.modes.dispatch integration modelFamily", 128);
+      if (!Array.isArray(integration.roles) || integration.roles.length < 1 || integration.roles.length > 3) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration roles must be bounded");
+      }
+      const roles = integration.roles.map((role) => modeString(role, "state.modes.dispatch integration role", 32)!);
+      if (new Set(roles).size !== roles.length || roles.some((role) => !DISPATCH_ROLES.has(role))) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration role is not recognized");
+      }
+      if (!Array.isArray(integration.invocations) || integration.invocations.length < 1 || integration.invocations.length > 3) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocations must be bounded");
+      }
+      const invocations = integration.invocations.map((invocation) =>
+        modeString(invocation, "state.modes.dispatch integration invocation", 32)!
+      );
+      if (new Set(invocations).size !== invocations.length || invocations.some((invocation) => !TRANSPORTS.has(invocation))) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocation is not recognized");
+      }
+      if (!Array.isArray(integration.capabilities) || integration.capabilities.length > 64) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be bounded");
+      }
+      const capabilities = integration.capabilities.map((capability) =>
+        modeString(capability, "state.modes.dispatch integration capability", 64)!
+      );
+      if (new Set(capabilities).size !== capabilities.length) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be unique");
+      }
+      const localCli = modeBoolean(integration.localCli, "state.modes.dispatch integration localCli");
+      const subagent = modeBoolean(integration.subagent, "state.modes.dispatch integration subagent");
+      const sandboxed = modeBoolean(integration.sandboxed, "state.modes.dispatch integration sandboxed");
+      const targetCount = safeInteger(integration.a2aTargetCount, "state.modes.dispatch integration a2aTargetCount", 0, 100);
+      if (
+        localCli !== invocations.includes("local-cli") ||
+        (localCli === true && sandboxed !== true) || (localCli === false && sandboxed !== false) ||
+        (subagent === true) !== invocations.includes("subagent") ||
+        (targetCount > 0) !== invocations.includes("a2a")
+      ) return reject("invalid_mode_snapshot", "state.modes.dispatch integration transport facts are inconsistent");
+    }
+  }
+  if (dispatch.enabled === true && dispatch.agents === undefined && dispatch.integrations === undefined) {
+    return reject("invalid_mode_snapshot", "state.modes.dispatch requires an inventory");
   }
   modeStrings(dispatch.issues, "state.modes.dispatch.issues", 100, 1_000);
   if (dispatch.toolCatalog !== undefined) {
@@ -739,6 +814,7 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
         ["planner", "generator", "evaluator"]
       );
       for (const role of HARNESS_MODE_ROLES) {
+        if (role === "planner" && bindings[role] === null) continue;
         const binding = exactRecord(
           bindings[role],
           `state.modes.pendingDefaults.execution.roleBindings.${role}`,

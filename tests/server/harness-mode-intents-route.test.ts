@@ -284,7 +284,24 @@ describe("session mode intent route", () => {
   });
 
   it("keeps v2 fast/null at the v6 gate but does not require a tool catalog", async () => {
-    const noCatalogModes = { dispatch: { enabled: true, agents: project().modes.dispatch.agents } };
+    const noCatalogModes = {
+      dispatch: {
+        enabled: true,
+        integrations: [{
+          id: "codex",
+          tool: "codex",
+          label: "Codex",
+          modelFamily: "codex",
+          roles: ["planner", "generator", "evaluator"],
+          invocations: ["local-cli"],
+          capabilities: ["build"],
+          localCli: true,
+          subagent: false,
+          a2aTargetCount: 0,
+          sandboxed: true
+        }]
+      }
+    };
     mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
       device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION - 1 },
       modes: noCatalogModes

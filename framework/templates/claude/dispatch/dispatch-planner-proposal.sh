@@ -10,6 +10,7 @@
 set -euo pipefail
 
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 AGENT=""
 BATCH=""
 REF=""
@@ -72,8 +73,6 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || die "必须从 git 项目内调用"
 cd "$PROJECT_ROOT"
 [ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
-bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2 \
-  || die "注册表校验未通过，不能派发 Planner proposal"
 
 # For a v2 non-fast batch, the explicit --agent is an assertion, never a
 # selector. The checkpoint resolver owns the Planner descriptor and rejects a
@@ -95,8 +94,29 @@ elif [ "$PROGRESS_EXPLICIT" = true ]; then
   die "显式 --progress 不存在，不能跳过 active mode 校验：$PROGRESS"
 fi
 if [ -n "$ACTIVE_PROGRESS" ]; then
+  [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+  MODE_ADAPTER_ARGS=(--progress "$ACTIVE_PROGRESS" --default "$DISPATCH_DIR/transports/adapters")
+  [ -z "$ADAPTERS" ] || MODE_ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+  ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
+    || die "无法恢复 active mode 的 adapter 目录"
+else
+  ADAPTERS="${ADAPTERS:-$DISPATCH_DIR/transports/adapters}"
+  [ -d "$ADAPTERS" ] || die "适配器目录不存在：$ADAPTERS"
+  ADAPTERS="$(python3 - "$ADAPTERS" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+)"
+fi
+
+bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" \
+  --progress "${ACTIVE_PROGRESS:-$PROJECT_ROOT/progress.json}" --adapters "$ADAPTERS" >&2 \
+  || die "注册表校验未通过，不能派发 Planner proposal"
+
+if [ -n "$ACTIVE_PROGRESS" ]; then
   ACTIVE_ARGS=(--role planner --expected-agent "$AGENT" --progress "$ACTIVE_PROGRESS" --registry "$REGISTRY")
-  [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
   bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
     || die "active Planner mode role 复验失败"
@@ -114,29 +134,25 @@ RUN_META="$STATE_ROOT/run-meta-$TASK_ID.json"
 [ ! -e "$RUN_META" ] || die "task_id 已有 run-meta：$TASK_ID；重派必须换新的 task_id"
 [ ! -e "$ARTIFACT_ABS" ] || die "task_id 已有 proposal audit artifact：$TASK_ID；不得覆盖"
 
-if ! TRANSPORT="$(python3 - "$REGISTRY" "$AGENT" <<'PY'
+TARGET_ARGS=(python3 "$DISPATCH_DIR/tool-catalog.py" target --registry "$REGISTRY" --target-id "$AGENT")
+TARGET_ARGS+=(--adapters "$ADAPTERS")
+TARGET_JSON="$("${TARGET_ARGS[@]}")" || die "无法解析 Planner 内部执行目标"
+if ! TRANSPORT="$(python3 - "$TARGET_JSON" <<'PY'
 import json
 import sys
-
-registry_path, agent_id = sys.argv[1:3]
 try:
-    registry = json.load(open(registry_path, encoding="utf-8"))
-except Exception as exc:
-    print(f"[planner-dispatch] ⛔ 注册表不可读：{exc}", file=sys.stderr)
-    raise SystemExit(2)
-descriptor = next(
-    (item for item in registry.get("agents", []) if item.get("id") == agent_id), None
-)
-if descriptor is None:
-    print(f"[planner-dispatch] ⛔ 注册表中无 Planner：{agent_id}", file=sys.stderr)
-    raise SystemExit(2)
-if "planner" not in (descriptor.get("roles") or []):
-    print(f"[planner-dispatch] ⛔ {agent_id} 没有 planner role", file=sys.stderr)
-    raise SystemExit(2)
-print(descriptor.get("transport") or "")
+    target = json.loads(sys.argv[1])
+except (TypeError, ValueError) as exc:
+    raise SystemExit(f"[planner-dispatch] ⛔ 内部执行目标 JSON 非法：{exc}")
+if not isinstance(target, dict) or "planner" not in (target.get("roles") or []):
+    raise SystemExit("[planner-dispatch] ⛔ 内部执行目标没有 planner role")
+transport = target.get("invocation")
+if transport not in ("subagent", "local-cli", "a2a"):
+    raise SystemExit(f"[planner-dispatch] ⛔ Planner invocation 非法：{transport!r}")
+print(transport)
 PY
 )"; then
-  die "无法验证 Planner descriptor"
+  die "无法验证 Planner 内部执行目标"
 fi
 
 case "$TRANSPORT" in
@@ -191,9 +207,7 @@ DISPATCH_ARGS=(
   --agent "$AGENT" --envelope "$ENVELOPE" --registry "$REGISTRY"
   --workroot "$WORKROOT" --state "$STATE_ROOT"
 )
-if [ -n "$ADAPTERS" ]; then
-  DISPATCH_ARGS+=(--adapters "$ADAPTERS")
-fi
+DISPATCH_ARGS+=(--adapters "$ADAPTERS")
 [ -z "$PUB" ] || DISPATCH_ARGS+=(--pub "$PUB")
 [ -z "$ACTIVE_PROGRESS" ] || DISPATCH_ARGS+=(--progress "$ACTIVE_PROGRESS")
 RUN_META_JSON="$(bash "$DISPATCH_DIR/dispatch-run.sh" "${DISPATCH_ARGS[@]}")"

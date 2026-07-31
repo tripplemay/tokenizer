@@ -9,6 +9,7 @@
 set -euo pipefail
 
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 AGENT=""
 ENVELOPE=""
 PROPOSAL_FILE=""
@@ -54,8 +55,6 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || die "必须从 git 项目内调用"
 cd "$PROJECT_ROOT"
 [ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
-bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2 \
-  || die "注册表校验未通过，不能接收 Planner proposal"
 
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 if [ -f "$CANONICAL_PROGRESS" ]; then
@@ -66,29 +65,48 @@ print(os.path.realpath(sys.argv[1]))
 PY
 )"
   [ "$PROVIDED_PROGRESS" = "$CANONICAL_PROGRESS" ] || die "--progress 必须是项目根 canonical progress.json"
+  [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+  MODE_ADAPTER_ARGS=(--progress "$CANONICAL_PROGRESS" --default "$DISPATCH_DIR/transports/adapters")
+  [ -z "$ADAPTERS" ] || MODE_ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+  ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
+    || die "无法恢复 active mode 的 adapter 目录"
+  bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" \
+    --progress "$CANONICAL_PROGRESS" --adapters "$ADAPTERS" >&2 \
+    || die "注册表校验未通过，不能接收 Planner proposal"
   ACTIVE_ARGS=(--role planner --expected-agent "$AGENT" --progress "$CANONICAL_PROGRESS" --registry "$REGISTRY")
-  [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
   bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
     || die "active Planner mode role 复验失败"
 elif [ "$PROGRESS_EXPLICIT" = true ]; then
   die "显式 --progress 不存在：$PROGRESS"
+else
+  ADAPTERS="${ADAPTERS:-$DISPATCH_DIR/transports/adapters}"
+  [ -d "$ADAPTERS" ] || die "适配器目录不存在：$ADAPTERS"
+  ADAPTERS="$(python3 - "$ADAPTERS" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+)"
+  bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" --adapters "$ADAPTERS" >&2 \
+    || die "注册表校验未通过，不能接收 Planner proposal"
 fi
 
 ENVELOPE="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
 PROPOSAL_FILE="$(cd "$(dirname "$PROPOSAL_FILE")" && pwd)/$(basename "$PROPOSAL_FILE")"
 STATE_ROOT="$(mkdir -p "$STATE" && cd "$STATE" && pwd)"
 
-if ! META="$(python3 - "$ENVELOPE" "$REGISTRY" "$AGENT" "$PROJECT_ROOT" <<'PY'
+if ! META="$(python3 - "$ENVELOPE" "$REGISTRY" "$AGENT" "$PROJECT_ROOT" "$DISPATCH_DIR" "$ADAPTERS" <<'PY'
 import json
 import os
 import re
+import subprocess
 import sys
 
-envelope_path, registry_path, agent_id, project_root = sys.argv[1:5]
+envelope_path, registry_path, agent_id, project_root, dispatch_dir, adapters_dir = sys.argv[1:7]
 try:
     envelope = json.load(open(envelope_path, encoding="utf-8"))
-    registry = json.load(open(registry_path, encoding="utf-8"))
 except Exception as exc:
     print(f"[planner-accept] ⛔ JSON 不可读：{exc}", file=sys.stderr)
     raise SystemExit(2)
@@ -105,11 +123,37 @@ if not isinstance(artifact_rel, str) or not re.fullmatch(
     print("[planner-accept] ⛔ 信封的 Planner artifact 路径非法", file=sys.stderr)
     raise SystemExit(2)
 
-descriptor = next(
-    (item for item in registry.get("agents", []) if item.get("id") == agent_id),
-    None,
-)
-if descriptor is None or descriptor.get("transport") != "subagent":
+command = [
+    sys.executable,
+    os.path.join(dispatch_dir, "tool-catalog.py"),
+    "target",
+    "--registry",
+    registry_path,
+    "--target-id",
+    agent_id,
+]
+if adapters_dir:
+    command.extend(["--adapters", adapters_dir])
+try:
+    resolved = subprocess.run(
+        command,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+except OSError as exc:
+    print(f"[planner-accept] ⛔ 无法启动 target resolver：{exc}", file=sys.stderr)
+    raise SystemExit(2)
+if resolved.returncode != 0:
+    print(f"[planner-accept] ⛔ 内部执行目标不可用：{(resolved.stderr or resolved.stdout).strip()[:600]}", file=sys.stderr)
+    raise SystemExit(2)
+try:
+    descriptor = json.loads(resolved.stdout)
+except (TypeError, ValueError) as exc:
+    print(f"[planner-accept] ⛔ 内部执行目标 JSON 非法：{exc}", file=sys.stderr)
+    raise SystemExit(2)
+if not isinstance(descriptor, dict) or descriptor.get("invocation") != "subagent":
     print("[planner-accept] ⛔ 只接受已解析的 subagent Planner", file=sys.stderr)
     raise SystemExit(2)
 if descriptor.get("agent_type") != "planner-proposal":

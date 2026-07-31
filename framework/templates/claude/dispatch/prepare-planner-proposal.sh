@@ -8,6 +8,7 @@
 set -euo pipefail
 
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 AGENT=""
 BATCH=""
 REF=""
@@ -68,8 +69,6 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || die "必须从 git 项目内调用"
 cd "$PROJECT_ROOT"
 [ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
-bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2 \
-  || die "注册表校验未通过，不能准备 Planner proposal"
 
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 if [ -f "$CANONICAL_PROGRESS" ]; then
@@ -82,64 +81,63 @@ PY
 )"
     [ "$PROVIDED_PROGRESS" = "$CANONICAL_PROGRESS" ] || die "--progress 必须是项目根 canonical progress.json"
   fi
+  [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+  MODE_ADAPTER_ARGS=(--progress "$CANONICAL_PROGRESS" --default "$DISPATCH_DIR/transports/adapters")
+  [ -z "$ADAPTERS" ] || MODE_ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+  ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
+    || die "无法恢复 active mode 的 adapter 目录"
+  bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" \
+    --progress "$CANONICAL_PROGRESS" --adapters "$ADAPTERS" >&2 \
+    || die "注册表校验未通过，不能准备 Planner proposal"
   ACTIVE_ARGS=(--role planner --expected-agent "$AGENT" --progress "$CANONICAL_PROGRESS" --registry "$REGISTRY")
-  [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
   bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
     || die "active Planner mode role 复验失败"
 elif [ "$PROGRESS_EXPLICIT" = true ]; then
   die "显式 --progress 不存在，不能跳过 active mode 校验：$PROGRESS"
+else
+  ADAPTERS="${ADAPTERS:-$DISPATCH_DIR/transports/adapters}"
+  [ -d "$ADAPTERS" ] || die "适配器目录不存在：$ADAPTERS"
+  ADAPTERS="$(python3 - "$ADAPTERS" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+)"
+  bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" --adapters "$ADAPTERS" >&2 \
+    || die "注册表校验未通过，不能准备 Planner proposal"
 fi
 
 FULL_REF="$(git rev-parse --verify "$REF^{commit}" 2>/dev/null)" \
   || die "--ref 不是当前仓库可解析的 commit：$REF"
 
-if ! DESCRIPTOR_JSON="$(python3 - "$REGISTRY" "$AGENT" <<'PY'
+TARGET_ARGS=(python3 "$DISPATCH_DIR/tool-catalog.py" target --registry "$REGISTRY" --target-id "$AGENT")
+TARGET_ARGS+=(--adapters "$ADAPTERS")
+TARGET_JSON="$("${TARGET_ARGS[@]}")" || die "无法解析 Planner 内部执行目标"
+if ! DESCRIPTOR_JSON="$(python3 - "$TARGET_JSON" <<'PY'
 import json
 import sys
 
-registry_path, agent_id = sys.argv[1:3]
 try:
-    registry = json.load(open(registry_path, encoding="utf-8"))
-except Exception as exc:
-    print(f"[planner-prepare] ⛔ 注册表不可读：{exc}", file=sys.stderr)
-    raise SystemExit(2)
-
-descriptor = next(
-    (item for item in registry.get("agents", []) if item.get("id") == agent_id),
-    None,
-)
-if descriptor is None:
-    print(f"[planner-prepare] ⛔ 注册表中无 Planner：{agent_id}", file=sys.stderr)
-    raise SystemExit(2)
-if "planner" not in (descriptor.get("roles") or []):
-    print(f"[planner-prepare] ⛔ {agent_id} 没有 planner role", file=sys.stderr)
-    raise SystemExit(2)
-transport = descriptor.get("transport")
+    target = json.loads(sys.argv[1])
+except (TypeError, ValueError) as exc:
+    raise SystemExit(f"[planner-prepare] ⛔ 内部执行目标 JSON 非法：{exc}")
+if not isinstance(target, dict) or "planner" not in (target.get("roles") or []):
+    raise SystemExit("[planner-prepare] ⛔ 内部执行目标没有 planner role")
+transport = target.get("invocation")
 if transport not in ("subagent", "local-cli", "a2a"):
-    print(f"[planner-prepare] ⛔ {agent_id} 的 transport 非法：{transport!r}", file=sys.stderr)
-    raise SystemExit(2)
-if transport == "subagent" and descriptor.get("agent_type") != "planner-proposal":
-    print(
-        f"[planner-prepare] ⛔ {agent_id} 必须使用 planner-proposal subagent persona",
-        file=sys.stderr,
-    )
-    raise SystemExit(2)
-constraints = descriptor.get("constraints") or {}
-if constraints.get("write_src") is True or constraints.get("push") is True:
-    print(
-        f"[planner-prepare] ⛔ {agent_id} 的 Planner constraints 允许写入或推送",
-        file=sys.stderr,
-    )
-    raise SystemExit(2)
+    raise SystemExit(f"[planner-prepare] ⛔ Planner invocation 非法：{transport!r}")
+if transport == "subagent" and target.get("agent_type") != "planner-proposal":
+    raise SystemExit("[planner-prepare] ⛔ subagent Planner 必须使用 planner-proposal persona")
 print(json.dumps({
     "transport": transport,
-    "agent_type": descriptor.get("agent_type"),
-    "model_family": descriptor.get("model_family"),
+    "agent_type": target.get("agent_type"),
+    "model_family": target.get("model_family"),
 }, ensure_ascii=False))
 PY
 )"; then
-  die "无法验证 Planner descriptor"
+  die "无法验证 Planner 内部执行目标"
 fi
 
 STATE_ROOT="$(mkdir -p "$STATE" && cd "$STATE" && pwd)"

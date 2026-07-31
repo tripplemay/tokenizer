@@ -28,7 +28,7 @@ import {
   modeEditorFocusTarget,
   modeEditorInitialProfile
 } from "../../app/harness/[id]/mode-drilldown";
-import { ModeEditor } from "../../app/harness/[id]/mode-editor";
+import { initialNonFastBindingsForProfile, ModeEditor } from "../../app/harness/[id]/mode-editor";
 import { ModesAndAgentsView } from "../../app/harness/[id]/views";
 
 const TOOLS: HarnessDetailToolCapability[] = [
@@ -66,6 +66,45 @@ const TOOLS: HarnessDetailToolCapability[] = [
     invocation: "local-cli",
     agentCount: 1,
     modelFamilies: ["kimi"],
+    capabilities: ["verify"]
+  }
+];
+
+const PROFILED_TOOLS: HarnessDetailToolCapability[] = [
+  {
+    role: "generator",
+    tool: "claude-code",
+    label: "Claude Code",
+    invocation: "local-cli",
+    agentCount: 1,
+    modelFamilies: ["claude"],
+    capabilities: ["build"]
+  },
+  {
+    role: "evaluator",
+    tool: "claude-code",
+    label: "Claude Code",
+    invocation: "a2a",
+    agentCount: 1,
+    modelFamilies: ["claude"],
+    capabilities: ["verify"]
+  },
+  {
+    role: "evaluator",
+    tool: "codex",
+    label: "Codex",
+    invocation: "local-cli",
+    agentCount: 1,
+    modelFamilies: ["codex"],
+    capabilities: ["verify"]
+  },
+  {
+    role: "evaluator",
+    tool: "codex",
+    label: "Codex",
+    invocation: "a2a",
+    agentCount: 1,
+    modelFamilies: ["codex"],
     capabilities: ["verify"]
   }
 ];
@@ -135,6 +174,7 @@ describe("Harness mode drilldown contract", () => {
     const zh = JSON.parse(readFileSync("messages/zh-CN.json", "utf8")) as Record<string, unknown>;
     for (const path of [
       ["harness", "detail", "modes", "agent"],
+      ["harness", "detail", "modes", "integration"],
       ["harness", "detail", "modes", "role"],
       ["harness", "detail", "modes", "coordinator"],
       ["harness", "editor"]
@@ -194,5 +234,51 @@ describe("Harness mode drilldown contract", () => {
     expect(html).toContain("Kimi");
     expect(html).toContain("local-cli");
     expect(html).not.toContain("multi-role-agent");
+  });
+
+  it("chooses Coordinator plus a signable pair for each non-fast profile", () => {
+    expect(initialNonFastBindingsForProfile(PROFILED_TOOLS, "heterogeneous")).toEqual({
+      plannerTool: "",
+      plannerInvocation: "",
+      generatorTool: "claude-code",
+      generatorInvocation: "local-cli",
+      evaluatorTool: "codex",
+      evaluatorInvocation: "local-cli"
+    });
+    expect(initialNonFastBindingsForProfile(PROFILED_TOOLS, "slow")).toEqual({
+      plannerTool: "",
+      plannerInvocation: "",
+      generatorTool: "claude-code",
+      generatorInvocation: "local-cli",
+      evaluatorTool: "codex",
+      evaluatorInvocation: "a2a"
+    });
+  });
+
+  it("shows Coordinator only for an explicit null Planner audit value", () => {
+    const unavailable = renderToStaticMarkup(createElement(ModeEditor, {
+      projectId: "project-1",
+      tools: TOOLS,
+      agentFeatureVersion: 6,
+      blocker: null,
+      selectedRole: "planner",
+      currentRoleBinding: undefined,
+      pendingRoleBinding: undefined,
+      currentIntent: null
+    }));
+    expect((unavailable.match(/notAvailable/g) ?? []).length).toBe(2);
+
+    const coordinator = renderToStaticMarkup(createElement(ModeEditor, {
+      projectId: "project-1",
+      tools: TOOLS,
+      agentFeatureVersion: 6,
+      blocker: null,
+      selectedRole: "planner",
+      currentRoleBinding: null,
+      pendingRoleBinding: null,
+      currentIntent: null
+    }));
+    expect(coordinator).not.toContain("notAvailable");
+    expect((coordinator.match(/coordinator/g) ?? []).length).toBeGreaterThanOrEqual(4);
   });
 });

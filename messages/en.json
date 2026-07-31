@@ -539,7 +539,7 @@
       "tabsLabel": "Harness project views",
       "tabs": {
         "overview": "Overview",
-        "modes": "Modes & Agents",
+        "modes": "Modes & CLI",
         "activity": "Activity"
       },
       "notReported": "Not reported",
@@ -606,6 +606,21 @@
           "configureRoles": "Configure roles from {agent}",
           "noConfigurableRoles": "No configurable role is available in the reported tool catalog."
         },
+        "integrations": "CLI integrations",
+        "noIntegrations": "No readable CLI integration inventory was reported.",
+        "integration": {
+          "roles": "Roles",
+          "capabilities": "Capabilities",
+          "modelFamily": "Model family",
+          "invocations": "Invocation modes",
+          "sandbox": "Local CLI sandbox",
+          "notApplicable": "Not applicable",
+          "a2aTargets": "Remote targets",
+          "configure": "Configure role",
+          "configureRole": "Configure {role}",
+          "configureRoles": "Configure roles from {integration}",
+          "noConfigurableRoles": "No configurable role is available in the reported tool catalog."
+        },
         "role": {
           "planner": "Planner",
           "generator": "Generator",
@@ -656,10 +671,11 @@
       "generator": "Generator",
       "evaluator": "Evaluator",
       "planner": "Planner",
+      "coordinator": "Coordinator",
       "selectedRole": "Selected role",
       "selectedRoleContext": "Adjust {role} tool and invocation",
       "availableTools": "Available tool routes",
-      "candidateCount": "{count} eligible candidates",
+      "candidateCount": "{count} eligible routes",
       "modelFamilies": "Model families",
       "capabilities": "Capabilities",
       "currentBinding": "Current binding",
@@ -698,7 +714,7 @@
         "agentUpgradeRequired": "Issuance is disabled because this device reports an agent feature version below {version}.",
         "toolBindingAgentUpgradeRequired": "Tool bindings require device agent feature version {version} or newer.",
         "headNotFull": "Issuance is disabled because the project did not report a full 40-character HEAD SHA.",
-        "agentSnapshotUnavailable": "Issuance is disabled because no usable reported agent snapshot is available.",
+        "agentSnapshotUnavailable": "Issuance is disabled because no usable reported integration inventory is available.",
         "toolCatalogUnavailable": "Tool bindings cannot be issued because no usable reported tool capability catalog is available."
       },
       "errors": {

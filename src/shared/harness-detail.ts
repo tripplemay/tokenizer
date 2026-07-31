@@ -10,12 +10,12 @@ import {
   type HarnessExecutionProfile,
   type HarnessModeIntentDesired,
   type HarnessModeRole,
-  type HarnessModeRoleBindings,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
 import {
   toolCatalogModeDescriptors,
-  type HarnessToolCatalogEntry
+  type HarnessToolCatalogEntry,
+  type HarnessToolIntegration
 } from "@/shared/harness-tool-catalog";
 import { DEVICE_ONLINE_MS } from "@/shared/device-status";
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/shared/agent-feature-version";
 
 type UnknownRecord = Record<string, unknown>;
+const TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
 function record(value: unknown): UnknownRecord | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -76,13 +77,18 @@ export type HarnessDetailAgent = {
 };
 
 export type HarnessDetailToolCapability = HarnessToolCatalogEntry;
+export type HarnessDetailIntegration = HarnessToolIntegration;
 
 export type HarnessDetailRoleBindings = {
-  [role in HarnessModeRole]: HarnessModeRoleBindings[role] & { modelFamily?: string };
+  planner: ({ tool: string; invocation: HarnessTransport; modelFamily?: string } | null);
+  generator: { tool: string; invocation: HarnessTransport; modelFamily?: string };
+  evaluator: { tool: string; invocation: HarnessTransport; modelFamily?: string };
 };
 
 export type HarnessDetailResolvedRoleBindings = {
-  [role in HarnessModeRole]: HarnessModeRoleBindings[role] & { modelFamily: string };
+  planner: ({ tool: string; invocation: HarnessTransport; modelFamily: string } | null);
+  generator: { tool: string; invocation: HarnessTransport; modelFamily: string };
+  evaluator: { tool: string; invocation: HarnessTransport; modelFamily: string };
 };
 
 export type HarnessDesiredSummary = {
@@ -112,12 +118,14 @@ export type HarnessDetailModes = {
   };
   dispatch: {
     enabled: boolean;
-    assignments: Record<string, string>;
+    assignments: Record<string, string | null>;
     agents: HarnessDetailAgent[];
+    integrations: HarnessDetailIntegration[];
     toolCatalog: HarnessDetailToolCapability[];
     familyExclusive: boolean | null;
     issues: string[];
     agentSnapshotUsable: boolean;
+    integrationSnapshotUsable: boolean;
     toolCatalogUsable: boolean;
   };
   framework: {
@@ -156,6 +164,10 @@ function roleBindings(value: unknown): HarnessDetailRoleBindings | null {
   if (!bindings) return null;
   const parsed = {} as HarnessDetailRoleBindings;
   for (const role of HARNESS_MODE_ROLES) {
+    if (role === "planner" && bindings[role] === null) {
+      parsed.planner = null;
+      continue;
+    }
     const binding = record(bindings[role]);
     const tool = text(binding?.tool);
     const invocation = harnessTransport(binding?.invocation);
@@ -173,6 +185,10 @@ function currentMode(value: unknown, execution: HarnessDetailModes["execution"])
 
   const parsed = {} as HarnessDetailResolvedRoleBindings;
   for (const role of HARNESS_MODE_ROLES) {
+    if (role === "planner" && bindings[role] === null) {
+      parsed.planner = null;
+      continue;
+    }
     const binding = record(bindings[role]);
     const tool = text(binding?.tool);
     const invocation = harnessTransport(binding?.invocation);
@@ -180,7 +196,10 @@ function currentMode(value: unknown, execution: HarnessDetailModes["execution"])
     if (!binding || !tool || tool.length > 64 || !invocation || !modelFamily || modelFamily.length > 128) return null;
     parsed[role] = { tool, invocation, modelFamily };
   }
-  const invocations = HARNESS_MODE_ROLES.map((role) => parsed[role].invocation);
+  const invocations = HARNESS_MODE_ROLES.flatMap((role) => {
+    const binding = parsed[role];
+    return binding === null ? [] : [binding.invocation];
+  });
   if (
     (profile === "slow" && !invocations.includes("a2a")) ||
     (profile === "heterogeneous" && (invocations.includes("a2a") || !invocations.includes("local-cli")))
@@ -226,6 +245,86 @@ function strictAgentSnapshot(dispatch: UnknownRecord | null): HarnessDetailAgent
     agents.push(parsed);
   }
   return agents;
+}
+
+function displayIntegration(value: unknown): HarnessDetailIntegration | null {
+  const integration = record(value);
+  const id = text(integration?.id);
+  const tool = text(integration?.tool);
+  const label = text(integration?.label);
+  const modelFamily = text(integration?.modelFamily);
+  if (!integration || !id || !tool || !label || !modelFamily) return null;
+  return {
+    id,
+    tool,
+    label,
+    modelFamily,
+    roles: stringList(integration.roles, 8).filter((role): role is HarnessModeRole =>
+      HARNESS_MODE_ROLES.includes(role as HarnessModeRole)
+    ),
+    invocations: stringList(integration.invocations, 8).flatMap((invocation) => {
+      const parsed = harnessTransport(invocation);
+      return parsed ? [parsed] : [];
+    }),
+    capabilities: stringList(integration.capabilities, 64),
+    localCli: integration.localCli === true,
+    subagent: integration.subagent === true,
+    a2aTargetCount: count(integration.a2aTargetCount) ?? -1,
+    sandboxed: integration.sandboxed === true
+  };
+}
+
+/** Keep already-persisted dispatch/1 reports readable after the UI migration. */
+function integrationFromLegacyAgent(agent: HarnessDetailAgent): HarnessDetailIntegration | null {
+  const invocation = harnessTransport(agent.transport);
+  const roles = agent.roles.filter((role): role is HarnessModeRole =>
+    HARNESS_MODE_ROLES.includes(role as HarnessModeRole)
+  );
+  if (!invocation || roles.length === 0) return null;
+  const tool = agent.adapter ?? agent.id;
+  return {
+    id: agent.id,
+    tool,
+    label: agent.id,
+    modelFamily: agent.modelFamily ?? "unknown",
+    roles,
+    invocations: [invocation],
+    capabilities: agent.capabilities,
+    localCli: invocation === "local-cli",
+    subagent: invocation === "subagent",
+    a2aTargetCount: invocation === "a2a" ? 1 : 0,
+    sandboxed: agent.sandboxed === true
+  };
+}
+
+function strictIntegrationSnapshot(dispatch: UnknownRecord | null): HarnessDetailIntegration[] | null {
+  if (dispatch?.enabled !== true || !Array.isArray(dispatch.integrations)) return null;
+  if (dispatch.integrations.length < 1 || dispatch.integrations.length > 50) return null;
+  const seen = new Set<string>();
+  const integrations: HarnessDetailIntegration[] = [];
+  for (const value of dispatch.integrations) {
+    const integration = record(value);
+    const parsed = displayIntegration(value);
+    if (
+      !integration || !parsed || !TOOL_ID.test(parsed.id) || seen.has(parsed.id) ||
+      !TOOL_ID.test(parsed.tool) || parsed.label.length > 128 || parsed.modelFamily.length > 128 ||
+      !Array.isArray(integration.roles) || integration.roles.length < 1 || integration.roles.length > 3 ||
+      integration.roles.length !== parsed.roles.length || new Set(parsed.roles).size !== parsed.roles.length ||
+      !Array.isArray(integration.invocations) || integration.invocations.length < 1 || integration.invocations.length > 3 ||
+      integration.invocations.length !== parsed.invocations.length || new Set(parsed.invocations).size !== parsed.invocations.length ||
+      !Array.isArray(integration.capabilities) || integration.capabilities.length !== parsed.capabilities.length ||
+      new Set(parsed.capabilities).size !== parsed.capabilities.length || parsed.a2aTargetCount < 0 || parsed.a2aTargetCount > 100 ||
+      typeof integration.localCli !== "boolean" || typeof integration.subagent !== "boolean" ||
+      typeof integration.sandboxed !== "boolean" ||
+      parsed.localCli !== parsed.invocations.includes("local-cli") ||
+      (parsed.localCli && !parsed.sandboxed) || (!parsed.localCli && parsed.sandboxed) ||
+      (parsed.subagent !== parsed.invocations.includes("subagent")) ||
+      ((parsed.a2aTargetCount > 0) !== parsed.invocations.includes("a2a"))
+    ) return null;
+    seen.add(parsed.id);
+    integrations.push(parsed);
+  }
+  return integrations;
 }
 
 function strictToolCatalog(dispatch: UnknownRecord | null): HarnessDetailToolCapability[] | null {
@@ -313,15 +412,26 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
   const gate = record(modes.gate);
   const machinery = record(modes.machinery);
   const strictAgents = strictAgentSnapshot(dispatch);
+  const strictIntegrations = strictIntegrationSnapshot(dispatch);
   const strictTools = strictToolCatalog(dispatch);
-  const assignments: Record<string, string> = {};
+  const assignments: Record<string, string | null> = {};
   for (const [role, agentId] of Object.entries(record(dispatch?.assignments) ?? {})) {
+    if (role === "planner" && agentId === null) {
+      assignments.planner = null;
+      continue;
+    }
     const normalized = text(agentId);
     if (normalized) assignments[role] = normalized;
   }
   const agents = Array.isArray(dispatch?.agents)
     ? dispatch.agents.slice(0, 50).map(displayAgent).filter((agent): agent is HarnessDetailAgent => agent !== null)
     : [];
+  const reportedIntegrations = Array.isArray(dispatch?.integrations)
+    ? dispatch.integrations.slice(0, 50).map(displayIntegration).filter((item): item is HarnessDetailIntegration => item !== null)
+    : [];
+  const integrations = reportedIntegrations.length > 0
+    ? reportedIntegrations
+    : agents.map(integrationFromLegacyAgent).filter((item): item is HarnessDetailIntegration => item !== null);
 
   const execution = executionProfile(modes.execution) ?? "unknown";
   return {
@@ -338,10 +448,12 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
       enabled: dispatch?.enabled === true,
       assignments,
       agents,
+      integrations,
       toolCatalog: strictTools ?? [],
       familyExclusive: typeof dispatch?.familyExclusive === "boolean" ? dispatch.familyExclusive : null,
       issues: stringList(dispatch?.issues),
-      agentSnapshotUsable: strictAgents !== null,
+      agentSnapshotUsable: strictAgents !== null || strictIntegrations !== null,
+      integrationSnapshotUsable: strictIntegrations !== null,
       toolCatalogUsable: strictTools !== null
     },
     framework: framework ? {
@@ -478,20 +590,27 @@ export function buildModeIntentRequest(
   projectId: string,
   draft: HarnessModeEditorDraft,
   tools: readonly HarnessDetailToolCapability[],
-  now: Date
+  now: Date,
+  options: { useToolBindings?: boolean } = {}
 ): { projectId: string; desired: HarnessModeIntentDesired; intentExpiresAt: string } {
   if (!projectId.trim()) return editorReject("invalid_project");
   const profile = executionProfile(draft.profile);
   if (!profile) return editorReject("invalid_profile");
 
   const intentExpiresAt = timestampInput(draft.intentExpiresAt);
+  const plannerTool = draft.plannerTool.trim();
+  const plannerInvocation = draft.plannerInvocation.trim();
   const desired: HarnessModeIntentDesired = {
     execution: profile === "fast"
-      ? { profile: "fast", role_assignments: null }
+      ? options.useToolBindings
+        ? { profile: "fast", role_bindings: null }
+        : { profile: "fast", role_assignments: null }
       : {
           profile,
           role_bindings: {
-            planner: { tool: draft.plannerTool, invocation: draft.plannerInvocation as HarnessTransport },
+            planner: !plannerTool && !plannerInvocation
+              ? null
+              : { tool: draft.plannerTool, invocation: draft.plannerInvocation as HarnessTransport },
             generator: { tool: draft.generatorTool, invocation: draft.generatorInvocation as HarnessTransport },
             evaluator: { tool: draft.evaluatorTool, invocation: draft.evaluatorInvocation as HarnessTransport }
           }

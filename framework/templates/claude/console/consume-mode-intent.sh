@@ -11,6 +11,7 @@ umask 077
 
 CONSOLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VALIDATOR="$CONSOLE_DIR/validate-mode-intent.sh"
+MODE_ADAPTERS="$CONSOLE_DIR/../dispatch/resolve-mode-adapters.sh"
 PROGRESS="progress.json"
 HARNESS="harness.json"
 REGISTRY=".agents-registry.json"
@@ -71,7 +72,31 @@ VALIDATOR_ARGS+=("$HARNESS" "$REGISTRY" "$PUB")
 bash "$VALIDATOR" "${VALIDATOR_ARGS[@]}" > "$SEALED" \
   || die "签名 mode intent 未通过新批次消费验证"
 
-if ! python3 - "$PROGRESS" "$SEALED" "$BATCH" <<'PY'
+# A default framework adapter directory is deterministic and remains implicit.
+# Only an explicit project-owned override needs durable state so every active
+# command reuses the exact directory selected when the signed bindings were
+# consumed.
+PERSISTED_ADAPTER_DIR=""
+if [ -n "$ADAPTERS" ]; then
+  PERSIST_ADAPTERS="$(python3 - "$SEALED" <<'PY'
+import json
+import sys
+
+try:
+    sealed = json.load(open(sys.argv[1], encoding="utf-8"))
+except (OSError, ValueError) as exc:
+    raise SystemExit(f"[consume-mode-intent] ⛔ 无法读取已验签消费快照：{exc}")
+print("yes" if sealed.get("execution_version") == "v2" and sealed.get("profile") != "fast" else "no")
+PY
+)" || die "无法判断已验签 mode intent 的 adapter 持久化条件"
+  if [ "$PERSIST_ADAPTERS" = yes ]; then
+    [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+    PERSISTED_ADAPTER_DIR="$(bash "$MODE_ADAPTERS" --persist --progress "$PROGRESS" --adapters "$ADAPTERS")" \
+      || die "自定义 adapter 目录必须是项目内的非链接目录"
+  fi
+fi
+
+if ! python3 - "$PROGRESS" "$SEALED" "$BATCH" "$PERSISTED_ADAPTER_DIR" <<'PY'
 import datetime
 import json
 import os
@@ -80,10 +105,11 @@ import stat
 import sys
 import tempfile
 
-progress_path, sealed_path, batch = sys.argv[1:4]
+progress_path, sealed_path, batch, persisted_adapter_dir = sys.argv[1:5]
 roles = ("planner", "generator", "evaluator")
 stable_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 stable_tool = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+adapter_segment = re.compile(r"[A-Za-z0-9._-]+\Z")
 resolution_fields = {"agent_id", "tool", "invocation", "model_family", "priority"}
 
 
@@ -164,6 +190,11 @@ elif version == "v2":
         for role in roles:
             binding = bindings[role]
             record = resolution[role]
+            if role == "planner" and binding is None:
+                if record is not None:
+                    fail("Coordinator Planner 不得拥有外部 resolution")
+                assignments[role] = None
+                continue
             if not isinstance(binding, dict) or set(binding) != {"tool", "invocation"}:
                 fail(f"已签名 role_bindings.{role} shape 非法")
             if not isinstance(record, dict) or set(record) != resolution_fields:
@@ -186,6 +217,15 @@ elif version == "v2":
         # sig is what lets every active wake independently reject tampering.
         mode["signed_intent"] = intent
         mode["resolution"] = resolution
+        if persisted_adapter_dir:
+            parts = persisted_adapter_dir.split("/")
+            if (
+                persisted_adapter_dir.startswith("/")
+                or "\\" in persisted_adapter_dir
+                or any(part in ("", ".", "..") or not adapter_segment.fullmatch(part) for part in parts)
+            ):
+                fail("已持久化 adapter_dir 非法")
+            mode["adapter_dir"] = persisted_adapter_dir
 else:
     fail("已验签 execution_version 非法")
 

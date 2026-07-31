@@ -36,7 +36,7 @@
 已签名 v2 role_bindings: { role: { tool, invocation } }
         ↓ 验签后 registry preflight + tool-catalog resolver
 progress.mode_intent.signed_intent（active checkpoint）
-        ↓ checkpoint 重验 + 当前 registry/verified adapter 重解
+        ↓ checkpoint 重验 + 当前 registry/verified adapter 重解（可选的项目内 adapter_dir 随 checkpoint 恢复）
 progress.mode_intent.resolution + progress.role_assignments（仅审计快照，不参与选择）
         ↓
 .agents-registry.json descriptor（L1）：transport · model_family · roles · constraints · sandbox

@@ -1,0 +1,32 @@
+{
+  "_comment": "Claude Code local-cli adapter. The harness owns the worktree, environment boundary, and role contract; this adapter only fixes the non-interactive CLI protocol.",
+  "name": "claude-code",
+  "tool": "claude-code",
+  "display_name": "Claude Code",
+  "model_family": "claude",
+  "envelope_delivery": "argv",
+  "argv": [
+    "claude",
+    "-p",
+    "{{envelope_json}}",
+    "--output-format",
+    "stream-json",
+    "--no-session-persistence",
+    "--permission-mode",
+    "acceptEdits"
+  ],
+  "artifact_relpath": "docs/test-reports/{{batch}}-verdict.json",
+  "env_allowlist_extra": [
+    "ANTHROPIC_API_KEY",
+    "CLAUDE_CONFIG_DIR"
+  ],
+  "_flags_rationale": {
+    "-p {{envelope_json}}": "Claude Code accepts a non-interactive prompt as one argv value. sandbox-profile.sh expands the JSON without invoking a shell.",
+    "--output-format stream-json": "Keeps the CLI event stream in the sandbox run log for audit and failure analysis.",
+    "--no-session-persistence": "A dispatch task must not create resumable Claude sessions in a user profile.",
+    "--permission-mode acceptEdits": "Allows the constrained worktree task to create its commissioned artifact. It does not bypass permissions; source return and push authority remain controlled by the framework role policy and sandbox."
+  },
+  "_auth_note": "Runtime credentials remain an explicit integration precondition. Use a scoped ANTHROPIC_API_KEY or an explicitly supplied CLAUDE_CONFIG_DIR; the sandbox never inherits the whole real HOME.",
+  "_verified": true,
+  "_verified_note": "Claude Code 2.1.220 interface probe on 2026-07-31 accepted the non-interactive print, stream-json, no-session-persistence, permission-mode, and tools flags before returning the expected AUTH_REQUIRED result on an unauthenticated host. The adapter transport is covered by the sandbox fixture contract; a project must still configure valid Claude credentials before dispatching work."
+}

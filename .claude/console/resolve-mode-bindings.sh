@@ -4,12 +4,39 @@
 # The resolver repeats full validation itself before it reads bindings or the
 # registry. It consumes the validator's sealed snapshot, never harness.json
 # after verification, so a file swap cannot redirect a signed selection.
+# A project may keep verified adapters outside the framework default; pass the
+# same directory used by consumption and active-role validation with --adapters.
 
 set -euo pipefail
 
+CONSOLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ADAPTERS=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --adapters)
+      [ "$#" -ge 2 ] || { echo "[mode-bindings] ⛔ --adapters 缺值" >&2; exit 2; }
+      ADAPTERS="$2"
+      shift 2
+      ;;
+    -h|--help)
+      echo "usage: resolve-mode-bindings.sh [--adapters adapters-dir] [harness.json] [.agents-registry.json] [console.pub]" >&2
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "[mode-bindings] ⛔ 未知参数：$1" >&2
+      exit 2
+      ;;
+    *) break ;;
+  esac
+done
+
+[ "$#" -le 3 ] || { echo "[mode-bindings] ⛔ 用法：resolve-mode-bindings.sh [--adapters adapters-dir] [harness.json] [.agents-registry.json] [console.pub]" >&2; exit 2; }
 HARNESS="${1:-harness.json}"
 REGISTRY="${2:-.agents-registry.json}"
-CONSOLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PUB="${3:-$CONSOLE_DIR/console.pub}"
 TOOL_CATALOG="$CONSOLE_DIR/../dispatch/tool-catalog.py"
 VALIDATOR="$CONSOLE_DIR/validate-mode-intent.sh"
@@ -23,11 +50,15 @@ die() { echo "[mode-bindings] ⛔ $1" >&2; exit 2; }
 [ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
 [ -f "$TOOL_CATALOG" ] || die "框架缺少 tool-catalog.py；请升级 harness"
 [ -f "$VALIDATOR" ] || die "框架缺少 validate-mode-intent.sh；不能安全解析 bindings"
+[ -z "$ADAPTERS" ] || [ -d "$ADAPTERS" ] || die "adapter 目录不存在：$ADAPTERS"
 
 # This validates the mutable source exactly once and emits the resulting
 # signed snapshot. Do not redirect stdout: it is the only trusted input to the
 # parser below; diagnostics remain on stderr.
-bash "$VALIDATOR" --emit-resolution-input "$HARNESS" "$REGISTRY" "$PUB" > "$SEALED_INPUT" \
+VALIDATOR_ARGS=(--emit-resolution-input)
+[ -z "$ADAPTERS" ] || VALIDATOR_ARGS+=(--adapters "$ADAPTERS")
+VALIDATOR_ARGS+=("$HARNESS" "$REGISTRY" "$PUB")
+bash "$VALIDATOR" "${VALIDATOR_ARGS[@]}" > "$SEALED_INPUT" \
   || die "签名 mode intent 未通过完整校验，拒绝解析 bindings"
 
 python3 - "$SEALED_INPUT" "$BINDINGS" <<'PY'
@@ -61,6 +92,8 @@ if not isinstance(resolution, dict) or set(resolution) != set(roles):
     raise SystemExit("[mode-bindings] ⛔ 已验签解析结果必须恰含三角色")
 for role in roles:
     item = resolution[role]
+    if role == "planner" and item is None:
+        continue
     if not isinstance(item, dict) or set(item) != fields:
         raise SystemExit(f"[mode-bindings] ⛔ resolution.{role} 必须恰含五个审计字段")
     if not isinstance(item["agent_id"], str) or not safe_id.fullmatch(item["agent_id"]):

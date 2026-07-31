@@ -44,7 +44,49 @@ const CATALOG_REGISTRY = {
   ]
 };
 
-function installToolCatalogFixture(registry = CATALOG_REGISTRY) {
+const INTEGRATION_REGISTRY = {
+  version: "tool-integrations/1",
+  integrations: [
+    {
+      id: "future-local",
+      tool: "future-cli",
+      label: "Future CLI",
+      model_family: "codex",
+      priority: 100,
+      capabilities: ["build", "verify"],
+      local_cli: {
+        adapter: "future-cli",
+        sandbox: { home_dir: "~/.harness-sandbox/future" },
+        timeout_s: 1800
+      }
+    },
+    {
+      id: "kimi-local",
+      tool: "kimi",
+      label: "Kimi CLI",
+      model_family: "kimi",
+      priority: 100,
+      capabilities: ["plan", "verify"],
+      local_cli: {
+        adapter: "kimi",
+        sandbox: { home_dir: "~/.harness-sandbox/kimi" },
+        timeout_s: 1800
+      }
+    }
+  ],
+  a2a_targets: [
+    {
+      id: "kimi-remote",
+      integration_id: "kimi-local",
+      endpoint: "https://example.invalid/kimi",
+      remote_runner_id: "kimi-runner-1",
+      priority: 100,
+      capabilities: ["verify"]
+    }
+  ]
+};
+
+function installToolCatalogFixture(registry: Record<string, unknown> = CATALOG_REGISTRY) {
   write(".agents-registry.json", JSON.stringify(registry));
   write(".claude/dispatch/transports/adapters/future-cli.json", JSON.stringify({
     name: "future-cli", tool: "future-cli", display_name: "Future CLI", model_family: "codex",
@@ -141,6 +183,44 @@ describe("执行形态", () => {
     });
     expect(JSON.stringify(snapshot.current)).not.toContain("builder-codex");
   });
+
+  it("reports tool integrations and treats a null Planner resolution as the Coordinator", () => {
+    installToolCatalogFixture(INTEGRATION_REGISTRY);
+    write("progress.json", JSON.stringify({
+      role_assignments: {
+        planner: null,
+        generator: "future-runner",
+        evaluator: "kimi-remote-runner"
+      },
+      mode_intent: {
+        intent_id: "intent-coordinator",
+        resolution: {
+          planner: null,
+          generator: { agent_id: "future-runner", tool: "future-cli", invocation: "local-cli", model_family: "codex", priority: 100 },
+          evaluator: { agent_id: "kimi-remote-runner", tool: "kimi", invocation: "a2a", model_family: "kimi", priority: 100 }
+        }
+      }
+    }));
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.dispatch.enabled).toBe(true);
+    expect(snapshot.dispatch.assignments.planner).toBeNull();
+    expect(snapshot.dispatch.agents).toEqual([]);
+    expect(snapshot.dispatch.integrations).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "future-local", invocations: ["local-cli"] }),
+      expect.objectContaining({ id: "kimi-local", invocations: ["local-cli", "a2a"], a2aTargetCount: 1 })
+    ]));
+    expect(snapshot.current).toEqual({
+      profile: "slow",
+      roleBindings: {
+        planner: null,
+        generator: { tool: "future-cli", invocation: "local-cli", modelFamily: "codex" },
+        evaluator: { tool: "kimi", invocation: "a2a", modelFamily: "kimi" }
+      }
+    });
+    expect(snapshot.dispatch.familyExclusive).toBe(true);
+    expect(JSON.stringify(snapshot.dispatch.integrations)).not.toContain("kimi-remote-runner");
+  });
 });
 
 describe("独立性与沙箱", () => {
@@ -162,6 +242,17 @@ describe("独立性与沙箱", () => {
     installToolCatalogFixture(invalid);
 
     const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.dispatch.toolCatalog).toEqual([]);
+    expect(snapshot.dispatch.issues).toContain("dispatch tool catalog is unavailable");
+  });
+
+  it("surfaces a canonical registry validation failure while keeping dispatch inert", () => {
+    const invalid = structuredClone(INTEGRATION_REGISTRY);
+    invalid.integrations[0].local_cli.adapter = "missing-adapter";
+    installToolCatalogFixture(invalid);
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.dispatch.enabled).toBe(false);
     expect(snapshot.dispatch.toolCatalog).toEqual([]);
     expect(snapshot.dispatch.issues).toContain("dispatch tool catalog is unavailable");
   });

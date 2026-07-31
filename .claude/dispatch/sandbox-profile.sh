@@ -29,11 +29,14 @@ set -euo pipefail
 
 REGISTRY=".agents-registry.json"
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ADAPTERS="$DISPATCH_DIR/transports/adapters"
+DEFAULT_ADAPTERS="$DISPATCH_DIR/transports/adapters"
+MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
+ADAPTERS=""
 TIMEOUT_HELPER="$DISPATCH_DIR/process-timeout.py"
 WORKROOT="../.harness-dispatch"
 STATE=".harness-dispatch"
 AGENT_ID=""
+INTEGRATION_ID=""
 ENVELOPE=""
 REF=""
 PROFILE=""
@@ -41,6 +44,7 @@ PROFILE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --agent)    [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --agent 缺值" >&2; exit 2; }; AGENT_ID="$2"; shift 2 ;;
+    --integration) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --integration 缺值" >&2; exit 2; }; INTEGRATION_ID="$2"; shift 2 ;;
     --envelope) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --envelope 缺值" >&2; exit 2; }; ENVELOPE="$2"; shift 2 ;;
     --ref)      [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --ref 缺值" >&2; exit 2; }; REF="$2"; shift 2 ;;
     --registry) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --registry 缺值" >&2; exit 2; }; REGISTRY="$2"; shift 2 ;;
@@ -55,9 +59,18 @@ done
 die() { echo "[sandbox] ⛔ $1" >&2; exit 2; }
 
 # ── 0. 前置断言（fail-closed：任一不满足即不派活）─────────────────────────
-[ -n "$AGENT_ID" ]   || die "缺 --agent"
-[[ "$AGENT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || \
-  die "--agent 必须是 1..128 位安全稳定标识"
+if [ -n "$AGENT_ID" ] && [ -n "$INTEGRATION_ID" ]; then
+  die "--agent 与 --integration 不得同时提供"
+fi
+[ -n "$AGENT_ID" ] || [ -n "$INTEGRATION_ID" ] || die "缺 --agent 或 --integration"
+if [ -n "$AGENT_ID" ]; then
+  [[ "$AGENT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || \
+    die "--agent 必须是 1..128 位安全稳定标识"
+fi
+if [ -n "$INTEGRATION_ID" ]; then
+  [[ "$INTEGRATION_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || \
+    die "--integration 必须是 1..128 位安全稳定标识"
+fi
 [ -n "$ENVELOPE" ]   || die "缺 --envelope"
 [ -f "$ENVELOPE" ]   || die "信封文件不存在：$ENVELOPE"
 [ -f "$REGISTRY" ]   || die "注册表不存在：${REGISTRY}（机件未装，不许开车）"
@@ -76,6 +89,27 @@ bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE_ABS" >&2 \
 MAIN_REPO="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
   --envelope "$ENVELOPE_ABS" --cwd "$PWD")" || die "repo.url 前置校验未过，不创建沙箱"
 
+# Direct sandbox use must obey the same active checkpoint as dispatch-run.sh.
+# Without this recovery a custom adapter selected during /plan would validate
+# successfully there and then silently fall back to the framework default here.
+CANONICAL_PROGRESS="$MAIN_REPO/progress.json"
+if [ -f "$CANONICAL_PROGRESS" ]; then
+  [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+  MODE_ADAPTER_ARGS=(--progress "$CANONICAL_PROGRESS" --default "$DEFAULT_ADAPTERS")
+  [ -z "$ADAPTERS" ] || MODE_ADAPTER_ARGS+=(--adapters "$ADAPTERS")
+  ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
+    || die "无法恢复 active mode 的 adapter 目录"
+else
+  ADAPTERS="${ADAPTERS:-$DEFAULT_ADAPTERS}"
+  [ -d "$ADAPTERS" ] || die "适配器目录不存在：$ADAPTERS"
+  ADAPTERS="$(python3 - "$ADAPTERS" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+)"
+fi
+
 # ── 1. 解析 descriptor + adapter（受限 JSON 配置，绝不 eval）───────────────
 # Registry and adapter strings are untrusted at this direct entrypoint. Keep
 # them as JSON values, then read scalars/arrays without ever re-parsing them as
@@ -84,9 +118,9 @@ MAIN_REPO="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
 PROFILE="$(mktemp)"
 cleanup_profile() { [ -z "$PROFILE" ] || rm -f "$PROFILE"; }
 trap cleanup_profile EXIT
-if ! python3 - "$REGISTRY" "$AGENT_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" "$PROFILE" <<'PY'
-import json, sys, os, re
-reg_path, agent_id, adapters_dir, env_path, dispatch_dir, output_path = sys.argv[1:7]
+if ! python3 - "$REGISTRY" "$AGENT_ID" "$INTEGRATION_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" "$PROFILE" <<'PY'
+import json, sys, os, re, subprocess
+reg_path, agent_id, integration_id, adapters_dir, env_path, dispatch_dir, output_path = sys.argv[1:8]
 sys.path.insert(0, dispatch_dir)
 from dispatch_common import (
     DispatchContractError,
@@ -100,18 +134,52 @@ def fail(msg):
     raise SystemExit(2)
 
 try:
-    reg = json.load(open(reg_path))
+    env = json.load(open(env_path))
 except Exception as e:
-    fail(f"注册表 JSON 非法：{e}")
+    fail(f"信封 JSON 非法：{e}")
+role = env.get("role") or fail("信封缺 role")
 
-agents = reg.get("agents")
-if not isinstance(agents, list):
-    fail("注册表 agents 必须为 array")
-d = next((a for a in agents if isinstance(a, dict) and a.get("id") == agent_id), None)
-if d is None:
-    fail(f"注册表中无此 agent：{agent_id}")
-if d.get("transport") != "local-cli":
-    fail(f"{agent_id} 的 transport={d.get('transport')}，本脚本只处理 local-cli")
+if integration_id:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", integration_id):
+        fail(f"--integration 非法：{integration_id!r}")
+    target_id = f"local-cli--{integration_id}--{role}"
+else:
+    target_id = agent_id
+catalog = os.path.join(dispatch_dir, "tool-catalog.py")
+try:
+    resolved = subprocess.run(
+        [sys.executable, catalog, "target", "--registry", reg_path,
+         "--adapters", adapters_dir, "--target-id", target_id],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+except OSError as exc:
+    fail(f"无法启动 tool-catalog.py：{exc}")
+if resolved.returncode != 0:
+    fail(f"内部执行目标不可用：{(resolved.stderr or resolved.stdout).strip()[:600]}")
+try:
+    target = json.loads(resolved.stdout)
+except (TypeError, ValueError) as exc:
+    fail(f"内部执行目标 JSON 非法：{exc}")
+if not isinstance(target, dict):
+    fail("内部执行目标必须是 object")
+if target.get("invocation") != "local-cli":
+    fail(f"{target_id} 的 invocation={target.get('invocation')!r}，本脚本只处理 local-cli")
+if role not in (target.get("roles") or []):
+    fail(f"{target_id} 的 roles={target.get('roles')!r} 不含信封 role={role!r}")
+d = {
+    "id": target_id,
+    "tool": target.get("tool"),
+    "transport": target.get("invocation"),
+    "adapter": target.get("adapter"),
+    "model_family": target.get("model_family"),
+    "sandbox": target.get("sandbox"),
+    "timeout_s": target.get("timeout_s"),
+    "roles": target.get("roles"),
+    "constraints": {"l2": False, "write_src": role == "generator", "push": False},
+}
 
 adapter_name = d.get("adapter") or ""
 if not adapter_name:
@@ -154,17 +222,9 @@ try:
 except DispatchContractError as e:
     fail(str(e))
 
-try:
-    env = json.load(open(env_path))
-except Exception as e:
-    fail(f"信封 JSON 非法：{e}")
-
 batch    = env.get("batch") or fail("信封缺 batch")
 task_id  = env.get("task_id") or fail("信封缺 task_id（幂等键）")
 ref      = (env.get("repo") or {}).get("ref") or ""
-role     = env.get("role") or fail("信封缺 role")
-if role not in (d.get("roles") or []):
-    fail(f"{agent_id} 的 roles={d.get('roles')} 不含信封 role={role!r}")
 
 constraints = d.get("constraints") or {}
 if not isinstance(constraints, dict):
@@ -224,6 +284,7 @@ for k in allow:
 # env_set：字面注入的键值（~ 展开）。只注入该 CLI 的认证目录，
 # 而不是把整个真实 HOME 放进白名单连带暴露 ~/.aws 等。
 config = {
+    "target_id": target_id,
     "adapter": adapter_name,
     "family": d.get("model_family", ""),
     "timeout_cap": timeout_cap,
@@ -278,6 +339,8 @@ for item in value:
 PY
 }
 
+E_TARGET_ID="$(profile_scalar target_id)"
+[ -n "$E_TARGET_ID" ] || die "内部 profile 缺 target_id"
 D_ADAPTER="$(profile_scalar adapter)"
 D_FAMILY="$(profile_scalar family)"
 D_TIMEOUT_CAP="$(profile_scalar timeout_cap)"
@@ -306,7 +369,7 @@ while IFS= read -r -d '' item; do D_ENV_SET+=("$item"); done < <(profile_array e
 mkdir -p "$WORKROOT"
 mkdir -p "$STATE"
 STATE_ROOT="$(cd "$STATE" && pwd)"
-WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${AGENT_ID}-${E_TASK_ID}"
+WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${E_TARGET_ID}-${E_TASK_ID}"
 [ -e "$WT" ] && die "worktree 已存在：${WT}（同 task_id 重复派活？幂等键应去重）"
 # 🔴 写代码的角色不能用 worktree。git worktree 把元数据放在**主仓**的
 # `.git/worktrees/<name>/`，而外部 CLI 的厂商沙箱（Codex 的 -s workspace-write）只允许
@@ -350,7 +413,7 @@ ENV_ARGS+=("GIT_CONFIG_COUNT=1" "GIT_CONFIG_KEY_0=remote.origin.pushurl" \
 # 登录 shell 会 source `~/.zshenv` / `~/.zprofile`——其中任何 `export` 都会把
 # env -i 刚剥掉的变量**原样还回子进程**，静默击穿第一道锁。
 # 实测：HOME 指向含 `.zshenv` 的目录时，DATABASE_URL / DEPLOY_TOKEN 全部复活。
-[ -n "$D_HOME" ] || die "$AGENT_ID 未配 sandbox.home_dir —— 子进程会继承真实 HOME，
+[ -n "$D_HOME" ] || die "$E_TARGET_ID 未配 sandbox.home_dir —— 子进程会继承真实 HOME，
    其 .zshenv/.zprofile 中的 export 将绕过 env 白名单还原敏感变量（dispatch-mode.md §5.1 L1）。
    请配置专用 HOME，并用 sandbox.env_set 投喂该 CLI 的认证目录（如 CODEX_HOME）。"
 case "$D_HOME" in /*) ;; *) die "sandbox.home_dir 必须是绝对路径或 ~ 开头（当前解析为 ${D_HOME}）" ;; esac
@@ -444,7 +507,7 @@ else                                                  OUTCOME="RETURNED"
 fi
 
 META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
-python3 - "$META" "$E_TASK_ID" "$AGENT_ID" "$D_ADAPTER" "$D_FAMILY" "$E_ROLE" "$E_DELIVERABLE" \
+python3 - "$META" "$E_TASK_ID" "$E_TARGET_ID" "$D_ADAPTER" "$D_FAMILY" "$E_ROLE" "$E_DELIVERABLE" \
                   "$E_BATCH" "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
                   "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" <<'PY'
 import json, sys

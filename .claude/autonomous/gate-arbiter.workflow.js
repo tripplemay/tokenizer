@@ -84,8 +84,106 @@ const EVAL_TIERS = [{ model: 'opus', effort: 'high' }, { model: 'sonnet', effort
 // args.registry 由 /autodrive 耐久层读盘注入（Workflow 无文件系统权限）。
 // 无注册表 ⇒ 全部回退到 v1.0 行为，存量项目零影响。
 
+// `tool-integrations/1` removes user-selectable Agent Cards. The autonomous
+// workflow receives the raw registry rather than invoking Python, so derive
+// the same opaque role targets locally for its audit-only routing decisions.
+// Legacy dispatch/1 registries retain their original descriptors unchanged.
+const CONTROL_CHARACTERS = /[\x00-\x1f\x7f]/
+const PYTHON_STRIP_WHITESPACE = /^[\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+|[\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+$/g
+
+// Keep this in lockstep with tool-catalog.py: bounded_text() rejects controls
+// then stores the stripped model family. The raw canonical registry still
+// reaches this workflow for audit routing, so comparing its unnormalized value
+// against the catalog-produced signed resolution would otherwise cause a false
+// drift halt. Do not use JavaScript trim(): its Unicode whitespace set differs
+// from Python str.strip(), which the catalog uses.
+function canonicalModelFamily(value) {
+  if (typeof value !== 'string' || CONTROL_CHARACTERS.test(value)) return null
+  const normalized = value.replace(PYTHON_STRIP_WHITESPACE, '')
+  return normalized && normalized.length <= 128 ? normalized : null
+}
+
+function registryAgents(registry) {
+  if (!registry || typeof registry !== 'object') return []
+  if (registry.version !== 'tool-integrations/1') return Array.isArray(registry.agents) ? registry.agents : []
+  if (!Array.isArray(registry.integrations) || !Array.isArray(registry.a2a_targets)) return []
+  const integrations = new Map()
+  for (const integration of registry.integrations) {
+    if (!integration || typeof integration !== 'object' || typeof integration.id !== 'string') continue
+    const modelFamily = canonicalModelFamily(integration.model_family)
+    if (!modelFamily) continue
+    integrations.set(integration.id, { ...integration, model_family: modelFamily })
+  }
+  const targets = []
+  const roles = ['planner', 'generator', 'evaluator']
+  const priorityOf = value => Number.isSafeInteger(value) && value >= 0 ? value : 1000
+  const roleConstraints = role => ({ l2: false, write_src: role === 'generator', push: false })
+  for (const integration of integrations.values()) {
+    const base = {
+      tool: integration.tool,
+      model_family: integration.model_family,
+      priority: priorityOf(integration.priority),
+      capabilities: Array.isArray(integration.capabilities) ? integration.capabilities : [],
+      integration_id: integration.id,
+    }
+    if (integration.local_cli && typeof integration.local_cli === 'object') {
+      for (const role of roles) {
+        targets.push({
+          ...base,
+          id: `local-cli--${integration.id}--${role}`,
+          roles: [role],
+          transport: 'local-cli',
+          adapter: integration.local_cli.adapter,
+          sandbox: integration.local_cli.sandbox,
+          timeout_s: integration.local_cli.timeout_s,
+          constraints: roleConstraints(role),
+        })
+      }
+    }
+    if (integration.subagent === true) {
+      const personas = { planner: 'planner-proposal', generator: 'generator-restricted', evaluator: 'evaluator' }
+      for (const role of roles) {
+        targets.push({
+          ...base,
+          id: `subagent--${integration.id}--${role}`,
+          roles: [role],
+          transport: 'subagent',
+          agent_type: personas[role],
+          constraints: roleConstraints(role),
+        })
+      }
+    }
+  }
+  for (const target of registry.a2a_targets) {
+    if (!target || typeof target !== 'object' || typeof target.id !== 'string') continue
+    const integration = integrations.get(target.integration_id)
+    if (!integration || !integration.local_cli || typeof integration.local_cli !== 'object') continue
+    const capabilities = [
+      ...(Array.isArray(integration.capabilities) ? integration.capabilities : []),
+      ...(Array.isArray(target.capabilities) ? target.capabilities : []),
+    ]
+    for (const role of ['planner', 'evaluator']) {
+      targets.push({
+        id: `a2a--${target.id}--${role}`,
+        integration_id: integration.id,
+        tool: integration.tool,
+        model_family: integration.model_family,
+        priority: priorityOf(target.priority ?? integration.priority),
+        capabilities: [...new Set(capabilities)],
+        roles: [role],
+        transport: 'a2a',
+        endpoint: target.endpoint,
+        auth: target.auth,
+        remote_runner_id: target.remote_runner_id,
+        constraints: roleConstraints(role),
+      })
+    }
+  }
+  return targets
+}
+
 const eligible = (registry, role) =>
-  ((registry && registry.agents) || []).filter(a => (a.roles || []).includes(role))
+  registryAgents(registry).filter(a => (a.roles || []).includes(role))
 
 // 确定性轮换：同一 wake_n 恒选同一个（无 Math.random，可重放）
 const pick = (pool, n) => (pool.length ? pool[((n % pool.length) + pool.length) % pool.length] : null)
@@ -100,12 +198,13 @@ function assigned(registry, state, role) {
   }
   const id = assignments[role]
   if (typeof id !== 'string' || !id) return { configured: true, candidate: null, id: null }
-  const candidate = ((registry && registry.agents) || []).find(a =>
+  const candidate = registryAgents(registry).find(a =>
     a.id === id && (a.roles || []).includes(role)) || null
   return { configured: true, candidate, id }
 }
 
 const ROLE_NAMES = ['planner', 'generator', 'evaluator']
+const STABLE_AGENT_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
 const STABLE_TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/
 
 function descriptorPriority(descriptor) {
@@ -127,7 +226,7 @@ function exactResolutionRecord(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
   const fields = Object.keys(value).sort()
   if (fields.join(',') !== 'agent_id,invocation,model_family,priority,tool') return false
-  return typeof value.agent_id === 'string'
+  return typeof value.agent_id === 'string' && STABLE_AGENT_ID.test(value.agent_id)
     && STABLE_TOOL_ID.test(value.tool)
     && ['subagent', 'local-cli', 'a2a'].includes(value.invocation)
     && typeof value.model_family === 'string' && value.model_family.length > 0
@@ -156,13 +255,23 @@ function resolutionDrift(state, registry, currentResolution) {
   }
   for (const role of ROLE_NAMES) {
     const expected = audit[role]
+    if (role === 'planner' && expected === null) {
+      if (assignments[role] !== null) {
+        return { role, detail: 'Coordinator Planner assignment must remain null' }
+      }
+      const current = currentResolution && currentResolution[role]
+      if (current !== undefined && current !== null) {
+        return { role, detail: 'current Planner resolution drifted from Coordinator route' }
+      }
+      continue
+    }
     if (!exactResolutionRecord(expected)) {
       return { role, detail: 'stored v2 resolution must contain exactly five stable fields' }
     }
     if (assignments[role] !== expected.agent_id) {
       return { role, detail: 'role_assignments agent_id differs from stored v2 resolution' }
     }
-    const descriptor = ((registry && registry.agents) || []).find(item =>
+    const descriptor = registryAgents(registry).find(item =>
       item && item.id === expected.agent_id && (item.roles || []).includes(role))
     if (!descriptor) return { role, detail: 'stored v2 agent_id no longer resolves to an authorized descriptor' }
     if (descriptor.transport !== expected.invocation) {
@@ -373,6 +482,7 @@ const configuredRoles = {
   evaluator: assigned(registry, state, 'evaluator'),
 }
 for (const [role, resolution] of Object.entries(configuredRoles)) {
+  if (role === 'planner' && resolution.configured && resolution.id === null) continue
   if (resolution.configured && !resolution.candidate) {
     return {
       decision: 'HALT',

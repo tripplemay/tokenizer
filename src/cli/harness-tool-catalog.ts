@@ -6,7 +6,7 @@ import {
   type HarnessModeRole,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
-import type { HarnessToolCatalogEntry } from "@/shared/harness-tool-catalog";
+import type { HarnessToolCatalogEntry, HarnessToolIntegration } from "@/shared/harness-tool-catalog";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -28,10 +28,18 @@ const PROTECTED_ENV_PREFIXES = ["DYLD_", "GIT_", "HARNESS_", "LD_"];
 const A2A_BEARER_ENV_PREFIX = "REMOTE_A2A_";
 const MAX_REGISTRY_BYTES = 512 * 1024;
 const MAX_ADAPTER_BYTES = 128 * 1024;
-const REGISTRY_FIELDS = new Set(["_comment", "version", "agents"]);
+const LEGACY_REGISTRY_FIELDS = new Set(["_comment", "version", "agents"]);
+const INTEGRATION_REGISTRY_FIELDS = new Set(["_comment", "version", "integrations", "a2a_targets"]);
 const DESCRIPTOR_FIELDS = new Set([
   "id", "tool", "priority", "roles", "transport", "model_family", "adapter", "endpoint", "agent_type",
   "capabilities", "constraints", "sandbox", "timeout_s", "auth", "notes"
+]);
+const INTEGRATION_FIELDS = new Set([
+  "id", "tool", "label", "model_family", "priority", "capabilities", "local_cli", "subagent", "notes"
+]);
+const LOCAL_CLI_FIELDS = new Set(["adapter", "sandbox", "timeout_s"]);
+const A2A_TARGET_FIELDS = new Set([
+  "id", "integration_id", "endpoint", "remote_runner_id", "priority", "auth", "capabilities", "notes"
 ]);
 const ADAPTER_FIELDS = new Set([
   "name", "tool", "display_name", "model_family", "envelope_delivery", "argv", "artifact_relpath",
@@ -40,6 +48,11 @@ const ADAPTER_FIELDS = new Set([
 
 export type ToolCatalogReadResult = {
   entries: HarnessToolCatalogEntry[];
+  issue: string | null;
+};
+
+export type ToolIntegrationReadResult = {
+  integrations: HarnessToolIntegration[];
   issue: string | null;
 };
 
@@ -54,6 +67,11 @@ type CatalogCandidate = {
   capabilities: string[];
 };
 
+type ParsedCatalog = {
+  candidates: CatalogCandidate[];
+  integrations: HarnessToolIntegration[];
+};
+
 function record(value: unknown): UnknownRecord | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
     ? (value as UnknownRecord)
@@ -62,8 +80,9 @@ function record(value: unknown): UnknownRecord | null {
 
 function safeText(value: unknown, max: number): string | null {
   if (typeof value !== "string") return null;
+  if (/[\u0000-\u001f\u007f]/.test(value)) return null;
   const normalized = value.trim();
-  if (!normalized || normalized.length > max || /[\u0000-\u001f\u007f]/.test(normalized)) return null;
+  if (!normalized || normalized.length > max) return null;
   return normalized;
 }
 
@@ -400,19 +419,19 @@ function candidateFromDescriptor(repoPath: string, value: unknown, seenIds: Set<
   };
 }
 
-function catalogCandidates(repoPath: string): CatalogCandidate[] | null {
-  const registry = record(readJsonUnder(repoPath, ".agents-registry.json", MAX_REGISTRY_BYTES));
+function requiredPriority(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function legacyCatalogCandidates(repoPath: string, registry: UnknownRecord): ParsedCatalog | null {
   if (
-    !registry ||
-    !onlyKnownKeys(registry, REGISTRY_FIELDS) ||
+    !onlyKnownKeys(registry, LEGACY_REGISTRY_FIELDS) ||
     (registry._comment !== undefined && typeof registry._comment !== "string") ||
-    registry.version !== "dispatch/1" ||
     !Array.isArray(registry.agents) ||
     registry.agents.length < 1 ||
     registry.agents.length > 50
-  ) {
-    return null;
-  }
+  ) return null;
+
   const seenIds = new Set<string>();
   const candidates: CatalogCandidate[] = [];
   for (const descriptor of registry.agents) {
@@ -420,7 +439,183 @@ function catalogCandidates(repoPath: string): CatalogCandidate[] | null {
     if (!candidate) return null;
     candidates.push(candidate);
   }
-  return candidates;
+
+  return {
+    candidates,
+    integrations: candidates.map((candidate) => ({
+      id: candidate.id,
+      tool: candidate.tool,
+      label: candidate.label,
+      modelFamily: candidate.modelFamily,
+      roles: [...candidate.roles],
+      invocations: [candidate.invocation],
+      capabilities: [...candidate.capabilities],
+      localCli: candidate.invocation === "local-cli",
+      subagent: candidate.invocation === "subagent",
+      a2aTargetCount: candidate.invocation === "a2a" ? 1 : 0,
+      sandboxed: candidate.invocation === "local-cli"
+    }))
+  };
+}
+
+function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord): ParsedCatalog | null {
+  if (
+    !onlyKnownKeys(registry, INTEGRATION_REGISTRY_FIELDS) ||
+    (registry._comment !== undefined && typeof registry._comment !== "string") ||
+    !Array.isArray(registry.integrations) ||
+    registry.integrations.length < 1 ||
+    registry.integrations.length > 50 ||
+    !Array.isArray(registry.a2a_targets) ||
+    registry.a2a_targets.length > 100
+  ) return null;
+
+  const candidates: CatalogCandidate[] = [];
+  const integrations = new Map<string, HarnessToolIntegration>();
+  const integrationPriorities = new Map<string, number>();
+  const integrationBaseCapabilities = new Map<string, string[]>();
+  for (const value of registry.integrations) {
+    const integration = record(value);
+    const id = toolId(integration?.id);
+    const tool = toolId(integration?.tool);
+    const label = integration?.label === undefined ? tool : safeText(integration.label, 128);
+    const modelFamily = safeText(integration?.model_family, 128);
+    const parsedPriority = priority(integration?.priority);
+    const parsedCapabilities = capabilities(integration?.capabilities);
+    const hasLocalCli = integration !== null && Object.prototype.hasOwnProperty.call(integration, "local_cli");
+    const localCli = hasLocalCli ? record(integration?.local_cli) : null;
+    if (
+      !integration ||
+      !onlyKnownKeys(integration, INTEGRATION_FIELDS) ||
+      !id || integrations.has(id) || !tool || !label || !modelFamily ||
+      parsedPriority === null || !parsedCapabilities ||
+      (hasLocalCli && !localCli)
+    ) return null;
+
+    if (integration.subagent !== undefined && integration.subagent !== true) return null;
+    const subagent = integration.subagent === true;
+    // Match the framework schema: an integration must expose at least one
+    // invocation, while local_cli remains optional for subagent-only tools.
+    if (!localCli && !subagent) return null;
+    if (
+      localCli && (
+        !onlyKnownKeys(localCli, LOCAL_CLI_FIELDS) ||
+        !toolId(localCli.adapter) || !validSandbox(localCli.sandbox, true) ||
+        !validTimeout(localCli.timeout_s)
+      )
+    ) return null;
+    if (integration.notes !== undefined && safeText(integration.notes, 4_096) === null) return null;
+
+    if (localCli) {
+      const canonical = adapterCatalogInfo(repoPath, toolId(localCli.adapter) as string, { tool }, modelFamily);
+      if (!canonical || canonical.tool !== tool) return null;
+    }
+
+    const roles = [...HARNESS_MODE_ROLES];
+    if (localCli) {
+      candidates.push({
+        id: `${id}:local-cli`,
+        roles,
+        tool,
+        label,
+        invocation: "local-cli",
+        modelFamily,
+        priority: parsedPriority,
+        capabilities: parsedCapabilities
+      });
+    }
+    if (subagent) {
+      candidates.push({
+        id: `${id}:subagent`,
+        roles,
+        tool,
+        label,
+        invocation: "subagent",
+        modelFamily,
+        priority: parsedPriority,
+        capabilities: parsedCapabilities
+      });
+    }
+    integrations.set(id, {
+      id,
+      tool,
+      label,
+      modelFamily,
+      roles,
+      invocations: [
+        ...(localCli ? ["local-cli" as const] : []),
+        ...(subagent ? ["subagent" as const] : [])
+      ],
+      capabilities: [...parsedCapabilities],
+      localCli: localCli !== null,
+      subagent,
+      a2aTargetCount: 0,
+      sandboxed: localCli !== null
+    });
+    integrationPriorities.set(id, parsedPriority);
+    integrationBaseCapabilities.set(id, [...parsedCapabilities]);
+  }
+
+  const seenTargetIds = new Set<string>();
+  const targets = registry.a2a_targets as unknown[];
+  for (const value of targets) {
+    const target = record(value);
+    const id = toolId(target?.id);
+    const integrationId = toolId(target?.integration_id);
+    const endpoint = safeText(target?.endpoint, 2_048);
+    const remoteRunnerId = safeText(target?.remote_runner_id, 128);
+    const source = integrationId ? integrations.get(integrationId) : undefined;
+    const parsedPriority = target?.priority === undefined || target?.priority === null
+      ? (integrationId ? integrationPriorities.get(integrationId) ?? null : null)
+      : requiredPriority(target.priority);
+    const targetCapabilities = target?.capabilities === undefined || target?.capabilities === null
+      ? []
+      : capabilities(target.capabilities);
+    if (
+      !target ||
+      !onlyKnownKeys(target, A2A_TARGET_FIELDS) ||
+      !id || seenTargetIds.has(id) || !integrationId || !source ||
+      !source.localCli ||
+      !endpoint || !remoteRunnerId || !AGENT_ID.test(remoteRunnerId) || parsedPriority === null ||
+      !validAuth(target.auth) || targetCapabilities === null ||
+      (target.notes !== undefined && safeText(target.notes, 4_096) === null)
+    ) return null;
+
+    seenTargetIds.add(id);
+    const capabilitiesForTarget = [...new Set([
+      ...(integrationBaseCapabilities.get(integrationId) ?? []),
+      ...targetCapabilities
+    ])].sort((left, right) => left.localeCompare(right));
+    candidates.push({
+      // The target identifier is deliberately internal to catalog resolution.
+      id: `${integrationId}:a2a:${id}`,
+      roles: ["planner", "evaluator"],
+      tool: source.tool,
+      label: source.label,
+      invocation: "a2a",
+      modelFamily: source.modelFamily,
+      priority: parsedPriority,
+      capabilities: capabilitiesForTarget
+    });
+    source.a2aTargetCount += 1;
+    if (!source.invocations.includes("a2a")) source.invocations.push("a2a");
+    source.capabilities = [...new Set([...source.capabilities, ...capabilitiesForTarget])]
+      .sort((left, right) => left.localeCompare(right));
+  }
+
+  return {
+    candidates,
+    integrations: [...integrations.values()].sort((left, right) =>
+      `${left.label}\u0000${left.id}`.localeCompare(`${right.label}\u0000${right.id}`)
+    )
+  };
+}
+
+function catalogCandidates(repoPath: string): ParsedCatalog | null {
+  const registry = record(readJsonUnder(repoPath, ".agents-registry.json", MAX_REGISTRY_BYTES));
+  if (!registry) return null;
+  if (registry.version === "dispatch/1") return legacyCatalogCandidates(repoPath, registry);
+  if (registry.version === "tool-integrations/1") return integrationCatalogCandidates(repoPath, registry);
+  return null;
 }
 
 function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatalogEntry[] | null {
@@ -460,9 +655,20 @@ function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatal
  * this registry-driven parser without an application/UI release.
  */
 export function readDispatchToolCatalog(repoPath: string): ToolCatalogReadResult {
-  const candidates = catalogCandidates(repoPath);
-  const entries = candidates ? buildCatalog(candidates) : null;
+  const catalog = catalogCandidates(repoPath);
+  const entries = catalog ? buildCatalog(catalog.candidates) : null;
   return entries
     ? { entries, issue: null }
     : { entries: [], issue: "dispatch tool catalog is unavailable" };
+}
+
+/**
+ * Public integration inventory for the console. A2A endpoint and target ids
+ * are intentionally resolved only on the device and never cross this API.
+ */
+export function readDispatchToolIntegrations(repoPath: string): ToolIntegrationReadResult {
+  const catalog = catalogCandidates(repoPath);
+  return catalog
+    ? { integrations: catalog.integrations, issue: null }
+    : { integrations: [], issue: "dispatch tool catalog is unavailable" };
 }

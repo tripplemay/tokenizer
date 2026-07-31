@@ -1,157 +1,96 @@
 {
-  "_comment": "dispatch-mode.md L1 示例。拷到项目根 .agents-registry.json 后按实际改。⚠️ generator 与 evaluator 的 model_family 必须不同（validate-dispatch.sh assignments 强制）；transport=local-cli 必须配 sandbox.home_dir（专用空 HOME，见 §5.1 L1）。",
-  "version": "dispatch/1",
-  "agents": [
+  "_comment": "tool-integrations/1 example. A CLI integration has no configured role list: local_cli automatically participates in Planner, Generator, and Evaluator under framework-owned role contracts. a2a_targets add only Planner/Evaluator because remote Generator source handoff is not defined yet.",
+  "version": "tool-integrations/1",
+  "integrations": [
     {
-      "id": "planner-claude",
+      "id": "claude-code",
       "tool": "claude-code",
-      "priority": 100,
-      "roles": [
-        "planner"
-      ],
-      "transport": "subagent",
-      "agent_type": "planner-proposal",
+      "label": "Claude Code",
       "model_family": "claude",
-      "capabilities": [
-        "plan"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "notes": "隔离的 proposal-only Planner。v2 非 fast 选择 claude-code + subagent 时必须启动它，返回 proposal 后由 Coordinator 转交人类确认。"
-    },
-    {
-      "id": "main-claude",
-      "tool": "claude-code",
       "priority": 100,
-      "roles": [
-        "generator"
-      ],
-      "transport": "subagent",
-      "agent_type": "generator-restricted",
-      "model_family": "claude",
-      "capabilities": [
-        "build",
-        "fix"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": true,
-        "push": true
-      },
-      "notes": "隔离 Generator。Coordinator 不是 registry 角色；Evaluator 由下方 reviewer-claude 独立承担（铁律 4）。"
-    },
-    {
-      "id": "reviewer-claude",
-      "tool": "claude-code",
-      "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "subagent",
-      "agent_type": "evaluator",
-      "model_family": "claude",
-      "capabilities": [
-        "verify",
-        "l1_local",
-        "security_audit"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": true
-      },
-      "notes": "同会话隔离验收 subagent（铁律 4 的默认实现）"
-    },
-    {
-      "id": "reviewer-codex",
-      "tool": "codex",
-      "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "local-cli",
-      "adapter": "codex",
-      "model_family": "codex",
-      "capabilities": [
-        "verify",
-        "l1_local",
-        "code_review"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/reviewer-codex",
-        "env_set": {
-          "CODEX_HOME": "~/.codex"
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local", "security_audit"],
+      "subagent": true,
+      "local_cli": {
+        "adapter": "claude-code",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/claude-code",
+          "env_allow": ["ANTHROPIC_API_KEY", "CLAUDE_CONFIG_DIR"],
+          "env_set": {}
         },
-        "env_allow": []
+        "timeout_s": 2400
       },
-      "timeout_s": 2400,
-      "notes": "异构验收，去偏轮换池成员。model_family=codex 与主实例的 claude 不同，满足独立性互斥。sandbox.home_dir 为硬性前置（防登录 shell 经 .zshenv/.zprofile 还原被剥离的变量）；env_set 只投喂 Codex 认证目录，不泄露真实 HOME"
+      "notes": "The framework fixes the role persona to planner-proposal, generator-restricted, or evaluator. Coordinator remains outside this catalog."
     },
     {
-      "id": "builder-codex",
+      "id": "codex",
       "tool": "codex",
-      "priority": 100,
-      "roles": [
-        "generator"
-      ],
-      "transport": "local-cli",
-      "adapter": "codex",
+      "label": "Codex",
       "model_family": "codex",
-      "capabilities": [
-        "build",
-        "fix"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": true,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/builder-codex",
-        "env_set": {
-          "CODEX_HOME": "~/.codex"
+      "priority": 100,
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local", "code_review"],
+      "local_cli": {
+        "adapter": "codex",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/codex",
+          "env_set": {
+            "CODEX_HOME": "~/.codex"
+          },
+          "env_allow": []
         },
-        "env_allow": []
+        "timeout_s": 2400
       },
-      "timeout_s": 3600,
-      "notes": "v1.1 放开的外部 generator。四道锁：roles 白名单 + 独立 worktree 无 push + spec-lock critic 稽核 + L1 全绿硬证据。⚠️ 与它配对的 evaluator 必须是非 codex family。sandbox.home_dir 为硬性前置（防登录 shell 经 .zshenv/.zprofile 还原被剥离的变量）；env_set 只投喂 Codex 认证目录，不泄露真实 HOME"
+      "notes": "One verified Codex integration. The framework applies proposal-only, source-handoff, or verdict-only limits according to the dispatched role."
     },
     {
-      "id": "reviewer-kimi",
+      "id": "kimi",
       "tool": "kimi",
-      "priority": 100,
-      "roles": [
-        "evaluator"
-      ],
-      "transport": "local-cli",
-      "adapter": "kimi",
+      "label": "Kimi Code",
       "model_family": "kimi",
-      "capabilities": [
-        "verify",
-        "l1_local"
-      ],
-      "constraints": {
-        "l2": false,
-        "write_src": false,
-        "push": false
-      },
-      "sandbox": {
-        "home_dir": "~/.harness-sandbox/reviewer-kimi",
-        "env_set": {
-          "KIMI_CODE_HOME": "~/.kimi-code"
+      "priority": 100,
+      "capabilities": ["plan", "build", "fix", "verify", "l1_local"],
+      "local_cli": {
+        "adapter": "kimi",
+        "sandbox": {
+          "home_dir": "~/.harness-sandbox/kimi",
+          "env_set": {
+            "KIMI_CODE_HOME": "~/.kimi-code"
+          },
+          "env_allow": []
         },
-        "env_allow": []
+        "timeout_s": 1800
+      }
+    }
+  ],
+  "a2a_targets": [
+    {
+      "id": "claude-code-loopback",
+      "integration_id": "claude-code",
+      "remote_runner_id": "claude-code-loopback",
+      "endpoint": "http://127.0.0.1:41243",
+      "auth": {
+        "type": "none"
       },
-      "timeout_s": 1800,
-      "notes": "第三个 model_family，去偏轮换池成员（claude × codex × kimi）。⚠️ Kimi 的 prompt 模式隐式全批准且拒绝一切权限旗标——厂商侧零约束，机件 #7 的进程级四道锁是唯一防线"
+      "notes": "Start the self-hosted runner with --integration claude-code --runner-id claude-code-loopback. Dispatch requires valid scoped Claude credentials on the runner host."
+    },
+    {
+      "id": "codex-loopback",
+      "integration_id": "codex",
+      "remote_runner_id": "codex-loopback",
+      "endpoint": "http://127.0.0.1:41242",
+      "auth": {
+        "type": "none"
+      },
+      "notes": "Start the self-hosted runner with --integration codex --runner-id codex-loopback. This target is offered for Planner and Evaluator only."
+    },
+    {
+      "id": "kimi-loopback",
+      "integration_id": "kimi",
+      "remote_runner_id": "kimi-loopback",
+      "endpoint": "http://127.0.0.1:41241",
+      "auth": {
+        "type": "none"
+      },
+      "notes": "Start the self-hosted runner with --integration kimi --runner-id kimi-loopback."
     }
   ]
 }

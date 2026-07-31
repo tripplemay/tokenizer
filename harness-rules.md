@@ -18,8 +18,9 @@
 **Coordinator 不是第四个可选 agent。** 它不进 `.agents-registry.json`、不出现在
 `role_assignments`、也不能写进签名的 mode intent。它只能运输和验证：当 v2 工具绑定存在时，
 Coordinator 不得自行替代所绑定的 Planner / Generator / Evaluator；Planner 的 proposal、Generator 的
-源码改动和 Evaluator 的结论都必须来自对应执行角色。只有 `fast`（bindings 为 null）和历史 v1
-无 Planner assignment 的本机默认路径，才保留主会话直接执行 Planner/Generator 的兼容行为。
+源码改动和 Evaluator 的结论都必须来自对应执行角色。只有 `fast`（bindings 为 null）、历史 v1
+无 Planner assignment 的本机默认路径，或 v2 non-fast 明确写入 `planner: null` 的 Coordinator 路径，才
+保留主会话直接执行 Planner 的兼容行为；v2 已绑定的 Generator / Evaluator 仍必须按 descriptor 派发。
 
 **控制台的 v2 选择从不暴露 agent id。** 人类为 Planner、Generator、Evaluator 分别签发稳定的
 `{tool, invocation}`；本机在下一次 `/plan` 边界用 registry + verified adapter 的候选池确定性解析具体
@@ -31,7 +32,7 @@ adapter 和角色 descriptor，就会自动进入同一目录、校验和解析�
 | 形态 | 隔离方式 | 调度方式 | 适用 |
 |---|---|---|---|
 | **快车道（同会话，默认）** | 同会话隔离 subagent（fresh context） | 主上下文直派 | 日常批次；阶段切换 = 上下文隔离切换，不需要结束会话 |
-| **本地异构（v1.1 新增）** | 独立进程 + 独立 worktree + **异厂商模型** | Dispatcher 按 `.agents-registry.json` descriptor 派活 | 去偏验收、跨厂商调配。见 `dispatch-mode.md` |
+| **本地异构（v1.1 新增）** | 独立进程 + 独立 worktree + **异厂商模型** | Dispatcher 按 `tool-integrations/1` target（兼容 `.agents-registry.json`）派活 | 去偏验收、跨厂商调配。见 `dispatch-mode.md` |
 | **慢车道（git 总线）** | 不同会话 / 机器 / 工具 | git 同步状态文件异步交接 | 跨机器、多日大批次、真异步。行为与 v0.x 相同 |
 
 **形态选择规则（Planner 在 planning 末尾确认）：** 默认快车道。命中以下任一 → 升级形态：
@@ -98,8 +99,9 @@ git pull --ff-only origin main
 
 **然后从磁盘重新读取以下文件，不得使用任何缓存版本：**
 - `.agent-id` — 当前实例的身份标识（文件不存在则 myId = null）
-- `.agents-registry.json` — 项目实例注册表 / descriptor（Planner 角色分配与 Dispatcher 派活时使用）。
-  格式见 `framework/templates/claude/dispatch/agents-registry.schema.json`；
+- `.agents-registry.json` — 工具 integration / A2A target 注册表（v2 工具绑定与 Dispatcher 派活时使用）。
+  新格式见 `framework/templates/claude/dispatch/agents-registry.schema.json`；
+  `tool-integrations/1` 自动按角色派生 target，历史 `dispatch/1` descriptor 仍兼容；
   历史的纯 id 列表格式 `.agents-registry` 仍兼容读取，但只能支撑快车道默认映射，无法派活给外部实例
 - `progress.json` — 当前阶段和进度
 - `features.json` — 功能列表和状态
@@ -342,9 +344,11 @@ git status --short docs/test-reports/ docs/test-cases/ .auto-memory/
 
 进度类文件（progress.json / features.json / .auto-memory/ 等）推 `main` 不触发 CI（paths-ignore 已配置）。
 
-## 角色动态分配（role_assignments）
+## 历史角色动态分配（role_assignments，v1 兼容）
 
-支持在 progress.json 中按批次指定角色分配，覆盖默认映射。
+历史 v1 项目支持在 progress.json 中按批次指定角色分配，覆盖默认映射。新 v2 项目签名的是
+`role_bindings`（`{tool, invocation}`），具体 agent id 只由本机 resolver 生成并作为审计记录；Planner
+为 `null` 时由不可配置的 Coordinator 负责。
 
 **字段格式（progress.json）：**
 ```json

@@ -81,10 +81,20 @@ class ToolCatalogTests(unittest.TestCase):
             json.dumps({"version": "dispatch/1", "agents": agents}), encoding="utf-8"
         )
 
+    def write_integrations(self, integrations: list[dict], a2a_targets: list[dict] | None = None):
+        self.registry.write_text(
+            json.dumps({
+                "version": "tool-integrations/1",
+                "integrations": integrations,
+                "a2a_targets": a2a_targets or [],
+            }),
+            encoding="utf-8",
+        )
+
     def write_bindings(self, bindings: dict):
         self.bindings.write_text(json.dumps(bindings), encoding="utf-8")
 
-    def invoke(self, command: str):
+    def invoke(self, command: str, *, target_id: str | None = None):
         args = [
             sys.executable,
             str(TOOL_CATALOG),
@@ -96,6 +106,10 @@ class ToolCatalogTests(unittest.TestCase):
         ]
         if command == "resolve":
             args.extend(["--bindings", str(self.bindings)])
+        if command == "target":
+            if target_id is None:
+                raise AssertionError("target_id is required for target command")
+            args.extend(["--target-id", target_id])
         return subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def invoke_registry_validator(self):
@@ -420,6 +434,280 @@ class ToolCatalogTests(unittest.TestCase):
         rejected = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(rejected.returncode, 2)
         self.assertIn("checkpoint", rejected.stderr)
+
+    def test_integrations_auto_expand_cli_roles_and_keep_coordinator_planner_null(self):
+        self.write_adapter("future-cli", "future")
+        self.write_adapter("other-cli", "other")
+        self.write_integrations(
+            [
+                {
+                    "id": "future",
+                    "tool": "future-cli",
+                    "label": "Future CLI",
+                    "model_family": "future",
+                    "capabilities": ["plan", "build", "verify"],
+                    "local_cli": {
+                        "adapter": "future-cli",
+                        "sandbox": {"home_dir": "/tmp/future-home"},
+                        "timeout_s": 900,
+                    },
+                },
+                {
+                    "id": "other",
+                    "tool": "other-cli",
+                    "label": "Other CLI",
+                    "model_family": "other",
+                    "local_cli": {
+                        "adapter": "other-cli",
+                        "sandbox": {"home_dir": "/tmp/other-home"},
+                    },
+                },
+                {
+                    "id": "claude",
+                    "tool": "claude-code",
+                    "label": "Claude Code",
+                    "model_family": "claude",
+                    "subagent": True,
+                },
+            ],
+            [
+                {
+                    "id": "future-remote",
+                    "integration_id": "future",
+                    "remote_runner_id": "future-a2a-runner",
+                    "endpoint": "https://future.invalid/a2a",
+                    "auth": {"type": "none"},
+                }
+            ],
+        )
+        self.write_bindings(
+            {
+                "planner": None,
+                "generator": {"tool": "future-cli", "invocation": "local-cli"},
+                "evaluator": {"tool": "other-cli", "invocation": "local-cli"},
+            }
+        )
+
+        catalog_result = self.invoke("catalog")
+        self.assertEqual(catalog_result.returncode, 0, catalog_result.stderr)
+        catalog = json.loads(catalog_result.stdout)
+        for role in ("planner", "generator", "evaluator"):
+            self.assertIn(
+                ("future-cli", "local-cli"),
+                {(entry["tool"], entry["invocation"]) for entry in catalog["roles"][role]},
+            )
+        self.assertIn(
+            ("future-cli", "a2a"),
+            {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["planner"]},
+        )
+        self.assertIn(
+            ("future-cli", "a2a"),
+            {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["evaluator"]},
+        )
+        self.assertNotIn(
+            ("future-cli", "a2a"),
+            {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["generator"]},
+        )
+        self.assertIn(
+            ("claude-code", "subagent"),
+            {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["generator"]},
+        )
+
+        resolved_result = self.invoke("resolve")
+        self.assertEqual(resolved_result.returncode, 0, resolved_result.stderr)
+        resolved = json.loads(resolved_result.stdout)
+        self.assertIsNone(resolved["planner"])
+        self.assertEqual(resolved["generator"]["agent_id"], "local-cli--future--generator")
+        self.assertEqual(resolved["evaluator"]["agent_id"], "local-cli--other--evaluator")
+
+        local_target = self.invoke("target", target_id="local-cli--future--generator")
+        self.assertEqual(local_target.returncode, 0, local_target.stderr)
+        self.assertEqual(
+            json.loads(local_target.stdout),
+            {
+                "adapter": "future-cli",
+                "capabilities": ["build", "plan", "verify"],
+                "integration_id": "future",
+                "invocation": "local-cli",
+                "model_family": "future",
+                "priority": 1000,
+                "roles": ["generator"],
+                "sandbox": {"home_dir": "/tmp/future-home"},
+                "target_id": "local-cli--future--generator",
+                "timeout_s": 900,
+                "tool": "future-cli",
+            },
+        )
+        remote_target = self.invoke("target", target_id="a2a--future-remote--evaluator")
+        self.assertEqual(remote_target.returncode, 0, remote_target.stderr)
+        remote = json.loads(remote_target.stdout)
+        self.assertEqual(remote["remote_runner_id"], "future-a2a-runner")
+        self.assertEqual(remote["roles"], ["evaluator"])
+        self.assertEqual(remote["auth"], {"type": "none"})
+
+    def test_integrations_reject_a2a_target_without_local_cli_profile(self):
+        self.write_integrations(
+            [{
+                "id": "subagent-only",
+                "tool": "claude-code",
+                "model_family": "claude",
+                "subagent": True,
+            }],
+            [{
+                "id": "invalid-remote",
+                "integration_id": "subagent-only",
+                "remote_runner_id": "invalid-runner",
+                "endpoint": "https://invalid.example/a2a",
+            }],
+        )
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("must provide local_cli", result.stderr)
+
+    def test_integrations_reject_invalid_declared_local_cli(self):
+        self.write_integrations(
+            [{
+                "id": "subagent-only",
+                "tool": "claude-code",
+                "model_family": "claude",
+                "subagent": True,
+                "local_cli": False,
+            }],
+            [],
+        )
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("local_cli must be an object", result.stderr)
+
+    def test_integrations_reject_overlong_integration_or_target_ids(self):
+        self.write_adapter("future-cli", "future")
+        overlong = "x" * 65
+        self.write_integrations(
+            [{
+                "id": overlong,
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+            }],
+            [],
+        )
+        integration_result = self.invoke("catalog")
+        self.assertEqual(integration_result.returncode, 2)
+        self.assertIn("integration", integration_result.stderr)
+
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+            }],
+            [{
+                "id": overlong,
+                "integration_id": "future",
+                "remote_runner_id": "future-runner",
+                "endpoint": "https://future.invalid/a2a",
+            }],
+        )
+        target_result = self.invoke("catalog")
+        self.assertEqual(target_result.returncode, 2)
+        self.assertIn("a2a_targets", target_result.stderr)
+
+    def test_integrations_reject_a2a_target_without_remote_runner_identity(self):
+        self.write_adapter("future-cli", "future")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+            }],
+            [{
+                "id": "future-remote",
+                "integration_id": "future",
+                "endpoint": "https://future.invalid/a2a",
+            }],
+        )
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("remote_runner_id", result.stderr)
+
+    def test_catalog_text_and_capability_bounds_are_explicit(self):
+        self.write_adapter("future-cli", "future")
+
+        def registry(model_family="future", label=None, capabilities=None, endpoint_value=None):
+            integration = {
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": model_family,
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+            }
+            if label is not None:
+                integration["label"] = label
+            if capabilities is not None:
+                integration["capabilities"] = capabilities
+            targets = []
+            if endpoint_value is not None:
+                targets.append({
+                    "id": "future-remote",
+                    "integration_id": "future",
+                    "remote_runner_id": "future-runner",
+                    "endpoint": endpoint_value,
+                })
+            return [integration], targets
+
+        cases = (
+            ("model family length", *registry(model_family="x" * 129)),
+            ("model family control", *registry(model_family="future\nfamily")),
+            ("model family edge control", *registry(model_family="\nfuture")),
+            ("label length", *registry(label="x" * 129)),
+            ("label control", *registry(label="Future\nCLI")),
+            ("capability format", *registry(capabilities=["unsafe capability"])),
+            ("capability length", *registry(capabilities=["x" * 65])),
+            ("endpoint length", *registry(endpoint_value="https://example.invalid/" + "x" * 2025)),
+            ("endpoint control", *registry(endpoint_value="https://example.invalid/a2a\nnext")),
+            ("endpoint edge control", *registry(endpoint_value="\nhttps://example.invalid/a2a")),
+        )
+        for label, integrations, targets in cases:
+            with self.subTest(label=label):
+                self.write_integrations(integrations, targets)
+                result = self.invoke("catalog")
+                self.assertEqual(result.returncode, 2, result.stderr)
+
+    def test_catalog_rejects_control_characters_in_sandbox_env_set_values(self):
+        self.write_adapter("future-cli", "future")
+        for value in ("token\x00ZDOTDIR=/tmp/escape", "token\nnext", "token\x7fnext"):
+            with self.subTest(value=repr(value)):
+                self.write_integrations(
+                    [{
+                        "id": "future",
+                        "tool": "future-cli",
+                        "model_family": "future",
+                        "local_cli": {
+                            "adapter": "future-cli",
+                            "sandbox": {
+                                "home_dir": "/tmp/future-home",
+                                "env_set": {"FIXTURE_TOKEN": value},
+                            },
+                        },
+                    }],
+                    [],
+                )
+                result = self.invoke("catalog")
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("must not contain control characters", result.stderr)
 
 
 if __name__ == "__main__":

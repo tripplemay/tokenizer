@@ -185,6 +185,58 @@ REGISTRY = {
 }
 
 
+INTEGRATION_REGISTRY = {
+    "version": "tool-integrations/1",
+    "integrations": [
+        {
+            "id": "codex",
+            "tool": "codex",
+            "label": "Codex",
+            "model_family": "codex",
+            "priority": 100,
+            "capabilities": ["plan", "build", "verify"],
+            "local_cli": {
+                "adapter": "codex",
+                "sandbox": {"home_dir": "/tmp/mode-intent/codex"},
+                "timeout_s": 60,
+            },
+        },
+        {
+            "id": "kimi",
+            "tool": "kimi",
+            "label": "Kimi Code",
+            "model_family": "kimi",
+            "priority": 100,
+            "capabilities": ["plan", "build", "verify"],
+            "local_cli": {
+                "adapter": "kimi",
+                "sandbox": {"home_dir": "/tmp/mode-intent/kimi"},
+                "timeout_s": 60,
+            },
+        },
+        {
+            "id": "claude-code",
+            "tool": "claude-code",
+            "label": "Claude Code",
+            "model_family": "claude",
+            "priority": 100,
+            "capabilities": ["plan", "verify"],
+            "subagent": True,
+        },
+    ],
+    "a2a_targets": [
+        {
+            "id": "codex-loopback",
+            "integration_id": "codex",
+            "remote_runner_id": "codex-loopback",
+            "endpoint": "https://example.invalid/codex-a2a",
+            "auth": {"type": "none"},
+            "priority": 100,
+        },
+    ],
+}
+
+
 def find_openssl():
     for candidate in (
         os.environ.get("HARNESS_OPENSSL"),
@@ -293,6 +345,7 @@ def main():
             mode_tamper=None,
             must_contain=None,
             must_not_contain=None,
+            adapters=None,
         ):
             nonlocal passed
             registry_path.write_text(
@@ -312,14 +365,12 @@ def main():
                 ),
                 encoding="utf-8",
             )
+            command = ["bash", VALIDATOR]
+            if adapters is not None:
+                command.extend(["--adapters", adapters])
+            command.extend([harness_path, registry_path, public_key if pub is None else pub])
             result = subprocess.run(
-                [
-                    "bash",
-                    VALIDATOR,
-                    harness_path,
-                    registry_path,
-                    public_key if pub is None else pub,
-                ],
+                command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -344,16 +395,14 @@ def main():
             print(f"ok {passed} - {name}")
             return result
 
-        def run_resolver_case(name, expected, must_contain=None, env=None):
+        def run_resolver_case(name, expected, must_contain=None, env=None, adapters=None):
             nonlocal passed
+            command = ["bash", RESOLVER]
+            if adapters is not None:
+                command.extend(["--adapters", adapters])
+            command.extend([harness_path, registry_path, public_key])
             result = subprocess.run(
-                [
-                    "bash",
-                    RESOLVER,
-                    harness_path,
-                    registry_path,
-                    public_key,
-                ],
+                command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -395,6 +444,58 @@ def main():
             base_tool_intent("slow"),
             True,
         )
+        coordinator_intent = base_tool_intent("slow")
+        coordinator_intent["intent_id"] = "intent-tool-coordinator-002"
+        coordinator_intent["desired"]["execution"]["role_bindings"] = {
+            "planner": None,
+            "generator": tool_binding("kimi", "local-cli"),
+            "evaluator": tool_binding("codex", "a2a"),
+        }
+        run_case(
+            "v2 integration registry keeps Planner with Coordinator and resolves Codex A2A",
+            coordinator_intent,
+            True,
+            INTEGRATION_REGISTRY,
+        )
+        coordinator_resolution = run_resolver_case(
+            "v2 integration registry resolution records Coordinator Planner as null",
+            True,
+        )
+        resolved = json.loads(coordinator_resolution.stdout)
+        assert resolved["planner"] is None
+        assert resolved["generator"]["agent_id"] == "local-cli--kimi--generator"
+        assert resolved["evaluator"]["agent_id"] == "a2a--codex-loopback--evaluator"
+
+        # A project-owned adapter directory must be supplied uniformly to
+        # both validation and direct resolution. Otherwise a future verified
+        # CLI integration can be signed at consumption yet become impossible
+        # to inspect through the resolver utility.
+        custom_adapters = repo / "custom-adapters"
+        custom_adapters.mkdir()
+        adapters_root = HERE.parent / "dispatch" / "transports" / "adapters"
+        for tool in ("codex", "kimi"):
+            adapter = json.loads((adapters_root / f"{tool}.json").read_text(encoding="utf-8"))
+            adapter["name"] = f"custom-{tool}"
+            (custom_adapters / f"custom-{tool}.json").write_text(
+                json.dumps(adapter), encoding="utf-8"
+            )
+        custom_registry = copy.deepcopy(INTEGRATION_REGISTRY)
+        for integration in custom_registry["integrations"]:
+            if integration["id"] in {"codex", "kimi"}:
+                integration["local_cli"]["adapter"] = f"custom-{integration['id']}"
+        run_case(
+            "v2 integration registry validates project-owned adapters",
+            coordinator_intent,
+            True,
+            custom_registry,
+            adapters=custom_adapters,
+        )
+        custom_resolution = run_resolver_case(
+            "direct resolver forwards project-owned adapters",
+            True,
+            adapters=custom_adapters,
+        )
+        assert json.loads(custom_resolution.stdout)["planner"] is None
         run_case("valid v2 fast keeps bindings null", base_tool_intent("fast"), True)
         run_case("disabled autonomy is exactly enabled false", base_intent(autonomy=False), True)
 
@@ -504,16 +605,19 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
             encoding="utf-8",
         )
 
-        def consume(batch):
+        def consume(batch, adapters=None):
+            command = [
+                "bash", CONSUMER,
+                "--batch", batch,
+                "--progress", progress_path,
+                "--harness", harness_path,
+                "--registry", registry_path,
+                "--pub", public_key,
+            ]
+            if adapters is not None:
+                command.extend(["--adapters", adapters])
             return subprocess.run(
-                [
-                    "bash", CONSUMER,
-                    "--batch", batch,
-                    "--progress", progress_path,
-                    "--harness", harness_path,
-                    "--registry", registry_path,
-                    "--pub", public_key,
-                ],
+                command,
                 cwd=repo,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -521,14 +625,17 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
                 env={**os.environ, "HARNESS_OPENSSL": openssl},
             )
 
-        def validate_active_checkpoint():
+        def validate_active_checkpoint(adapters=None):
+            command = [
+                "bash", RESOLVED_BINDINGS_VALIDATOR,
+                "--progress", progress_path,
+                "--registry", registry_path,
+                "--pub", public_key,
+            ]
+            if adapters is not None:
+                command.extend(["--adapters", adapters])
             return subprocess.run(
-                [
-                    "bash", RESOLVED_BINDINGS_VALIDATOR,
-                    "--progress", progress_path,
-                    "--registry", registry_path,
-                    "--pub", public_key,
-                ],
+                command,
                 cwd=repo,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -550,6 +657,58 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         progress_path.write_text(json.dumps(active), encoding="utf-8")
         passed += 1
         print(f"ok {passed} - v2 consumption atomically persists full signed checkpoint")
+
+        # An explicit project-owned adapter directory must survive consumption.
+        # Active validation intentionally receives no --adapters override: it
+        # can only pass by recovering the durable checkpoint path.
+        custom_consumption_intent = copy.deepcopy(coordinator_intent)
+        custom_consumption_intent["intent_id"] = "intent-custom-adapters-003"
+        harness_path.write_text(
+            json.dumps(
+                {
+                    "framework": {},
+                    "project": {
+                        "name": "fixture",
+                        "mode_defaults": {
+                            "intent": sign(custom_consumption_intent),
+                            "staged_at": iso_after(seconds=-1),
+                        },
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        progress_path.write_text(
+            json.dumps({"status": "new", "role_assignments": None, "mode_intent": None}),
+            encoding="utf-8",
+        )
+        registry_path.write_text(json.dumps(custom_registry), encoding="utf-8")
+        custom_consumed = consume("BL-CUSTOM-ADAPTERS", adapters=custom_adapters)
+        assert custom_consumed.returncode == 0, custom_consumed.stderr
+        custom_active = json.loads(progress_path.read_text(encoding="utf-8"))
+        assert custom_active["mode_intent"]["adapter_dir"] == "custom-adapters"
+        recovered_custom = validate_active_checkpoint()
+        assert recovered_custom.returncode == 0, recovered_custom.stderr
+        assert json.loads(recovered_custom.stdout)["planner"] is None
+        for command, label in (
+            (["bash", HERE.parent / "dispatch" / "validate-dispatch.sh", "registry", registry_path], "registry"),
+            (["bash", HERE.parent / "dispatch" / "validate-dispatch.sh", "assignments", progress_path, registry_path], "assignments"),
+        ):
+            active_preflight = subprocess.run(
+                command,
+                cwd=repo,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            assert active_preflight.returncode == 0, f"{label}: {active_preflight.stderr}"
+        wrong_custom = validate_active_checkpoint(adapters=adapters_root)
+        assert wrong_custom.returncode == 2
+        assert "adapter" in wrong_custom.stderr
+        progress_path.write_text(json.dumps(active), encoding="utf-8")
+        registry_path.write_text(json.dumps(REGISTRY), encoding="utf-8")
+        passed += 1
+        print(f"ok {passed} - custom adapter directory persists and active routes reject drift")
 
         # A separately valid next-batch intent must not affect the active
         # checkpoint resolver. It selects a different Planner route on purpose.

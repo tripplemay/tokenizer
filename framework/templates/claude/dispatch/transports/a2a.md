@@ -20,7 +20,7 @@
 | **服务端推送** | SSE `SubscribeToTask` 实时推 `TaskStatusUpdateEvent` / `TaskArtifactUpdateEvent`，无轮询延迟 |
 | （附带）**跨机器** | runner 绑 `0.0.0.0` + Bearer，编排者在另一台机器上派活 |
 
-`run`/`subscribe` 不是无限等待：使用与 local-cli 相同的 effective timeout
+`run`/`subscribe` 不是无限等待：从 Agent Card 身份核验开始就使用与 local-cli 相同的 effective timeout
 `min(envelope.deadline_s, descriptor.timeout_s)`，缺 deadline 时用 descriptor cap，再加 5 秒 transport
 grace。到点先 `CancelTask`；确认 CANCELED 后，即使 runner 在 drain 结束后令最终 GetTask 连接失败，
 本地仍落可解释的 CANCELED run-meta，不把已确认事实降级成未知错误。
@@ -33,7 +33,7 @@ grace。到点先 `CancelTask`；确认 CANCELED 后，即使 runner 在 drain �
 
 ```
 编排者（client）                          对端机器（runner）
- dispatch-run.sh                          a2a-runner.py --agent <local-cli-id>
+ dispatch-run.sh                          a2a-runner.py --integration <cli-integration>
    └ a2a-client.py run                      ├ GET  /.well-known/a2a-agent-card
        ├ SendMessage → taskId               ├ POST / SendMessage → 起后台 sandbox-profile.sh
        ├ SubscribeToTask (SSE)              ├ POST / GetTask / ListTasks / CancelTask
@@ -41,9 +41,16 @@ grace。到点先 `CancelTask`；确认 CANCELED 后，即使 runner 在 drain �
        └ 合成 run-meta（与 local-cli 同形）  └ task store 落盘（活过重启）
 ```
 
-**两侧注册表是两份文件。** 对端机器的 `.agents-registry.json` 里该 agent 是 `transport: local-cli`
-（它在本地执行）；编排者机器上是 `transport: a2a` + `endpoint`。真实跨机时**可以用同一个 id**；
-单机 loopback 演练时因同处一份文件，需用两个 id（演练产物，非设计缺陷）。
+`dispatch/1` 的旧路径仍可使用 `--agent <local-cli-id>`。新的 `tool-integrations/1` 配置使用
+`--integration <integration-id>`：runner 从该 integration 的 `local_cli` 配置启动已验证 adapter，
+并只接受框架固定的 Planner / Evaluator 角色。Coordinator 侧的 `a2a_targets` 记录 endpoint、认证与
+`remote_runner_id`；工具目录为每个 target 生成角色专属内部 ID，例如
+`a2a--codex-remote--planner`、`a2a--codex-remote--evaluator`。这些 ID 是运行时审计键，不是用户配置。
+
+因此，任何已验证 `local_cli` integration 都可由同一个 runner 泛化为 A2A Planner/Evaluator：Claude Code、
+Codex 和 Kimi 不需要各自实现第二套网络协议。一个新 CLI 想进入 A2A 目录仍必须先有已验证 adapter，并由
+运维配置远端 `a2a_targets` 条目；系统无法从“本机已安装命令”自动推断远端地址或凭据。当前示例已为这三种
+工具提供 loopback target；未来工具只要通过同一 adapter 核验即可自动进入规则体系。
 
 ## 3. 安全模型
 
@@ -79,6 +86,11 @@ runner 返回的 `state` 写进 run-meta 的 `remote_state_advisory` 字段，**
 客户端把产物写到本地后，由调用方对**本地副本**重跑 `validate-dispatch.sh receipt`——
 我们校验实际收到的东西，不采信远端的结论。跨机器场景下这是唯一诚实的做法。
 
+对于 `tool-integrations/1` 的 target，client 在每次涉及已委托信封的发送、读取或订阅前都会读取 Agent Card，并严格核验
+`remote_runner_id`、`tool`、`integration_id`、`model_family`、请求角色、`harness/1.1` 版本与
+`sandboxed=true`。这避免把“Codex A2A target”误接到 Kimi runner 后，悄然破坏 Generator/Evaluator 的
+family 互斥。该 Card 仍不是签名证明；非自建对端的身份信任仍依赖部署边界和认证。
+
 ### 3.4 Generator 目前被刻意拒绝
 
 `a2a-client.py` 能把结构化 artifact 内联回本机，但不能安全回流远端 Generator 的源码 diff、
@@ -110,23 +122,24 @@ local-cli 的日志仍在它的 workroot，不会被搬运或上传。
 # ── 对端机器 ──
 export HARNESS_A2A_TOKEN=<token>        # 绑非 loopback 时必需
 python3 .claude/dispatch/transports/a2a-runner.py \
-  --agent reviewer-codex --host 0.0.0.0 --port 41241
+  --integration codex --runner-id codex-remote-runner \
+  --host 0.0.0.0 --port 41241
 
 # ── 编排者机器 ──
 export REMOTE_A2A_TOKEN=<同一 token>
 # descriptor.auth = {"type":"bearer","env":"REMOTE_A2A_TOKEN"}
-bash .claude/dispatch/dispatch-run.sh --agent reviewer-codex-a2a --envelope envelope.json   # 阻塞至终态
+bash .claude/dispatch/dispatch-run.sh --agent a2a--codex-remote--evaluator --envelope envelope.json   # 阻塞至终态
 
 # 真异步用法：派完就走
-python3 .claude/dispatch/transports/a2a-client.py send --agent reviewer-codex-a2a --envelope envelope.json
+python3 .claude/dispatch/transports/a2a-client.py send --agent a2a--codex-remote--evaluator --envelope envelope.json
 #   → {"taskId": "...", "state": "SUBMITTED"}          ← 可以关会话了
-python3 .claude/dispatch/transports/a2a-client.py get  --agent reviewer-codex-a2a --task <taskId>
+python3 .claude/dispatch/transports/a2a-client.py get  --agent a2a--codex-remote--evaluator --task <taskId> --envelope envelope.json
 #   → 终态时写产物 + 落 run-meta；未完成则报当前 state
-python3 .claude/dispatch/transports/a2a-client.py subscribe --agent reviewer-codex-a2a \
-        --task <taskId> --resume-from <seq>            ← 断线从第 seq 个事件后重放，不丢事件
+python3 .claude/dispatch/transports/a2a-client.py subscribe --agent a2a--codex-remote--evaluator \
+        --task <taskId> --envelope envelope.json --resume-from <seq>            ← 断线从第 seq 个事件后重放，不丢事件
 
 # graceful stop：先收束 active task，终态在 drain 内仍可 Get/SSE，最后清 pidfile
-python3 .claude/dispatch/transports/a2a-runner.py --agent reviewer-codex \
+python3 .claude/dispatch/transports/a2a-runner.py --integration codex \
         --state .harness-dispatch/a2a --stop
 ```
 

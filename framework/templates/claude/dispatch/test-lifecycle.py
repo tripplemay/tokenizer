@@ -260,6 +260,118 @@ class DeadlineAndPreflightTests(unittest.TestCase):
                 self.assertFalse(workroot.exists())
                 self.assertFalse(state.exists())
 
+    def test_integration_sandbox_run_meta_uses_generated_target_id(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "fixture",
+                "tool": "fixture",
+                "label": "Fixture",
+                "model_family": "fixture",
+                "priority": 100,
+                "capabilities": [],
+                "local_cli": {
+                    "adapter": "fixture",
+                    "sandbox": {
+                        "home_dir": str(self.root / "safe-home"),
+                        "env_allow": [],
+                    },
+                    "timeout_s": 90,
+                },
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        workroot = self.root / "integration-work"
+        state = self.root / "integration-state"
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--integration", "fixture",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--adapters", str(adapters),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        meta = json.loads(result.stdout)
+        self.assertEqual(meta["agent_id"], "local-cli--fixture--evaluator")
+        persisted = json.loads((state / "run-meta-lifecycle-fixture.json").read_text())
+        self.assertEqual(persisted["agent_id"], meta["agent_id"])
+
+    def test_assignments_accept_canonical_targets_and_coordinator_planner(self):
+        adapters = self.root / "assignment-adapters"
+        adapters.mkdir()
+        safe_home = self.root / "assignment-home"
+        safe_home.mkdir()
+        for name, family in (("generator", "generator-family"), ("evaluator", "evaluator-family")):
+            (adapters / f"{name}.json").write_text(json.dumps({
+                "name": name,
+                "tool": f"{name}-cli",
+                "model_family": family,
+                "argv": ["true"],
+                "envelope_delivery": "stdin",
+                "_verified": True,
+            }), encoding="utf-8")
+        registry = self.root / "assignments-registry.json"
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [
+                {
+                    "id": "generator",
+                    "tool": "generator-cli",
+                    "model_family": "generator-family",
+                    "local_cli": {
+                        "adapter": "generator",
+                        "sandbox": {"home_dir": str(safe_home)},
+                    },
+                },
+                {
+                    "id": "evaluator",
+                    "tool": "evaluator-cli",
+                    "model_family": "evaluator-family",
+                    "local_cli": {
+                        "adapter": "evaluator",
+                        "sandbox": {"home_dir": str(safe_home)},
+                    },
+                },
+            ],
+            "a2a_targets": [{
+                "id": "evaluator-remote",
+                "integration_id": "evaluator",
+                "remote_runner_id": "evaluator-runner",
+                "endpoint": "https://evaluator.invalid/a2a",
+            }],
+        }), encoding="utf-8")
+        progress = self.root / "assignments-progress.json"
+        progress.write_text(json.dumps({
+            "role_assignments": {
+                "planner": None,
+                "generator": "local-cli--generator--generator",
+                "evaluator": "a2a--evaluator-remote--evaluator",
+            },
+        }), encoding="utf-8")
+        result = subprocess.run([
+            "bash", str(VALIDATOR), "assignments", str(progress), str(registry),
+            "--adapters", str(adapters),
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("family 互斥成立", result.stdout)
+
+        data = json.loads(registry.read_text(encoding="utf-8"))
+        data["integrations"][1]["model_family"] = "generator-family"
+        (adapters / "evaluator.json").write_text(json.dumps({
+            **json.loads((adapters / "evaluator.json").read_text(encoding="utf-8")),
+            "model_family": "generator-family",
+        }), encoding="utf-8")
+        registry.write_text(json.dumps(data), encoding="utf-8")
+        invalid = subprocess.run([
+            "bash", str(VALIDATOR), "assignments", str(progress), str(registry),
+            "--adapters", str(adapters),
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(invalid.returncode, 2)
+        self.assertIn("同为", invalid.stdout)
+
     def test_direct_sandbox_malicious_agent_and_registry_text_never_execute_shell(self):
         registry, envelope, adapters = self._sandbox_inputs(self.repo)
         marker = self.root / "sandbox-eval-injection-marker"
@@ -657,6 +769,13 @@ class A2ALifecycleTests(unittest.TestCase):
         count = (self.runner.root / "count-normal-task").read_text().splitlines()
         self.assertEqual(len(count), 1)
 
+    def test_runner_rejects_a2a_generator_before_sandbox_execution(self):
+        envelope = self.runner.envelope("generator-task")
+        envelope["role"] = "generator"
+        with self.assertRaisesRegex(RuntimeError, "a2a generator is disabled"):
+            self.runner.rpc("SendMessage", {"envelope": envelope})
+        self.assertFalse((self.runner.root / "count-generator-task").exists())
+
     def test_cancel_and_duplicate_cancel_are_one_terminal_sequence(self):
         self.runner.send("cancel-task", "slow")
         pids_path = self.runner.root / "pids-cancel-task.json"
@@ -747,6 +866,34 @@ class A2AClientTests(unittest.TestCase):
             },
         }
 
+    @staticmethod
+    def integration_registry():
+        return {
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "codex",
+                "tool": "codex",
+                "label": "Codex",
+                "model_family": "codex",
+                "priority": 100,
+                "capabilities": ["plan", "verify"],
+                "local_cli": {
+                    "adapter": "codex",
+                    "sandbox": {"home_dir": "/tmp/harness-codex"},
+                    "timeout_s": 2400,
+                },
+            }],
+            "a2a_targets": [{
+                "id": "codex-remote",
+                "integration_id": "codex",
+                "endpoint": "https://codex.example.invalid/a2a",
+                "remote_runner_id": "codex-remote-runner",
+                "priority": 100,
+                "auth": {"type": "bearer", "env": "REMOTE_A2A_CODEX"},
+                "capabilities": ["remote-verify"],
+            }],
+        }
+
     def commission(self, root, envelope):
         root.mkdir(parents=True, exist_ok=True)
         if not (root / ".git").exists():
@@ -819,6 +966,124 @@ class A2AClientTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(self.client.ClientError, "protected"):
                 self.client.load_descriptor(str(registry), "remote")
+
+    def test_tool_integration_target_resolves_per_role_and_rejects_generator(self):
+        with tempfile.TemporaryDirectory() as raw:
+            registry = Path(raw) / "tool-integrations.json"
+            registry.write_text(json.dumps(self.integration_registry()), encoding="utf-8")
+
+            planner = self.client.load_descriptor(
+                str(registry), "a2a--codex-remote--planner"
+            )
+            evaluator = self.client.load_descriptor(
+                str(registry), "a2a--codex-remote--evaluator"
+            )
+            compatibility = self.client.load_descriptor(str(registry), "codex-remote")
+
+            self.assertEqual(planner["id"], "a2a--codex-remote--planner")
+            self.assertEqual(planner["roles"], ["planner"])
+            self.assertEqual(evaluator["roles"], ["evaluator"])
+            self.assertEqual(compatibility["roles"], ["planner", "evaluator"])
+            self.assertEqual(planner["integration_id"], "codex")
+            self.assertEqual(planner["remote_runner_id"], "codex-remote-runner")
+            self.assertEqual(planner["tool"], "codex")
+            self.assertEqual(planner["model_family"], "codex")
+            self.assertEqual(planner["capabilities"], ["plan", "remote-verify", "verify"])
+            self.assertTrue(planner["remote_card_required"])
+            with self.assertRaisesRegex(self.client.ClientError, "does not support generator"):
+                self.client.load_descriptor(
+                    str(registry), "a2a--codex-remote--generator"
+                )
+
+            with self.assertRaisesRegex(self.client.ClientError, "does not support generator"):
+                self.client.validate_dispatchable_role(planner, {"role": "generator"})
+
+    def test_canonical_target_preflight_rejects_unverified_adapter_before_network(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            registry = root / "tool-integrations.json"
+            registry.write_text(json.dumps(self.integration_registry()), encoding="utf-8")
+            adapters = root / "adapters"
+            adapters.mkdir()
+            adapter = json.loads(
+                (DISPATCH / "transports" / "adapters" / "codex.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            adapter["_verified"] = False
+            (adapters / "codex.json").write_text(json.dumps(adapter), encoding="utf-8")
+
+            with mock.patch.object(urllib.request, "urlopen") as urlopen:
+                with self.assertRaisesRegex(self.client.ClientError, "not verified"):
+                    self.client.load_descriptor(
+                        str(registry),
+                        "a2a--codex-remote--planner",
+                        adapters=str(adapters),
+                    )
+                urlopen.assert_not_called()
+
+                argv = [
+                    str(CLIENT), "card", "--agent", "a2a--codex-remote--planner",
+                    "--registry", str(registry), "--adapters", str(adapters),
+                ]
+                with mock.patch.object(sys, "argv", argv), self.assertRaises(SystemExit):
+                    self.client.main()
+                urlopen.assert_not_called()
+
+    def test_tool_integration_target_requires_matching_remote_card(self):
+        with tempfile.TemporaryDirectory() as raw:
+            registry = Path(raw) / "tool-integrations.json"
+            registry.write_text(json.dumps(self.integration_registry()), encoding="utf-8")
+            descriptor = self.client.load_descriptor(
+                str(registry), "a2a--codex-remote--planner"
+            )
+            card = {
+                "name": "codex-remote-runner",
+                "provider": {"modelFamily": "codex"},
+                "roles": ["planner", "evaluator"],
+                "x-harness": {
+                    "contract_version": "harness/1.1",
+                    "sandboxed": True,
+                    "tool": "codex",
+                    "integration_id": "codex",
+                },
+            }
+            with mock.patch.object(self.client, "fetch_agent_card", return_value=card):
+                self.client.validate_remote_card(descriptor, "planner")
+
+            mismatches = {
+                "name": {**card, "name": "kimi-remote-runner"},
+                "family": {**card, "provider": {"modelFamily": "kimi"}},
+                "role": {**card, "roles": ["evaluator"]},
+                "tool": {**card, "x-harness": {**card["x-harness"], "tool": "kimi"}},
+                "integration": {
+                    **card,
+                    "x-harness": {**card["x-harness"], "integration_id": "kimi"},
+                },
+            }
+            for label, bad_card in mismatches.items():
+                with self.subTest(label=label), mock.patch.object(
+                    self.client, "fetch_agent_card", return_value=bad_card
+                ), self.assertRaises(self.client.ClientError):
+                    self.client.validate_remote_card(descriptor, "planner")
+
+    def test_remote_card_verification_is_bounded_by_the_task_deadline(self):
+        descriptor = {"id": "remote", "endpoint": "http://127.0.0.1:1"}
+        with mock.patch.object(self.client, "validate_remote_card") as validate, mock.patch.object(
+            self.client.time, "time", side_effect=[100.0, 100.25]
+        ):
+            self.client.validate_remote_card_before_deadline(
+                descriptor, "evaluator", 100.5
+            )
+        validate.assert_called_once_with(descriptor, "evaluator", timeout=0.5)
+
+        with mock.patch.object(self.client, "validate_remote_card") as validate, mock.patch.object(
+            self.client.time, "time", side_effect=[100.0, 100.51]
+        ), self.assertRaisesRegex(self.client.ClientError, "during Agent Card"):
+            self.client.validate_remote_card_before_deadline(
+                descriptor, "evaluator", 100.5
+            )
+        validate.assert_called_once_with(descriptor, "evaluator", timeout=0.5)
 
     def test_confirmed_deadline_cancel_survives_final_get_failure(self):
         descriptor = {
@@ -1060,6 +1325,7 @@ class RunnerCoreTests(unittest.TestCase):
             "args = sys.argv[1:]\n"
             "env = json.load(open(args[args.index('--envelope') + 1]))\n"
             "root = os.path.dirname(__file__); tid = env['task_id']\n"
+            "json.dump(args, open(os.path.join(root, 'args-' + tid + '.json'), 'w'))\n"
             "if env.get('contract') == 'slow':\n"
             " signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
             " child = subprocess.Popen([sys.executable, os.path.join(root, 'child.py')])\n"
@@ -1080,6 +1346,8 @@ class RunnerCoreTests(unittest.TestCase):
             validator=str(self.validator),
             sandbox=str(self.sandbox),
             agent="fixture-agent",
+            integration=None,
+            runner_id="fixture-agent",
             registry=str(self.root / "registry.json"),
             adapters=str(self.root / "adapters"),
             workroot=str(self.root / "work"),
@@ -1137,6 +1405,193 @@ class RunnerCoreTests(unittest.TestCase):
         self.assertFalse(changed)
         self.assertEqual(same["state"], "COMPLETED")
         self.assertEqual(len(self.store.events_since("normal-core", 0)), 4)
+
+    def test_integration_runner_profile_is_role_limited_and_passes_integration_selector(self):
+        registry = {
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "codex",
+                "tool": "codex",
+                "label": "Codex",
+                "model_family": "codex",
+                "priority": 100,
+                "capabilities": ["plan", "verify"],
+                "local_cli": {
+                    "adapter": "codex",
+                    "sandbox": {"home_dir": "/tmp/harness-codex"},
+                    "timeout_s": 2400,
+                },
+            }],
+            "a2a_targets": [],
+        }
+        Path(self.cfg.registry).write_text(json.dumps(registry), encoding="utf-8")
+        adapter = {
+            "name": "codex",
+            "tool": "codex",
+            "model_family": "codex",
+            "argv": ["codex", "exec"],
+            "envelope_delivery": "stdin",
+            "_verified": True,
+        }
+        adapter_path = Path(self.cfg.adapters) / "codex.json"
+        adapter_path.write_text(json.dumps(adapter), encoding="utf-8")
+        descriptor = self.runner_module.load_execution_descriptor(
+            self.cfg.registry, integration="codex"
+        )
+        self.assertEqual(descriptor["id"], "local-cli--codex")
+        self.assertEqual(descriptor["roles"], ["planner", "evaluator"])
+        self.assertEqual(descriptor["tool"], "codex")
+        self.assertEqual(descriptor["model_family"], "codex")
+        self.assertEqual(descriptor["constraints"], {
+            "l2": False, "write_src": False, "push": False,
+        })
+        self.runner_module.validate_integration_preflight(
+            str(DISPATCH / "tool-catalog.py"),
+            self.cfg.registry,
+            self.cfg.adapters,
+            descriptor,
+        )
+
+        self.cfg.integration = "codex"
+        self.cfg.agent = None
+        self.cfg.runner_id = descriptor["id"]
+        self.create_and_start("integration-core")
+        record = wait_until(
+            lambda: (lambda value: value if value.get("state") == "COMPLETED" else None)(
+                self.store.get("integration-core")
+            )
+        )
+        self.assertIsNotNone(record)
+        args = json.loads((self.root / "args-integration-core.json").read_text())
+        self.assertIn("--integration", args)
+        self.assertEqual(args[args.index("--integration") + 1], "codex")
+
+        from types import SimpleNamespace
+        card = self.runner_module.agent_card(
+            SimpleNamespace(
+                runner_id="codex-remote-runner",
+                advertise="127.0.0.1",
+                port=41241,
+                token="",
+            ),
+            {**descriptor, "id": "codex-remote-runner"},
+        )
+        self.assertEqual(card["name"], "codex-remote-runner")
+        self.assertEqual(card["roles"], ["planner", "evaluator"])
+        self.assertEqual(card["x-harness"]["tool"], "codex")
+        self.assertEqual(card["x-harness"]["integration_id"], "codex")
+
+    def test_integration_preflight_rejects_unverified_adapter_before_listening(self):
+        registry = {
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "codex",
+                "tool": "codex",
+                "label": "Codex",
+                "model_family": "codex",
+                "priority": 100,
+                "capabilities": ["plan", "verify"],
+                "local_cli": {
+                    "adapter": "codex",
+                    "sandbox": {"home_dir": "/tmp/harness-codex"},
+                    "timeout_s": 2400,
+                },
+            }],
+            "a2a_targets": [],
+        }
+        Path(self.cfg.registry).write_text(json.dumps(registry), encoding="utf-8")
+        (Path(self.cfg.adapters) / "codex.json").write_text(json.dumps({
+            "name": "codex",
+            "tool": "codex",
+            "model_family": "codex",
+            "argv": ["codex", "exec"],
+            "envelope_delivery": "stdin",
+            "_verified": False,
+        }), encoding="utf-8")
+        state = self.root / "preflight-state"
+        argv = [
+            str(RUNNER),
+            "--registry", self.cfg.registry,
+            "--integration", "codex",
+            "--state", str(state),
+            "--sandbox", self.cfg.sandbox,
+            "--validator", self.cfg.validator,
+            "--adapters", self.cfg.adapters,
+        ]
+        with mock.patch.object(sys, "argv", argv), mock.patch.object(
+            self.runner_module, "ThreadingHTTPServer"
+        ) as server:
+            with self.assertRaises(SystemExit) as raised:
+                self.runner_module.main()
+        self.assertIn("not verified", str(raised.exception))
+        server.assert_not_called()
+        self.assertFalse(state.exists())
+
+    def test_runner_uses_catalog_timeout_default_and_accepts_legacy_long_id(self):
+        integration_registry = {
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "codex",
+                "tool": "codex",
+                "label": "Codex",
+                "model_family": "codex",
+                "priority": 100,
+                "capabilities": ["plan", "verify"],
+                "local_cli": {
+                    "adapter": "codex",
+                    "sandbox": {"home_dir": "/tmp/harness-codex"},
+                },
+            }],
+            "a2a_targets": [],
+        }
+        Path(self.cfg.registry).write_text(json.dumps(integration_registry), encoding="utf-8")
+        (Path(self.cfg.adapters) / "codex.json").write_text(json.dumps({
+            "name": "codex",
+            "tool": "codex",
+            "model_family": "codex",
+            "argv": ["codex", "exec"],
+            "envelope_delivery": "stdin",
+            "_verified": True,
+        }), encoding="utf-8")
+        descriptor = self.runner_module.load_execution_descriptor(
+            self.cfg.registry, integration="codex"
+        )
+        self.assertEqual(descriptor["timeout_s"], 3600)
+        self.runner_module.validate_integration_preflight(
+            str(DISPATCH / "tool-catalog.py"),
+            self.cfg.registry,
+            self.cfg.adapters,
+            descriptor,
+        )
+
+        legacy_id = "legacy-" + "x" * 80
+        Path(self.cfg.registry).write_text(json.dumps({
+            "version": "dispatch/1",
+            "agents": [{
+                "id": legacy_id,
+                "roles": ["evaluator"],
+                "transport": "local-cli",
+                "adapter": "codex",
+                "model_family": "codex",
+            }],
+        }), encoding="utf-8")
+        legacy = self.runner_module.load_execution_descriptor(
+            self.cfg.registry, agent=legacy_id
+        )
+        self.assertEqual(legacy["id"], legacy_id)
+
+        Path(self.cfg.registry).write_text(json.dumps({
+            "version": "dispatch/1",
+            "agents": [{
+                "id": legacy_id,
+                "roles": ["generator"],
+                "transport": "local-cli",
+                "adapter": "codex",
+                "model_family": "codex",
+            }],
+        }), encoding="utf-8")
+        with self.assertRaisesRegex(self.runner_module.RunnerConfigError, "source-handoff"):
+            self.runner_module.load_execution_descriptor(self.cfg.registry, agent=legacy_id)
 
     def test_cancel_race_and_shutdown_reap_complete_process_groups(self):
         self.create_and_start("race-core", "slow")

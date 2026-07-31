@@ -65,7 +65,7 @@ export type PendingModeDefaultsSummary = {
     profile: "fast" | "heterogeneous" | "slow";
     roleAssignments: { generator: string; evaluator: string } | null;
     roleBindings: {
-      planner: { tool: string; invocation: HarnessTransport };
+      planner: { tool: string; invocation: HarnessTransport } | null;
       generator: { tool: string; invocation: HarnessTransport };
       evaluator: { tool: string; invocation: HarnessTransport };
     } | null;
@@ -210,18 +210,20 @@ function readRegistryModeContext(repoPath: string): {
     return { agents: undefined, tools: undefined };
   }
   const registry = record(value);
-  if (!registry || !Array.isArray(registry.agents) || registry.agents.length > 50) {
+  if (!registry) {
     return { agents: undefined, tools: undefined };
   }
-  const agents = registry.agents.map((rawAgent) => {
-    const agent = record(rawAgent) ?? {};
-    return {
-      id: typeof agent.id === "string" ? agent.id : "",
-      roles: Array.isArray(agent.roles) ? agent.roles.filter((role): role is string => typeof role === "string") : [],
-      transport: agent.transport as HarnessTransport,
-      model_family: typeof agent.model_family === "string" ? agent.model_family : ""
-    };
-  });
+  const agents = Array.isArray(registry.agents) && registry.agents.length <= 50
+    ? registry.agents.map((rawAgent) => {
+        const agent = record(rawAgent) ?? {};
+        return {
+          id: typeof agent.id === "string" ? agent.id : "",
+          roles: Array.isArray(agent.roles) ? agent.roles.filter((role): role is string => typeof role === "string") : [],
+          transport: agent.transport as HarnessTransport,
+          model_family: typeof agent.model_family === "string" ? agent.model_family : ""
+        };
+      })
+    : undefined;
   const catalog = readDispatchToolCatalog(repoPath);
   const catalogIsComplete = HARNESS_MODE_ROLES.every((role) =>
     catalog.entries.some((entry) => entry.role === role)

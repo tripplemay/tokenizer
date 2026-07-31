@@ -539,7 +539,7 @@
       "tabsLabel": "Harness 项目视图",
       "tabs": {
         "overview": "概览",
-        "modes": "模式与 Agent",
+        "modes": "模式与 CLI",
         "activity": "活动"
       },
       "notReported": "尚未上报",
@@ -606,6 +606,21 @@
           "configureRoles": "从 {agent} 配置角色",
           "noConfigurableRoles": "已上报的工具目录中没有可配置角色。"
         },
+        "integrations": "CLI 工具集成",
+        "noIntegrations": "尚未上报可读取的 CLI 工具集成目录。",
+        "integration": {
+          "roles": "角色",
+          "capabilities": "能力",
+          "modelFamily": "模型家族",
+          "invocations": "调用方式",
+          "sandbox": "本地 CLI 沙箱",
+          "notApplicable": "不适用",
+          "a2aTargets": "远程目标数",
+          "configure": "配置角色",
+          "configureRole": "配置 {role}",
+          "configureRoles": "从 {integration} 配置角色",
+          "noConfigurableRoles": "已上报的工具目录中没有可配置角色。"
+        },
         "role": {
           "planner": "Planner",
           "generator": "Generator",
@@ -656,10 +671,11 @@
       "generator": "Generator",
       "evaluator": "Evaluator",
       "planner": "Planner",
+      "coordinator": "Coordinator",
       "selectedRole": "已选择角色",
       "selectedRoleContext": "调整 {role} 的工具与调用方式",
       "availableTools": "可用工具路由",
-      "candidateCount": "{count} 个可选候选",
+      "candidateCount": "{count} 条可用路由",
       "modelFamilies": "模型家族",
       "capabilities": "能力",
       "currentBinding": "当前绑定",
@@ -698,7 +714,7 @@
         "agentUpgradeRequired": "设备上报的 Agent 功能版本低于 {version}，已禁止签发。",
         "toolBindingAgentUpgradeRequired": "设备需要 Agent 功能版本 {version} 或更高版本，才能签发工具绑定。",
         "headNotFull": "项目没有上报完整的 40 位 HEAD SHA，已禁止签发。",
-        "agentSnapshotUnavailable": "没有可用的已上报 Agent 快照，已禁止签发。",
+        "agentSnapshotUnavailable": "没有可用的已上报集成目录，已禁止签发。",
         "toolCatalogUnavailable": "没有可用的已上报工具能力目录，无法签发工具绑定。"
       },
       "errors": {

@@ -285,6 +285,121 @@ async function testV2ResolutionFiveFieldDriftFailsClosed() {
   }
 }
 
+async function testCanonicalRegistryKeepsCoordinatorAndLongA2ATarget() {
+  const targetId = "r".repeat(64);
+  const evaluatorId = `a2a--${targetId}--evaluator`;
+  const registry = {
+    version: "tool-integrations/1",
+    integrations: [
+      {
+        id: "codex",
+        tool: "codex",
+        model_family: "\u0085codex\u0085",
+        local_cli: { adapter: "codex", sandbox: { home_dir: "/tmp/codex" } },
+      },
+      {
+        id: "claude",
+        tool: "claude-code",
+        model_family: " claude ",
+        local_cli: { adapter: "claude-code", sandbox: { home_dir: "/tmp/claude" } },
+      },
+    ],
+    a2a_targets: [{
+      id: targetId,
+      integration_id: "claude",
+      remote_runner_id: "claude-runner",
+      endpoint: "http://127.0.0.1:41243",
+    }],
+  };
+  const resolution = {
+    planner: null,
+    generator: { agent_id: "local-cli--codex--generator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000 },
+    evaluator: { agent_id: evaluatorId, tool: "claude-code", invocation: "a2a", model_family: "claude", priority: 1000 },
+  };
+  const { result, calls } = await run(
+    baseArgs({
+      registry,
+      resolved_mode_bindings: resolution,
+      state: {
+        ...baseArgs().state,
+        status: "verifying",
+        features: [],
+        role_assignments: {
+          planner: null,
+          generator: "local-cli--codex--generator",
+          evaluator: evaluatorId,
+        },
+        mode_intent: { resolution },
+      },
+    }),
+    (options) => {
+      if (options.label === `dispatch:evaluator:${evaluatorId}`) {
+        return {
+          state: "COMPLETED", artifact_path: "verdict.json", run_meta_path: "run-meta.json",
+          envelope_path: "envelope.json", verdict_summary: { all_pass: false },
+        };
+      }
+      throw new Error(`unexpected agent call ${options.label}`);
+    },
+  );
+  assert.equal(evaluatorId.length > 64, true);
+  assert.equal(result.decision, "ADVANCE");
+  assert.equal(result.writeback.agent_id, evaluatorId);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].options.label, `dispatch:evaluator:${evaluatorId}`);
+}
+
+async function testCanonicalRegistryUsesPythonModelFamilyStripRules() {
+  const preservedFamily = "\ufeffclaude\ufeff";
+  const registry = {
+    version: "tool-integrations/1",
+    integrations: [
+      {
+        id: "preserved",
+        tool: "claude-code",
+        model_family: preservedFamily,
+        subagent: true,
+      },
+      {
+        id: "codex",
+        tool: "codex",
+        model_family: "codex",
+        local_cli: { adapter: "codex", sandbox: { home_dir: "/tmp/codex" } },
+      },
+    ],
+    a2a_targets: [],
+  };
+  const resolution = {
+    planner: null,
+    generator: { agent_id: "subagent--preserved--generator", tool: "claude-code", invocation: "subagent", model_family: preservedFamily, priority: 1000 },
+    evaluator: { agent_id: "local-cli--codex--evaluator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000 },
+  };
+  const { result, calls } = await run(
+    baseArgs({
+      registry,
+      resolved_mode_bindings: resolution,
+      state: {
+        ...baseArgs().state,
+        role_assignments: {
+          planner: null,
+          generator: "subagent--preserved--generator",
+          evaluator: "local-cli--codex--evaluator",
+        },
+        mode_intent: { resolution },
+      },
+    }),
+    (options) => {
+      if (options.label === "build:F001") {
+        return { feature_id: "F001", result: "completed", files_touched: [] };
+      }
+      if (options.label === "critic:spec-lock") return { violation: false, detail: "clean" };
+      throw new Error(`unexpected agent call ${options.label}`);
+    },
+  );
+  assert.equal(result.decision, "ADVANCE");
+  assert.equal(calls[0].options.agentType, "generator-restricted");
+}
+
 await testConfiguredGeneratorWinsOverRegistryOrder();
 await testConfiguredEvaluatorWinsOverRegistryOrder();
 await testInvalidConfiguredRoleFailsClosed();
@@ -293,4 +408,6 @@ await testExternalGeneratorWithoutReturnEvidenceHalts();
 await testUnsafeBatchCannotReachDispatcher();
 await testExternalGeneratorWithoutFixedSourceReturnCapabilityHalts();
 await testV2ResolutionFiveFieldDriftFailsClosed();
-console.log("[gate-arbiter] 8/8 role-routing and dispatch-id checks passed");
+await testCanonicalRegistryKeepsCoordinatorAndLongA2ATarget();
+await testCanonicalRegistryUsesPythonModelFamilyStripRules();
+console.log("[gate-arbiter] 10/10 role-routing and dispatch-id checks passed");

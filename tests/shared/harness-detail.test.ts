@@ -176,6 +176,9 @@ describe("Harness detail snapshot helpers", () => {
     expect(parsed?.execution).toBe("heterogeneous");
     expect(parsed?.pendingDefaults).toBeNull();
     expect(parsed?.dispatch.agentSnapshotUsable).toBe(true);
+    expect(parsed?.dispatch.integrations).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "reviewer-kimi", tool: "reviewer-kimi" })
+    ]));
     expect(parsed?.dispatch.agents[2]).toMatchObject({ id: "reviewer-kimi", capabilities: [] });
     expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
     expect(parsed?.dispatch.toolCatalog.find((tool) => tool.tool === "claude-code")).toMatchObject({
@@ -226,6 +229,24 @@ describe("Harness detail snapshot helpers", () => {
     expect(JSON.stringify(summary)).not.toContain("builder-codex");
   });
 
+  it("accepts a null Planner binding and preserves Coordinator semantics", () => {
+    const snapshot: any = structuredClone(modeSnapshot());
+    snapshot.execution = "slow";
+    snapshot.dispatch.assignments.planner = null;
+    snapshot.current = {
+      profile: "slow",
+      roleBindings: {
+        planner: null,
+        generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+        evaluator: { tool: "kimi", invocation: "a2a", modelFamily: "kimi" }
+      }
+    };
+    const parsed = parseHarnessDetailModes(snapshot);
+    expect(parsed?.current?.roleBindings.planner).toBeNull();
+    expect(parsed?.dispatch.assignments.planner).toBeNull();
+    expect(currentHarnessModeSummary(parsed)?.execution.roleBindings?.planner).toBeNull();
+  });
+
   it("defensively drops malformed feature entries while retaining readable legacy fields", () => {
     expect(parseHarnessDetailFeatures([
       { id: "F001", title: "one", status: "completed" },
@@ -264,11 +285,18 @@ describe("Harness detail snapshot helpers", () => {
 });
 
 describe("Harness mode editor validation", () => {
-  it("keeps fast on v1 and sends v2 tool bindings for heterogeneous", () => {
+  it("keeps legacy fast compatibility while sending v2 fast for tool-binding devices", () => {
     const fast = buildModeIntentRequest("project-1", draft(), TOOLS, NOW);
     expect(fast).toEqual({
       projectId: "project-1",
       desired: { execution: { profile: "fast", role_assignments: null }, autonomy: { enabled: false } },
+      intentExpiresAt: "2026-07-28T12:00:00.000Z"
+    });
+
+    const toolBindingFast = buildModeIntentRequest("project-1", draft(), TOOLS, NOW, { useToolBindings: true });
+    expect(toolBindingFast).toEqual({
+      projectId: "project-1",
+      desired: { execution: { profile: "fast", role_bindings: null }, autonomy: { enabled: false } },
       intentExpiresAt: "2026-07-28T12:00:00.000Z"
     });
 
@@ -321,9 +349,16 @@ describe("Harness mode editor validation", () => {
     }
   });
 
-  it("rejects missing, unavailable, and non-independent tool bindings", () => {
+  it("allows Coordinator as the default Planner while rejecting partial bindings", () => {
+    const coordinator = buildModeIntentRequest("p", draft({
+      profile: "heterogeneous", plannerTool: "", plannerInvocation: ""
+    }), TOOLS, NOW);
+    expect(coordinator.desired.execution).toMatchObject({
+      profile: "heterogeneous",
+      role_bindings: { planner: null }
+    });
     expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", plannerTool: ""
+      profile: "heterogeneous", plannerTool: "", plannerInvocation: "local-cli"
     }), TOOLS, NOW), "invalid_string");
     expectCode(() => buildModeIntentRequest("p", draft({
       profile: "heterogeneous", evaluatorTool: "ghost"

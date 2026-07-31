@@ -48,21 +48,27 @@
      `progress.role_assignments=null`；`heterogeneous` / `slow` 原样复制签名的 Generator/Evaluator
      agent id。
    - **v2**（`execution.role_bindings`）：`fast` 的 bindings 必为 null，保留 Coordinator 的本机默认
-     路径。非 fast 时消费者将三个 `agent_id` 写入 `progress.role_assignments`，并同时持久化
-     `progress.mode_intent.signed_intent`（**完整原始对象，含 `sig`**）与完整五字段
-     `progress.mode_intent.resolution`。前者是 active batch 的可复验锚点；后者和 assignments 只是审计
-     副本。运行中的 `/plan`、`/build`、`/verify`、autodrive 与 dispatch wrapper 必须调用
+     路径。非 fast 时消费者为已配置的外部角色写入解析出的 `agent_id`；若 `role_bindings.planner=null`，
+     Planner 的 `role_assignments` 与 resolution 保持 null，由固定 Coordinator 规划。消费者同时持久化
+     `progress.mode_intent.signed_intent`（**完整原始对象，含 `sig`**）与三角色 resolution。前者是 active
+     batch 的可复验锚点；后者和 assignments 只是审计副本。运行中的 `/plan`、`/build`、`/verify`、autodrive 与 dispatch wrapper 必须调用
      `resolve-active-mode-role.sh` / `validate-resolved-mode-bindings.sh`，从 checkpoint 重验后取得唯一
      descriptor，绝不可从这些可变副本或新的 staged harness 选 agent。无候选、签名失效或任一漂移都硬停，
      请人类重新配置或重新签发。
+
+     若消费命令显式传入 `--adapters <dir>`，该目录必须是项目根内、无符号链接的相对目录；消费者把它记为
+     `mode_intent.adapter_dir`，并由所有 active 入口恢复。它不属于人类 role binding 或签名载荷，显式覆盖只可
+     指向同一目录；目录丢失、路径逃逸或不一致均硬停。未显式指定时继续使用随框架安装的默认 adapter 目录。
 
      Coordinator 是当前主会话的固定控制面，不属于 registry、`role_assignments` 或签名 bindings。
      它只负责验签、解析、派活、验证结构化产物、向人类转交问题/提案和在确认后落盘。若 Planner
      绑定不是本机默认路径，Planner 只可交付 proposal；Coordinator 不得自行补写规划、越过 spec lock
      或把自己替换成 Planner。
 
-   v2 的 profile 约束检查三角色：`heterogeneous` 不得含 a2a 且至少一方为 local-cli；`slow`
-   至少一方为 a2a。Generator / Evaluator 仍必须由 resolver 选为不同 model family；Planner 可重叠。
+   v2 的 profile 约束检查已配置外部角色：`heterogeneous` 不得含 a2a 且至少一方为 local-cli；`slow`
+   至少一方为 a2a。Generator / Evaluator 仍必须由 resolver 选为不同 model family；Planner 可为 Coordinator
+   或与任一方重叠。任何已验证 `local_cli` integration 都可由通用 runner 提供 A2A Planner/Evaluator，
+   Generator A2A 在 source-handoff 契约落地前继续拒绝。
 4. **自治开启时**，以新 batch id 写 `autonomy-policy.json`：`enabled=true`、`batch_scope=<new batch>`、
    `authorized_by="user"`，并原样复制签名内的绝对 `expires_at`、`auto_cross`、`budget` 和可选
    `wake_interval_s` / `notify_on`。不得按当前时间续期。
@@ -77,7 +83,8 @@
      "applied_batch": "<new batch id>",
      "applied_at": "<current UTC ISO8601>",
      "signed_intent": "<仅 v2 non-fast：完整原始 signed intent，含 sig>",
-     "resolution": "<仅 v2 non-fast：三角色五字段解析快照>"
+     "resolution": "<仅 v2 non-fast：三角色五字段解析快照>",
+     "adapter_dir": "<可选：消费时显式指定的项目内 adapter 相对目录>"
    }
    ```
 

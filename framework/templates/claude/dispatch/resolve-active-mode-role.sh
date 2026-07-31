@@ -74,6 +74,11 @@ if value == {}:
 if not isinstance(value, dict) or set(value) != {"planner", "generator", "evaluator"}:
     fail("resolved bindings 必须恰含三角色或为空")
 record = value.get(role)
+if role == "planner" and record is None:
+    if expected_agent:
+        fail("已验签 Planner 绑定为 Coordinator，不能断言外部 agent")
+    print("{}")
+    raise SystemExit(0)
 if not isinstance(record, dict) or set(record) != fields:
     fail(f"resolved {role} 必须恰含五字段")
 if not isinstance(record["agent_id"], str) or not safe_id.fullmatch(record["agent_id"]):

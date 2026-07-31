@@ -23,6 +23,24 @@ export type HarnessToolCatalogEntry = {
 };
 
 /**
+ * A configured CLI integration as surfaced by the device. Concrete A2A
+ * target and runner identifiers deliberately stay out of this public shape.
+ */
+export type HarnessToolIntegration = {
+  id: string;
+  tool: string;
+  label: string;
+  modelFamily: string;
+  roles: HarnessModeRole[];
+  invocations: HarnessTransport[];
+  capabilities: string[];
+  localCli: boolean;
+  subagent: boolean;
+  a2aTargetCount: number;
+  sandboxed: boolean;
+};
+
+/**
  * A tool can legitimately expose different labels per invocation (for example
  * a local CLI and a remote A2A endpoint). Always resolve the exact pair so a
  * selection never inherits another transport's display name.
