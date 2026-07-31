@@ -1,53 +1,37 @@
 {
-  "sprint": "BL-HARNESS-SYNC-HEALTH",
+  "sprint": "BL-HARNESS-REPORT-COMPAT",
   "features": [
     {
       "id": "F001",
-      "title": "结构化 harness 同步结果与安全错误分类",
+      "title": "无远端 Harness 仓库的匿名稳定 repoKey",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "保留既有计数/字符串兼容字段并新增最多 20 条白名单 issue；正确分类 HTTP、网络、超时和本机错误；任何结构化结果均不含响应正文、token、URL query、绝对路径或 stack；四条同步子链互不阻塞"
+      "acceptance": "有 remote 的规范化身份完全不变；无 remote 时生成 local:sha256:<64位小写hex>，同路径稳定、不同路径不同；任何上报体、状态或输出均不含原始绝对路径、用户名或目录片段"
     },
     {
       "id": "F002",
-      "title": "Agent 本地 harness 健康快照与重复日志降噪",
+      "title": "feature 标题斜杠语法的精确安全校验",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "CLI、runOnce、常驻 scheduler 的每次同步均原子写 attemptedAt/status/counts/issues；idle/success/degraded/failed 判定准确，异常覆盖旧成功；连续相同 issue 不重复刷详情且恢复会记录"
+      "acceptance": "feature.title 接受合法 Harness 命令、/api 与 /vN route、词内和自然语言斜杠；继续拒绝本机绝对路径、未知 path-shaped slash command、Windows/UNC/file URL、换行、raw channel 和凭据；例外不扩散到其他字段"
     },
     {
       "id": "F003",
-      "title": "Harness 健康心跳、数据库与 agent v5 兼容契约",
+      "title": "真实 sensitive_summary_data 失败形状回归与兼容证明",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "Device 新增时间、状态与有界 JSON 诊断列及无 backfill 迁移；heartbeat 完整校验并原子写入，旧 payload 不清空历史；损坏本地 state 不阻塞心跳；AGENT_FEATURE_VERSION/MIN 同步升至 5"
+      "acceptance": "测试覆盖三个真实项目的 repoKey/标题形状、服务端首次查询前 fail-closed、客户端 payload 路径泄漏负例；聚焦与全量 test、verify、lint、build 全绿；不改 Prisma、UI、i18n、framework 或 agent feature version"
     },
     {
       "id": "F004",
-      "title": "设备与 Harness 控制台同步健康展示",
+      "title": "Kimi A2A 独立兼容与安全验收",
       "priority": "high",
-      "status": "completed",
-      "executor": "generator",
-      "acceptance": "设备列表、设备详情和 Harness 项目卡展示 success/degraded/failed/stale/not-reported；统一使用 3 分钟 shared freshness helper；问题列表只显示白名单字段；中英文 key 对称，沿用现有布局且窄屏无溢出遮挡"
-    },
-    {
-      "id": "F005",
-      "title": "Harness 诊断 CLI、回归测试与 README",
-      "priority": "medium",
-      "status": "completed",
-      "executor": "generator",
-      "acceptance": "harness --status 只读本地且零网络，--json stdout 是单个可解析 JSON；默认输出兼容并显示安全 issue；测试覆盖分类/状态/心跳/UI/CLI关键分支，README 说明命令与四类状态"
-    },
-    {
-      "id": "F006",
-      "title": "Kimi A2A 独立安全与端到端验收",
-      "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "锁定实现 SHA，经 reviewer-kimi-a2a 自行执行目标/全量测试、verify、build、CLI 临时状态与四轮同步模拟；确认不泄漏原始正文或本机敏感信息；输出 schema 合法 verdict 并逐项裁决 F001-F006"
+      "acceptance": "锁定实现 SHA 后由 reviewer-kimi-a2a fresh context 自行审查 diff，运行聚焦/全量测试、verify、lint、build和临时 HOME 端到端 fixture；输出 schema 合法 verdict，逐项裁决 F001-F004 且不复述 handoff"
     }
   ]
 }
