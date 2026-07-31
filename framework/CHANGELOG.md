@@ -5,6 +5,20 @@
 
 ---
 
+## v1.5.3 — 2026-07-30（发布清单契约：控制台与框架版本不得漂移）
+
+**来源：** tokenizer `BL-FW-RELEASE-CONTRACT`。框架源码、项目镜像和控制台各自维护
+发布历史，导致本地账本已是 `v1.5.2` 时，控制台仍把 `v1.4.6` 当作最新版本。
+
+- 新增 `harness/framework-releases.json` 作为 v1 正式发布历史的机器事实源；`VERSION`
+  必须等于其末项，`CHANGELOG.md` 的全部 v1 标题与发布日期必须双向一致。
+- 新增只读校验器、失败 fixture 与 PR/push CI；非法 SemVer、前导零、空或乱序清单、重复版本、
+  `VERSION` 漂移和 changelog 单边条目都会 fail closed。
+- 清单随既有 `harness/` 递归镜像物化为项目的
+  `framework/harness/framework-releases.json`，由 `harness.lock` 使用现有双 SHA 规则管理。
+- 历史 v1.1 / v1.2 / v1.3 标题规范为三段式版本号，与已有 tag 和发布契约一致；v0 历史不进入
+  v1 发布次数清单，保留控制台对旧项目的无计数兼容语义。
+
 ## v1.5.2 — 2026-07-29（macOS pending-gate Ed25519 验签兼容）
 
 **来源：** tokenizer `BL-DISPATCH-LIFECYCLE` 的 `verifying → done` 批准已由设备 agent
@@ -426,7 +440,7 @@ decision，fail-closed 的 hook 会把该批次卡死，得人工回滚那个 co
 
 ---
 
-## v1.3 — 2026-07-25（Console Mode：自托管多项目控制台 + 闸门契约）
+## v1.3.0 — 2026-07-25（Console Mode：自托管多项目控制台 + 闸门契约）
 
 **来源：** 用户三项裁决——数据边界=全量日志（自托管前提）· 部署=自托管小服务 · 优先级=人闸门优先。
 
@@ -521,7 +535,7 @@ Kimi 的执行 shell 未观测到（`stream-json` 事件不暴露），按最坏
 
 ---
 
-## v1.2 — 2026-07-25（a2a transport 实装：真异步 / taskId 重订阅 / SSE 推送）
+## v1.2.0 — 2026-07-25（a2a transport 实装：真异步 / taskId 重订阅 / SSE 推送）
 
 **来源：** 用户确认做到 C 档（loopback 异步 + 局域网跨机 + SSE 推送）。
 
@@ -624,7 +638,7 @@ gRPC/REST 绑定、扩展协商、签名 Agent Card 验真、push webhook、OAut
 
 ---
 
-## v1.1 — 2026-07-25（Dispatch Mode：自动调配异厂商 agent）
+## v1.1.0 — 2026-07-25（Dispatch Mode：自动调配异厂商 agent）
 
 **来源：** A2A 协议 v1.0 研究（`docs/a2a-harness-research-2026-07-25.md`，规范三页 + ADK 集成面）
 + 用户四项裁决：对端 = 异构 CLI（Codex 优先）· 交付 = 规范 + 机件模板 · 自动化边界 = 接 autodrive 可逆内环

@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.5.2",
-    "commit": "473ecd0"
+    "version": "1.5.3",
+    "commit": "0c27c01"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "743aa432b83164dda158feece2b271d1477a541acc87e70aedd2dce66231d639",
-      "upstream": "743aa432b83164dda158feece2b271d1477a541acc87e70aedd2dce66231d639"
+      "sha256": "e571e8217b9ce1454e0dc42e9f87b3a43a9a2b19fb179d6281afc5f65584cc58",
+      "upstream": "e571e8217b9ce1454e0dc42e9f87b3a43a9a2b19fb179d6281afc5f65584cc58"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "ded1b601e81d31ca1f65c4f3ccf2ebd7992b6390e37bc2a86f3837282f1e00cf",
-      "upstream": "ded1b601e81d31ca1f65c4f3ccf2ebd7992b6390e37bc2a86f3837282f1e00cf"
+      "sha256": "c03e3824001f39b9518249b8d6522422fc4de7227e12a568c0164662b03b7758",
+      "upstream": "c03e3824001f39b9518249b8d6522422fc4de7227e12a568c0164662b03b7758"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -267,8 +267,8 @@
     },
     "framework/harness/framework-versioning.md": {
       "src": "harness/framework-versioning.md",
-      "sha256": "ed1b8c560ebc3aa76bd62833fd2fef20d0a796289577569ba2ece9c1b0ba0b93",
-      "upstream": "ed1b8c560ebc3aa76bd62833fd2fef20d0a796289577569ba2ece9c1b0ba0b93"
+      "sha256": "fe2327944e3e9fa6b431efe39b67cc54c567751ad5032edf946cccad11ea81e0",
+      "upstream": "fe2327944e3e9fa6b431efe39b67cc54c567751ad5032edf946cccad11ea81e0"
     },
     "framework/harness/generator.md": {
       "src": "harness/generator.md",
@@ -709,6 +709,11 @@
       "src": "templates/claude/console/test-pending-gate.py",
       "sha256": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b",
       "upstream": "b599ee9ec8db9507131893d17dab04602e8fc1a51a89a8bddf382ccfda47098b"
+    },
+    "framework/harness/framework-releases.json": {
+      "src": "harness/framework-releases.json",
+      "sha256": "3e60773a1d605bdbc48f75dac7bef05a8a2d29dac2a1ca8917267d67c6229fdc",
+      "upstream": "3e60773a1d605bdbc48f75dac7bef05a8a2d29dac2a1ca8917267d67c6229fdc"
     }
   },
   "seeded": {

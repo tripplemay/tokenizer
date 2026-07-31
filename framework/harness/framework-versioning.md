@@ -29,6 +29,7 @@ v1.3 及以前，`bootstrap.sh` 是**一次性复制**。后果三条，都在�
 |---|---|---|
 | `harness.json` | 框架来源 URL、版本、commit、安装来源 | ✅ |
 | `harness.lock` | 受管文件清单 + 每文件**双 sha256** | ✅ |
+| `framework/harness/framework-releases.json` | 随 `harness/` 镜像物化的 v1 发布清单 | ✅ |
 
 **🔴 双 sha 是这套设计的关键。** 每个受管文件记两个哈希：
 
@@ -100,6 +101,15 @@ bash .claude/harness.sh sync --from <框架源树>                        # 确�
 `harness.json` 与 `harness.lock` 是机器可读的：device agent 上报 `framework.version` 与
 漂移摘要，控制台就能显示「这个项目跑的是哪版框架、有几处本地定制、落后几个版本」，
 并据此发起「升级到 vX」的**签名意图**——执行仍在机器上，git 仍是唯一真相源。
+
+发布历史也不能由控制台或项目各自抄写：源仓的
+`harness/framework-releases.json` 是 v1 正式版本历史的唯一机器事实源，镜像后位于
+`framework/harness/framework-releases.json`。其末项必须等于源仓根 `VERSION`，全部 v1
+changelog 标题的版本与日期必须逐项一致；CI 会在发布前拒绝任何漂移。v0.x 不在这个有序清单中，
+以保留旧项目「可识别但不能按 v1 发布次数计数」的兼容语义。
+
+`adopt` 保持只记录既有项目状态、绝不补写文件的语义；尚未拥有该清单的存量项目会在随后一次
+`sync --from <源树>` 中把它作为新版新增的受管文件铺入并记入 lock。
 
 ## 9. 红线
 
