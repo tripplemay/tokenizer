@@ -6,7 +6,7 @@
   "fix_rounds": 1,
   "current_sprint": "BL-HARNESS-REPORT-COMPAT",
   "dashboard_url": null,
-  "last_updated": "2026-07-31T03:32:00Z",
+  "last_updated": "2026-07-31T03:44:27Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -15,7 +15,7 @@
   "docs": {
     "spec": "docs/specs/BL-HARNESS-REPORT-COMPAT-spec.md",
     "test_cases": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-verdict.json",
-    "signoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-verdict.json",
+    "signoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-signoff-2026-07-30.md",
     "framework_reviewed": true
   },
   "role_assignments": {
@@ -28,7 +28,8 @@
   "session_notes": {
     "planning": "【BL-HARNESS-REPORT-COMPAT verifying fix_round 1 2026-07-31】Kimi A2A 首轮在 OAuth 中断前确认 F002 forward-slash UNC 回归。builder-codex 修复轮次锁定 80f7ef3，仅改 validator 与两处回归；主仓应用为 4cc4b4f：raw summary 先检测 //server/share 形状，再执行 feature.title slash 掩码。新 unit/route Prisma 前拒绝覆盖 //server/share、//api/x、x //host/share y；focused 117/117、全量 53 files / 695 passed / 4 skipped、verify/lint/build、真实 9 项目离线字段检查 0 failures。F001-F003 已完成，F004 等待 fresh Kimi A2A schema-valid verdict；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。",
     "verifying": "【BL-HARNESS-REPORT-COMPAT Kimi A2A r1 2026-07-31】fresh context 锁定 9974815，674 秒经 SUBMITTED→WORKING→artifact→COMPLETED 返回 schema-valid verdict；F001-F004 全 PASS、waiting=null。独立 focused 141/141、全量 53 files / 695 passed / 4 skipped、verify/lint/build，temp HOME remote+2 local fixture，无路径泄漏；真实 9 项目/84 标题均接收，//server/share、//api/x、x //host/share y 在 Prisma 前拒绝。状态保持 verifying，等待 BL-HARNESS-REPORT-COMPAT-verifying-done-w1 人工批准；批准仅完成状态机，不部署生产。",
-    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-31T03:30:28.901Z 对 BL-HARNESS-REPORT-COMPAT-verifying-done-w1 签发一次性 approve；中继提交 4344a18，Ed25519 签名已通过本机校验，机器于 2026-07-31T03:32:00Z 消费批准并进入 done。"
+    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-31T03:30:28.901Z 对 BL-HARNESS-REPORT-COMPAT-verifying-done-w1 签发一次性 approve；中继提交 4344a18，Ed25519 签名已通过本机校验，机器于 2026-07-31T03:32:00Z 消费批准并进入 done。",
+    "deploy": "【BL-HARNESS-REPORT-COMPAT deploy 2026-07-30】用户在闸门消费后另行明确“提交推送部署”；main 100b1479854ef4a06fefd108cbd3dc20cecea761 的 Actions 30601984523 中 Linux Verify、Windows Verify、Deploy 全部成功。VPS 检出目标 SHA，19 个迁移无待执行，PostgreSQL healthy、应用启动并通过 /api/health；公开 health 回报同一 commit。"
   },
   "features": [],
   "pending_gate": null
