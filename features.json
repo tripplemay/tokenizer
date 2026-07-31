@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "feature 标题斜杠语法的精确安全校验",
       "priority": "high",
-      "status": "fixing",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "feature.title 接受合法 Harness 命令、/api 与 /vN route、词内和自然语言斜杠；继续拒绝本机绝对路径、未知 path-shaped slash command、Windows/UNC/file URL、换行、raw channel 和凭据；例外不扩散到其他字段"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "真实 sensitive_summary_data 失败形状回归与兼容证明",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "测试覆盖三个真实项目的 repoKey/标题形状、服务端首次查询前 fail-closed、客户端 payload 路径泄漏负例；聚焦与全量 test、verify、lint、build 全绿；不改 Prisma、UI、i18n、framework 或 agent feature version"
     },

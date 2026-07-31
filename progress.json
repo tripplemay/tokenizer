@@ -1,12 +1,12 @@
 {
-  "status": "fixing",
+  "status": "verifying",
   "user_goal": "修复 Harness report 对无远端本地仓库身份和合法 feature 标题斜杠语法的确定性 400，并继续用异构 dispatch 验证 harness",
   "total_features": 4,
-  "completed_features": 1,
+  "completed_features": 3,
   "fix_rounds": 1,
   "current_sprint": "BL-HARNESS-REPORT-COMPAT",
   "dashboard_url": null,
-  "last_updated": "2026-07-31T02:25:32Z",
+  "last_updated": "2026-07-31T03:09:08Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -14,7 +14,7 @@
   ],
   "docs": {
     "spec": "docs/specs/BL-HARNESS-REPORT-COMPAT-spec.md",
-    "test_cases": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-generator-handoff.json",
+    "test_cases": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-fix1-generator-handoff.json",
     "signoff": null,
     "framework_reviewed": true
   },
@@ -23,10 +23,10 @@
     "evaluator": "reviewer-kimi-a2a"
   },
   "mode_intent": null,
-  "evaluator_feedback": "Kimi A2A 独立复现：feature.title 的 route/词内斜杠例外会使 //server/share、//api/x 与 x //host/share y 在当前实现被接受，而父提交 d106eab 会拒绝。该结论在 OAuth provider.connection_error 中断前已写入评审日志；未生成 schema-valid verdict artifact，不能作为通过签收。",
-  "generator_handoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-generator-handoff.json",
+  "evaluator_feedback": "Kimi A2A 首次独立评审复现：feature.title 的 route/词内斜杠例外会使 //server/share、//api/x 与 x //host/share y 被接受，而父提交 d106eab 会拒绝。OAuth 中断前未生成 schema-valid verdict，不能签收。fix_round 1 已在 4cc4b4f 把 forward-slash UNC 检测移到 title 掩码前；主仓 focused 117/117、全量 53 files / 695 passed / 4 skipped、verify/lint/build 与真实 9 项目离线检查均绿，等待 fresh Kimi A2A 重新裁决。",
+  "generator_handoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-fix1-generator-handoff.json",
   "session_notes": {
-    "planning": "【BL-HARNESS-REPORT-COMPAT fix_round 1 2026-07-31】Kimi A2A 独立验收在 OAuth 中断前确认 F002 安全回归：词内 slash 扫描先移除 //server/share 的内部斜杠，致 forward-slash UNC/path 形状绕过后续检测；父提交 d106eab 会拒绝，当前实现接受。F001 保持完成；F002 fixing、F003/F004 待重验。下一步由 builder-codex 只修复该回归并补负例，随后 fresh Kimi A2A 重新验收；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。"
+    "planning": "【BL-HARNESS-REPORT-COMPAT verifying fix_round 1 2026-07-31】Kimi A2A 首轮在 OAuth 中断前确认 F002 forward-slash UNC 回归。builder-codex 修复轮次锁定 80f7ef3，仅改 validator 与两处回归；主仓应用为 4cc4b4f：raw summary 先检测 //server/share 形状，再执行 feature.title slash 掩码。新 unit/route Prisma 前拒绝覆盖 //server/share、//api/x、x //host/share y；focused 117/117、全量 53 files / 695 passed / 4 skipped、verify/lint/build、真实 9 项目离线字段检查 0 failures。F001-F003 已完成，F004 等待 fresh Kimi A2A schema-valid verdict；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。"
   },
   "features": [],
   "pending_gate": null

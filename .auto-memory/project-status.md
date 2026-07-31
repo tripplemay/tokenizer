@@ -5,13 +5,13 @@ type: project
 ---
 ## 当前批次
 
-- **BL-HARNESS-REPORT-COMPAT（fixing，1/4，fix_round 1）**：修复三个真实 `sensitive_summary_data`。
+- **BL-HARNESS-REPORT-COMPAT（verifying，3/4，fix_round 1）**：修复三个真实 `sensitive_summary_data`。
 - 根因 A：无 remote 项目使用 `local:<绝对路径>` repoKey，违反路径最小化契约。
 - 根因 B：合法 `/v1`、`/api` route 与中文/英文斜杠分隔符被 POSIX path 正则误判。
 - F001：客户端生成 `local:sha256:<digest>` opaque identity；remote 项目保持不变。
-- F002：独立评审复现 forward-slash UNC `//server/share` 绕过，因词内 slash 掩码早于 UNC 检测；父提交拒绝、当前接受，正在修复。
-- F003：需随 F002 修复补 forward-slash UNC/双斜杠负例并重新执行证明；此前主仓全量 53 files / 689 passed / 4 skipped，verify/lint/build 全绿。
-- F004：首次 `reviewer-kimi-a2a` 实测 135 focused、53 files / 689 passed / 4 skipped、verify/lint/build 与临时 HOME fixture 均通过，但 OAuth 在写 verdict 前中断；artifact 缺失，不能签收，修复后重新独立验收。
+- F002：`4cc4b4f` 在 title slash 掩码前检查 forward-slash UNC，恢复 `//server/share`、`//api/x`、嵌入式 `//host/share` fail-closed。
+- F003：unit + report route Prisma 前拒绝已覆盖该回归；主仓 focused 117/117、全量 53 files / 695 passed / 4 skipped，verify/lint/build 和真实 9 项目离线检查 0 failures。
+- F004：首次 `reviewer-kimi-a2a` OAuth 在写 verdict 前中断，不能签收；修复后将以 fresh context 重新独立验收。
 - Generator=`builder-codex` local-cli；Evaluator=`reviewer-kimi-a2a`；family 互斥，自治关闭。
 - 本批不改 framework、Prisma、UI、i18n 或 agent feature version，不 push/deploy。
 
