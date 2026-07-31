@@ -30,7 +30,8 @@
   `/api/...`、`/v<数字>/...` 引用。
 - 词内或自然语言中的斜杠分隔符（如 `喜欢/不喜欢`、`i2i/edits/MCP`、独立的 ` / `）不视为
   POSIX 绝对路径。
-- 仍拒绝 `/Users/...`、`/home/...`、`/srv/...`、`/tmp`、`file://...`、Windows drive path、UNC path、
+- 仍拒绝 `/Users/...`、`/home/...`、`/srv/...`、`/tmp`、`file://...`、Windows drive path、反斜杠或正斜杠
+  UNC path（例如 `\\server\\share`、`//server/share`）、
   路径形状的未知 slash command、换行、raw channel 标记和凭据。
 - route 例外只对 `feature.title` 生效；`errorSummary`、mode issue、gate detail 等其他持久摘要继续使用
   严格规则。
@@ -41,7 +42,7 @@
 - CLI 测试证明无 remote 时 payload 不含临时 HOME/仓库绝对路径，并且 repoKey 可被服务端接受。
 - 服务端测试覆盖本批真实合法形状：`REST /v1/images/generations`、`POST /api/trip/generate`、
   `喜欢/不喜欢`、`门禁/限制/计费`。
-- 负例覆盖真实本机绝对路径、route traversal/path-shaped suffix、凭据、raw channel、换行和非标题字段；
+- 负例覆盖真实本机绝对路径、反斜杠与正斜杠 UNC、route traversal/path-shaped suffix、凭据、raw channel、换行和非标题字段；
   所有拒绝必须发生在 Prisma 首次查询/写入之前。
 - 聚焦测试、全量 `npm test`、`npm run verify`、`npm run lint`、`npm run build` 全绿。
 - 这是纯 bug fix，不修改 Prisma、UI、i18n、Harness framework 或 agent feature version。

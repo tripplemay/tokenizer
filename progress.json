@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "fixing",
   "user_goal": "修复 Harness report 对无远端本地仓库身份和合法 feature 标题斜杠语法的确定性 400，并继续用异构 dispatch 验证 harness",
   "total_features": 4,
-  "completed_features": 3,
-  "fix_rounds": 0,
+  "completed_features": 1,
+  "fix_rounds": 1,
   "current_sprint": "BL-HARNESS-REPORT-COMPAT",
   "dashboard_url": null,
-  "last_updated": "2026-07-31T01:06:20Z",
+  "last_updated": "2026-07-31T02:25:32Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/orchestration-patterns.md",
@@ -23,10 +23,10 @@
     "evaluator": "reviewer-kimi-a2a"
   },
   "mode_intent": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": "Kimi A2A 独立复现：feature.title 的 route/词内斜杠例外会使 //server/share、//api/x 与 x //host/share y 在当前实现被接受，而父提交 d106eab 会拒绝。该结论在 OAuth provider.connection_error 中断前已写入评审日志；未生成 schema-valid verdict artifact，不能作为通过签收。",
   "generator_handoff": "docs/test-reports/BL-HARNESS-REPORT-COMPAT-generator-handoff.json",
   "session_notes": {
-    "planning": "【BL-HARNESS-REPORT-COMPAT plan 2026-07-31】生产 smoke 精确复现三个 sensitive_summary_data：harness-console-demo/wearwhat 无 remote 时 repoKey 携带 local 绝对路径；aigcgateway/wearwhat 的合法 /v1、/api 与自然语言斜杠被 POSIX path 正则误判。批次采用客户端 local:sha256 opaque identity + 服务端仅 feature.title 的精确 route/分隔符语义修复；Generator=builder-codex local-cli，Evaluator=reviewer-kimi-a2a，family 互斥，自治关闭。F001-F003 已实现并锁定 aead718，F004 进入独立验收；主仓真实 9 项目字段检查 0 failures；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。"
+    "planning": "【BL-HARNESS-REPORT-COMPAT fix_round 1 2026-07-31】Kimi A2A 独立验收在 OAuth 中断前确认 F002 安全回归：词内 slash 扫描先移除 //server/share 的内部斜杠，致 forward-slash UNC/path 形状绕过后续检测；父提交 d106eab 会拒绝，当前实现接受。F001 保持完成；F002 fixing、F003/F004 待重验。下一步由 builder-codex 只修复该回归并补负例，随后 fresh Kimi A2A 重新验收；不改 framework/Prisma/UI/i18n/agent version，不 push/deploy。"
   },
   "features": [],
   "pending_gate": null
