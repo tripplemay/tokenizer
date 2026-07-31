@@ -43,6 +43,15 @@
       "docs/test-reports/BL-HARNESS-REPORT-COMPAT-verdict.json",
       "docs/test-reports/BL-HARNESS-REPORT-COMPAT-fix1-generator-handoff.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-HARNESS-REPORT-COMPAT-verifying-done-w1",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-07-31T03:30:28.901Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "Rfwmc3YHcSswLtAe7EkYaxETBOeumGVAvuRbYV3PMpvaJolxsVSkUsRi1b4kYp/lmBKLGMTNH9MtSZEGRLKIBg=="
+    }
   }
 }
