@@ -37,41 +37,88 @@
           "required": ["execution", "autonomy"],
           "properties": {
             "execution": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["profile", "role_assignments"],
-              "properties": {
-                "profile": {
-                  "type": "string",
-                  "enum": ["fast", "heterogeneous", "slow"]
-                },
-                "role_assignments": {
-                  "oneOf": [
-                    { "type": "null" },
+              "oneOf": [
+                {
+                  "title": "v1 agent assignments",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["profile", "role_assignments"],
+                  "properties": {
+                    "profile": {
+                      "type": "string",
+                      "enum": ["fast", "heterogeneous", "slow"]
+                    },
+                    "role_assignments": {
+                      "oneOf": [
+                        { "type": "null" },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": ["generator", "evaluator"],
+                          "properties": {
+                            "generator": { "type": "string", "minLength": 1 },
+                            "evaluator": { "type": "string", "minLength": 1 }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "allOf": [
                     {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["generator", "evaluator"],
-                      "properties": {
-                        "generator": { "type": "string", "minLength": 1 },
-                        "evaluator": { "type": "string", "minLength": 1 }
+                      "if": {
+                        "properties": { "profile": { "const": "fast" } },
+                        "required": ["profile"]
+                      },
+                      "then": {
+                        "properties": { "role_assignments": { "type": "null" } }
+                      },
+                      "else": {
+                        "properties": { "role_assignments": { "type": "object" } }
                       }
                     }
                   ]
-                }
-              },
-              "allOf": [
+                },
                 {
-                  "if": {
-                    "properties": { "profile": { "const": "fast" } },
-                    "required": ["profile"]
+                  "title": "v2 tool bindings",
+                  "description": "The human selects only a harness tool and invocation. The device resolves a concrete agent locally and records it as runtime audit data; it is never part of the signed binding.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["profile", "role_bindings"],
+                  "properties": {
+                    "profile": {
+                      "type": "string",
+                      "enum": ["fast", "heterogeneous", "slow"]
+                    },
+                    "role_bindings": {
+                      "oneOf": [
+                        { "type": "null" },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": ["planner", "generator", "evaluator"],
+                          "properties": {
+                            "planner": { "$ref": "#/definitions/tool_binding" },
+                            "generator": { "$ref": "#/definitions/tool_binding" },
+                            "evaluator": { "$ref": "#/definitions/tool_binding" }
+                          }
+                        }
+                      ]
+                    }
                   },
-                  "then": {
-                    "properties": { "role_assignments": { "type": "null" } }
-                  },
-                  "else": {
-                    "properties": { "role_assignments": { "type": "object" } }
-                  }
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": { "profile": { "const": "fast" } },
+                        "required": ["profile"]
+                      },
+                      "then": {
+                        "properties": { "role_bindings": { "type": "null" } }
+                      },
+                      "else": {
+                        "properties": { "role_bindings": { "type": "object" } }
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -106,13 +153,19 @@
                       "required": ["max_tokens", "max_cost_usd", "max_wakes", "max_fix_rounds"],
                       "properties": {
                         "max_tokens": { "type": "integer", "minimum": 0, "maximum": 10000000 },
-                        "max_cost_usd": { "type": "number", "minimum": 0, "maximum": 10000 },
+                        "max_cost_usd": { "type": "number", "minimum": 0, "maximum": 10000, "multipleOf": 0.01 },
                         "max_wakes": { "type": "integer", "minimum": 1, "maximum": 1000 },
                         "max_fix_rounds": { "type": "integer", "minimum": 0, "maximum": 5 }
                       }
                     },
                     "wake_interval_s": {
                       "type": "object",
+                      "propertyNames": {
+                        "allOf": [
+                          { "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$" },
+                          { "not": { "enum": ["__proto__", "prototype", "constructor"] } }
+                        ]
+                      },
                       "additionalProperties": { "type": "integer", "minimum": 60, "maximum": 86400 }
                     },
                     "notify_on": {
@@ -152,6 +205,24 @@
       "type": "string",
       "format": "date-time",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    }
+  },
+  "definitions": {
+    "tool_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "invocation"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Stable tool identity supplied by the device capability catalog. New adapters participate without console schema changes."
+        },
+        "invocation": {
+          "type": "string",
+          "enum": ["subagent", "local-cli", "a2a"]
+        }
+      }
     }
   }
 }

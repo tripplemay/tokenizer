@@ -7,6 +7,7 @@ import {
   HARNESS_MODE_INTENT_ACTIVE_STATUSES,
   harnessInputErrorResponse,
   modeAgentsFromSnapshot,
+  modeToolCatalogFromSnapshot,
   parseCancelModeIntentInput,
   parseIssueModeIntentInput,
   parseProjectIdFromUrl,
@@ -16,10 +17,15 @@ import { signHarnessPayload } from "@/server/harness-sign";
 import {
   HarnessModeIntentValidationError,
   normalizeHarnessModeIntentPayload,
+  requiresHarnessToolCatalog,
+  usesHarnessToolBindings,
   type HarnessModeIntentPayload
 } from "@/shared/harness-mode-intent";
 import { DEVICE_ONLINE_MS } from "@/shared/device-status";
-import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import {
+  MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+} from "@/shared/agent-feature-version";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +125,8 @@ export async function POST(request: Request) {
   if (!project || project.device.userId !== session.user.id) return notFound();
 
   const now = new Date();
+  const isV2ToolBindingIntent = usesHarnessToolBindings(input.desired);
+  const needsToolCatalog = requiresHarnessToolCatalog(input.desired);
   if (
     !project.reportedAt ||
     project.reportedAt.getTime() > now.getTime() + 5 * 60 * 1000 ||
@@ -135,6 +143,15 @@ export async function POST(request: Request) {
       { status: 409 }
     );
   }
+  if (isV2ToolBindingIntent && (project.device.agentFeatureVersion ?? 0) < MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION) {
+    return Response.json(
+      {
+        error: `device agent feature version ${MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION} or newer is required for v2 mode intents`,
+        code: "tool_binding_agent_upgrade_required"
+      },
+      { status: 409 }
+    );
+  }
   if (!project.headSha || !/^[0-9a-fA-F]{40}$/.test(project.headSha)) {
     return Response.json(
       { error: "project must report a full 40-character HEAD SHA", code: "invalid_project_head" },
@@ -143,10 +160,20 @@ export async function POST(request: Request) {
   }
 
   let agents;
+  let tools;
   try {
+    // The agent snapshot remains a separate device-health check. It must not,
+    // however, be used to infer tool ids for v2 bindings.
     agents = modeAgentsFromSnapshot(project.modes);
+    tools = needsToolCatalog ? modeToolCatalogFromSnapshot(project.modes) : undefined;
   } catch (error) {
     return harnessInputErrorResponse(error);
+  }
+  if (needsToolCatalog && (!tools || tools.length === 0)) {
+    return Response.json(
+      { error: "project does not have a usable tool capability catalog", code: "invalid_tool_catalog" },
+      { status: 409 }
+    );
   }
 
   const issuedBy = (session.user.email || session.user.name || session.user.id).trim();
@@ -166,7 +193,7 @@ export async function POST(request: Request) {
         issued_at: now.toISOString(),
         intent_expires_at: input.intentExpiresAt.toISOString()
       },
-      { now, agents }
+      { now, agents, tools }
     );
   } catch (error) {
     if (error instanceof HarnessModeIntentValidationError) {

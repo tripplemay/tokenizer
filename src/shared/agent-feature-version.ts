@@ -31,12 +31,27 @@
 //       agents cannot safely receive mode changes and leave detail views stale.
 //   5 — 2026-07-30: bounded Harness sync health in local state and heartbeat.
 //       Older agents cannot report whether orchestration transport is healthy.
-export const AGENT_FEATURE_VERSION = 5;
-export const MIN_AGENT_FEATURE_VERSION = 5;
+//   6 — 2026-07-31: tool-bound Harness mode intents and the reported tool
+//       capability catalog. Older agents can still consume v1 intents, but
+//       cannot safely issue or stage the v2 tool-binding contract.
+export const AGENT_FEATURE_VERSION = 6;
+export const MIN_AGENT_FEATURE_VERSION = 6;
 
 // Signed Harness mode intent issuance was added at capability level 4. Keep
 // this separate from the global update threshold so the API and UI never drift.
 export const MIN_MODE_INTENT_AGENT_FEATURE_VERSION = 4;
+
+// Tool-bound mode intents are deliberately gated separately from the v1
+// agent-id contract so previously issued v1 intents remain readable and
+// consumable during the rollout.
+export const MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION = 6;
+
+/** The capability level to show for a mode-intent compatibility blocker. */
+export function requiredModeIntentAgentFeatureVersion(blocker: string | null | undefined): number {
+  return blocker === "toolBindingAgentUpgradeRequired"
+    ? MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+    : MIN_MODE_INTENT_AGENT_FEATURE_VERSION;
+}
 
 // The ingest correction pass (updating an existing UsageEvent row in place
 // when a re-parse revises it) is only trusted from agents at or above this

@@ -3,6 +3,7 @@ import {
   HarnessApiInputError,
   isIdenticalRelayAck,
   modeAgentsFromSnapshot,
+  modeToolCatalogFromSnapshot,
   parseDispatchRuns,
   parseModeSnapshot,
   parseRelayModeIntentAck,
@@ -13,6 +14,38 @@ import {
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
 const SHA256 = "a".repeat(64);
+
+function toolCatalog() {
+  return [
+    {
+      tool: "claude-code",
+      label: "Claude Code",
+      invocation: "subagent",
+      role: "planner",
+      agentCount: 1,
+      modelFamilies: ["claude"],
+      capabilities: ["plan"]
+    },
+    {
+      tool: "codex",
+      label: "Codex",
+      invocation: "local-cli",
+      role: "generator",
+      agentCount: 1,
+      modelFamilies: ["codex"],
+      capabilities: ["build"]
+    },
+    {
+      tool: "kimi",
+      label: "Kimi",
+      invocation: "local-cli",
+      role: "evaluator",
+      agentCount: 1,
+      modelFamilies: ["kimi"],
+      capabilities: ["verify"]
+    }
+  ];
+}
 
 function modeSnapshot() {
   return {
@@ -46,6 +79,9 @@ function modeSnapshot() {
           capabilities: ["build", "fix"]
         }
       ],
+      // Deliberately does not mirror `agents`: tool identity belongs to the
+      // formal device catalog, not to Tokenizer's adapter-name heuristics.
+      toolCatalog: toolCatalog(),
       familyExclusive: true,
       issues: []
     },
@@ -137,6 +173,24 @@ describe("mode snapshot extraction", () => {
         }
       })
     ).toThrow(/duplicate/);
+  });
+
+  it("uses the formal agent-id-free tool catalog as the canonical source", () => {
+    const descriptors = modeToolCatalogFromSnapshot(modeSnapshot());
+    expect(descriptors).toContainEqual({
+      tool: "claude-code",
+      invocation: "subagent",
+      role: "planner",
+      model_family: "claude"
+    });
+    expect(descriptors).not.toContainEqual(expect.objectContaining({ tool: "codex", role: "planner" }));
+  });
+
+  it("allows an empty reported catalog to persist but never uses it to sign v2", () => {
+    const snapshot = modeSnapshot();
+    snapshot.dispatch.toolCatalog = [];
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    expect(() => modeToolCatalogFromSnapshot(snapshot)).toThrow(/usable tool capability catalog/);
   });
 });
 
@@ -235,6 +289,51 @@ describe("persisted mode snapshot validation", () => {
     expect(parseModeSnapshot(snapshot)).toBe(snapshot);
   });
 
+  it("accepts only a full, agent-id-free current v2 resolution", () => {
+    const snapshot = {
+      ...modeSnapshot(),
+      current: {
+        profile: "heterogeneous",
+        roleBindings: {
+          planner: { tool: "claude-code", invocation: "subagent", modelFamily: "claude" },
+          generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+          evaluator: { tool: "kimi", invocation: "local-cli", modelFamily: "kimi" }
+        }
+      }
+    };
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+
+    const mismatchedProfile = {
+      ...snapshot,
+      current: { ...snapshot.current, profile: "slow" }
+    };
+    expect(() => parseModeSnapshot(mismatchedProfile)).toThrow(/must match state\.modes\.execution/);
+
+    const mismatchedInvocations = {
+      ...snapshot,
+      current: {
+        ...snapshot.current,
+        roleBindings: {
+          ...snapshot.current.roleBindings,
+          evaluator: { ...snapshot.current.roleBindings.evaluator, invocation: "a2a" }
+        }
+      }
+    };
+    expect(() => parseModeSnapshot(mismatchedInvocations)).toThrow(/does not match resolved invocations/);
+
+    const leakedAgentId = {
+      ...snapshot,
+      current: {
+        ...snapshot.current,
+        roleBindings: {
+          ...snapshot.current.roleBindings,
+          planner: { ...snapshot.current.roleBindings.planner, agentId: "planner-claude" }
+        }
+      }
+    };
+    expect(() => parseModeSnapshot(leakedAgentId)).toThrow(/unsupported fields/);
+  });
+
   it.each([
     ["raw output", "stdout: full command output"],
     ["Harness command reference", "/plan"],
@@ -273,6 +372,16 @@ describe("persisted mode snapshot validation", () => {
     expect(() => parseModeSnapshot(unknownDefaultsField)).toThrow(/unsupported/);
   });
 
+  it("accepts only the public catalog shape and rejects agent-id leakage", () => {
+    const leaked = modeSnapshot();
+    Object.assign(leaked.dispatch.toolCatalog[0], { agentId: "planner-private" });
+    expect(() => parseModeSnapshot(leaked)).toThrow(/unsupported fields/);
+
+    const duplicate = modeSnapshot();
+    duplicate.dispatch.toolCatalog.push(structuredClone(duplicate.dispatch.toolCatalog[0]));
+    expect(() => parseModeSnapshot(duplicate)).toThrow(/duplicate/);
+  });
+
   it("enforces pending profile assignments and staging-before-expiry ordering", () => {
     const fastWithAssignments = modeSnapshot();
     fastWithAssignments.pendingDefaults.execution.profile = "fast";
@@ -280,7 +389,7 @@ describe("persisted mode snapshot validation", () => {
 
     const heterogeneousWithoutAssignments = modeSnapshot();
     heterogeneousWithoutAssignments.pendingDefaults.execution.roleAssignments = null;
-    expect(() => parseModeSnapshot(heterogeneousWithoutAssignments)).toThrow(/require roleAssignments/);
+    expect(() => parseModeSnapshot(heterogeneousWithoutAssignments)).toThrow(/require exactly one role assignment form/);
 
     const reversedWindow = modeSnapshot();
     reversedWindow.pendingDefaults.stagedAt = reversedWindow.pendingDefaults.intentExpiresAt;
@@ -361,6 +470,18 @@ describe("dispatch summary allowlist and redaction", () => {
     ]);
   });
 
+  it("accepts the scanner's fixed a2a cancellation summary", () => {
+    expect(parseDispatchRuns([dispatchRun({
+      outcome: "CANCELED",
+      verdict: null,
+      artifactPath: null,
+      artifactSha256: null,
+      errorSummary: "canceled"
+    })])).toEqual([
+      expect.objectContaining({ outcome: "CANCELED", verdict: null, errorSummary: "canceled" })
+    ]);
+  });
+
   it.each([
     ["unknown raw prompt field", dispatchRun({ prompt: "raw prompt" })],
     ["unknown stdout field", dispatchRun({ stdout: "raw output" })],
@@ -386,10 +507,14 @@ describe("dispatch summary allowlist and redaction", () => {
       "reversed dates",
       dispatchRun({ startedAt: "2026-07-27T12:00:02.000Z", finishedAt: "2026-07-27T12:00:01.000Z" })
     ],
-    ["unknown role", dispatchRun({ role: "planner" })],
+    ["unknown role", dispatchRun({ role: "coordinator" })],
     ["unknown transport", dispatchRun({ transport: "ssh" })]
   ])("rejects %s", (_label, value) => {
     expect(() => parseDispatchRuns([value])).toThrow(HarnessApiInputError);
+  });
+
+  it("accepts planner dispatch summaries", () => {
+    expect(parseDispatchRuns([dispatchRun({ role: "planner" })])[0]?.role).toBe("planner");
   });
 
   it("rejects duplicate run ids and more than 50 summaries", () => {

@@ -4,7 +4,9 @@
 import argparse
 import json
 import os
+import re
 import socket
+import subprocess
 import sys
 import time
 import urllib.error
@@ -13,7 +15,12 @@ import urllib.request
 
 DISPATCH_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DISPATCH_DIR)
-from dispatch_common import DispatchContractError, effective_timeout  # noqa: E402
+from dispatch_common import (  # noqa: E402
+    A2A_AUTH_UNSET,
+    DispatchContractError,
+    a2a_auth_config,
+    effective_timeout,
+)
 
 
 STATE_DIR_DEFAULT = ".harness-dispatch"
@@ -22,6 +29,14 @@ TERMINAL = {
     "COMPLETED", "FAILED", "CANCELED", "REJECTED",
     "INPUT_REQUIRED", "AUTH_REQUIRED",
 }
+SAFE_TASK_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,127}\Z")
+SAFE_BATCH = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+SAFE_ARTIFACT = re.compile(
+    r"[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*\Z"
+)
+CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+_MISSING = object()
+_LOCAL_TERMINAL_MARKER = object()
 
 
 class ClientError(RuntimeError):
@@ -56,18 +71,25 @@ def load_descriptor(registry, agent):
         raise ClientError(f"{agent} has no endpoint")
     try:
         effective_timeout(None, descriptor.get("timeout_s"))
+        a2a_auth_config(
+            descriptor.get("auth", A2A_AUTH_UNSET), f"agent {agent!r}.auth"
+        )
     except DispatchContractError as exc:
         raise ClientError(str(exc))
     return descriptor
 
 
 def auth_header(descriptor):
-    auth = descriptor.get("auth") or {}
-    if auth.get("type") != "bearer":
+    try:
+        auth = a2a_auth_config(
+            descriptor.get("auth", A2A_AUTH_UNSET),
+            f"agent {descriptor.get('id')!r}.auth",
+        )
+    except DispatchContractError as exc:
+        raise ClientError(str(exc)) from exc
+    if auth["type"] == "none":
         return {}
-    env_name = auth.get("env")
-    if not env_name:
-        raise ClientError("auth.type=bearer requires auth.env")
+    env_name = auth["env"]
     token = os.environ.get(env_name, "").strip()
     if not token:
         raise ClientError(f"environment variable {env_name} is empty")
@@ -99,48 +121,226 @@ def rpc(descriptor, method, params, timeout=30.0):
     return result.get("result")
 
 
-def write_artifact_local(record):
-    artifact = record.get("artifact")
-    relative = (
-        (record.get("deliverable") or {}).get("artifact")
-        or f"docs/test-reports/{record.get('batch')}-verdict.json"
+def _safe_artifact_destination(project_root, relative):
+    """Resolve a locally commissioned repository-relative artifact path."""
+    if not isinstance(relative, str) or not SAFE_ARTIFACT.fullmatch(relative):
+        raise ClientError(
+            "commissioned deliverable.artifact is not a safe repository-relative path"
+        )
+    root = os.path.realpath(project_root)
+    if not os.path.isdir(root):
+        raise ClientError(f"artifact project root is not a directory: {project_root}")
+    destination = os.path.realpath(os.path.join(root, relative))
+    try:
+        inside_root = os.path.commonpath((root, destination)) == root
+    except ValueError:
+        inside_root = False
+    if not inside_root:
+        raise ClientError("commissioned artifact resolves outside the local project root")
+    return destination
+
+
+def _canonical_project_root(project_root=None):
+    candidate = project_root or os.getcwd()
+    try:
+        root = subprocess.check_output(
+            ["git", "-C", candidate, "rev-parse", "--show-toplevel"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ClientError(
+            "A2A artifact commissioning requires a local git project root"
+        ) from exc
+    return os.path.realpath(root)
+
+
+def _validate_role_artifact(role, task_id, batch, artifact):
+    if role == "planner":
+        expected = f"docs/test-reports/planner-proposal-{task_id}.json"
+        if artifact != expected:
+            raise ClientError(f"planner artifact must be exactly {expected}")
+    elif role == "generator":
+        expected = f"docs/test-reports/generator-handoff-{task_id}.json"
+        if artifact != expected:
+            raise ClientError(f"generator artifact must be exactly {expected}")
+    elif role == "evaluator":
+        expected = f"docs/test-reports/{batch}-verdict.json"
+        if artifact != expected:
+            raise ClientError(f"evaluator artifact must be exactly {expected}")
+
+
+def commission_from_envelope(envelope, envelope_path, *, project_root=None):
+    """Freeze the local contract before any remote response is considered."""
+    if not isinstance(envelope, dict):
+        raise ClientError("envelope root must be an object")
+    if envelope.get("contract_version") != "harness/1.1":
+        raise ClientError("envelope contract_version must be harness/1.1")
+    task_id = envelope.get("task_id")
+    batch = envelope.get("batch")
+    role = envelope.get("role")
+    if not isinstance(task_id, str) or not SAFE_TASK_ID.fullmatch(task_id):
+        raise ClientError("envelope task_id is not a safe dispatch identifier")
+    if not isinstance(batch, str) or not SAFE_BATCH.fullmatch(batch):
+        raise ClientError("envelope batch is not a safe dispatch identifier")
+    if role not in ("planner", "generator", "evaluator"):
+        raise ClientError(f"envelope role is invalid: {role!r}")
+
+    deliverable = envelope.get("deliverable")
+    if not isinstance(deliverable, dict):
+        raise ClientError("envelope deliverable must be an object")
+    if set(deliverable) - {"artifact", "schema", "commit_to"}:
+        raise ClientError("envelope deliverable contains unsupported fields")
+    artifact = deliverable.get("artifact")
+    schema = deliverable.get("schema")
+    if not isinstance(artifact, str) or not SAFE_ARTIFACT.fullmatch(artifact):
+        raise ClientError("envelope deliverable.artifact is not a safe repository-relative path")
+    _validate_role_artifact(role, task_id, batch, artifact)
+    if not isinstance(schema, str) or not schema:
+        raise ClientError("envelope deliverable.schema is required")
+
+    repo = envelope.get("repo")
+    if not isinstance(repo, dict) or not isinstance(repo.get("ref"), str):
+        raise ClientError("envelope repo.ref is required")
+    if not CANONICAL_COMMIT_SHA.fullmatch(repo["ref"]):
+        raise ClientError("envelope repo.ref must be a canonical immutable commit SHA")
+    # JSON round-trip prevents later caller mutation of the envelope object from
+    # changing the local authority to which a remote response is bound.
+    frozen_deliverable = json.loads(json.dumps(deliverable, ensure_ascii=False))
+    root = _canonical_project_root(project_root)
+    return {
+        "task_id": task_id,
+        "batch": batch,
+        "role": role,
+        "deliverable": frozen_deliverable,
+        "ref": repo["ref"],
+        "envelope_path": os.path.abspath(envelope_path),
+        "artifact_path": _safe_artifact_destination(root, artifact),
+    }
+
+
+def _require_remote_task_id(record, expected_task_id, source):
+    if not isinstance(record, dict):
+        raise ClientError(f"{source} response must be an object")
+    if record.get("taskId", _MISSING) != expected_task_id:
+        raise ClientError(
+            f"{source} taskId does not match locally commissioned task_id"
+        )
+
+
+def validate_terminal_binding(record, commission, *, locally_synthesized=False):
+    """Reject a remote terminal response that is not for this exact envelope."""
+    if not isinstance(record, dict):
+        raise ClientError("A2A terminal record must be an object")
+    if record.get("state") not in TERMINAL:
+        raise ClientError("A2A record is not terminal")
+    expected = {
+        "taskId": commission["task_id"],
+        "batch": commission["batch"],
+        "role": commission["role"],
+        "deliverable": commission["deliverable"],
+    }
+    for field, expected_value in expected.items():
+        if record.get(field, _MISSING) != expected_value:
+            origin = "local fallback" if locally_synthesized else "A2A terminal record"
+            raise ClientError(
+                f"{origin} {field} does not match the locally commissioned envelope"
+            )
+
+
+def _staged_artifact_destination(state_dir, commission):
+    """Keep remote bytes inside local dispatch state, never project paths."""
+    state_root = os.path.realpath(state_dir)
+    stage_root = os.path.realpath(os.path.join(state_root, "a2a-artifacts"))
+    filename = os.path.basename(commission["deliverable"]["artifact"])
+    destination = os.path.realpath(
+        os.path.join(stage_root, commission["task_id"], filename)
     )
+    try:
+        inside_stage = os.path.commonpath((stage_root, destination)) == stage_root
+    except ValueError:
+        inside_stage = False
+    if not inside_stage:
+        raise ClientError("A2A artifact staging path escapes dispatch state")
+    return destination
+
+
+def write_artifact_local(artifact, local_path):
     if artifact is None:
         return None
-    os.makedirs(os.path.dirname(relative) or ".", exist_ok=True)
-    with open(relative, "w", encoding="utf-8") as fh:
-        json.dump(artifact, fh, ensure_ascii=False, indent=2)
-    log(f"artifact written locally: {relative}")
-    return relative
+    # The remote owns only JSON content, not a project path. O_EXCL makes a
+    # duplicate/replayed remote response fail rather than overwrite evidence.
+    os.makedirs(os.path.dirname(local_path) or ".", exist_ok=True)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        fd = os.open(local_path, flags, 0o600)
+    except FileExistsError as exc:
+        raise ClientError(
+            f"refusing to overwrite an existing staged A2A artifact: {local_path}"
+        ) from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(artifact, fh, ensure_ascii=False, indent=2)
+            fh.flush()
+            os.fsync(fh.fileno())
+    except Exception:
+        try:
+            os.unlink(local_path)
+        except OSError:
+            pass
+        raise
+    log(f"artifact staged locally: {local_path}")
+    return local_path
 
 
-def synth_run_meta(descriptor, record, state_dir, *, effective_timeout_s=None):
+def synth_run_meta(
+    descriptor,
+    record,
+    state_dir,
+    *,
+    commission,
+    effective_timeout_s=None,
+    locally_synthesized=False,
+):
     """Write the local authoritative receipt input; remote state remains advisory."""
-    local_artifact = write_artifact_local(record)
+    validate_terminal_binding(
+        record, commission, locally_synthesized=locally_synthesized
+    )
+    # Only artifact content crosses A2A. It is staged under dispatch state;
+    # the logical deliverable path remains contract metadata for a later,
+    # explicit Coordinator materialization step.
+    local_artifact = write_artifact_local(
+        record.get("artifact"), _staged_artifact_destination(state_dir, commission)
+    )
     state = record.get("state")
     reason = record.get("termination_reason")
-    if local_artifact:
+    # Remote bytes are diagnostic evidence, not evidence of a successful task.
+    # A FAILED/REJECTED terminal record must never turn into RETURNED merely
+    # because it carried an artifact-shaped object.
+    if state == "COMPLETED" and local_artifact:
         outcome = "RETURNED"
     elif state == "CANCELED" and reason in ("deadline", "client_deadline"):
         outcome = "TIMEOUT"
     elif state == "CANCELED":
         outcome = "CANCELED"
-    elif state in ("FAILED", "REJECTED") and record.get("exit_code") in (0, None):
-        outcome = "ARTIFACT_MISSING"
     else:
         outcome = "FAILED"
 
-    remote_meta = record.get("run_meta") or {}
     meta = {
-        "task_id": record.get("taskId"),
-        "agent_id": record.get("agent") or descriptor["id"],
-        "adapter": remote_meta.get("adapter") or "a2a",
-        "model_family": record.get("model_family") or descriptor.get("model_family"),
-        "batch": record.get("batch"),
-        "ref": remote_meta.get("ref"),
-        "worktree": remote_meta.get("worktree"),
+        "task_id": commission["task_id"],
+        "agent_id": descriptor["id"],
+        "adapter": "a2a",
+        "model_family": descriptor.get("model_family"),
+        "batch": commission["batch"],
+        "role": commission["role"],
+        "deliverable": commission["deliverable"],
+        "ref": commission["ref"],
+        "worktree": None,
         "artifact": local_artifact or "",
         "log": "",
+        "envelope_path": commission["envelope_path"],
         "outcome": outcome,
         "exit_code": record.get("exit_code") if record.get("exit_code") is not None else 0,
         "duration_s": record.get("duration_s") or 0,
@@ -151,7 +351,7 @@ def synth_run_meta(descriptor, record, state_dir, *, effective_timeout_s=None):
         "remote_state_advisory": state,
     }
     os.makedirs(state_dir, exist_ok=True)
-    path = os.path.join(state_dir, f"run-meta-{meta['task_id']}.json")
+    path = os.path.join(state_dir, f"run-meta-{commission['task_id']}.json")
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(meta, fh, ensure_ascii=False, indent=2)
     log(f"run-meta written: {path}; validate the local receipt next")
@@ -160,6 +360,8 @@ def synth_run_meta(descriptor, record, state_dir, *, effective_timeout_s=None):
 
 
 def _event_record(base, event_name, payload):
+    if not isinstance(payload, dict):
+        raise ClientError("A2A stream event payload must be an object")
     if event_name == "status":
         base["state"] = payload.get("state")
     elif event_name == "artifact":
@@ -238,6 +440,7 @@ def wait_for_terminal(
                     return rpc(descriptor, "GetTask", {"taskId": task_id}, remaining), last_seq
                 except ClientError:
                     if advisory.get("state") in TERMINAL:
+                        advisory["_harness_local_terminal"] = _LOCAL_TERMINAL_MARKER
                         return advisory, last_seq
             reconnects += 1
         except (urllib.error.URLError, socket.timeout, TimeoutError, OSError, ValueError) as exc:
@@ -253,7 +456,7 @@ def wait_for_terminal(
                 {"taskId": task_id},
                 timeout=max(0.05, min(5.0, remaining)),
             )
-            if record.get("state") in TERMINAL:
+            if isinstance(record, dict) and record.get("state") in TERMINAL:
                 return record, last_seq
         except ClientError as exc:
             log(f"bounded GetTask retry failed: {exc}")
@@ -268,6 +471,7 @@ def cancel_at_deadline(descriptor, task_id, grace_s, base_record):
         {"taskId": task_id},
         timeout=max(0.05, grace_s),
     )
+    _require_remote_task_id(cancel, task_id, "CancelTask")
     synthetic = dict(base_record or {})
     synthetic.update(cancel or {})
     cancel_reason = (cancel or {}).get("termination_reason")
@@ -288,14 +492,18 @@ def cancel_at_deadline(descriptor, task_id, grace_s, base_record):
             record = rpc(
                 descriptor, "GetTask", {"taskId": task_id}, timeout=max(0.05, grace_s)
             )
+            _require_remote_task_id(record, task_id, "GetTask")
             record["termination_reason"] = local_reason
             return record
         except ClientError as exc:
             log(f"cancel was confirmed; preserving CANCELED despite final GetTask failure: {exc}")
+            synthetic["_harness_local_terminal"] = _LOCAL_TERMINAL_MARKER
             return synthetic
-    return rpc(
+    record = rpc(
         descriptor, "GetTask", {"taskId": task_id}, timeout=max(0.05, grace_s)
     )
+    _require_remote_task_id(record, task_id, "GetTask")
+    return record
 
 
 def deadline_exit_code(record):
@@ -313,6 +521,40 @@ def _load_envelope(path):
         raise ClientError(f"envelope unreadable ({path}): {exc}")
 
 
+def validate_dispatchable_role(descriptor, envelope):
+    role = envelope.get("role")
+    if role not in (descriptor.get("roles") or []):
+        raise ClientError(
+            f"{descriptor.get('id')} does not declare envelope role={role!r}"
+        )
+    if role == "generator":
+        raise ClientError(
+            "a2a transport does not support generator until a source-handoff "
+            "protocol can return implementation changes safely"
+        )
+
+
+def load_commissioned_envelope(descriptor, envelope_path, *, project_root=None):
+    envelope_path = os.path.abspath(envelope_path)
+    envelope = _load_envelope(envelope_path)
+    commission = commission_from_envelope(
+        envelope, envelope_path, project_root=project_root
+    )
+    validate_dispatchable_role(descriptor, envelope)
+    return envelope, commission
+
+
+def commissioned_base_record(descriptor, commission):
+    return {
+        "taskId": commission["task_id"],
+        "agent": descriptor["id"],
+        "model_family": descriptor.get("model_family"),
+        "batch": commission["batch"],
+        "role": commission["role"],
+        "deliverable": commission["deliverable"],
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("cmd", choices=["run", "send", "subscribe", "get", "cancel", "card", "ls"])
@@ -321,6 +563,7 @@ def main():
     parser.add_argument("--task")
     parser.add_argument("--registry", default=".agents-registry.json")
     parser.add_argument("--state", default=STATE_DIR_DEFAULT)
+    parser.add_argument("--project-root")
     parser.add_argument("--resume-from", type=int, default=0)
     parser.add_argument("--poll-interval", type=float, default=5.0)
     parser.add_argument("--transport-grace", type=float, default=TRANSPORT_GRACE_S)
@@ -345,7 +588,10 @@ def main():
         if args.cmd in ("send", "run"):
             if not args.envelope:
                 raise ClientError("--envelope is required")
-            envelope = _load_envelope(args.envelope)
+            envelope_path = os.path.abspath(args.envelope)
+            envelope, commission = load_commissioned_envelope(
+                descriptor, envelope_path, project_root=args.project_root
+            )
             timeout_s = effective_timeout(
                 envelope.get("deadline_s"), descriptor.get("timeout_s")
             )
@@ -357,7 +603,10 @@ def main():
                 {"envelope": envelope},
                 timeout=max(0.05, min(30.0, deadline - time.time())),
             )
-            task_id = result["taskId"]
+            _require_remote_task_id(
+                result, commission["task_id"], "SendMessage"
+            )
+            task_id = commission["task_id"]
             if result.get("deduplicated"):
                 log(f"task {task_id} deduplicated at state={result.get('state')}")
             else:
@@ -370,14 +619,7 @@ def main():
                     "endpoint": descriptor["endpoint"],
                 }, ensure_ascii=False))
                 return 0
-            base = {
-                "taskId": task_id,
-                "agent": args.agent,
-                "model_family": descriptor.get("model_family"),
-                "batch": envelope.get("batch"),
-                "role": envelope.get("role"),
-                "deliverable": envelope.get("deliverable"),
-            }
+            base = commissioned_base_record(descriptor, commission)
             record, _last = wait_for_terminal(
                 descriptor,
                 task_id,
@@ -390,10 +632,22 @@ def main():
             if record is None:
                 record = cancel_at_deadline(descriptor, task_id, args.transport_grace, base)
                 synth_run_meta(
-                    descriptor, record, args.state, effective_timeout_s=timeout_s
+                    descriptor, record, args.state, effective_timeout_s=timeout_s,
+                    commission=commission,
+                    locally_synthesized=(
+                        record.get("_harness_local_terminal")
+                        is _LOCAL_TERMINAL_MARKER
+                    ),
                 )
                 return deadline_exit_code(record)
-            synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+            synth_run_meta(
+                descriptor, record, args.state, effective_timeout_s=timeout_s,
+                commission=commission,
+                locally_synthesized=(
+                    record.get("_harness_local_terminal")
+                    is _LOCAL_TERMINAL_MARKER
+                ),
+            )
             return 0
 
         if not args.task:
@@ -404,33 +658,41 @@ def main():
             ))
             return 0
         if args.cmd == "get":
+            if not args.envelope:
+                raise ClientError("--envelope is required for get")
+            envelope, commission = load_commissioned_envelope(
+                descriptor, args.envelope, project_root=args.project_root
+            )
+            if args.task != commission["task_id"]:
+                raise ClientError("--task must equal the local envelope task_id")
             record = rpc(descriptor, "GetTask", {"taskId": args.task})
+            _require_remote_task_id(record, commission["task_id"], "GetTask")
             if record.get("state") in TERMINAL:
-                synth_run_meta(descriptor, record, args.state)
+                synth_run_meta(descriptor, record, args.state, commission=commission)
             else:
                 log(f"task {args.task} remains {record.get('state')}")
-                print(json.dumps({key: record.get(key) for key in
-                                  ("taskId", "state", "batch", "role",
-                                   "submitted_at", "started_at")}, ensure_ascii=False))
+                print(json.dumps({
+                    "taskId": commission["task_id"],
+                    "state": record.get("state"),
+                    "submitted_at": record.get("submitted_at"),
+                    "started_at": record.get("started_at"),
+                }, ensure_ascii=False))
             return 0
         if args.cmd == "subscribe":
-            envelope = _load_envelope(args.envelope) if args.envelope else None
+            if not args.envelope:
+                raise ClientError("--envelope is required for subscribe")
+            envelope_path = os.path.abspath(args.envelope)
+            envelope, commission = load_commissioned_envelope(
+                descriptor, envelope_path, project_root=args.project_root
+            )
+            if args.task != commission["task_id"]:
+                raise ClientError("--task must equal the local envelope task_id")
             timeout_s = effective_timeout(
-                envelope.get("deadline_s") if envelope else None,
+                envelope.get("deadline_s"),
                 descriptor.get("timeout_s"),
             )
             deadline = time.time() + timeout_s + args.transport_grace
-            base = {
-                "taskId": args.task,
-                "agent": args.agent,
-                "model_family": descriptor.get("model_family"),
-            }
-            if envelope:
-                base.update(
-                    batch=envelope.get("batch"),
-                    role=envelope.get("role"),
-                    deliverable=envelope.get("deliverable"),
-                )
+            base = commissioned_base_record(descriptor, commission)
             record, _last = wait_for_terminal(
                 descriptor,
                 args.task,
@@ -444,9 +706,23 @@ def main():
                 record = cancel_at_deadline(
                     descriptor, args.task, args.transport_grace, base
                 )
-                synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+                synth_run_meta(
+                    descriptor, record, args.state, effective_timeout_s=timeout_s,
+                    commission=commission,
+                    locally_synthesized=(
+                        record.get("_harness_local_terminal")
+                        is _LOCAL_TERMINAL_MARKER
+                    ),
+                )
                 return deadline_exit_code(record)
-            synth_run_meta(descriptor, record, args.state, effective_timeout_s=timeout_s)
+            synth_run_meta(
+                descriptor, record, args.state, effective_timeout_s=timeout_s,
+                commission=commission,
+                locally_synthesized=(
+                    record.get("_harness_local_terminal")
+                    is _LOCAL_TERMINAL_MARKER
+                ),
+            )
             return 0
     except (ClientError, DispatchContractError, urllib.error.URLError, OSError, ValueError) as exc:
         die(str(exc))

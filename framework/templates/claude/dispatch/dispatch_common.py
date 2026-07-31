@@ -13,10 +13,136 @@ from urllib.parse import unquote, urlparse
 MIN_TIMEOUT_S = 60
 MAX_TIMEOUT_S = 86400
 DEFAULT_TIMEOUT_S = 3600
+CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+POSIX_ENV_KEY = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+_PROTECTED_ENV_KEYS = {
+    "BASH_ENV",
+    "CDPATH",
+    "ENV",
+    "HOME",
+    "IFS",
+    "NODE_OPTIONS",
+    "NODE_PATH",
+    "PATH",
+    "PYTHONHOME",
+    "PYTHONPATH",
+    "PYTHONSTARTUP",
+    "SHELL",
+    "ZDOTDIR",
+    "ZSH_ENV",
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_COMMON_DIR",
+}
+# Configuration may name credentials to propagate into a constrained process,
+# but it may never replace the harness's Git execution contract.  Protect the
+# entire GIT_ namespace rather than only GIT_CONFIG_: variables such as
+# GIT_TERMINAL_PROMPT and GIT_OPTIONAL_LOCKS can alter the coordinator's
+# non-interactive and repository-safety guarantees too.
+_PROTECTED_ENV_PREFIXES = ("DYLD_", "GIT_", "HARNESS_", "LD_")
+A2A_AUTH_UNSET = object()
+A2A_BEARER_ENV_PREFIX = "REMOTE_A2A_"
 
 
 class DispatchContractError(ValueError):
     pass
+
+
+def external_environment_key(value, label):
+    """Validate a configuration-owned key before it can reach ``env -i``.
+
+    The sandbox owns PATH/HOME/SHELL/HARNESS/Git control variables itself. An
+    adapter or descriptor may request tool-specific authentication directories
+    such as CODEX_HOME or KIMI_*, but never process/bootstrap control knobs.
+    """
+    if not isinstance(value, str) or not POSIX_ENV_KEY.fullmatch(value):
+        raise DispatchContractError(f"{label} must be a POSIX environment variable name")
+    if value in _PROTECTED_ENV_KEYS or value.startswith(_PROTECTED_ENV_PREFIXES):
+        raise DispatchContractError(
+            f"{label} is protected by the harness process boundary: {value}"
+        )
+    return value
+
+
+def external_environment_allowlist(value, label):
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise DispatchContractError(f"{label} must be an array of environment variable names")
+    keys = []
+    seen = set()
+    for index, key in enumerate(value):
+        key = external_environment_key(key, f"{label}[{index}]")
+        if key in seen:
+            raise DispatchContractError(f"{label} contains duplicate key {key}")
+        seen.add(key)
+        keys.append(key)
+    return keys
+
+
+def external_environment_set(value, label):
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise DispatchContractError(f"{label} must be an object of string values")
+    result = {}
+    for key, item in value.items():
+        key = external_environment_key(key, f"{label}.{key}")
+        if not isinstance(item, str):
+            raise DispatchContractError(f"{label}.{key} must be a string")
+        result[key] = item
+    return result
+
+
+def a2a_bearer_environment_key(value, label):
+    """Return only a dedicated A2A credential variable name.
+
+    The client sends this value to a remote endpoint.  General host variables
+    that happen not to control the sandbox (for example OPENAI_API_KEY) still
+    must not become an exfiltration source through descriptor configuration.
+    """
+    key = external_environment_key(value, label)
+    if not key.startswith(A2A_BEARER_ENV_PREFIX) or len(key) == len(A2A_BEARER_ENV_PREFIX):
+        raise DispatchContractError(
+            f"{label} must use the dedicated {A2A_BEARER_ENV_PREFIX}* namespace"
+        )
+    return key
+
+
+def a2a_auth_config(value, label):
+    """Validate the only authentication configuration supported by A2A.
+
+    Descriptor JSON is configuration, not an authority to select arbitrary
+    process variables.  Keep the validation shared by registry preflight, the
+    console catalog, and direct-client use so a descriptor cannot be advertised
+    by one layer and rejected only after a task has been commissioned.
+    """
+    if value is A2A_AUTH_UNSET:
+        return {"type": "none"}
+    if not isinstance(value, dict):
+        raise DispatchContractError(f"{label} must be an object")
+
+    auth_type = value.get("type")
+    if auth_type == "none":
+        if set(value) != {"type"}:
+            raise DispatchContractError(
+                f"{label}.type=none must contain exactly the field 'type'"
+            )
+        return {"type": "none"}
+    if auth_type != "bearer":
+        raise DispatchContractError(
+            f"{label}.type must be 'none' or 'bearer'"
+        )
+
+    if set(value) != {"type", "env"}:
+        raise DispatchContractError(
+            f"{label}.type=bearer must contain exactly the fields 'type' and 'env'"
+        )
+    return {
+        "type": "bearer",
+        "env": a2a_bearer_environment_key(value["env"], f"{label}.env"),
+    }
 
 
 def bounded_seconds(value, field, *, default=None):
@@ -54,6 +180,32 @@ def _git_top_level(path):
     return os.path.realpath(proc.stdout.strip())
 
 
+def canonical_commit_sha(value):
+    if not isinstance(value, str) or not CANONICAL_COMMIT_SHA.fullmatch(value):
+        raise DispatchContractError(
+            "repo.ref must be a 40- or 64-character lowercase hexadecimal "
+            "immutable commit SHA"
+        )
+    return value
+
+
+def _verify_commit(repo, ref):
+    try:
+        resolved = subprocess.check_output(
+            ["git", "-C", repo, "rev-parse", "--verify", f"{ref}^{{commit}}"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        raise DispatchContractError(
+            f"repo.ref is not an available commit in the invocation repository: {ref}"
+        )
+    if resolved != ref:
+        raise DispatchContractError(
+            "repo.ref did not resolve to the exact canonical commit object ID"
+        )
+
+
 def _local_repo_path(url, cwd):
     if not isinstance(url, str) or not url.strip():
         raise DispatchContractError("repo.url is missing")
@@ -70,7 +222,8 @@ def _local_repo_path(url, cwd):
     return os.path.realpath(os.path.join(cwd, os.path.expanduser(url)))
 
 
-def verify_invocation_repo(repo_url, cwd):
+def verify_invocation_repo(repo_url, cwd, repo_ref):
+    repo_ref = canonical_commit_sha(repo_ref)
     invocation = _git_top_level(cwd)
     invocation_identity = invocation or f"<not a git repository: {os.path.realpath(cwd)}>"
     local_path = _local_repo_path(repo_url, cwd)
@@ -79,6 +232,7 @@ def verify_invocation_repo(repo_url, cwd):
             raise DispatchContractError(
                 "invocation repository is not a git repository: " + invocation_identity
             )
+        _verify_commit(invocation, repo_ref)
         return invocation
 
     target = _git_top_level(local_path)
@@ -88,6 +242,7 @@ def verify_invocation_repo(repo_url, cwd):
             "local repo.url does not match the invocation repository; "
             f"repo.url identity={target_identity}; invocation identity={invocation_identity}"
         )
+    _verify_commit(invocation, repo_ref)
     return invocation
 
 
@@ -103,7 +258,8 @@ def main():
         try:
             with open(args.envelope, encoding="utf-8") as fh:
                 envelope = json.load(fh)
-            print(verify_invocation_repo((envelope.get("repo") or {}).get("url"), args.cwd))
+            repo = envelope.get("repo") or {}
+            print(verify_invocation_repo(repo.get("url"), args.cwd, repo.get("ref")))
         except (OSError, ValueError, DispatchContractError) as exc:
             sys.stderr.write(f"[dispatch] repository preflight failed: {exc}\n")
             raise SystemExit(2)

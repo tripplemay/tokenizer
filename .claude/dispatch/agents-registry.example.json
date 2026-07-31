@@ -3,16 +3,36 @@
   "version": "dispatch/1",
   "agents": [
     {
-      "id": "main-claude",
+      "id": "planner-claude",
+      "tool": "claude-code",
+      "priority": 100,
       "roles": [
-        "planner",
+        "planner"
+      ],
+      "transport": "subagent",
+      "agent_type": "planner-proposal",
+      "model_family": "claude",
+      "capabilities": [
+        "plan"
+      ],
+      "constraints": {
+        "l2": false,
+        "write_src": false,
+        "push": false
+      },
+      "notes": "隔离的 proposal-only Planner。v2 非 fast 选择 claude-code + subagent 时必须启动它，返回 proposal 后由 Coordinator 转交人类确认。"
+    },
+    {
+      "id": "main-claude",
+      "tool": "claude-code",
+      "priority": 100,
+      "roles": [
         "generator"
       ],
       "transport": "subagent",
       "agent_type": "generator-restricted",
       "model_family": "claude",
       "capabilities": [
-        "plan",
         "build",
         "fix"
       ],
@@ -21,10 +41,12 @@
         "write_src": true,
         "push": true
       },
-      "notes": "本机主实例。⚠️ roles 不含 evaluator——快车道下主实例是「编排」隔离 evaluator subagent，自己并不承担该角色（铁律 4）。承担者是下面的 reviewer-claude"
+      "notes": "隔离 Generator。Coordinator 不是 registry 角色；Evaluator 由下方 reviewer-claude 独立承担（铁律 4）。"
     },
     {
       "id": "reviewer-claude",
+      "tool": "claude-code",
+      "priority": 100,
       "roles": [
         "evaluator"
       ],
@@ -45,6 +67,8 @@
     },
     {
       "id": "reviewer-codex",
+      "tool": "codex",
+      "priority": 100,
       "roles": [
         "evaluator"
       ],
@@ -73,6 +97,8 @@
     },
     {
       "id": "builder-codex",
+      "tool": "codex",
+      "priority": 100,
       "roles": [
         "generator"
       ],
@@ -100,6 +126,8 @@
     },
     {
       "id": "reviewer-kimi",
+      "tool": "kimi",
+      "priority": 100,
       "roles": [
         "evaluator"
       ],

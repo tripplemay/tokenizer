@@ -3,15 +3,28 @@
 ## 你是谁
 你是一个多角色协作编码系统的执行者。每次接手工作时，先读取 progress.json 判断当前阶段，再执行对应角色的指令文件。
 
-## 角色与执行形态（v1.0）
+## 角色与执行形态（v1.6）
 
-三个角色，两条执行车道。角色定义不变（无人评估自己的工作），执行形态随工具能力升级：
+三个可派发执行角色，加一个固定的 Coordinator 控制面。角色定义不变（无人评估自己的工作），
+执行形态随工具能力升级：
 
 | 角色 | 职责 | 快车道执行形态（默认） | 慢车道执行形态 |
 |---|---|---|---|
+| **Coordinator** | 验签、解析工具绑定、派活、校验产物、举闸门、取得人类确认后落盘 | 当前主会话，**固定且不可配置** | 同一固定控制面；不成为 Planner / Generator / Evaluator |
 | **Planner** | 需求拆解、规格文档、裁决、记忆维护 | 主上下文（建议配合 plan mode 确认规格） | 独立会话 |
 | **Generator** | 功能实现、修复 | 主上下文；独立 feature 可并行 subagent + worktree | 独立会话 |
 | **Evaluator** | 测试设计 + 执行 + 验收 + 复验 | **上下文隔离的 evaluator subagent**（fresh context） | 独立会话 / 独立实例（含外部工具） |
+
+**Coordinator 不是第四个可选 agent。** 它不进 `.agents-registry.json`、不出现在
+`role_assignments`、也不能写进签名的 mode intent。它只能运输和验证：当 v2 工具绑定存在时，
+Coordinator 不得自行替代所绑定的 Planner / Generator / Evaluator；Planner 的 proposal、Generator 的
+源码改动和 Evaluator 的结论都必须来自对应执行角色。只有 `fast`（bindings 为 null）和历史 v1
+无 Planner assignment 的本机默认路径，才保留主会话直接执行 Planner/Generator 的兼容行为。
+
+**控制台的 v2 选择从不暴露 agent id。** 人类为 Planner、Generator、Evaluator 分别签发稳定的
+`{tool, invocation}`；本机在下一次 `/plan` 边界用 registry + verified adapter 的候选池确定性解析具体
+descriptor，并只把该 id 写入 `progress.role_assignments` 作为运行审计。新增 CLI 只要提供通过核对的
+adapter 和角色 descriptor，就会自动进入同一目录、校验和解析规则；控制台不得维护工具白名单。
 
 **三条执行形态（v1.1）：**
 
@@ -23,7 +36,7 @@
 
 **形态选择规则（Planner 在 planning 末尾确认）：** 默认快车道。命中以下任一 → 升级形态：
 
-1. `role_assignments` 把某角色指派给了其他实例 → 查该实例 descriptor 的 `transport` 决定形态
+1. `role_assignments`（v2 解析后的内部审计数据）把某角色指派给了其他实例 → 查该实例 descriptor 的 `transport` 决定形态
 2. 批次预计跨多个工作日 / 多会话（大型重构、Path A 串行多批次）→ 慢车道
 3. 用户明确要求独立实例验收（正式发布批次建议）→ 慢车道
 4. 需要打破同模型盲区相关性（正式发布批次 / 自主无人值守）→ **本地异构**
@@ -151,6 +164,10 @@ evaluator: Reviewer
 ### 第二步：判断阶段与角色
 
 读取 progress.json（已确认为最新版本），获取 `status` 和 `role_assignments`。
+
+**Coordinator 例外：** 当前主会话作为 Coordinator 不需要也不得匹配 `role_assignments`。它可以启动
+`/plan`、`/build`、`/verify` 的编排入口，但当 v2 已解析某个角色时，只能按该 descriptor 的 transport
+派发并校验回执，不能自己完成该角色的业务工作或越过人类确认。独立执行实例仍按下述身份匹配规则工作。
 
 **角色判断逻辑：**
 

@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
-import { AGENT_FEATURE_VERSION, MIN_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import {
+  AGENT_FEATURE_VERSION,
+  MIN_AGENT_FEATURE_VERSION,
+  MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION,
+  requiredModeIntentAgentFeatureVersion
+} from "@/shared/agent-feature-version";
 
 const mocks = vi.hoisted(() => ({ findMany: vi.fn() }));
 
@@ -12,8 +18,8 @@ import { deviceAgentUpdateStatus, getAgentUpdateSummary, isDeviceOutdated } from
 
 describe("isDeviceOutdated", () => {
   it("advertises the Harness sync-health heartbeat capability level", () => {
-    expect(AGENT_FEATURE_VERSION).toBe(5);
-    expect(MIN_AGENT_FEATURE_VERSION).toBe(5);
+    expect(AGENT_FEATURE_VERSION).toBe(6);
+    expect(MIN_AGENT_FEATURE_VERSION).toBe(6);
   });
 
   it("AGENT_FEATURE_VERSION and MIN_AGENT_FEATURE_VERSION are positive integers", () => {
@@ -46,6 +52,17 @@ describe("isDeviceOutdated", () => {
   it("returns false for null and undefined (device hasn't reported yet)", () => {
     expect(isDeviceOutdated(null)).toBe(false);
     expect(isDeviceOutdated(undefined)).toBe(false);
+  });
+});
+
+describe("mode intent capability notices", () => {
+  it("shows the v6 threshold only for tool-binding compatibility failures", () => {
+    expect(requiredModeIntentAgentFeatureVersion("agentUpgradeRequired")).toBe(
+      MIN_MODE_INTENT_AGENT_FEATURE_VERSION
+    );
+    expect(requiredModeIntentAgentFeatureVersion("toolBindingAgentUpgradeRequired")).toBe(
+      MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+    );
   });
 });
 

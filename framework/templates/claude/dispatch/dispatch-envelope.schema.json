@@ -9,17 +9,25 @@
     "task_id": {
       "type": "string",
       "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$",
       "description": "幂等键。at-least-once 投递与超时重派的去重依据；同 task_id 重复派活必须被拒（沙箱以 worktree 同名冲突兜底）"
     },
     "contract_version": {
       "const": "harness/1.1",
       "description": "≈ A2A required profile extension。不认此契约版本的 agent 应当拒收整个任务，而不是尽力而为"
     },
-    "batch": { "type": "string", "minLength": 1, "description": "= progress.json.current_sprint" },
+    "batch": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "= progress.json.current_sprint；会进入受控 worktree、状态和 artifact 路径，必须是安全标识"
+    },
     "role": {
       "type": "string",
-      "enum": ["generator", "evaluator"],
-      "description": "本次派发的角色。必须在被派 agent 的 descriptor.roles 白名单内（validate-dispatch.sh assignments 校验）"
+      "enum": ["planner", "generator", "evaluator"],
+      "description": "本次派发的执行角色。Coordinator 不是可派发角色；被派 role 必须在 descriptor.roles 白名单内。Planner 只交付结构化 proposal，不得写状态或规格。"
     },
     "repo": {
       "type": "object",
@@ -28,7 +36,13 @@
       "description": "只传指针，不传内容——对方自行拉仓取证。这是 A2A Opaque Execution 与 harness「只认实物」的兼容解",
       "properties": {
         "url": { "type": "string", "description": "仓库地址；local-cli 下可为本地路径" },
-        "ref": { "type": "string", "minLength": 7, "description": "commit sha。锁定到 sha 而非分支名——验收对象必须是确定的一次快照" }
+        "ref": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64,
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "description": "canonical immutable commit object ID（SHA-1 40 位或 SHA-256 64 位，小写十六进制）。禁止分支、tag、短 SHA 与可变 ref。"
+        }
       }
     },
     "spec": { "type": ["string", "null"], "description": "规格文档路径（仓内相对路径）。Bug 修复批次可为 null" },
@@ -52,11 +66,80 @@
       "required": ["artifact", "schema"],
       "description": "唯一交付契约。「不信任对方守规矩，只信任产出能过 schema」",
       "properties": {
-        "artifact": { "type": "string", "description": "产物落盘路径（仓内相对），如 docs/test-reports/BL-XXX-verdict.json" },
+        "artifact": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "description": "产物落盘路径（仓内相对），如 docs/test-reports/BL-XXX-verdict.json；禁止绝对路径、空段、. / .. 和反斜杠"
+        },
         "schema": { "type": "string", "description": "产物必须满足的 schema 路径。不合规 → 机械拒收 → 重跑上限 1 次 → 硬停" },
         "commit_to": { "type": ["string", "null"], "description": "产物提交去向。外部实例恒为 null——由编排者校验 commit tag 归属后回流主仓（constraints.push=false）" }
       }
     },
     "deadline_s": { "type": "integer", "minimum": 60, "maximum": 86400, "description": "本任务的 wall-clock 硬上限；有效值为 min(deadline_s, descriptor.timeout_s)，缺省保持 descriptor 上限" }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "role": { "const": "planner" } },
+        "required": ["role"]
+      },
+      "then": {
+        "properties": {
+          "l2_authorized": { "const": false },
+          "deliverable": {
+            "required": ["artifact", "schema", "commit_to"],
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^docs/test-reports/planner-proposal-[A-Za-z0-9][A-Za-z0-9._-]{7,127}\\.json$"
+              },
+              "schema": {
+                "const": ".claude/dispatch/planner-proposal.schema.json"
+              },
+              "commit_to": { "const": null }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "role": { "const": "evaluator" } },
+        "required": ["role"]
+      },
+      "then": {
+        "properties": {
+          "deliverable": {
+            "required": ["artifact", "schema", "commit_to"],
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^docs/test-reports/[A-Za-z0-9][A-Za-z0-9._-]*-verdict\\.json$"
+              },
+              "schema": { "const": ".claude/autonomous/verdict-artifact.schema.json" },
+              "commit_to": { "const": null }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "role": { "const": "generator" } },
+        "required": ["role"]
+      },
+      "then": {
+        "properties": {
+          "deliverable": {
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^docs/test-reports/generator-handoff-[A-Za-z0-9][A-Za-z0-9._-]{7,127}\\.json$"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

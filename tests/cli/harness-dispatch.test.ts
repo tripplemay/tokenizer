@@ -132,6 +132,27 @@ describe("dispatch run summary collection", () => {
     expect(JSON.stringify(run)).not.toContain("Bearer");
   });
 
+  it("keeps a2a cancellation as a known terminal outcome with a fixed safe summary", () => {
+    write(".harness-dispatch/run-meta-task-canceled.json", JSON.stringify(meta("task-canceled", {
+      agent_id: "reviewer-kimi-a2a",
+      artifact: "",
+      outcome: "CANCELED",
+      exit_code: 0,
+      termination_reason: "remote operator message and private diagnostics"
+    })));
+
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    expect(run).toMatchObject({
+      role: "evaluator",
+      transport: "a2a",
+      outcome: "CANCELED",
+      verdict: null,
+      artifactPath: null,
+      errorSummary: "canceled"
+    });
+    expect(JSON.stringify(run)).not.toContain("remote operator");
+  });
+
   it("accepts only associated batches and refs that name commits in this repository", () => {
     write(".harness-dispatch/run-meta-wrong-batch.json", JSON.stringify(meta("wrong-batch", { batch: "BL-OTHER" })));
     write(".harness-dispatch/run-meta-wrong-ref.json", JSON.stringify(meta("wrong-ref", { ref: "f".repeat(40) })));

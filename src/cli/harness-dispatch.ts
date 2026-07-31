@@ -21,8 +21,8 @@ const FULL_SHA_PATTERN = /^[0-9a-fA-F]{40}$/;
 const SAFE_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 const SAFE_PATH_PATTERN = /^[A-Za-z0-9._/-]{1,512}$/;
 const UTC_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
-const KNOWN_OUTCOMES = new Set(["RETURNED", "FAILED", "TIMEOUT", "ARTIFACT_MISSING"]);
-const KNOWN_ROLES = new Set(["generator", "evaluator"]);
+const KNOWN_OUTCOMES = new Set(["RETURNED", "FAILED", "TIMEOUT", "CANCELED", "ARTIFACT_MISSING"]);
+const KNOWN_ROLES = new Set(["planner", "generator", "evaluator"]);
 const KNOWN_TRANSPORTS = new Set(["subagent", "local-cli", "a2a"]);
 
 type UnknownRecord = Record<string, unknown>;
@@ -273,6 +273,7 @@ function artifactFacts(
 function stableError(outcome: string, artifactPath: string | null): string | null {
   if (outcome === "FAILED") return "process_failed";
   if (outcome === "TIMEOUT") return "timeout";
+  if (outcome === "CANCELED") return "canceled";
   if (outcome === "ARTIFACT_MISSING") return "artifact_missing";
   if (outcome === "UNKNOWN") return "unknown_outcome";
   if (outcome === "RETURNED" && artifactPath === null) return "artifact_unavailable";

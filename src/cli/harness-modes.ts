@@ -1,6 +1,14 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { readDispatchToolCatalog } from "./harness-tool-catalog";
+import type { HarnessToolCatalogEntry } from "@/shared/harness-tool-catalog";
+import {
+  HARNESS_MODE_ROLES,
+  HARNESS_TRANSPORTS,
+  type HarnessModeRole,
+  type HarnessTransport
+} from "@/shared/harness-mode-intent";
 import { readPendingModeDefaults, type PendingModeDefaultsSummary } from "./harness-mode-intents";
 
 /**
@@ -29,8 +37,19 @@ export type FrameworkInfo = {
 export type ModeSnapshot = {
   framework: FrameworkInfo | null;
   execution: "fast" | "heterogeneous" | "slow" | "unknown";
+  current: {
+    profile: "heterogeneous" | "slow";
+    roleBindings: Record<HarnessModeRole, { tool: string; invocation: HarnessTransport; modelFamily: string }>;
+  } | null;
   autonomy: { enabled: boolean; policyValid: boolean | null; authorizedBy: string | null; expiresAt: string | null; status: string | null };
-  dispatch: { enabled: boolean; assignments: Record<string, string>; agents: DispatchAgent[]; familyExclusive: boolean | null; issues: string[] };
+  dispatch: {
+    enabled: boolean;
+    assignments: Record<string, string>;
+    agents: DispatchAgent[];
+    toolCatalog: DispatchToolCapability[];
+    familyExclusive: boolean | null;
+    issues: string[];
+  };
   gate: { pubInstalled: boolean; guardMode: "signature" | "head-compare"; pendingGateId: string | null };
   machinery: { denyListMerged: boolean | null; hooks: string[]; missing: string[] };
   pendingDefaults: PendingModeDefaultsSummary | null;
@@ -45,6 +64,8 @@ export type DispatchAgent = {
   sandboxed: boolean;
   capabilities: string[];
 };
+
+export type DispatchToolCapability = HarnessToolCatalogEntry;
 
 function readJson<T>(path: string): T | null {
   try {
@@ -147,7 +168,7 @@ function safeCapabilities(value: unknown): string[] {
 export function readDispatch(repoPath: string, assignments: Record<string, string>): ModeSnapshot["dispatch"] {
   const registry = readJson<Registry>(join(repoPath, ".agents-registry.json"));
   if (!registry?.agents) {
-    return { enabled: false, assignments: {}, agents: [], familyExclusive: null, issues: [] };
+    return { enabled: false, assignments: {}, agents: [], toolCatalog: [], familyExclusive: null, issues: [] };
   }
   const agents: DispatchAgent[] = registry.agents.map((a) => ({
     id: a.id ?? "",
@@ -177,7 +198,9 @@ export function readDispatch(repoPath: string, assignments: Record<string, strin
   for (const a of agents) {
     if (a.transport === "local-cli" && !a.sandboxed) issues.push(`${a.id} 是 local-cli 却没配 sandbox —— env 白名单形同虚设`);
   }
-  return { enabled: true, assignments, agents, familyExclusive, issues };
+  const catalog = readDispatchToolCatalog(repoPath);
+  if (catalog.issue) issues.push(catalog.issue);
+  return { enabled: true, assignments, agents, toolCatalog: catalog.entries, familyExclusive, issues };
 }
 
 // ── 机件在位 ─────────────────────────────────────────────────────────────────
@@ -219,25 +242,83 @@ export function readMachinery(repoPath: string): ModeSnapshot["machinery"] {
 // ── 汇总 ─────────────────────────────────────────────────────────────────────
 type Progress = {
   role_assignments?: Record<string, string>;
+  mode_intent?: unknown;
   autonomy?: { status?: string | null };
   pending_gate?: { id?: string } | null;
 };
+
+const CURRENT_TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const CURRENT_TRANSPORTS = new Set<string>(HARNESS_TRANSPORTS);
+
+function plainRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+}
+
+function boundedCurrentText(value: unknown, max: number): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized && normalized.length <= max && !/[\u0000-\u001f\u007f]/.test(normalized) ? normalized : null;
+}
+
+/**
+ * v2 resolution is the persisted audit fact after the framework maps a signed
+ * tool binding to local agent ids. Keep the ids only for consistency checking;
+ * the reported current mode remains tool-centric.
+ */
+function currentResolvedMode(
+  value: unknown,
+  assignments: Record<string, string>
+): ModeSnapshot["current"] {
+  const intent = plainRecord(value);
+  const resolution = plainRecord(intent?.resolution);
+  if (!resolution || Object.keys(resolution).length !== HARNESS_MODE_ROLES.length) return null;
+
+  const roleBindings = {} as NonNullable<ModeSnapshot["current"]>["roleBindings"];
+  for (const role of HARNESS_MODE_ROLES) {
+    const entry = plainRecord(resolution[role]);
+    if (!entry || Object.keys(entry).sort().join("\u0000") !== "agent_id\u0000invocation\u0000model_family\u0000priority\u0000tool") return null;
+    const agentId = boundedCurrentText(entry.agent_id, 128);
+    const tool = boundedCurrentText(entry.tool, 64);
+    const invocation = boundedCurrentText(entry.invocation, 32);
+    const modelFamily = boundedCurrentText(entry.model_family, 128);
+    if (
+      !agentId ||
+      assignments[role] !== agentId ||
+      !tool ||
+      !CURRENT_TOOL_ID.test(tool) ||
+      !invocation ||
+      !CURRENT_TRANSPORTS.has(invocation) ||
+      !modelFamily ||
+      typeof entry.priority !== "number" ||
+      !Number.isSafeInteger(entry.priority) ||
+      entry.priority < 0
+    ) return null;
+    roleBindings[role] = { tool, invocation: invocation as HarnessTransport, modelFamily };
+  }
+
+  const invocations = HARNESS_MODE_ROLES.map((role) => roleBindings[role].invocation);
+  if (invocations.includes("a2a")) return { profile: "slow", roleBindings };
+  return invocations.includes("local-cli") ? { profile: "heterogeneous", roleBindings } : null;
+}
 
 export function buildModeSnapshot(repoPath: string, now: number = Date.now()): ModeSnapshot {
   const progress = readJson<Progress>(join(repoPath, "progress.json")) ?? {};
   const assignments = progress.role_assignments ?? {};
   const dispatch = readDispatch(repoPath, assignments);
+  const current = currentResolvedMode(progress.mode_intent, assignments);
 
-  // 执行形态：被指派的角色里只要有一个走非 subagent transport，就是本地异构。
-  // 慢车道无法从文件推断（它是「跨会话/跨机器交接」这件事本身），故不猜。
-  let execution: ModeSnapshot["execution"] = "fast";
-  if (dispatch.enabled) {
+  // 已解析的 v2 binding 是当前配置的权威审计事实。旧项目没有它时才从
+  // role_assignments 回退推断；只要含 A2A，慢车道优先于 local-cli。
+  let execution: ModeSnapshot["execution"] = current?.profile ?? "fast";
+  if (!current && dispatch.enabled) {
     const byId = new Map(dispatch.agents.map((a) => [a.id, a]));
     const transports = Object.values(assignments)
       .map((id) => byId.get(id)?.transport)
       .filter(Boolean) as string[];
-    if (transports.some((t) => t === "local-cli")) execution = "heterogeneous";
-    else if (transports.some((t) => t === "a2a")) execution = "slow";
+    if (transports.some((t) => t === "a2a")) execution = "slow";
+    else if (transports.some((t) => t === "local-cli")) execution = "heterogeneous";
   }
 
   const policy = readJson<{ authorized_by?: string; expires_at?: string }>(join(repoPath, "autonomy-policy.json"));
@@ -248,6 +329,7 @@ export function buildModeSnapshot(repoPath: string, now: number = Date.now()): M
   return {
     framework: readFramework(repoPath, now),
     execution,
+    current,
     autonomy: {
       enabled: Boolean(policy),
       // 轻量判据：有 authorized_by=user 且未过期。权威判定是 validate-autonomy-policy.sh

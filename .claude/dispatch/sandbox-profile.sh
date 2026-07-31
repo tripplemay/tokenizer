@@ -36,17 +36,18 @@ STATE=".harness-dispatch"
 AGENT_ID=""
 ENVELOPE=""
 REF=""
+PROFILE=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --agent)    AGENT_ID="$2"; shift 2 ;;
-    --envelope) ENVELOPE="$2"; shift 2 ;;
-    --ref)      REF="$2"; shift 2 ;;
-    --registry) REGISTRY="$2"; shift 2 ;;
-    --adapters) ADAPTERS="$2"; shift 2 ;;
-    --timeout-helper) TIMEOUT_HELPER="$2"; shift 2 ;;
-    --workroot) WORKROOT="$2"; shift 2 ;;
-    --state)    STATE="$2"; shift 2 ;;
+    --agent)    [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --agent 缺值" >&2; exit 2; }; AGENT_ID="$2"; shift 2 ;;
+    --envelope) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --envelope 缺值" >&2; exit 2; }; ENVELOPE="$2"; shift 2 ;;
+    --ref)      [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --ref 缺值" >&2; exit 2; }; REF="$2"; shift 2 ;;
+    --registry) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --registry 缺值" >&2; exit 2; }; REGISTRY="$2"; shift 2 ;;
+    --adapters) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --adapters 缺值" >&2; exit 2; }; ADAPTERS="$2"; shift 2 ;;
+    --timeout-helper) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --timeout-helper 缺值" >&2; exit 2; }; TIMEOUT_HELPER="$2"; shift 2 ;;
+    --workroot) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --workroot 缺值" >&2; exit 2; }; WORKROOT="$2"; shift 2 ;;
+    --state)    [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --state 缺值" >&2; exit 2; }; STATE="$2"; shift 2 ;;
     *) echo "[sandbox] ⛔ 未知参数：$1" >&2; exit 2 ;;
   esac
 done
@@ -55,6 +56,8 @@ die() { echo "[sandbox] ⛔ $1" >&2; exit 2; }
 
 # ── 0. 前置断言（fail-closed：任一不满足即不派活）─────────────────────────
 [ -n "$AGENT_ID" ]   || die "缺 --agent"
+[[ "$AGENT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || \
+  die "--agent 必须是 1..128 位安全稳定标识"
 [ -n "$ENVELOPE" ]   || die "缺 --envelope"
 [ -f "$ENVELOPE" ]   || die "信封文件不存在：$ENVELOPE"
 [ -f "$REGISTRY" ]   || die "注册表不存在：${REGISTRY}（机件未装，不许开车）"
@@ -64,25 +67,47 @@ command -v git     >/dev/null 2>&1 || die "git 不可用"
 
 # repo.url 的本地目标身份必须在创建 workroot/state/clone/worktree 之前确定。
 ENVELOPE_ABS="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
+# dispatch-run.sh normally executes this check first, but sandbox-profile.sh is
+# also a supported direct entrypoint. Keep the same path contract here before
+# batch/task/artifact values can influence worktree, state, log, or artifact
+# locations.
+bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE_ABS" >&2 \
+  || die "信封校验未过，不创建沙箱"
 MAIN_REPO="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
   --envelope "$ENVELOPE_ABS" --cwd "$PWD")" || die "repo.url 前置校验未过，不创建沙箱"
 
-# ── 1. 解析 descriptor + adapter（合并为一份 shell 变量清单）───────────────
-eval "$(python3 - "$REGISTRY" "$AGENT_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" <<'PY'
-import json, sys, shlex, os
-reg_path, agent_id, adapters_dir, env_path, dispatch_dir = sys.argv[1:6]
+# ── 1. 解析 descriptor + adapter（受限 JSON 配置，绝不 eval）───────────────
+# Registry and adapter strings are untrusted at this direct entrypoint. Keep
+# them as JSON values, then read scalars/arrays without ever re-parsing them as
+# shell source. This is intentionally more verbose than a shell-code bridge: one bad
+# descriptor must be unable to execute in the Coordinator shell.
+PROFILE="$(mktemp)"
+cleanup_profile() { [ -z "$PROFILE" ] || rm -f "$PROFILE"; }
+trap cleanup_profile EXIT
+if ! python3 - "$REGISTRY" "$AGENT_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" "$PROFILE" <<'PY'
+import json, sys, os, re
+reg_path, agent_id, adapters_dir, env_path, dispatch_dir, output_path = sys.argv[1:7]
 sys.path.insert(0, dispatch_dir)
-from dispatch_common import DispatchContractError, effective_timeout
+from dispatch_common import (
+    DispatchContractError,
+    effective_timeout,
+    external_environment_allowlist,
+    external_environment_set,
+)
 
 def fail(msg):
-    print(f'echo "[sandbox] ⛔ {msg}" >&2; exit 2'); sys.exit(0)
+    print(f"[sandbox] ⛔ {msg}", file=sys.stderr)
+    raise SystemExit(2)
 
 try:
     reg = json.load(open(reg_path))
 except Exception as e:
     fail(f"注册表 JSON 非法：{e}")
 
-d = next((a for a in reg.get("agents", []) if a.get("id") == agent_id), None)
+agents = reg.get("agents")
+if not isinstance(agents, list):
+    fail("注册表 agents 必须为 array")
+d = next((a for a in agents if isinstance(a, dict) and a.get("id") == agent_id), None)
 if d is None:
     fail(f"注册表中无此 agent：{agent_id}")
 if d.get("transport") != "local-cli":
@@ -91,11 +116,43 @@ if d.get("transport") != "local-cli":
 adapter_name = d.get("adapter") or ""
 if not adapter_name:
     fail(f"{agent_id} 未声明 adapter")
+if not isinstance(adapter_name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", adapter_name):
+    fail(f"{agent_id} 的 adapter 必须是安全稳定标识")
 ad_path = os.path.join(adapters_dir, adapter_name + ".json")
 try:
     ad = json.load(open(ad_path))
 except Exception as e:
     fail(f"适配器不可读（{ad_path}）：{e}")
+if not isinstance(ad, dict):
+    fail(f"适配器必须是 object：{ad_path}")
+if ad.get("name") != adapter_name:
+    fail(f"适配器文件名 {adapter_name!r} 与 adapter.name={ad.get('name')!r} 不一致")
+if ad.get("_verified") is not True:
+    fail(f"适配器 {adapter_name!r} 未标记 _verified=true，不能执行")
+if ad.get("model_family") != d.get("model_family"):
+    fail(f"适配器 {adapter_name!r} model_family 与 descriptor 不一致")
+delivery = ad.get("envelope_delivery")
+if delivery not in ("stdin", "argv", "env"):
+    fail(f"适配器 {adapter_name!r}.envelope_delivery 必须为 stdin、argv 或 env")
+argv = ad.get("argv")
+if not isinstance(argv, list) or not argv or any(not isinstance(item, str) or not item for item in argv):
+    fail(f"适配器 {adapter_name!r}.argv 必须是非空 string array")
+adapter_tool = ad.get("tool", adapter_name)
+descriptor_tool = d.get("tool")
+if not isinstance(adapter_tool, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", adapter_tool):
+    fail(f"适配器 {adapter_name!r}.tool 必须是安全稳定标识")
+if descriptor_tool is not None and (
+    not isinstance(descriptor_tool, str)
+    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", descriptor_tool)
+    or descriptor_tool != adapter_tool
+):
+    fail(f"{agent_id} 的 tool 与适配器 {adapter_name!r} 的 tool 不一致")
+try:
+    adapter_env_allow = external_environment_allowlist(
+        ad.get("env_allowlist_extra"), f"adapter {adapter_name!r}.env_allowlist_extra"
+    )
+except DispatchContractError as e:
+    fail(str(e))
 
 try:
     env = json.load(open(env_path))
@@ -105,27 +162,48 @@ except Exception as e:
 batch    = env.get("batch") or fail("信封缺 batch")
 task_id  = env.get("task_id") or fail("信封缺 task_id（幂等键）")
 ref      = (env.get("repo") or {}).get("ref") or ""
+role     = env.get("role") or fail("信封缺 role")
+if role not in (d.get("roles") or []):
+    fail(f"{agent_id} 的 roles={d.get('roles')} 不含信封 role={role!r}")
+
+constraints = d.get("constraints") or {}
+if not isinstance(constraints, dict):
+    fail(f"{agent_id} 的 constraints 必须为 object")
+if role == "generator":
+    if constraints.get("write_src") is not True:
+        fail(f"local-cli Generator {agent_id!r} 必须 constraints.write_src=true")
+    if constraints.get("push") is not False:
+        fail(f"local-cli Generator {agent_id!r} 必须 constraints.push=false")
+    if constraints.get("l2") is not False:
+        fail(f"local-cli Generator {agent_id!r} 必须 constraints.l2=false")
 
 sb       = d.get("sandbox") or {}
+if not isinstance(sb, dict):
+    fail(f"{agent_id} 的 sandbox 必须为 object")
+try:
+    sandbox_env_allow = external_environment_allowlist(
+        sb.get("env_allow"), f"{agent_id}.sandbox.env_allow"
+    )
+    sandbox_env_set = external_environment_set(
+        sb.get("env_set"), f"{agent_id}.sandbox.env_set"
+    )
+except DispatchContractError as e:
+    fail(str(e))
 # 产物路径的优先级：**信封 > 适配器 > 默认约定**。
 # 信封是「这一次任务」的契约，适配器只是「这家 CLI」的默认约定 —— 契约必须压过约定。
 # 原实现只读适配器（默认 `<batch>-verdict.json`），于是 generator 派活（交 handoff 工件）
 # 的产物永远被判 ARTIFACT_MISSING：它按信封写在 handoff.json，沙箱却去找 verdict.json。
 # 实测踩到（BL-MODESCMD，Codex 写完代码交了 handoff，回执仍报「产物缺失」）。
 _dl = (env.get("deliverable") or {}).get("artifact")
-artifact = (_dl or ad.get("artifact_relpath") or "docs/test-reports/{{batch}}-verdict.json").replace("{{batch}}", batch)
+if not isinstance(_dl, str) or not _dl:
+    fail("信封 deliverable.artifact 缺失")
+artifact = _dl
 
-def emit(k, v): print(f"{k}={shlex.quote(str(v))}")
-emit("D_ADAPTER", adapter_name)
-emit("D_FAMILY", d.get("model_family", ""))
 try:
     timeout_cap = effective_timeout(None, d.get("timeout_s"))
     timeout = effective_timeout(env.get("deadline_s"), timeout_cap)
 except DispatchContractError as e:
     fail(str(e))
-emit("D_TIMEOUT_CAP", timeout_cap)
-emit("D_TIMEOUT", timeout)
-emit("E_DEADLINE", env.get("deadline_s", ""))
 # home_dir 必须展开 ~ 并绝对化。相对/未展开的 HOME 有两层危害（实测踩到）：
 # ① 子进程把 HOME 当相对路径 → 在 CWD 下造出字面量 `~/` 垃圾目录；
 # ② 下面的 dotfile fail-closed 断言会去检查一个**不存在的相对路径**，
@@ -137,29 +215,89 @@ if _home:
     if not (_home.startswith("/") or _home.startswith("~")):
         fail(f"sandbox.home_dir 必须以 / 或 ~ 开头（当前 {_home!r}）—— 相对路径会随 CWD 漂移")
     _home = os.path.abspath(os.path.expanduser(_home))
-emit("D_HOME", _home)
-emit("D_ENVELOPE_DELIVERY", ad.get("envelope_delivery", "stdin"))
-emit("D_WRITE_SRC", "1" if (d.get("constraints") or {}).get("write_src") else "")
-emit("E_BATCH", batch)
-emit("E_TASK_ID", task_id)
-emit("E_REF", ref)
-emit("E_ARTIFACT", artifact)
-# argv 模板与 env 白名单以 NUL 安全的换行分隔数组传出
-print("D_ARGV_TEMPLATE=(" + " ".join(shlex.quote(x) for x in ad.get("argv", [])) + ")")
 allow = ["PATH", "HOME", "LANG", "LC_ALL", "TERM", "TMPDIR", "USER", "SHELL"]
-allow += ad.get("env_allowlist_extra", []) + sb.get("env_allow", [])
+allow += adapter_env_allow + sandbox_env_allow
 seen, uniq = set(), []
 for k in allow:
     if k not in seen:
         seen.add(k); uniq.append(k)
-print("D_ENV_ALLOW=(" + " ".join(shlex.quote(x) for x in uniq) + ")")
-# env_set：字面注入的键值（~ 展开）。R1 缓解的正确形态——只注入该 CLI 的认证目录
-# （如 CODEX_HOME=~/.codex），而不是把整个真实 HOME 放进白名单连带暴露 ~/.aws 等。
-es = sb.get("env_set") or {}
-print("D_ENV_SET=(" + " ".join(
-    shlex.quote(f"{k}={os.path.expanduser(str(v))}") for k, v in es.items()) + ")")
+# env_set：字面注入的键值（~ 展开）。只注入该 CLI 的认证目录，
+# 而不是把整个真实 HOME 放进白名单连带暴露 ~/.aws 等。
+config = {
+    "adapter": adapter_name,
+    "family": d.get("model_family", ""),
+    "timeout_cap": timeout_cap,
+    "timeout": timeout,
+    "deadline": env.get("deadline_s", ""),
+    "home": _home,
+    "delivery": delivery,
+    "write_src": constraints.get("write_src") is True,
+    "batch": batch,
+    "task_id": task_id,
+    "ref": ref,
+    "role": env.get("role") or "",
+    "deliverable_json": json.dumps(env.get("deliverable") or {}, ensure_ascii=False, separators=(",", ":")),
+    "artifact": artifact,
+    "argv": argv,
+    "env_allow": uniq,
+    "env_set": [f"{key}={os.path.expanduser(value)}" for key, value in sandbox_env_set.items()],
+}
+json.dump(config, open(output_path, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 PY
-)"
+then
+  exit 2
+fi
+
+profile_scalar() {
+  python3 - "$PROFILE" "$1" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+value = data.get(sys.argv[2])
+if isinstance(value, bool):
+    print("true" if value else "false")
+elif value is None:
+    print("")
+else:
+    print(str(value))
+PY
+}
+
+profile_array() {
+  python3 - "$PROFILE" "$1" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+value = data.get(sys.argv[2])
+if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+    raise SystemExit("[sandbox] ⛔ 内部 profile array 非法")
+for item in value:
+    sys.stdout.buffer.write(item.encode("utf-8") + b"\0")
+PY
+}
+
+D_ADAPTER="$(profile_scalar adapter)"
+D_FAMILY="$(profile_scalar family)"
+D_TIMEOUT_CAP="$(profile_scalar timeout_cap)"
+D_TIMEOUT="$(profile_scalar timeout)"
+E_DEADLINE="$(profile_scalar deadline)"
+D_HOME="$(profile_scalar home)"
+D_ENVELOPE_DELIVERY="$(profile_scalar delivery)"
+D_WRITE_SRC="$(profile_scalar write_src)"
+E_BATCH="$(profile_scalar batch)"
+E_TASK_ID="$(profile_scalar task_id)"
+E_REF="$(profile_scalar ref)"
+E_ROLE="$(profile_scalar role)"
+E_DELIVERABLE="$(profile_scalar deliverable_json)"
+E_ARTIFACT="$(profile_scalar artifact)"
+D_ARGV_TEMPLATE=()
+while IFS= read -r -d '' item; do D_ARGV_TEMPLATE+=("$item"); done < <(profile_array argv)
+D_ENV_ALLOW=()
+while IFS= read -r -d '' item; do D_ENV_ALLOW+=("$item"); done < <(profile_array env_allow)
+D_ENV_SET=()
+while IFS= read -r -d '' item; do D_ENV_SET+=("$item"); done < <(profile_array env_set)
 
 [ -n "$REF" ] || REF="$E_REF"
 [ -n "$REF" ] || REF="$(git -C "$MAIN_REPO" rev-parse HEAD)"
@@ -177,7 +315,7 @@ WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${AGENT_ID}-${E_TASK_ID}"
 # 拿不到任何提交能力，只能交出未提交的改动。
 # 改用 `git clone --shared`：.git 落在沙箱目录内（可写），object 仍与主仓共享（不复制体积）。
 # 隔离性不降反升 —— 不再与主仓共用 .git，主仓连元数据都不会被碰。
-if [ -n "${D_WRITE_SRC:-}" ]; then
+if [ "${D_WRITE_SRC:-false}" = true ]; then
   git clone --shared --no-checkout "$MAIN_REPO" "$WT" >/dev/null 2>&1 \
     || die "沙箱克隆创建失败（ref=${REF}）"
   git -C "$WT" checkout --detach "$REF" >/dev/null 2>&1 \
@@ -225,12 +363,11 @@ ENV_ARGS+=("HOME=$D_HOME")
 echo "[sandbox] 专用 HOME: ${D_HOME}（已确认无 shell 初始化文件）" >&2
 ENV_ARGS+=("HARNESS_ENVELOPE=$ENVELOPE_ABS")
 ENV_ARGS+=("HARNESS_ARTIFACT=$E_ARTIFACT" "HARNESS_BATCH=$E_BATCH" "HARNESS_TASK_ID=$E_TASK_ID")
-# 主仓绝对路径：一次性工作目录里没有 node_modules 之类的依赖，而厂商沙箱可能禁网
-# （Codex 实测 npm ci 装不了）。与其让对方自己去猜，不如明确告诉它「同 HEAD 的依赖在这儿，
-# 只读复用」——实测中 Codex 正是自己摸到主仓 node_modules 才跑通 L1 的，且如实披露了。
-# ⚠️ 这不放宽任何权限：四道锁本来就不含文件系统隔离（§5.1），对方读得到主仓是既成事实；
-# 明写出来只是把「靠猜」变成「有契约」，并让它知道**不该写**这个路径。
-ENV_ARGS+=("HARNESS_MAIN_REPO=$MAIN_REPO" "HARNESS_EFFECTIVE_TIMEOUT_S=$D_TIMEOUT")
+# Do not disclose the Coordinator checkout path to external CLIs. local-cli
+# isolation is an env/worktree convention, not OS filesystem containment; an
+# adapter remains a verified/trusted integration and stronger isolation needs
+# an explicit host sandbox provider.
+ENV_ARGS+=("HARNESS_EFFECTIVE_TIMEOUT_S=$D_TIMEOUT")
 
 # ── 4. 渲染 argv 模板 ──────────────────────────────────────────────────────
 ARGV=()
@@ -267,17 +404,23 @@ wait_for_helper() {
 set +e
 # 子进程一律在 worktree 内启动（子 shell cd，不影响本脚本）。
 # 不依赖各家 CLI 的 --cd/-C 是否存在、是否被遵守；Kimi 无此类参数，完全靠这条。
-# 封顶对两种投递方式都必须生效——重定向套在 timeout 之外，stdin 透传给子进程，不影响封顶。
-if [ "$D_ENVELOPE_DELIVERY" = "stdin" ]; then
-  ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
-      --status-file "$TIMEOUT_STATUS" -- \
-      env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < "$ENVELOPE_ABS" > "$LOG" 2>&1 ) &
-else
-  # argv 投递：信封路径或内容已渲染进 argv，另有 HARNESS_ENVELOPE env 兜底
-  ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
-      --status-file "$TIMEOUT_STATUS" -- \
-      env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < /dev/null > "$LOG" 2>&1 ) &
-fi
+# 封顶对每种投递方式都必须生效。env 只通过 HARNESS_ENVELOPE 交付，argv
+# 只通过适配器模板交付；两者都不应意外继承调用方 stdin。
+case "$D_ENVELOPE_DELIVERY" in
+  stdin)
+    ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
+        --status-file "$TIMEOUT_STATUS" -- \
+        env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < "$ENVELOPE_ABS" > "$LOG" 2>&1 ) &
+    ;;
+  argv|env)
+    ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
+        --status-file "$TIMEOUT_STATUS" -- \
+        env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < /dev/null > "$LOG" 2>&1 ) &
+    ;;
+  *)
+    die "适配器 envelope_delivery 非法：$D_ENVELOPE_DELIVERY"
+    ;;
+esac
 HELPER_PID=$!
 wait_for_helper
 EXIT=$?
@@ -301,23 +444,29 @@ else                                                  OUTCOME="RETURNED"
 fi
 
 META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
-python3 - "$META" "$E_TASK_ID" "$AGENT_ID" "$D_ADAPTER" "$D_FAMILY" "$E_BATCH" \
-                  "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
-                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" <<'PY'
+python3 - "$META" "$E_TASK_ID" "$AGENT_ID" "$D_ADAPTER" "$D_FAMILY" "$E_ROLE" "$E_DELIVERABLE" \
+                  "$E_BATCH" "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
+                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" <<'PY'
 import json, sys
-p, task, agent, adapter, family, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason = sys.argv[1:17]
+p, task, agent, adapter, family, role, deliverable_json, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason, envelope_path = sys.argv[1:20]
+try:
+    deliverable = json.loads(deliverable_json)
+except (TypeError, ValueError):
+    deliverable = {}
 meta = {"task_id": task, "agent_id": agent, "adapter": adapter, "model_family": family,
+        "role": role, "deliverable": deliverable,
         "batch": batch, "ref": ref, "worktree": wt, "artifact": art, "log": log,
+        "envelope_path": envelope_path,
         "outcome": outcome, "exit_code": int(code), "duration_s": int(dur),
         "effective_timeout_s": int(effective), "descriptor_timeout_s": int(cap),
-        "termination_reason": reason}
+        "termination_reason": reason, "transport": "local-cli"}
 json.dump(meta, open(p, "w"), ensure_ascii=False, indent=2)
 print(json.dumps(meta, ensure_ascii=False))
 PY
 
 echo "[sandbox] outcome=$OUTCOME exit=$EXIT ${DURATION}s · log=$LOG" >&2
 # 清理命令按沙箱形态给：克隆是普通目录（worktree remove 对它无效，会报「不是 worktree」）
-if [ -n "${D_WRITE_SRC:-}" ]; then
+if [ "${D_WRITE_SRC:-false}" = true ]; then
   echo "[sandbox] 取证后清理：rm -rf '$WT'（write_src 用的是独立克隆，不是 worktree）" >&2
 else
   echo "[sandbox] 取证后清理：git worktree remove --force '$WT'" >&2

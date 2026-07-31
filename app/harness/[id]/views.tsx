@@ -5,6 +5,7 @@ import {
   MdComputer,
   MdDeviceHub,
   MdErrorOutline,
+  MdLock,
   MdMemory,
   MdOutlineShield,
   MdPendingActions,
@@ -18,9 +19,16 @@ import {
   parseHarnessDetailFeatures,
   parseHarnessDetailModes,
   type HarnessDesiredSummary,
+  type HarnessDetailAgent,
   type HarnessDetailModes
 } from "@/shared/harness-detail";
+import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-intent";
 import { formatDateTimeSeconds, formatRelativeTime } from "@/shared/format";
+import {
+  isConfigurableModeRole,
+  modeDrilldownHref,
+  type ModeDrilldownTarget
+} from "./mode-drilldown";
 import { ModeEditor } from "./mode-editor";
 
 const PHASES = ["new", "planning", "building", "verifying", "fixing", "reverifying", "done"] as const;
@@ -210,7 +218,9 @@ function ModeSummary({
         <dl className="mt-3 space-y-3">
           <Fact label={t("modes.execution")}>{t(`modes.profile.${summary.execution.profile}`)}</Fact>
           <Fact label={t("modes.roles")} mono>
-            {summary.execution.roleAssignments
+            {summary.execution.roleBindings
+              ? roleBindingSummary(summary.execution.roleBindings)
+              : summary.execution.roleAssignments
               ? `${summary.execution.roleAssignments.generator} → ${summary.execution.roleAssignments.evaluator}`
               : summary.execution.profile === "fast"
                 ? t("modes.defaultRoles")
@@ -226,14 +236,25 @@ function ModeSummary({
   );
 }
 
+function roleBindingSummary(bindings: NonNullable<HarnessDesiredSummary["execution"]["roleBindings"]>): string {
+  return ["planner", "generator", "evaluator"]
+    .map((role) => {
+      const binding = bindings[role as keyof typeof bindings];
+      return `${role}: ${binding.tool} · ${binding.invocation}${binding.modelFamily ? ` · ${binding.modelFamily}` : ""}`;
+    })
+    .join(" | ");
+}
+
 export async function ModesAndAgentsView({
   project,
   canSign,
-  timezone
+  timezone,
+  selectedFocus
 }: {
   project: OwnedHarnessProjectDetail;
   canSign: boolean;
   timezone: string;
+  selectedFocus: ModeDrilldownTarget | null;
 }) {
   const [t, statusT] = await Promise.all([
     getTranslations("harness.detail"),
@@ -250,7 +271,10 @@ export async function ModesAndAgentsView({
     modes,
     now: new Date()
   });
-  const editorAgents = modes?.dispatch.agentSnapshotUsable ? modes.dispatch.agents : [];
+  const editorTools = modes?.dispatch.toolCatalogUsable ? modes.dispatch.toolCatalog : [];
+  const selectedRole = isConfigurableModeRole(selectedFocus) ? selectedFocus : null;
+  const currentRoleBinding = selectedRole ? modes?.current?.roleBindings[selectedRole] ?? null : null;
+  const pendingRoleBinding = selectedRole ? modes?.pendingDefaults?.execution.roleBindings?.[selectedRole] ?? null : null;
 
   return (
     <div className="min-w-0 space-y-7">
@@ -274,30 +298,24 @@ export async function ModesAndAgentsView({
         <SectionTitle icon={MdSmartToy}>{t("modes.agents")}</SectionTitle>
         {modes?.dispatch.agents.length ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <CoordinatorCard projectId={project.id} selected={selectedFocus === "coordinator"} t={t} />
             {modes.dispatch.agents.map((agent) => (
-              <Card key={agent.id} extra="!rounded-lg border border-gray-200 !p-4 dark:border-white/10">
-                <div className="min-w-0 space-y-3">
-                  <div className="flex min-w-0 items-start gap-2">
-                    <MdMemory className="mt-0.5 h-5 w-5 shrink-0 text-brand-500" />
-                    <h3 className="min-w-0 break-all font-mono text-sm font-bold text-navy-700 dark:text-white">{agent.id}</h3>
-                  </div>
-                  <dl className="space-y-2 text-xs">
-                    <AgentFact label={t("modes.agent.roles")} value={agent.roles.join(", ") || t("notReported")} />
-                    <AgentFact label={t("modes.agent.capabilities")} value={agent.capabilities.join(", ") || t("notReported")} />
-                    <AgentFact label={t("modes.agent.modelFamily")} value={agent.modelFamily ?? t("notReported")} />
-                    <AgentFact label={t("modes.agent.transport")} value={agent.transport || t("notReported")} />
-                    <AgentFact label={t("modes.agent.adapter")} value={agent.adapter ?? t("notReported")} />
-                    <AgentFact
-                      label={t("modes.agent.sandbox")}
-                      value={agent.sandboxed === null ? statusT("health.unknown") : agent.sandboxed ? statusT("health.installed") : statusT("health.missing")}
-                    />
-                  </dl>
-                </div>
-              </Card>
+              <AgentCard
+                key={agent.id}
+                projectId={project.id}
+                agent={agent}
+                tools={editorTools}
+                selectedRole={selectedRole}
+                t={t}
+                statusT={statusT}
+              />
             ))}
           </div>
         ) : (
-          <p className="border-y border-gray-200 py-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{t("modes.noAgents")}</p>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <CoordinatorCard projectId={project.id} selected={selectedFocus === "coordinator"} t={t} />
+            <p className="border-y border-gray-200 py-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{t("modes.noAgents")}</p>
+          </div>
         )}
       </section>
 
@@ -319,8 +337,12 @@ export async function ModesAndAgentsView({
 
       <ModeEditor
         projectId={project.id}
-        agents={editorAgents}
+        tools={editorTools}
+        agentFeatureVersion={project.device.agentFeatureVersion}
         blocker={blocker}
+        selectedRole={selectedRole}
+        currentRoleBinding={currentRoleBinding}
+        pendingRoleBinding={pendingRoleBinding}
         currentIntent={activeIntent ? {
           intentId: activeIntent.intentId,
           status: activeIntent.status,
@@ -330,6 +352,112 @@ export async function ModesAndAgentsView({
         } : null}
       />
     </div>
+  );
+}
+
+function configurableRoles(agent: HarnessDetailAgent, tools: HarnessDetailModes["dispatch"]["toolCatalog"]): HarnessModeRole[] {
+  const availableRoles = new Set(tools.map((tool) => tool.role));
+  return HARNESS_MODE_ROLES.filter((role) => agent.roles.includes(role) && availableRoles.has(role));
+}
+
+function AgentCard({
+  projectId,
+  agent,
+  tools,
+  selectedRole,
+  t,
+  statusT
+}: {
+  projectId: string;
+  agent: HarnessDetailAgent;
+  tools: HarnessDetailModes["dispatch"]["toolCatalog"];
+  selectedRole: HarnessModeRole | null;
+  t: Translator;
+  statusT: Translator;
+}) {
+  const roles = configurableRoles(agent, tools);
+  return (
+    <Card extra="!rounded-lg border border-gray-200 !p-4 dark:border-white/10">
+      <div className="min-w-0 space-y-3">
+        <div className="flex min-w-0 items-start gap-2">
+          <MdMemory className="mt-0.5 h-5 w-5 shrink-0 text-brand-500" />
+          <h3 className="min-w-0 break-all font-mono text-sm font-bold text-navy-700 dark:text-white">{agent.id}</h3>
+        </div>
+        <dl className="space-y-2 text-xs">
+          <AgentFact label={t("modes.agent.roles")} value={agent.roles.join(", ") || t("notReported")} />
+          <AgentFact label={t("modes.agent.capabilities")} value={agent.capabilities.join(", ") || t("notReported")} />
+          <AgentFact label={t("modes.agent.modelFamily")} value={agent.modelFamily ?? t("notReported")} />
+          <AgentFact label={t("modes.agent.transport")} value={agent.transport || t("notReported")} />
+          <AgentFact label={t("modes.agent.adapter")} value={agent.adapter ?? t("notReported")} />
+          <AgentFact
+            label={t("modes.agent.sandbox")}
+            value={agent.sandboxed === null ? statusT("health.unknown") : agent.sandboxed ? statusT("health.installed") : statusT("health.missing")}
+          />
+        </dl>
+        {roles.length ? (
+          <nav aria-label={t("modes.agent.configureRoles", { agent: agent.id })} className="border-t border-gray-200 pt-3 dark:border-white/10">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t("modes.agent.configure")}</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {roles.map((role) => (
+                <Link
+                  key={role}
+                  href={modeDrilldownHref(projectId, role)}
+                  aria-current={selectedRole === role ? "location" : undefined}
+                  className={`inline-flex min-h-8 items-center rounded-md border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    selectedRole === role
+                      ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200"
+                      : "border-gray-200 text-brand-600 hover:bg-gray-50 dark:border-white/10 dark:text-brand-300 dark:hover:bg-white/5"
+                  }`}
+                >
+                  {t("modes.agent.configureRole", { role: t(`modes.role.${role}`) })}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        ) : (
+          <p className="border-t border-gray-200 pt-3 text-xs text-gray-500 dark:border-white/10 dark:text-gray-400">{t("modes.agent.noConfigurableRoles")}</p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function CoordinatorCard({ projectId, selected, t }: { projectId: string; selected: boolean; t: Translator }) {
+  return (
+    <Card
+      id="coordinator-details"
+      data-coordinator-readonly="true"
+      extra={`scroll-mt-6 !rounded-lg border !p-4 ${
+        selected
+          ? "border-brand-500 ring-2 ring-brand-500/20 dark:border-brand-300"
+          : "border-brand-200 dark:border-brand-500/30"
+      }`}
+    >
+      <div className="min-w-0 space-y-3">
+        <div className="flex min-w-0 items-start gap-2">
+          <MdLock className="mt-0.5 h-5 w-5 shrink-0 text-brand-500" />
+          <div className="min-w-0">
+            <h3 className="break-words text-sm font-bold text-navy-700 dark:text-white">{t("modes.coordinator.title")}</h3>
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{t("modes.coordinator.locked")}</p>
+          </div>
+        </div>
+        <dl className="space-y-2 text-xs">
+          <AgentFact label={t("modes.coordinator.assignment")} value={t("modes.coordinator.assignmentValue")} />
+          <AgentFact label={t("modes.coordinator.configuration")} value={t("modes.coordinator.configurationValue")} />
+          <AgentFact label={t("modes.coordinator.runtime")} value={t("modes.coordinator.runtimeValue")} />
+        </dl>
+        <div className="border-t border-brand-100 pt-3 dark:border-brand-500/20">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t("modes.coordinator.readOnlyReason")}</p>
+          <Link
+            href={modeDrilldownHref(projectId, "coordinator")}
+            aria-current={selected ? "location" : undefined}
+            className="mt-2 inline-flex min-h-8 items-center rounded-md border border-brand-200 px-2.5 py-1 text-xs font-semibold text-brand-600 transition hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-brand-500/30 dark:text-brand-300 dark:hover:bg-brand-500/10"
+          >
+            {t("modes.coordinator.openDetails")}
+          </Link>
+        </div>
+      </div>
+    </Card>
   );
 }
 

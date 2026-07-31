@@ -15,6 +15,7 @@ STATE="$REPO/.harness-dispatch"
 ADAPTERS="$TMP/adapters"
 SAFE_HOME="$TMP/sandbox-home"
 TASK="local-state-fixture"
+ARTIFACT_REL="docs/test-reports/BL-FIXTURE-verdict.json"
 mkdir -p "$REPO" "$ADAPTERS" "$SAFE_HOME"
 
 git -C "$REPO" init -q
@@ -30,7 +31,7 @@ cat > "$FAKE" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 mkdir -p "$(dirname "$HARNESS_ARTIFACT")"
-printf '{"created_at":"2026-07-27T00:00:00Z","waiting":null}\n' > "$HARNESS_ARTIFACT"
+printf '{"all_pass":true,"verdicts":[]}\n' > "$HARNESS_ARTIFACT"
 echo "fixture child output stays in the local log"
 SH
 chmod +x "$FAKE"
@@ -41,7 +42,8 @@ cat > "$ADAPTERS/fixture.json" <<JSON
   "model_family": "fixture",
   "argv": ["bash", "$FAKE"],
   "envelope_delivery": "stdin",
-  "artifact_relpath": "artifact.json"
+  "_verified": true,
+  "artifact_relpath": "$ARTIFACT_REL"
 }
 JSON
 
@@ -70,7 +72,7 @@ cat > "$REPO/envelope.json" <<JSON
   "repo": {"url": "$REPO", "ref": "$REF"},
   "l2_authorized": false,
   "contract": "Fixture evaluator contract long enough for the dispatch envelope validator.",
-  "deliverable": {"artifact": "artifact.json", "schema": "fixture.schema.json", "commit_to": null}
+  "deliverable": {"artifact": "$ARTIFACT_REL", "schema": ".claude/autonomous/verdict-artifact.schema.json", "commit_to": null}
 }
 JSON
 
@@ -97,11 +99,13 @@ printed = json.loads(stdout)
 stored = json.load(open(meta_path))
 assert printed == stored, "stdout and durable run-meta differ"
 assert stored["outcome"] == "RETURNED"
+assert stored["transport"] == "local-cli", "local sandbox metadata must name its transport"
 assert os.path.commonpath([stored["log"], workroot]) == os.path.abspath(workroot)
 assert os.path.isfile(stored["log"]), "local log missing from workroot"
 assert not glob.glob(os.path.join(state, "*.log")), "log leaked into durable state"
 print("ok 1 - local-cli stdout remains one run-meta JSON document")
 print("ok 2 - local-cli run-meta is durable in project state")
 print("ok 3 - local-cli log remains only in disposable workroot")
-print("1..3")
+print("ok 4 - local-cli run-meta names the transport for return validation")
+print("1..4")
 PY

@@ -19,7 +19,7 @@
 - 选中的条目从 backlog.json 中移除（未选的保留）
 - 如果 backlog 为空且无用户反馈，直接询问用户新需求
 
-**0c. 仅在新批次边界消费签名模式意图（v1.5）**
+**0c. 仅在新批次边界消费签名模式意图（v1.6）**
 
 `harness.json.project.mode_defaults` 是人类签发的**下一批次默认值**，不是立即调度命令。按以下顺序激活：
 
@@ -28,39 +28,61 @@
    batch；这些阶段不得运行消费步骤，不得改 `role_assignments`、`autonomy-policy.json` 或
    `progress.mode_intent`。若当前 `progress.mode_intent.intent_id` 已等于待消费的 `intent_id`，它已消费过，
    不得在后续批次重复应用。
-2. **机械验证完整意图。** 在项目根运行：
+2. **用原子消费者机械验证并消费完整意图。** 选定新 batch id 后，在项目根运行：
 
    ```bash
-   bash .claude/console/validate-mode-intent.sh harness.json .agents-registry.json
+   bash .claude/console/consume-mode-intent.sh --batch <new-batch-id>
    ```
 
-   脚本验证严格 shape、递归 canonical JSON Ed25519 签名、意图/自治绝对 UTC 有效期、`repo_key`
-   与规范化 origin 的身份一致性、Agent id/角色白名单、transport/profile 和 model family 互斥。
-   任一失败都 fail-closed，要求人类删除或重新签发；不可只套用部分字段。
+   它在临界区内一次读取 staged `harness.json`，验证严格 shape、递归 canonical JSON Ed25519 签名、意图/
+   自治绝对 UTC 有效期、`repo_key` 与规范化 origin 的身份一致性、角色/transport/profile 约束，然后从同一
+   已验签快照解析 registry + verified adapter。最后以 temp + fsync + rename 原子写 `progress.json`；任一失败
+   都 fail-closed，绝不只套用部分字段，也绝不重读可能已被下一批 staging 替换的 `harness.json`。
 
    **关键 phase rule：`intent.expected_head_sha` 只由 tokenizer device agent 在写入并提交
    `harness.json` 的前一刻与真实 HEAD 比较一次。** staging commit 本身会改变 HEAD，之后还可能有状态提交，
    因此 `/plan` 验证器绝对不得要求当前 HEAD 等于 `expected_head_sha`；此时该字段只是已完成 staging
    前置检查的签名审计元数据。
-3. **按新 batch id 物化。** `fast` 写 `progress.role_assignments=null`；`heterogeneous` / `slow`
-   原样复制 `intent.desired.execution.role_assignments`。`slow` 至少一方为 a2a，另一方可以是 local-cli。
+3. **消费者按新 batch id 物化，并区分 v1/v2。**
+   - **v1**（`execution.role_assignments`）：保持兼容。`fast` 写
+     `progress.role_assignments=null`；`heterogeneous` / `slow` 原样复制签名的 Generator/Evaluator
+     agent id。
+   - **v2**（`execution.role_bindings`）：`fast` 的 bindings 必为 null，保留 Coordinator 的本机默认
+     路径。非 fast 时消费者将三个 `agent_id` 写入 `progress.role_assignments`，并同时持久化
+     `progress.mode_intent.signed_intent`（**完整原始对象，含 `sig`**）与完整五字段
+     `progress.mode_intent.resolution`。前者是 active batch 的可复验锚点；后者和 assignments 只是审计
+     副本。运行中的 `/plan`、`/build`、`/verify`、autodrive 与 dispatch wrapper 必须调用
+     `resolve-active-mode-role.sh` / `validate-resolved-mode-bindings.sh`，从 checkpoint 重验后取得唯一
+     descriptor，绝不可从这些可变副本或新的 staged harness 选 agent。无候选、签名失效或任一漂移都硬停，
+     请人类重新配置或重新签发。
+
+     Coordinator 是当前主会话的固定控制面，不属于 registry、`role_assignments` 或签名 bindings。
+     它只负责验签、解析、派活、验证结构化产物、向人类转交问题/提案和在确认后落盘。若 Planner
+     绑定不是本机默认路径，Planner 只可交付 proposal；Coordinator 不得自行补写规划、越过 spec lock
+     或把自己替换成 Planner。
+
+   v2 的 profile 约束检查三角色：`heterogeneous` 不得含 a2a 且至少一方为 local-cli；`slow`
+   至少一方为 a2a。Generator / Evaluator 仍必须由 resolver 选为不同 model family；Planner 可重叠。
 4. **自治开启时**，以新 batch id 写 `autonomy-policy.json`：`enabled=true`、`batch_scope=<new batch>`、
    `authorized_by="user"`，并原样复制签名内的绝对 `expires_at`、`auto_cross`、`budget` 和可选
    `wake_interval_s` / `notify_on`。不得按当前时间续期。
 5. **自治关闭时**，`desired.autonomy` 必须严格等于 `{ "enabled": false }`。不要创建
    `enabled=false` 的 `autonomy-policy.json`（现有 policy schema 只接受有效授权）；这条签名人类意图同时授权
    Planner 删除上一批遗留的 `autonomy-policy.json`，确保新批次保持手动模式。
-6. **最后记录一次消费事实。** 选定新 batch id 后写：
+6. **记录消费事实。** 原子消费者写入；不要手工拼装或补写其中任一字段：
 
    ```json
    "mode_intent": {
      "intent_id": "<signed intent_id>",
      "applied_batch": "<new batch id>",
-     "applied_at": "<current UTC ISO8601>"
+     "applied_at": "<current UTC ISO8601>",
+     "signed_intent": "<仅 v2 non-fast：完整原始 signed intent，含 sig>",
+     "resolution": "<仅 v2 non-fast：三角色五字段解析快照>"
    }
    ```
 
-   不把签名对象拆进 progress；完整可复验原文仍在 `harness.json.project.mode_defaults.intent`。
+   `signed_intent` 不是把内部 agent id 回写到人类签名对象；它是消费当时的完整原文副本。后续
+   `harness.json.project.mode_defaults` 可以安全地为下一批替换，不能替换 active checkpoint。
 
 `mode_defaults` 不存在或同一 `intent_id` 已消费时，完整保留下文的本机手工选择流程；Harness 不依赖控制台在线。
 
@@ -139,7 +161,12 @@ executor:evaluator 的典型场景：压力测试执行、code review、安全�
 步骤 0c 已消费合法 intent 时，不再询问默认分配，直接使用其 execution 值。以下是没有新 intent 时的
 本机手工路径，行为保持不变。
 
-如果项目根目录存在 `.agents-registry` 文件，读取可用 agent 列表，在写入 progress.json 前向用户展示并询问：
+历史项目没有新的 mode intent 时，才保留以下本机手工路径。若项目根目录存在
+`.agents-registry` 文件，读取可用 descriptor；**不要在控制台或普通交互中让用户选择具体 agent id**。
+用户若明确要求某个 CLI，应选择稳定的工具名与调用方式，由 `tool-catalog.py` 的候选规则解析 id；
+`role_assignments` 只是解析后的运行审计数据。
+
+旧的纯 id 注册表仍可按兼容路径展示并询问：
 
 ```
 可用实例：
@@ -156,7 +183,8 @@ executor:evaluator 的典型场景：压力测试执行、code review、安全�
 
 **校验规则（写入前必须检查）：**
 - generator 和 evaluator 不能是同一执行上下文（同一实例 id 下 generator 主上下文 + evaluator 隔离 subagent 视为满足）
-- 外部工具类实例（非 Claude Code，如 Codex）只能被分配为 evaluator
+- 外部 local-cli 可承担 Planner proposal、Generator 或 Evaluator，但必须由 dispatcher、固定信封和
+  对应 artifact 校验接管；Planner 不得直接写规格/状态，Generator 必须走 handoff 回流，Evaluator 不得写产品代码
 - 指定的实例名必须在 `.agents-registry` 中存在
 
 `.agents-registry` 文件不存在 → 跳过此步骤，按默认映射。

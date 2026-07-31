@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "agents-registry",
-  "description": "dispatch-mode.md L1 —— harness 版 Agent Card（A2A Agent Card 的最小可用子集）。把 role_assignments 里的字符串 id 解析为「怎么找到它 + 能干什么 + 不许干什么」。`transport` 字段是车道的技术实现：subagent=快车道 · local-cli=本地异构 · a2a=跨机器（预留未实装）。",
+  "description": "dispatch-mode.md L1 —— harness 版 Agent Card（A2A Agent Card 的最小可用子集）。把 role_assignments 里的字符串 id 解析为「怎么找到它 + 能干什么 + 不许干什么」。`transport` 字段是车道的技术实现：subagent=快车道 · local-cli=本地异构 · a2a=已实装的远端 Planner/Evaluator transport；Generator 因未定义 source-handoff protocol 被拒。",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "agents"],
@@ -22,7 +22,22 @@
           "id": {
             "type": "string",
             "minLength": 1,
-            "description": "= progress.json.role_assignments 里引用的 id，也 = .agents-registry 历史格式里的 myId"
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "description": "= progress.json.role_assignments 里引用的 id，也 = .agents-registry 历史格式里的 myId。它会进入受控 shell 参数和 state 路径，故只允许稳定 ASCII 标识。"
+          },
+          "tool": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "description": "可选的稳定工具标识。优先于 local-cli adapter.tool / adapter.name；subagent 未声明时回退 claude-code；其他 transport 回退 model_family。控制台按此值展示和签发工具，而非 agent id。"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1000,
+            "description": "同一 role + tool + transport 候选池的确定性调度优先级；数值越小越优先，平局按 id 字典序。"
           },
           "roles": {
             "type": "array",
@@ -33,7 +48,7 @@
           "transport": {
             "type": "string",
             "enum": ["subagent", "local-cli", "a2a"],
-            "description": "subagent=同会话隔离 subagent · local-cli=独立进程（机件 #7 沙箱）· a2a=远程 A2A server（接口预留，未实装）"
+            "description": "subagent=同会话隔离 subagent · local-cli=独立进程（机件 #7 沙箱）· a2a=远程 A2A server（Planner/Evaluator 已实装；Generator 无 source-handoff protocol，registry 校验拒绝）"
           },
           "model_family": {
             "type": "string",
@@ -94,8 +109,19 @@
             "additionalProperties": false,
             "properties": {
               "type": { "type": "string", "enum": ["none", "bearer"] },
-              "env": { "type": "string", "description": "持有凭据的环境变量名（值不入 git）" }
-            }
+              "env": { "type": "string", "pattern": "^REMOTE_A2A_[A-Za-z0-9_]+$", "description": "持有编排端 A2A bearer 凭据的专用变量名（值不入 git）。只允许 REMOTE_A2A_*，防止 descriptor 将任意宿主密钥转发给远端；运行时还会拒绝所有 harness 受保护名称" }
+            },
+            "oneOf": [
+              {
+                "required": ["type"],
+                "properties": { "type": { "const": "none" } },
+                "not": { "required": ["env"] }
+              },
+              {
+                "required": ["type", "env"],
+                "properties": { "type": { "const": "bearer" } }
+              }
+            ]
           },
           "notes": { "type": "string" }
         },
@@ -112,8 +138,45 @@
             "then": { "required": ["endpoint"] }
           },
           {
+            "if": {
+              "properties": { "transport": { "not": { "const": "a2a" } } },
+              "required": ["transport"]
+            },
+            "then": { "not": { "required": ["auth"] } }
+          },
+          {
             "if": { "properties": { "transport": { "const": "subagent" } }, "required": ["transport"] },
             "then": { "required": ["agent_type"] }
+          },
+          {
+            "if": {
+              "properties": {
+                "transport": { "const": "a2a" },
+                "roles": { "contains": { "const": "generator" } }
+              },
+              "required": ["transport", "roles"]
+            },
+            "then": false
+          },
+          {
+            "if": {
+              "properties": {
+                "transport": { "const": "subagent" },
+                "roles": { "contains": { "const": "planner" } }
+              },
+              "required": ["transport", "roles"]
+            },
+            "then": {
+              "required": ["agent_type"],
+              "properties": {
+                "agent_type": { "const": "planner-proposal" },
+                "roles": {
+                  "minItems": 1,
+                  "maxItems": 1,
+                  "items": { "const": "planner" }
+                }
+              }
+            }
           }
         ]
       }

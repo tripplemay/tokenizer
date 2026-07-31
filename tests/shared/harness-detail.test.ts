@@ -7,14 +7,28 @@ import {
   parseHarnessDetailFeatures,
   parseHarnessDetailModes,
   type HarnessDetailAgent,
+  type HarnessDetailToolCapability,
   type HarnessModeEditorDraft
 } from "@/shared/harness-detail";
-import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import { toolCatalogLabelForInvocation } from "@/shared/harness-tool-catalog";
+import {
+  MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+} from "@/shared/agent-feature-version";
 
 const NOW = new Date("2026-07-27T12:00:00.000Z");
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
 
 const AGENTS: HarnessDetailAgent[] = [
+  {
+    id: "main-claude",
+    roles: ["planner", "generator"],
+    capabilities: ["plan", "build"],
+    modelFamily: "claude",
+    transport: "subagent",
+    adapter: null,
+    sandboxed: false
+  },
   {
     id: "builder-codex",
     roles: ["generator"],
@@ -44,6 +58,54 @@ const AGENTS: HarnessDetailAgent[] = [
   }
 ];
 
+const TOOLS: HarnessDetailToolCapability[] = [
+  {
+    tool: "claude-code",
+    label: "Claude Code",
+    invocation: "subagent",
+    role: "planner",
+    agentCount: 1,
+    modelFamilies: ["claude"],
+    capabilities: ["plan"]
+  },
+  {
+    tool: "codex",
+    label: "Codex",
+    invocation: "local-cli",
+    role: "generator",
+    agentCount: 1,
+    modelFamilies: ["codex"],
+    capabilities: ["build", "fix"]
+  },
+  {
+    tool: "kimi",
+    label: "Kimi",
+    invocation: "local-cli",
+    role: "planner",
+    agentCount: 1,
+    modelFamilies: ["kimi"],
+    capabilities: ["plan"]
+  },
+  {
+    tool: "kimi",
+    label: "Kimi",
+    invocation: "local-cli",
+    role: "evaluator",
+    agentCount: 1,
+    modelFamilies: ["kimi"],
+    capabilities: ["verify"]
+  },
+  {
+    tool: "kimi",
+    label: "Kimi Remote",
+    invocation: "a2a",
+    role: "evaluator",
+    agentCount: 1,
+    modelFamilies: ["kimi"],
+    capabilities: ["verify"]
+  }
+];
+
 function modeSnapshot() {
   return {
     framework: {
@@ -58,6 +120,7 @@ function modeSnapshot() {
       enabled: true,
       assignments: { generator: "builder-codex", evaluator: "reviewer-kimi" },
       agents: AGENTS,
+      toolCatalog: TOOLS,
       familyExclusive: true,
       issues: []
     },
@@ -69,8 +132,12 @@ function modeSnapshot() {
 function draft(overrides: Partial<HarnessModeEditorDraft> = {}): HarnessModeEditorDraft {
   return {
     profile: "fast",
-    generatorId: "",
-    evaluatorId: "",
+    plannerTool: "claude-code",
+    plannerInvocation: "subagent",
+    generatorTool: "codex",
+    generatorInvocation: "local-cli",
+    evaluatorTool: "kimi",
+    evaluatorInvocation: "local-cli",
     intentExpiresAt: "2026-07-28T12:00:00.000Z",
     autonomyEnabled: false,
     autonomyExpiresAt: "",
@@ -96,15 +163,25 @@ function expectCode(run: () => unknown, code: string) {
 }
 
 describe("Harness detail snapshot helpers", () => {
+  it("keeps labels scoped to the selected tool and invocation", () => {
+    expect(toolCatalogLabelForInvocation(TOOLS, "kimi", "local-cli")).toBe("Kimi");
+    expect(toolCatalogLabelForInvocation(TOOLS, "kimi", "a2a")).toBe("Kimi Remote");
+  });
+
   it("keeps legacy modes and agents readable when optional F004 fields are absent", () => {
     const snapshot = structuredClone(modeSnapshot());
     Reflect.deleteProperty(snapshot, "pendingDefaults");
-    Reflect.deleteProperty(snapshot.dispatch.agents[1], "capabilities");
+    Reflect.deleteProperty(snapshot.dispatch.agents[2], "capabilities");
     const parsed = parseHarnessDetailModes(snapshot);
     expect(parsed?.execution).toBe("heterogeneous");
     expect(parsed?.pendingDefaults).toBeNull();
     expect(parsed?.dispatch.agentSnapshotUsable).toBe(true);
-    expect(parsed?.dispatch.agents[1]).toMatchObject({ id: "reviewer-kimi", capabilities: [] });
+    expect(parsed?.dispatch.agents[2]).toMatchObject({ id: "reviewer-kimi", capabilities: [] });
+    expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
+    expect(parsed?.dispatch.toolCatalog.find((tool) => tool.tool === "claude-code")).toMatchObject({
+      label: "Claude Code",
+      capabilities: ["plan"]
+    });
   });
 
   it("does not invent assignments or transport for incomplete legacy snapshots", () => {
@@ -115,10 +192,38 @@ describe("Harness detail snapshot helpers", () => {
     const parsed = parseHarnessDetailModes(snapshot);
     expect(currentHarnessModeSummary(parsed)?.execution).toEqual({
       profile: "heterogeneous",
-      roleAssignments: null
+      roleAssignments: null,
+      roleBindings: null
     });
     expect(parsed?.dispatch.agents[1].transport).toBe("");
     expect(parsed?.dispatch.agentSnapshotUsable).toBe(false);
+  });
+
+  it("prefers the resolved v2 tool bindings over internal agent ids", () => {
+    const snapshot = structuredClone(modeSnapshot());
+    snapshot.execution = "slow";
+    Object.assign(snapshot, {
+      current: {
+        profile: "slow",
+        roleBindings: {
+          planner: { tool: "claude-code", invocation: "subagent", modelFamily: "claude" },
+          generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+          evaluator: { tool: "kimi", invocation: "a2a", modelFamily: "kimi" }
+        }
+      }
+    });
+
+    const summary = currentHarnessModeSummary(parseHarnessDetailModes(snapshot));
+    expect(summary?.execution).toEqual({
+      profile: "slow",
+      roleAssignments: null,
+      roleBindings: {
+        planner: { tool: "claude-code", invocation: "subagent", modelFamily: "claude" },
+        generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+        evaluator: { tool: "kimi", invocation: "a2a", modelFamily: "kimi" }
+      }
+    });
+    expect(JSON.stringify(summary)).not.toContain("builder-codex");
   });
 
   it("defensively drops malformed feature entries while retaining readable legacy fields", () => {
@@ -149,12 +254,18 @@ describe("Harness detail snapshot helpers", () => {
     expect(modeIssuanceBlocker({ ...ready, agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION - 1 })).toBe("agentUpgradeRequired");
     expect(modeIssuanceBlocker({ ...ready, headSha: "short" })).toBe("headNotFull");
     expect(modeIssuanceBlocker({ ...ready, modes: null })).toBe("agentSnapshotUnavailable");
+    expect(modeIssuanceBlocker({ ...ready, requiresToolBindings: true })).toBe("toolBindingAgentUpgradeRequired");
+    expect(modeIssuanceBlocker({
+      ...ready,
+      requiresToolBindings: true,
+      agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+    })).toBeNull();
   });
 });
 
 describe("Harness mode editor validation", () => {
-  it("sends null assignments for fast and explicit assignments for heterogeneous", () => {
-    const fast = buildModeIntentRequest("project-1", draft(), AGENTS, NOW);
+  it("keeps fast on v1 and sends v2 tool bindings for heterogeneous", () => {
+    const fast = buildModeIntentRequest("project-1", draft(), TOOLS, NOW);
     expect(fast).toEqual({
       projectId: "project-1",
       desired: { execution: { profile: "fast", role_assignments: null }, autonomy: { enabled: false } },
@@ -162,13 +273,15 @@ describe("Harness mode editor validation", () => {
     });
 
     const heterogeneous = buildModeIntentRequest("project-1", draft({
-      profile: "heterogeneous",
-      generatorId: "builder-codex",
-      evaluatorId: "reviewer-kimi"
-    }), AGENTS, NOW);
+      profile: "heterogeneous"
+    }), TOOLS, NOW);
     expect(heterogeneous.desired.execution).toEqual({
       profile: "heterogeneous",
-      role_assignments: { generator: "builder-codex", evaluator: "reviewer-kimi" }
+      role_bindings: {
+        planner: { tool: "claude-code", invocation: "subagent" },
+        generator: { tool: "codex", invocation: "local-cli" },
+        evaluator: { tool: "kimi", invocation: "local-cli" }
+      }
     });
   });
 
@@ -178,7 +291,7 @@ describe("Harness mode editor validation", () => {
       autonomyExpiresAt: "2026-07-29T12:00:00.000Z",
       autoCross: ["A", "B"],
       notifyOn: ["halt", "budget_80pct"]
-    }), AGENTS, NOW);
+    }), TOOLS, NOW);
     expect(request.desired.autonomy).toEqual({
       enabled: true,
       expires_at: "2026-07-29T12:00:00.000Z",
@@ -189,52 +302,68 @@ describe("Harness mode editor validation", () => {
     expect(request.desired.autonomy).not.toHaveProperty("wake_interval_s");
   });
 
-  it("rejects missing, duplicate, unknown, role-mismatched, and same-family agents", () => {
-    expectCode(() => buildModeIntentRequest("p", draft({ profile: "heterogeneous" }), AGENTS, NOW), "invalid_string");
+  it("keeps standard decimal USD input while rejecting non-cents values before a request", () => {
+    for (const [input, expected] of [["20", 20], ["20.50", 20.5], ["0.29", 0.29]] as const) {
+      const cents = buildModeIntentRequest("project-1", draft({
+        autonomyEnabled: true,
+        autonomyExpiresAt: "2026-07-29T12:00:00.000Z",
+        maxCostUsd: input
+      }), TOOLS, NOW);
+      expect(cents.desired.autonomy).toMatchObject({ budget: { max_cost_usd: expected } });
+    }
+
+    for (const maxCostUsd of ["-0", "0.000001", "1.234"]) {
+      expectCode(() => buildModeIntentRequest("project-1", draft({
+        autonomyEnabled: true,
+        autonomyExpiresAt: "2026-07-29T12:00:00.000Z",
+        maxCostUsd
+      }), TOOLS, NOW), "invalid_number");
+    }
+  });
+
+  it("rejects missing, unavailable, and non-independent tool bindings", () => {
     expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", generatorId: "builder-codex", evaluatorId: "builder-codex"
-    }), AGENTS, NOW), "duplicate_agent");
+      profile: "heterogeneous", plannerTool: ""
+    }), TOOLS, NOW), "invalid_string");
     expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", generatorId: "ghost", evaluatorId: "reviewer-kimi"
-    }), AGENTS, NOW), "unknown_agent");
-    expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", generatorId: "reviewer-kimi", evaluatorId: "builder-codex"
-    }), AGENTS, NOW), "role_not_allowed");
-    expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", generatorId: "builder-codex", evaluatorId: "reviewer-codex"
-    }), [...AGENTS, { ...AGENTS[1], id: "reviewer-codex", modelFamily: "codex" }], NOW), "same_model_family");
+      profile: "heterogeneous", evaluatorTool: "ghost"
+    }), TOOLS, NOW), "unknown_tool");
+    const sameFamilyTools = TOOLS.map((tool) =>
+      tool.role === "evaluator" ? { ...tool, modelFamilies: ["codex"] } : tool
+    );
+    expectCode(() => buildModeIntentRequest("p", draft({ profile: "heterogeneous" }), sameFamilyTools, NOW), "same_model_family");
   });
 
   it("enforces heterogeneous and slow transport constraints", () => {
     expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "heterogeneous", generatorId: "builder-codex", evaluatorId: "reviewer-kimi-a2a"
-    }), AGENTS, NOW), "profile_transport_mismatch");
+      profile: "heterogeneous", evaluatorInvocation: "a2a"
+    }), TOOLS, NOW), "profile_transport_mismatch");
     expectCode(() => buildModeIntentRequest("p", draft({
-      profile: "slow", generatorId: "builder-codex", evaluatorId: "reviewer-kimi"
-    }), AGENTS, NOW), "profile_transport_mismatch");
+      profile: "slow"
+    }), TOOLS, NOW), "profile_transport_mismatch");
 
     const slow = buildModeIntentRequest("p", draft({
-      profile: "slow", generatorId: "builder-codex", evaluatorId: "reviewer-kimi-a2a"
-    }), AGENTS, NOW);
+      profile: "slow", evaluatorInvocation: "a2a"
+    }), TOOLS, NOW);
     expect(slow.desired.execution.profile).toBe("slow");
   });
 
   it("rejects invalid or expired absolute dates and out-of-range budgets", () => {
-    expectCode(() => buildModeIntentRequest("p", draft({ intentExpiresAt: "" }), AGENTS, NOW), "invalid_timestamp");
-    expectCode(() => buildModeIntentRequest("p", draft({ intentExpiresAt: "2026-07-27T11:00:00.000Z" }), AGENTS, NOW), "expired_intent");
+    expectCode(() => buildModeIntentRequest("p", draft({ intentExpiresAt: "" }), TOOLS, NOW), "invalid_timestamp");
+    expectCode(() => buildModeIntentRequest("p", draft({ intentExpiresAt: "2026-07-27T11:00:00.000Z" }), TOOLS, NOW), "expired_intent");
     expectCode(() => buildModeIntentRequest("p", draft({
       autonomyEnabled: true,
       autonomyExpiresAt: "2026-07-27T11:00:00.000Z"
-    }), AGENTS, NOW), "expired_autonomy");
+    }), TOOLS, NOW), "expired_autonomy");
     expectCode(() => buildModeIntentRequest("p", draft({
       autonomyEnabled: true,
       autonomyExpiresAt: "2026-07-29T12:00:00.000Z",
       maxTokens: "10000001"
-    }), AGENTS, NOW), "invalid_number");
+    }), TOOLS, NOW), "invalid_number");
     expectCode(() => buildModeIntentRequest("p", draft({
       autonomyEnabled: true,
       autonomyExpiresAt: "2026-07-29T12:00:00.000Z",
       maxWakes: "1.5"
-    }), AGENTS, NOW), "invalid_number");
+    }), TOOLS, NOW), "invalid_number");
   });
 });

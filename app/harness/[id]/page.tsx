@@ -8,6 +8,7 @@ import { ownedHarnessProjectDetailQuery } from "@/server/harness-detail";
 import { signingKeyReady } from "@/server/harness-sign";
 import { getUserTimezone } from "@/server/timezone";
 import { AutoRefresh } from "../../_components/auto-refresh";
+import { modeDrilldownTarget } from "./mode-drilldown";
 import { ActivityView, ModesAndAgentsView, OverviewView } from "./views";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +38,7 @@ export default async function HarnessProjectDetailPage({
   if (!project) notFound();
 
   const view = selectedView(query.view);
+  const selectedFocus = modeDrilldownTarget(query.focus);
   const icons = {
     overview: MdSpaceDashboard,
     modes: MdSettingsSuggest,
@@ -89,7 +91,14 @@ export default async function HarnessProjectDetailPage({
       </nav>
 
       {view === "overview" ? <OverviewView project={project} timezone={timezone} /> : null}
-      {view === "modes" ? <ModesAndAgentsView project={project} canSign={signingKeyReady()} timezone={timezone} /> : null}
+      {view === "modes" ? (
+        <ModesAndAgentsView
+          project={project}
+          canSign={signingKeyReady()}
+          timezone={timezone}
+          selectedFocus={selectedFocus}
+        />
+      ) : null}
       {view === "activity" ? <ActivityView project={project} timezone={timezone} /> : null}
     </div>
   );

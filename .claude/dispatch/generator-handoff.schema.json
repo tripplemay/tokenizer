@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "generator handoff artifact",
-  "description": "dispatch-mode.md §6 —— 外部 generator 的交付契约。§6 规定产物是 worktree 里的提交，但信封 schema 必填 deliverable，此前 generator 派活因此无契约可填（v1.4.2 补）。\n\n这份工件**不是**代码本身，而是一张可与实物逐条对账的清单：编排者拿它去比对 git log 与 diff。它存在的理由是让「声称做了」与「实际做了」可机械比对 —— 外部实例说自己改了什么、跑了什么，回流时逐条核，对不上就拒收（§6 回流四步之一）。\n\n⚠️ 结论性字段（如「已充分测试」「可以合并」）刻意不设：外部 generator 无评估权，L1 是否真绿由编排者自己跑，不看它怎么说。\n\n⚠️ waiting 非空（被阻塞而停手）时不要求 features/commits —— 第一版把 commits 定成 minItems:1，结果外部 generator 被挡住无法提交时，如实上报的产物必然违反 schema、被机械拒收：**诚实反而受罚**（BL-MODESCMD 实测）。",
+  "description": "dispatch-mode.md §6 —— 外部 generator 的交付契约。代码以 sandbox 中的未提交 diff 交回；Coordinator 先把 diff 与本清单逐条对账、重跑 L1，再受控应用并提交。\n\n这份工件**不是**代码本身，而是一张可与实物逐条对账的清单：编排者拿它去比对 sandbox diff。它存在的理由是让「声称做了」与「实际做了」可机械比对 —— 外部实例说自己改了什么、跑了什么，回流时逐条核，对不上就拒收（§6 回流四步之一）。接受成功时，本 JSON 原样随 feature commit 进入 docs/test-reports/ 作为耐久审计证据。\n\n⚠️ 结论性字段（如「已充分测试」「可以合并」）刻意不设：外部 generator 无评估权，L1 是否真绿由编排者自己跑，不看它怎么说。\n\n⚠️ waiting 非空（被阻塞而停手）时不要求 features/commits —— 第一版把 commits 定成 minItems:1，结果外部 generator 被挡住无法提交时，如实上报的产物必然违反 schema、被机械拒收：**诚实反而受罚**（BL-MODESCMD 实测）。",
   "type": "object",
   "additionalProperties": false,
   "required": [

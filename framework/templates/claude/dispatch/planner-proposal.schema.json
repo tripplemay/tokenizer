@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "planner proposal artifact",
+  "description": "A Planner may propose a batch plan or an adjudication, but never apply it. The Coordinator validates this artifact, presents it to the human, and only materializes accepted changes into spec/features/progress. This artifact intentionally has no path, commit, mode-intent, or state-transition fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_version",
+    "task_id",
+    "batch_id",
+    "source_ref",
+    "kind",
+    "created_at",
+    "summary",
+    "questions",
+    "spec",
+    "features",
+    "decisions",
+    "waiting"
+  ],
+  "properties": {
+    "proposal_version": {
+      "const": "planner-proposal/1"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Must equal the dispatch envelope task_id."
+    },
+    "batch_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Must equal the dispatch envelope batch."
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+      "description": "Must equal the immutable repository ref from the dispatch envelope."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["batch_plan", "adjudication"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "question", "blocking"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "question": { "type": "string", "minLength": 1 },
+          "blocking": { "type": "boolean" },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": ["object", "null"],
+      "description": "A proposed specification. The Coordinator, not the Planner, writes it after human confirmation.",
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "markdown": { "type": "string", "minLength": 1 }
+      },
+      "required": ["title", "markdown"],
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "priority", "executor", "acceptance"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+          "executor": { "type": "string", "enum": ["generator", "evaluator"] },
+          "acceptance": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "resolution", "rationale", "affected_paths"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "resolution": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "affected_paths": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "waiting": {
+      "type": ["string", "null"],
+      "enum": ["input", null],
+      "description": "Use input when a human decision or missing requirement prevents a complete proposal."
+    },
+    "waiting_detail": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "waiting": { "const": "input" } },
+        "required": ["waiting"]
+      },
+      "then": {
+        "required": ["waiting_detail"]
+      },
+      "else": {
+        "not": { "required": ["waiting_detail"] }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": { "const": "batch_plan" },
+          "waiting": { "const": null }
+        },
+        "required": ["kind", "waiting"]
+      },
+      "then": {
+        "properties": {
+          "spec": { "type": "object" },
+          "features": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": { "const": "adjudication" },
+          "waiting": { "const": null }
+        },
+        "required": ["kind", "waiting"]
+      },
+      "then": {
+        "properties": {
+          "decisions": { "minItems": 1 }
+        }
+      }
+    }
+  ]
+}

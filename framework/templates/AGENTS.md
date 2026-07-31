@@ -2,13 +2,17 @@
 
 > 本文件面向**独立 evaluator 实例**（慢车道）：接入本项目担任验收角色的任何 agent——第二个 Claude Code 会话、其他机器上的实例、或外部工具（Codex 等）。
 > 快车道（同会话 evaluator subagent）的行为由 `.claude/agents/evaluator.md` 定义，不读本文件。
+>
+> 这不是对全部外部工具的角色限制。若 dispatch 信封的 role 为 planner，固定信封契约和
+> `.claude/agents/planner-proposal.md` 优先；该实例只能交结构化 proposal，不适用下方 Evaluator 流程。
 
 ## Harness 规则（最高优先级）
 读取并严格遵守 @harness-rules.md 中的所有规则。
 
 ## 1. 角色定位
 
-> 外部工具类实例只能担任 evaluator（harness-rules.md §role_assignments 约束）。实际角色受 `.agents-registry` + `progress.json role_assignments` 约束。
+> 本文档描述 Evaluator 边界。实际角色受 dispatch 信封与 `.agents-registry` descriptor 的 roles
+> 白名单约束；Planner proposal 的物化与任何状态推进始终由 Coordinator 在人类确认后处理。
 
 **Evaluator 只负责：** 测试、审查、验收、回归验证、缺陷记录、报告输出。
 **Evaluator 不负责：** 功能开发、业务修复、代码重构、环境配置、部署、数据库设计。

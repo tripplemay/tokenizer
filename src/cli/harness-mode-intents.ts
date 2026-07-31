@@ -3,8 +3,10 @@ import { createPublicKey, verify as edVerify } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { writeFileAtomic, withFileLock } from "./atomic-file";
+import { readDispatchToolCatalog } from "./harness-tool-catalog";
 import { canonicalJson } from "@/server/harness-sign";
 import {
+  HARNESS_MODE_ROLES,
   normalizeHarnessRepoKey,
   validateHarnessModeIntentPayload,
   type HarnessModeAgentDescriptor,
@@ -12,6 +14,7 @@ import {
   type HarnessSignedModeIntent,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
+import { toolCatalogModeDescriptors } from "@/shared/harness-tool-catalog";
 
 const HEAD_SHA_PATTERN = /^[0-9a-f]{40}$/;
 const UTC_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
@@ -61,6 +64,11 @@ export type PendingModeDefaultsSummary = {
   execution: {
     profile: "fast" | "heterogeneous" | "slow";
     roleAssignments: { generator: string; evaluator: string } | null;
+    roleBindings: {
+      planner: { tool: string; invocation: HarnessTransport };
+      generator: { tool: string; invocation: HarnessTransport };
+      evaluator: { tool: string; invocation: HarnessTransport };
+    } | null;
   };
   autonomy: { enabled: boolean; expiresAt: string | null };
 };
@@ -191,16 +199,21 @@ export function verifySignedModeIntent(repoPath: string, intent: HarnessSignedMo
   }
 }
 
-function readRegistryAgents(repoPath: string): HarnessModeAgentDescriptor[] | undefined {
+function readRegistryModeContext(repoPath: string): {
+  agents: HarnessModeAgentDescriptor[] | undefined;
+  tools: ReturnType<typeof toolCatalogModeDescriptors> | undefined;
+} {
   let value: unknown;
   try {
     value = JSON.parse(readFileSync(join(repoPath, ".agents-registry.json"), "utf8"));
   } catch {
-    return undefined;
+    return { agents: undefined, tools: undefined };
   }
   const registry = record(value);
-  if (!registry || !Array.isArray(registry.agents) || registry.agents.length > 50) return undefined;
-  return registry.agents.map((rawAgent) => {
+  if (!registry || !Array.isArray(registry.agents) || registry.agents.length > 50) {
+    return { agents: undefined, tools: undefined };
+  }
+  const agents = registry.agents.map((rawAgent) => {
     const agent = record(rawAgent) ?? {};
     return {
       id: typeof agent.id === "string" ? agent.id : "",
@@ -209,6 +222,14 @@ function readRegistryAgents(repoPath: string): HarnessModeAgentDescriptor[] | un
       model_family: typeof agent.model_family === "string" ? agent.model_family : ""
     };
   });
+  const catalog = readDispatchToolCatalog(repoPath);
+  const catalogIsComplete = HARNESS_MODE_ROLES.every((role) =>
+    catalog.entries.some((entry) => entry.role === role)
+  );
+  return {
+    agents,
+    tools: catalog.issue || !catalogIsComplete ? undefined : toolCatalogModeDescriptors(catalog.entries)
+  };
 }
 
 function failure(item: RelayedModeIntent, now: Date, failureCode: string): StagedModeIntentResult {
@@ -292,10 +313,8 @@ export function stageHarnessModeIntent(
   if (!verifySignedModeIntent(repo.path, item.intent)) return failure(item, now, "invalid_signature");
 
   const { sig: _sig, ...rawPayload } = item.intent;
-  const validation = validateHarnessModeIntentPayload(rawPayload, {
-    now,
-    agents: readRegistryAgents(repo.path)
-  });
+  const registry = readRegistryModeContext(repo.path);
+  const validation = validateHarnessModeIntentPayload(rawPayload, { now, ...registry });
   if (validation.ok === false) return failure(item, now, validation.error.code);
   if (Date.parse(validation.value.issued_at) > now.getTime()) {
     return failure(item, now, "intent_not_yet_valid");
@@ -466,7 +485,8 @@ function readValidatedDefaults(
   const signed = intent as HarnessSignedModeIntent;
   if (!verifySignedModeIntent(repoPath, signed)) return null;
   const { sig: _sig, ...payload } = signed;
-  const validation = validateHarnessModeIntentPayload(payload, { now, agents: readRegistryAgents(repoPath) });
+  const registry = readRegistryModeContext(repoPath);
+  const validation = validateHarnessModeIntentPayload(payload, { now, ...registry });
   if (validation.ok === false || Date.parse(validation.value.issued_at) > now.getTime()) return null;
   try {
     const currentRepoKey = normalizeHarnessRepoKey(git(["remote", "get-url", "origin"], repoPath));
@@ -477,9 +497,21 @@ function readValidatedDefaults(
   return { payload: validation.value, stagedAt: defaults.staged_at };
 }
 
+function consumedModeIntentId(repoPath: string): string | null {
+  try {
+    const progress = record(JSON.parse(readFileSync(join(repoPath, "progress.json"), "utf8")));
+    return boundedString(record(progress?.mode_intent)?.intent_id, 128);
+  } catch {
+    return null;
+  }
+}
+
 export function readPendingModeDefaults(repoPath: string, now: Date = new Date()): PendingModeDefaultsSummary | null {
   const defaults = readValidatedDefaults(repoPath, now);
   if (!defaults) return null;
+  // The framework retains the signed intent as an audit record after /plan
+  // consumes it. It must not continue to appear as a next-plan default.
+  if (consumedModeIntentId(repoPath) === defaults.payload.intent_id) return null;
   const execution = defaults.payload.desired.execution;
   const autonomy = defaults.payload.desired.autonomy;
   return {
@@ -488,8 +520,15 @@ export function readPendingModeDefaults(repoPath: string, now: Date = new Date()
     intentExpiresAt: defaults.payload.intent_expires_at,
     execution: {
       profile: execution.profile,
-      roleAssignments: execution.role_assignments
+      roleAssignments: "role_assignments" in execution && execution.role_assignments
         ? { generator: execution.role_assignments.generator, evaluator: execution.role_assignments.evaluator }
+        : null,
+      roleBindings: "role_bindings" in execution && execution.role_bindings
+        ? {
+            planner: execution.role_bindings.planner,
+            generator: execution.role_bindings.generator,
+            evaluator: execution.role_bindings.evaluator
+          }
         : null
     },
     autonomy: {

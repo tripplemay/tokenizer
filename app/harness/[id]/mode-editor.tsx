@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
+import { useEffect, useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MdDeleteOutline, MdSend } from "react-icons/md";
@@ -11,18 +11,30 @@ import {
   HARNESS_AUTONOMY_LIMITS,
   HarnessModeEditorValidationError,
   buildModeIntentRequest,
-  type HarnessDetailAgent,
+  type HarnessDetailToolCapability,
   type HarnessModeIssuanceBlocker
 } from "@/shared/harness-detail";
-import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import {
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION,
+  requiredModeIntentAgentFeatureVersion
+} from "@/shared/agent-feature-version";
 import {
   HARNESS_AUTONOMY_GATES,
   HARNESS_AUTONOMY_NOTIFICATIONS,
   HARNESS_EXECUTION_PROFILES,
   type HarnessAutonomyGate,
   type HarnessAutonomyNotification,
-  type HarnessExecutionProfile
+  type HarnessExecutionProfile,
+  type HarnessModeRole,
+  type HarnessTransport
 } from "@/shared/harness-mode-intent";
+import { toolCatalogLabelForInvocation } from "@/shared/harness-tool-catalog";
+import {
+  MODE_EDITOR_ANCHOR,
+  modeEditorFocusRegion,
+  modeEditorFocusTarget,
+  modeEditorInitialProfile
+} from "./mode-drilldown";
 
 type PendingIntent = {
   intentId: string;
@@ -31,6 +43,12 @@ type PendingIntent = {
   intentExpiresAt: string;
   canCancel: boolean;
 };
+
+type RoleBindingContext = {
+  tool: string;
+  invocation: HarnessTransport;
+  modelFamily?: string;
+} | null;
 
 const ERROR_KEYS: Record<string, string> = {
   invalid_project: "invalidProject",
@@ -44,6 +62,9 @@ const ERROR_KEYS: Record<string, string> = {
   same_model_family: "sameFamily",
   invalid_transport: "transportMismatch",
   profile_transport_mismatch: "transportMismatch",
+  invalid_bindings: "toolBindingInvalid",
+  missing_tool_catalog: "toolCatalogUnavailable",
+  unknown_tool: "toolUnavailable",
   invalid_timestamp: "invalidDate",
   expired_intent: "expiredIntent",
   invalid_expiry: "expiredIntent",
@@ -55,8 +76,10 @@ const ERROR_KEYS: Record<string, string> = {
   duplicate_notification: "invalidNotification",
   stale_report: "reportStale",
   agent_upgrade_required: "agentUpgradeRequired",
+  tool_binding_agent_upgrade_required: "toolBindingAgentUpgradeRequired",
   invalid_project_head: "headNotFull",
   invalid_mode_snapshot: "agentSnapshotUnavailable",
+  invalid_tool_catalog: "toolCatalogUnavailable",
   signing_unavailable: "signingKeyUnavailable",
   invalid_transition: "cannotCancel",
   state_conflict: "stateConflict"
@@ -80,24 +103,37 @@ const INPUT =
 
 export function ModeEditor({
   projectId,
-  agents,
+  tools,
+  agentFeatureVersion,
   blocker,
+  selectedRole,
+  currentRoleBinding,
+  pendingRoleBinding,
   currentIntent
 }: {
   projectId: string;
-  agents: HarnessDetailAgent[];
+  tools: HarnessDetailToolCapability[];
+  agentFeatureVersion: number | null;
   blocker: HarnessModeIssuanceBlocker | null;
+  selectedRole: HarnessModeRole | null;
+  currentRoleBinding: RoleBindingContext;
+  pendingRoleBinding: RoleBindingContext;
   currentIntent: PendingIntent | null;
 }) {
   const t = useTranslations("harness.editor");
   const statusT = useTranslations("harness.status.intent");
   const router = useRouter();
   const [refreshing, startTransition] = useTransition();
-  const generators = agents.filter((agent) => agent.roles.includes("generator"));
-  const evaluators = agents.filter((agent) => agent.roles.includes("evaluator"));
-  const [profile, setProfile] = useState<HarnessExecutionProfile>("fast");
-  const [generatorId, setGeneratorId] = useState(generators[0]?.id ?? "");
-  const [evaluatorId, setEvaluatorId] = useState(evaluators.find((agent) => agent.id !== generators[0]?.id)?.id ?? evaluators[0]?.id ?? "");
+  const [profile, setProfile] = useState<HarnessExecutionProfile>(() => modeEditorInitialProfile(selectedRole));
+  const plannerOptions = roleToolOptions(tools, "planner");
+  const generatorOptions = roleToolOptions(tools, "generator");
+  const evaluatorOptions = roleToolOptions(tools, "evaluator");
+  const [plannerTool, setPlannerTool] = useState(plannerOptions[0]?.tool ?? "");
+  const [plannerInvocation, setPlannerInvocation] = useState(plannerOptions[0]?.invocation ?? "");
+  const [generatorTool, setGeneratorTool] = useState(generatorOptions[0]?.tool ?? "");
+  const [generatorInvocation, setGeneratorInvocation] = useState(generatorOptions[0]?.invocation ?? "");
+  const [evaluatorTool, setEvaluatorTool] = useState(evaluatorOptions[0]?.tool ?? "");
+  const [evaluatorInvocation, setEvaluatorInvocation] = useState(evaluatorOptions[0]?.invocation ?? "");
   const [intentExpiresAt, setIntentExpiresAt] = useState("");
   const [autonomyEnabled, setAutonomyEnabled] = useState(false);
   const [autonomyExpiresAt, setAutonomyExpiresAt] = useState("");
@@ -110,7 +146,31 @@ export function ModeEditor({
   const [busy, setBusy] = useState<"submit" | "delete" | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
 
-  const disabled = blocker !== null || busy !== null || refreshing;
+  useEffect(() => {
+    if (!selectedRole) return;
+    if (profile === "fast") {
+      setProfile("heterogeneous");
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      const control = document.getElementById(modeEditorFocusTarget(selectedRole));
+      const region = document.getElementById(modeEditorFocusRegion(selectedRole));
+      const target = control instanceof HTMLSelectElement && !control.disabled ? control : region;
+      target?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [profile, selectedRole]);
+
+  const baseDisabled = blocker !== null || busy !== null || refreshing;
+  const toolBindingBlocker: HarnessModeIssuanceBlocker | null = profile === "fast"
+    ? null
+    : (agentFeatureVersion ?? 0) < MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+      ? "toolBindingAgentUpgradeRequired"
+      : plannerOptions.length === 0 || generatorOptions.length === 0 || evaluatorOptions.length === 0
+        ? "toolCatalogUnavailable"
+        : null;
+  const submitDisabled = baseDisabled || toolBindingBlocker !== null;
+  const selectedRoleCapabilities = selectedRole ? tools.filter((tool) => tool.role === selectedRole) : [];
 
   function localizedError(error: unknown): string {
     const code = error instanceof HarnessModeEditorValidationError || error instanceof RequestError
@@ -132,14 +192,22 @@ export function ModeEditor({
   async function submit(event: FormEvent) {
     event.preventDefault();
     setErrorKey(null);
+    if (toolBindingBlocker) {
+      setErrorKey(toolBindingBlocker);
+      return;
+    }
     setBusy("submit");
     try {
       const request = buildModeIntentRequest(
         projectId,
         {
           profile,
-          generatorId,
-          evaluatorId,
+          plannerTool,
+          plannerInvocation,
+          generatorTool,
+          generatorInvocation,
+          evaluatorTool,
+          evaluatorInvocation,
           intentExpiresAt,
           autonomyEnabled,
           autonomyExpiresAt,
@@ -150,7 +218,7 @@ export function ModeEditor({
           autoCross,
           notifyOn
         },
-        agents,
+        tools,
         new Date()
       );
       const response = await fetch("/api/harness/mode-intents", {
@@ -189,12 +257,23 @@ export function ModeEditor({
   }
 
   return (
-    <Card extra="!rounded-lg border border-gray-200 !p-5 dark:border-white/10">
+    <Card id={MODE_EDITOR_ANCHOR} extra="scroll-mt-6 !rounded-lg border border-gray-200 !p-5 dark:border-white/10">
       <div className="flex flex-col gap-5">
         <div>
           <h3 className="text-base font-bold text-navy-700 dark:text-white">{t("title")}</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t("nextPlanNotice")}</p>
         </div>
+
+        {selectedRole ? (
+          <SelectedRoleContext
+            role={selectedRole}
+            label={t(selectedRole)}
+            capabilities={selectedRoleCapabilities}
+            currentBinding={currentRoleBinding}
+            pendingBinding={pendingRoleBinding}
+            t={t}
+          />
+        ) : null}
 
         <div className="border-y border-gray-200 py-4 dark:border-white/10">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -232,12 +311,12 @@ export function ModeEditor({
 
         {blocker ? (
           <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-            {t(`disabled.${blocker}`, { version: MIN_MODE_INTENT_AGENT_FEATURE_VERSION })}
+            {t(`disabled.${blocker}`, { version: requiredModeIntentAgentFeatureVersion(blocker) })}
           </p>
         ) : null}
 
         <form onSubmit={submit} className="space-y-5">
-          <fieldset disabled={disabled} className="space-y-5 disabled:opacity-70">
+          <fieldset disabled={baseDisabled} className="space-y-5 disabled:opacity-70">
             <div>
               <legend className="mb-2 text-xs font-bold uppercase text-gray-500 dark:text-gray-400">{t("execution")}</legend>
               <div className="grid grid-cols-3 overflow-hidden rounded-md border border-gray-200 dark:border-white/10">
@@ -260,22 +339,59 @@ export function ModeEditor({
             </div>
 
             {profile !== "fast" ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="text-sm font-medium text-navy-700 dark:text-white">
-                  {t("generator")}
-                  <select value={generatorId} onChange={(event) => setGeneratorId(event.target.value)} className={`${INPUT} mt-1.5`}>
-                    <option value="">{t("selectAgent")}</option>
-                    {generators.map((agent) => <option key={agent.id} value={agent.id}>{agent.id} · {agent.modelFamily ?? "?"} · {agent.transport}</option>)}
-                  </select>
-                </label>
-                <label className="text-sm font-medium text-navy-700 dark:text-white">
-                  {t("evaluator")}
-                  <select value={evaluatorId} onChange={(event) => setEvaluatorId(event.target.value)} className={`${INPUT} mt-1.5`}>
-                    <option value="">{t("selectAgent")}</option>
-                    {evaluators.map((agent) => <option key={agent.id} value={agent.id}>{agent.id} · {agent.modelFamily ?? "?"} · {agent.transport}</option>)}
-                  </select>
-                </label>
+              <div className="grid gap-4 lg:grid-cols-3">
+                <RoleToolBinding
+                  role="planner"
+                  label={t("planner")}
+                  tool={plannerTool}
+                  invocation={plannerInvocation}
+                  options={plannerOptions}
+                  disabled={toolBindingBlocker !== null}
+                  selected={selectedRole === "planner"}
+                  onToolChange={(nextTool) => {
+                    setPlannerTool(nextTool);
+                    setPlannerInvocation(firstInvocation(plannerOptions, nextTool));
+                  }}
+                  onInvocationChange={setPlannerInvocation}
+                  t={t}
+                />
+                <RoleToolBinding
+                  role="generator"
+                  label={t("generator")}
+                  tool={generatorTool}
+                  invocation={generatorInvocation}
+                  options={generatorOptions}
+                  disabled={toolBindingBlocker !== null}
+                  selected={selectedRole === "generator"}
+                  onToolChange={(nextTool) => {
+                    setGeneratorTool(nextTool);
+                    setGeneratorInvocation(firstInvocation(generatorOptions, nextTool));
+                  }}
+                  onInvocationChange={setGeneratorInvocation}
+                  t={t}
+                />
+                <RoleToolBinding
+                  role="evaluator"
+                  label={t("evaluator")}
+                  tool={evaluatorTool}
+                  invocation={evaluatorInvocation}
+                  options={evaluatorOptions}
+                  disabled={toolBindingBlocker !== null}
+                  selected={selectedRole === "evaluator"}
+                  onToolChange={(nextTool) => {
+                    setEvaluatorTool(nextTool);
+                    setEvaluatorInvocation(firstInvocation(evaluatorOptions, nextTool));
+                  }}
+                  onInvocationChange={setEvaluatorInvocation}
+                  t={t}
+                />
               </div>
+            ) : null}
+
+            {toolBindingBlocker ? (
+              <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                {t(`disabled.${toolBindingBlocker}`, { version: requiredModeIntentAgentFeatureVersion(toolBindingBlocker) })}
+              </p>
             ) : null}
 
             <label className="block text-sm font-medium text-navy-700 dark:text-white">
@@ -326,11 +442,11 @@ export function ModeEditor({
             ) : null}
           </fieldset>
 
-          {errorKey ? <p role="alert" className="text-sm text-red-600 dark:text-red-300">{t(`errors.${errorKey}`, { version: MIN_MODE_INTENT_AGENT_FEATURE_VERSION })}</p> : null}
+          {errorKey ? <p role="alert" className="text-sm text-red-600 dark:text-red-300">{t(`errors.${errorKey}`, { version: requiredModeIntentAgentFeatureVersion(errorKey) })}</p> : null}
 
           <button
             type="submit"
-            disabled={disabled}
+            disabled={submitDisabled}
             className="inline-flex h-10 items-center gap-2 rounded-md bg-brand-500 px-4 text-sm font-bold text-white transition hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <MdSend className="h-4 w-4" />
@@ -339,6 +455,174 @@ export function ModeEditor({
         </form>
       </div>
     </Card>
+  );
+}
+
+type RoleToolOption = { tool: string; label: string; invocation: HarnessTransport; capabilities: string[] };
+
+function SelectedRoleContext({
+  role,
+  label,
+  capabilities,
+  currentBinding,
+  pendingBinding,
+  t
+}: {
+  role: HarnessModeRole;
+  label: string;
+  capabilities: readonly HarnessDetailToolCapability[];
+  currentBinding: RoleBindingContext;
+  pendingBinding: RoleBindingContext;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const modelFamilies = [...new Set(capabilities.flatMap((capability) => capability.modelFamilies))];
+  const availableCapabilities = [...new Set(capabilities.flatMap((capability) => capability.capabilities))];
+  return (
+    <section
+      id="mode-editor-role-context"
+      aria-labelledby="mode-editor-role-context-title"
+      data-selected-role={role}
+      className="border-y border-brand-200 bg-brand-50/50 px-3 py-4 dark:border-brand-500/30 dark:bg-brand-500/10"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <p className="text-xs font-bold uppercase text-brand-700 dark:text-brand-200">{t("selectedRole")}</p>
+          <h4 id="mode-editor-role-context-title" className="mt-1 text-sm font-bold text-navy-700 dark:text-white">
+            {t("selectedRoleContext", { role: label })}
+          </h4>
+        </div>
+        <span className="font-mono text-xs text-brand-700 dark:text-brand-200">{role}</span>
+      </div>
+      <dl className="mt-3 grid gap-x-5 gap-y-3 text-xs sm:grid-cols-2 xl:grid-cols-3">
+        <RoleContextFact label={t("availableTools")}>
+          {capabilities.length ? (
+            <ul className="space-y-1.5">
+              {capabilities.map((capability) => (
+                <li key={`${capability.tool}\u0000${capability.invocation}`} className="flex flex-wrap items-baseline gap-x-1.5">
+                  <span className="font-mono text-navy-700 dark:text-white">
+                    {capability.label === capability.tool ? capability.tool : `${capability.label} (${capability.tool})`} · {capability.invocation}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">{t("candidateCount", { count: capability.agentCount })}</span>
+                </li>
+              ))}
+            </ul>
+          ) : <span className="text-gray-500 dark:text-gray-400">{t("noRoleTools")}</span>}
+        </RoleContextFact>
+        <RoleContextFact label={t("modelFamilies")} value={modelFamilies.join(" · ") || t("notAvailable")} />
+        <RoleContextFact label={t("capabilities")} value={availableCapabilities.join(" · ") || t("notAvailable")} />
+        <RoleContextFact label={t("currentBinding")}>
+          <BindingSummary binding={currentBinding} unavailable={t("notAvailable")} />
+        </RoleContextFact>
+        <RoleContextFact label={t("nextPlanBinding")}>
+          <BindingSummary binding={pendingBinding} unavailable={t("notAvailable")} />
+        </RoleContextFact>
+      </dl>
+    </section>
+  );
+}
+
+function RoleContextFact({ label, value, children }: { label: string; value?: string; children?: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className="font-medium text-gray-500 dark:text-gray-400">{label}</dt>
+      <dd className="mt-1 break-words text-navy-700 dark:text-white">{children ?? value}</dd>
+    </div>
+  );
+}
+
+function BindingSummary({ binding, unavailable }: { binding: RoleBindingContext; unavailable: string }) {
+  if (!binding) return <span className="text-gray-500 dark:text-gray-400">{unavailable}</span>;
+  return (
+    <span className="font-mono text-navy-700 dark:text-white">
+      {binding.tool} · {binding.invocation}{binding.modelFamily ? ` · ${binding.modelFamily}` : ""}
+    </span>
+  );
+}
+
+function roleToolOptions(tools: readonly HarnessDetailToolCapability[], role: HarnessDetailToolCapability["role"]): RoleToolOption[] {
+  const options = new Map<string, RoleToolOption>();
+  for (const capability of tools) {
+    if (capability.role !== role) continue;
+    const option = {
+      tool: capability.tool,
+      label: capability.label,
+      invocation: capability.invocation,
+      capabilities: capability.capabilities
+    };
+    options.set(`${option.tool}\u0000${option.invocation}`, option);
+  }
+  return [...options.values()].sort((left, right) =>
+    `${left.tool}\u0000${left.invocation}`.localeCompare(`${right.tool}\u0000${right.invocation}`)
+  );
+}
+
+function firstInvocation(options: readonly RoleToolOption[], tool: string): HarnessTransport | "" {
+  return options.find((option) => option.tool === tool)?.invocation ?? "";
+}
+
+function RoleToolBinding({
+  role,
+  label,
+  tool,
+  invocation,
+  options,
+  disabled,
+  selected,
+  onToolChange,
+  onInvocationChange,
+  t
+}: {
+  role: HarnessModeRole;
+  label: string;
+  tool: string;
+  invocation: string;
+  options: readonly RoleToolOption[];
+  disabled: boolean;
+  selected: boolean;
+  onToolChange: (tool: string) => void;
+  onInvocationChange: (invocation: string) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const tools = [...new Set(options.map((option) => option.tool))].map((candidateTool) => {
+    const selectedInvocation = candidateTool === tool ? invocation : firstInvocation(options, candidateTool);
+    const fallback = options.find((option) => option.tool === candidateTool);
+    return {
+      tool: candidateTool,
+      label: toolCatalogLabelForInvocation(options, candidateTool, selectedInvocation as HarnessTransport)
+        ?? fallback?.label
+        ?? candidateTool
+    };
+  });
+  const invocations = options.filter((option) => option.tool === tool).map((option) => option.invocation);
+  const toolId = `mode-binding-${role}-tool`;
+  const invocationId = `mode-binding-${role}-invocation`;
+  return (
+    <fieldset
+      id={modeEditorFocusRegion(role)}
+      tabIndex={selected ? -1 : undefined}
+      data-selected-role={selected ? role : undefined}
+      className={`space-y-2 ${selected ? "rounded-md border border-brand-300 bg-brand-50/50 p-3 dark:border-brand-500/40 dark:bg-brand-500/10" : ""}`}
+    >
+      <legend className="text-sm font-medium text-navy-700 dark:text-white">{label}</legend>
+      <label htmlFor={toolId} className="block text-xs font-medium text-gray-500 dark:text-gray-400">
+        {t("tool")}
+        <select id={toolId} aria-label={`${label}: ${t("tool")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={tool} disabled={disabled} onChange={(event) => onToolChange(event.target.value)} className={`${INPUT} mt-1`}>
+          <option value="">{t("selectTool")}</option>
+          {tools.map((option) => (
+            <option key={option.tool} value={option.tool}>
+              {option.label === option.tool ? option.label : `${option.label} (${option.tool})`}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label htmlFor={invocationId} className="block text-xs font-medium text-gray-500 dark:text-gray-400">
+        {t("invocation")}
+        <select id={invocationId} aria-label={`${label}: ${t("invocation")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={invocation} disabled={disabled} onChange={(event) => onInvocationChange(event.target.value)} className={`${INPUT} mt-1`}>
+          <option value="">{t("selectInvocation")}</option>
+          {invocations.map((value) => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </label>
+    </fieldset>
   );
 }
 
@@ -366,6 +650,7 @@ function NumericField({
         min={min}
         max={max}
         step={step}
+        inputMode={step === "0.01" ? "decimal" : "numeric"}
         onChange={(event) => setValue(event.target.value)}
         className={`${INPUT} mt-1.5`}
       />

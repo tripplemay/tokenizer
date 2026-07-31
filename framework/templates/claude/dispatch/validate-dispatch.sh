@@ -37,10 +37,17 @@ registry)
   REG="${2:-.agents-registry.json}"
   [ -f "$REG" ] || { echo "[dispatch] ⛔ 注册表不存在：$REG"; exit 2; }
   python3 - "$REG" "$DISPATCH_DIR" <<'PY'
-import json, sys
+import json, re, sys
 p, dispatch_dir = sys.argv[1:3]
 sys.path.insert(0, dispatch_dir)
-from dispatch_common import DispatchContractError, effective_timeout
+from dispatch_common import (
+    A2A_AUTH_UNSET,
+    DispatchContractError,
+    a2a_auth_config,
+    effective_timeout,
+    external_environment_allowlist,
+    external_environment_set,
+)
 try: reg = json.load(open(p))
 except Exception as e: print(f"[dispatch] ⛔ 注册表 JSON 非法：{e}"); sys.exit(2)
 
@@ -54,42 +61,114 @@ if not isinstance(agents, list) or not agents:
 
 ROLES = {"planner", "generator", "evaluator"}
 TRANSPORTS = {"subagent", "local-cli", "a2a"}
+AGENT_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 seen = set()
-for a in agents:
-    aid = a.get("id", "<无 id>")
-    if not a.get("id"): errs.append("存在缺 id 的条目")
+for index, a in enumerate(agents):
+    if not isinstance(a, dict):
+        errs.append(f"agents[{index}] 必须为 object")
+        continue
+    raw_aid = a.get("id")
+    aid = raw_aid if isinstance(raw_aid, str) else "<无效 id>"
+    if not isinstance(raw_aid, str) or not AGENT_ID.fullmatch(raw_aid):
+        errs.append(
+            f"[{aid}] id 必须匹配 "
+            "[A-Za-z0-9][A-Za-z0-9._-]{0,127}；它会进入受控 shell 参数和路径"
+        )
     if aid in seen: errs.append(f"[{aid}] id 重复")
     seen.add(aid)
     rs = a.get("roles")
-    if not isinstance(rs, list) or not rs or not set(rs) <= ROLES:
+    roles = rs if isinstance(rs, list) and all(isinstance(role, str) for role in rs) else []
+    if (
+        not isinstance(rs, list)
+        or not rs
+        or any(role not in ROLES for role in roles)
+        or len(roles) != len(set(roles))
+    ):
         errs.append(f"[{aid}] roles 非法：{rs!r}（合法值 {sorted(ROLES)}）")
     t = a.get("transport")
     if t not in TRANSPORTS:
         errs.append(f"[{aid}] transport 非法：{t!r}")
-    if not a.get("model_family"):
-        errs.append(f"[{aid}] 缺 model_family —— 独立性互斥校验依赖它，不可省")
+    family = a.get("model_family")
+    if not isinstance(family, str) or not family.strip():
+        errs.append(f"[{aid}] model_family 必须是非空字符串 —— 独立性互斥校验依赖它，不可省")
     if t == "local-cli" and not a.get("adapter"):
         errs.append(f"[{aid}] transport=local-cli 必须声明 adapter")
     if t == "a2a" and not a.get("endpoint"):
         errs.append(f"[{aid}] transport=a2a 必须声明 endpoint")
+    if t == "a2a":
+        try:
+            a2a_auth_config(a.get("auth", A2A_AUTH_UNSET), f"[{aid}] auth")
+        except DispatchContractError as ex:
+            errs.append(str(ex))
+    elif "auth" in a:
+        errs.append(f"[{aid}] auth 仅支持 transport=a2a，不能保留会被忽略的死配置")
     if t == "subagent" and not a.get("agent_type"):
         errs.append(f"[{aid}] transport=subagent 必须声明 agent_type")
+    # A2A currently carries only the structured artifact. It has no source
+    # diff / commit handoff protocol, so an A2A Generator would make an
+    # implementation look executable while its source changes cannot return.
+    if t == "a2a" and "generator" in roles:
+        errs.append(
+            f"[{aid}] transport=a2a 暂不支持 generator —— "
+            "尚无 source-handoff protocol，不能把源码改动安全回流"
+        )
+    # A Planner subagent is proposal-only. Its singular agent_type cannot also
+    # safely represent a Generator/Evaluator persona.
+    if t == "subagent" and "planner" in roles:
+        if a.get("agent_type") != "planner-proposal":
+            errs.append(
+                f"[{aid}] subagent Planner 的 agent_type 必须为 "
+                "'planner-proposal'"
+            )
+        if set(roles) != {"planner"}:
+            errs.append(
+                f"[{aid}] subagent Planner 的 roles 必须恰为 ['planner']；"
+                "不得与其他角色共用 persona"
+            )
     try:
         effective_timeout(None, a.get("timeout_s"))
     except DispatchContractError as ex:
         errs.append(f"[{aid}] {ex}")
 
     c = a.get("constraints") or {}
+    if not isinstance(c, dict):
+        errs.append(f"[{aid}] constraints 必须为 object")
+        c = {}
     # 硬约束：evaluator 恒不得改产品代码；外部实例恒不得直接 push
-    if "evaluator" in (rs or []) and c.get("write_src") is True:
+    if "evaluator" in roles and c.get("write_src") is True:
         errs.append(f"[{aid}] 含 evaluator 角色却 constraints.write_src=true —— 违反「Evaluator 不修改产品代码」")
+    if "planner" in roles and c.get("write_src") is True:
+        errs.append(f"[{aid}] 含 planner 角色却 constraints.write_src=true —— Planner 只能返回 proposal")
+    if "planner" in roles and c.get("push") is True:
+        errs.append(f"[{aid}] 含 planner 角色却 constraints.push=true —— Planner 不得提交或推送")
+    if "generator" in roles and t == "local-cli":
+        if c.get("write_src") is not True:
+            errs.append(f"[{aid}] local-cli Generator 必须 constraints.write_src=true —— 否则无法返回源码 diff")
+        if c.get("push") is not False:
+            errs.append(f"[{aid}] local-cli Generator 必须 constraints.push=false —— 回流提交只能由 Coordinator 完成")
+        if c.get("l2") is not False:
+            errs.append(f"[{aid}] local-cli Generator 必须 constraints.l2=false —— 固定 handoff 契约禁止 L2")
     if t != "subagent" and c.get("push") is True:
         errs.append(f"[{aid}] 外部实例（transport={t}）不得 constraints.push=true —— 产物须由编排者校验 tag 归属后回流")
     # 硬性前置：外部 CLI 用登录 shell 执行命令，继承真实 HOME 会让 ~/.zshenv / ~/.zprofile
     # 里的 export 绕过 env 白名单还原敏感变量（实测，dispatch-mode.md §5.1 L1）
-    if t == "local-cli" and not (a.get("sandbox") or {}).get("home_dir"):
+    sandbox = a.get("sandbox") or {}
+    if not isinstance(sandbox, dict):
+        errs.append(f"[{aid}] sandbox 必须为 object")
+        sandbox = {}
+    if t == "local-cli" and not sandbox.get("home_dir"):
         errs.append(f"[{aid}] transport=local-cli 必须配 sandbox.home_dir —— "
                     f"否则子进程继承真实 HOME，其 .zshenv/.zprofile 的 export 会绕过 env 白名单")
+    if t == "local-cli":
+        try:
+            external_environment_allowlist(
+                sandbox.get("env_allow"), f"[{aid}] sandbox.env_allow"
+            )
+            external_environment_set(
+                sandbox.get("env_set"), f"[{aid}] sandbox.env_set"
+            )
+        except DispatchContractError as ex:
+            errs.append(str(ex))
 
 if errs:
     print(f"[dispatch] ⛔ 注册表校验失败（{p}）：")
@@ -103,16 +182,26 @@ envelope)
   ENV_F="${2:?用法: validate-dispatch.sh envelope <envelope.json>}"
   [ -f "$ENV_F" ] || { echo "[dispatch] ⛔ 信封不存在：$ENV_F"; exit 2; }
   python3 - "$ENV_F" "$DISPATCH_DIR" <<'PY'
-import json, sys
+import json, re, sys
 p, dispatch_dir = sys.argv[1:3]
 sys.path.insert(0, dispatch_dir)
 from dispatch_common import DispatchContractError, bounded_seconds
 try: e = json.load(open(p))
 except Exception as ex: print(f"[dispatch] ⛔ 信封 JSON 非法：{ex}"); sys.exit(2)
+if not isinstance(e, dict):
+    print(f"[dispatch] ⛔ 信封根节点必须为 object（当前 {type(e).__name__}）")
+    sys.exit(2)
 
 ALLOWED = {"task_id","contract_version","batch","role","repo","spec","features",
            "l2_authorized","contract","deliverable","deadline_s"}
 REQUIRED = {"task_id","contract_version","batch","role","repo","l2_authorized","contract","deliverable"}
+SAFE_TASK_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,127}\Z")
+SAFE_BATCH = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+# Repository-relative path segments only. This intentionally excludes absolute
+# paths, empty segments, . / .., and backslashes before any transport can use
+# the value in a worktree, state, or local artifact path.
+SAFE_ARTIFACT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*\Z")
 errs = []
 
 # 核心安全属性：字段白名单。多出来的字段 = 夹带通道（铁律 12）
@@ -124,28 +213,84 @@ for k in sorted(REQUIRED - set(e)):
 
 if e.get("contract_version") != "harness/1.1":
     errs.append(f"contract_version 必须为 'harness/1.1'（当前 {e.get('contract_version')!r}）")
-if e.get("role") not in ("generator", "evaluator"):
+role = e.get("role")
+if role not in ("planner", "generator", "evaluator"):
     errs.append(f"role 非法：{e.get('role')!r}")
 if not isinstance(e.get("l2_authorized"), bool):
     errs.append("l2_authorized 必须为 boolean（缺省不等于 false，必须显式）")
 if len(str(e.get("contract", ""))) < 40:
     errs.append("contract 内联契约摘要过短 —— 外部 CLI 不读仓内指令文件，契约必须随信封走")
-if len(str(e.get("task_id", ""))) < 8:
-    errs.append("task_id 过短 —— 幂等键须足够唯一")
+task_id = e.get("task_id")
+if not isinstance(task_id, str) or not SAFE_TASK_ID.fullmatch(task_id):
+    errs.append(
+        "task_id 必须匹配 [A-Za-z0-9][A-Za-z0-9._-]{7,127} "
+        "—— 它会进入受控 worktree 与 state 路径"
+    )
+batch = e.get("batch")
+if not isinstance(batch, str) or not SAFE_BATCH.fullmatch(batch):
+    errs.append(
+        "batch 必须匹配 [A-Za-z0-9][A-Za-z0-9._-]{0,127} "
+        "—— 它会进入受控 worktree、state 与 artifact 路径"
+    )
 if "deadline_s" in e:
     try:
         bounded_seconds(e.get("deadline_s"), "deadline_s")
     except DispatchContractError as ex:
         errs.append(str(ex))
 
-repo = e.get("repo") or {}
+repo_raw = e.get("repo")
+repo = repo_raw if isinstance(repo_raw, dict) else {}
+if not isinstance(repo_raw, dict): errs.append("repo 必须为 object")
 if not repo.get("url"): errs.append("repo.url 缺失")
-if len(str(repo.get("ref", ""))) < 7:
-    errs.append("repo.ref 必须锁定到 commit sha（不接受分支名——验收对象须是确定快照）")
+ref = repo.get("ref")
+if not isinstance(ref, str) or not CANONICAL_COMMIT_SHA.fullmatch(ref):
+    errs.append(
+        "repo.ref 必须是 40 或 64 位小写十六进制 immutable commit SHA "
+        "（不接受分支、tag、短 SHA 或大写）"
+    )
 
-d = e.get("deliverable") or {}
-if not d.get("artifact"): errs.append("deliverable.artifact 缺失")
+d_raw = e.get("deliverable")
+d = d_raw if isinstance(d_raw, dict) else {}
+if not isinstance(d_raw, dict): errs.append("deliverable 必须为 object")
+artifact = d.get("artifact")
+if not isinstance(artifact, str) or not SAFE_ARTIFACT.fullmatch(artifact):
+    errs.append(
+        "deliverable.artifact 必须是安全仓内相对路径 "
+        "（禁止绝对路径、空段、. / .. 与反斜杠）"
+    )
 if not d.get("schema"):   errs.append("deliverable.schema 缺失 —— 无 schema 即无机械拒收能力")
+
+if role == "evaluator":
+    expected = f"docs/test-reports/{batch}-verdict.json"
+    if artifact != expected:
+        errs.append(
+            "evaluator deliverable.artifact 必须精确为 "
+            "docs/test-reports/<batch>-verdict.json"
+        )
+    if d.get("schema") != ".claude/autonomous/verdict-artifact.schema.json":
+        errs.append("evaluator deliverable.schema 必须为 .claude/autonomous/verdict-artifact.schema.json")
+    if d.get("commit_to", object()) is not None:
+        errs.append("evaluator deliverable.commit_to 必须显式为 null")
+if role == "generator" and artifact != f"docs/test-reports/generator-handoff-{task_id}.json":
+    errs.append(
+        "generator deliverable.artifact 必须精确为 "
+        "docs/test-reports/generator-handoff-<task_id>.json"
+    )
+
+# Planner 只能交结构化 proposal；Coordinator 在人类确认后才可物化它。
+# 在信封层锁定路径、schema、无 L2、无 commit，避免把它误当成可直接执行的计划。
+if role == "planner":
+    if e.get("l2_authorized") is not False:
+        errs.append("planner 信封的 l2_authorized 必须为 false")
+    if artifact != f"docs/test-reports/planner-proposal-{task_id}.json":
+        errs.append(
+            "planner deliverable.artifact 必须为 "
+            "docs/test-reports/planner-proposal-<safe-task-id>.json"
+        )
+    if d.get("schema") != ".claude/dispatch/planner-proposal.schema.json":
+        errs.append("planner deliverable.schema 必须为 .claude/dispatch/planner-proposal.schema.json")
+    if d.get("commit_to", object()) is not None:
+        errs.append("planner deliverable.commit_to 必须显式为 null")
 
 if errs:
     print(f"[dispatch] ⛔ 信封校验失败（{p}）：")
@@ -217,13 +362,39 @@ import json, sys, os
 p = sys.argv[1]
 try: m = json.load(open(p))
 except Exception as e:
-    print(json.dumps({"state":"FAILED","reason":f"run-meta 非法：{e}"}, ensure_ascii=False)); sys.exit(0)
+    # Keep the receipt shape useful to the dispatcher even when the metadata is
+    # corrupt. It can report the durable run-meta pointer without inventing any
+    # artifact or envelope location.
+    print(json.dumps({
+        "state": "FAILED",
+        "reason": f"run-meta 非法：{e}",
+        "artifact": None,
+        "artifact_path": "",
+        "run_meta_path": os.path.abspath(p),
+        "envelope_path": "",
+        "worktree_path": None,
+    }, ensure_ascii=False)); sys.exit(0)
 
 out, art = m.get("outcome"), m.get("artifact")
 def emit(state, reason, **kw):
-    print(json.dumps({"state":state,"reason":reason,"task_id":m.get("task_id"),
-                      "agent_id":m.get("agent_id"),"model_family":m.get("model_family"),
-                      "artifact":art, **kw}, ensure_ascii=False)); sys.exit(0)
+    artifact_path = art if isinstance(art, str) else ""
+    worktree = m.get("worktree")
+    envelope = m.get("envelope_path")
+    print(json.dumps({
+        "state": state,
+        "reason": reason,
+        "task_id": m.get("task_id"),
+        "agent_id": m.get("agent_id"),
+        "model_family": m.get("model_family"),
+        # artifact remains for existing callers. The *_path fields are the
+        # transport-owned pointers a dispatcher may return without inference.
+        "artifact": art,
+        "artifact_path": artifact_path,
+        "run_meta_path": os.path.abspath(p),
+        "envelope_path": os.path.abspath(envelope) if isinstance(envelope, str) and envelope else "",
+        "worktree_path": worktree if isinstance(worktree, str) and worktree else None,
+        **kw,
+    }, ensure_ascii=False)); sys.exit(0)
 
 if out == "TIMEOUT":         emit("CANCELED", f"wall-clock 超时（{m.get('duration_s')}s）—— 凭 task_id 幂等重派")
 if out == "CANCELED":        emit("CANCELED", f"外部取消（{m.get('termination_reason') or 'cancel'}）—— 不伪装成 timeout")
@@ -238,21 +409,124 @@ except Exception as e:       emit("ARTIFACT_INVALID", f"产物 JSON 非法：{e}
 w = a.get("waiting")
 if w == "auth":         emit("AUTH_REQUIRED", a.get("waiting_detail") or "撞 L2 边界，等用户授权")
 if w == "adjudication": emit("INPUT_REQUIRED", a.get("waiting_detail") or "规格歧义，等 Planner/用户裁决")
+if w == "input":
+    if m.get("role") == "planner":
+        emit("INPUT_REQUIRED", a.get("waiting_detail") or "Planner proposal 需要用户澄清")
+    emit("ARTIFACT_INVALID", "waiting='input' 只允许 Planner proposal 使用")
 if w not in (None, ""): emit("ARTIFACT_INVALID", f"waiting 取值非法：{w!r}")
 emit("COMPLETED", "产物已返回，待 schema 内容校验")
 PY
 )
   set -e
-  echo "$RC_JSON"
   STATE=$(printf '%s' "$RC_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['state'])")
+  ART=$(printf '%s' "$RC_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('artifact') or '')")
+  ROLE=$(python3 - "$META" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("role") or "")
+except Exception: print("")
+PY
+)
+  SCHEMA=$(python3 - "$META" <<'PY'
+import json, sys
+try: print((json.load(open(sys.argv[1])).get("deliverable") or {}).get("schema") or "")
+except Exception: print("")
+PY
+)
+  DELIVERABLE_ARTIFACT=$(python3 - "$META" <<'PY'
+import json, sys
+try:
+    value = (json.load(open(sys.argv[1])).get("deliverable") or {}).get("artifact")
+    print(value if isinstance(value, str) else "")
+except Exception:
+    print("")
+PY
+)
+  TASK_ID=$(python3 - "$META" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("task_id") or "")
+except Exception: print("")
+PY
+)
+  BATCH=$(python3 - "$META" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("batch") or "")
+except Exception: print("")
+PY
+)
+  REF=$(python3 - "$META" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("ref") or "")
+except Exception: print("")
+PY
+)
+  ENVELOPE_PATH=$(python3 - "$META" <<'PY'
+import json, sys
+try:
+    value = json.load(open(sys.argv[1])).get("envelope_path")
+    print(value if isinstance(value, str) else "")
+except Exception:
+    print("")
+PY
+)
+  invalidate_receipt() {
+    RC_JSON="$(python3 - "$RC_JSON" "$1" <<'PY'
+import json
+import sys
+
+receipt = json.loads(sys.argv[1])
+receipt["state"] = "ARTIFACT_INVALID"
+receipt["reason"] = sys.argv[2]
+print(json.dumps(receipt, ensure_ascii=False))
+PY
+)"
+    STATE="ARTIFACT_INVALID"
+  }
+  # Planner artifacts have a different semantic schema from verdicts. Validate
+  # both a completed proposal and a request-for-input before returning the
+  # receipt state to the Coordinator.
+  if [ "$ROLE" = "planner" ] && { [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "INPUT_REQUIRED" ]; }; then
+    if [ "$SCHEMA" != ".claude/dispatch/planner-proposal.schema.json" ]; then
+      echo "[dispatch] ⛔ Planner deliverable schema 非法" >&2
+      invalidate_receipt "planner deliverable schema is not allowed"
+    elif ! "$DISPATCH_DIR/validate-planner-proposal.sh" "$ART" "$TASK_ID" "$BATCH" "$REF" >&2; then
+      invalidate_receipt "planner proposal failed schema validation"
+    fi
+  fi
+  # Generator handoffs must be bound to the exact commissioned envelope, not
+  # merely to an artifact filename. envelope_path is emitted by every trusted
+  # transport run-meta writer before this receipt is evaluated.
+  if [ "$ROLE" = "generator" ] && {
+    [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "AUTH_REQUIRED" ] || [ "$STATE" = "INPUT_REQUIRED" ];
+  }; then
+    if [ "$SCHEMA" != ".claude/dispatch/generator-handoff.schema.json" ]; then
+      echo "[dispatch] ⛔ Generator deliverable schema 非法" >&2
+      invalidate_receipt "generator deliverable schema is not allowed"
+    elif [ -z "$ENVELOPE_PATH" ] || [ ! -f "$ENVELOPE_PATH" ]; then
+      echo "[dispatch] ⛔ Generator run-meta 缺有效 envelope_path" >&2
+      invalidate_receipt "generator run-meta lacks a readable envelope_path"
+    elif ! "$DISPATCH_DIR/validate-generator-handoff.sh" "$ART" --envelope "$ENVELOPE_PATH" >&2; then
+      invalidate_receipt "generator handoff failed schema and envelope validation"
+    fi
+  fi
+  if [ "$ROLE" = "evaluator" ] && [ "$STATE" = "COMPLETED" ]; then
+    VVA="$DISPATCH_DIR/../autonomous/validate-verdict-artifact.sh"
+    EXPECTED_EVALUATOR_ARTIFACT="docs/test-reports/${BATCH}-verdict.json"
+    if [ "$DELIVERABLE_ARTIFACT" != "$EXPECTED_EVALUATOR_ARTIFACT" ]; then
+      echo "[dispatch] ⛔ Evaluator deliverable artifact 非法" >&2
+      invalidate_receipt "evaluator deliverable artifact is not the fixed batch verdict path"
+    elif [ "$SCHEMA" != ".claude/autonomous/verdict-artifact.schema.json" ]; then
+      echo "[dispatch] ⛔ Evaluator deliverable schema 非法" >&2
+      invalidate_receipt "evaluator deliverable schema is not allowed"
+    elif [ -n "$ART" ] && [ -x "$VVA" ]; then
+      if ! "$VVA" "$ART" >&2; then
+        echo "[dispatch] ⛔ 产物未过 verdict schema → ARTIFACT_INVALID" >&2
+        invalidate_receipt "verdict artifact failed schema validation"
+      fi
+    fi
+  fi
+  echo "$RC_JSON"
   case "$STATE" in
     COMPLETED)
-      ART=$(printf '%s' "$RC_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin).get('artifact') or '')")
-      VVA="$DISPATCH_DIR/../autonomous/validate-verdict-artifact.sh"
-      # verdict 类产物再过机件 #3 的内容门（证据非空，拒收空壳）
-      if [ -n "$ART" ] && [ -x "$VVA" ] && case "$ART" in *-verdict.json) true ;; *) false ;; esac; then
-        "$VVA" "$ART" >&2 || { echo "[dispatch] ⛔ 产物未过 verdict schema → ARTIFACT_INVALID"; exit 4; }
-      fi
       echo "[dispatch] ✓ 回执 COMPLETED" >&2; exit 0 ;;
     AUTH_REQUIRED|INPUT_REQUIRED)
       echo "[dispatch] ⏸ 回执 $STATE —— 硬停交人类，不得自行推进" >&2; exit 3 ;;

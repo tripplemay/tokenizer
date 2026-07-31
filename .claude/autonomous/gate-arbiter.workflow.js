@@ -90,13 +90,123 @@ const eligible = (registry, role) =>
 // 确定性轮换：同一 wake_n 恒选同一个（无 Math.random，可重放）
 const pick = (pool, n) => (pool.length ? pool[((n % pool.length) + pool.length) % pool.length] : null)
 
+// 已解析的 role_assignments 是人类签名工具绑定在本机 resolver 后的运行时事实。
+// 有显式 assignment 时，绝不能退回 registry 全局池另挑一个 agent；那会让控制台显示的
+// 工具选择与实际派活脱钩。无 assignment 才保留 v1.0/v1.1 的默认轮换。
+function assigned(registry, state, role) {
+  const assignments = state && state.role_assignments
+  if (!assignments || typeof assignments !== 'object' || !Object.prototype.hasOwnProperty.call(assignments, role)) {
+    return { configured: false, candidate: null, id: null }
+  }
+  const id = assignments[role]
+  if (typeof id !== 'string' || !id) return { configured: true, candidate: null, id: null }
+  const candidate = ((registry && registry.agents) || []).find(a =>
+    a.id === id && (a.roles || []).includes(role)) || null
+  return { configured: true, candidate, id }
+}
+
+const ROLE_NAMES = ['planner', 'generator', 'evaluator']
+const STABLE_TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/
+
+function descriptorPriority(descriptor) {
+  return Number.isSafeInteger(descriptor && descriptor.priority) && descriptor.priority >= 0
+    ? descriptor.priority
+    : 1000
+}
+
+function descriptorToolWithoutAdapter(descriptor) {
+  if (typeof descriptor.tool === 'string') return descriptor.tool
+  if (descriptor.transport === 'subagent') return 'claude-code'
+  if (descriptor.transport === 'a2a') return descriptor.model_family
+  // local-cli canonical tool can originate in the verified adapter. A caller
+  // must inject the output of validate-resolved-mode-bindings.sh for that case.
+  return null
+}
+
+function exactResolutionRecord(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const fields = Object.keys(value).sort()
+  if (fields.join(',') !== 'agent_id,invocation,model_family,priority,tool') return false
+  return typeof value.agent_id === 'string'
+    && STABLE_TOOL_ID.test(value.tool)
+    && ['subagent', 'local-cli', 'a2a'].includes(value.invocation)
+    && typeof value.model_family === 'string' && value.model_family.length > 0
+    && Number.isSafeInteger(value.priority) && value.priority >= 0
+}
+
+function sameResolution(left, right) {
+  return exactResolutionRecord(left)
+    && exactResolutionRecord(right)
+    && left.agent_id === right.agent_id
+    && left.tool === right.tool
+    && left.invocation === right.invocation
+    && left.model_family === right.model_family
+    && left.priority === right.priority
+}
+
+function resolutionDrift(state, registry, currentResolution) {
+  const modeIntent = state && state.mode_intent
+  if (!modeIntent || typeof modeIntent !== 'object' || !Object.prototype.hasOwnProperty.call(modeIntent, 'resolution')) {
+    return null // v1 and non-v2 paths intentionally retain their historical assignment behavior.
+  }
+  const audit = modeIntent.resolution
+  const assignments = state && state.role_assignments
+  if (!audit || typeof audit !== 'object' || Array.isArray(audit) || !assignments || typeof assignments !== 'object') {
+    return { role: 'mode_intent', detail: 'v2 resolution or role_assignments is malformed' }
+  }
+  for (const role of ROLE_NAMES) {
+    const expected = audit[role]
+    if (!exactResolutionRecord(expected)) {
+      return { role, detail: 'stored v2 resolution must contain exactly five stable fields' }
+    }
+    if (assignments[role] !== expected.agent_id) {
+      return { role, detail: 'role_assignments agent_id differs from stored v2 resolution' }
+    }
+    const descriptor = ((registry && registry.agents) || []).find(item =>
+      item && item.id === expected.agent_id && (item.roles || []).includes(role))
+    if (!descriptor) return { role, detail: 'stored v2 agent_id no longer resolves to an authorized descriptor' }
+    if (descriptor.transport !== expected.invocation) {
+      return { role, detail: 'descriptor invocation drifted from stored v2 resolution' }
+    }
+    if (descriptor.model_family !== expected.model_family) {
+      return { role, detail: 'descriptor model_family drifted from stored v2 resolution' }
+    }
+    if (descriptorPriority(descriptor) !== expected.priority) {
+      return { role, detail: 'descriptor priority drifted from stored v2 resolution' }
+    }
+    const resolved = currentResolution && currentResolution[role]
+    if (resolved !== undefined) {
+      if (!sameResolution(expected, resolved)) {
+        return { role, detail: 'current adapter/catalog resolution differs from stored v2 resolution' }
+      }
+    } else {
+      const tool = descriptorToolWithoutAdapter(descriptor)
+      if (tool === null) {
+        return { role, detail: 'local-cli v2 resolution requires a verified adapter/catalog snapshot' }
+      }
+      if (tool !== expected.tool) {
+        return { role, detail: 'descriptor tool drifted from stored v2 resolution' }
+      }
+    }
+  }
+  return null
+}
+
 // 独立性互斥（dispatch-mode.md §3.2）：evaluator 的 model_family 必须 ≠ generator 的。
 // validate-dispatch.sh assignments 是第一道门，这里是派活当下的第二道——纵深防御。
-function resolveEvaluators(registry, wakeN, generatorFamily) {
+function resolveEvaluators(registry, wakeN, generatorFamily, configuredPrimary) {
+  if (configuredPrimary) {
+    if (generatorFamily && configuredPrimary.model_family === generatorFamily) return null
+    const secondaryPool = eligible(registry, 'evaluator').filter(a =>
+      a.id !== configuredPrimary.id
+      && a.model_family !== configuredPrimary.model_family
+      && (!generatorFamily || a.model_family !== generatorFamily))
+    return { primary: configuredPrimary, second: pick(secondaryPool, wakeN) }
+  }
   const pool = eligible(registry, 'evaluator').filter(a => !generatorFamily || a.model_family !== generatorFamily)
   if (!pool.length) return null
   const primary = pick(pool, wakeN)
-  const second = pool.find(a => a.model_family !== primary.model_family) || pick(pool, wakeN + 1)
+  const second = pool.find(a => a.model_family !== primary.model_family) || null
   return { primary, second }
 }
 
@@ -108,11 +218,40 @@ const CONTRACT = {
     + ' steps_to_reproduce，无证据的 PASS 一律降级 PARTIAL。撞 L2（真实外部服务/计费/生产写入）而'
     + ' l2_authorized=false 时，写 waiting="auth" + waiting_detail 后正常退出，不得自行触达。'
     + '规格歧义无法客观判定时写 waiting="adjudication"。产物必须满足 deliverable.schema。',
-  generator:
-    '你是 Generator。只实现 features 列出的条目，越界即停；每条 feature 独立 commit，message 必须为'
-    + ' feat(<batch>-<feature_id>): 格式且对应 features.json 真实条目。禁止任何 deploy / 生产写入 / 花钱调用。'
-    + '不得 git push（沙箱已禁用）。本地 lint/tsc/test 必须全绿；bug 修复须同 commit 补回归测试。'
-    + '规格歧义时写 waiting="adjudication" + waiting_detail 后正常退出，不要猜测规格。',
+}
+
+const DELIVERABLE = {
+  evaluator: (batch) => ({
+    artifact: `docs/test-reports/${batch}-verdict.json`,
+    schema: '.claude/autonomous/verdict-artifact.schema.json',
+    commit_to: null,
+  }),
+}
+
+// batch 会同时进入 envelope、artifact 和 dispatcher 写出的 envelope filename。
+// 不要依赖下游校验器才发现它不安全：task id 在本 workflow 内由 batch 派生，
+// 因而在任何 agent 被要求写文件前先把组成项和最终值一起封住。
+const SAFE_DISPATCH_BATCH = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
+const SAFE_DISPATCH_TASK_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$/
+
+function boundedDispatchCounter(value, label) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`unsafe dispatch ${label}: expected a non-negative safe integer`)
+  }
+  return value
+}
+
+function makeDispatchTaskId(batch, role, wakeN, fixRound) {
+  if (typeof batch !== 'string' || !SAFE_DISPATCH_BATCH.test(batch)) {
+    throw new Error('unsafe dispatch batch: must be a safe identifier')
+  }
+  const wake = boundedDispatchCounter(wakeN, 'wake_n')
+  const round = boundedDispatchCounter(fixRound, 'fix_round')
+  const taskId = `${batch}-${role}-w${wake}-r${round}`
+  if (!SAFE_DISPATCH_TASK_ID.test(taskId)) {
+    throw new Error('unsafe dispatch task_id derived from batch/role/counters')
+  }
+  return taskId
 }
 
 // dispatcher subagent 的返回 schema —— 注意这里**结构性地没有装结论的字段**：
@@ -125,6 +264,10 @@ const RECEIPT_SCHEMA = {
     state: { type: 'string', enum: ['COMPLETED', 'AUTH_REQUIRED', 'INPUT_REQUIRED', 'FAILED', 'CANCELED', 'ARTIFACT_INVALID'] },
     artifact_path: { type: 'string' },
     run_meta_path: { type: 'string' },
+    envelope_path: { type: 'string' },
+    // local-cli Generator 回流前需要定位沙箱 clone；A2A Generator 在注册表层已拒绝，
+    // 这里仍允许 null 以保持 Evaluator/A2A receipt 兼容。
+    worktree_path: { type: ['string', 'null'] },
     reason: { type: 'string', description: '仅描述运输层失败原因，不得描述验收内容' },
     // 机械投影：只有布尔与计数，schema 层禁止任何自由文本结论字段。
     // 引擎需要 all_pass 才能提出 proposedNext；完整结论仍由耐久层从产物文件**逐字**回写（铁律 12）。
@@ -141,31 +284,70 @@ const RECEIPT_SCHEMA = {
   },
 }
 
-// 派一个外部 agent（transport=local-cli 或 a2a）。dispatcher subagent 只跑三条机械命令，无评估权。
-// transport 差异由 dispatch-run.sh 吸收，引擎侧完全不感知。
+// 派一个外部 Evaluator（transport=local-cli 或 a2a）。dispatcher subagent 只跑三条机械命令，无评估权。
+// Generator 绝不能复用此通道：它需要固定 handoff 信封、未提交 sandbox diff 和 Coordinator 回流协议。
 async function dispatchExternal(d, { batch, role, ref, spec, features, l2, fixRound, wakeN }) {
-  // 幂等键：确定性（Workflow 内无 Date/Math.random），且每次唤醒唯一
-  const taskId = `${batch}-${role}-w${wakeN}-r${fixRound}`
+  const makeDeliverable = DELIVERABLE[role]
+  if (!CONTRACT[role] || !makeDeliverable) {
+    throw new Error(`unsupported external role ${role}`)
+  }
+  // 幂等键：确定性（Workflow 内无 Date/Math.random），且每次唤醒唯一。
+  // makeDispatchTaskId 还确保派生值本身仍在 envelope 的安全长度/字符集内。
+  const taskId = makeDispatchTaskId(batch, role, wakeN, fixRound)
   const envelope = {
     task_id: taskId, contract_version: 'harness/1.1', batch, role,
     repo: { url: '.', ref }, spec: spec || null, features: features || [],
     l2_authorized: l2 === true, contract: CONTRACT[role],
-    deliverable: {
-      artifact: `docs/test-reports/${batch}-verdict.json`,
-      schema: '.claude/autonomous/verdict-artifact.schema.json',
-      commit_to: null,
-    },
+    deliverable: makeDeliverable(batch, taskId),
   }
   return await agent(
-    `你是 dispatch 搬运工，**无评估权**。严格执行三条命令，不做任何解读、不总结产物内容：\n`
+    `你是 dispatch 搬运工，**无评估权**。严格执行四条命令，不做任何解读、不总结产物内容：\n`
     + `1. 把以下 JSON 原样写入 .harness-dispatch/envelope-${taskId}.json（一个字节都不要改）：\n`
     + `${JSON.stringify(envelope)}\n`
     + `2. bash .claude/dispatch/validate-dispatch.sh envelope .harness-dispatch/envelope-${taskId}.json\n`
     + `3. bash .claude/dispatch/dispatch-run.sh --agent ${d.id} --envelope .harness-dispatch/envelope-${taskId}.json\n`    + `   （该入口按 descriptor.transport 自动路由：local-cli 走本机沙箱，a2a 走远端 runner + SSE 订阅）\n`
     + `4. bash .claude/dispatch/validate-dispatch.sh receipt <上一步 run-meta 路径>\n`
-    + `返回 receipt 的 state 与两个路径。role=evaluator 时另用 python3 从产物机械统计 verdict_summary`
+    + `返回 receipt 的 state、artifact_path、run_meta_path、envelope_path；再从 run-meta JSON 机械读取 worktree 字段并以`
+    + ` worktree_path 返回（不存在则 null）。role=evaluator 时另用 python3 从产物机械统计 verdict_summary`
     + `（all_pass 与三个计数）。**除此之外不要读取、引用或转述产物内容**——结论由耐久层逐字读文件回写。`,
     { label: `dispatch:${role}:${d.id}`, phase: 'Wake', effort: 'low',
+      agentType: 'general-purpose', schema: RECEIPT_SCHEMA })
+}
+
+function generatorHandoffArtifact(taskId) {
+  return `docs/test-reports/generator-handoff-${taskId}.json`
+}
+
+function generatorCapabilityIssue(descriptor) {
+  if (!descriptor || descriptor.transport !== 'local-cli') {
+    return 'Generator source return is implemented only for transport=local-cli'
+  }
+  const constraints = descriptor.constraints
+  if (!constraints || typeof constraints !== 'object') {
+    return 'Generator descriptor lacks fixed source-handoff constraints'
+  }
+  if (constraints.write_src !== true) return 'Generator requires constraints.write_src=true'
+  if (constraints.push !== false) return 'Generator requires constraints.push=false'
+  if (constraints.l2 !== false) return 'Generator requires constraints.l2=false'
+  return null
+}
+
+// Generator has a deliberately separate protocol. The wrapper reconstructs a
+// fixed envelope from the already materialized runtime assignment, validates
+// the handoff, and returns a sandbox-contained *uncommitted* diff. Only the
+// Coordinator can later rerun L1, apply the diff, and create the feature commit.
+async function dispatchExternalGenerator(d, { batch, featureId, fixRound, wakeN }) {
+  const taskId = makeDispatchTaskId(batch, 'generator', wakeN, fixRound)
+  const artifact = generatorHandoffArtifact(taskId)
+  return await agent(
+    `你是 dispatch 搬运工，**无评估权**。严格执行下面这一条命令；不要自行组装通用 Generator 信封、`
+    + `不要提交、push、apply diff，也不要解读 handoff 内容：\n`
+    + `bash .claude/dispatch/dispatch-generator-handoff.sh --task-id ${taskId} --feature ${featureId}\n`
+    + `该包装器固定生成 deliverable.artifact=${artifact}，要求 external Generator 只返回 sandbox 内的未提交源码 diff `
+    + `与 handoff；它会机械校验信封、run-meta、handoff。命令成功后，只从其 JSON 输出机械映射：`
+    + `receipt.state -> state，handoff_path -> artifact_path，run_meta_path、envelope_path，以及 `
+    + `receipt.worktree_path -> worktree_path。不得读取、引用或转述 handoff 内容。`,
+    { label: `dispatch:generator:${d.id}`, phase: 'Wake', effort: 'low',
       agentType: 'general-purpose', schema: RECEIPT_SCHEMA })
 }
 
@@ -185,6 +367,39 @@ async function specLockCritic(batchScope, worktree) {
 // ==================== 一个唤醒周期 ====================
 phase('Wake')
 const { state, policy, ledger, now, registry } = args   // registry 由耐久层读盘注入；无则全程回退 v1.0 行为
+const configuredRoles = {
+  planner: assigned(registry, state, 'planner'),
+  generator: assigned(registry, state, 'generator'),
+  evaluator: assigned(registry, state, 'evaluator'),
+}
+for (const [role, resolution] of Object.entries(configuredRoles)) {
+  if (resolution.configured && !resolution.candidate) {
+    return {
+      decision: 'HALT',
+      reasons: ['configured_role_unresolvable:' + role],
+      detail: `progress.role_assignments.${role}=${resolution.id || '<empty>'} cannot be resolved in the injected registry`,
+    }
+  }
+}
+if (
+  configuredRoles.generator.candidate
+  && configuredRoles.evaluator.candidate
+  && configuredRoles.generator.candidate.model_family === configuredRoles.evaluator.candidate.model_family
+) {
+  return {
+    decision: 'HALT',
+    reasons: ['configured_generator_evaluator_same_family'],
+    detail: 'configured generator and evaluator have the same model_family',
+  }
+}
+const modeResolutionDrift = resolutionDrift(state, registry, args.resolved_mode_bindings)
+if (modeResolutionDrift) {
+  return {
+    decision: 'HALT',
+    reasons: ['configured_role_resolution_drift:' + modeResolutionDrift.role],
+    detail: modeResolutionDrift.detail,
+  }
+}
 
 // 1. GOVERN（纯函数）— 任一 halt 条件命中即停，不回写
 const gov = governor(state, policy, ledger, now)
@@ -218,14 +433,27 @@ if (action === 'plan') {
     proposedNext = 'verifying'                     // 所有 generator feature 完成 → 跨到验收
   } else {
     const t = pending[0]
-    // v1.1：generator 可解析到外部 CLI（transport=local-cli）。无注册表 / 无外部 generator ⇒ 走原路径。
-    const extGen = eligible(registry, 'generator').find(a => a.transport !== 'subagent')
+    // 显式 assignment 必须精确命中；只有没有 assignment 的存量项目才可从默认池选外部 generator。
+    const generatorChoice = configuredRoles.generator
+    const extGen = generatorChoice.configured
+      ? (generatorChoice.candidate.transport === 'subagent' ? null : generatorChoice.candidate)
+      : eligible(registry, 'generator').find(a => generatorCapabilityIssue(a) === null)
+    const generatorAgentType = generatorChoice.configured && generatorChoice.candidate.transport === 'subagent'
+      ? (generatorChoice.candidate.agent_type || 'generator-restricted')
+      : 'generator-restricted'
     let extWorktree = null
 
     if (extGen) {
-      const r = await dispatchExternal(extGen, {
-        batch: state.current_sprint, role: 'generator', ref: state.head_sha,
-        spec: state.spec_path, features: [t.id], l2: false,
+      const capabilityIssue = generatorCapabilityIssue(extGen)
+      if (capabilityIssue) {
+        return {
+          decision: 'HALT',
+          reasons: ['external_generator_capability_invalid'],
+          detail: `${extGen.id}: ${capabilityIssue}`,
+        }
+      }
+      const r = await dispatchExternalGenerator(extGen, {
+        batch: state.current_sprint, featureId: t.id,
         fixRound: state.fix_rounds || 0, wakeN: ledger.wake_n ?? 0,
       })
       if (!r) return { decision: 'HALT', reasons: ['dispatch_failed:' + t.id], detail: 'dispatcher 返回空' }
@@ -237,14 +465,23 @@ if (action === 'plan') {
         return { decision: 'HALT', reasons: ['external_generator_failed:' + r.state], detail: r.reason,
           writeback: { dispatch: r, feature_id: t.id } }
       }
-      stepResult = { feature_id: t.id, result: 'completed', dispatch: r, agent_id: extGen.id }
-      extWorktree = r.run_meta_path                 // 耐久层据此定位 worktree 做 tag 校验 + 回流
+      if (!r.artifact_path || !r.run_meta_path || !r.envelope_path || !r.worktree_path) {
+        return { decision: 'HALT', reasons: ['external_generator_missing_return_evidence'],
+          detail: 'Generator receipt lacks a handoff, envelope, run-meta, or local sandbox worktree',
+          writeback: { dispatch: r, feature_id: t.id } }
+      }
+      stepResult = {
+        role: 'generator', feature_id: t.id, result: 'completed', dispatch: r, agent_id: extGen.id,
+        handoff_path: r.artifact_path, envelope_path: r.envelope_path, run_meta_path: r.run_meta_path,
+        worktree_path: r.worktree_path, source_ref: state.head_sha,
+      }
+      extWorktree = r.worktree_path                 // 仅本地 clone 可在回流前做 scope/L1 核验
     } else {
       stepResult = await agent(
         `实现 feature ${t.id}${t.title ? '（' + t.title + '）' : ''}。读 docs/specs 对应段与 acceptance；`
         + `只做本 feature、越界即停；本地自测通过后以 feat(${state.current_sprint}-${t.id}): 独立 commit。`
         + `禁止任何 deploy/生产/花钱动作（deny-list 已强制）。bug 修复须同 commit 补回归测试。`,
-        { label: `build:${t.id}`, phase: 'Wake', agentType: 'generator-restricted',
+        { label: `build:${t.id}`, phase: 'Wake', agentType: generatorAgentType,
           schema: { type: 'object', additionalProperties: false, required: ['feature_id', 'result', 'files_touched'],
             properties: {
               feature_id: { type: 'string' },
@@ -273,8 +510,17 @@ if (action === 'plan') {
   // 同家族换档位只降一点盲区相关性，换 family 才是真去偏。
   const w = ledger.wake_n ?? 0
   const feats = state.features || []
-  const genFamily = (eligible(registry, 'generator').find(a => a.transport === 'local-cli') || {}).model_family
-  const evals = resolveEvaluators(registry, w, genFamily)   // 已排除与 generator 同 family 者
+  const configuredGenerator = configuredRoles.generator.candidate
+  const configuredEvaluator = configuredRoles.evaluator
+  const genFamily = configuredGenerator
+    ? configuredGenerator.model_family
+    : (eligible(registry, 'generator').find(a => a.transport === 'local-cli') || {}).model_family
+  const evals = resolveEvaluators(
+    registry,
+    w,
+    genFamily,
+    configuredEvaluator.configured ? configuredEvaluator.candidate : null
+  )
   const sampled = feats.length ? feats[w % feats.length] : null
 
   if (evals && evals.primary.transport !== 'subagent') {
@@ -293,7 +539,7 @@ if (action === 'plan') {
         writeback: { dispatch: r } }
     }
     stepResult = {
-      dispatch: r, agent_id: evals.primary.id, model_family: evals.primary.model_family,
+      role: 'evaluator', dispatch: r, agent_id: evals.primary.id, model_family: evals.primary.model_family,
       all_pass: !!(r.verdict_summary && r.verdict_summary.all_pass),
     }
     // 去偏抽检：第二 evaluator 恒为不同 family。外部主验时引擎手上没有逐条判定，
@@ -321,7 +567,10 @@ if (action === 'plan') {
       `以隔离 evaluator 验收 batch=${state.current_sprint}。prompt 只含 {spec/feature 路径, L2-flag}，`
       + `无任何实现叙述（铁律 12）。对 FAIL/PARTIAL 证伪已知环境误报；对 PASS 抽样核对 `
       + `steps_to_reproduce + evidence 非空，无证据的 PASS 一律降级 PARTIAL。`,
-      { label: 'verify:evaluator', phase: 'Wake', agentType: 'general-purpose',
+      { label: 'verify:evaluator', phase: 'Wake',
+        agentType: configuredEvaluator.configured
+          ? (configuredEvaluator.candidate.agent_type || 'general-purpose')
+          : 'general-purpose',
         model: primaryTier.model, effort: primaryTier.effort, schema: VERDICT_SCHEMA })
 
     // 机件 #6：每批抽一个 feature 跑第二独立 evaluator，与主判定对比。

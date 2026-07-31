@@ -95,8 +95,8 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             "l2_authorized": False,
             "contract": "Deterministic fixture contract with enough detail for validation.",
             "deliverable": {
-                "artifact": "artifact.json",
-                "schema": "artifact.schema.json",
+                "artifact": "docs/test-reports/BL-LIFECYCLE-FIXTURE-verdict.json",
+                "schema": ".claude/autonomous/verdict-artifact.schema.json",
                 "commit_to": None,
             },
         }
@@ -138,6 +138,34 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             with self.assertRaises(DispatchContractError):
                 effective_timeout(value, 90)
 
+    def test_envelope_path_components_reject_traversal_absolute_and_backslash(self):
+        schema = json.loads((DISPATCH / "dispatch-envelope.schema.json").read_text())
+        self.assertIn("pattern", schema["properties"]["task_id"])
+        self.assertIn("pattern", schema["properties"]["batch"])
+        self.assertIn("pattern", schema["properties"]["deliverable"]["properties"]["artifact"])
+        cases = [
+            ("task_id", "../escape-task-001"),
+            ("task_id", "/absolute-task-001"),
+            ("task_id", r"task\\escape-001"),
+            ("batch", "../escape"),
+            ("batch", "/absolute"),
+            ("batch", r"batch\\escape"),
+            ("batch", ""),
+            ("artifact", "../escaped.json"),
+            ("artifact", "/tmp/escaped.json"),
+            ("artifact", r"docs\\escaped.json"),
+            ("artifact", "docs//escaped.json"),
+            ("artifact", ""),
+        ]
+        for field, value in cases:
+            envelope = self.envelope()
+            if field == "artifact":
+                envelope["deliverable"]["artifact"] = value
+            else:
+                envelope[field] = value
+            with self.subTest(field=field, value=value):
+                self.assertEqual(self.validate(envelope).returncode, 2)
+
     def _sandbox_inputs(self, repo_url):
         adapters = self.root / "adapters"
         adapters.mkdir(exist_ok=True)
@@ -146,6 +174,7 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             fake,
             "#!/usr/bin/env bash\n"
             "set -euo pipefail\n"
+            "mkdir -p \"$(dirname \"$HARNESS_ARTIFACT\")\"\n"
             "printf '{\"waiting\":null}\\n' > \"$HARNESS_ARTIFACT\"\n",
         )
         (adapters / "fixture.json").write_text(json.dumps({
@@ -153,6 +182,7 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             "model_family": "fixture",
             "argv": ["bash", str(fake)],
             "envelope_delivery": "stdin",
+            "_verified": True,
             "artifact_relpath": "artifact.json",
         }), encoding="utf-8")
         safe_home = self.root / "safe-home"
@@ -200,6 +230,63 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             self.assertFalse(workroot.exists())
             self.assertFalse(state.exists())
 
+    def test_direct_sandbox_rejects_unsafe_envelope_before_creating_paths(self):
+        registry, envelope_path, adapters = self._sandbox_inputs(self.repo)
+        unsafe = [
+            ("task_id", "../escape-task-001"),
+            ("batch", "../escape"),
+            ("artifact", "../escaped.json"),
+        ]
+        for field, value in unsafe:
+            envelope = self.envelope(self.repo, 60)
+            if field == "artifact":
+                envelope["deliverable"]["artifact"] = value
+            else:
+                envelope[field] = value
+            envelope_path.write_text(json.dumps(envelope), encoding="utf-8")
+            workroot = self.root / f"unsafe-work-{field}"
+            state = self.root / f"unsafe-state-{field}"
+            result = subprocess.run([
+                "bash", str(DISPATCH / "sandbox-profile.sh"),
+                "--agent", "fixture-agent",
+                "--envelope", str(envelope_path),
+                "--registry", str(registry),
+                "--adapters", str(adapters),
+                "--workroot", str(workroot),
+                "--state", str(state),
+            ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            with self.subTest(field=field):
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertFalse(workroot.exists())
+                self.assertFalse(state.exists())
+
+    def test_direct_sandbox_malicious_agent_and_registry_text_never_execute_shell(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        marker = self.root / "sandbox-eval-injection-marker"
+        malicious_agent = f'fixture-agent"; touch {marker}; #'
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", malicious_agent,
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--adapters", str(adapters),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(marker.exists(), result.stderr)
+
+        data = json.loads(registry.read_text(encoding="utf-8"))
+        data["agents"][0]["transport"] = f'local-cli"; touch {marker}; #'
+        registry.write_text(json.dumps(data), encoding="utf-8")
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "fixture-agent",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--adapters", str(adapters),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(marker.exists(), result.stderr)
+
     def test_repo_match_and_script_relative_defaults_work_cross_cwd(self):
         installed = self.root / "installed-dispatch"
         shutil.copytree(DISPATCH, installed)
@@ -211,6 +298,7 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             "model_family": "fixture",
             "argv": ["bash", str(fake)],
             "envelope_delivery": "stdin",
+            "_verified": True,
             "artifact_relpath": "artifact.json",
         }), encoding="utf-8")
         workroot = self.root / "work-match"
@@ -249,6 +337,7 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             "model_family": "fixture",
             "argv": [sys.executable, str(tree), "parent", str(pids_path)],
             "envelope_delivery": "stdin",
+            "_verified": True,
             "artifact_relpath": "artifact.json",
         }), encoding="utf-8")
         workroot = self.root / "cancel-work"
@@ -641,6 +730,96 @@ class A2AClientTests(unittest.TestCase):
         cls.client = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.client)
 
+    @staticmethod
+    def commissioned_envelope(task_id="remote-artifact-001", artifact="docs/test-reports/BL-FIXTURE-verdict.json"):
+        return {
+            "task_id": task_id,
+            "contract_version": "harness/1.1",
+            "batch": "BL-FIXTURE",
+            "role": "evaluator",
+            "repo": {"url": ".", "ref": "a" * 40},
+            "l2_authorized": False,
+            "contract": "Deterministic remote fixture contract with enough detail for validation.",
+            "deliverable": {
+                "artifact": artifact,
+                "schema": ".claude/autonomous/verdict-artifact.schema.json",
+                "commit_to": None,
+            },
+        }
+
+    def commission(self, root, envelope):
+        root.mkdir(parents=True, exist_ok=True)
+        if not (root / ".git").exists():
+            subprocess.run(["git", "-C", str(root), "init", "-q"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "fixture@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "fixture"], check=True)
+            (root / ".a2a-fixture").write_text("fixture\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(root), "add", ".a2a-fixture"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "fixture"], check=True)
+        envelope_path = root / "envelope.json"
+        envelope_path.write_text(json.dumps(envelope), encoding="utf-8")
+        return self.client.commission_from_envelope(
+            envelope, str(envelope_path), project_root=str(root)
+        )
+
+    def test_a2a_auth_rejects_unsafe_configuration_before_network(self):
+        base = {
+            "id": "remote",
+            "roles": ["evaluator"],
+            "transport": "a2a",
+            "endpoint": "http://127.0.0.1:1",
+            "model_family": "fixture",
+        }
+        self.assertEqual(self.client.auth_header(base), {})
+        self.assertEqual(
+            self.client.auth_header({**base, "auth": {"type": "none"}}), {}
+        )
+        with mock.patch.dict(os.environ, {"REMOTE_A2A_TOKEN": "fixture-token"}, clear=False):
+            self.assertEqual(
+                self.client.auth_header(
+                    {**base, "auth": {"type": "bearer", "env": "REMOTE_A2A_TOKEN"}}
+                ),
+                {"Authorization": "Bearer fixture-token"},
+            )
+
+        for auth, error in (
+            (None, "must be an object"),
+            ({}, "must be 'none' or 'bearer'"),
+            ({"type": "none", "env": "REMOTE_A2A_TOKEN"}, "must contain exactly"),
+            ({"type": "bearer"}, "must contain exactly"),
+            ({"type": "bearer", "env": "GIT_TERMINAL_PROMPT"}, "protected"),
+            ({"type": "bearer", "env": "OPENAI_API_KEY"}, "REMOTE_A2A_"),
+        ):
+            with self.subTest(auth=auth), self.assertRaisesRegex(self.client.ClientError, error):
+                self.client.auth_header({**base, "auth": auth})
+
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(self.client.ClientError, "REMOTE_A2A_TOKEN is empty"):
+                self.client.auth_header(
+                    {**base, "auth": {"type": "bearer", "env": "REMOTE_A2A_TOKEN"}}
+                )
+
+        with mock.patch.object(urllib.request, "urlopen") as urlopen:
+            for env_name, error in (("GIT_ASKPASS", "protected"), ("OPENAI_API_KEY", "REMOTE_A2A_")):
+                with self.subTest(env_name=env_name), self.assertRaisesRegex(self.client.ClientError, error):
+                    self.client.rpc(
+                        {**base, "auth": {"type": "bearer", "env": env_name}},
+                        "GetTask",
+                        {"taskId": "fixture-task"},
+                    )
+            urlopen.assert_not_called()
+
+        with tempfile.TemporaryDirectory() as raw:
+            registry = Path(raw) / "registry.json"
+            registry.write_text(
+                json.dumps({"version": "dispatch/1", "agents": [{
+                    **base, "auth": {"type": "bearer", "env": "HARNESS_A2A_TOKEN"}
+                }]}),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(self.client.ClientError, "protected"):
+                self.client.load_descriptor(str(registry), "remote")
+
     def test_confirmed_deadline_cancel_survives_final_get_failure(self):
         descriptor = {
             "id": "remote",
@@ -710,6 +889,141 @@ class A2AClientTests(unittest.TestCase):
             )
         self.assertEqual(record["state"], "COMPLETED")
         self.assertEqual(self.client.deadline_exit_code(record), 0)
+
+    def test_inlined_a2a_artifact_receipt_pointer_is_absolute(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            state = root / "state"
+            envelope = self.commissioned_envelope(
+                artifact="docs/test-reports/BL-FIXTURE-verdict.json"
+            )
+            commission = self.commission(root, envelope)
+            previous_cwd = os.getcwd()
+            try:
+                os.chdir(root)
+                with mock.patch("builtins.print"):
+                    meta = self.client.synth_run_meta(
+                        {
+                            "id": "remote",
+                            "endpoint": "http://127.0.0.1:1",
+                            "model_family": "fixture",
+                        },
+                        {
+                            "taskId": envelope["task_id"],
+                            "agent": "remote",
+                            "model_family": "fixture",
+                            "batch": envelope["batch"],
+                            "role": envelope["role"],
+                            "deliverable": envelope["deliverable"],
+                            "artifact": {"waiting": None},
+                            "state": "COMPLETED",
+                        },
+                        str(state),
+                        commission=commission,
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            expected = state / "a2a-artifacts" / "remote-artifact-001" / "BL-FIXTURE-verdict.json"
+            self.assertTrue(Path(meta["artifact"]).is_absolute())
+            self.assertEqual(Path(meta["artifact"]).resolve(), expected.resolve())
+            self.assertTrue(expected.is_file())
+            self.assertEqual(
+                Path(json.loads((state / "run-meta-remote-artifact-001.json").read_text())["artifact"]).resolve(),
+                expected.resolve(),
+            )
+            self.assertFalse((root / "docs" / "test-reports" / "BL-FIXTURE-verdict.json").exists())
+
+    def test_terminal_binding_mismatch_never_writes_remote_artifact_path(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            project = root / "project"
+            project.mkdir()
+            envelope = self.commissioned_envelope(
+                artifact="docs/test-reports/BL-FIXTURE-verdict.json"
+            )
+            commission = self.commission(project, envelope)
+            remote = {
+                "taskId": envelope["task_id"],
+                "batch": envelope["batch"],
+                "role": envelope["role"],
+                # A remote path must never choose a local write destination.
+                "deliverable": {
+                    "artifact": "../escaped.json",
+                    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+                    "commit_to": None,
+                },
+                "artifact": {"waiting": None},
+                "state": "COMPLETED",
+            }
+            previous_cwd = os.getcwd()
+            try:
+                os.chdir(project)
+                with self.assertRaisesRegex(self.client.ClientError, "deliverable"):
+                    self.client.synth_run_meta(
+                        {"id": "remote", "endpoint": "http://127.0.0.1:1"},
+                        remote,
+                        str(project / "state"),
+                        commission=commission,
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            self.assertFalse((root / "escaped.json").exists())
+            self.assertFalse((project / "docs" / "test-reports" / "BL-FIXTURE-verdict.json").exists())
+            self.assertFalse((project / "state").exists())
+
+    def test_terminal_record_fields_must_exactly_match_commission(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            envelope = self.commissioned_envelope()
+            commission = self.commission(root, envelope)
+            base = {
+                "taskId": envelope["task_id"],
+                "batch": envelope["batch"],
+                "role": envelope["role"],
+                "deliverable": envelope["deliverable"],
+                "state": "COMPLETED",
+            }
+            mutations = {
+                "taskId": "other-task-001",
+                "batch": "BL-OTHER",
+                "role": "planner",
+                "deliverable": {"artifact": "docs/test-reports/other.json", "schema": ".claude/autonomous/verdict-artifact.schema.json", "commit_to": None},
+            }
+            for field, value in mutations.items():
+                record = dict(base)
+                record[field] = value
+                with self.subTest(field=field), self.assertRaisesRegex(self.client.ClientError, field):
+                    self.client.synth_run_meta(
+                        {"id": "remote", "endpoint": "http://127.0.0.1:1"},
+                        record,
+                        str(root / "state"),
+                        commission=commission,
+                    )
+            self.assertFalse((root / "state").exists())
+            self.assertFalse((root / "docs" / "test-reports" / "BL-FIXTURE-verdict.json").exists())
+
+    def test_failed_a2a_terminal_with_artifact_is_not_returned(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            envelope = self.commissioned_envelope()
+            commission = self.commission(root, envelope)
+            meta = self.client.synth_run_meta(
+                {"id": "remote", "endpoint": "http://127.0.0.1:1", "model_family": "fixture"},
+                {
+                    "taskId": envelope["task_id"],
+                    "batch": envelope["batch"],
+                    "role": envelope["role"],
+                    "deliverable": envelope["deliverable"],
+                    "state": "FAILED",
+                    "artifact": {"waiting": None},
+                },
+                str(root / "state"),
+                commission=commission,
+            )
+            self.assertEqual(meta["outcome"], "FAILED")
+            self.assertTrue(Path(meta["artifact"]).is_file())
 
 
 class RunnerCoreTests(unittest.TestCase):

@@ -35,6 +35,27 @@ function write(rel: string, content: string): void {
   writeFileSync(path, content);
 }
 
+function installToolCatalogFixture(invalidPlanner = false): void {
+  write(".agents-registry.json", `${JSON.stringify({
+    version: "dispatch/1",
+    agents: [
+      { id: "planner", roles: ["planner"], transport: "subagent", agent_type: invalidPlanner ? "generator-restricted" : "planner-proposal", model_family: "claude" },
+      { id: "generator", roles: ["generator"], transport: "local-cli", adapter: "future-cli", model_family: "codex", sandbox: { home_dir: "~/future" }, constraints: { l2: false, write_src: true, push: false } },
+      { id: "evaluator", roles: ["evaluator"], transport: "local-cli", adapter: "kimi", model_family: "kimi", sandbox: { home_dir: "~/kimi" } }
+    ]
+  }, null, 2)}\n`);
+  write(".claude/dispatch/transports/adapters/future-cli.json", `${JSON.stringify({
+    name: "future-cli", tool: "future-cli", display_name: "Future CLI", model_family: "codex",
+    argv: ["future-cli"], envelope_delivery: "env", _verified: true
+  })}\n`);
+  write(".claude/dispatch/transports/adapters/kimi.json", `${JSON.stringify({
+    name: "kimi", tool: "kimi", display_name: "Kimi", model_family: "kimi",
+    argv: ["kimi"], envelope_delivery: "stdin", _verified: true
+  })}\n`);
+  git(["add", "-A"]);
+  git(["commit", "-qm", "install catalog fixture"]);
+}
+
 function basePayload(overrides: Record<string, unknown> = {}) {
   return {
     intent_id: "intent-1",
@@ -60,6 +81,31 @@ function relayItem(payload = basePayload()): RelayedModeIntent {
       sig: edSign(null, Buffer.from(canonicalJson(payload)), privateKey).toString("base64")
     } as RelayedModeIntent["intent"]
   };
+}
+
+function v2Payload() {
+  return basePayload({
+    desired: {
+      execution: {
+        profile: "heterogeneous",
+        role_bindings: {
+          planner: { tool: "claude-code", invocation: "subagent" },
+          generator: { tool: "future-cli", invocation: "local-cli" },
+          evaluator: { tool: "kimi", invocation: "local-cli" }
+        }
+      },
+      autonomy: { enabled: false }
+    }
+  });
+}
+
+function v2FastPayload() {
+  return basePayload({
+    desired: {
+      execution: { profile: "fast", role_bindings: null },
+      autonomy: { enabled: false }
+    }
+  });
 }
 
 beforeEach(() => {
@@ -94,6 +140,54 @@ describe("mode intent relay bounds", () => {
 });
 
 describe("signed mode intent staging", () => {
+  it("stages and reads v2 bindings through the data-only catalog, without agent ids", () => {
+    installToolCatalogFixture();
+
+    expect(stageHarnessModeIntent({ path: repo, repoKey: REPO_KEY }, relayItem(v2Payload()), NOW)).toMatchObject({
+      status: "staged",
+      intentId: "intent-1"
+    });
+    expect(readPendingModeDefaults(repo, NOW)).toMatchObject({
+      execution: {
+        profile: "heterogeneous",
+        roleAssignments: null,
+        roleBindings: {
+          planner: { tool: "claude-code", invocation: "subagent" },
+          generator: { tool: "future-cli", invocation: "local-cli" },
+          evaluator: { tool: "kimi", invocation: "local-cli" }
+        }
+      }
+    });
+
+    // /plan retains the intent as an audit record after consuming it. The same
+    // signed defaults must not continue to appear as pending for the next plan.
+    write("progress.json", JSON.stringify({ mode_intent: { intent_id: "intent-1" } }));
+    expect(readPendingModeDefaults(repo, NOW)).toBeNull();
+  });
+
+  it("stages and reports legal v2 fast null bindings without a tool catalog", () => {
+    expect(stageHarnessModeIntent({ path: repo, repoKey: REPO_KEY }, relayItem(v2FastPayload()), NOW)).toMatchObject({
+      status: "staged",
+      intentId: "intent-1"
+    });
+    expect(readPendingModeDefaults(repo, NOW)).toMatchObject({
+      intentId: "intent-1",
+      execution: { profile: "fast", roleAssignments: null, roleBindings: null }
+    });
+    expect(readModeDefaultsReportSummary(repo, NOW)).toMatchObject({ intentId: "intent-1" });
+  });
+
+  it("rejects v2 staging when the data-only registry validation fails", () => {
+    installToolCatalogFixture(true);
+    const before = readFileSync(join(repo, "harness.json"), "utf8");
+
+    expect(stageHarnessModeIntent({ path: repo, repoKey: REPO_KEY }, relayItem(v2Payload()), NOW)).toMatchObject({
+      status: "failed",
+      failureCode: "missing_tool_catalog"
+    });
+    expect(readFileSync(join(repo, "harness.json"), "utf8")).toBe(before);
+  });
+
   it("validates, atomically stages, and commits only harness.json", () => {
     const progressBefore = readFileSync(join(repo, "progress.json"), "utf8");
     const result = stageHarnessModeIntent({ path: repo, repoKey: REPO_KEY }, relayItem(), NOW);

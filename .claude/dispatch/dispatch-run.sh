@@ -17,6 +17,10 @@ REGISTRY=".agents-registry.json"
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKROOT="../.harness-dispatch"
 STATE=".harness-dispatch"
+PROGRESS="progress.json"
+PROGRESS_EXPLICIT=false
+PUB=""
+ADAPTERS=""
 AGENT_ID=""; ENVELOPE=""; EXTRA=()
 
 while [ $# -gt 0 ]; do
@@ -26,6 +30,9 @@ while [ $# -gt 0 ]; do
     --registry) REGISTRY="$2"; shift 2 ;;
     --workroot) WORKROOT="$2"; shift 2 ;;
     --state)    STATE="$2"; shift 2 ;;
+    --progress) PROGRESS="$2"; PROGRESS_EXPLICIT=true; shift 2 ;;
+    --pub)      PUB="$2"; shift 2 ;;
+    --adapters) ADAPTERS="$2"; shift 2 ;;
     *) EXTRA+=("$1"); shift ;;
   esac
 done
@@ -38,29 +45,108 @@ die() { echo "[dispatch-run] ⛔ $1" >&2; exit 2; }
 
 # 信封白名单校验前置到这里，两条 transport 共用（铁律 12 的机械强制）
 bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE" >&2 || die "信封校验未过，不派活"
+# The registry is part of the execution contract too. In particular, it
+# rejects a2a+generator before a transport can claim source changes are
+# returnable without a source-handoff protocol.
+bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" >&2 || die "注册表校验未过，不派活"
 # 本地 repo.url 必须与调用入口所在 git 仓一致。此检查发生在任何 state/workroot 目录创建之前。
-python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
-  --envelope "$ENVELOPE" --cwd "$PWD" >/dev/null || die "repo.url 前置校验未过，不派活"
+PROJECT_ROOT="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
+  --envelope "$ENVELOPE" --cwd "$PWD")" || die "repo.url 前置校验未过，不派活"
 
-TRANSPORT="$(python3 -c "
-import json,sys
-reg=json.load(open(sys.argv[1]))
-d=next((a for a in reg.get('agents',[]) if a.get('id')==sys.argv[2]), None)
-print((d or {}).get('transport',''))" "$REGISTRY" "$AGENT_ID")"
+# A generic dispatch utility is also used by isolated fixtures that have no
+# progress state. Inside a real project, however, an active v2 checkpoint owns
+# the role selection: a caller-provided --agent may only equal the freshly
+# re-verified record for the envelope role. This applies equally to manually
+# invoked planner/generator/evaluator dispatches.
+ROLE="$(python3 - "$ENVELOPE" <<'PY'
+import json
+import sys
+try:
+    print(json.load(open(sys.argv[1], encoding="utf-8")).get("role") or "")
+except (OSError, ValueError) as exc:
+    raise SystemExit(f"[dispatch-run] ⛔ 无法读取已校验 envelope role：{exc}")
+PY
+)" || die "无法读取 envelope role"
+CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
+ACTIVE_PROGRESS=""
+if [ -f "$CANONICAL_PROGRESS" ]; then
+  if [ "$PROGRESS_EXPLICIT" = true ]; then
+    PROVIDED_PROGRESS="$(python3 - "$PROGRESS" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+)"
+    [ "$PROVIDED_PROGRESS" = "$CANONICAL_PROGRESS" ] || die "--progress 必须是项目根 canonical progress.json"
+  fi
+  ACTIVE_PROGRESS="$CANONICAL_PROGRESS"
+elif [ "$PROGRESS_EXPLICIT" = true ]; then
+  die "显式 --progress 不存在，不能跳过 active mode 校验：$PROGRESS"
+fi
+if [ -n "$ACTIVE_PROGRESS" ]; then
+  ACTIVE_ARGS=(--role "$ROLE" --expected-agent "$AGENT_ID" --progress "$ACTIVE_PROGRESS" --registry "$REGISTRY")
+  [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
+  bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
+    || die "active mode role 复验失败；拒绝使用未验证的 --agent"
+fi
+
+if ! TRANSPORT="$(python3 - "$REGISTRY" "$AGENT_ID" "$ENVELOPE" <<'PY'
+import json
+import sys
+
+registry_path, agent_id, envelope_path = sys.argv[1:4]
+try:
+    registry = json.load(open(registry_path, encoding="utf-8"))
+    envelope = json.load(open(envelope_path, encoding="utf-8"))
+except Exception as exc:
+    print(f"[dispatch-run] ⛔ descriptor preflight failed: {exc}", file=sys.stderr)
+    raise SystemExit(2)
+
+descriptor = next(
+    (item for item in registry.get("agents", []) if item.get("id") == agent_id), None
+)
+if descriptor is None:
+    print(f"[dispatch-run] ⛔ 注册表中无此 agent：{agent_id}", file=sys.stderr)
+    raise SystemExit(2)
+role = envelope.get("role")
+if role not in (descriptor.get("roles") or []):
+    print(
+        f"[dispatch-run] ⛔ {agent_id} 的 roles={descriptor.get('roles')} 不含信封 role={role!r}",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+if role == "generator" and descriptor.get("transport") == "a2a":
+    print(
+        "[dispatch-run] ⛔ a2a transport 暂不支持 generator："
+        "尚无 source-handoff protocol，不能安全回流源码改动",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+print(descriptor.get("transport") or "")
+PY
+)"; then
+  die "agent descriptor 与信封角色不兼容"
+fi
 
 case "$TRANSPORT" in
   local-cli)
     echo "[dispatch-run] transport=local-cli → 本机沙箱" >&2
-    exec bash "$DISPATCH_DIR/sandbox-profile.sh" \
-      --agent "$AGENT_ID" --envelope "$ENVELOPE" \
-      --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE" \
-      ${EXTRA[@]+"${EXTRA[@]}"}
+    LOCAL_ARGS=(
+      --agent "$AGENT_ID" --envelope "$ENVELOPE"
+      --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE"
+    )
+    [ -z "$ADAPTERS" ] || LOCAL_ARGS+=(--adapters "$ADAPTERS")
+    if [ "${#EXTRA[@]}" -gt 0 ]; then
+      LOCAL_ARGS+=("${EXTRA[@]}")
+    fi
+    exec bash "$DISPATCH_DIR/sandbox-profile.sh" "${LOCAL_ARGS[@]}"
     ;;
   a2a)
     echo "[dispatch-run] transport=a2a → 远端 runner（SSE 订阅至终态）" >&2
     exec python3 "$DISPATCH_DIR/transports/a2a-client.py" run \
       --agent "$AGENT_ID" --envelope "$ENVELOPE" \
-      --registry "$REGISTRY" --state "$STATE" ${EXTRA[@]+"${EXTRA[@]}"}
+      --registry "$REGISTRY" --state "$STATE" --project-root "$PROJECT_ROOT" ${EXTRA[@]+"${EXTRA[@]}"}
     ;;
   subagent)
     die "$AGENT_ID 的 transport=subagent —— 同会话 subagent 由编排者直接派，不走本入口"

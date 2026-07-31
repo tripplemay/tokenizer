@@ -12,7 +12,7 @@
 
 ## 1. 定位：解决的是「派活」，不是「协议」
 
-慢车道原本缺三样：**① 没有派活抽象**（`role_assignments` 只是字符串 id，编排者知道该谁干却不知道怎么把活递过去）、
+慢车道原本缺三样：**① 没有派活抽象**（历史 `role_assignments` 只是字符串 id，编排者知道该谁干却不知道怎么把活递过去）、
 **② 没有唤醒信号**、**③ 没有回执与超时**。
 
 ①是地基，且是纯 harness 内的抽象工作，**一行协议都不需要**。②③才需要协议栈，且只在跨机器时才值钱。
@@ -23,8 +23,8 @@
 | `transport` | 含义 | 形态 |
 |---|---|---|
 | `subagent` | 同会话隔离 subagent | 快车道（默认） |
-| `local-cli` | 独立进程 + 独立 worktree + 异厂商模型 | **本地异构（本模式主体）** |
-| `a2a` | 自建 runner（长驻 HTTP 服务） | **真异步 / taskId 重订阅 / SSE 推送 / 跨机器**（已实装，见 `transports/a2a.md`） |
+| `local-cli` | 独立进程 + 独立 sandbox checkout + 异厂商模型 | **本地异构（本模式主体）** |
+| `a2a` | 自建 runner（长驻 HTTP 服务） | **真异步 / taskId 重订阅 / SSE 推送 / 跨机器**；Planner / Evaluator 已实装，Generator 因无源码回流协议被拒（见 `transports/a2a.md`） |
 
 `local-cli` 提供**模型异构**（阻塞子进程，会话在任务在）；`a2a` 在其上再加**时间与空间解耦**
 （派完可关会话、凭 taskId 重订阅、跨机器）。两者共用同一份信封、回执表与状态机，
@@ -33,20 +33,43 @@
 ## 2. 一句话架构
 
 ```
-role_assignments: { "generator": "builder-codex", "evaluator": "reviewer-claude" }
-        ↓ 解析
-.agents-registry.json  descriptor（L1）：transport · model_family · roles · constraints · sandbox
+已签名 v2 role_bindings: { role: { tool, invocation } }
+        ↓ 验签后 registry preflight + tool-catalog resolver
+progress.mode_intent.signed_intent（active checkpoint）
+        ↓ checkpoint 重验 + 当前 registry/verified adapter 重解
+progress.mode_intent.resolution + progress.role_assignments（仅审计快照，不参与选择）
+        ↓
+.agents-registry.json descriptor（L1）：transport · model_family · roles · constraints · sandbox
         ↓ 组装
 dispatch-envelope（L2）：字段白名单，只传指针（batch · repo@sha · spec · features · l2_flag · 内联契约）
-        ↓ 机件 #7 沙箱：env 白名单 · 独立 worktree · 禁 push · wall-clock 封顶
-     外部 CLI 进程
-        ↓ 产物落盘（verdict.json / worktree commit）
+        ↓ 机件 #7 沙箱：env 白名单 · 独立 sandbox checkout · 禁 push · wall-clock 封顶
+外部 CLI / A2A task
+        ↓ 产物落盘（verdict / Planner proposal / Generator handoff + sandbox diff）
 回执推断（L3）：exit code + 产物存在性 + schema + waiting → 6 态
         ↓ 机械回写（铁律 12 逐字）
 progress.json / features.json —— 唯一真相源
         ↓
 gate-arbiter：Class A 自动跨 · B 需 policy 授权 · C 硬停（L4：阶段推进键永不归引擎）
 ```
+
+v1 的已签名 `role_assignments` 仍走兼容路径；只有 v2 将人类选择的工具/调用方式解析为内部
+agent id。对控制台和用户而言，新增 CLI 只需注册 descriptor 与已验证 adapter，目录与 resolver 会自动
+把它纳入相同的角色、transport、沙箱和独立性约束。
+
+### 2.1 Coordinator 与 Planner proposal
+
+**Coordinator 是当前主会话的固定控制面，不是 Agent Card、不是注册表 role，也不可配置或派发。**
+它负责验证人类意图、按已选工具/调用方式解析可用 descriptor、组装固定契约、校验回执、向人类展示结果，
+并且只在获得人类确认后物化状态机文件。
+
+Planner 是可派发的执行角色，但它只能返回
+`.claude/dispatch/planner-proposal.schema.json` 规定的 proposal。它不得直接写 spec、features、
+`progress.json`、模式配置或 commit；proposal 不是执行命令。`/autodrive` 也不得自行派 Planner 或
+自动消费 proposal：未锁定的 spec 仍按 `spec_lock_required` 硬停。
+
+v2 non-fast 下，不论 Planner descriptor 的 transport 是 `subagent`、`local-cli` 还是 `a2a`，
+都必须走固定 Planner envelope → proposal schema → receipt → 人类确认。subagent 使用专用
+`planner-proposal` persona；Coordinator 不得以「本机」为理由直接代替 Planner 规划。
 
 ## 3. 四层设计
 
@@ -57,6 +80,17 @@ harness 版 Agent Card，A2A Agent Card 的最小可用子集。schema 见
 
 必填四项：`id` · `roles`（可分配角色白名单）· `transport` · `model_family`。
 `transport=local-cli` 另需 `adapter`；`a2a` 需 `endpoint`；`subagent` 需 `agent_type`。
+subagent 的 Planner descriptor 必须只含 `planner` 角色且 `agent_type=planner-proposal`。
+`a2a + generator` 被 registry 校验器拒绝：当前传输只能回流结构化 artifact，尚无可验证的
+source-handoff protocol 来回流源码 diff / commit。新增 CLI 工具只要以 descriptor 注册，就自动接受这组
+role × transport 约束和同一套 preflight。
+
+`auth` 只属于 `transport=a2a`，且仅允许省略（无认证）、`{ "type": "none" }` 或
+`{ "type": "bearer", "env": "REMOTE_A2A_TOKEN" }` 这两种显式形状。Bearer 的 `env` 必须是专用
+`REMOTE_A2A_*` POSIX 变量名，不能引用任意宿主密钥（例如 `OPENAI_API_KEY`）；它同时拒绝 `PATH`、`HOME`、
+所有 `GIT_*`、`HARNESS_*`、动态链接器和 shell bootstrap 名称。它只能承载远端 token，不能泄漏或改写
+Coordinator 进程控制。registry preflight、控制台目录和 direct A2A client 使用同一验证器，因而未来 descriptor
+不会先被 UI 展示、再在真实派发时才失败。
 
 历史的纯 id 列表 `.agents-registry` 仍兼容读取，但只能支撑快车道默认映射——它没有派活所需的信息。
 
@@ -85,33 +119,48 @@ schema 见 `dispatch-envelope.schema.json`。两个关键设计：
 必须是确定的一次快照）。这是 A2A 的 Opaque Execution 与 harness「只认实物」的兼容解：
 A2A 管交接信道，git 管证据与持久化。
 
-**可直接复制的合法信封（两个角色各一）：**
+**可直接复制的合法信封（三个执行角色各一）：**
 
 ```jsonc
+// planner：只提交结构化 proposal；Coordinator 展示给人类确认后才可写入项目
+{ "task_id": "BL-XXX-plan-a1b2c3d4", "contract_version": "harness/1.1",
+  "batch": "BL-XXX", "role": "planner",
+  "repo": { "url": "/abs/path/or/git-url", "ref": "<40 位 sha，不接受分支名>" },
+  "spec": null, "features": [], "l2_authorized": false,
+  "contract": "只读仓库并返回 planner-proposal；不得写 spec、features、状态机或代码。",
+  "deliverable": { "artifact": "docs/test-reports/planner-proposal-BL-XXX-plan-a1b2c3d4.json",
+                   "schema": ".claude/dispatch/planner-proposal.schema.json",
+                   "commit_to": null } }
+
 // evaluator：验收一次快照，产物是 verdict 工件
 { "task_id": "BL-XXX-verify-<sha12>",       // 幂等键，重复派活会被拒
   "contract_version": "harness/1.1",
   "batch": "BL-XXX", "role": "evaluator",
   "repo": { "url": "/abs/path/or/git-url", "ref": "<40 位 sha，不接受分支名>" },
   "spec": "docs/specs/BL-XXX.md", "features": ["F001"], "l2_authorized": false,
-  "contract": { "task": "……逐条按规格 §4 验收；自己跑命令；不要复述提交信息……" },
+  "contract": "……逐条按规格 §4 验收；自己跑命令；不要复述提交信息……",
   "deliverable": { "artifact": "docs/test-reports/BL-XXX-verdict.json",
                    "schema": ".claude/autonomous/verdict-artifact.schema.json",
                    "commit_to": null } }
 
 // generator：写代码，产物是 handoff 清单（代码本身以未提交 diff 形式留在沙箱里）
-{ "task_id": "BL-XXX-build-<sha12>", "contract_version": "harness/1.1",
+{ "task_id": "BL-XXX-build-a1b2c3d4", "contract_version": "harness/1.1",
   "batch": "BL-XXX", "role": "generator",
   "repo": { "url": "/abs/path", "ref": "<sha>" },
   "spec": "docs/specs/BL-XXX.md", "features": ["F001"], "l2_authorized": false,
-  "contract": { "task": "……只许动哪些文件；不得 push；跑不动 L1 就如实写未跑……" },
-  "deliverable": { "artifact": "docs/test-reports/BL-XXX-handoff.json",
+  "contract": "……只许动哪些文件；不得 push；跑不动 L1 就如实写未跑……",
+  "deliverable": { "artifact": "docs/test-reports/generator-handoff-BL-XXX-build-a1b2c3d4.json",
                    "schema": ".claude/dispatch/generator-handoff.schema.json",
                    "commit_to": null } }
 ```
 
 ⚠️ **`deliverable.artifact` 由信封说了算**（v1.4.3 修）：适配器的 `artifact_relpath` 只是
 该 CLI 的默认约定，信封是这一次任务的契约，契约压过约定。
+
+Planner 信封额外被机械锁定为 `l2_authorized=false`、proposal artifact 路径、proposal schema 和
+`commit_to=null`。proposal 必须回显 task id、batch 和 immutable ref；回执器据此拒绝跨任务、跨批次
+或跨快照的结果。artifact 路径只由安全 task id 决定，格式为
+`docs/test-reports/planner-proposal-<safe-task-id>.json`；batch 永远不参与路径拼接，避免重派覆盖审计记录。
 
 **v1.5.1 的目标与 deadline 前置契约：** `repo.url` 是本地路径时，入口在创建任何 state/workroot/
 clone/worktree 前把它与当前 invocation 的 git top-level 都做 realpath 规范化；两者不等或任一不是 git
@@ -132,6 +181,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 | `null` | 活干完了 | 继续状态机 |
 | `"auth"` | 撞 L2 边界而 `l2_authorized=false` | **硬停**等授权 |
 | `"adjudication"` | 规格歧义 / acceptance 无法客观判定 | **硬停**转 pre-impl 审计 |
+| `"input"` | 仅 Planner proposal：信息不足或需要人类选择 | **硬停**，Coordinator 展示问题；不得自动补全 |
 
 完整推断表见 `transports/local-cli.md` §4。其中最要紧的一条：
 
@@ -143,7 +193,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 
 ### 3.5 L4 — 谁按阶段推进键
 
-**编排者，永远。** transport 只运输，不推进。完全沿用 `orchestration-patterns.md` §8
+**Coordinator / 编排者，永远。** transport 只运输，不推进。完全沿用 `orchestration-patterns.md` §8
 「引擎拥有阶段内部怎么跑，progress.json 拥有跨阶段的真相与流转闸门；引擎永不自己按下阶段推进键」。
 
 ## 4. 组件
@@ -159,7 +209,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 | **统一派活入口** | 按 transport 路由，对上层隐藏差异 | `dispatch-run.sh` | 已装 ✅ 实测通过 |
 | **a2a runner** | 把一次性 CLI 包成长驻 A2A 服务端 | `transports/a2a-runner.py` | 已装 ✅ 实测通过 |
 | **a2a client** | 编排者侧 hub client（SSE / 轮询 / 幂等） | `transports/a2a-client.py` | 已装 ✅ 实测通过 |
-| **dispatcher subagent** | 跑三条机械命令取回执；**无评估权** | gate-arbiter `dispatchExternal()` | 已接线 |
+| **dispatcher subagent** | 写固定信封、校验信封、派发、取回执四条机械命令；**无评估权** | gate-arbiter `dispatchExternal()` | 已接线 |
 | **family 轮换** | 跨厂商去偏（机件 #6 升级） | gate-arbiter `resolveEvaluators()` | 已接线 |
 
 ## 5. 安全模型
@@ -177,7 +227,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 | 锁 | 实现 | 拦住 | 实测（codex-cli 0.145.0） |
 |---|---|---|---|
 | **L1 env 白名单** | `env -i` + descriptor 显式列名 **+ 专用空 HOME（硬性前置）** | prod 凭据 / 部署 token / 他家 key | ✅ 日志中 `SECRET_TOKEN` / `DATABASE_URL` 零出现 |
-| **L2 独立 worktree** | `git worktree add --detach <sha>` | 污染工作区、并行互踩 | ✅ 主仓零改动，产物只落 worktree |
+| **L2 独立 sandbox checkout** | 只读角色用 `git worktree add --detach <sha>`；Generator 用独立 `git clone --shared` | 污染工作区、并行互踩 | ✅ 主仓零改动，Generator 只留下待校验 handoff 与 sandbox diff |
 | **L3 禁 push** | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 直接改 main | ✅ 9 条子进程命令中无 push |
 | **L4 wall-clock 封顶** | 单一 `process-timeout.py`；绝对时钟 + 独立进程组 + TERM→KILL | 跑飞挂死、suspend/resume 后继续超期 | deterministic matrix |
 
@@ -204,8 +254,9 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
   真要文件系统隔离得靠 OS 层（macOS `sandbox-exec`、Linux bwrap/容器），那是另一档成本。
   当前设计是**用产物 schema 与回流校验兜底，不是用隔离兜底**。
 - **不保证对方能跑 L1。** 一次性工作目录里没有 `node_modules`，而 Codex 的沙箱禁网
-  （`npm ci` 装不了）。沙箱注入 `HARNESS_MAIN_REPO=<主仓绝对路径>` 供对方只读复用依赖；
-  跑不动就该在产物里如实写「未跑」——**编排者本来就要自己重跑**（回流第 3 步）。
+  （`npm ci` 装不了）。沙箱不会再注入 Coordinator 主仓路径；外部工具跑不动必须在产物里如实写「未跑」，
+  Coordinator 仍会在回流前自行重跑 L1。若要更强隔离或受控依赖缓存，须由宿主级 sandbox provider 明确提供，
+  不能把主仓位置作为普通环境变量泄露给 CLI。
 - **子命令 exit 124 不等于 helper timeout。** helper 另写有界 termination status；只有
   `reason=deadline` 才判 TIMEOUT。外部 TERM 是取消，子命令自行 exit 124 是普通非零退出。
 
@@ -243,13 +294,20 @@ v1.1 放开外部 CLI 承担 generator（v1.0 原规则是「外部工具只能 
    产物还在 worktree 里，拦得住才不会污染 main
 4. L1（lint / tsc / test）全绿 —— 代码 diff 比 verdict 更好机械核验，这是外部 generator 的硬证据
 
-**回流四步（编排者执行，外部实例永不直接 push）：**
+**回流四步（Coordinator 执行，外部实例永不直接 push）：**
 
 1. **diff 与 handoff 清单对账** —— 实际改动的文件必须落在 `generator-handoff.json` 的
    `files_touched` 与规格边界之内；多出来的即 **scope 漂移**，拒收
 2. **spec-lock critic 稽核**（机件 #2）
 3. **L1 全绿，由编排者亲自重跑** —— handoff 里的 `l1_ran` 只是对方的自称，不作数
 4. **编排者按 `features.json` 打 tag 并提交**（`feat(<batch>-F<num>):`，铁律 10），统一 push
+
+`dispatch-generator-handoff.sh` 每次只委托一个 pending Generator feature，并输出 handoff、run-meta、
+envelope 与 source ref 的路径。Coordinator 在第 2 步得到无违规的 critic 结论后，使用
+`accept-generator-handoff.sh` 执行第 1、3、4 步：先以严格 `harness-l1/1` 命令文档 dry-run，只有返回
+`READY_TO_APPLY` 后再显式传 `--apply`。该入口只接受 local-cli 的单 feature sandbox diff；它要求主仓 clean
+且仍在 source ref，要求实际 diff 与 `files_touched` 精确相等，并在 sandbox 中重跑 lint/typecheck/test。
+成功才会将二进制 patch 应用到主仓并创建对应 feature commit；失败时不修改主仓、保留 sandbox 取证。
 
 ### 🔴 为什么外部 generator **不提交**（v1.4.4 设计订正）
 
@@ -333,9 +391,12 @@ v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合�
 > - `sandbox-profile.sh` — 机件 #7 四道锁
 > - `dispatch_common.py` + `process-timeout.py` — repo/deadline 单一契约与 portable process-group timeout
 > - `agents-registry.schema.json` + `agents-registry.example.json` — L1
+> - `tool-catalog.py` — `tool-catalog/1` 的 harness 参考实现；从 registry/verified adapter 自动生成角色工具目录并解析 v2 bindings
 > - `dispatch-envelope.schema.json` — L2
 > - `validate-dispatch.sh` — registry / envelope / assignments / receipt / hook 五合一校验器
 > - `dispatch-run.sh` — 统一派活入口，按 transport 路由
+> - `planner-proposal.schema.json` + `prepare/dispatch/accept-planner-proposal.sh` — v2 Planner proposal 契约与三条 transport 路径
+> - `generator-handoff.schema.json` + `dispatch/accept-generator-handoff.sh` — local-cli Generator 的固定 handoff/diff 回流
 > - `transports/local-cli.md` + `transports/adapters/codex.json` — 首家适配器
 > - `transports/a2a.md` + `a2a-runner.py` + `a2a-client.py` — a2a transport（已实装）
 > - `test-local-state.sh` + `test-lifecycle.py` — durable state 与 deadline/lifecycle deterministic matrix

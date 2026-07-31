@@ -1,18 +1,27 @@
 import {
   HARNESS_AUTONOMY_LIMITS,
   HARNESS_EXECUTION_PROFILES,
+  HARNESS_MODE_ROLES,
   HARNESS_TRANSPORTS,
   HarnessModeIntentValidationError,
   normalizeHarnessModeIntentPayload,
   type HarnessAutonomyGate,
   type HarnessAutonomyNotification,
   type HarnessExecutionProfile,
-  type HarnessModeAgentDescriptor,
   type HarnessModeIntentDesired,
+  type HarnessModeRole,
+  type HarnessModeRoleBindings,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
+import {
+  toolCatalogModeDescriptors,
+  type HarnessToolCatalogEntry
+} from "@/shared/harness-tool-catalog";
 import { DEVICE_ONLINE_MS } from "@/shared/device-status";
-import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import {
+  MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+} from "@/shared/agent-feature-version";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -66,10 +75,21 @@ export type HarnessDetailAgent = {
   sandboxed: boolean | null;
 };
 
+export type HarnessDetailToolCapability = HarnessToolCatalogEntry;
+
+export type HarnessDetailRoleBindings = {
+  [role in HarnessModeRole]: HarnessModeRoleBindings[role] & { modelFamily?: string };
+};
+
+export type HarnessDetailResolvedRoleBindings = {
+  [role in HarnessModeRole]: HarnessModeRoleBindings[role] & { modelFamily: string };
+};
+
 export type HarnessDesiredSummary = {
   execution: {
     profile: HarnessExecutionProfile;
     roleAssignments: { generator: string; evaluator: string } | null;
+    roleBindings: HarnessDetailRoleBindings | null;
   };
   autonomy: {
     enabled: boolean;
@@ -79,6 +99,10 @@ export type HarnessDesiredSummary = {
 
 export type HarnessDetailModes = {
   execution: HarnessExecutionProfile | "unknown";
+  current: {
+    profile: "heterogeneous" | "slow";
+    roleBindings: HarnessDetailResolvedRoleBindings;
+  } | null;
   autonomy: {
     enabled: boolean;
     policyValid: boolean | null;
@@ -90,9 +114,11 @@ export type HarnessDetailModes = {
     enabled: boolean;
     assignments: Record<string, string>;
     agents: HarnessDetailAgent[];
+    toolCatalog: HarnessDetailToolCapability[];
     familyExclusive: boolean | null;
     issues: string[];
     agentSnapshotUsable: boolean;
+    toolCatalogUsable: boolean;
   };
   framework: {
     version: string | null;
@@ -123,6 +149,43 @@ function roleAssignments(value: unknown): HarnessDesiredSummary["execution"]["ro
   const evaluator = text(assignments?.evaluator);
   if (!generator || !evaluator) return null;
   return { generator, evaluator };
+}
+
+function roleBindings(value: unknown): HarnessDetailRoleBindings | null {
+  const bindings = record(value);
+  if (!bindings) return null;
+  const parsed = {} as HarnessDetailRoleBindings;
+  for (const role of HARNESS_MODE_ROLES) {
+    const binding = record(bindings[role]);
+    const tool = text(binding?.tool);
+    const invocation = harnessTransport(binding?.invocation);
+    if (!binding || !tool || !invocation) return null;
+    parsed[role] = { tool, invocation };
+  }
+  return parsed;
+}
+
+function currentMode(value: unknown, execution: HarnessDetailModes["execution"]): HarnessDetailModes["current"] {
+  const current = record(value);
+  const profile = executionProfile(current?.profile);
+  const bindings = record(current?.roleBindings);
+  if (!current || (profile !== "heterogeneous" && profile !== "slow") || profile !== execution || !bindings) return null;
+
+  const parsed = {} as HarnessDetailResolvedRoleBindings;
+  for (const role of HARNESS_MODE_ROLES) {
+    const binding = record(bindings[role]);
+    const tool = text(binding?.tool);
+    const invocation = harnessTransport(binding?.invocation);
+    const modelFamily = text(binding?.modelFamily);
+    if (!binding || !tool || tool.length > 64 || !invocation || !modelFamily || modelFamily.length > 128) return null;
+    parsed[role] = { tool, invocation, modelFamily };
+  }
+  const invocations = HARNESS_MODE_ROLES.map((role) => parsed[role].invocation);
+  if (
+    (profile === "slow" && !invocations.includes("a2a")) ||
+    (profile === "heterogeneous" && (invocations.includes("a2a") || !invocations.includes("local-cli")))
+  ) return null;
+  return { profile, roleBindings: parsed };
 }
 
 function displayAgent(value: unknown): HarnessDetailAgent | null {
@@ -165,6 +228,51 @@ function strictAgentSnapshot(dispatch: UnknownRecord | null): HarnessDetailAgent
   return agents;
 }
 
+function strictToolCatalog(dispatch: UnknownRecord | null): HarnessDetailToolCapability[] | null {
+  if (!Array.isArray(dispatch?.toolCatalog) || dispatch.toolCatalog.length < 1 || dispatch.toolCatalog.length > 150) return null;
+  const catalog: HarnessDetailToolCapability[] = [];
+  const seen = new Set<string>();
+  for (const value of dispatch.toolCatalog) {
+    const capability = record(value);
+    const tool = text(capability?.tool);
+    const label = text(capability?.label);
+    const invocation = harnessTransport(capability?.invocation);
+    const role = text(capability?.role);
+    const modelFamilies = stringList(capability?.modelFamilies, 50);
+    const capabilities = stringList(capability?.capabilities, 64);
+    const agentCount = capability?.agentCount;
+    if (
+      !capability ||
+      !tool ||
+      tool.length > 64 ||
+      !label ||
+      label.length > 128 ||
+      !invocation ||
+      !role ||
+      !HARNESS_MODE_ROLES.includes(role as HarnessModeRole) ||
+      !Array.isArray(capability.modelFamilies) ||
+      capability.modelFamilies.length < 1 ||
+      capability.modelFamilies.length !== modelFamilies.length ||
+      new Set(modelFamilies).size !== modelFamilies.length ||
+      modelFamilies.some((family) => family.length > 128) ||
+      !Array.isArray(capability.capabilities) ||
+      capability.capabilities.length !== capabilities.length ||
+      new Set(capabilities).size !== capabilities.length ||
+      typeof agentCount !== "number" ||
+      !Number.isSafeInteger(agentCount) ||
+      agentCount < 1 ||
+      agentCount > 50
+    ) {
+      return null;
+    }
+    const key = `${role}\u0000${tool}\u0000${invocation}`;
+    if (seen.has(key)) return null;
+    seen.add(key);
+    catalog.push({ tool, label, invocation, role: role as HarnessModeRole, agentCount, modelFamilies, capabilities });
+  }
+  return HARNESS_MODE_ROLES.every((role) => catalog.some((entry) => entry.role === role)) ? catalog : null;
+}
+
 function count(value: unknown): number | null {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
@@ -179,13 +287,15 @@ function parsePendingDefaults(value: unknown): HarnessDetailModes["pendingDefaul
   const intentExpiresAt = text(pending?.intentExpiresAt);
   if (!pending || !execution || !autonomy || !profile || !intentId || !stagedAt || !intentExpiresAt) return null;
   if (typeof autonomy.enabled !== "boolean") return null;
-  const assignments = profile === "fast" ? null : roleAssignments(execution.roleAssignments);
-  if (profile !== "fast" && !assignments) return null;
+  const assignments = roleAssignments(execution.roleAssignments);
+  const bindings = roleBindings(execution.roleBindings);
+  if (profile === "fast" && (assignments || bindings)) return null;
+  if (profile !== "fast" && Boolean(assignments) === Boolean(bindings)) return null;
   return {
     intentId,
     stagedAt,
     intentExpiresAt,
-    execution: { profile, roleAssignments: assignments },
+    execution: { profile, roleAssignments: assignments, roleBindings: bindings },
     autonomy: {
       enabled: autonomy.enabled,
       expiresAt: autonomy.enabled ? text(autonomy.expiresAt) : null
@@ -203,6 +313,7 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
   const gate = record(modes.gate);
   const machinery = record(modes.machinery);
   const strictAgents = strictAgentSnapshot(dispatch);
+  const strictTools = strictToolCatalog(dispatch);
   const assignments: Record<string, string> = {};
   for (const [role, agentId] of Object.entries(record(dispatch?.assignments) ?? {})) {
     const normalized = text(agentId);
@@ -212,8 +323,10 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
     ? dispatch.agents.slice(0, 50).map(displayAgent).filter((agent): agent is HarnessDetailAgent => agent !== null)
     : [];
 
+  const execution = executionProfile(modes.execution) ?? "unknown";
   return {
-    execution: executionProfile(modes.execution) ?? "unknown",
+    execution,
+    current: currentMode(modes.current, execution),
     autonomy: {
       enabled: autonomy?.enabled === true,
       policyValid: typeof autonomy?.policyValid === "boolean" ? autonomy.policyValid : null,
@@ -225,9 +338,11 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
       enabled: dispatch?.enabled === true,
       assignments,
       agents,
+      toolCatalog: strictTools ?? [],
       familyExclusive: typeof dispatch?.familyExclusive === "boolean" ? dispatch.familyExclusive : null,
       issues: stringList(dispatch?.issues),
-      agentSnapshotUsable: strictAgents !== null
+      agentSnapshotUsable: strictAgents !== null,
+      toolCatalogUsable: strictTools !== null
     },
     framework: framework ? {
       version: text(framework.version),
@@ -255,12 +370,23 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
 
 export function currentHarnessModeSummary(modes: HarnessDetailModes | null): HarnessDesiredSummary | null {
   if (!modes || modes.execution === "unknown") return null;
+  if (modes.current?.profile === modes.execution) {
+    return {
+      execution: {
+        profile: modes.current.profile,
+        roleAssignments: null,
+        roleBindings: modes.current.roleBindings
+      },
+      autonomy: { enabled: modes.autonomy.enabled, expiresAt: modes.autonomy.expiresAt }
+    };
+  }
   const generator = modes.dispatch.assignments.generator;
   const evaluator = modes.dispatch.assignments.evaluator;
   return {
     execution: {
       profile: modes.execution,
-      roleAssignments: modes.execution === "fast" || !generator || !evaluator ? null : { generator, evaluator }
+      roleAssignments: modes.execution === "fast" || !generator || !evaluator ? null : { generator, evaluator },
+      roleBindings: null
     },
     autonomy: { enabled: modes.autonomy.enabled, expiresAt: modes.autonomy.expiresAt }
   };
@@ -270,8 +396,10 @@ export type HarnessModeIssuanceBlocker =
   | "signingKeyUnavailable"
   | "reportStale"
   | "agentUpgradeRequired"
+  | "toolBindingAgentUpgradeRequired"
   | "headNotFull"
-  | "agentSnapshotUnavailable";
+  | "agentSnapshotUnavailable"
+  | "toolCatalogUnavailable";
 
 export function modeIssuanceBlocker(input: {
   signingKeyReady: boolean;
@@ -280,6 +408,7 @@ export function modeIssuanceBlocker(input: {
   headSha: string | null;
   modes: HarnessDetailModes | null;
   now: Date | number;
+  requiresToolBindings?: boolean;
 }): HarnessModeIssuanceBlocker | null {
   if (!input.signingKeyReady) return "signingKeyUnavailable";
   const now = input.now instanceof Date ? input.now.getTime() : input.now;
@@ -291,15 +420,25 @@ export function modeIssuanceBlocker(input: {
     now - reportedAt >= DEVICE_ONLINE_MS
   ) return "reportStale";
   if ((input.agentFeatureVersion ?? 0) < MIN_MODE_INTENT_AGENT_FEATURE_VERSION) return "agentUpgradeRequired";
+  if (
+    input.requiresToolBindings === true &&
+    (input.agentFeatureVersion ?? 0) < MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+  ) return "toolBindingAgentUpgradeRequired";
   if (!input.headSha || !/^[0-9a-fA-F]{40}$/.test(input.headSha)) return "headNotFull";
-  if (!input.modes?.dispatch.agentSnapshotUsable) return "agentSnapshotUnavailable";
+  if (!input.modes) return "agentSnapshotUnavailable";
+  if (!input.modes.dispatch.agentSnapshotUsable) return "agentSnapshotUnavailable";
+  if (input.requiresToolBindings === true && !input.modes.dispatch.toolCatalogUsable) return "toolCatalogUnavailable";
   return null;
 }
 
 export type HarnessModeEditorDraft = {
   profile: string;
-  generatorId: string;
-  evaluatorId: string;
+  plannerTool: string;
+  plannerInvocation: string;
+  generatorTool: string;
+  generatorInvocation: string;
+  evaluatorTool: string;
+  evaluatorInvocation: string;
   intentExpiresAt: string;
   autonomyEnabled: boolean;
   autonomyExpiresAt: string;
@@ -335,23 +474,10 @@ function numericInput(value: string | number): number {
   return typeof value === "string" && !value.trim() ? Number.NaN : Number(value);
 }
 
-function modeAgentDescriptors(agents: readonly HarnessDetailAgent[]): HarnessModeAgentDescriptor[] {
-  return agents.map((agent) => {
-    const transport = harnessTransport(agent.transport);
-    if (!transport) return editorReject("invalid_transport");
-    return {
-      id: agent.id,
-      roles: agent.roles,
-      transport,
-      model_family: agent.modelFamily ?? ""
-    };
-  });
-}
-
 export function buildModeIntentRequest(
   projectId: string,
   draft: HarnessModeEditorDraft,
-  agents: readonly HarnessDetailAgent[],
+  tools: readonly HarnessDetailToolCapability[],
   now: Date
 ): { projectId: string; desired: HarnessModeIntentDesired; intentExpiresAt: string } {
   if (!projectId.trim()) return editorReject("invalid_project");
@@ -364,7 +490,11 @@ export function buildModeIntentRequest(
       ? { profile: "fast", role_assignments: null }
       : {
           profile,
-          role_assignments: { generator: draft.generatorId, evaluator: draft.evaluatorId }
+          role_bindings: {
+            planner: { tool: draft.plannerTool, invocation: draft.plannerInvocation as HarnessTransport },
+            generator: { tool: draft.generatorTool, invocation: draft.generatorInvocation as HarnessTransport },
+            evaluator: { tool: draft.evaluatorTool, invocation: draft.evaluatorInvocation as HarnessTransport }
+          }
         },
     autonomy: draft.autonomyEnabled
       ? {
@@ -395,7 +525,7 @@ export function buildModeIntentRequest(
       },
       {
         now,
-        agents: modeAgentDescriptors(agents)
+        tools: toolCatalogModeDescriptors(tools)
       }
     );
     return { projectId: projectId.trim(), desired: payload.desired, intentExpiresAt };

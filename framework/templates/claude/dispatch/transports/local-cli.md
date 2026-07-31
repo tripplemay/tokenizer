@@ -16,7 +16,7 @@
  ├ 2. 组装信封 → validate-dispatch.sh envelope（字段白名单校验）
  ├ 3. sandbox-profile.sh --agent <id> --envelope <f>
  │     ├ repo.url top-level == invocation top-level（创建目录前 fail closed）
- │     ├ worktree add --detach @sha        独立工作副本
+ │     ├ 只读角色：worktree add --detach；Generator：独立 clone --shared
  │     ├ env -i <白名单>                    没凭据就花不了钱
  │     ├ GIT_CONFIG pushurl=DISABLED       禁 push（env 级覆盖，不污染主仓 config）
  │     └ process-timeout.py <effective>    绝对 wall-clock + 完整进程组封顶
@@ -25,7 +25,7 @@
  ├ 5. COMPLETED → 产物过 deliverable.schema → 机械回写状态机（铁律 12 原样）
  │   WAITING     → 硬停交人类
  │   FAILED/CANCELED → 凭 task_id 幂等重派，上限 1 次
- └ 6. generator 类：校验 commit tag 归属 → spec-lock critic 稽核 → 回流主仓（§6）
+ └ 6. generator 类：handoff/diff 精确对账 → spec-lock critic → sandbox L1 → Coordinator 受控回流（§6）
 ```
 
 `dispatch-run.sh --state <dir>` 对两种 transport 语义相同：都把 run-meta 写进该目录，默认为
@@ -45,7 +45,7 @@
 
 ## 3. 产物约定
 
-对方**唯一**的交付义务是：在 worktree 内把产物写到 `deliverable.artifact` 路径，且满足
+对方**唯一**的交付义务是：在 sandbox checkout 内把产物写到 `deliverable.artifact` 路径，且满足
 `deliverable.schema`。**不要求它读仓内任何指令文件**——契约随信封的 `contract` 字段走。
 
 产物里的 `waiting` 字段是中断态的降维表达（一次性进程无法「挂起等你」）：
@@ -86,7 +86,7 @@
 | 锁 | 实现 | 拦住 |
 |---|---|---|
 | env 白名单 | `env -i` + descriptor 显式列名 **+ 专用空 HOME（必填）** | prod 凭据 / 部署 token / 他家 API key |
-| 独立 worktree | `git worktree add --detach <sha>` | 污染工作区、并行互踩 |
+| 独立 sandbox checkout | 只读角色用 `git worktree add --detach <sha>`；Generator 用 `git clone --shared` | 污染工作区、并行互踩 |
 | 禁 push | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 直接改 main |
 | wall-clock 封顶 | `process-timeout.py`：绝对 wall clock、独立 session/process group、TERM→有界 KILL、reap | 跑飞挂死与 suspend/resume 超期 |
 
@@ -97,9 +97,9 @@
 adapter、timeout helper 等默认路径从 `sandbox-profile.sh` 自身目录解析；从其他 CWD 绝对调用入口
 不会改成去目标仓找机件。`--adapters` 与 `--timeout-helper` 显式覆盖继续支持。
 
-🔴 **子进程 CWD 一律固定为 worktree。** 不依赖各家 CLI 的 `--cd`/`-C` 是否存在、是否被遵守——
-Kimi **根本没有工作根参数**，完全靠这条约束在 worktree 内活动。（实测价值：Kimi 曾因 HOME 未展开
-而在 CWD 下造出字面量 `~/` 垃圾目录，正是 CWD 锁定把它挡在了一次性 worktree 里，没碰到主仓。）
+🔴 **子进程 CWD 一律固定为 sandbox checkout。** 不依赖各家 CLI 的 `--cd`/`-C` 是否存在、是否被遵守——
+Kimi **根本没有工作根参数**，完全靠这条约束在 sandbox checkout 内活动。（实测价值：Kimi 曾因 HOME 未展开
+而在 CWD 下造出字面量 `~/` 垃圾目录，正是 CWD 锁定把它挡在了一次性 sandbox checkout 里，没碰到主仓。）
 
 🔴 **`sandbox.home_dir` 必填，且必须以 `/` 或 `~` 开头。** 外部 CLI 普遍用**登录 shell** 执行命令
 （Codex 用 `/bin/zsh -lc`），它会 source `~/.zshenv` / `~/.zprofile`——其中任何 `export`
@@ -119,6 +119,31 @@ Kimi **根本没有工作根参数**，完全靠这条约束在 worktree 内活�
    稽核时机从「writeback 前」前移到「拉回主仓前」
 3. **L1 全绿**：`lint / tsc / test` 是外部 generator 唯一的硬证据——代码 diff 比 verdict 更好机械核验
 4. 通过后由编排者按 feature 归属提交并统一 push
+
+### 6.1 手动 `/build` 的固定入口
+
+当 `/plan` 已把 `progress.role_assignments.generator` 解析为 `transport=local-cli` 时，Coordinator
+必须使用 `dispatch-generator-handoff.sh`，而不是自己实现 feature：
+
+```bash
+bash .claude/dispatch/dispatch-generator-handoff.sh --task-id <fresh-safe-task-id>
+```
+
+入口从当前 `progress.json` / `features.json` 读取**顺序中的第一个** pending Generator feature（可用
+`--feature F001` 显式指定），构造固定 `generator-handoff` envelope，运行 transport receipt，并把
+handoff 对 envelope 的 batch、feature scope、UTC timestamp 和安全相对路径做机械校验。stdout 中的 `handoff_path`、
+`run_meta_path`、`envelope_path` 和 `source_ref` 是**待回流证据**；它不会复制 diff、更新状态或创建 commit。
+
+Coordinator 先完成 spec-lock critic，再为当前项目给出严格的 `harness-l1/1` 命令文档（只含
+`lint`、`typecheck`、`test` 三个 argv 数组）。接着先运行
+`accept-generator-handoff.sh --handoff <...> --envelope <...> --run-meta <...> --l1-commands <...>`；
+只有返回 `READY_TO_APPLY`，才可加 `--apply`。接收工具要求主仓 clean 且仍在 `source_ref`、diff 与
+`files_touched` 精确一致、L1 在 sandbox snapshot 全绿；随后才会应用该单 feature diff 并创建
+`feat(<batch>-<feature>): accept external generator handoff`。任一前提失效即拒收、保留 sandbox 取证。
+
+`transport=subagent` 由 Coordinator 按 descriptor 的 `agent_type` 启动，不可由它直接实现；没有
+assignment 的 fast 路径保持旧本机流程。`transport=a2a` 的 Generator source-handoff protocol 尚未
+实现，手动入口明确 fail closed，不能退化到本机或 local-cli。
 
 ## 7. 新增一家 CLI 的核对清单
 

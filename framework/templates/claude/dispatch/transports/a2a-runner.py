@@ -529,6 +529,19 @@ def make_handler(cfg, store, executor, descriptor):
                 tid = envelope.get("task_id")
                 if not tid:
                     return self._rpc_error(request_id, -32602, "envelope.task_id is required")
+                role = envelope.get("role")
+                if role not in (descriptor.get("roles") or []):
+                    return self._rpc_error(
+                        request_id,
+                        -32602,
+                        f"agent does not declare envelope role={role!r}",
+                    )
+                if role == "generator":
+                    return self._rpc_error(
+                        request_id,
+                        -32602,
+                        "a2a generator is disabled until a source-handoff protocol exists",
+                    )
                 rec = {
                     "taskId": tid,
                     "contextId": params.get("contextId") or str(uuid.uuid4()),

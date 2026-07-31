@@ -21,9 +21,78 @@ vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 vi.mock("@/server/harness-sign", () => ({ signHarnessPayload: mocks.signHarnessPayload }));
 
 import { DELETE, GET, POST } from "../../app/api/harness/mode-intents/route";
-import { MIN_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import {
+  MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
+  MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
+} from "@/shared/agent-feature-version";
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
+
+function toolCatalog() {
+  return [
+    {
+      tool: "claude-code",
+      label: "Claude Code",
+      invocation: "subagent",
+      role: "planner",
+      agentCount: 1,
+      modelFamilies: ["claude"],
+      capabilities: ["plan"]
+    },
+    {
+      tool: "codex",
+      label: "Codex",
+      invocation: "local-cli",
+      role: "generator",
+      agentCount: 1,
+      modelFamilies: ["codex"],
+      capabilities: ["build"]
+    },
+    {
+      tool: "kimi",
+      label: "Kimi",
+      invocation: "local-cli",
+      role: "evaluator",
+      agentCount: 1,
+      modelFamilies: ["kimi"],
+      capabilities: ["verify"]
+    }
+  ];
+}
+
+function v2Desired() {
+  return {
+    execution: {
+      profile: "heterogeneous",
+      role_bindings: {
+        planner: { tool: "claude-code", invocation: "subagent" },
+        generator: { tool: "codex", invocation: "local-cli" },
+        evaluator: { tool: "kimi", invocation: "local-cli" }
+      }
+    },
+    autonomy: { enabled: false }
+  };
+}
+
+function v2FastDesired() {
+  return {
+    execution: { profile: "fast", role_bindings: null },
+    autonomy: { enabled: false }
+  };
+}
+
+function enabledAutonomyDesired(overrides: Record<string, unknown> = {}) {
+  return {
+    execution: { profile: "fast", role_assignments: null },
+    autonomy: {
+      enabled: true,
+      expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      auto_cross: ["A"],
+      budget: { max_tokens: 50_000, max_cost_usd: 20, max_wakes: 8, max_fix_rounds: 2 },
+      ...overrides
+    }
+  };
+}
 
 function project(overrides: Record<string, unknown> = {}) {
   return {
@@ -37,7 +106,8 @@ function project(overrides: Record<string, unknown> = {}) {
         agents: [
           { id: "builder-codex", roles: ["generator"], transport: "local-cli", modelFamily: "codex" },
           { id: "reviewer-kimi", roles: ["evaluator"], transport: "a2a", modelFamily: "kimi" }
-        ]
+        ],
+        toolCatalog: toolCatalog()
       }
     },
     device: { userId: "user-1", agentFeatureVersion: MIN_MODE_INTENT_AGENT_FEATURE_VERSION },
@@ -54,6 +124,14 @@ function issueRequest(desired: unknown = { execution: { profile: "fast", role_as
       desired,
       intentExpiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString()
     })
+  });
+}
+
+function issueRequestWithRawDesired(rawDesired: string) {
+  return new Request("http://localhost/api/harness/mode-intents", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: `{"projectId":"project-1","desired":${rawDesired},"intentExpiresAt":"${new Date(Date.now() + 60 * 60 * 1000).toISOString()}"}`
   });
 }
 
@@ -140,6 +218,88 @@ describe("session mode intent route", () => {
     expect(response.status).toBe(400);
     expect((await response.json()).code).toBe("duplicate_agent");
     expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it("normalizes cent-denominated autonomy cost before signing", async () => {
+    const response = await POST(issueRequest(enabledAutonomyDesired({
+      budget: { max_tokens: 50_000, max_cost_usd: 0.29, max_wakes: 8, max_fix_rounds: 2 }
+    })));
+
+    expect(response.status).toBe(201);
+    expect(mocks.signHarnessPayload).toHaveBeenCalledWith(expect.objectContaining({
+      desired: expect.objectContaining({
+        autonomy: expect.objectContaining({ budget: expect.objectContaining({ max_cost_usd: 0.29 }) })
+      })
+    }));
+  });
+
+  it.each([
+    ["fractional cent", enabledAutonomyDesired({ budget: { max_tokens: 50_000, max_cost_usd: 1.234, max_wakes: 8, max_fix_rounds: 2 } })],
+    ["unstable wake key", enabledAutonomyDesired({ wake_interval_s: { "build phase": 60 } })],
+    ["prototype-mutating wake key", enabledAutonomyDesired({ wake_interval_s: JSON.parse('{"__proto__":60}') })]
+  ])("rejects %s before signing", async (_label, desired) => {
+    const response = await POST(issueRequest(desired));
+    expect(response.status).toBe(400);
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it("rejects a raw negative-zero JSON token before signing", async () => {
+    const desired = JSON.stringify(enabledAutonomyDesired({
+      budget: { max_tokens: 50_000, max_cost_usd: 0, max_wakes: 8, max_fix_rounds: 2 }
+    })).replace('"max_cost_usd":0', '"max_cost_usd":-0');
+    const response = await POST(issueRequestWithRawDesired(desired));
+    expect(response.status).toBe(400);
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+  });
+
+  it("gates v2 role bindings at feature v6 and signs the catalog's canonical tool ids", async () => {
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION - 1 }
+    }));
+    const oldAgent = await POST(issueRequest(v2Desired()));
+    expect(oldAgent.status).toBe(409);
+    expect((await oldAgent.json()).code).toBe("tool_binding_agent_upgrade_required");
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION }
+    }));
+    const response = await POST(issueRequest(v2Desired()));
+    expect(response.status).toBe(201);
+    expect(mocks.signHarnessPayload).toHaveBeenCalledWith(expect.objectContaining({
+      desired: v2Desired()
+    }));
+  });
+
+  it("refuses v2 signing when the device has no usable tool catalog", async () => {
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
+      modes: { dispatch: { enabled: true, agents: project().modes.dispatch.agents } }
+    }));
+    const response = await POST(issueRequest(v2Desired()));
+    expect(response.status).toBe(409);
+    expect((await response.json()).code).toBe("invalid_tool_catalog");
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+  });
+
+  it("keeps v2 fast/null at the v6 gate but does not require a tool catalog", async () => {
+    const noCatalogModes = { dispatch: { enabled: true, agents: project().modes.dispatch.agents } };
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION - 1 },
+      modes: noCatalogModes
+    }));
+    const oldAgent = await POST(issueRequest(v2FastDesired()));
+    expect(oldAgent.status).toBe(409);
+    expect((await oldAgent.json()).code).toBe("tool_binding_agent_upgrade_required");
+
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
+      modes: noCatalogModes
+    }));
+    const response = await POST(issueRequest(v2FastDesired()));
+    expect(response.status).toBe(201);
+    expect(mocks.signHarnessPayload).toHaveBeenCalledWith(expect.objectContaining({ desired: v2FastDesired() }));
   });
 
   it("creates no intent row when signing fails", async () => {

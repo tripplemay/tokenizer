@@ -5,6 +5,30 @@
 
 ---
 
+## v1.6.0 — 2026-07-31（工具绑定角色、Coordinator 控制面与可扩展 CLI 目录）
+
+**来源：** tokenizer dispatch 演练批次。原有控制台把角色直接绑定到注册的 agent，用户无法表达
+“使用哪一种 CLI / 调用方式”，而运行期又可能从可变 `progress.role_assignments` 重新选择 agent。
+
+- 新增已签名 v2 `execution.role_bindings`：人类只为 Planner、Generator、Evaluator 选择稳定的
+  `{tool, invocation}`；`fast` 固定为 null bindings。下一次 `/plan` 才从 registry 与 verified adapter
+  候选池确定性解析内部 descriptor，Generator/Evaluator 保持不同 model family。
+- 明确 Coordinator 为当前主会话的固定、不可配置控制面：负责验签、解析、派活、结构化产物校验、闸门与
+  人类确认后的落盘，但不能替代已经绑定的 Planner / Generator / Evaluator。非 fast Planner 始终先交
+  proposal，不能直接改写规格或状态机。
+- 新增 `tool-catalog/1` 参考实现和控制台可信 data-only 目录：registry 中新增兼容 descriptor，加上
+  已验证 local-cli adapter 后自动进入对应角色的工具/调用方式选择、签发、解析和安全 preflight；不再维护
+  前端工具白名单，也不执行项目脚本生成目录。
+- 新增原子 intent 消费 checkpoint。active batch 保存完整 signed intent 与解析审计，每次 `/plan`、`/build`、
+  `/verify`、dispatch 和 handoff 接受路径均从 checkpoint 重验；篡改 assignment/resolution、错误 agent、
+  伪造 run-meta 或替代/缺失 progress 路径都会 fail closed。
+- 增加 Planner proposal、local-cli Generator handoff 及 A2A Planner/Evaluator 的固定 artifact 契约；
+  A2A 远端字节只落进 dispatch state staging，终态与委托 envelope 精确绑定，Generator over A2A 在有可验证
+  source-handoff 前继续拒绝。
+- 收紧 adapter、sandbox 与 A2A bearer credential 环境变量：拒绝 process/Git/shell/dynamic-loader 控制变量，
+  A2A auth 仅允许无认证、精确 `none` 或安全 bearer env。同步回归覆盖 v2 运行文件、适配器、执行位和旧项目
+  升级，避免新增 CLI 形成半升级状态。
+
 ## v1.5.3 — 2026-07-30（发布清单契约：控制台与框架版本不得漂移）
 
 **来源：** tokenizer `BL-FW-RELEASE-CONTRACT`。框架源码、项目镜像和控制台各自维护

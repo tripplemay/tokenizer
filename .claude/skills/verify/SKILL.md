@@ -8,7 +8,16 @@ description: 启动 Harness 状态机的验收阶段——以隔离 evaluator su
 **你（主上下文）在本阶段只做编排，不做评估。** 按顺序执行：
 
 1. **前置确认：** status 为 `verifying` / `reverifying`；所有 executor:generator 的 feature 已 completed 且已 push；CI 绿色
-2. **选执行形态：** 读 `progress.json.role_assignments.evaluator`；有值且 `.agents-registry.json` 中该 descriptor 的 `transport` **不是 `subagent`** → 走 **2b 异厂商派活**；否则走 2a。
+2. **选执行形态：** 先运行唯一的 active-role 解析器：
+
+   ```bash
+   bash .claude/dispatch/resolve-active-mode-role.sh --role evaluator > /tmp/harness-active-evaluator.json
+   ```
+
+   输出 `{}` 才能走历史默认 2a。输出五字段 active record 时，它是从完整签名 checkpoint 重验并按当前
+   registry/verified adapter 重解的唯一 Evaluator 来源；**不得**用 `progress.role_assignments.evaluator` 或
+   `progress.mode_intent.resolution.evaluator` 选择执行者。读取 active record 对应 descriptor：transport 不是
+   `subagent` → 走 **2b 异厂商派活**；否则走 2a。解析失败、五字段不一致或 registry 漂移即硬停。
 
    **2a 同会话隔离 subagent（默认）：** 以 `evaluator` subagent 类型（`.claude/agents/evaluator.md`）启动验收。prompt 只含：批次名、progress.json / features.json / spec 路径、[L2 是否已获用户授权]。**不得夹带实现过程叙述或质量定性描述**（harness-rules.md 铁律 12）
 
@@ -17,7 +26,7 @@ description: 启动 Harness 状态机的验收阶段——以隔离 evaluator su
    bash .claude/dispatch/validate-dispatch.sh assignments        # 先确认 family 互斥成立
    # 组装信封（字段白名单见 dispatch-envelope.schema.json；repo.ref 用 git rev-parse HEAD，不得用分支名）
    bash .claude/dispatch/validate-dispatch.sh envelope <信封>
-   bash .claude/dispatch/dispatch-run.sh --agent <evaluator-id> --envelope <信封> > run-meta.json
+   bash .claude/dispatch/dispatch-run.sh --agent <active-record.agent_id> --envelope <信封> > run-meta.json
    bash .claude/dispatch/validate-dispatch.sh receipt run-meta.json   # 权威判定在本地
    ```
    退出码：`0` 继续第 4 步 · `3` 产物 `waiting` 非空 → **硬停交用户**（等 L2 授权或规格裁决）· `4` 可重派**上限 1 次**，仍失败则硬停。

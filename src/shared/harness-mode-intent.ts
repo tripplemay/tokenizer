@@ -1,5 +1,6 @@
 export const HARNESS_EXECUTION_PROFILES = ["fast", "heterogeneous", "slow"] as const;
 export const HARNESS_TRANSPORTS = ["subagent", "local-cli", "a2a"] as const;
+export const HARNESS_MODE_ROLES = ["planner", "generator", "evaluator"] as const;
 export const HARNESS_MODE_INTENT_STATUSES = [
   "issued",
   "relayed",
@@ -31,18 +32,35 @@ export type HarnessTransport = (typeof HARNESS_TRANSPORTS)[number];
 export type HarnessModeIntentStatus = (typeof HARNESS_MODE_INTENT_STATUSES)[number];
 export type HarnessAutonomyGate = (typeof HARNESS_AUTONOMY_GATES)[number];
 export type HarnessAutonomyNotification = (typeof HARNESS_AUTONOMY_NOTIFICATIONS)[number];
-export type HarnessModeRole = "generator" | "evaluator";
+export type HarnessModeRole = (typeof HARNESS_MODE_ROLES)[number];
+export type HarnessModeAssignmentRole = Exclude<HarnessModeRole, "planner">;
 
 export type HarnessModeRoleAssignments = {
   generator: string;
   evaluator: string;
 };
 
+export type HarnessModeRoleBinding = {
+  tool: string;
+  invocation: HarnessTransport;
+};
+
+export type HarnessModeRoleBindings = {
+  planner: HarnessModeRoleBinding;
+  generator: HarnessModeRoleBinding;
+  evaluator: HarnessModeRoleBinding;
+};
+
 export type HarnessModeExecution =
   | { profile: "fast"; role_assignments: null }
+  | { profile: "fast"; role_bindings: null }
   | {
       profile: "heterogeneous" | "slow";
       role_assignments: HarnessModeRoleAssignments;
+    }
+  | {
+      profile: "heterogeneous" | "slow";
+      role_bindings: HarnessModeRoleBindings;
     };
 
 export type HarnessAutonomyBudget = {
@@ -91,10 +109,22 @@ export type HarnessModeAgentDescriptor = {
   model_family: string;
 };
 
+/**
+ * A role-specific tool capability advertised by the local device. It has no
+ * agent id: the local resolver owns selection of a concrete registered agent.
+ */
+export type HarnessModeToolDescriptor = {
+  tool: string;
+  invocation: HarnessTransport;
+  role: HarnessModeRole;
+  model_family: string;
+};
+
 export type HarnessModeIntentValidationContext = {
   /** Explicit clock input keeps validation deterministic and side-effect free. */
   now: Date | string | number;
   agents?: readonly HarnessModeAgentDescriptor[];
+  tools?: readonly HarnessModeToolDescriptor[];
 };
 
 export type HarnessModeIntentValidationIssue = {
@@ -128,8 +158,11 @@ type UnknownRecord = Record<string, unknown>;
 const UTC_TIMESTAMP_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?Z$/;
 const HEAD_SHA_PATTERN = /^[0-9a-fA-F]{40}$/;
+const STABLE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const RESERVED_OBJECT_KEYS = new Set(["__proto__", "prototype", "constructor"]);
 const EXECUTION_PROFILES = new Set<string>(HARNESS_EXECUTION_PROFILES);
 const TRANSPORTS = new Set<string>(HARNESS_TRANSPORTS);
+const MODE_ROLES = new Set<string>(HARNESS_MODE_ROLES);
 const AUTONOMY_GATES = new Set<string>(HARNESS_AUTONOMY_GATES);
 const AUTONOMY_NOTIFICATIONS = new Set<string>(HARNESS_AUTONOMY_NOTIFICATIONS);
 
@@ -182,9 +215,28 @@ function boundedInteger(value: unknown, path: string, min: number, max: number):
   return value;
 }
 
-function boundedNumber(value: unknown, path: string, min: number, max: number): number {
-  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) {
-    return reject("invalid_number", path, `${path} must be a finite number between ${min} and ${max}`);
+/**
+ * Signed JSON must stay within the decimal representation shared by Node and
+ * the framework's Python validator. Normalize valid USD amounts to cents and
+ * reject values that would need rounding (including -0 and tiny exponents).
+ */
+function boundedUsdCents(value: unknown, path: string, min: number, max: number): number {
+  if (
+    typeof value !== "number" ||
+    !Number.isFinite(value) ||
+    Object.is(value, -0) ||
+    value < min ||
+    value > max ||
+    Number(value.toFixed(2)) !== value
+  ) {
+    return reject("invalid_number", path, `${path} must be a non-negative finite USD amount with at most two decimal places between ${min} and ${max}`);
+  }
+  return Number(value.toFixed(2));
+}
+
+function stableAsciiId(value: unknown, path: string): string {
+  if (typeof value !== "string" || !STABLE_ID_PATTERN.test(value) || RESERVED_OBJECT_KEYS.has(value)) {
+    return reject("invalid_string", path, `${path} must be a stable ASCII identifier`);
   }
   return value;
 }
@@ -257,12 +309,36 @@ export function normalizeHarnessRepoKey(value: unknown): string {
   return normalized;
 }
 
-function normalizeExecution(value: unknown, agents: readonly HarnessModeAgentDescriptor[] | undefined): HarnessModeExecution {
-  const execution = exactObject(value, "desired.execution", ["profile", "role_assignments"]);
-  if (typeof execution.profile !== "string" || !EXECUTION_PROFILES.has(execution.profile)) {
+function normalizedProfile(value: unknown): HarnessExecutionProfile {
+  if (typeof value !== "string" || !EXECUTION_PROFILES.has(value)) {
     return reject("invalid_profile", "desired.execution.profile", "execution profile must be fast, heterogeneous, or slow");
   }
-  const profile = execution.profile as HarnessExecutionProfile;
+  return value as HarnessExecutionProfile;
+}
+
+function validateProfileTransports(profile: Exclude<HarnessExecutionProfile, "fast">, transports: readonly HarnessTransport[]): void {
+  if (profile === "heterogeneous" && (transports.includes("a2a") || !transports.includes("local-cli"))) {
+    return reject(
+      "profile_transport_mismatch",
+      "desired.execution.profile",
+      "heterogeneous profile forbids a2a and requires at least one local-cli tool"
+    );
+  }
+  if (profile === "slow" && !transports.includes("a2a")) {
+    return reject(
+      "profile_transport_mismatch",
+      "desired.execution.profile",
+      "slow profile requires at least one a2a tool"
+    );
+  }
+}
+
+function normalizeLegacyExecution(
+  value: unknown,
+  agents: readonly HarnessModeAgentDescriptor[] | undefined
+): HarnessModeExecution {
+  const execution = exactObject(value, "desired.execution", ["profile", "role_assignments"]);
+  const profile = normalizedProfile(execution.profile);
   if (profile === "fast") {
     if (execution.role_assignments !== null) {
       return reject(
@@ -299,8 +375,8 @@ function normalizeExecution(value: unknown, agents: readonly HarnessModeAgentDes
     byId.set(id, descriptor);
   }
 
-  const descriptors = {} as Record<HarnessModeRole, HarnessModeAgentDescriptor>;
-  const modelFamilies = {} as Record<HarnessModeRole, string>;
+  const descriptors = {} as Record<HarnessModeAssignmentRole, HarnessModeAgentDescriptor>;
+  const modelFamilies = {} as Record<HarnessModeAssignmentRole, string>;
   for (const role of ["generator", "evaluator"] as const) {
     const descriptor = byId.get(assignments[role]);
     if (!descriptor) {
@@ -323,23 +399,121 @@ function normalizeExecution(value: unknown, agents: readonly HarnessModeAgentDes
       "generator and evaluator must use distinct model families"
     );
   }
-  const transports = [descriptors.generator.transport, descriptors.evaluator.transport];
-  if (profile === "heterogeneous" && (transports.includes("a2a") || !transports.includes("local-cli"))) {
-    return reject(
-      "profile_transport_mismatch",
-      "desired.execution.profile",
-      "heterogeneous profile forbids a2a and requires at least one local-cli agent"
-    );
+  validateProfileTransports(profile, [descriptors.generator.transport, descriptors.evaluator.transport]);
+  return { profile, role_assignments: assignments };
+}
+
+function normalizeToolBindingExecution(
+  value: unknown,
+  tools: readonly HarnessModeToolDescriptor[] | undefined
+): HarnessModeExecution {
+  const execution = exactObject(value, "desired.execution", ["profile", "role_bindings"]);
+  const profile = normalizedProfile(execution.profile);
+  if (profile === "fast") {
+    if (execution.role_bindings !== null) {
+      return reject("invalid_bindings", "desired.execution.role_bindings", "fast profile requires null role_bindings");
+    }
+    return { profile, role_bindings: null };
   }
-  if (profile === "slow" && !transports.includes("a2a")) {
+  if (!tools) {
+    return reject("missing_tool_catalog", "context.tools", `${profile} profile requires the reported tool catalog`);
+  }
+
+  const bindingsValue = exactObject(
+    execution.role_bindings,
+    "desired.execution.role_bindings",
+    ["planner", "generator", "evaluator"]
+  );
+  const bindings = {} as HarnessModeRoleBindings;
+  for (const role of HARNESS_MODE_ROLES) {
+    const binding = exactObject(bindingsValue[role], `desired.execution.role_bindings.${role}`, ["tool", "invocation"]);
+    const invocation = nonBlankString(binding.invocation, `desired.execution.role_bindings.${role}.invocation`);
+    if (!TRANSPORTS.has(invocation)) {
+      return reject("invalid_transport", `desired.execution.role_bindings.${role}.invocation`, "tool invocation is not recognized");
+    }
+    bindings[role] = {
+      tool: nonBlankString(binding.tool, `desired.execution.role_bindings.${role}.tool`),
+      invocation: invocation as HarnessTransport
+    };
+  }
+
+  const candidateFamilies = new Map<string, Set<string>>();
+  for (const descriptor of tools) {
+    const role = nonBlankString(descriptor?.role, "context.tools[].role");
+    if (!MODE_ROLES.has(role)) {
+      return reject("invalid_role", "context.tools[].role", `tool catalog role ${role} is not recognized`);
+    }
+    const tool = nonBlankString(descriptor.tool, "context.tools[].tool");
+    const invocation = nonBlankString(descriptor.invocation, "context.tools[].invocation");
+    if (!TRANSPORTS.has(invocation)) {
+      return reject("invalid_transport", "context.tools[].invocation", "tool catalog has an invalid invocation");
+    }
+    const family = nonBlankString(descriptor.model_family, "context.tools[].model_family");
+    const key = `${role}\u0000${tool}\u0000${invocation}`;
+    const families = candidateFamilies.get(key) ?? new Set<string>();
+    families.add(family);
+    candidateFamilies.set(key, families);
+  }
+
+  const familiesFor = (role: HarnessModeRole): Set<string> => {
+    const binding = bindings[role];
+    return candidateFamilies.get(`${role}\u0000${binding.tool}\u0000${binding.invocation}`) ?? new Set<string>();
+  };
+  for (const role of HARNESS_MODE_ROLES) {
+    if (familiesFor(role).size === 0) {
+      return reject(
+        "unknown_tool",
+        `desired.execution.role_bindings.${role}`,
+        `tool ${bindings[role].tool} cannot be invoked as ${bindings[role].invocation} for ${role}`
+      );
+    }
+  }
+
+  const generatorFamilies = familiesFor("generator");
+  const evaluatorFamilies = familiesFor("evaluator");
+  const hasIndependentPair = [...generatorFamilies].some((generator) =>
+    [...evaluatorFamilies].some((evaluator) => generator !== evaluator)
+  );
+  if (!hasIndependentPair) {
     return reject(
-      "profile_transport_mismatch",
-      "desired.execution.profile",
-      "slow profile requires at least one a2a agent"
+      "same_model_family",
+      "desired.execution.role_bindings",
+      "generator and evaluator bindings do not have a viable distinct model-family pairing"
     );
   }
 
-  return { profile, role_assignments: assignments };
+  validateProfileTransports(profile, HARNESS_MODE_ROLES.map((role) => bindings[role].invocation));
+  return { profile, role_bindings: bindings };
+}
+
+function normalizeExecution(
+  value: unknown,
+  agents: readonly HarnessModeAgentDescriptor[] | undefined,
+  tools: readonly HarnessModeToolDescriptor[] | undefined
+): HarnessModeExecution {
+  const execution = plainObject(value, "desired.execution");
+  return Object.prototype.hasOwnProperty.call(execution, "role_bindings")
+    ? normalizeToolBindingExecution(execution, tools)
+    : normalizeLegacyExecution(execution, agents);
+}
+
+/** Identifies the v2 branch before full validation, for feature-gate selection. */
+export function usesHarnessToolBindings(value: unknown): boolean {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const desired = value as UnknownRecord;
+  const execution = desired.execution;
+  return execution !== null && typeof execution === "object" && !Array.isArray(execution) &&
+    Object.prototype.hasOwnProperty.call(execution, "role_bindings");
+}
+
+/**
+ * A v2 fast intent still needs a v2-capable device, but it has no selected
+ * tool to resolve and therefore must not require a reported tool catalog.
+ */
+export function requiresHarnessToolCatalog(value: unknown): boolean {
+  if (!usesHarnessToolBindings(value)) return false;
+  const execution = (value as UnknownRecord).execution as UnknownRecord;
+  return execution.role_bindings !== null;
 }
 
 function normalizeAutonomy(value: unknown, nowEpoch: number): HarnessModeAutonomy {
@@ -394,7 +568,7 @@ function normalizeAutonomy(value: unknown, nowEpoch: number): HarnessModeAutonom
       HARNESS_AUTONOMY_LIMITS.maxTokens.min,
       HARNESS_AUTONOMY_LIMITS.maxTokens.max
     ),
-    max_cost_usd: boundedNumber(
+    max_cost_usd: boundedUsdCents(
       budgetValue.max_cost_usd,
       "desired.autonomy.budget.max_cost_usd",
       HARNESS_AUTONOMY_LIMITS.maxCostUsd.min,
@@ -419,7 +593,7 @@ function normalizeAutonomy(value: unknown, nowEpoch: number): HarnessModeAutonom
     const intervals = plainObject(autonomy.wake_interval_s, "desired.autonomy.wake_interval_s");
     wakeIntervals = {};
     for (const [rawPhase, seconds] of Object.entries(intervals)) {
-      const phase = nonBlankString(rawPhase, "desired.autonomy.wake_interval_s phase");
+      const phase = stableAsciiId(rawPhase, "desired.autonomy.wake_interval_s phase");
       if (Object.prototype.hasOwnProperty.call(wakeIntervals, phase)) {
         return reject("duplicate_key", "desired.autonomy.wake_interval_s", `duplicate normalized phase ${phase}`);
       }
@@ -460,7 +634,7 @@ function normalizeAutonomy(value: unknown, nowEpoch: number): HarnessModeAutonom
 }
 
 /**
- * Validate and normalize the exact unsigned harness v1.5.0 mode-intent payload.
+ * Validate and normalize the exact unsigned harness mode-intent payload.
  * Every object level is key-whitelisted; this function performs no I/O and does not read the clock.
  */
 export function normalizeHarnessModeIntentPayload(
@@ -497,7 +671,7 @@ export function normalizeHarnessModeIntentPayload(
     repo_key: normalizeHarnessRepoKey(payload.repo_key),
     expected_head_sha: expectedHeadSha.toLowerCase(),
     desired: {
-      execution: normalizeExecution(desired.execution, context.agents),
+      execution: normalizeExecution(desired.execution, context.agents, context.tools),
       autonomy: normalizeAutonomy(desired.autonomy, nowEpoch)
     },
     issued_by: nonBlankString(payload.issued_by, "issued_by"),

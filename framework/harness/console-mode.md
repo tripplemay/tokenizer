@@ -159,11 +159,12 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 要把它拿回来，把私钥放进钥匙串并要求每次确认（`-T ""`，见脚本文末「加固」）：
 无人值守的 agent 过不了系统授权框，而你本人过得去。
 
-### 3.4 签名模式意图（v1.5；只影响下一批次）
+### 3.4 签名模式意图（v1.6；只影响下一批次）
 
 控制台可以签发人类 intent；tokenizer device agent 验签后只把它暂存在项目自己的
 `harness.json.project.mode_defaults`。控制台不写 `progress.json`、角色分配或自治策略，当前 active batch
-也绝不改变。完整落盘形状固定为：
+也绝不改变。历史 **v1** 的 agent-id 形状继续可读、可消费，供已签发 intent 和旧 device agent
+平滑过渡：
 
 ```json
 {
@@ -200,14 +201,59 @@ validate-pending-gate.sh guard 用仓库里的 console.pub 验签
 }
 ```
 
+新签发的 **v2** 不再把任何具体 agent id 放进人类签名内容。人类只选择 Harness 已支持的 CLI
+工具及调用方式；设备在下一次 `/plan` 才从本地候选池解析实际 descriptor：
+
+```json
+{
+  "intent": {
+    "intent_id": "intent-tool-01",
+    "repo_key": "github.com/acme/project",
+    "expected_head_sha": "0123456789abcdef0123456789abcdef01234567",
+    "desired": {
+      "execution": {
+        "profile": "heterogeneous",
+        "role_bindings": {
+          "planner": { "tool": "kimi", "invocation": "local-cli" },
+          "generator": { "tool": "codex", "invocation": "local-cli" },
+          "evaluator": { "tool": "claude-code", "invocation": "subagent" }
+        }
+      },
+      "autonomy": { "enabled": false }
+    },
+    "issued_by": "human@example.com",
+    "issued_at": "2026-07-31T18:00:00Z",
+    "intent_expires_at": "2026-08-01T00:00:00Z",
+    "sig": "<base64 Ed25519>"
+  },
+  "staged_at": "2026-07-31T18:00:05Z"
+}
+```
+
+`fast` 的 v2 `role_bindings` 必须为 null，保留本机默认路径。非 fast 的 v2 bindings 必须完整含
+Planner、Generator、Evaluator；其解析出的 agent id 只记录在 `progress.role_assignments` 和
+`progress.mode_intent.resolution` 中，绝不可回写进签名 intent。消费者还必须把**完整原始 signed
+intent（含 `sig`）**写入 `progress.mode_intent.signed_intent`：它是 active batch 的 checkpoint；随后可为
+下一批替换的 `harness.json.project.mode_defaults` 绝不能改变本批执行者。运行路径从 checkpoint 重验后取得
+五字段 active record，`role_assignments` 与 `resolution` 只保留审计用途。
+
+设备在**可信端**解析 registry 与已验证 adapter 的 data-only `tool-catalog/1` 契约，生成按角色分组、
+只含 `{tool, label, invocation, agent_count, model_families, capabilities}` 的能力目录。目录不含 agent id；
+新的 CLI 在 registry 中声明角色、并为 local-cli 提供已验证 adapter 后，无需修改控制台 schema 或 UI 即会
+进入对应角色的选择器。目录不可生成或安全校验失败时，控制台必须禁用 v2 签发，而不是猜测工具名。
+
+**Coordinator 是固定控制面。** 当前主会话负责验签、解析、派发、校验 proposal/handoff/verdict、展示
+需要人类确认的内容并在确认后落盘。它不在上述三个 selector 中，不可配置，也不得替代已经绑定的执行角色。
+
 **签名载荷是 `intent` 中除 `sig` 外的全部字段**：递归键排序、紧凑 JSON separators
 `(',', ':')`、UTF-8、`ensure_ascii=false`。`staged_at` 是 device agent 写下的本机接收元数据，不在签名内；
 mode defaults 不接受其他字段。`.claude/console/validate-mode-intent.sh` 使用项目内
 `.claude/console/console.pub`，并拒绝签名篡改、过期、repo 身份不符或任何白名单外字段。
 
-profile 语义是机械护栏：`fast` 要求 `role_assignments=null`；`heterogeneous` 要求没有 a2a 且至少一方
-是 local-cli；`slow` 要求至少一方是 a2a，另一方明确可以是 local-cli。显式分配的两个 agent 必须 id 不同、
-角色白名单匹配且 model family 不同。
+profile 语义是机械护栏：v1 的 `fast` 要求 `role_assignments=null`；v2 的 `fast` 要求
+`role_bindings=null`。v2 的 `heterogeneous` 要求三个执行角色均非 a2a 且至少一方是 local-cli；`slow`
+要求三者中至少一方是 a2a。Generator / Evaluator 必须能解析出不同 model family；Planner 可以与任一方
+同 family。v1 仍按其原有的 Generator/Evaluator agent-id 规则验证，兼容既有签名。
 
 自治关闭必须严格为 `{ "enabled": false }`，没有预算或其他 policy 字段；下一次 `/plan` 会保持手动模式并
 删除旧批次遗留的 `autonomy-policy.json`。自治开启才需要独立的绝对未来 `expires_at`、唯一 A/B
@@ -218,7 +264,8 @@ profile 语义是机械护栏：`fast` 要求 `role_assignments=null`；`heterog
 因此 `/plan` 只复验签名、shape、期限、repo identity、Agent 和安全语义，绝不再要求当前 HEAD 相等。
 
 激活步骤见 `planner.md` §0c：仅 `status=new` 或完成态开始新批次时消费，并记录
-`progress.mode_intent={intent_id,applied_batch,applied_at}`。没有 mode intent 时仍走完整本机手工流程。
+`progress.mode_intent={intent_id,applied_batch,applied_at,signed_intent,resolution}`（后两项只用于 v2 non-fast）。
+没有 mode intent 时仍走完整本机手工流程。
 
 ## 4. 组件
 

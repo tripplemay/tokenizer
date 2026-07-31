@@ -35,6 +35,27 @@ const REGISTRY = {
   ]
 };
 
+const CATALOG_REGISTRY = {
+  version: "dispatch/1",
+  agents: [
+    { id: "planner-claude", roles: ["planner"], transport: "subagent", agent_type: "planner-proposal", model_family: "claude", capabilities: ["plan"] },
+    { id: "builder-future", roles: ["generator"], transport: "local-cli", adapter: "future-cli", model_family: "codex", capabilities: ["build"], sandbox: { home_dir: "~/future" }, constraints: { l2: false, write_src: true, push: false } },
+    { id: "reviewer-kimi", roles: ["evaluator"], transport: "local-cli", adapter: "kimi", model_family: "kimi", capabilities: ["verify"], sandbox: { home_dir: "~/kimi" } }
+  ]
+};
+
+function installToolCatalogFixture(registry = CATALOG_REGISTRY) {
+  write(".agents-registry.json", JSON.stringify(registry));
+  write(".claude/dispatch/transports/adapters/future-cli.json", JSON.stringify({
+    name: "future-cli", tool: "future-cli", display_name: "Future CLI", model_family: "codex",
+    argv: ["future-cli"], envelope_delivery: "env", _verified: true
+  }));
+  write(".claude/dispatch/transports/adapters/kimi.json", JSON.stringify({
+    name: "kimi", tool: "kimi", display_name: "Kimi", model_family: "kimi",
+    argv: ["kimi"], envelope_delivery: "stdin", _verified: true
+  }));
+}
+
 beforeEach(() => {
   repo = mkdtempSync(join(tmpdir(), "modes-"));
   write("progress.json", JSON.stringify({ status: "building", autonomy: { status: null } }));
@@ -68,9 +89,83 @@ describe("执行形态", () => {
     expect(s.execution).toBe("heterogeneous");
     expect(s.dispatch.familyExclusive).toBe(true);
   });
+
+  it("A2A evaluator 与 local-cli generator 并存时，慢车道优先", () => {
+    const registry = structuredClone(REGISTRY);
+    registry.agents.push({
+      id: "reviewer-kimi-a2a",
+      roles: ["evaluator"],
+      transport: "a2a",
+      model_family: "kimi"
+    });
+    write(".agents-registry.json", JSON.stringify(registry));
+    write("progress.json", JSON.stringify({
+      role_assignments: { generator: "builder-codex", evaluator: "reviewer-kimi-a2a" }
+    }));
+
+    expect(buildModeSnapshot(repo).execution).toBe("slow");
+  });
+
+  it("uses a persisted v2 resolution as the tool-centric current-mode audit", () => {
+    const registry = structuredClone(REGISTRY);
+    registry.agents.push(
+      { id: "planner-claude", roles: ["planner"], transport: "subagent", model_family: "claude" },
+      { id: "reviewer-kimi-a2a", roles: ["evaluator"], transport: "a2a", model_family: "kimi" }
+    );
+    write(".agents-registry.json", JSON.stringify(registry));
+    write("progress.json", JSON.stringify({
+      role_assignments: {
+        planner: "planner-claude",
+        generator: "builder-codex",
+        evaluator: "reviewer-kimi-a2a"
+      },
+      mode_intent: {
+        intent_id: "intent-1",
+        resolution: {
+          planner: { agent_id: "planner-claude", tool: "claude-code", invocation: "subagent", model_family: "claude", priority: 100 },
+          generator: { agent_id: "builder-codex", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 100 },
+          evaluator: { agent_id: "reviewer-kimi-a2a", tool: "kimi", invocation: "a2a", model_family: "kimi", priority: 100 }
+        }
+      }
+    }));
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.execution).toBe("slow");
+    expect(snapshot.current).toEqual({
+      profile: "slow",
+      roleBindings: {
+        planner: { tool: "claude-code", invocation: "subagent", modelFamily: "claude" },
+        generator: { tool: "codex", invocation: "local-cli", modelFamily: "codex" },
+        evaluator: { tool: "kimi", invocation: "a2a", modelFamily: "kimi" }
+      }
+    });
+    expect(JSON.stringify(snapshot.current)).not.toContain("builder-codex");
+  });
 });
 
 describe("独立性与沙箱", () => {
+  it("reports framework-owned catalog choices without deriving tool ids from agent cards", () => {
+    installToolCatalogFixture();
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.dispatch.toolCatalog).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "claude-code", role: "planner" }),
+      expect.objectContaining({ tool: "future-cli", label: "Future CLI", role: "generator" })
+    ]));
+    expect(JSON.stringify(snapshot.dispatch.toolCatalog)).not.toContain("agentId");
+    expect(snapshot.dispatch.issues).not.toContain("dispatch tool catalog is unavailable");
+  });
+
+  it("withholds the catalog when the data-only registry validation fails", () => {
+    const invalid = structuredClone(CATALOG_REGISTRY);
+    invalid.agents[0].agent_type = "generator-restricted";
+    installToolCatalogFixture(invalid);
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.dispatch.toolCatalog).toEqual([]);
+    expect(snapshot.dispatch.issues).toContain("dispatch tool catalog is unavailable");
+  });
+
   it("上报 registry capabilities 与有界待生效 defaults 摘要", () => {
     const now = Date.parse("2026-07-27T12:00:00.000Z");
     const { privateKey, publicKey } = generateKeyPairSync("ed25519");

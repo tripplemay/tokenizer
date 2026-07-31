@@ -62,24 +62,43 @@ Agent Card 的 `x-harness.sandboxed` 字段用于声明，但**声明不等于�
 - 所有端点（含 Agent Card）校验 `Authorization: Bearer`，错/缺 → 401
 - 第一版刻意不做 OAuth/mTLS：局域网 + Bearer 已覆盖目标场景，上 OAuth 是负资产
 
+编排端 descriptor 的 `auth` 是另一条受控边界：只允许省略（无 header）、`{"type":"none"}`，或
+`{"type":"bearer","env":"REMOTE_A2A_TOKEN"}`。`auth.env` 必须是安全的专用 `REMOTE_A2A_*` POSIX
+变量名，不能把 `OPENAI_API_KEY` 等任意宿主密钥转发给远端；`HOME`、`PATH`、所有 `GIT_*` / `HARNESS_*`、
+动态链接器和 shell 初始化变量也都被拒绝。空对象、`null`、未知类型、多余字段、缺 bearer `env`，以及
+local-cli/subagent descriptor 上的 `auth` 都 fail-closed。registry preflight、tool catalog 与 a2a client
+在发出任何网络请求前共享这项检查。
+
+对端 runner 可继续把自己的监听凭据保存在 `HARNESS_A2A_TOKEN`；编排端应从安全的外部配置把**同一个值**注入
+如 `REMOTE_A2A_TOKEN` 的专用变量，再在 A2A descriptor 中引用后者。这样远端 token 不会通过 descriptor
+读取 Harness 的内部控制变量。
+
 ### 3.3 🔴 远端自述只是参考，权威判定在本地
 
 runner 返回的 `state` 写进 run-meta 的 `remote_state_advisory` 字段，**仅供取证**。
 客户端把产物写到本地后，由调用方对**本地副本**重跑 `validate-dispatch.sh receipt`——
 我们校验实际收到的东西，不采信远端的结论。跨机器场景下这是唯一诚实的做法。
 
+### 3.4 Generator 目前被刻意拒绝
+
+`a2a-client.py` 能把结构化 artifact 内联回本机，但不能安全回流远端 Generator 的源码 diff、
+未提交变更或可验证 commit。因而 registry、tool catalog、dispatch 入口和 runner 都会 fail-closed
+拒绝 `transport=a2a + role=generator`。这不是 A2A 整体未实装：Planner proposal 与 Evaluator verdict
+仍可正常使用 a2a。等 source-handoff protocol 明确定义了 diff/commit 的归属、完整性和回流校验后，才可
+放开 Generator。
+
 ## 4. 与 local-cli 的一致性
 
-**产物落盘位置、run-meta 字段、回执推断表、gate-arbiter、`/autodrive` 全部不变。**
+**Planner / Evaluator 的产物落盘位置、run-meta 字段、回执推断表、gate-arbiter、`/autodrive` 全部不变。**
 `dispatch-run.sh` 按 `descriptor.transport` 路由，两条路径输出同形 run-meta：
 两者也都把该记录耐久落在 `--state` 目录（默认项目 `.harness-dispatch/`）；
 local-cli 的日志仍在它的 workroot，不会被搬运或上传。
 
 | run-meta 字段 | local-cli | a2a |
 |---|---|---|
-| `artifact` | worktree 内绝对路径 | **本地**相对路径（内联回传后写盘） |
+| `artifact` | worktree 内绝对路径 | **本地**绝对路径（内联回传后写盘） |
 | `outcome` | 沙箱直接观察 | 由传输层事实推导（拿到产物=RETURNED，取消=TIMEOUT…） |
-| `transport` | 缺省 | `"a2a"` |
+| `transport` | `"local-cli"` | `"a2a"` |
 | `remote_state_advisory` | 缺省 | 远端自述，仅参考 |
 
 跨机器时客户端读不到 runner 的文件系统，所以**产物必须随响应内联回传**——这是 a2a 与 local-cli
@@ -94,7 +113,8 @@ python3 .claude/dispatch/transports/a2a-runner.py \
   --agent reviewer-codex --host 0.0.0.0 --port 41241
 
 # ── 编排者机器 ──
-export HARNESS_A2A_TOKEN=<同一 token>
+export REMOTE_A2A_TOKEN=<同一 token>
+# descriptor.auth = {"type":"bearer","env":"REMOTE_A2A_TOKEN"}
 bash .claude/dispatch/dispatch-run.sh --agent reviewer-codex-a2a --envelope envelope.json   # 阻塞至终态
 
 # 真异步用法：派完就走

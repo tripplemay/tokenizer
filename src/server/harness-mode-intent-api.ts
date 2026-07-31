@@ -1,16 +1,24 @@
 import { posix as posixPath } from "node:path";
 import {
+  HARNESS_MODE_ROLES,
   HARNESS_TRANSPORTS,
   type HarnessModeAgentDescriptor,
-  type HarnessModeIntentDesired
+  type HarnessModeIntentDesired,
+  type HarnessModeRole,
+  type HarnessModeToolDescriptor
 } from "@/shared/harness-mode-intent";
+import {
+  toolCatalogModeDescriptors,
+  type HarnessToolCatalogEntry
+} from "@/shared/harness-tool-catalog";
 
 const UTC_TIMESTAMP_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?Z$/;
 const HEAD_SHA_PATTERN = /^[0-9a-fA-F]{40}$/;
 const SHA256_PATTERN = /^[0-9a-fA-F]{64}$/;
+const TOOL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const TRANSPORTS = new Set<string>(HARNESS_TRANSPORTS);
-const DISPATCH_ROLES = new Set(["generator", "evaluator"]);
+const DISPATCH_ROLES = new Set<string>(HARNESS_MODE_ROLES);
 const RELAY_ACK_STATUSES = new Set(["staged", "applied", "failed"]);
 
 export const HARNESS_REPORT_MAX_BYTES = 256 * 1024;
@@ -283,6 +291,88 @@ export function modeAgentsFromSnapshot(value: unknown): HarnessModeAgentDescript
   });
 }
 
+/**
+ * Parse the device-reported public catalog. It is intentionally independent
+ * from `dispatch.agents`: the framework tool-catalog contract owns canonical
+ * tool identity and the local resolver owns concrete agent selection.
+ */
+function reportedToolCatalog(value: unknown, requireUsable: boolean): HarnessToolCatalogEntry[] {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
+  }
+  const modes = record(value, "mode snapshot");
+  const dispatch = record(modes.dispatch, "mode snapshot dispatch");
+  if (dispatch.enabled !== true || !Array.isArray(dispatch.toolCatalog) || dispatch.toolCatalog.length > 150) {
+    return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
+  }
+  if (requireUsable && dispatch.toolCatalog.length < 1) {
+    return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
+  }
+
+  const catalog: HarnessToolCatalogEntry[] = [];
+  const seen = new Set<string>();
+  for (const rawCapability of dispatch.toolCatalog) {
+    const capability = exactRecord(rawCapability, "mode snapshot tool capability", [
+      "tool",
+      "label",
+      "invocation",
+      "role",
+      "agentCount",
+      "modelFamilies",
+      "capabilities"
+    ]);
+    const tool = modeString(capability.tool, "mode snapshot tool capability tool", 64)!;
+    const label = modeString(capability.label, "mode snapshot tool capability label", 128)!;
+    const invocation = modeString(capability.invocation, "mode snapshot tool capability invocation", 32)!;
+    const role = modeString(capability.role, "mode snapshot tool capability role", 32)!;
+    if (!TOOL_ID_PATTERN.test(tool) || !TRANSPORTS.has(invocation) || !DISPATCH_ROLES.has(role)) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains an invalid entry", 409);
+    }
+    if (!Array.isArray(capability.modelFamilies) || capability.modelFamilies.length < 1 || capability.modelFamilies.length > 50) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains invalid model families", 409);
+    }
+    const modelFamilies = capability.modelFamilies.map((family) =>
+      modeString(family, "mode snapshot tool capability model family", 128)!
+    );
+    if (new Set(modelFamilies).size !== modelFamilies.length) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains duplicate model families", 409);
+    }
+    if (!Array.isArray(capability.capabilities) || capability.capabilities.length > 64) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains invalid capabilities", 409);
+    }
+    const capabilities = capability.capabilities.map((item) =>
+      modeString(item, "mode snapshot tool capability capability", 64)!
+    );
+    if (new Set(capabilities).size !== capabilities.length) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains duplicate capabilities", 409);
+    }
+    const agentCount = safeInteger(capability.agentCount, "mode snapshot tool capability agentCount", 1, 50);
+    const key = `${role}\u0000${tool}\u0000${invocation}`;
+    if (seen.has(key)) {
+      return reject("invalid_tool_catalog", "project tool capability catalog contains duplicate entries", 409);
+    }
+    seen.add(key);
+    catalog.push({
+      tool,
+      label,
+      invocation: invocation as HarnessToolCatalogEntry["invocation"],
+      role: role as HarnessModeRole,
+      agentCount,
+      modelFamilies,
+      capabilities
+    });
+  }
+  if (requireUsable && !HARNESS_MODE_ROLES.every((role) => catalog.some((entry) => entry.role === role))) {
+    return reject("invalid_tool_catalog", "project tool capability catalog is missing a required role", 409);
+  }
+  return catalog;
+}
+
+/** Expand public candidate pools into the model-family facts required by v2 signing validation. */
+export function modeToolCatalogFromSnapshot(value: unknown): HarnessModeToolDescriptor[] {
+  return toolCatalogModeDescriptors(reportedToolCatalog(value, true));
+}
+
 export type RelayModeIntentAck =
   | { projectId: string; intentId: string; status: "staged"; stagedAt: Date; stagedCommitSha: string | null }
   | { projectId: string; intentId: string; status: "applied"; appliedAt: Date; appliedBatch: string }
@@ -442,7 +532,7 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     "dispatch",
     "gate",
     "machinery"
-  ], ["pendingDefaults"]);
+  ], ["current", "pendingDefaults"]);
 
   if (modes.framework !== null) {
     const framework = exactRecord(modes.framework, "state.modes.framework", [
@@ -474,6 +564,42 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     return reject("invalid_mode_snapshot", "state.modes.execution is not recognized");
   }
 
+  if (modes.current !== undefined && modes.current !== null) {
+    const current = exactRecord(modes.current, "state.modes.current", ["profile", "roleBindings"]);
+    const profile = modeString(current.profile, "state.modes.current.profile", 32);
+    if (profile !== "heterogeneous" && profile !== "slow") {
+      return reject("invalid_mode_snapshot", "state.modes.current.profile is not a resolved non-fast profile");
+    }
+    if (profile !== execution) {
+      return reject("invalid_mode_snapshot", "state.modes.current.profile must match state.modes.execution");
+    }
+    const bindings = exactRecord(current.roleBindings, "state.modes.current.roleBindings", ["planner", "generator", "evaluator"]);
+    const invocations: string[] = [];
+    for (const role of HARNESS_MODE_ROLES) {
+      const binding = exactRecord(bindings[role], `state.modes.current.roleBindings.${role}`, [
+        "tool",
+        "invocation",
+        "modelFamily"
+      ]);
+      const tool = modeString(binding.tool, `state.modes.current.roleBindings.${role}.tool`, 64);
+      if (!TOOL_ID_PATTERN.test(tool!)) {
+        return reject("invalid_mode_snapshot", "state.modes.current role binding tool is not recognized");
+      }
+      const invocation = modeString(binding.invocation, `state.modes.current.roleBindings.${role}.invocation`, 32);
+      if (!TRANSPORTS.has(invocation!)) {
+        return reject("invalid_mode_snapshot", "state.modes.current role binding invocation is not recognized");
+      }
+      invocations.push(invocation!);
+      modeString(binding.modelFamily, `state.modes.current.roleBindings.${role}.modelFamily`, 128);
+    }
+    if (
+      (profile === "slow" && !invocations.includes("a2a")) ||
+      (profile === "heterogeneous" && (invocations.includes("a2a") || !invocations.includes("local-cli")))
+    ) {
+      return reject("invalid_mode_snapshot", "state.modes.current.profile does not match resolved invocations");
+    }
+  }
+
   const autonomy = exactRecord(modes.autonomy, "state.modes.autonomy", [
     "enabled",
     "policyValid",
@@ -493,7 +619,7 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     "agents",
     "familyExclusive",
     "issues"
-  ]);
+  ], ["toolCatalog"]);
   modeBoolean(dispatch.enabled, "state.modes.dispatch.enabled");
   modeBoolean(dispatch.familyExclusive, "state.modes.dispatch.familyExclusive", true);
   const assignments = record(dispatch.assignments, "state.modes.dispatch.assignments");
@@ -528,6 +654,12 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     }
   }
   modeStrings(dispatch.issues, "state.modes.dispatch.issues", 100, 1_000);
+  if (dispatch.toolCatalog !== undefined) {
+    // This is a framework-produced, agent-id-free catalog. Do not derive tool
+    // ids from visible agent cards: data-only adapter canonicalization follows
+    // the tool-catalog contract and may evolve independently of Tokenizer.
+    reportedToolCatalog(modes, false);
+  }
 
   const gate = exactRecord(modes.gate, "state.modes.gate", ["pubInstalled", "guardMode", "pendingGateId"]);
   modeBoolean(gate.pubInstalled, "state.modes.gate.pubInstalled");
@@ -563,10 +695,12 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
       );
     }
 
-    const pendingExecution = exactRecord(defaults.execution, "state.modes.pendingDefaults.execution", [
-      "profile",
-      "roleAssignments"
-    ]);
+    const pendingExecution = exactRecord(
+      defaults.execution,
+      "state.modes.pendingDefaults.execution",
+      ["profile"],
+      ["roleAssignments", "roleBindings"]
+    );
     const pendingProfile = modeString(
       pendingExecution.profile,
       "state.modes.pendingDefaults.execution.profile",
@@ -575,19 +709,21 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     if (!new Set(["fast", "heterogeneous", "slow"]).has(pendingProfile!)) {
       return reject("invalid_mode_snapshot", "state.modes.pendingDefaults.execution.profile is not recognized");
     }
-    if (pendingProfile === "fast" && pendingExecution.roleAssignments !== null) {
+    const hasAssignments = pendingExecution.roleAssignments !== undefined && pendingExecution.roleAssignments !== null;
+    const hasBindings = pendingExecution.roleBindings !== undefined && pendingExecution.roleBindings !== null;
+    if (pendingProfile === "fast" && (hasAssignments || hasBindings)) {
       return reject(
         "invalid_mode_snapshot",
-        "state.modes.pendingDefaults fast profile requires null roleAssignments"
+        "state.modes.pendingDefaults fast profile requires null role assignments and bindings"
       );
     }
-    if (pendingProfile !== "fast" && pendingExecution.roleAssignments === null) {
+    if (pendingProfile !== "fast" && hasAssignments === hasBindings) {
       return reject(
         "invalid_mode_snapshot",
-        "state.modes.pendingDefaults heterogeneous and slow profiles require roleAssignments"
+        "state.modes.pendingDefaults heterogeneous and slow profiles require exactly one role assignment form"
       );
     }
-    if (pendingExecution.roleAssignments !== null) {
+    if (hasAssignments) {
       const assignments = exactRecord(
         pendingExecution.roleAssignments,
         "state.modes.pendingDefaults.execution.roleAssignments",
@@ -595,6 +731,29 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
       );
       modeString(assignments.generator, "state.modes.pendingDefaults.execution.roleAssignments.generator", 128);
       modeString(assignments.evaluator, "state.modes.pendingDefaults.execution.roleAssignments.evaluator", 128);
+    }
+    if (hasBindings) {
+      const bindings = exactRecord(
+        pendingExecution.roleBindings,
+        "state.modes.pendingDefaults.execution.roleBindings",
+        ["planner", "generator", "evaluator"]
+      );
+      for (const role of HARNESS_MODE_ROLES) {
+        const binding = exactRecord(
+          bindings[role],
+          `state.modes.pendingDefaults.execution.roleBindings.${role}`,
+          ["tool", "invocation"]
+        );
+        modeString(binding.tool, `state.modes.pendingDefaults.execution.roleBindings.${role}.tool`, 128);
+        const invocation = modeString(
+          binding.invocation,
+          `state.modes.pendingDefaults.execution.roleBindings.${role}.invocation`,
+          32
+        );
+        if (!TRANSPORTS.has(invocation!)) {
+          return reject("invalid_mode_snapshot", "state.modes.pendingDefaults role binding invocation is not recognized");
+        }
+      }
     }
 
     const pendingAutonomy = exactRecord(defaults.autonomy, "state.modes.pendingDefaults.autonomy", [

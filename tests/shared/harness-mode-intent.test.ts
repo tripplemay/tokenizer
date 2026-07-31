@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   HarnessModeAgentDescriptor,
   HarnessModeIntentPayload,
+  HarnessModeToolDescriptor,
   normalizeHarnessModeIntentPayload,
+  requiresHarnessToolCatalog,
+  usesHarnessToolBindings,
   validateHarnessModeIntentPayload
 } from "@/shared/harness-mode-intent";
 
@@ -13,6 +16,14 @@ const AGENTS: HarnessModeAgentDescriptor[] = [
   { id: "builder-codex", roles: ["generator"], transport: "local-cli", model_family: "codex" },
   { id: "reviewer-kimi", roles: ["evaluator"], transport: "local-cli", model_family: "kimi" },
   { id: "reviewer-kimi-a2a", roles: ["evaluator"], transport: "a2a", model_family: "kimi" }
+];
+
+const TOOLS: HarnessModeToolDescriptor[] = [
+  { tool: "claude", invocation: "subagent", role: "planner", model_family: "claude" },
+  { tool: "kimi", invocation: "local-cli", role: "planner", model_family: "kimi" },
+  { tool: "codex", invocation: "local-cli", role: "generator", model_family: "codex" },
+  { tool: "kimi", invocation: "local-cli", role: "evaluator", model_family: "kimi" },
+  { tool: "kimi", invocation: "a2a", role: "evaluator", model_family: "kimi" }
 ];
 
 function autonomy(enabled = true) {
@@ -52,6 +63,29 @@ function intent(profile: "fast" | "heterogeneous" | "slow" = "fast", enabled = t
 
 function expectCode(input: unknown, code: string, agents = AGENTS) {
   const result = validateHarnessModeIntentPayload(input, { now: NOW, agents });
+  if (!("error" in result)) throw new Error(`expected validation error ${code}`);
+  expect(result.error.code).toBe(code);
+}
+
+function toolBindingIntent(profile: "heterogeneous" | "slow" = "heterogeneous"): Record<string, any> {
+  return {
+    ...intent(profile),
+    desired: {
+      execution: {
+        profile,
+        role_bindings: {
+          planner: { tool: "kimi", invocation: "local-cli" },
+          generator: { tool: "codex", invocation: "local-cli" },
+          evaluator: { tool: "kimi", invocation: profile === "slow" ? "a2a" : "local-cli" }
+        }
+      },
+      autonomy: autonomy(true)
+    }
+  };
+}
+
+function expectToolCode(input: unknown, code: string, tools = TOOLS) {
+  const result = validateHarnessModeIntentPayload(input, { now: NOW, tools });
   if (!("error" in result)) throw new Error(`expected validation error ${code}`);
   expect(result.error.code).toBe(code);
 }
@@ -213,6 +247,84 @@ describe("execution profiles and agent assignments", () => {
   });
 });
 
+describe("v2 execution profiles and tool bindings", () => {
+  it("accepts the legal v2 fast null shape without a catalog, while retaining the v2 feature gate", () => {
+    const value = {
+      ...intent("fast", false),
+      desired: {
+        execution: { profile: "fast", role_bindings: null },
+        autonomy: { enabled: false }
+      }
+    };
+    expect(usesHarnessToolBindings(value.desired)).toBe(true);
+    expect(requiresHarnessToolCatalog(value.desired)).toBe(false);
+    expect(normalizeHarnessModeIntentPayload(value, { now: NOW }).desired.execution).toEqual({
+      profile: "fast",
+      role_bindings: null
+    });
+  });
+
+  it("keeps the signed v2 shape free of concrete agent ids", () => {
+    const value = toolBindingIntent();
+    expect(usesHarnessToolBindings(value.desired)).toBe(true);
+    const result = normalizeHarnessModeIntentPayload(value, { now: NOW, tools: TOOLS });
+    expect(result.desired.execution).toEqual({
+      profile: "heterogeneous",
+      role_bindings: {
+        planner: { tool: "kimi", invocation: "local-cli" },
+        generator: { tool: "codex", invocation: "local-cli" },
+        evaluator: { tool: "kimi", invocation: "local-cli" }
+      }
+    });
+    expect(JSON.stringify(result.desired.execution)).not.toContain("builder-codex");
+  });
+
+  it("requires an exact, role-complete tool capability catalog", () => {
+    const missingPlanner = toolBindingIntent();
+    delete missingPlanner.desired.execution.role_bindings.planner;
+    expectToolCode(missingPlanner, "missing_key");
+
+    const unknown = toolBindingIntent();
+    unknown.desired.execution.role_bindings.evaluator.tool = "ghost";
+    expectToolCode(unknown, "unknown_tool");
+
+    expect(validateHarnessModeIntentPayload(toolBindingIntent(), { now: NOW })).toMatchObject({
+      ok: false,
+      error: { code: "missing_tool_catalog" }
+    });
+  });
+
+  it("requires a viable independent generator/evaluator family pair", () => {
+    const sameFamily = TOOLS.map((tool) =>
+      tool.role === "evaluator" ? { ...tool, model_family: "codex" } : tool
+    );
+    expectToolCode(toolBindingIntent(), "same_model_family", sameFamily);
+  });
+
+  it("applies profile transport rules across planner, generator, and evaluator", () => {
+    const heterogeneous = toolBindingIntent();
+    heterogeneous.desired.execution.role_bindings.evaluator.invocation = "a2a";
+    expectToolCode(heterogeneous, "profile_transport_mismatch");
+
+    const slow = toolBindingIntent("slow");
+    expect(normalizeHarnessModeIntentPayload(slow, { now: NOW, tools: TOOLS }).desired.execution.profile).toBe("slow");
+
+    const noA2a = toolBindingIntent("slow");
+    noA2a.desired.execution.role_bindings.evaluator.invocation = "local-cli";
+    expectToolCode(noA2a, "profile_transport_mismatch");
+  });
+
+  it("rejects non-null v2 bindings for fast and v1/v2 mixed execution objects", () => {
+    const fast = toolBindingIntent();
+    fast.desired.execution.profile = "fast";
+    expectToolCode(fast, "invalid_bindings");
+
+    const mixed = toolBindingIntent();
+    mixed.desired.execution.role_assignments = { generator: "builder-codex", evaluator: "reviewer-kimi" };
+    expectToolCode(mixed, "extra_key");
+  });
+});
+
 describe("autonomy validation", () => {
   it("requires disabled autonomy to be exactly enabled=false", () => {
     const value = intent("fast", false);
@@ -247,6 +359,10 @@ describe("autonomy validation", () => {
     ["max_cost_usd", 10_001],
     ["max_cost_usd", Number.NaN],
     ["max_cost_usd", Number.POSITIVE_INFINITY],
+    ["max_cost_usd", -0],
+    ["max_cost_usd", 0.000001],
+    ["max_cost_usd", 1.234],
+    ["max_cost_usd", 0.30000000000000004],
     ["max_wakes", 0],
     ["max_wakes", 1_001],
     ["max_fix_rounds", -1],
@@ -257,16 +373,35 @@ describe("autonomy validation", () => {
     expectCode(value, "invalid_number");
   });
 
+  it("preserves standard cent-denominated USD values in the normalized signed payload", () => {
+    const value = intent();
+    value.desired.autonomy.budget.max_cost_usd = 0.29;
+    expect(normalizeHarnessModeIntentPayload(value, { now: NOW }).desired.autonomy).toMatchObject({
+      budget: { max_cost_usd: 0.29 }
+    });
+  });
+
   it.each([59, 86_401, 1.5, Number.MAX_SAFE_INTEGER + 1])("bounds wake intervals: %s", (seconds) => {
     const value = intent();
     value.desired.autonomy.wake_interval_s = { building: seconds };
     expectCode(value, "invalid_number");
   });
 
-  it("rejects blank wake interval phase names", () => {
+  it.each(["   ", "build phase", "构建", "_building", "building!", "__proto__", "prototype", "constructor", "x".repeat(65)])(
+    "rejects non-stable wake interval phase %j",
+    (phase) => {
+      const value = intent();
+      value.desired.autonomy.wake_interval_s = { [phase]: 60 };
+      expectCode(value, "invalid_string");
+    }
+  );
+
+  it("accepts stable ASCII wake interval phase identifiers", () => {
     const value = intent();
-    value.desired.autonomy.wake_interval_s = { "   ": 60 };
-    expectCode(value, "invalid_string");
+    value.desired.autonomy.wake_interval_s = { "build.v2": 60, verify_fix: 120 };
+    expect(normalizeHarnessModeIntentPayload(value, { now: NOW }).desired.autonomy).toMatchObject({
+      wake_interval_s: { "build.v2": 60, verify_fix: 120 }
+    });
   });
 
   it.each([[["unknown"]], [["done", "done"]]])("rejects invalid or duplicate notification events: %j", (events) => {
