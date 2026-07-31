@@ -25,6 +25,7 @@ const CREDENTIAL_PATTERN =
 const SENSITIVE_FIELD_PATTERN =
   /^(?:prompt|stdout|stderr|logs?|env(?:ironment)?|worktrees?|source|credentials?)$/i;
 const HARNESS_COMMAND_REFERENCE_LABELS = new Set(["feature.title"]);
+const FORWARD_SLASH_UNC_PATH_PATTERN = /(^|[^A-Za-z0-9_/:])\/\/[^/\s]+\/[^\s]*/;
 const KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN =
   /(^|[^A-Za-z0-9_/])\/(?:plan|build|verify|dashboard|autodrive)(?=$|[\s,;:!)\]}"'`，。、；：！）】》」』]|\.(?=$|\s))/g;
 const SAFE_ROUTE_REFERENCE_PATTERN =
@@ -187,6 +188,7 @@ export function safePersistedSummary(value: unknown, label: string, max: number)
   if (!summary || value.length > max) {
     return reject("invalid_string", `${label} must contain between 1 and ${max} characters`);
   }
+  const containsForwardSlashUncPath = FORWARD_SLASH_UNC_PATH_PATTERN.test(summary);
   const pathScanValue = HARNESS_COMMAND_REFERENCE_LABELS.has(label)
     ? summary
       .replace(KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN, "$1")
@@ -198,9 +200,14 @@ export function safePersistedSummary(value: unknown, label: string, max: number)
     /(^|[^A-Za-z0-9_/])\/(?!\/)[^\s,;)\]}"']*/.test(pathScanValue) ||
     /\b[A-Za-z]:[\\/][^\s]*/.test(pathScanValue) ||
     /(^|[^A-Za-z0-9_\\])\\\\[^\\\s]+\\[^\\\s]+/.test(pathScanValue) ||
-    /(^|[^A-Za-z0-9_/:])\/\/[^/\s]+\/[^\s]*/.test(pathScanValue) ||
+    FORWARD_SLASH_UNC_PATH_PATTERN.test(pathScanValue) ||
     /\bfile:\/\//i.test(pathScanValue);
-  if (containsAbsolutePath || RAW_CHANNEL_PATTERN.test(summary) || CREDENTIAL_PATTERN.test(summary)) {
+  if (
+    containsForwardSlashUncPath ||
+    containsAbsolutePath ||
+    RAW_CHANNEL_PATTERN.test(summary) ||
+    CREDENTIAL_PATTERN.test(summary)
+  ) {
     return reject("sensitive_summary_data", `${label} contains data that may not be persisted`);
   }
   return summary;

@@ -1,0 +1,33 @@
+{
+  "batch_id": "BL-HARNESS-REPORT-COMPAT",
+  "created_at": "2026-07-31T02:58:45Z",
+  "features": [
+    {
+      "feature_id": "F002",
+      "commits": [],
+      "files_touched": [
+        "src/server/harness-mode-intent-api.ts",
+        "tests/server/harness-mode-intent-api.test.ts",
+        "tests/server/harness-report-mode-intent.test.ts"
+      ],
+      "notes": "Restored fail-closed detection for forward-slash UNC/path-shaped summaries by testing the raw trimmed summary with FORWARD_SLASH_UNC_PATH_PATTERN before feature.title-only command, route, word-internal slash, or prose separator masking can modify it. Existing safe exact Harness command, /api and /vN route, word-internal slash, and standalone prose slash acceptance remains covered by the existing real-title tests."
+    },
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "tests/server/harness-mode-intent-api.test.ts",
+        "tests/server/harness-report-mode-intent.test.ts",
+        "docs/test-reports/BL-HARNESS-REPORT-COMPAT-fix1-generator-handoff.json"
+      ],
+      "notes": "Added focused regressions for //server/share, //api/x, and x //host/share y at the unit API layer and the /api/harness/report route layer. The route cases assert sensitive_summary_data, response non-echoing, and no prisma.project.findFirst or prisma.$transaction call before rejection."
+    }
+  ],
+  "l1_ran": {
+    "test": "npm run test -- tests/server/harness-mode-intent-api.test.ts tests/server/harness-report-mode-intent.test.ts: exit 127, failed before Vitest because sh: vitest: command not found. npm test: exit 127, failed before Vitest because sh: vitest: command not found. node regex smoke for changed safePersistedSummary logic: exit 0, output regex smoke passed accepted=7 rejected=11. npm ci --offline: exit 1, ENOTCACHED for yocto-queue-0.1.0; no node_modules left behind.",
+    "typecheck": "npm run verify: exit 127, failed before type checking because sh: prisma: command not found. npm run build: exit 127, failed before build because sh: prisma: command not found.",
+    "lint": "npm run lint: exit 127, failed before linting because sh: next: command not found. git diff --check: exit 0."
+  },
+  "waiting": null,
+  "waiting_detail": "No product-code blocker. Formal Vitest/verify/lint/build are unrun because this sandbox lacks node_modules and offline npm cache is missing yocto-queue-0.1.0."
+}

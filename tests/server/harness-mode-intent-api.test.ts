@@ -188,6 +188,9 @@ describe("persisted feature title redaction", () => {
   });
 
   it.each([
+    ["forward-slash UNC path", "//server/share"],
+    ["forward-slash route-shaped UNC path", "//api/x"],
+    ["embedded forward-slash UNC path", "x //host/share y"],
     ["nested path", "Harness command /plan/private"],
     ["path-shaped extension", "Harness command /plan.txt"],
     ["path-shaped suffix", "Harness command /plan-private"],

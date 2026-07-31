@@ -208,6 +208,9 @@ describe("harness report mode activation and dispatch summaries", () => {
 
   it.each([
     "/Users/alice/private/repo",
+    "//server/share",
+    "//api/x",
+    "x //host/share y",
     "POST /api/../private",
     "C:\\Users\\alice\\private",
     "\\\\server\\share\\private",
