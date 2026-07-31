@@ -1,37 +1,37 @@
 {
-  "sprint": "BL-FW-RELEASE-CONTRACT",
+  "sprint": "BL-AGENT-REPORT-COMPAT",
   "features": [
     {
       "id": "F001",
-      "title": "框架发布清单唯一事实源与源仓校验",
+      "title": "旧 Agent 空工具目录上报兼容",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "harness-template 以 harness/framework-releases.json 记录 v1 正式发行历史至 v1.5.3，版本严格递增且无重复；VERSION 必须等于 manifest 末项，CHANGELOG 的 v1 标题与 manifest 双向一致，缺失的 v1.1.0/v1.2.0/v1.3.0 历史条目一并回填；校验器在任一漂移、非法 SemVer、空清单或重复时非零退出，且不修改文件；源仓 CI 在 PR/push 自动运行该校验。"
+      "acceptance": "仅接受 feature 6 旧 Agent 产生的 dispatch.enabled=false 且 toolCatalog=[] 的 report 快照并刷新 reportedAt；该空目录不能用于 v2 签发；disabled 非空/畸形目录和 enabled 畸形目录仍在 Prisma 前 fail-closed 为 invalid_tool_catalog。"
     },
     {
       "id": "F002",
-      "title": "发布清单随 Harness init 与 sync 可靠分发",
+      "title": "Agent 1.1.0 发行与能力门槛契约",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "harness/framework-releases.json 经既有 framework/harness 递归受管镜像随 init、sync、nested/flat bootstrap 分发，harness.lock 记录其校验和；adopt 继续只记录现状，旧项目缺清单时由后续 sync 作为新增受管文件补入。临时源仓/项目 fixture 验证首次安装、升级、adopt 后 sync 和 bootstrap 均得到与源字节一致的 manifest，且不破坏既有 VERSION、CHANGELOG、harness.json 或自我覆盖防护。"
+      "acceptance": "Agent build、全局更新门槛和 tool-bound intent 门槛升至 capability 7，manifest 新增严格递增的 1.1.0 条目且最新 manifest capability 与源码一致；旧 1.0.0/feature 6 显示 upgrade-required，v1 intent 阈值保持 4。"
     },
     {
       "id": "F003",
-      "title": "Tokenizer 控制台消费发布清单并消除静态漂移",
+      "title": "首页升级提示语义完整性",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "tokenizer 经受控 sync 更新到 framework v1.5.3，src/shared/framework-version.ts 从 framework/harness/framework-releases.json 派生 FRAMEWORK_RELEASES 与 latest，不再维护第二份发行数组；保留 public helper 与 latest/behind/ahead/unknown 四态及 v0.x 的无计数兼容语义。v1.5.3=latest、v1.5.2=behind one、未来 v9.9.9=ahead、非法版本=unknown；模式徽章不再把当前已同步项目误标为服务端未知超前。"
+      "acceptance": "首页对 outdated 或 unknown 任一非零都可见；旧 feature 6 指向 v1.1.0 和其 manifest 功能说明；unknown-only 只提示核验，混合状态同时可见，两个 locale 键与插值对称。"
     },
     {
       "id": "F004",
-      "title": "跨仓独立发布契约验收",
+      "title": "独立验收、闸门与发布后收敛验证",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "reviewer-kimi-a2a 在锁定 SHA 上 fresh context 独立验证 harness-template validator/fixture 与 tokenizer focused/full test、verify、lint、build；审查两仓 diff、manifest/VERSION/CHANGELOG 的一致性、同步字节一致性和版本四态，产出 schema 合法 verdict（waiting=null）。不触达生产、不推送。"
+      "acceptance": "fresh-context Evaluator 在锁定 SHA 上独立运行兼容矩阵、版本与 banner 三态、npm test/typecheck/lint/build，写 schema 合法全量 verdict；全 PASS 后举 verifying-to-done 人工闸门，批准发布后验证本机 Agent=1.1.0/feature 7、Harness report 成功且无 invalid_tool_catalog。"
     }
   ]
 }

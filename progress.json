@@ -1,44 +1,29 @@
 {
-  "status": "done",
-  "user_goal": "根治 Harness 框架版本、控制台发布清单与同步产物可独立漂移，消除 tokenizer 项目被误标为服务端未知超前的状态",
+  "status": "building",
+  "user_goal": "根治旧 Tokenizer Agent 因工具目录协议升级而无法上报、控制台未提示本机 Agent 更新的问题，并按 Harness 闸门流程上线验证",
   "total_features": 4,
-  "completed_features": 4,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-FW-RELEASE-CONTRACT",
+  "current_sprint": "BL-AGENT-REPORT-COMPAT",
   "dashboard_url": null,
-  "last_updated": "2026-07-31T05:14:56Z",
+  "last_updated": "2026-07-31T20:18:37Z",
   "reference_docs": [
-    "framework/harness/framework-versioning.md",
     "framework/harness/dispatch-mode.md",
-    "framework/harness/orchestration-patterns.md",
-    "docs/specs/BL-FWDRIFT-framework-drift-badge.md"
+    "framework/harness/console-mode.md",
+    "docs/specs/BL-AGENT-REPORT-COMPAT-spec.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-FW-RELEASE-CONTRACT-spec.md",
-    "test_cases": "docs/test-reports/BL-FW-RELEASE-CONTRACT-verdict.json",
-    "signoff": "docs/test-reports/BL-FW-RELEASE-CONTRACT-verdict.json",
+    "spec": "docs/specs/BL-AGENT-REPORT-COMPAT-spec.md",
+    "test_cases": "docs/test-reports/BL-AGENT-REPORT-COMPAT-verdict.json",
+    "signoff": "docs/test-reports/BL-AGENT-REPORT-COMPAT-verdict.json",
     "framework_reviewed": true
   },
-  "role_assignments": {
-    "generator": "builder-codex",
-    "evaluator": "reviewer-kimi-a2a"
-  },
+  "role_assignments": null,
   "mode_intent": null,
-  "evaluator_feedback": "reviewer-kimi-a2a 在锁定 094318a 经 A2A loopback 459 秒返回 schema 合法 verdict，F001-F004 全 PASS、waiting=null；独立重跑源仓 validator/12 项 fixture 与负例、tokenizer 聚焦 19/19、全量 701 passed/4 skipped、verify、lint、build，确认清单字节/lock 一致、consumer 无第二份版本数组、无生产/L2/推送/部署写入。",
-  "generator_handoff": {
-    "feature_id": "F003",
-    "agent": "builder-codex",
-    "transport": "local-cli",
-    "outcome": "COMPLETED",
-    "report": "docs/test-reports/BL-FW-RELEASE-CONTRACT-F003-generator-handoff.json",
-    "integrated_commit": "0da19ab"
-  },
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-FW-RELEASE-CONTRACT 2026-07-31】用户已批准启动。根因已核实：harness-template 与 tokenizer 镜像均为 v1.5.2，但服务端静态 FRAMEWORK_RELEASES 停在 v1.4.6；页面的 ahead 分支正确，发布契约维护遗漏才是 bug。批次采用 builder-codex(local-cli) + reviewer-kimi-a2a 的异构 dispatch；先改源仓发布 manifest/validator/CI 与分发，再同步 tokenizer 并接入 consumer。当前仅本地实现、验证与闸门准备，不 push/deploy。",
-    "f001_f002": "【BL-FW-RELEASE-CONTRACT】harness-template 已在本地锁定 1408dae（v1.5.3 manifest/VERSION/CHANGELOG/validator/CI）与 0c27c01（init/sync/adopt 后 sync/nested-flat bootstrap 分发矩阵）。发布契约校验和 12 项 fixture、既有 mode-intent 30 项、pending-gate 3 项、dispatch lifecycle 18 项、local-state 3 项均通过。adopt 保持只记录，缺清单的旧项目由后续 sync 新增受管文件补入。无 push/tag/deploy。",
-    "f003": "【BL-FW-RELEASE-CONTRACT】builder-codex(local-cli) 在 e299cfb 输入上 654s 正常返回，handoff waiting=null；主树集成为 0da19ab。FRAMEWORK_RELEASES/latest 改由 framework/harness/framework-releases.json 静态派生，聚焦 19/19、全量 701 passed/4 skipped、verify、lint、build 全绿，并新增 ModeBadges 静态渲染三态回归。首次操作误把 dispatch stdout 重定向至 --state 同一 run-meta 路径，造成双写尾部污染；首个完整 JSON 与产物均独立解析，且 test-local-state 已验证正确的仅用 --state 调用契约。后续 A2A 不再重定向 stdout。无 push/deploy。",
-    "f004": "【BL-FW-RELEASE-CONTRACT】reviewer-kimi-a2a fresh context 锁定 094318a，经 SUBMITTED→WORKING→artifact→COMPLETED 在 459s 返回；本地 receipt 与 verdict schema 均通过，F001-F004 全 PASS、waiting=null。独立验收重跑源仓 validator/12 项 fixture/负例，以及 tokenizer 聚焦 19/19、全量 701 passed/4 skipped、verify、lint、build；来源清单、镜像、harness.lock checksum 与四态语义均一致。评估者只写 verdict，worktree 已清理；无生产/L2/push/deploy。下批 dispatch 候选：并行 a2a-client get 会以 effective_timeout_s=null 覆盖同 task 更完整的 run-meta，receipt 不受影响但应改为保留完整事实。当前等待 BL-FW-RELEASE-CONTRACT-verifying-done-w1 人工批准；批准只推进状态机。",
-    "gate_approved": "控制台由 tripplezhou@gmail.com 于 2026-07-31T05:12:46.088Z 对 BL-FW-RELEASE-CONTRACT-verifying-done-w1 签发一次性 approve；中继提交 a3d6b95，Ed25519 签名已通过本机校验，机器于 2026-07-31T05:14:56Z 消费批准并进入 done。"
+    "planning": "【BL-AGENT-REPORT-COMPAT 2026-07-31】用户已批准启动并授权上线。根因已实测：旧安装 Agent 在 tool-integrations/1 下上报 dispatch.enabled=false/toolCatalog=[]；服务端把该遗留空目录按新版可用目录验证，拒绝 report，使 reportedAt 过期。Heartbeat 的 agent SHA 未纳入升级判定，而 feature 6/release 1.0.0 与当前服务端相同，首页错误显示 latest。无新的已签发 mode intent，故使用默认快车道；F001/F002 可并行，F003 依赖正式 1.1.0 发行，F004 由 fresh-context Evaluator 验收。人工 done 闸门仍是提交、推送、部署与本机更新前置条件。"
   },
   "features": [],
   "pending_gate": null
