@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "Kimi A2A 独立兼容与安全验收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "锁定实现 SHA 后由 reviewer-kimi-a2a fresh context 自行审查 diff，运行聚焦/全量测试、verify、lint、build和临时 HOME 端到端 fixture；输出 schema 合法 verdict，逐项裁决 F001-F004 且不复述 handoff"
     }
