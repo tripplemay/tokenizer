@@ -1,10 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { createPublicKey, verify as edVerify } from "node:crypto";
+import { createHash, createPublicKey, verify as edVerify } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { writeFileAtomic } from "@/cli/atomic-file";
 import { canonicalJson } from "@/server/harness-sign";
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
+import { normalizeWorkspacePath } from "@/shared/path";
 import { normalizeGitRemote } from "./git";
 import { readCredentials, readState, updateState, TokenizerConfig } from "./config";
 import { agentFetch } from "./fetch";
@@ -140,10 +141,11 @@ export function discoverHarnessRepos(config: TokenizerConfig): HarnessRepo[] {
     const root = git(["rev-parse", "--show-toplevel"], dir);
     if (!root || seen.has(root)) return;
     const repoKey = normalizeGitRemote(git(["remote", "get-url", "origin"], dir));
-    // 没有 remote 就没有稳定的跨机器身份，回落到本机路径并标注，避免与他人的同名项目串号
-    const key = repoKey ?? `local:${root}`;
+    // Local-only projects need a stable per-device identity without sending their root path.
+    const normalizedRoot = normalizeWorkspacePath(root);
+    const key = repoKey ?? `local:sha256:${createHash("sha256").update(normalizedRoot).digest("hex")}`;
     seen.add(root);
-    found.push({ path: root, name: root.split("/").filter(Boolean).pop() ?? root, repoKey: key });
+    found.push({ path: root, name: normalizedRoot.split(/[\\/]/).filter(Boolean).pop() ?? root, repoKey: key });
   };
 
   for (const rootPath of config.projectRoots ?? []) {

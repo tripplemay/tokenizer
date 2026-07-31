@@ -172,6 +172,22 @@ describe("discoverHarnessRepos", () => {
     rmSync(join(repo, "harness-rules.md"));
     expect(discoverHarnessRepos(config())).toHaveLength(0);
   });
+
+  it("uses a stable opaque key for local-only repos without leaking the root into the report", () => {
+    git(["remote", "remove", "origin"]);
+    const second = makeSecondRepo("second-local-project");
+    const firstRepo = discoverHarnessRepos(config()).find((candidate) => candidate.name === "myproject")!;
+    const secondRepo = discoverHarnessRepos(config()).find((candidate) => candidate.name === "second-local-project")!;
+
+    expect(firstRepo.repoKey).toMatch(/^local:sha256:[0-9a-f]{64}$/);
+    expect(discoverHarnessRepos(config()).find((candidate) => candidate.name === "myproject")?.repoKey).toBe(firstRepo.repoKey);
+    expect(secondRepo.repoKey).toMatch(/^local:sha256:[0-9a-f]{64}$/);
+    expect(secondRepo.repoKey).not.toBe(firstRepo.repoKey);
+
+    const serializedReport = JSON.stringify(buildReport(firstRepo));
+    expect(serializedReport).not.toContain(root);
+    expect(serializedReport).not.toContain(repo);
+  });
 });
 
 describe("buildReport", () => {

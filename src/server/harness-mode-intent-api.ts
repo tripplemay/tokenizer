@@ -27,6 +27,10 @@ const SENSITIVE_FIELD_PATTERN =
 const HARNESS_COMMAND_REFERENCE_LABELS = new Set(["feature.title"]);
 const KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN =
   /(^|[^A-Za-z0-9_/])\/(?:plan|build|verify|dashboard|autodrive)(?=$|[\s,;:!)\]}"'`，。、；：！）】》」』]|\.(?=$|\s))/g;
+const SAFE_ROUTE_REFERENCE_PATTERN =
+  /(^|[^A-Za-z0-9_/])\/(?:api|v[1-9]\d*)\/[A-Za-z0-9][A-Za-z0-9_-]*(?:\/[A-Za-z0-9][A-Za-z0-9_-]*)*(?=$|[\s,;:!)\]}"'`，。、；：！）】》」』])/g;
+const WORD_INTERNAL_SLASH_PATTERN = /(?<=[\p{L}\p{N}])\/(?=[\p{L}\p{N}])/gu;
+const STANDALONE_PROSE_SLASH_PATTERN = /(?<=\s)\/(?=\s)/g;
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -184,7 +188,11 @@ export function safePersistedSummary(value: unknown, label: string, max: number)
     return reject("invalid_string", `${label} must contain between 1 and ${max} characters`);
   }
   const pathScanValue = HARNESS_COMMAND_REFERENCE_LABELS.has(label)
-    ? summary.replace(KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN, "$1")
+    ? summary
+      .replace(KNOWN_HARNESS_COMMAND_REFERENCE_PATTERN, "$1")
+      .replace(SAFE_ROUTE_REFERENCE_PATTERN, "$1")
+      .replace(WORD_INTERNAL_SLASH_PATTERN, "")
+      .replace(STANDALONE_PROSE_SLASH_PATTERN, "")
     : summary;
   const containsAbsolutePath =
     /(^|[^A-Za-z0-9_/])\/(?!\/)[^\s,;)\]}"']*/.test(pathScanValue) ||

@@ -1,0 +1,41 @@
+{
+  "batch_id": "BL-HARNESS-REPORT-COMPAT",
+  "created_at": "2026-07-31T00:58:47Z",
+  "features": [
+    {
+      "feature_id": "F001",
+      "commits": [],
+      "files_touched": [
+        "src/cli/harness.ts",
+        "tests/cli/harness.test.ts"
+      ],
+      "notes": "No-origin Harness repositories now use local:sha256:<64 lowercase hex> derived from normalizeWorkspacePath(root); remote normalization is unchanged. Regression covers stability, distinct local roots, and report serialization without the temporary root."
+    },
+    {
+      "feature_id": "F002",
+      "commits": [],
+      "files_touched": [
+        "src/server/harness-mode-intent-api.ts",
+        "tests/server/harness-mode-intent-api.test.ts",
+        "tests/server/harness-report-mode-intent.test.ts"
+      ],
+      "notes": "Only feature.title strips exact Harness commands, safe /api/... and /vN/... references, word-internal slash separators, and whitespace-delimited prose separators from the path scan. Raw channels, credentials, newlines, paths, traversal, path-shaped suffixes, and strict fields remain fail-closed."
+    },
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "tests/cli/harness.test.ts",
+        "tests/server/harness-mode-intent-api.test.ts",
+        "tests/server/harness-report-mode-intent.test.ts"
+      ],
+      "notes": "Covers the four specified live title shapes, local opaque repoKey acceptance, sensitive title rejection before Prisma access, and response non-echoing. git diff --check passed. Focused Vitest, full npm test, verify, lint, and build could not execute because this sandbox has no node_modules; offline npm ci also failed because the npm cache lacks yocto-queue-0.1.0."
+    }
+  ],
+  "l1_ran": {
+    "test": "npx vitest run tests/cli/harness.test.ts tests/server/harness-mode-intent-api.test.ts tests/server/harness-report-mode-intent.test.ts: attempted but emitted no test report with node_modules/.bin/vitest absent, so not counted as evidence; npm test: failed (sh: vitest: command not found)",
+    "typecheck": "npm run verify: failed before type checking (sh: prisma: command not found)",
+    "lint": "npm run lint: failed before linting (sh: next: command not found)"
+  },
+  "waiting": null
+}

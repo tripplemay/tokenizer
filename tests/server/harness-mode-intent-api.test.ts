@@ -177,9 +177,22 @@ describe("persisted feature title redaction", () => {
   );
 
   it.each([
+    "REST /v1/images/generations",
+    "POST /api/trip/generate",
+    "喜欢/不喜欢",
+    "门禁/限制/计费",
+    "i2i/edits/MCP",
+    "生成 / 取消"
+  ])("accepts a safe route or prose slash separator: %s", (title) => {
+    expect(safePersistedSummary(title, "feature.title", 256)).toBe(title);
+  });
+
+  it.each([
     ["nested path", "Harness command /plan/private"],
     ["path-shaped extension", "Harness command /plan.txt"],
     ["path-shaped suffix", "Harness command /plan-private"],
+    ["route traversal", "POST /api/../private"],
+    ["path-shaped route suffix", "POST /v1/images/output.txt"],
     ["unknown slash command", "Harness command /unknown"],
     ["arbitrary absolute path", "Harness command /tmp"],
     ["POSIX path beside command", "Harness /plan state at /srv/private/repo"],
@@ -202,6 +215,13 @@ describe("persisted feature title redaction", () => {
     "does not allow the same command reference in strict %s data",
     (label) => {
       expect(() => safePersistedSummary("/plan", label, 256)).toThrow(/may not be persisted/);
+    }
+  );
+
+  it.each(["/api/trip/generate", "/v1/images/generations", "喜欢/不喜欢", "生成 / 取消"])(
+    "does not allow title-only route or slash exceptions in strict fields: %s",
+    (summary) => {
+      expect(() => safePersistedSummary(summary, "errorSummary", 256)).toThrow(/may not be persisted/);
     }
   );
 });

@@ -182,6 +182,52 @@ describe("harness report mode activation and dispatch summaries", () => {
     );
   });
 
+  it("accepts an opaque local repoKey and the live slash title shapes", async () => {
+    const titles = [
+      "REST /v1/images/generations",
+      "POST /api/trip/generate",
+      "喜欢/不喜欢",
+      "门禁/限制/计费"
+    ];
+    const response = await POST(
+      request(
+        report({
+          repoKey: `local:sha256:${"a".repeat(64)}`,
+          state: {
+            status: "building",
+            features: titles.map((title, index) => ({ id: `F00${index + 1}`, title, status: "pending", executor: "generator" }))
+          },
+          dispatchRuns: []
+        })
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].create.repoKey).toBe(`local:sha256:${"a".repeat(64)}`);
+  });
+
+  it.each([
+    "/Users/alice/private/repo",
+    "POST /api/../private",
+    "C:\\Users\\alice\\private",
+    "\\\\server\\share\\private",
+    "file:///private/repo",
+    "stdout: raw output",
+    "api_key=top-secret",
+    "first line\nsecond line"
+  ])("rejects sensitive feature titles before Prisma access", async (title) => {
+    const response = await POST(
+      request(report({ state: { status: "building", features: [{ id: "F003", title, status: "pending", executor: "generator" }] } }))
+    );
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toMatchObject({ code: "sensitive_summary_data" });
+    expect(JSON.stringify(body)).not.toContain(title);
+    expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+  });
+
   it("rejects unknown report, state, feature, and lastHalt fields before the first business query", async () => {
     const invalidReports = [
       report({ prompt: "raw prompt" }),
