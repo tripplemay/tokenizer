@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "独立验收、闸门与发布后收敛验证",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "fresh-context Evaluator 在锁定 SHA 上独立运行兼容矩阵、版本与 banner 三态、npm test/typecheck/lint/build，写 schema 合法全量 verdict；全 PASS 后举 verifying-to-done 人工闸门，批准发布后验证本机 Agent=1.1.0/feature 7、Harness report 成功且无 invalid_tool_catalog。"
     }

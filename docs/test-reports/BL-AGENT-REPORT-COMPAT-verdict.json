@@ -1,0 +1,32 @@
+{
+  "batch_id": "BL-AGENT-REPORT-COMPAT",
+  "fix_round": 0,
+  "created_at": "2026-07-31T20:53:04Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "独立审查锁定 SHA ec74c22 的 diff 与源码：src/server/harness-mode-intent-api.ts:308-313 仅在 dispatch.enabled===false && Array.isArray(toolCatalog) && length===0 且 requireUsable=false 时放行空目录；requireUsable=true（v2 签发）仍 reject invalid_tool_catalog/409。app/api/harness/report/route.ts:244 在 prisma.project.findFirst（:250）之前完成 parseReport，畸形目录必然 fail-closed 在 Prisma 之前。旧安装 Agent 实物核对：git show daf106c:src/cli/harness-modes.ts:171 的 readDispatch 在新格式 registry（无 agents 键）下精确返回 { enabled:false, assignments:{}, agents:[], toolCatalog:[], familyExclusive:null, issues:[] }，与测试 fixture 逐字段一致。独立运行探针（npx tsx，直接调用真实 parseModeSnapshot/modeToolCatalogFromSnapshot，13/13 PASS）：该精确快照被 parseModeSnapshot 原样接受（report 持久化路径），同一快照 modeToolCatalogFromSnapshot 拒绝（invalid_tool_catalog/409，不能供 v2 签发目录）；disabled 非空、disabled 非数组、enabled 语义非法条目、重复条目、>150 超长目录均 fail-closed 为 invalid_tool_catalog；enabled 缺字段条目 fail-closed 为 missing_field/400（先于 Prisma，属本批未改动的既有的更细粒度拒绝码，严格性未放松）。聚焦测试 npx vitest run tests/server/harness-mode-intent-api.test.ts tests/server/harness-report-mode-intent.test.ts：route 级测试证明精确 legacy 快照 upsert 成功且 create/update.reportedAt 为同一新 Date（刷新 reportedAt），畸形/敏感字段/未知字段用例断言 prisma.project.findFirst 与 $transaction 均未被调用。",
+      "steps_to_reproduce": "git checkout ec74c22 && npm ci && npx vitest run tests/server/harness-mode-intent-api.test.ts tests/server/harness-report-mode-intent.test.ts；独立探针：用 daf106c readDispatch 回退字面量构造快照调用 parseModeSnapshot（接受）与 modeToolCatalogFromSnapshot（拒绝 invalid_tool_catalog），并逐个注入 disabled 非空/非数组、enabled 非法/重复/超长目录确认 fail-closed。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "独立运行探针确认：AGENT_FEATURE_VERSION===7、MIN_AGENT_FEATURE_VERSION===7、MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION===7、MIN_MODE_INTENT_AGENT_FEATURE_VERSION===4（v1 阈值保持）；LATEST_AGENT_RELEASE={version:1.1.0, agent_feature_version:7} 与源码常量一致，manifest 严格递增（tests/shared/agent-release-version.test.ts 通过）。deviceAgentUpdateStatus 逻辑（src/server/agent-version.ts:54-65，先 capability 门槛再 release 账本）：feature 6/release 1.0.0 经 agentReleaseStanding 判 behind(1)→upgrade-required，目标 latest=1.1.0（tests/server/agent-version.test.ts 新增用例通过）；9.9.9→ahead 不要求降级、缺失 release→unknown 不冒充 latest。1.1.0 中英文 highlights 只描述本批 report 兼容与升级可见性（agent-release-i18n.test.ts 逐字断言通过，且全部消息文件不再含旧发行的 'Harness sync health' 说明）。tests/cli/harness-heartbeat.test.ts 证明本地 heartbeat 上报 release=CURRENT_AGENT_RELEASE_VERSION(1.1.0)、feature=AGENT_FEATURE_VERSION(7)。",
+      "steps_to_reproduce": "git checkout ec74c22 && npm ci && npx vitest run tests/server/agent-version.test.ts tests/shared/agent-release-version.test.ts tests/shared/agent-release-i18n.test.ts tests/cli/harness-heartbeat.test.ts tests/server/harness-mode-intents-route.test.ts；独立探针：直接 import 真实常量与 agentReleaseStanding，断言 1.0.0/feature6→upgrade-required、9.9.9→ahead、undefined→unknown。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "独立渲染探针（react-dom/server 直渲染真实 UpgradeBanner，14/14 PASS）：shouldRenderUpgradeBanner 0/0 隐藏、outdated>0 或 unknown>0 均显示；upgrade-only 态渲染 upgradeBanner.message(count,version=1.1.0)+manifest highlights+安装命令，无 unknownOnly 文案；unknown-only 态只渲染 upgradeBanner.unknownOnly(count)，不伪称必须升级、不展示 highlights/安装步骤；mixed 态同时渲染 message 与 unknown(count=2) 附注且不使用 unknownOnly。app/layout.tsx:28 改由 shouldRenderUpgradeBanner(outdatedCount, unknownCount) 控制，unknown 设备不再被首页静默隐藏。locale 对称性独立核对（python3 解析 messages/en.json 与 zh-CN.json）：upgradeBanner 下 6 个键完全一致，message/latest/unknown/unknownOnly 插值变量逐键相同。tests/shared/upgrade-banner.test.ts（新文件，4 用例）与 app/layout.tsx 静态渲染链路一致。",
+      "steps_to_reproduce": "git checkout ec74c22 && npm ci && npx vitest run tests/shared/upgrade-banner.test.ts；独立探针：stub next-intl 后以 react-dom/server 渲染真实组件，分别传 (1,0)/(0,2)/(1,2) 断言三态输出；python3 对比两个 locale 的 upgradeBanner 键集与 {count}/{version} 插值。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "Fresh-context Evaluator 在锁定 SHA ec74c22935978a3a14e20d2b05352a76086a4b26 上自行审查全部 diff（git show ec74c22，19 文件 +304/-52）与实物源码，未采信任何交接叙述。聚焦测试 9 文件 187/187 通过；全量 npm test：59 文件 835 passed / 4 skipped / 0 failed；npm run typecheck（tsc --noEmit）exit 0；npm run lint exit 0（No ESLint warnings or errors）；npm run build（prisma generate && next build）exit 0 含 /api/harness/report 路由编译。兼容矩阵、版本契约、banner 三态均由独立探针复验（见 F001-F003 evidence）。工作树保持干净（git status 无改动），未修改产品代码、测试、progress/features、framework 或部署文件，未 push。遗留事项（按 spec 属闸门后人工步骤，非本轮可验证项）：一次性 BL-AGENT-REPORT-COMPAT-verifying-done-w1 人工闸门需由控制台签发；批准/提交/推送/CI/CD/本机 Agent 更新与发布后 smoke（heartbeat=1.1.0/feature 7、report 成功、无 invalid_tool_catalog）在闸门消费后执行。观察项（不影响 PASS）：enabled 目录中缺字段条目以 missing_field/400 拒绝而非 invalid_tool_catalog，属本批之前既有的更细粒度 fail-closed 行为，先于 Prisma 且严格性未放松。",
+      "steps_to_reproduce": "git checkout ec74c22 && npm ci && npx vitest run tests/server/harness-mode-intent-api.test.ts tests/server/harness-report-mode-intent.test.ts tests/server/agent-version.test.ts tests/server/harness-mode-intents-route.test.ts tests/shared/upgrade-banner.test.ts tests/shared/agent-release-version.test.ts tests/shared/agent-release-i18n.test.ts tests/cli/harness-heartbeat.test.ts tests/shared/harness-mode-drilldown.test.ts && npm test && npm run typecheck && npm run lint && npm run build。"
+    }
+  ]
+}
