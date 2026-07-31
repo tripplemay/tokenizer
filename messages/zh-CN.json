@@ -431,6 +431,7 @@
     "message": "{count} 台设备需要升级到 Agent v{version}。",
     "latest": "v{version} 的新增内容：",
     "unknown": "另有 {count} 台设备尚未上报可确认的发布版本；请在设备列表中检查。",
+    "unknownOnly": "{count} 台设备尚未上报可确认的 Agent 发行版本；请在设备列表中核验版本状态。",
     "copy": "复制",
     "copied": "已复制"
   },

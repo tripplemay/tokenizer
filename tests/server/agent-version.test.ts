@@ -17,9 +17,9 @@ vi.mock("@/server/db", () => ({
 import { deviceAgentUpdateStatus, getAgentUpdateSummary, isDeviceOutdated } from "@/server/agent-version";
 
 describe("isDeviceOutdated", () => {
-  it("advertises the Harness sync-health heartbeat capability level", () => {
-    expect(AGENT_FEATURE_VERSION).toBe(6);
-    expect(MIN_AGENT_FEATURE_VERSION).toBe(6);
+  it("advertises the 1.1.0 report-compatibility capability level", () => {
+    expect(AGENT_FEATURE_VERSION).toBe(7);
+    expect(MIN_AGENT_FEATURE_VERSION).toBe(7);
   });
 
   it("AGENT_FEATURE_VERSION and MIN_AGENT_FEATURE_VERSION are positive integers", () => {
@@ -56,7 +56,9 @@ describe("isDeviceOutdated", () => {
 });
 
 describe("mode intent capability notices", () => {
-  it("shows the v6 threshold only for tool-binding compatibility failures", () => {
+  it("keeps v1 intents at capability 4 while tool-bound intents require capability 7", () => {
+    expect(MIN_MODE_INTENT_AGENT_FEATURE_VERSION).toBe(4);
+    expect(MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION).toBe(7);
     expect(requiredModeIntentAgentFeatureVersion("agentUpgradeRequired")).toBe(
       MIN_MODE_INTENT_AGENT_FEATURE_VERSION
     );
@@ -79,6 +81,15 @@ describe("strict Agent release update state", () => {
       .toMatchObject({ kind: "upgrade-required", latest: CURRENT_AGENT_RELEASE_VERSION });
     expect(deviceAgentUpdateStatus({ featureVersion: MIN_AGENT_FEATURE_VERSION, releaseVersion: "0.9.9" }))
       .toMatchObject({ kind: "upgrade-required", reported: "0.9.9", latest: CURRENT_AGENT_RELEASE_VERSION });
+  });
+
+  it("requires the installed 1.0.0 / capability-6 Agent to upgrade to 1.1.0", () => {
+    expect(deviceAgentUpdateStatus({ featureVersion: 6, releaseVersion: "1.0.0" })).toEqual({
+      kind: "upgrade-required",
+      reported: "1.0.0",
+      behind: 1,
+      latest: "1.1.0"
+    });
   });
 
   it("does not direct a newer client to downgrade", () => {

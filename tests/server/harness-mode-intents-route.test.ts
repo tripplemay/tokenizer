@@ -253,7 +253,7 @@ describe("session mode intent route", () => {
     expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
   });
 
-  it("gates v2 role bindings at feature v6 and signs the catalog's canonical tool ids", async () => {
+  it("gates v2 role bindings at feature v7 and signs the catalog's canonical tool ids", async () => {
     mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
       device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION - 1 }
     }));
@@ -283,7 +283,7 @@ describe("session mode intent route", () => {
     expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
   });
 
-  it("keeps v2 fast/null at the v6 gate but does not require a tool catalog", async () => {
+  it("keeps v2 fast/null at the v7 gate but does not require a tool catalog", async () => {
     const noCatalogModes = {
       dispatch: {
         enabled: true,

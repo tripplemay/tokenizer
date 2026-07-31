@@ -11,7 +11,7 @@ import { AuthProvider } from "./session-provider";
 import { auth } from "@/auth";
 import { getAgentUpdateSummary, INSTALL_COMMANDS } from "@/server/agent-version";
 import { latestAgentReleaseHighlights } from "@/shared/agent-release-version";
-import { UpgradeBanner } from "./_components/upgrade-banner";
+import { shouldRenderUpgradeBanner, UpgradeBanner } from "./_components/upgrade-banner";
 
 export const metadata: Metadata = {
   title: "Tokenizer",
@@ -25,10 +25,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const updateSummary = session?.user?.id
     ? await getAgentUpdateSummary(session.user.id)
     : null;
-  const banner = updateSummary && updateSummary.outdatedCount > 0
+  const banner = updateSummary && shouldRenderUpgradeBanner(updateSummary.outdatedCount, updateSummary.unknownCount)
     ? (
       <UpgradeBanner
-        count={updateSummary.outdatedCount}
+        outdatedCount={updateSummary.outdatedCount}
         unknownCount={updateSummary.unknownCount}
         latestRelease={updateSummary.latestRelease}
         highlights={latestAgentReleaseHighlights(locale)}

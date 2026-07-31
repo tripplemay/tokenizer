@@ -302,6 +302,15 @@ function reportedToolCatalog(value: unknown, requireUsable: boolean): HarnessToo
   }
   const modes = record(value, "mode snapshot");
   const dispatch = record(modes.dispatch, "mode snapshot dispatch");
+  // Agents before tool-integrations/1 reported this exact unavailable state
+  // when they encountered a new-format registry. It is safe to persist as an
+  // audit fact, but must never become a candidate source for v2 signing.
+  if (dispatch.enabled === false && Array.isArray(dispatch.toolCatalog) && dispatch.toolCatalog.length === 0) {
+    if (requireUsable) {
+      return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
+    }
+    return [];
+  }
   if (dispatch.enabled !== true || !Array.isArray(dispatch.toolCatalog) || dispatch.toolCatalog.length > 150) {
     return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
   }

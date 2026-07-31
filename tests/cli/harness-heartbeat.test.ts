@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { readDiagnostics } from "@/cli/sync";
 import { updateState } from "@/cli/config";
+import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
 
 const roots: string[] = [];
@@ -36,6 +37,7 @@ describe("local heartbeat Harness snapshot", () => {
     const diagnostics = readDiagnostics(fixture(JSON.stringify({ harness, lastSyncStatus: "success" })));
     expect(diagnostics.queueDepth).toBe(2);
     expect(diagnostics.agentReleaseVersion).toBe(CURRENT_AGENT_RELEASE_VERSION);
+    expect(diagnostics.agentFeatureVersion).toBe(AGENT_FEATURE_VERSION);
     expect(diagnostics.harness).toEqual(harness);
   });
 

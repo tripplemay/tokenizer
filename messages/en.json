@@ -431,6 +431,7 @@
     "message": "{count} devices need an Agent update to v{version}.",
     "latest": "What's new in v{version}:",
     "unknown": "Another {count} devices have not reported a verifiable release; check them in Devices.",
+    "unknownOnly": "{count} devices have not reported a verifiable Agent release. Check their version status in Devices.",
     "copy": "Copy",
     "copied": "Copied"
   },

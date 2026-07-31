@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "旧 Agent 空工具目录上报兼容",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "仅接受 feature 6 旧 Agent 产生的 dispatch.enabled=false 且 toolCatalog=[] 的 report 快照并刷新 reportedAt；该空目录不能用于 v2 签发；disabled 非空/畸形目录和 enabled 畸形目录仍在 Prisma 前 fail-closed 为 invalid_tool_catalog。"
     },
@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "Agent 1.1.0 发行与能力门槛契约",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "Agent build、全局更新门槛和 tool-bound intent 门槛升至 capability 7，manifest 新增严格递增的 1.1.0 条目且最新 manifest capability 与源码一致；旧 1.0.0/feature 6 显示 upgrade-required，v1 intent 阈值保持 4。"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "首页升级提示语义完整性",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "首页对 outdated 或 unknown 任一非零都可见；旧 feature 6 指向 v1.1.0 和其 manifest 功能说明；unknown-only 只提示核验，混合状态同时可见，两个 locale 键与插值对称。"
     },

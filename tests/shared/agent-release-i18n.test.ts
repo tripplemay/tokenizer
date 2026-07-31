@@ -30,11 +30,19 @@ describe("Agent release update copy", () => {
 
   it("uses the release manifest as the source of the newest feature description", () => {
     const latest = agentReleasesManifest.releases.at(-1);
-    expect(latest?.highlights["zh-CN"].join(" ")).toContain("Harness");
-    expect(latest?.highlights.en.join(" ")).toContain("Harness sync health");
+    expect(latest).toMatchObject({ version: "1.1.0", agent_feature_version: 7 });
+    expect(latest?.highlights["zh-CN"]).toEqual([
+      "改善 Harness 工具目录升级期间的项目上报兼容性，避免旧 Agent 的空目录中断上报。",
+      "区分必须升级与版本待核验的设备，并在首页展示可操作的升级提示。"
+    ]);
+    expect(latest?.highlights.en).toEqual([
+      "Improves Harness project-report compatibility during the tool-catalog rollout, preventing legacy empty catalogs from interrupting reporting.",
+      "Distinguishes required upgrades from unverified releases and surfaces actionable upgrade guidance on the home page."
+    ]);
 
     const allCopy = `${readFileSync("messages/en.json", "utf8")} ${readFileSync("messages/zh-CN.json", "utf8")}`;
     expect(allCopy).not.toContain("Codex quota tracking");
     expect(allCopy).not.toContain("时区采集、Codex 配额追踪");
+    expect(allCopy).not.toContain("Harness sync health");
   });
 });

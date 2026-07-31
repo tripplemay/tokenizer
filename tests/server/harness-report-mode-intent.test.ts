@@ -55,6 +55,37 @@ function modes() {
   };
 }
 
+type LegacyEmptyToolCatalogModes = Omit<ReturnType<typeof modes>, "dispatch" | "execution"> & {
+  execution: "fast";
+  current: null;
+  dispatch: {
+    enabled: boolean;
+    assignments: Record<string, string | null>;
+    agents: unknown[];
+    toolCatalog: unknown;
+    familyExclusive: boolean | null;
+    issues: string[];
+  };
+};
+
+/** Exact snapshot emitted by the pre-tool-integrations Agent for a new registry. */
+function legacyEmptyToolCatalogModes(): LegacyEmptyToolCatalogModes {
+  const { dispatch: _dispatch, ...snapshot } = modes();
+  return {
+    ...snapshot,
+    execution: "fast",
+    current: null,
+    dispatch: {
+      enabled: false,
+      assignments: {},
+      agents: [],
+      toolCatalog: [],
+      familyExclusive: null,
+      issues: []
+    }
+  };
+}
+
 function run(overrides: Record<string, unknown> = {}) {
   return {
     runId: "run-1",
@@ -296,6 +327,54 @@ describe("harness report mode activation and dispatch summaries", () => {
     expect(response.status).toBe(200);
     expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].create.modes).toEqual(snapshot);
     expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].update.modes).toEqual(snapshot);
+  });
+
+  it("persists the exact legacy empty tool catalog report and refreshes reportedAt", async () => {
+    const snapshot = legacyEmptyToolCatalogModes();
+    const response = await POST(request(report({ state: { status: "building", modes: snapshot } })));
+
+    expect(response.status).toBe(200);
+    const upsert = mocks.tx.harnessProject.upsert.mock.calls[0][0];
+    expect(upsert.create.modes).toEqual(snapshot);
+    expect(upsert.update.modes).toEqual(snapshot);
+    expect(upsert.create.reportedAt).toBeInstanceOf(Date);
+    expect(upsert.update.reportedAt).toBe(upsert.create.reportedAt);
+  });
+
+  it.each([
+    ["disabled non-empty catalog", () => [{ tool: "codex" }]],
+    ["disabled non-array catalog", () => ({})],
+    ["enabled non-array catalog", () => ({}), true]
+  ])("rejects %s before Prisma access", async (_label, catalog, enabled = false) => {
+    const snapshot = legacyEmptyToolCatalogModes();
+    snapshot.dispatch.enabled = enabled;
+    snapshot.dispatch.toolCatalog = catalog() as never;
+
+    const response = await POST(request(report({ state: { status: "building", modes: snapshot } })));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "invalid_tool_catalog" });
+    expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["unknown dispatch field", (snapshot: ReturnType<typeof legacyEmptyToolCatalogModes>) => {
+      Object.assign(snapshot.dispatch, { source: "raw" });
+    }, "unknown_field"],
+    ["sensitive dispatch issue", (snapshot: ReturnType<typeof legacyEmptyToolCatalogModes>) => {
+      snapshot.dispatch.issues = ["api_key=top-secret"];
+    }, "sensitive_summary_data"]
+  ])("keeps %s fail-closed before Prisma access", async (_label, mutate, code) => {
+    const snapshot = legacyEmptyToolCatalogModes();
+    mutate(snapshot);
+
+    const response = await POST(request(report({ state: { status: "building", modes: snapshot } })));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code });
+    expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
   });
 
   it("fails closed before upsert when the unique device+repo project belongs to another user", async () => {

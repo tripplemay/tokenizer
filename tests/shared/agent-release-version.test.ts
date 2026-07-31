@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import agentReleasesManifest from "../../src/shared/agent-releases.json";
+import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import {
   AGENT_RELEASES,
   AGENT_RELEASE_VERSIONS,
@@ -22,6 +23,10 @@ describe("Agent release manifest contract", () => {
     expect(AGENT_RELEASE_VERSIONS).toEqual(agentReleasesManifest.releases.map((release) => release.version));
     expect(LATEST_AGENT_RELEASE).toEqual(latest);
     expect(CURRENT_AGENT_RELEASE_VERSION).toBe(latest?.version);
+    expect(LATEST_AGENT_RELEASE).toMatchObject({
+      version: "1.1.0",
+      agent_feature_version: AGENT_FEATURE_VERSION
+    });
   });
 
   it("keeps stable, strictly increasing release entries with localized highlights", () => {
@@ -32,6 +37,8 @@ describe("Agent release manifest contract", () => {
       expect(release.released_on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(Number.isSafeInteger(release.agent_feature_version)).toBe(true);
       expect(release.agent_feature_version).toBeGreaterThan(0);
+      expect(release.highlights["zh-CN"].length).toBeGreaterThan(0);
+      expect(release.highlights.en.length).toBeGreaterThan(0);
       expect(release.highlights["zh-CN"].every(Boolean)).toBe(true);
       expect(release.highlights.en.every(Boolean)).toBe(true);
       if (index > 0) {

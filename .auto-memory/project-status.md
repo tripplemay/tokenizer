@@ -5,9 +5,9 @@ type: project
 ---
 ## 当前批次
 
-- **BL-AGENT-REPORT-COMPAT（building，0/4）**：修复旧 Agent 因工具目录协议升级导致 Harness report 被 `invalid_tool_catalog` 拒绝，以及首页未提示该本机 Agent 更新的问题。
+- **BL-AGENT-REPORT-COMPAT（verifying，3/4）**：修复旧 Agent 因工具目录协议升级导致 Harness report 被 `invalid_tool_catalog` 拒绝，以及首页未提示该本机 Agent 更新的问题。
 - 旧安装副本报告 feature 6 / release `1.0.0`，在 `tool-integrations/1` 下生成 `dispatch.enabled=false` 和空 `toolCatalog`；服务端误把空遗留目录按新版可用目录验证，`reportedAt` 因此不刷新。
-- F001 仅兼容这一精确空目录形状，仍禁止将它用于 v2 签发；F002 发布 Agent `1.1.0` / capability 7；F003 补齐 outdated/unknown 首页语义；F004 由 fresh Evaluator 验收。
+- F001 仅兼容这一精确空目录形状，仍禁止将它用于 v2 签发；F002 已发布 Agent `1.1.0` / capability 7；F003 已补齐 outdated/unknown 首页语义；F004 正由 fresh Evaluator 验收。
 - 无新签名 mode intent，使用默认快车道；人工 `verifying -> done` 闸门、推送、CI/CD、生产健康检查和本机 Agent 更新均在本批完成定义内。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
 
@@ -19,4 +19,4 @@ type: project
 ## 已知边界
 
 - Git SHA 仅作诊断，不作为升级顺序；正式 release + capability 是可操作的兼容合同。
-- 旧 Agent 在兼容服务端恢复 report 后仍不得签发 tool-bound intent，直至更新到 capability 7。
+- 旧 Agent 在兼容服务端恢复 report 后仍不得签发 tool-bound intent，直至更新到 capability 7；现场 daf106c 快照已被新 parser 接受，但 v2 catalog 提取仍拒绝。

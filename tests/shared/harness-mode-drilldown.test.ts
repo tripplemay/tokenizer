@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, describe, expect, it, vi } from "vitest";
 import type { OwnedHarnessProjectDetail } from "@/server/harness-detail";
 import type { HarnessDetailToolCapability } from "@/shared/harness-detail";
+import { MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 
 function translate(key: string, values?: Record<string, unknown>): string {
   if (key === "selectedRoleContext") return `Adjust ${values?.role} tool and invocation`;
@@ -140,7 +141,7 @@ function project(): OwnedHarnessProjectDetail {
     },
     modeIntents: [],
     reportedAt: new Date(),
-    device: { agentFeatureVersion: 6 },
+    device: { agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
     headSha: "0123456789abcdef0123456789abcdef01234567"
   } as unknown as OwnedHarnessProjectDetail;
 }
@@ -216,7 +217,7 @@ describe("Harness mode drilldown contract", () => {
     const html = renderToStaticMarkup(createElement(ModeEditor, {
       projectId: "project-1",
       tools: TOOLS,
-      agentFeatureVersion: 6,
+      agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION,
       blocker: null,
       selectedRole: "planner",
       currentRoleBinding: { tool: "claude-code", invocation: "subagent", modelFamily: "claude" },
@@ -259,7 +260,7 @@ describe("Harness mode drilldown contract", () => {
     const unavailable = renderToStaticMarkup(createElement(ModeEditor, {
       projectId: "project-1",
       tools: TOOLS,
-      agentFeatureVersion: 6,
+      agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION,
       blocker: null,
       selectedRole: "planner",
       currentRoleBinding: undefined,
@@ -271,7 +272,7 @@ describe("Harness mode drilldown contract", () => {
     const coordinator = renderToStaticMarkup(createElement(ModeEditor, {
       projectId: "project-1",
       tools: TOOLS,
-      agentFeatureVersion: 6,
+      agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION,
       blocker: null,
       selectedRole: "planner",
       currentRoleBinding: null,

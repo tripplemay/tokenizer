@@ -100,6 +100,23 @@ function modeSnapshot() {
   };
 }
 
+function legacyEmptyToolCatalogSnapshot() {
+  const { dispatch: _dispatch, ...snapshot } = modeSnapshot();
+  return {
+    ...snapshot,
+    execution: "fast" as const,
+    current: null,
+    dispatch: {
+      enabled: false,
+      assignments: {},
+      agents: [],
+      toolCatalog: [],
+      familyExclusive: null,
+      issues: []
+    }
+  };
+}
+
 function dispatchRun(overrides: Record<string, unknown> = {}) {
   return {
     runId: "run-1",
@@ -186,11 +203,21 @@ describe("mode snapshot extraction", () => {
     expect(descriptors).not.toContainEqual(expect.objectContaining({ tool: "codex", role: "planner" }));
   });
 
-  it("allows an empty reported catalog to persist but never uses it to sign v2", () => {
-    const snapshot = modeSnapshot();
-    snapshot.dispatch.toolCatalog = [];
+  it("allows the exact disabled legacy empty catalog to persist but never uses it to sign v2", () => {
+    const snapshot = legacyEmptyToolCatalogSnapshot();
     expect(parseModeSnapshot(snapshot)).toBe(snapshot);
     expect(() => modeToolCatalogFromSnapshot(snapshot)).toThrow(/usable tool capability catalog/);
+  });
+
+  it.each([
+    ["disabled non-empty catalog", false, toolCatalog()],
+    ["disabled non-array catalog", false, {}],
+    ["enabled malformed catalog", true, [{}]]
+  ])("rejects a %s catalog before it can be used", (_label, enabled, catalog) => {
+    const snapshot = modeSnapshot();
+    snapshot.dispatch.enabled = enabled;
+    snapshot.dispatch.toolCatalog = catalog as typeof snapshot.dispatch.toolCatalog;
+    expect(() => parseModeSnapshot(snapshot)).toThrow(HarnessApiInputError);
   });
 });
 

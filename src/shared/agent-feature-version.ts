@@ -34,8 +34,12 @@
 //   6 — 2026-07-31: tool-bound Harness mode intents and the reported tool
 //       capability catalog. Older agents can still consume v1 intents, but
 //       cannot safely issue or stage the v2 tool-binding contract.
-export const AGENT_FEATURE_VERSION = 6;
-export const MIN_AGENT_FEATURE_VERSION = 6;
+//   7 — 2026-07-31: tool-catalog report compatibility and upgrade visibility.
+//       A compatibility branch lets capability-6 agents recover their report,
+//       but this release is required before they can be treated as current or
+//       issue tool-bound intents.
+export const AGENT_FEATURE_VERSION = 7;
+export const MIN_AGENT_FEATURE_VERSION = 7;
 
 // Signed Harness mode intent issuance was added at capability level 4. Keep
 // this separate from the global update threshold so the API and UI never drift.
@@ -44,7 +48,7 @@ export const MIN_MODE_INTENT_AGENT_FEATURE_VERSION = 4;
 // Tool-bound mode intents are deliberately gated separately from the v1
 // agent-id contract so previously issued v1 intents remain readable and
 // consumable during the rollout.
-export const MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION = 6;
+export const MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION = 7;
 
 /** The capability level to show for a mode-intent compatibility blocker. */
 export function requiredModeIntentAgentFeatureVersion(blocker: string | null | undefined): number {
