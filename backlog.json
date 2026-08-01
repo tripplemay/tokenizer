@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "BL-AGENT-CATALOG-RELEASE-RECOVERY",
+    "title": "修复 Harness 工具目录兼容性与 Agent 升级判定",
+    "description": "修复旧 Tokenizer Agent 无法解析对象式 subagent bridge 后上报空工具目录、控制台未提示升级且禁止签发的问题。以 fail-closed 为前提恢复 local-cli/A2A 目录，不重新发布外部 same-session subagent。",
+    "decisions": [
+      "当前 BL-NATIVE-SUBAGENT-BRIDGES 仍在 verifying，先由 F005 的独立 Evaluator 记录 FAIL 并进入 fixing；仅在旧批 done 后才可消费本条作为独立新批。",
+      "发布 Agent 1.2.0，capability 8；目录、上报或签发契约变更必须同时提高最低 capability。",
+      "旧 parser 不回退兼容 subagent:true，避免重新暴露不可信 external subagent 路由。",
+      "控制台按报告新鲜度、升级要求、版本核验、兼容但空目录的顺序给出互斥且可操作的原因。",
+      "安装脚本负责更新 ~/.tokenizer/app 并重启 daemon；项目 harness sync 不能替代 Agent 升级。"
+    ],
+    "confirmed_at": "2026-08-01T15:29:19Z",
+    "priority": "high"
+  }
+]
