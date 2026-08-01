@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 from urllib.parse import unquote, urlparse
@@ -251,12 +252,63 @@ def verify_invocation_repo(repo_url, cwd, repo_ref):
     return invocation
 
 
+def project_registry_path(project_root, requested_registry):
+    """Pin dispatch configuration to the invocation repository's registry.
+
+    Registry contents select transport and external executable metadata.  A
+    caller must not be able to replace that authority after the envelope and
+    active-mode checkpoint have been checked. The parent directory is
+    canonicalized to accommodate platform aliases such as /var; the terminal
+    file is deliberately left unresolved and then required to be regular, so a
+    symbolic link cannot become an accepted registry spelling.
+    """
+    if not isinstance(project_root, str) or not project_root:
+        raise DispatchContractError("project root is missing")
+    if not isinstance(requested_registry, str) or not requested_registry:
+        raise DispatchContractError("registry path is missing")
+
+    root = os.path.realpath(project_root)
+    if not os.path.isdir(root):
+        raise DispatchContractError(f"project root is not a directory: {root}")
+    expected = os.path.join(root, ".agents-registry.json")
+    requested_raw = os.path.abspath(os.path.expanduser(requested_registry))
+    # Canonicalize only the parent directory. macOS commonly aliases /var to
+    # /private/var, while resolving the terminal path too would incorrectly
+    # accept a registry file that is itself a symbolic link.
+    requested = os.path.join(
+        os.path.realpath(os.path.dirname(requested_raw)), os.path.basename(requested_raw)
+    )
+    if requested != expected:
+        raise DispatchContractError(
+            "registry must be the project-root .agents-registry.json; "
+            f"requested={requested}; expected={expected}"
+        )
+    try:
+        file_stat = os.lstat(expected)
+    except OSError as exc:
+        raise DispatchContractError(
+            f"project-root registry is unavailable: {expected}: {exc}"
+        ) from exc
+    if stat.S_ISLNK(file_stat.st_mode):
+        raise DispatchContractError(
+            f"project-root registry must not be a symbolic link: {expected}"
+        )
+    if not stat.S_ISREG(file_stat.st_mode):
+        raise DispatchContractError(
+            f"project-root registry must be a regular file: {expected}"
+        )
+    return expected
+
+
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
     preflight = sub.add_parser("repo-preflight")
     preflight.add_argument("--envelope", required=True)
     preflight.add_argument("--cwd", default=os.getcwd())
+    registry = sub.add_parser("project-registry")
+    registry.add_argument("--project-root", required=True)
+    registry.add_argument("--registry", required=True)
     args = parser.parse_args()
 
     if args.command == "repo-preflight":
@@ -267,6 +319,12 @@ def main():
             print(verify_invocation_repo(repo.get("url"), args.cwd, repo.get("ref")))
         except (OSError, ValueError, DispatchContractError) as exc:
             sys.stderr.write(f"[dispatch] repository preflight failed: {exc}\n")
+            raise SystemExit(2)
+    elif args.command == "project-registry":
+        try:
+            print(project_registry_path(args.project_root, args.registry))
+        except DispatchContractError as exc:
+            sys.stderr.write(f"[dispatch] registry preflight failed: {exc}\n")
             raise SystemExit(2)
 
 

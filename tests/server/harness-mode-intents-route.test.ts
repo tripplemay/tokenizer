@@ -31,12 +31,12 @@ const HEAD = "0123456789abcdef0123456789abcdef01234567";
 function toolCatalog() {
   return [
     {
-      tool: "claude-code",
-      label: "Claude Code",
-      invocation: "subagent",
+      tool: "kimi",
+      label: "Kimi",
+      invocation: "local-cli",
       role: "planner",
       agentCount: 1,
-      modelFamilies: ["claude"],
+      modelFamilies: ["kimi"],
       capabilities: ["plan"]
     },
     {
@@ -65,7 +65,7 @@ function v2Desired() {
     execution: {
       profile: "heterogeneous",
       role_bindings: {
-        planner: { tool: "claude-code", invocation: "subagent" },
+        planner: null,
         generator: { tool: "codex", invocation: "local-cli" },
         evaluator: { tool: "kimi", invocation: "local-cli" }
       }
@@ -272,6 +272,101 @@ describe("session mode intent route", () => {
     }));
   });
 
+  it("refuses to sign report-shaped external bridge routes", async () => {
+    const bridgeCatalog = [
+      {
+        tool: "kimi",
+        label: "Kimi Code",
+        invocation: "subagent",
+        role: "planner",
+        agentCount: 1,
+        modelFamilies: ["kimi"],
+        capabilities: ["plan", "build"]
+      },
+      {
+        tool: "kimi",
+        label: "Kimi Code",
+        invocation: "subagent",
+        role: "generator",
+        agentCount: 1,
+        modelFamilies: ["kimi"],
+        capabilities: ["plan", "build"]
+      },
+      {
+        tool: "future-cli",
+        label: "Future CLI",
+        invocation: "subagent",
+        role: "evaluator",
+        agentCount: 1,
+        modelFamilies: ["future"],
+        capabilities: ["verify"]
+      }
+    ];
+    const desired = {
+      execution: {
+        profile: "heterogeneous",
+        role_bindings: {
+          planner: null,
+          generator: { tool: "kimi", invocation: "subagent" },
+          evaluator: { tool: "future-cli", invocation: "subagent" }
+        }
+      },
+      autonomy: { enabled: false }
+    };
+    const integrations = [
+      {
+        id: "kimi",
+        tool: "kimi",
+        label: "Kimi Code",
+        modelFamily: "kimi",
+        roles: ["planner", "generator"],
+        invocations: ["local-cli", "subagent"],
+        capabilities: ["plan", "build"],
+        localCli: true,
+        subagent: true,
+        bridgeId: "kimi-acp-native-agent",
+        bridgeKind: "session-bridge-v1",
+        sessionScope: "same-session",
+        bridgeProtocol: "acp-native-agent/v1",
+        bridgeCommand: ["kimi", "acp"],
+        adapterBridgeCommand: ["kimi", "acp"],
+        bridgeRoles: ["planner", "generator"],
+        a2aTargetCount: 0,
+        sandboxed: true
+      },
+      {
+        id: "future-cli",
+        tool: "future-cli",
+        label: "Future CLI",
+        modelFamily: "future",
+        roles: ["evaluator"],
+        invocations: ["local-cli", "subagent"],
+        capabilities: ["verify"],
+        localCli: true,
+        subagent: true,
+        bridgeId: "future-acp-native-agent",
+        bridgeKind: "session-bridge-v1",
+        sessionScope: "same-session",
+        bridgeProtocol: "acp-native-agent/v1",
+        bridgeCommand: ["future-cli", "acp"],
+        adapterBridgeCommand: ["future-cli", "acp"],
+        bridgeRoles: ["evaluator"],
+        a2aTargetCount: 0,
+        sandboxed: true
+      }
+    ];
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
+      modes: { dispatch: { enabled: true, agents: [], integrations, toolCatalog: bridgeCatalog } }
+    }));
+
+    const response = await POST(issueRequest(desired));
+    expect(response.status).toBe(409);
+    expect((await response.json()).code).toBe("invalid_tool_catalog");
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+  });
+
   it("refuses v2 signing when the device has no usable tool catalog", async () => {
     mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
       device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
@@ -281,6 +376,32 @@ describe("session mode intent route", () => {
     expect(response.status).toBe(409);
     expect((await response.json()).code).toBe("invalid_tool_catalog");
     expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+  });
+
+  it("refuses v2 signing from a catalog-only Codex subagent claim", async () => {
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
+      device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION },
+      modes: {
+        dispatch: {
+          enabled: true,
+          agents: [],
+          toolCatalog: [{
+            tool: "codex",
+            label: "Codex",
+            invocation: "subagent",
+            role: "generator",
+            agentCount: 1,
+            modelFamilies: ["codex"],
+            capabilities: ["build"]
+          }]
+        }
+      }
+    }));
+    const response = await POST(issueRequest(v2Desired()));
+    expect(response.status).toBe(409);
+    expect((await response.json()).code).toBe("invalid_tool_catalog");
+    expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it("keeps v2 fast/null at the v7 gate but does not require a tool catalog", async () => {

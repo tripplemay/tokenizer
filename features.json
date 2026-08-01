@@ -1,37 +1,45 @@
 {
-  "sprint": "BL-AGENT-REPORT-COMPAT",
+  "sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "features": [
     {
       "id": "F001",
-      "title": "旧 Agent 空工具目录上报兼容",
+      "title": "声明式同会话 bridge 注册与能力目录",
       "priority": "high",
       "status": "completed",
       "executor": "generator",
-      "acceptance": "仅接受 feature 6 旧 Agent 产生的 dispatch.enabled=false 且 toolCatalog=[] 的 report 快照并刷新 reportedAt；该空目录不能用于 v2 签发；disabled 非空/畸形目录和 enabled 畸形目录仍在 Prisma 前 fail-closed 为 invalid_tool_catalog。"
+      "acceptance": "tool-integrations/1 的 integration 以受限 subagent bridge 对象声明能力；catalog 仅为已发布且 _verified 的 bridge 展开三角色 subagent 候选，target 带不可签名的 bridge provenance 与 execution_provenance_sha256；未来工具只要声明同一已支持 bridge 协议即可自动进入目录，未知、未验证、角色越权、命令不匹配或配置漂移均 fail-closed。"
     },
     {
       "id": "F002",
-      "title": "Agent 1.1.0 发行与能力门槛契约",
+      "title": "Codex local-cli 保持与 external bridge 禁止",
       "priority": "high",
       "status": "completed",
       "executor": "generator",
-      "acceptance": "Agent build、全局更新门槛和 tool-bound intent 门槛升至 capability 7，manifest 新增严格递增的 1.1.0 条目且最新 manifest capability 与源码一致；旧 1.0.0/feature 6 显示 upgrade-required，v1 intent 阈值保持 4。"
+      "acceptance": "Codex 继续通过 verified adapter、sandbox、凭据隔离和 timeout 执行 local-cli 任务；App Server session fork 只保留为 fail-closed probe，不发布 manifest 或 external subagent candidate。目录、签发页面、模式快照和标准回执均不把 Codex fork 当作 child-agent 证据。"
     },
     {
       "id": "F003",
-      "title": "首页升级提示语义完整性",
+      "title": "Kimi ACP 原生 Agent 子代理 bridge",
       "priority": "high",
       "status": "completed",
       "executor": "generator",
-      "acceptance": "首页对 outdated 或 unknown 任一非零都可见；旧 feature 6 指向 v1.1.0 和其 manifest 功能说明；unknown-only 只提示核验，混合状态同时可见，两个 locale 键与插值对称。"
+      "acceptance": "runner 通过 ACP initialize/session/new/session/prompt 驱动 Harness 自有 Kimi 根会话；严格委派提示含单次 nonce，只有观察到 Agent 子代理 tool_call 的相同 nonce、plan/coder/explore 类型与完成事件才接受。不得解析或泄露用户 Kimi session wire 文件；ACP 或 child 证据不足必须 fail-closed。"
     },
     {
       "id": "F004",
-      "title": "独立验收、闸门与发布后收敛验证",
+      "title": "模式签发、设备目录与动态界面桥接语义",
       "priority": "high",
       "status": "completed",
+      "executor": "generator",
+      "acceptance": "heterogeneous 模式允许已验证的外部 same-session bridge 与 local-cli 组合、仍拒绝 a2a；Generator/Evaluator 仍须不同 model family。Tokenizer Agent 的 TypeScript catalog mirror、服务端 intent 校验和既有动态角色 UI 会一致展示 Kimi external bridge 与 Codex local-cli，不新增按工具名硬编码；Coordinator-host-native 与 bridge 路径的文案可区分。"
+    },
+    {
+      "id": "F005",
+      "title": "真实探针、回归矩阵与独立验收",
+      "priority": "high",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "fresh-context Evaluator 在锁定 SHA 上独立运行兼容矩阵、版本与 banner 三态、npm test/typecheck/lint/build，写 schema 合法全量 verdict；全 PASS 后举 verifying-to-done 人工闸门，批准发布后验证本机 Agent=1.1.0/feature 7、Harness report 成功且无 invalid_tool_catalog。"
+      "acceptance": "在本机已认证 Codex 与 Kimi 上分别执行无源码写入的真实 bridge probe，并保存不含 prompt/wire/凭据的结构化审计证据；运行 framework 与 Tokenizer 聚焦回归、全量 npm test/typecheck/lint/build。fresh-context Evaluator 锁定 SHA 独立复验 F001-F004，全 PASS 后举 verifying-to-done 人工闸门；批准前不得 push、部署或更新安装 Agent。"
     }
   ]
 }

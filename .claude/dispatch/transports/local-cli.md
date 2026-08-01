@@ -32,6 +32,12 @@
 当前项目的 `.harness-dispatch/`。local-cli 的一次性 clone/worktree 与 `run-<task>.log`
 仍放在 `--workroot` 下；取证清理 workroot 不会再把 run-meta 一起删掉，也没有新增任何日志上传。
 
+对于 active v2 non-fast 批次，进入 `sandbox-profile.sh` 前还必须匹配 active resolution 的
+`execution_provenance_sha256`。它把本次 target、verified adapter 的执行契约、sandbox 与 timeout 等实际
+执行语义固定为 checkpoint；同一 `{tool, invocation}` 在这些语义改变后不会继续运行。用户签名仍只覆盖
+`{tool, invocation}`，因此该 hash 是运行时漂移 guard，不是对 registry 或 adapter 文件的防篡改签名。
+旧五字段 active v2 checkpoint 必须重新 `/plan`/consume，不能降级执行。
+
 ## 2. 信封投递（`envelope_delivery`）
 
 | 值 | 做法 | 适用 |
@@ -83,11 +89,11 @@
 
 见 `sandbox-profile.sh`。摘要：
 
-| 锁 | 实现 | 拦住 |
+| 锁 | 实现 | 降低的风险 |
 |---|---|---|
-| env 白名单 | `env -i` + descriptor 显式列名 **+ 专用空 HOME（必填）** | prod 凭据 / 部署 token / 他家 API key |
-| 独立 sandbox checkout | 只读角色用 `git worktree add --detach <sha>`；Generator 用 `git clone --shared` | 污染工作区、并行互踩 |
-| 禁 push | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 直接改 main |
+| env 白名单 | `env -i` + descriptor 显式列名 **+ 专用空 HOME（必填）** | 意外继承的环境变量与登录 shell 初始化 |
+| 独立 sandbox checkout | 只读角色用 `git worktree add --detach <sha>`；Generator 用 `git clone --shared` | 正常流程中的工作区污染、并行互踩 |
+| 禁 push | `GIT_CONFIG_*` env 级覆盖 `remote.origin.pushurl` | 合作型 CLI 的直接 push |
 | wall-clock 封顶 | `process-timeout.py`：绝对 wall clock、独立 session/process group、TERM→有界 KILL、reap | 跑飞挂死与 suspend/resume 超期 |
 
 `deadline_s` 与 descriptor `timeout_s` 都是 `60..86400` 的整数；boolean/float/string 拒绝。
@@ -97,9 +103,10 @@
 adapter、timeout helper 等默认路径从 `sandbox-profile.sh` 自身目录解析；从其他 CWD 绝对调用入口
 不会改成去目标仓找机件。`--adapters` 与 `--timeout-helper` 显式覆盖继续支持。
 
-🔴 **子进程 CWD 一律固定为 sandbox checkout。** 不依赖各家 CLI 的 `--cd`/`-C` 是否存在、是否被遵守——
-Kimi **根本没有工作根参数**，完全靠这条约束在 sandbox checkout 内活动。（实测价值：Kimi 曾因 HOME 未展开
-而在 CWD 下造出字面量 `~/` 垃圾目录，正是 CWD 锁定把它挡在了一次性 sandbox checkout 里，没碰到主仓。）
+🔴 **子进程 CWD 一律固定为 sandbox checkout。** 这为合作型 `local-cli` 提供确定的相对路径语义，
+不依赖各家 CLI 的 `--cd`/`-C` 是否存在；Kimi **根本没有工作根参数**。它不是文件系统隔离，
+恶意同 UID 进程仍可能读取或访问其他宿主路径。（实测价值：Kimi 曾因 HOME 未展开而在 CWD 下造出字面量
+`~/` 垃圾目录，CWD 锁定把该垃圾限制在一次性 checkout 内。）
 
 🔴 **`sandbox.home_dir` 必填，且必须以 `/` 或 `~` 开头。** 外部 CLI 普遍用**登录 shell** 执行命令
 （Codex 用 `/bin/zsh -lc`），它会 source `~/.zshenv` / `~/.zprofile`——其中任何 `export`
@@ -141,9 +148,14 @@ Coordinator 先完成 spec-lock critic，再为当前项目给出严格的 `harn
 `files_touched` 精确一致、L1 在 sandbox snapshot 全绿；随后才会应用该单 feature diff 并创建
 `feat(<batch>-<feature>): accept external generator handoff`。任一前提失效即拒收、保留 sandbox 取证。
 
-`transport=subagent` 由 Coordinator 按 descriptor 的 `agent_type` 启动，不可由它直接实现；没有
-assignment 的 fast 路径保持旧本机流程。`transport=a2a` 的 Generator source-handoff protocol 尚未
-实现，手动入口明确 fail closed，不能退化到本机或 local-cli。
+`transport=subagent` 有两条严格分开的路径：历史 `dispatch/1` descriptor 的 host-native 路径由
+Coordinator 按 descriptor 的 `agent_type` 启动；`tool-integrations/1` 的旧 `subagent: true` 只保留为
+Coordinator 兼容信息，不生成可签发的 CLI candidate。`subagent: {"bridge":"..."}` 是协议声明，不是
+授权。当前 release 没有 VM/ephemeral-principal strict provider，故所有外部 same-session bridge 均不可选；
+Kimi、Codex 继续可用 `local-cli`。未来 provider 必须满足
+[`external-bridge-provider.md`](external-bridge-provider.md) 的独立 principal、copy-in/copy-out、brokered
+credential/egress 与 provider-owned lifecycle 契约，才可重新公开相应 bridge。没有 assignment 的 fast 路径保持旧本机流程。`transport=a2a`
+的 Generator source-handoff protocol 尚未实现，手动入口明确 fail closed，不能退化到本机或 local-cli。
 
 ## 7. 新增一家 CLI 的核对清单
 

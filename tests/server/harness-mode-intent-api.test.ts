@@ -18,12 +18,12 @@ const SHA256 = "a".repeat(64);
 function toolCatalog() {
   return [
     {
-      tool: "claude-code",
-      label: "Claude Code",
-      invocation: "subagent",
+      tool: "kimi",
+      label: "Kimi",
+      invocation: "local-cli",
       role: "planner",
       agentCount: 1,
-      modelFamilies: ["claude"],
+      modelFamilies: ["kimi"],
       capabilities: ["plan"]
     },
     {
@@ -98,6 +98,41 @@ function modeSnapshot() {
       autonomy: { enabled: false, expiresAt: null }
     }
   };
+}
+
+function verifiedBridgeSnapshot() {
+  const snapshot: any = modeSnapshot();
+  delete snapshot.dispatch.agents;
+  snapshot.dispatch.integrations = [{
+    id: "kimi-bridge",
+    tool: "kimi",
+    label: "Kimi",
+    modelFamily: "kimi",
+    roles: ["planner", "generator", "evaluator"],
+    invocations: ["local-cli", "subagent"],
+    capabilities: ["plan", "build", "verify"],
+    localCli: true,
+    subagent: true,
+    bridgeId: "kimi-acp-native-agent",
+    bridgeKind: "session-bridge-v1",
+    sessionScope: "same-session",
+    bridgeProtocol: "acp-native-agent/v1",
+    bridgeCommand: ["kimi", "acp"],
+    adapterBridgeCommand: ["kimi", "acp"],
+    bridgeRoles: ["planner", "generator", "evaluator"],
+    a2aTargetCount: 0,
+    sandboxed: true
+  }];
+  snapshot.dispatch.toolCatalog = ["planner", "generator", "evaluator"].map((role) => ({
+    tool: "kimi",
+    label: "Kimi",
+    invocation: "subagent",
+    role,
+    agentCount: 1,
+    modelFamilies: ["kimi"],
+    capabilities: ["plan", "build", "verify"]
+  }));
+  return snapshot;
 }
 
 function legacyEmptyToolCatalogSnapshot() {
@@ -192,13 +227,13 @@ describe("mode snapshot extraction", () => {
     ).toThrow(/duplicate/);
   });
 
-  it("uses the formal agent-id-free tool catalog as the canonical source", () => {
+  it("uses the formal agent-id-free, v2-selectable tool catalog as the canonical source", () => {
     const descriptors = modeToolCatalogFromSnapshot(modeSnapshot());
     expect(descriptors).toContainEqual({
-      tool: "claude-code",
-      invocation: "subagent",
+      tool: "kimi",
+      invocation: "local-cli",
       role: "planner",
-      model_family: "claude"
+      model_family: "kimi"
     });
     expect(descriptors).not.toContainEqual(expect.objectContaining({ tool: "codex", role: "planner" }));
   });
@@ -385,6 +420,26 @@ describe("persisted mode snapshot validation", () => {
         sandboxed: true
       }
     ];
+    snapshot.dispatch.toolCatalog = [
+      {
+        tool: "codex",
+        label: "Codex CLI",
+        invocation: "local-cli",
+        role: "generator",
+        agentCount: 1,
+        modelFamilies: ["codex"],
+        capabilities: ["build", "verify"]
+      },
+      {
+        tool: "codex",
+        label: "Codex CLI",
+        invocation: "a2a",
+        role: "evaluator",
+        agentCount: 1,
+        modelFamilies: ["codex"],
+        capabilities: ["build", "verify"]
+      }
+    ];
     snapshot.current = {
       profile: "slow",
       roleBindings: {
@@ -394,6 +449,114 @@ describe("persisted mode snapshot validation", () => {
       }
     };
     expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    // Coordinator owns Planner, so a valid v2 catalog only needs the
+    // explicitly selectable Generator and Evaluator bindings.
+    expect(modeToolCatalogFromSnapshot(snapshot)).toEqual(expect.arrayContaining([
+      { tool: "codex", invocation: "local-cli", role: "generator", model_family: "codex" },
+      { tool: "codex", invocation: "a2a", role: "evaluator", model_family: "codex" }
+    ]));
+  });
+
+  it("keeps Kimi bridge fields observable but only returns local-cli choices for v2 signing", () => {
+    const snapshot: any = verifiedBridgeSnapshot();
+    snapshot.dispatch.toolCatalog = [
+      ...["planner", "generator", "evaluator"].map((role) => ({
+        tool: "kimi",
+        label: "Kimi",
+        invocation: "local-cli",
+        role,
+        agentCount: 1,
+        modelFamilies: ["kimi"],
+        capabilities: ["plan", "build", "verify"]
+      })),
+      ...snapshot.dispatch.toolCatalog
+    ];
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    const descriptors = modeToolCatalogFromSnapshot(snapshot);
+    expect(descriptors).toContainEqual({
+      tool: "kimi",
+      invocation: "local-cli",
+      role: "generator",
+      model_family: "kimi"
+    });
+    expect(descriptors).not.toContainEqual(expect.objectContaining({ invocation: "subagent" }));
+
+    const incomplete = structuredClone(snapshot);
+    delete incomplete.dispatch.integrations[0].bridgeKind;
+    expect(() => parseModeSnapshot(incomplete)).toThrow(/bridgeKind must be a string/);
+  });
+
+  it("keeps a catalog-only Coordinator-native subagent route observable but not signable", () => {
+    const snapshot: any = modeSnapshot();
+    delete snapshot.dispatch.agents;
+    snapshot.dispatch.integrations = [{
+      id: "codex",
+      tool: "codex",
+      label: "Codex",
+      modelFamily: "codex",
+      roles: ["planner", "generator", "evaluator"],
+      invocations: ["subagent"],
+      capabilities: ["plan", "build", "verify"],
+      localCli: false,
+      subagent: true,
+      a2aTargetCount: 0,
+      sandboxed: false
+    }];
+    snapshot.dispatch.toolCatalog = [{
+      tool: "codex",
+      label: "Codex",
+      invocation: "subagent",
+      role: "generator",
+      agentCount: 1,
+      modelFamilies: ["codex"],
+      capabilities: ["build"]
+    }];
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    expect(() => modeToolCatalogFromSnapshot(snapshot)).toThrow(/selectable tool capability catalog/);
+  });
+
+  it("rejects malformed bridge observations without treating coherent reports as authorization", () => {
+    const snapshot = verifiedBridgeSnapshot();
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    expect(() => modeToolCatalogFromSnapshot(snapshot)).toThrow(/selectable tool capability catalog/);
+
+    const malformed = structuredClone(snapshot);
+    malformed.dispatch.integrations[0].adapterBridgeCommand = ["codex", "acp"];
+    expect(() => parseModeSnapshot(malformed)).toThrow(/transport facts are inconsistent/);
+
+    const forgedCatalog = structuredClone(snapshot);
+    forgedCatalog.dispatch.toolCatalog[1].tool = "codex";
+    expect(parseModeSnapshot(forgedCatalog)).toBe(forgedCatalog);
+    expect(() => modeToolCatalogFromSnapshot(forgedCatalog)).toThrow(/selectable tool capability catalog/);
+  });
+
+  it.each([true, null])("keeps legacy Coordinator-native subagent=%j metadata reportable but non-external", (legacySubagent) => {
+    const snapshot = verifiedBridgeSnapshot();
+    snapshot.dispatch.integrations[0] = {
+      ...snapshot.dispatch.integrations[0],
+      subagent: legacySubagent,
+      invocations: ["local-cli"],
+      bridgeId: null,
+      bridgeKind: null,
+      sessionScope: null,
+      bridgeProtocol: null,
+      bridgeCommand: null,
+      adapterBridgeCommand: null,
+      bridgeRoles: null
+    };
+    snapshot.dispatch.toolCatalog = ["planner", "generator", "evaluator"].map((role) => ({
+      tool: "kimi",
+      label: "Kimi",
+      invocation: "local-cli",
+      role,
+      agentCount: 1,
+      modelFamilies: ["kimi"],
+      capabilities: ["plan", "build", "verify"]
+    }));
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    expect(modeToolCatalogFromSnapshot(snapshot)).not.toContainEqual(
+      expect.objectContaining({ invocation: "subagent" })
+    );
   });
 
   it("allows a null dispatch assignment only for the Coordinator Planner", () => {

@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -17,17 +19,61 @@ DISPATCH_VALIDATOR = HERE / "validate-dispatch.sh"
 RESOLVED_BINDINGS_VALIDATOR = HERE / "validate-resolved-mode-bindings.sh"
 
 
+def load_tool_catalog_module():
+    """Load the CLI module directly so host capability can be fail-closed tested."""
+    sys.path.insert(0, str(HERE))
+    spec = importlib.util.spec_from_file_location("tool_catalog_test_support", TOOL_CATALOG)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+TOOL_CATALOG_MODULE = load_tool_catalog_module()
+
+
 def adapter(name: str, family: str, *, verified: bool = True, tool: str | None = None) -> dict:
     value = {
         "name": name,
         "model_family": family,
-        "argv": ["fixture-cli"],
+        "argv": [name],
         "envelope_delivery": "stdin",
+        "bridge_commands": {
+            "acp-native-agent/v1": [name, "acp"],
+        },
         "_verified": verified,
     }
     if tool is not None:
         value["tool"] = tool
     return value
+
+
+def subagent_bridge(
+    bridge_id: str,
+    *,
+    verified: bool = True,
+    strategy: str = "native-session",
+    protocol_kind: str = "acp-native-agent/v1",
+    command: list[str] | None = None,
+    personas: dict[str, str] | None = None,
+) -> dict:
+    return {
+        "id": bridge_id,
+        "_verified": verified,
+        "session_scope": "same-session",
+        "strategy": strategy,
+        "protocol": {
+            "kind": protocol_kind,
+            "command": command or ["future-cli", "acp"],
+            "request_delivery": "stdin",
+            "response_format": "json",
+        },
+        "personas": personas or {
+            "planner": "planner-proposal",
+            "evaluator": "evaluator",
+        },
+    }
 
 
 def local_agent(
@@ -65,6 +111,8 @@ class ToolCatalogTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.adapters = self.root / "adapters"
         self.adapters.mkdir()
+        self.bridges = self.root / "bridges"
+        self.bridges.mkdir()
         self.registry = self.root / "registry.json"
         self.bindings = self.root / "bindings.json"
 
@@ -79,6 +127,11 @@ class ToolCatalogTests(unittest.TestCase):
     def write_registry(self, agents: list[dict]):
         self.registry.write_text(
             json.dumps({"version": "dispatch/1", "agents": agents}), encoding="utf-8"
+        )
+
+    def write_bridge(self, bridge_id: str, **kwargs):
+        (self.bridges / f"{bridge_id}.json").write_text(
+            json.dumps(subagent_bridge(bridge_id, **kwargs)), encoding="utf-8"
         )
 
     def write_integrations(self, integrations: list[dict], a2a_targets: list[dict] | None = None):
@@ -103,6 +156,8 @@ class ToolCatalogTests(unittest.TestCase):
             str(self.registry),
             "--adapters",
             str(self.adapters),
+            "--bridges",
+            str(self.bridges),
         ]
         if command == "resolve":
             args.extend(["--bindings", str(self.bindings)])
@@ -111,6 +166,27 @@ class ToolCatalogTests(unittest.TestCase):
                 raise AssertionError("target_id is required for target command")
             args.extend(["--target-id", target_id])
         return subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def attested_strict_provider(self):
+        """A test-only stand-in for a future framework-owned VM provider."""
+        return TOOL_CATALOG_MODULE.StrictExternalBridgeProvider(
+            id="fixture-vm-provider",
+            kind="vm-v1",
+            contract_sha256="a" * 64,
+        )
+
+    def candidates_with_attested_strict_provider(self):
+        # The CLI subprocess must stay fail-closed in this release.  Patch the
+        # in-process framework hook only to prove that any future provider can
+        # admit a protocol-compatible new CLI declaratively.
+        with mock.patch.object(
+            TOOL_CATALOG_MODULE,
+            "external_same_session_bridge_provider",
+            return_value=self.attested_strict_provider(),
+        ):
+            return TOOL_CATALOG_MODULE.candidates_from_registry(
+                self.registry, self.adapters, self.bridges
+            )
 
     def invoke_registry_validator(self):
         return subprocess.run(
@@ -157,7 +233,7 @@ class ToolCatalogTests(unittest.TestCase):
         planner_entries = catalog["roles"]["planner"]
         by_choice = {(item["tool"], item["invocation"]): item for item in planner_entries}
         self.assertIn(("new-cli", "local-cli"), by_choice)
-        self.assertIn(("claude-code", "subagent"), by_choice)
+        self.assertNotIn(("claude-code", "subagent"), by_choice)
         self.assertEqual(by_choice[("new-cli", "local-cli")]["agent_count"], 2)
         self.assertNotIn("agent_id", by_choice[("new-cli", "local-cli")])
 
@@ -171,6 +247,8 @@ class ToolCatalogTests(unittest.TestCase):
         self.assertEqual(resolved["planner"]["invocation"], "local-cli")
         self.assertEqual(resolved["generator"]["agent_id"], "generator")
         self.assertEqual(resolved["evaluator"]["agent_id"], "evaluator")
+        for record in resolved.values():
+            self.assertRegex(record["execution_provenance_sha256"], r"^[0-9a-f]{64}$")
         self.assertNotEqual(
             resolved["generator"]["model_family"], resolved["evaluator"]["model_family"]
         )
@@ -396,7 +474,7 @@ class ToolCatalogTests(unittest.TestCase):
         )
         self.write_bindings(
             {
-                "planner": {"tool": "claude-code", "invocation": "subagent"},
+                "planner": None,
                 "generator": {"tool": "same-generator", "invocation": "local-cli"},
                 "evaluator": {"tool": "same-evaluator", "invocation": "local-cli"},
             }
@@ -508,7 +586,7 @@ class ToolCatalogTests(unittest.TestCase):
             ("future-cli", "a2a"),
             {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["generator"]},
         )
-        self.assertIn(
+        self.assertNotIn(
             ("claude-code", "subagent"),
             {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["generator"]},
         )
@@ -522,8 +600,16 @@ class ToolCatalogTests(unittest.TestCase):
 
         local_target = self.invoke("target", target_id="local-cli--future--generator")
         self.assertEqual(local_target.returncode, 0, local_target.stderr)
+        local_target_value = json.loads(local_target.stdout)
         self.assertEqual(
-            json.loads(local_target.stdout),
+            {
+                key: value
+                for key, value in local_target_value.items()
+                if key not in {
+                    "adapter_execution_contract_sha256",
+                    "execution_provenance_sha256",
+                }
+            },
             {
                 "adapter": "future-cli",
                 "capabilities": ["build", "plan", "verify"],
@@ -538,12 +624,531 @@ class ToolCatalogTests(unittest.TestCase):
                 "tool": "future-cli",
             },
         )
+        self.assertRegex(
+            local_target_value["adapter_execution_contract_sha256"], r"^[0-9a-f]{64}$"
+        )
+        self.assertRegex(
+            local_target_value["execution_provenance_sha256"], r"^[0-9a-f]{64}$"
+        )
         remote_target = self.invoke("target", target_id="a2a--future-remote--evaluator")
         self.assertEqual(remote_target.returncode, 0, remote_target.stderr)
         remote = json.loads(remote_target.stdout)
         self.assertEqual(remote["remote_runner_id"], "future-a2a-runner")
         self.assertEqual(remote["roles"], ["evaluator"])
         self.assertEqual(remote["auth"], {"type": "none"})
+
+    def test_legacy_subagent_boolean_is_not_a_selectable_cli_candidate(self):
+        self.write_integrations(
+            [{
+                "id": "codex",
+                "tool": "codex",
+                "model_family": "codex",
+                "subagent": True,
+            }],
+            [],
+        )
+
+        catalog_result = self.invoke("catalog")
+        self.assertEqual(catalog_result.returncode, 0, catalog_result.stderr)
+        catalog = json.loads(catalog_result.stdout)
+        for role in ("planner", "generator", "evaluator"):
+            self.assertNotIn(
+                ("codex", "subagent"),
+                {(entry["tool"], entry["invocation"]) for entry in catalog["roles"][role]},
+            )
+
+        target_result = self.invoke("target", target_id="subagent--codex--planner")
+        self.assertEqual(target_result.returncode, 2)
+        self.assertIn("not registered", target_result.stderr)
+
+    def test_legacy_dispatch_host_native_subagent_is_internal_not_v2_selectable(self):
+        self.write_adapter("generator-cli", "generator")
+        self.write_adapter("evaluator-cli", "evaluator")
+        self.write_registry(
+            [
+                {
+                    "id": "legacy-host-planner",
+                    "roles": ["planner"],
+                    "transport": "subagent",
+                    "agent_type": "planner-proposal",
+                    "model_family": "claude",
+                },
+                local_agent("generator", "generator", "generator-cli", "generator"),
+                local_agent("evaluator", "evaluator", "evaluator-cli", "evaluator"),
+            ]
+        )
+
+        target_result = self.invoke("target", target_id="legacy-host-planner")
+        self.assertEqual(target_result.returncode, 0, target_result.stderr)
+        target = json.loads(target_result.stdout)
+        self.assertEqual(target["bridge_id"], "host-native")
+        self.assertNotIn("bridge_protocol", target)
+        self.assertNotIn("session_scope", target)
+
+        catalog_result = self.invoke("catalog")
+        self.assertEqual(catalog_result.returncode, 0, catalog_result.stderr)
+        catalog = json.loads(catalog_result.stdout)
+        self.assertNotIn(
+            ("claude-code", "subagent"),
+            {(entry["tool"], entry["invocation"]) for entry in catalog["roles"]["planner"]},
+        )
+
+        self.write_bindings(
+            {
+                "planner": {"tool": "claude-code", "invocation": "subagent"},
+                "generator": {"tool": "generator-cli", "invocation": "local-cli"},
+                "evaluator": {"tool": "evaluator-cli", "invocation": "local-cli"},
+            }
+        )
+        resolution = self.invoke("resolve")
+        self.assertEqual(resolution.returncode, 2)
+        self.assertIn("planner=claude-code+subagent", resolution.stderr)
+
+    def test_acp_bridge_is_hidden_by_default_but_auto_discovers_roles_after_provider_attestation(self):
+        self.write_adapter("future-cli", "future")
+        self.write_adapter("other-cli", "other")
+        self.write_bridge(
+            "future-session",
+            strategy="managed-session",
+            personas={
+                "planner": "planner-proposal",
+                "evaluator": "evaluator",
+            },
+        )
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "capabilities": ["plan", "verify"],
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {
+                        "home_dir": "/tmp/future-home",
+                        "env_allow": ["FUTURE_TOKEN"],
+                    },
+                    "timeout_s": 900,
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+        integrations = json.loads(self.registry.read_text(encoding="utf-8"))
+        integrations["integrations"].append(
+            {
+                "id": "other",
+                "tool": "other-cli",
+                "model_family": "other",
+                "local_cli": {
+                    "adapter": "other-cli",
+                    "sandbox": {"home_dir": "/tmp/other-home"},
+                },
+            }
+        )
+        self.registry.write_text(json.dumps(integrations), encoding="utf-8")
+        self.write_bindings(
+            {
+                "planner": {"tool": "future-cli", "invocation": "subagent"},
+                "generator": {"tool": "future-cli", "invocation": "local-cli"},
+                "evaluator": {"tool": "other-cli", "invocation": "local-cli"},
+            }
+        )
+
+        catalog_result = self.invoke("catalog")
+        self.assertEqual(catalog_result.returncode, 0, catalog_result.stderr)
+        catalog = json.loads(catalog_result.stdout)
+        for role in ("planner", "generator", "evaluator"):
+            choices = {(entry["tool"], entry["invocation"]) for entry in catalog["roles"][role]}
+            self.assertIn(("future-cli", "local-cli"), choices)
+            self.assertNotIn(("future-cli", "subagent"), choices)
+
+        hidden = self.invoke("target", target_id="subagent--future--planner")
+        self.assertEqual(hidden.returncode, 2)
+        self.assertIn("not registered", hidden.stderr)
+
+        candidates = self.candidates_with_attested_strict_provider()
+        attested_catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
+        for role in ("planner", "evaluator"):
+            self.assertIn(
+                ("future-cli", "subagent"),
+                {
+                    (entry["tool"], entry["invocation"])
+                    for entry in attested_catalog["roles"][role]
+                },
+            )
+        self.assertNotIn(
+            ("future-cli", "subagent"),
+            {
+                (entry["tool"], entry["invocation"])
+                for entry in attested_catalog["roles"]["generator"]
+            },
+        )
+
+        target = TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+        self.assertEqual(target["agent_type"], "planner-proposal")
+        self.assertEqual(target["adapter"], "future-cli")
+        self.assertEqual(target["sandbox"], {
+            "home_dir": "/tmp/future-home",
+            "env_allow": ["FUTURE_TOKEN"],
+        })
+        self.assertEqual(target["timeout_s"], 900)
+        self.assertEqual(target["bridge_id"], "future-session")
+        self.assertEqual(target["bridge_strategy"], "managed-session")
+        self.assertEqual(target["session_scope"], "same-session")
+        self.assertEqual(target["bridge_protocol"], {
+            "kind": "acp-native-agent/v1",
+            "command": ["future-cli", "acp"],
+            "request_delivery": "stdin",
+            "response_format": "json",
+        })
+        self.assertEqual(target["bridge_provider_id"], "fixture-vm-provider")
+        self.assertEqual(target["bridge_provider_kind"], "vm-v1")
+        self.assertEqual(target["bridge_provider_contract_sha256"], "a" * 64)
+        self.assertRegex(target["adapter_execution_contract_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(target["execution_provenance_sha256"], r"^[0-9a-f]{64}$")
+        resolved = TOOL_CATALOG_MODULE.resolve(
+            candidates, TOOL_CATALOG_MODULE.load_bindings(self.bindings)
+        )
+        planner = resolved["planner"]
+        assert planner is not None
+        self.assertEqual(
+            planner["execution_provenance_sha256"],
+            target["execution_provenance_sha256"],
+        )
+
+    def test_verified_external_bridge_is_hidden_without_a_strict_provider(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        self.assertIsNone(TOOL_CATALOG_MODULE.external_same_session_bridge_provider())
+        candidates = TOOL_CATALOG_MODULE.candidates_from_registry(
+            self.registry, self.adapters, self.bridges
+        )
+        catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
+        with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not registered"):
+            TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+
+        for role in ("planner", "generator", "evaluator"):
+            choices = {
+                (entry["tool"], entry["invocation"])
+                for entry in catalog["roles"][role]
+            }
+            self.assertIn(("future-cli", "local-cli"), choices)
+            self.assertNotIn(("future-cli", "subagent"), choices)
+
+    def test_invalid_strict_provider_observation_fails_closed(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session")
+        self.write_integrations(
+            [
+                {
+                    "id": "future",
+                    "tool": "future-cli",
+                    "model_family": "future",
+                    "local_cli": {
+                        "adapter": "future-cli",
+                        "sandbox": {"home_dir": "/tmp/future-home"},
+                    },
+                    "subagent": {"bridge": "future-session"},
+                }
+            ],
+            [],
+        )
+        cases = (
+            (
+                TOOL_CATALOG_MODULE.StrictExternalBridgeProvider(
+                    id="fixture-vm-provider", kind="vm-v1", contract_sha256="A" * 64
+                ),
+                "contract_sha256",
+            ),
+            (
+                TOOL_CATALOG_MODULE.StrictExternalBridgeProvider(
+                    id="fixture-seatbelt-provider", kind="seatbelt-v1", contract_sha256="a" * 64
+                ),
+                "provider kind",
+            ),
+        )
+        for invalid, expected in cases:
+            with self.subTest(expected=expected), mock.patch.object(
+                TOOL_CATALOG_MODULE,
+                "external_same_session_bridge_provider",
+                return_value=invalid,
+            ):
+                with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, expected):
+                    TOOL_CATALOG_MODULE.candidates_from_registry(
+                        self.registry, self.adapters, self.bridges
+                    )
+
+    def test_malformed_external_bridge_is_rejected_before_host_capability_downgrade(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session", protocol_kind="unpublished-native-agent/v1")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not published"):
+            TOOL_CATALOG_MODULE.candidates_from_registry(
+                self.registry, self.adapters, self.bridges
+            )
+
+    def test_execution_provenance_hashes_adapter_and_bridge_semantics_but_not_comments(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        def target():
+            candidates = self.candidates_with_attested_strict_provider()
+            return TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+
+        baseline = target()
+        bridge_path = self.bridges / "future-session.json"
+        adapter_path = self.adapters / "future-cli.json"
+        bridge = json.loads(bridge_path.read_text(encoding="utf-8"))
+        bridge["_comment"] = "operator-facing bridge note"
+        bridge_path.write_text(json.dumps(bridge), encoding="utf-8")
+        self.assertEqual(target()["execution_provenance_sha256"], baseline["execution_provenance_sha256"])
+
+        adapter_value = json.loads(adapter_path.read_text(encoding="utf-8"))
+        adapter_value["_comment"] = "operator-facing adapter note"
+        adapter_value["display_name"] = "Future CLI"
+        adapter_path.write_text(json.dumps(adapter_value), encoding="utf-8")
+        comment_only = target()
+        self.assertEqual(
+            comment_only["execution_provenance_sha256"],
+            baseline["execution_provenance_sha256"],
+        )
+        self.assertEqual(
+            comment_only["adapter_execution_contract_sha256"],
+            baseline["adapter_execution_contract_sha256"],
+        )
+
+        bridge["strategy"] = "managed-session"
+        bridge_path.write_text(json.dumps(bridge), encoding="utf-8")
+        bridge_changed = target()
+        self.assertNotEqual(
+            bridge_changed["execution_provenance_sha256"],
+            baseline["execution_provenance_sha256"],
+        )
+
+        bridge["strategy"] = "native-session"
+        bridge_path.write_text(json.dumps(bridge), encoding="utf-8")
+        adapter_value["env_allowlist_extra"] = ["FUTURE_TOKEN"]
+        adapter_path.write_text(json.dumps(adapter_value), encoding="utf-8")
+        adapter_changed = target()
+        self.assertNotEqual(
+            adapter_changed["adapter_execution_contract_sha256"],
+            baseline["adapter_execution_contract_sha256"],
+        )
+        self.assertNotEqual(
+            adapter_changed["execution_provenance_sha256"],
+            baseline["execution_provenance_sha256"],
+        )
+
+    def test_bridge_manifest_requires_verified_local_cli_policy(self):
+        self.write_bridge("future-session")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("requires local_cli", result.stderr)
+
+    def test_bridge_manifest_rejects_unverified_or_unpublished_protocol(self):
+        self.write_adapter("future-cli", "future")
+        integration = {
+            "id": "future",
+            "tool": "future-cli",
+            "model_family": "future",
+            "local_cli": {
+                "adapter": "future-cli",
+                "sandbox": {"home_dir": "/tmp/future-home"},
+            },
+            "subagent": {"bridge": "future-session"},
+        }
+        cases = (
+            ("unverified", {"verified": False}, "not verified"),
+            ("wrong persona", {"personas": {"planner": "evaluator"}}, "framework role contract"),
+            (
+                "dormant app server",
+                {"protocol_kind": "app-server-native-agent/v1"},
+                "not published",
+            ),
+            (
+                "unknown protocol",
+                {"protocol_kind": "unreviewed-native-agent/v1"},
+                "not published",
+            ),
+        )
+        for label, bridge_args, expected in cases:
+            with self.subTest(label=label):
+                self.write_bridge("future-session", **bridge_args)
+                self.write_integrations([integration], [])
+                result = self.invoke("catalog")
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn(expected, result.stderr)
+
+    def test_bridge_manifest_command_must_match_its_verified_adapter(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session", command=["other-cli", "acp"])
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("must exactly match", result.stderr)
+
+    def test_bridge_adapter_rejects_unpublished_command_even_when_acp_is_bound(self):
+        self.write_adapter("future-cli", "future")
+        adapter_path = self.adapters / "future-cli.json"
+        raw_adapter = json.loads(adapter_path.read_text(encoding="utf-8"))
+        raw_adapter["bridge_commands"] = {
+            "acp-native-agent/v1": ["future-cli", "acp"],
+            "app-server-native-agent/v1": ["future-cli", "app-server"],
+        }
+        adapter_path.write_text(json.dumps(raw_adapter), encoding="utf-8")
+        self.write_bridge("future-session")
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("unpublished protocol", result.stderr)
+
+    def test_shipped_kimi_protocol_manifest_stays_hidden_without_provider_and_codex_stays_local_cli(self):
+        bridge_id = "kimi-acp-native-agent"
+        source = HERE / "transports" / "bridges" / f"{bridge_id}.json"
+        self.assertTrue(source.is_file(), f"missing shipped bridge manifest: {source}")
+        (self.bridges / source.name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+        manifest = json.loads(source.read_text(encoding="utf-8"))
+        self.assertEqual(
+            manifest["personas"],
+            {"planner": "planner-proposal", "evaluator": "evaluator"},
+        )
+        self.write_adapter("codex", "codex")
+        self.write_adapter("kimi", "kimi")
+        self.write_integrations(
+            [
+                {
+                    "id": "codex",
+                    "tool": "codex",
+                    "model_family": "codex",
+                    "local_cli": {
+                        "adapter": "codex",
+                        "sandbox": {"home_dir": "/tmp/codex-home"},
+                    },
+                },
+                {
+                    "id": "kimi",
+                    "tool": "kimi",
+                    "model_family": "kimi",
+                    "local_cli": {
+                        "adapter": "kimi",
+                        "sandbox": {"home_dir": "/tmp/kimi-home"},
+                    },
+                    "subagent": {"bridge": "kimi-acp-native-agent"},
+                },
+            ],
+            [],
+        )
+
+        result = self.invoke("catalog")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        catalog = json.loads(result.stdout)
+        for role in ("planner", "generator", "evaluator"):
+            choices = {(entry["tool"], entry["invocation"]) for entry in catalog["roles"][role]}
+            self.assertIn(("codex", "local-cli"), choices)
+            self.assertNotIn(("codex", "subagent"), choices)
+            self.assertIn(("kimi", "local-cli"), choices)
+            self.assertNotIn(("kimi", "subagent"), choices)
+        hidden = self.invoke("target", target_id="subagent--kimi--planner")
+        self.assertEqual(hidden.returncode, 2)
+
+        candidates = self.candidates_with_attested_strict_provider()
+        attested_catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
+        for role in ("planner", "evaluator"):
+            choices = {
+                (entry["tool"], entry["invocation"])
+                for entry in attested_catalog["roles"][role]
+            }
+            self.assertIn(("kimi", "subagent"), choices)
+            self.assertNotIn(("codex", "subagent"), choices)
+        generator_choices = {
+            (entry["tool"], entry["invocation"])
+            for entry in attested_catalog["roles"]["generator"]
+        }
+        self.assertNotIn(("kimi", "subagent"), generator_choices)
+
+        kimi_target = TOOL_CATALOG_MODULE.resolve_target(
+            candidates, "subagent--kimi--planner"
+        )
+        self.assertEqual(kimi_target["bridge_protocol"]["kind"], "acp-native-agent/v1")
+        self.assertEqual(kimi_target["bridge_provider_id"], "fixture-vm-provider")
+        self.assertRegex(kimi_target["adapter_execution_contract_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(kimi_target["execution_provenance_sha256"], r"^[0-9a-f]{64}$")
 
     def test_integrations_reject_a2a_target_without_local_cli_profile(self):
         self.write_integrations(

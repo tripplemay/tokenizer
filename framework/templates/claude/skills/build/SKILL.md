@@ -17,9 +17,9 @@ description: 进入 Harness 状态机的 Generator 角色——按 features.json
    ```
 
    - **输出 `{}`（fast/v1/未启用 checkpoint）：** 保持历史本机 Generator 路径，继续第 4 步。
-   - **输出五字段 active record：** 该 record 是从完整签名 checkpoint 重验并按当前 registry/verified adapter 重解的唯一来源。按它的 `agent_id`/transport/agent type 路由；`role_assignments` 与 `mode_intent.resolution` 只作审计，不能参与选择。任何非 0、字段不匹配或 registry 漂移都硬停。
-   - **`transport=subagent`：** 从 active record 对应的 descriptor 读取该**精确 agent type**，以它启动受限 Generator subagent；Coordinator 只编排与收敛，不直接写 feature。若 `agent_type` 缺失或不匹配，硬停，不用默认 persona 代替。
-   - **`transport=local-cli`：** 用下面的固定封装派发。封装会在读 progress 前再次验证 active Generator record：
+   - **输出六字段 active record：** 该 record 是从完整签名 checkpoint 重验并按当前 registry/verified adapter 重解的唯一来源；`execution_provenance_sha256` 同时固定 target、adapter 执行契约、sandbox/timeout 与 bridge/A2A 等执行语义。按它的 `agent_id`/transport/agent type 路由；`role_assignments` 与 `mode_intent.resolution` 只作审计，不能参与选择。任何非 0、字段不匹配或执行语义漂移都硬停。用户签名仍只覆盖 `{tool,invocation}`，hash 是运行时 guard 而非文件防篡改证明；旧五字段 active v2 checkpoint 必须重新 plan/consume。
+   - **`transport=subagent`：** 先读取 target provenance。仅当 `bridge_id=host-native` 时，从 active record 对应的 descriptor 读取该**精确 agent type**，以它启动受限 Generator subagent；Coordinator 只编排与收敛，不直接写 feature。若 `agent_type` 缺失或不匹配，硬停，不用默认 persona 代替。已验证外部 bridge（非 `host-native`、`session_scope=same-session`、有 protocol）不得由 Coordinator 直派，必须使用下列固定封装。
+   - **`transport=local-cli` 或已验证外部 `subagent` bridge：** 用下面的固定封装派发。封装会在读 progress 前再次验证 active Generator record：
 
      ```bash
      TASK_ID="build-$(git rev-parse --short=12 HEAD)-$(date -u +%Y%m%dT%H%M%SZ)"

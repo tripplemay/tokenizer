@@ -26,19 +26,19 @@ async function renderModeBadges(version: string): Promise<string> {
 }
 
 describe("ModeBadges framework release rendering", () => {
-  it("renders the synced v1.6.1 project as latest without stale guidance", async () => {
-    const html = await renderModeBadges("1.6.1");
+  it("renders the synced v1.6.2 project as latest without stale guidance", async () => {
+    const html = await renderModeBadges("1.6.2");
 
-    expect(html).toContain("v1.6.1");
+    expect(html).toContain("v1.6.2");
     expect(html).not.toContain("behindN:");
     expect(html).not.toContain("ahead:");
     expect(html).not.toContain("syncHint");
   });
 
-  it("renders v1.6.0 as one release behind with sync guidance", async () => {
-    const html = await renderModeBadges("1.6.0");
+  it("renders v1.6.1 as one release behind with sync guidance", async () => {
+    const html = await renderModeBadges("1.6.1");
 
-    expect(html).toContain("v1.6.0");
+    expect(html).toContain("v1.6.1");
     expect(html).toContain("behindN:1");
     expect(html).toContain("syncHint");
     expect(html).not.toContain("ahead:");
@@ -48,7 +48,7 @@ describe("ModeBadges framework release rendering", () => {
     const html = await renderModeBadges("9.9.9");
 
     expect(html).toContain("v9.9.9");
-    expect(html).toContain("ahead:1.6.1");
+    expect(html).toContain("ahead:1.6.2");
     expect(html).not.toContain("behindN:");
     expect(html).not.toContain("syncHint");
   });

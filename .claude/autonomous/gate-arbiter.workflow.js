@@ -85,9 +85,13 @@ const EVAL_TIERS = [{ model: 'opus', effort: 'high' }, { model: 'sonnet', effort
 // 无注册表 ⇒ 全部回退到 v1.0 行为，存量项目零影响。
 
 // `tool-integrations/1` removes user-selectable Agent Cards. The autonomous
-// workflow receives the raw registry rather than invoking Python, so derive
-// the same opaque role targets locally for its audit-only routing decisions.
-// Legacy dispatch/1 registries retain their original descriptors unchanged.
+// workflow receives the raw registry rather than invoking Python, so it may
+// derive only static local-cli/A2A targets for audit routing. In particular it
+// must not turn a raw `subagent.bridge` string into a selectable external
+// target: bridge-manifest and adapter verification live in tool-catalog.py.
+// Verified external bridge assignments are projected below only from the
+// durable layer's freshly validated `resolved_mode_bindings` snapshot. Legacy
+// dispatch/1 registries retain their original descriptors unchanged.
 const CONTROL_CHARACTERS = /[\x00-\x1f\x7f]/
 const PYTHON_STRIP_WHITESPACE = /^[\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+|[\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+$/g
 
@@ -140,19 +144,10 @@ function registryAgents(registry) {
         })
       }
     }
-    if (integration.subagent === true) {
-      const personas = { planner: 'planner-proposal', generator: 'generator-restricted', evaluator: 'evaluator' }
-      for (const role of roles) {
-        targets.push({
-          ...base,
-          id: `subagent--${integration.id}--${role}`,
-          roles: [role],
-          transport: 'subagent',
-          agent_type: personas[role],
-          constraints: roleConstraints(role),
-        })
-      }
-    }
+    // Do not project `subagent` here. A syntactically valid registry string
+    // says nothing about a verified bridge manifest, protocol, or matching
+    // adapter command. See verifiedExternalBridgeCandidate() for the only
+    // v2 external-bridge path this workflow may use.
   }
   for (const target of registry.a2a_targets) {
     if (!target || typeof target !== 'object' || typeof target.id !== 'string') continue
@@ -191,21 +186,22 @@ const pick = (pool, n) => (pool.length ? pool[((n % pool.length) + pool.length) 
 // 已解析的 role_assignments 是人类签名工具绑定在本机 resolver 后的运行时事实。
 // 有显式 assignment 时，绝不能退回 registry 全局池另挑一个 agent；那会让控制台显示的
 // 工具选择与实际派活脱钩。无 assignment 才保留 v1.0/v1.1 的默认轮换。
-function assigned(registry, state, role) {
+function assigned(registry, state, role, currentResolution) {
   const assignments = state && state.role_assignments
   if (!assignments || typeof assignments !== 'object' || !Object.prototype.hasOwnProperty.call(assignments, role)) {
     return { configured: false, candidate: null, id: null }
   }
   const id = assignments[role]
   if (typeof id !== 'string' || !id) return { configured: true, candidate: null, id: null }
-  const candidate = registryAgents(registry).find(a =>
-    a.id === id && (a.roles || []).includes(role)) || null
+  const candidate = candidateForAssignment(registry, state, role, currentResolution)
   return { configured: true, candidate, id }
 }
 
 const ROLE_NAMES = ['planner', 'generator', 'evaluator']
 const STABLE_AGENT_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
 const STABLE_TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/
+const EXECUTION_PROVENANCE_SHA256 = /^[0-9a-f]{64}$/
+const EXTERNAL_SUBAGENT_TARGET = /^subagent--([A-Za-z0-9][A-Za-z0-9._-]{0,63})--(planner|generator|evaluator)$/
 
 function descriptorPriority(descriptor) {
   return Number.isSafeInteger(descriptor && descriptor.priority) && descriptor.priority >= 0
@@ -213,24 +209,17 @@ function descriptorPriority(descriptor) {
     : 1000
 }
 
-function descriptorToolWithoutAdapter(descriptor) {
-  if (typeof descriptor.tool === 'string') return descriptor.tool
-  if (descriptor.transport === 'subagent') return 'claude-code'
-  if (descriptor.transport === 'a2a') return descriptor.model_family
-  // local-cli canonical tool can originate in the verified adapter. A caller
-  // must inject the output of validate-resolved-mode-bindings.sh for that case.
-  return null
-}
-
 function exactResolutionRecord(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
   const fields = Object.keys(value).sort()
-  if (fields.join(',') !== 'agent_id,invocation,model_family,priority,tool') return false
+  if (fields.join(',') !== 'agent_id,execution_provenance_sha256,invocation,model_family,priority,tool') return false
   return typeof value.agent_id === 'string' && STABLE_AGENT_ID.test(value.agent_id)
     && STABLE_TOOL_ID.test(value.tool)
     && ['subagent', 'local-cli', 'a2a'].includes(value.invocation)
     && typeof value.model_family === 'string' && value.model_family.length > 0
     && Number.isSafeInteger(value.priority) && value.priority >= 0
+    && typeof value.execution_provenance_sha256 === 'string'
+    && EXECUTION_PROVENANCE_SHA256.test(value.execution_provenance_sha256)
 }
 
 function sameResolution(left, right) {
@@ -241,6 +230,71 @@ function sameResolution(left, right) {
     && left.invocation === right.invocation
     && left.model_family === right.model_family
     && left.priority === right.priority
+    && left.execution_provenance_sha256 === right.execution_provenance_sha256
+}
+
+// The workflow cannot read bridge manifests or adapter contracts. Treat the
+// six-field output of validate-resolved-mode-bindings.sh as its trust boundary:
+// the durable caller supplies it only after tool-catalog.py has revalidated
+// the current registry, bridge manifest, and adapter. The raw registry is used
+// here solely to bind the opaque target to a unique integration's non-bridge
+// identity; it can never create an external candidate by itself.
+function verifiedExternalBridgeCandidate(registry, role, record) {
+  if (!exactResolutionRecord(record) || record.invocation !== 'subagent') return null
+  const match = EXTERNAL_SUBAGENT_TARGET.exec(record.agent_id)
+  if (!match || match[2] !== role) return null
+  if (!registry || registry.version !== 'tool-integrations/1' || !Array.isArray(registry.integrations)) return null
+  const integrationId = match[1]
+  const matches = registry.integrations.filter(integration => integration
+    && typeof integration === 'object'
+    && integration.id === integrationId)
+  if (matches.length !== 1) return null
+  const integration = matches[0]
+  const modelFamily = canonicalModelFamily(integration.model_family)
+  const priority = Number.isSafeInteger(integration.priority) && integration.priority >= 0
+    ? integration.priority
+    : 1000
+  if (!STABLE_TOOL_ID.test(integration.tool) || !modelFamily
+    || integration.tool !== record.tool
+    || modelFamily !== record.model_family
+    || priority !== record.priority) return null
+  const personas = { planner: 'planner-proposal', generator: 'generator-restricted', evaluator: 'evaluator' }
+  return {
+    id: record.agent_id,
+    integration_id: integrationId,
+    tool: record.tool,
+    model_family: record.model_family,
+    priority: record.priority,
+    capabilities: Array.isArray(integration.capabilities) ? integration.capabilities : [],
+    roles: [role],
+    transport: 'subagent',
+    agent_type: personas[role],
+    // This is deliberately a boolean rather than the raw bridge ID. The
+    // dispatcher receives only the opaque target id and re-resolves the real
+    // manifest immediately before execution.
+    verified_bridge: true,
+    constraints: { l2: false, write_src: role === 'generator', push: false },
+  }
+}
+
+function candidateForAssignment(registry, state, role, currentResolution) {
+  const assignments = state && state.role_assignments
+  if (!assignments || typeof assignments !== 'object' || !Object.prototype.hasOwnProperty.call(assignments, role)) {
+    return null
+  }
+  const id = assignments[role]
+  if (typeof id !== 'string' || !id) return null
+  const staticCandidate = registryAgents(registry).find(candidate =>
+    candidate.id === id && (candidate.roles || []).includes(role)) || null
+  if (staticCandidate) return staticCandidate
+
+  // Only a consumed v2 intent plus the fresh, verified resolver snapshot may
+  // materialize an external same-session bridge candidate.
+  const stored = state && state.mode_intent && state.mode_intent.resolution
+  const current = currentResolution && currentResolution[role]
+  if (!stored || typeof stored !== 'object' || !sameResolution(stored[role], current)
+    || current.agent_id !== id) return null
+  return verifiedExternalBridgeCandidate(registry, role, current)
 }
 
 function resolutionDrift(state, registry, currentResolution) {
@@ -266,13 +320,22 @@ function resolutionDrift(state, registry, currentResolution) {
       continue
     }
     if (!exactResolutionRecord(expected)) {
-      return { role, detail: 'stored v2 resolution must contain exactly five stable fields' }
+      return { role, detail: 'stored v2 resolution must contain exactly six fields including execution provenance' }
     }
     if (assignments[role] !== expected.agent_id) {
       return { role, detail: 'role_assignments agent_id differs from stored v2 resolution' }
     }
+    if (!currentResolution || typeof currentResolution !== 'object' || Array.isArray(currentResolution)
+      || !Object.prototype.hasOwnProperty.call(currentResolution, role)) {
+      return { role, detail: 'v2 execution provenance requires a verified current catalog resolution' }
+    }
+    const resolved = currentResolution[role]
+    if (!sameResolution(expected, resolved)) {
+      return { role, detail: 'current adapter/catalog resolution differs from stored v2 resolution' }
+    }
     const descriptor = registryAgents(registry).find(item =>
       item && item.id === expected.agent_id && (item.roles || []).includes(role))
+      || verifiedExternalBridgeCandidate(registry, role, resolved)
     if (!descriptor) return { role, detail: 'stored v2 agent_id no longer resolves to an authorized descriptor' }
     if (descriptor.transport !== expected.invocation) {
       return { role, detail: 'descriptor invocation drifted from stored v2 resolution' }
@@ -282,20 +345,6 @@ function resolutionDrift(state, registry, currentResolution) {
     }
     if (descriptorPriority(descriptor) !== expected.priority) {
       return { role, detail: 'descriptor priority drifted from stored v2 resolution' }
-    }
-    const resolved = currentResolution && currentResolution[role]
-    if (resolved !== undefined) {
-      if (!sameResolution(expected, resolved)) {
-        return { role, detail: 'current adapter/catalog resolution differs from stored v2 resolution' }
-      }
-    } else {
-      const tool = descriptorToolWithoutAdapter(descriptor)
-      if (tool === null) {
-        return { role, detail: 'local-cli v2 resolution requires a verified adapter/catalog snapshot' }
-      }
-      if (tool !== expected.tool) {
-        return { role, detail: 'descriptor tool drifted from stored v2 resolution' }
-      }
     }
   }
   return null
@@ -393,7 +442,7 @@ const RECEIPT_SCHEMA = {
   },
 }
 
-// 派一个外部 Evaluator（transport=local-cli 或 a2a）。dispatcher subagent 只跑三条机械命令，无评估权。
+// 派一个外部 Evaluator（local-cli、a2a 或已验证同会话 bridge）。dispatcher subagent 只跑三条机械命令，无评估权。
 // Generator 绝不能复用此通道：它需要固定 handoff 信封、未提交 sandbox diff 和 Coordinator 回流协议。
 async function dispatchExternal(d, { batch, role, ref, spec, features, l2, fixRound, wakeN }) {
   const makeDeliverable = DELIVERABLE[role]
@@ -428,8 +477,10 @@ function generatorHandoffArtifact(taskId) {
 }
 
 function generatorCapabilityIssue(descriptor) {
-  if (!descriptor || descriptor.transport !== 'local-cli') {
-    return 'Generator source return is implemented only for transport=local-cli'
+  const returnable = descriptor && (descriptor.transport === 'local-cli'
+    || (descriptor.transport === 'subagent' && descriptor.verified_bridge === true))
+  if (!returnable) {
+    return 'Generator source return requires local-cli or a verified same-session subagent bridge'
   }
   const constraints = descriptor.constraints
   if (!constraints || typeof constraints !== 'object') {
@@ -476,10 +527,18 @@ async function specLockCritic(batchScope, worktree) {
 // ==================== 一个唤醒周期 ====================
 phase('Wake')
 const { state, policy, ledger, now, registry } = args   // registry 由耐久层读盘注入；无则全程回退 v1.0 行为
+const modeResolutionDrift = resolutionDrift(state, registry, args.resolved_mode_bindings)
+if (modeResolutionDrift) {
+  return {
+    decision: 'HALT',
+    reasons: ['configured_role_resolution_drift:' + modeResolutionDrift.role],
+    detail: modeResolutionDrift.detail,
+  }
+}
 const configuredRoles = {
-  planner: assigned(registry, state, 'planner'),
-  generator: assigned(registry, state, 'generator'),
-  evaluator: assigned(registry, state, 'evaluator'),
+  planner: assigned(registry, state, 'planner', args.resolved_mode_bindings),
+  generator: assigned(registry, state, 'generator', args.resolved_mode_bindings),
+  evaluator: assigned(registry, state, 'evaluator', args.resolved_mode_bindings),
 }
 for (const [role, resolution] of Object.entries(configuredRoles)) {
   if (role === 'planner' && resolution.configured && resolution.id === null) continue
@@ -500,14 +559,6 @@ if (
     decision: 'HALT',
     reasons: ['configured_generator_evaluator_same_family'],
     detail: 'configured generator and evaluator have the same model_family',
-  }
-}
-const modeResolutionDrift = resolutionDrift(state, registry, args.resolved_mode_bindings)
-if (modeResolutionDrift) {
-  return {
-    decision: 'HALT',
-    reasons: ['configured_role_resolution_drift:' + modeResolutionDrift.role],
-    detail: modeResolutionDrift.detail,
   }
 }
 
@@ -546,7 +597,7 @@ if (action === 'plan') {
     // 显式 assignment 必须精确命中；只有没有 assignment 的存量项目才可从默认池选外部 generator。
     const generatorChoice = configuredRoles.generator
     const extGen = generatorChoice.configured
-      ? (generatorChoice.candidate.transport === 'subagent' ? null : generatorChoice.candidate)
+      ? (generatorChoice.candidate.transport === 'subagent' && generatorChoice.candidate.verified_bridge !== true ? null : generatorChoice.candidate)
       : eligible(registry, 'generator').find(a => generatorCapabilityIssue(a) === null)
     const generatorAgentType = generatorChoice.configured && generatorChoice.candidate.transport === 'subagent'
       ? (generatorChoice.candidate.agent_type || 'generator-restricted')
@@ -633,7 +684,7 @@ if (action === 'plan') {
   )
   const sampled = feats.length ? feats[w % feats.length] : null
 
-  if (evals && evals.primary.transport !== 'subagent') {
+  if (evals && (evals.primary.transport !== 'subagent' || evals.primary.verified_bridge === true)) {
     // ── 外部 evaluator：引擎只拿回执与机械投影，不碰结论 ──
     const r = await dispatchExternal(evals.primary, {
       batch: state.current_sprint, role: 'evaluator', ref: state.head_sha,

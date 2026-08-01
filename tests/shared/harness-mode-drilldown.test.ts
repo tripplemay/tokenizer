@@ -110,6 +110,27 @@ const PROFILED_TOOLS: HarnessDetailToolCapability[] = [
   }
 ];
 
+const BRIDGE_PROFILED_TOOLS: HarnessDetailToolCapability[] = [
+  {
+    role: "generator",
+    tool: "kimi",
+    label: "Kimi Code",
+    invocation: "subagent",
+    agentCount: 1,
+    modelFamilies: ["kimi"],
+    capabilities: ["build"]
+  },
+  {
+    role: "evaluator",
+    tool: "codex",
+    label: "Codex",
+    invocation: "local-cli",
+    agentCount: 1,
+    modelFamilies: ["codex"],
+    capabilities: ["verify"]
+  }
+];
+
 function project(): OwnedHarnessProjectDetail {
   return {
     id: "project-1",
@@ -208,6 +229,40 @@ describe("Harness mode drilldown contract", () => {
     expect(html).toContain('data-coordinator-readonly="true"');
   });
 
+  it("renders Kimi's verified external bridge provenance while Codex remains a local route", async () => {
+    const detail = project();
+    (detail.modes as any).dispatch.integrations = [{
+      id: "kimi-bridge",
+      tool: "kimi",
+      label: "Kimi Code",
+      modelFamily: "kimi",
+      roles: ["planner", "generator", "evaluator"],
+      invocations: ["local-cli", "subagent"],
+      capabilities: ["plan", "build", "verify"],
+      localCli: true,
+      subagent: true,
+      bridgeId: "kimi-acp-native-agent",
+      bridgeKind: "session-bridge-v1",
+      sessionScope: "same-session",
+      bridgeProtocol: "acp-native-agent/v1",
+      bridgeCommand: ["kimi", "acp"],
+      adapterBridgeCommand: ["kimi", "acp"],
+      bridgeRoles: ["planner", "generator", "evaluator"],
+      a2aTargetCount: 0,
+      sandboxed: true
+    }];
+    const html = renderToStaticMarkup(await ModesAndAgentsView({
+      project: detail,
+      canSign: true,
+      timezone: "UTC",
+      selectedFocus: null
+    }));
+
+    expect(html).toContain("kimi-acp-native-agent");
+    expect(html).toContain("modes.integration.subagentPath");
+    expect(html).toContain("modes.integration.sameSessionBridge");
+  });
+
   it("starts a selected role in a configurable profile and renders its focusable tool route context", () => {
     expect(modeEditorInitialProfile("planner")).toBe("heterogeneous");
     expect(modeEditorInitialProfile(null)).toBe("fast");
@@ -254,6 +309,7 @@ describe("Harness mode drilldown contract", () => {
       evaluatorTool: "codex",
       evaluatorInvocation: "a2a"
     });
+    expect(initialNonFastBindingsForProfile(BRIDGE_PROFILED_TOOLS, "heterogeneous")).toBeNull();
   });
 
   it("shows Coordinator only for an explicit null Planner audit value", () => {

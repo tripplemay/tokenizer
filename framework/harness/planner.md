@@ -83,7 +83,7 @@
      "applied_batch": "<new batch id>",
      "applied_at": "<current UTC ISO8601>",
      "signed_intent": "<仅 v2 non-fast：完整原始 signed intent，含 sig>",
-     "resolution": "<仅 v2 non-fast：三角色五字段解析快照>",
+     "resolution": "<仅 v2 non-fast：三角色六字段解析快照，含 execution_provenance_sha256>",
      "adapter_dir": "<可选：消费时显式指定的项目内 adapter 相对目录>"
    }
    ```

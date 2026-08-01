@@ -8,8 +8,11 @@ import {
   type HarnessModeToolDescriptor
 } from "@/shared/harness-mode-intent";
 import {
+  hasWellFormedExternalSubagentBridgeObservation,
   toolCatalogModeDescriptors,
-  type HarnessToolCatalogEntry
+  v2SelectableToolCatalogEntries,
+  type HarnessToolCatalogEntry,
+  type HarnessToolIntegration
 } from "@/shared/harness-tool-catalog";
 
 const UTC_TIMESTAMP_PATTERN =
@@ -17,6 +20,7 @@ const UTC_TIMESTAMP_PATTERN =
 const HEAD_SHA_PATTERN = /^[0-9a-fA-F]{40}$/;
 const SHA256_PATTERN = /^[0-9a-fA-F]{64}$/;
 const TOOL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const SAFE_CAPABILITY_PATTERN = /^[A-Za-z0-9._-]{1,64}$/;
 const TRANSPORTS = new Set<string>(HARNESS_TRANSPORTS);
 const DISPATCH_ROLES = new Set<string>(HARNESS_MODE_ROLES);
 const RELAY_ACK_STATUSES = new Set(["staged", "applied", "failed"]);
@@ -291,12 +295,195 @@ export function modeAgentsFromSnapshot(value: unknown): HarnessModeAgentDescript
   });
 }
 
+type ReportedIntegrationInventory = {
+  present: boolean;
+  integrations: HarnessToolIntegration[];
+};
+
+const BRIDGE_REPORT_FIELDS = [
+  "bridgeId",
+  "bridgeKind",
+  "sessionScope",
+  "bridgeProtocol",
+  "bridgeCommand",
+  "adapterBridgeCommand",
+  "bridgeRoles"
+] as const;
+
+function reportedBridgeCommand(value: unknown, label: string): string[] {
+  if (!Array.isArray(value) || value.length < 2 || value.length > 64) {
+    return reject("invalid_mode_snapshot", `${label} must be a bounded command array`);
+  }
+  const command = value.map((item) => modeString(item, `${label} item`, 1_024)!);
+  if (command[1] !== "acp" || command.some((item) => !SAFE_CAPABILITY_PATTERN.test(item))) {
+    return reject("invalid_mode_snapshot", `${label} is not a published ACP command`);
+  }
+  return command;
+}
+
+function reportedBridgeRoles(value: unknown, label: string): HarnessModeRole[] {
+  if (!Array.isArray(value) || value.length < 1 || value.length > HARNESS_MODE_ROLES.length) {
+    return reject("invalid_mode_snapshot", `${label} must be a bounded role array`);
+  }
+  const roles = value.map((item) => modeString(item, `${label} item`, 32)! as HarnessModeRole);
+  if (new Set(roles).size !== roles.length || roles.some((role) => !DISPATCH_ROLES.has(role))) {
+    return reject("invalid_mode_snapshot", `${label} contains an invalid bridge persona role`);
+  }
+  return roles;
+}
+
+/**
+ * Parse the public tool-integration inventory once. Bridge fields are retained
+ * as bounded device observations only; they are not a control-plane proof of
+ * an external same-session route. A boolean/null subagent declaration remains
+ * Coordinator-native compatibility metadata.
+ */
+function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrationInventory {
+  if (!Object.prototype.hasOwnProperty.call(dispatch, "integrations")) {
+    return { present: false, integrations: [] };
+  }
+  if (!Array.isArray(dispatch.integrations) || dispatch.integrations.length > 50) {
+    return reject("invalid_mode_snapshot", "state.modes.dispatch.integrations must be a bounded array");
+  }
+
+  const seenIntegrations = new Set<string>();
+  const integrations: HarnessToolIntegration[] = [];
+  for (const rawIntegration of dispatch.integrations) {
+    const integration = exactRecord(rawIntegration, "state.modes.dispatch integration", [
+      "id",
+      "tool",
+      "label",
+      "modelFamily",
+      "roles",
+      "invocations",
+      "capabilities",
+      "localCli",
+      "subagent",
+      "a2aTargetCount",
+      "sandboxed"
+    ], [...BRIDGE_REPORT_FIELDS]);
+    const id = modeString(integration.id, "state.modes.dispatch integration id", 64)!;
+    const tool = modeString(integration.tool, "state.modes.dispatch integration tool", 64)!;
+    if (seenIntegrations.has(id) || !TOOL_ID_PATTERN.test(id) || !TOOL_ID_PATTERN.test(tool)) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration is not recognized");
+    }
+    seenIntegrations.add(id);
+    const label = modeString(integration.label, "state.modes.dispatch integration label", 128)!;
+    const modelFamily = modeString(integration.modelFamily, "state.modes.dispatch integration modelFamily", 128)!;
+    if (!Array.isArray(integration.roles) || integration.roles.length < 1 || integration.roles.length > HARNESS_MODE_ROLES.length) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration roles must be bounded");
+    }
+    const roles = integration.roles.map((role) =>
+      modeString(role, "state.modes.dispatch integration role", 32)! as HarnessModeRole
+    );
+    if (new Set(roles).size !== roles.length || roles.some((role) => !DISPATCH_ROLES.has(role))) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration role is not recognized");
+    }
+    if (!Array.isArray(integration.invocations) || integration.invocations.length < 1 || integration.invocations.length > HARNESS_TRANSPORTS.length) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocations must be bounded");
+    }
+    const invocations = integration.invocations.map((invocation) =>
+      modeString(invocation, "state.modes.dispatch integration invocation", 32)! as HarnessToolIntegration["invocations"][number]
+    );
+    if (new Set(invocations).size !== invocations.length || invocations.some((invocation) => !TRANSPORTS.has(invocation))) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocation is not recognized");
+    }
+    if (!Array.isArray(integration.capabilities) || integration.capabilities.length > 64) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be bounded");
+    }
+    const capabilities = integration.capabilities.map((capability) =>
+      modeString(capability, "state.modes.dispatch integration capability", 64)!
+    );
+    if (new Set(capabilities).size !== capabilities.length) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be unique");
+    }
+    const localCli = modeBoolean(integration.localCli, "state.modes.dispatch integration localCli")!;
+    if (integration.subagent !== true && integration.subagent !== false && integration.subagent !== null) {
+      return reject("invalid_mode_snapshot", "state.modes.dispatch integration subagent must be a boolean or null");
+    }
+    const subagent = integration.subagent === true;
+    const sandboxed = modeBoolean(integration.sandboxed, "state.modes.dispatch integration sandboxed")!;
+    const a2aTargetCount = safeInteger(
+      integration.a2aTargetCount,
+      "state.modes.dispatch integration a2aTargetCount",
+      0,
+      100
+    );
+
+    const hasExternalBridgeValue = BRIDGE_REPORT_FIELDS.some((field) => {
+      const item = integration[field];
+      return item !== undefined && item !== null;
+    });
+    let bridgeId: string | null = null;
+    let bridgeKind: string | null = null;
+    let sessionScope: "same-session" | null = null;
+    let bridgeProtocol: HarnessToolIntegration["bridgeProtocol"] = null;
+    let bridgeCommand: string[] | null = null;
+    let adapterBridgeCommand: string[] | null = null;
+    let bridgeRoles: HarnessModeRole[] | null = null;
+    if (hasExternalBridgeValue) {
+      bridgeId = modeString(integration.bridgeId, "state.modes.dispatch integration bridgeId", 64)!;
+      bridgeKind = modeString(integration.bridgeKind, "state.modes.dispatch integration bridgeKind", 64)!;
+      const rawSessionScope = modeString(integration.sessionScope, "state.modes.dispatch integration sessionScope", 32)!;
+      const rawProtocol = modeString(integration.bridgeProtocol, "state.modes.dispatch integration bridgeProtocol", 64)!;
+      bridgeCommand = reportedBridgeCommand(integration.bridgeCommand, "state.modes.dispatch integration bridgeCommand");
+      adapterBridgeCommand = reportedBridgeCommand(
+        integration.adapterBridgeCommand,
+        "state.modes.dispatch integration adapterBridgeCommand"
+      );
+      bridgeRoles = reportedBridgeRoles(integration.bridgeRoles, "state.modes.dispatch integration bridgeRoles");
+      if (
+        !TOOL_ID_PATTERN.test(bridgeId) ||
+        !SAFE_CAPABILITY_PATTERN.test(bridgeKind) ||
+        rawSessionScope !== "same-session" ||
+        rawProtocol !== "acp-native-agent/v1"
+      ) return reject("invalid_mode_snapshot", "state.modes.dispatch integration bridge metadata is inconsistent");
+      sessionScope = rawSessionScope;
+      bridgeProtocol = rawProtocol;
+    }
+
+    const normalized: HarnessToolIntegration = {
+      id,
+      tool,
+      label,
+      modelFamily,
+      roles,
+      invocations,
+      capabilities,
+      localCli,
+      subagent,
+      bridgeId,
+      bridgeKind,
+      sessionScope,
+      bridgeProtocol,
+      bridgeCommand,
+      adapterBridgeCommand,
+      bridgeRoles,
+      a2aTargetCount,
+      sandboxed
+    };
+    if (
+      localCli !== invocations.includes("local-cli") ||
+      (localCli && !sandboxed) ||
+      (!localCli && sandboxed) ||
+      ((a2aTargetCount > 0) !== invocations.includes("a2a")) ||
+      (!hasExternalBridgeValue && !subagent && invocations.includes("subagent")) ||
+      (hasExternalBridgeValue && !hasWellFormedExternalSubagentBridgeObservation(normalized))
+    ) return reject("invalid_mode_snapshot", "state.modes.dispatch integration transport facts are inconsistent");
+    integrations.push(normalized);
+  }
+  return { present: true, integrations };
+}
+
 /**
  * Parse the device-reported public catalog. It is intentionally independent
  * from `dispatch.agents`: the framework tool-catalog contract owns canonical
  * tool identity and the local resolver owns concrete agent selection.
  */
-function reportedToolCatalog(value: unknown, requireUsable: boolean): HarnessToolCatalogEntry[] {
+function reportedToolCatalog(
+  value: unknown,
+  requireUsable: boolean
+): HarnessToolCatalogEntry[] {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
   }
@@ -371,10 +558,15 @@ function reportedToolCatalog(value: unknown, requireUsable: boolean): HarnessToo
       capabilities
     });
   }
-  if (requireUsable && !HARNESS_MODE_ROLES.every((role) => catalog.some((entry) => entry.role === role))) {
-    return reject("invalid_tool_catalog", "project tool capability catalog is missing a required role", 409);
+  // A report may still contain a historical Coordinator-native or external
+  // `subagent` observation. This release has no independently attested
+  // VM/ephemeral-principal provider, so reports cannot elevate it into a
+  // mode-intent choice. Only the filtered inventory reaches signing.
+  const selectableCatalog = v2SelectableToolCatalogEntries(catalog);
+  if (requireUsable && selectableCatalog.length === 0) {
+    return reject("invalid_tool_catalog", "project does not have a selectable tool capability catalog", 409);
   }
-  return catalog;
+  return requireUsable ? selectableCatalog : catalog;
 }
 
 /** Expand public candidate pools into the model-family facts required by v2 signing validation. */
@@ -604,7 +796,10 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
     }
     if (
       (profile === "slow" && !invocations.includes("a2a")) ||
-      (profile === "heterogeneous" && (invocations.includes("a2a") || !invocations.includes("local-cli")))
+      (
+        profile === "heterogeneous" &&
+        (invocations.includes("a2a") || !invocations.some((invocation) => invocation === "local-cli" || invocation === "subagent"))
+      )
     ) {
       return reject("invalid_mode_snapshot", "state.modes.current.profile does not match resolved invocations");
     }
@@ -670,70 +865,9 @@ export function parseModeSnapshot(value: unknown): UnknownRecord | null {
       }
     }
   }
-  if (dispatch.integrations !== undefined) {
-    if (!Array.isArray(dispatch.integrations) || dispatch.integrations.length > 50) {
-      return reject("invalid_mode_snapshot", "state.modes.dispatch.integrations must be a bounded array");
-    }
-    const seenIntegrations = new Set<string>();
-    for (const rawIntegration of dispatch.integrations) {
-      const integration = exactRecord(rawIntegration, "state.modes.dispatch integration", [
-        "id",
-        "tool",
-        "label",
-        "modelFamily",
-        "roles",
-        "invocations",
-        "capabilities",
-        "localCli",
-        "subagent",
-        "a2aTargetCount",
-        "sandboxed"
-      ]);
-      const id = modeString(integration.id, "state.modes.dispatch integration id", 64)!;
-      const tool = modeString(integration.tool, "state.modes.dispatch integration tool", 64)!;
-      if (seenIntegrations.has(id) || !TOOL_ID_PATTERN.test(id) || !TOOL_ID_PATTERN.test(tool)) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration is not recognized");
-      }
-      seenIntegrations.add(id);
-      modeString(integration.label, "state.modes.dispatch integration label", 128);
-      modeString(integration.modelFamily, "state.modes.dispatch integration modelFamily", 128);
-      if (!Array.isArray(integration.roles) || integration.roles.length < 1 || integration.roles.length > 3) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration roles must be bounded");
-      }
-      const roles = integration.roles.map((role) => modeString(role, "state.modes.dispatch integration role", 32)!);
-      if (new Set(roles).size !== roles.length || roles.some((role) => !DISPATCH_ROLES.has(role))) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration role is not recognized");
-      }
-      if (!Array.isArray(integration.invocations) || integration.invocations.length < 1 || integration.invocations.length > 3) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocations must be bounded");
-      }
-      const invocations = integration.invocations.map((invocation) =>
-        modeString(invocation, "state.modes.dispatch integration invocation", 32)!
-      );
-      if (new Set(invocations).size !== invocations.length || invocations.some((invocation) => !TRANSPORTS.has(invocation))) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration invocation is not recognized");
-      }
-      if (!Array.isArray(integration.capabilities) || integration.capabilities.length > 64) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be bounded");
-      }
-      const capabilities = integration.capabilities.map((capability) =>
-        modeString(capability, "state.modes.dispatch integration capability", 64)!
-      );
-      if (new Set(capabilities).size !== capabilities.length) {
-        return reject("invalid_mode_snapshot", "state.modes.dispatch integration capabilities must be unique");
-      }
-      const localCli = modeBoolean(integration.localCli, "state.modes.dispatch integration localCli");
-      const subagent = modeBoolean(integration.subagent, "state.modes.dispatch integration subagent");
-      const sandboxed = modeBoolean(integration.sandboxed, "state.modes.dispatch integration sandboxed");
-      const targetCount = safeInteger(integration.a2aTargetCount, "state.modes.dispatch integration a2aTargetCount", 0, 100);
-      if (
-        localCli !== invocations.includes("local-cli") ||
-        (localCli === true && sandboxed !== true) || (localCli === false && sandboxed !== false) ||
-        (subagent === true) !== invocations.includes("subagent") ||
-        (targetCount > 0) !== invocations.includes("a2a")
-      ) return reject("invalid_mode_snapshot", "state.modes.dispatch integration transport facts are inconsistent");
-    }
-  }
+  // Parse and retain integrations as report observations. They deliberately
+  // never participate in deriving the v2 selectable tool catalog below.
+  reportedIntegrationInventory(dispatch);
   if (dispatch.enabled === true && dispatch.agents === undefined && dispatch.integrations === undefined) {
     return reject("invalid_mode_snapshot", "state.modes.dispatch requires an inventory");
   }

@@ -523,7 +523,7 @@
       "gateHeadCompare": "gate: HEAD-compare",
       "execution": {
         "fast": "fast lane",
-        "heterogeneous": "local heterogeneous",
+        "heterogeneous": "heterogeneous execution",
         "slow": "cross-machine",
         "unknown": "unknown"
       },
@@ -614,6 +614,10 @@
           "capabilities": "Capabilities",
           "modelFamily": "Model family",
           "invocations": "Invocation modes",
+          "subagentPath": "Subagent path",
+          "hostNative": "Coordinator-native child",
+          "sameSessionBridge": "Same-session bridge · {kind}",
+          "bridgeId": "Bridge ID",
           "sandbox": "Local CLI sandbox",
           "notApplicable": "Not applicable",
           "a2aTargets": "Remote targets",
@@ -685,6 +689,13 @@
       "noRoleTools": "No compatible tool route was reported for this role.",
       "tool": "Tool",
       "invocation": "Invocation",
+      "invocationMode": {
+        "subagent": "Subagent",
+        "hostNative": "Coordinator-native child",
+        "sameSessionBridge": "Same-session bridge · {kind}",
+        "local-cli": "Local CLI",
+        "a2a": "A2A"
+      },
       "selectTool": "Select a tool",
       "selectInvocation": "Select an invocation",
       "intentExpiresAt": "Absolute intent expiry",

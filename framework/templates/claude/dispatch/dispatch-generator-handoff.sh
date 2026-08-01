@@ -70,6 +70,17 @@ fi
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || \
   die "must be invoked inside a git repository"
 cd "$PROJECT_ROOT"
+# Legacy /build deliberately permits an absent registry when no external
+# Generator is assigned. Once a registry exists, however, it is dispatch
+# authority and must be the project's own regular file before any resolver or
+# catalog reads it. Include dangling symlinks so they fail closed too.
+REGISTRY_AVAILABLE=false
+if [ -e "$REGISTRY" ] || [ -L "$REGISTRY" ]; then
+  REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+    --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+    || die "registry must be the project-root non-symlink .agents-registry.json"
+  REGISTRY_AVAILABLE=true
+fi
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 if [ -f "$CANONICAL_PROGRESS" ]; then
   if [ "$PROGRESS_EXPLICIT" = true ]; then
@@ -111,7 +122,7 @@ mode = progress.get("mode_intent") if isinstance(progress, dict) else None
 print("yes" if isinstance(mode, dict) and ("signed_intent" in mode or "resolution" in mode) else "no")
 PY
 )" || die "cannot inspect mode checkpoint"
-if [ -f "$REGISTRY" ]; then
+if [ "$REGISTRY_AVAILABLE" = true ]; then
   ACTIVE_ARGS=(--role generator --progress "$PROGRESS" --registry "$REGISTRY")
   ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
@@ -166,7 +177,7 @@ case "$ASSIGNMENT_ROUTE" in
     die "progress.role_assignments.generator must be a non-empty string or null"
     ;;
   assigned)
-    [ -f "$REGISTRY" ] || die "registry does not exist: $REGISTRY"
+    [ "$REGISTRY_AVAILABLE" = true ] || die "registry does not exist: $REGISTRY"
     bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" \
       --progress "$PROGRESS" --adapters "$ADAPTERS" >&2 || \
       die "registry preflight failed; fail closed without local fallback"
@@ -255,7 +266,19 @@ if transport == "subagent":
     agent_type = descriptor.get("agent_type")
     if not isinstance(agent_type, str) or not agent_type:
         fail(f"subagent Generator {agent_id!r} is missing descriptor.agent_type")
-    json.dump({"route": "subagent", "agent_id": agent_id, "agent_type": agent_type},
+    bridge_id = descriptor.get("bridge_id")
+    if bridge_id is None or bridge_id == "host-native":
+        route = "host-native-subagent"
+    elif (
+        isinstance(bridge_id, str)
+        and isinstance(descriptor.get("bridge_strategy"), str)
+        and isinstance(descriptor.get("bridge_protocol"), dict)
+        and descriptor.get("session_scope") == "same-session"
+    ):
+        route = "external-bridge-subagent"
+    else:
+        fail(f"subagent Generator {agent_id!r} has invalid bridge metadata")
+    json.dump({"route": route, "agent_id": agent_id, "agent_type": agent_type},
               open(output_path, "w", encoding="utf-8"))
     raise SystemExit(0)
 if transport == "a2a":
@@ -345,14 +368,16 @@ print(json.load(open(sys.argv[1], encoding="utf-8")).get("route") or "")
 PY
 )"
 case "$ROUTE" in
-  subagent)
+  host-native-subagent)
     AGENT_TYPE="$(python3 - "$CONTEXT" <<'PY'
 import json
 import sys
 print(json.load(open(sys.argv[1], encoding="utf-8"))["agent_type"])
 PY
 )"
-    route_stop "assigned Generator uses transport=subagent; launch descriptor.agent_type=$AGENT_TYPE, never implement in the Coordinator"
+    route_stop "assigned Generator uses host-native subagent; launch descriptor.agent_type=$AGENT_TYPE, never implement in the Coordinator"
+    ;;
+  external-bridge-subagent)
     ;;
   a2a)
     die "assigned Generator uses transport=a2a; manual /build A2A Generator dispatch is not implemented, fail closed without local fallback"

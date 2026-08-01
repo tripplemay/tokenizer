@@ -35,12 +35,12 @@ function write(rel: string, content: string): void {
   writeFileSync(path, content);
 }
 
-function installToolCatalogFixture(invalidPlanner = false): void {
+function installToolCatalogFixture(invalidGenerator = false): void {
   write(".agents-registry.json", `${JSON.stringify({
     version: "dispatch/1",
     agents: [
-      { id: "planner", roles: ["planner"], transport: "subagent", agent_type: invalidPlanner ? "generator-restricted" : "planner-proposal", model_family: "claude" },
-      { id: "generator", roles: ["generator"], transport: "local-cli", adapter: "future-cli", model_family: "codex", sandbox: { home_dir: "~/future" }, constraints: { l2: false, write_src: true, push: false } },
+      { id: "planner", roles: ["planner"], transport: "subagent", agent_type: "planner-proposal", model_family: "claude" },
+      { id: "generator", roles: ["generator"], transport: "local-cli", adapter: invalidGenerator ? "missing-cli" : "future-cli", model_family: "codex", sandbox: { home_dir: "~/future" }, constraints: { l2: false, write_src: true, push: false } },
       { id: "evaluator", roles: ["evaluator"], transport: "local-cli", adapter: "kimi", model_family: "kimi", sandbox: { home_dir: "~/kimi" } }
     ]
   }, null, 2)}\n`);
@@ -89,7 +89,7 @@ function v2Payload() {
       execution: {
         profile: "heterogeneous",
         role_bindings: {
-          planner: { tool: "claude-code", invocation: "subagent" },
+          planner: null,
           generator: { tool: "future-cli", invocation: "local-cli" },
           evaluator: { tool: "kimi", invocation: "local-cli" }
         }
@@ -152,7 +152,7 @@ describe("signed mode intent staging", () => {
         profile: "heterogeneous",
         roleAssignments: null,
         roleBindings: {
-          planner: { tool: "claude-code", invocation: "subagent" },
+          planner: null,
           generator: { tool: "future-cli", invocation: "local-cli" },
           evaluator: { tool: "kimi", invocation: "local-cli" }
         }

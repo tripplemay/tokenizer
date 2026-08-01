@@ -18,7 +18,9 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -39,10 +41,24 @@ ROLES = ("planner", "generator", "evaluator")
 NON_GENERATOR_ROLES = ("planner", "evaluator")
 INVOCATIONS = ("subagent", "local-cli", "a2a")
 ENVELOPE_DELIVERIES = ("stdin", "argv", "env")
+BRIDGE_RESPONSE_FORMATS = ("json",)
+SAME_SESSION_SCOPE = "same-session"
+# A manifest is a project declaration, not permission to turn on an arbitrary
+# framework driver.  Only protocol kinds that this released framework has
+# independently exercised may reach the catalog or sandbox.  More CLIs can
+# join this published ACP capability declaratively; a new wire protocol needs
+# a framework release with its own runner and probe first.
+PUBLISHED_BRIDGE_PROTOCOL_KINDS = frozenset({"acp-native-agent/v1"})
+STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS = frozenset({"vm-v1", "ephemeral-uid-v1"})
+EXECUTION_PROVENANCE_FIELD = "execution_provenance_sha256"
+EXECUTION_PROVENANCE_DOMAIN = "harness/execution-provenance/v1"
+ADAPTER_CONTRACT_DOMAIN = "harness/adapter-execution-contract/v1"
 TOOL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 AGENT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 SAFE_CAPABILITY = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+BRIDGE_PROTOCOL_KIND = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,63}$")
 CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
+SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 LEGACY_REGISTRY_VERSION = "dispatch/1"
 INTEGRATION_REGISTRY_VERSION = "tool-integrations/1"
 SUBAGENT_PERSONAS = {
@@ -62,6 +78,17 @@ INTEGRATION_FIELDS = {
     "notes",
 }
 LOCAL_CLI_FIELDS = {"adapter", "sandbox", "timeout_s"}
+BRIDGE_MANIFEST_FIELDS = {
+    "_comment",
+    "id",
+    "_verified",
+    "session_scope",
+    "strategy",
+    "protocol",
+    "personas",
+    "notes",
+}
+BRIDGE_PROTOCOL_FIELDS = {"kind", "command", "request_delivery", "response_format"}
 A2A_TARGET_FIELDS = {
     "id",
     "integration_id",
@@ -76,6 +103,23 @@ A2A_TARGET_FIELDS = {
 
 class ToolCatalogError(ValueError):
     """A registry or binding cannot safely produce a dispatch decision."""
+
+
+def canonical_semantic_sha256(domain: str, value: Any) -> str:
+    """Hash a stable execution contract without making documentation semantic.
+
+    The NUL-separated domain makes a digest from one contract family
+    ineligible as a digest from another one. ``value`` only contains validated
+    JSON primitives sourced from registry, adapter, or bridge declarations.
+    """
+    canonical = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(domain.encode("ascii") + b"\0" + canonical).hexdigest()
 
 
 def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -204,6 +248,63 @@ def default_adapters_dir() -> Path:
     return Path(__file__).resolve().parent / "transports" / "adapters"
 
 
+def default_bridges_dir() -> Path:
+    return Path(__file__).resolve().parent / "transports" / "bridges"
+
+
+@dataclass(frozen=True)
+class StrictExternalBridgeProvider:
+    """A framework-integrated, freshly attested external-bridge provider.
+
+    This is deliberately not a project-registry object.  A future VM or
+    ephemeral-principal provider is responsible for proving the full provider
+    contract at both catalog resolution and launch.  The catalog carries only
+    stable identity and contract digest into the signed execution semantics.
+    """
+
+    id: str
+    kind: str
+    contract_sha256: str
+
+
+def external_same_session_bridge_provider() -> StrictExternalBridgeProvider | None:
+    """Return a trusted strict provider after a fresh framework-owned probe.
+
+    This release intentionally has no such provider.  ``sandbox-exec`` can
+    provide defense-in-depth write restrictions, but a same-UID child retains
+    host bootstrap and network capabilities; it must never be returned here.
+    A future implementation must be framework-owned rather than selected by a
+    project registry, PATH entry, adapter command, or environment variable.
+    """
+    return None
+
+
+def resolved_external_same_session_bridge_provider() -> StrictExternalBridgeProvider | None:
+    """Validate the trusted provider observation before it reaches a target."""
+    provider = external_same_session_bridge_provider()
+    if provider is None:
+        return None
+    if not isinstance(provider, StrictExternalBridgeProvider):
+        raise ToolCatalogError("external same-session bridge provider has an invalid type")
+    if not isinstance(provider.contract_sha256, str) or not SHA256_HEX.fullmatch(
+        provider.contract_sha256
+    ):
+        raise ToolCatalogError(
+            "external same-session bridge provider contract_sha256 must be lower-case SHA-256"
+        )
+    kind = bounded_text(provider.kind, "external same-session bridge provider kind", 128)
+    if kind not in STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS:
+        raise ToolCatalogError(
+            "external same-session bridge provider kind must be one of "
+            f"{sorted(STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS)!r}"
+        )
+    return StrictExternalBridgeProvider(
+        id=tool_id(provider.id, "external same-session bridge provider id"),
+        kind=kind,
+        contract_sha256=provider.contract_sha256,
+    )
+
+
 def generated_target_id(prefix: str, source_id: str, role: str) -> str:
     return stable_agent_id(f"{prefix}--{source_id}--{role}", "generated target id")
 
@@ -229,6 +330,19 @@ class Candidate:
     auth: dict[str, str] | None = None
     remote_runner_id: str | None = None
     agent_type: str | None = None
+    bridge_id: str | None = None
+    bridge_strategy: str | None = None
+    session_scope: str | None = None
+    bridge_protocol: dict[str, Any] | None = None
+    bridge_provider_id: str | None = None
+    bridge_provider_kind: str | None = None
+    bridge_provider_contract_sha256: str | None = None
+    adapter_execution_contract_sha256: str | None = None
+    bridge_semantics: dict[str, Any] | None = None
+    # Historical dispatch/1 host-native children remain Coordinator-internal
+    # targets.  They must be resolvable by the Coordinator, but a v2 signed
+    # tool binding must never turn them into a tool-labelled external route.
+    v2_selectable: bool = True
 
     def public(self) -> dict[str, Any]:
         return {
@@ -237,9 +351,10 @@ class Candidate:
             "invocation": self.invocation,
             "model_family": self.model_family,
             "priority": self.priority,
+            EXECUTION_PROVENANCE_FIELD: self.execution_provenance_sha256(),
         }
 
-    def target_public(self) -> dict[str, Any]:
+    def target_semantics(self) -> dict[str, Any]:
         value: dict[str, Any] = {
             "target_id": self.target_id,
             "integration_id": self.integration_id,
@@ -263,8 +378,42 @@ class Candidate:
             value["remote_runner_id"] = self.remote_runner_id
         if self.agent_type is not None:
             value["agent_type"] = self.agent_type
+        if self.bridge_id is not None:
+            value["bridge_id"] = self.bridge_id
+        if self.bridge_strategy is not None:
+            value["bridge_strategy"] = self.bridge_strategy
+        if self.session_scope is not None:
+            value["session_scope"] = self.session_scope
+        if self.bridge_protocol is not None:
+            value["bridge_protocol"] = self.bridge_protocol
+        if self.bridge_provider_id is not None:
+            value["bridge_provider_id"] = self.bridge_provider_id
+        if self.bridge_provider_kind is not None:
+            value["bridge_provider_kind"] = self.bridge_provider_kind
+        if self.bridge_provider_contract_sha256 is not None:
+            value["bridge_provider_contract_sha256"] = self.bridge_provider_contract_sha256
+        if self.adapter_execution_contract_sha256 is not None:
+            value["adapter_execution_contract_sha256"] = self.adapter_execution_contract_sha256
         if self.capabilities:
             value["capabilities"] = list(self.capabilities)
+        return value
+
+    def execution_provenance_payload(self) -> dict[str, Any]:
+        return {
+            "target": self.target_semantics(),
+            "adapter_execution_contract_sha256": self.adapter_execution_contract_sha256,
+            "bridge_semantics": self.bridge_semantics,
+            "bridge_provider_contract_sha256": self.bridge_provider_contract_sha256,
+        }
+
+    def execution_provenance_sha256(self) -> str:
+        return canonical_semantic_sha256(
+            EXECUTION_PROVENANCE_DOMAIN, self.execution_provenance_payload()
+        )
+
+    def target_public(self) -> dict[str, Any]:
+        value = self.target_semantics()
+        value[EXECUTION_PROVENANCE_FIELD] = self.execution_provenance_sha256()
         return value
 
 
@@ -275,6 +424,245 @@ def adapter_path(adapters_dir: Path, name: str) -> Path:
     return adapters_dir / f"{name}.json"
 
 
+def bridge_manifest_path(bridges_dir: Path, bridge_id: str) -> Path:
+    # Bridge ids are registry-controlled. Keep them out of path syntax before
+    # resolving the manifest path so a declaration cannot traverse directories.
+    if not TOOL_ID.fullmatch(bridge_id):
+        raise ToolCatalogError(f"bridge id {bridge_id!r} is not a safe bridge id")
+    return bridges_dir / f"{bridge_id}.json"
+
+
+@dataclass(frozen=True)
+class SubagentBridge:
+    id: str
+    strategy: str
+    session_scope: str
+    protocol: dict[str, Any]
+    personas: dict[str, str]
+    requires_local_cli: bool
+
+
+def subagent_bridge_semantics(bridge: SubagentBridge) -> dict[str, Any]:
+    """Return the manifest fields that can change a bridge's execution path."""
+    return {
+        "id": bridge.id,
+        "strategy": bridge.strategy,
+        "session_scope": bridge.session_scope,
+        "protocol": bridge.protocol,
+        "personas": bridge.personas,
+        "requires_local_cli": bridge.requires_local_cli,
+    }
+
+
+def bridge_command(value: Any, label: str) -> tuple[str, ...]:
+    if not isinstance(value, list) or not value or len(value) > 64:
+        raise ToolCatalogError(f"{label} must be a non-empty string array of at most 64 items")
+    command: list[str] = []
+    for index, item in enumerate(value):
+        command.append(bounded_text(item, f"{label}[{index}]", 4_096))
+    return tuple(command)
+
+
+def bridge_protocol_kind(value: Any, label: str) -> str:
+    value = nonempty_string(value, label)
+    if not BRIDGE_PROTOCOL_KIND.fullmatch(value):
+        raise ToolCatalogError(f"{label} must match {BRIDGE_PROTOCOL_KIND.pattern!r}")
+    return value
+
+
+def load_subagent_bridge(bridges_dir: Path, bridge_id: str) -> SubagentBridge:
+    path = bridge_manifest_path(bridges_dir, bridge_id)
+    raw = load_json(path, f"subagent bridge {bridge_id!r}")
+    manifest = exact_fields(raw, BRIDGE_MANIFEST_FIELDS, f"subagent bridge {bridge_id!r}")
+
+    declared_id = tool_id(manifest.get("id"), f"subagent bridge {bridge_id!r}.id")
+    if declared_id != bridge_id:
+        raise ToolCatalogError(
+            f"subagent bridge filename {bridge_id!r} disagrees with bridge.id={declared_id!r}"
+        )
+    if manifest.get("_verified") is not True:
+        raise ToolCatalogError(
+            f"subagent bridge {bridge_id!r} is not verified; it cannot enter the catalog"
+        )
+    if manifest.get("session_scope") != SAME_SESSION_SCOPE:
+        raise ToolCatalogError(
+            f"subagent bridge {bridge_id!r}.session_scope must be {SAME_SESSION_SCOPE!r}"
+        )
+    strategy = capabilities([manifest.get("strategy")], f"subagent bridge {bridge_id!r}.strategy")
+    assert len(strategy) == 1
+    if manifest.get("_comment") is not None and not isinstance(manifest.get("_comment"), str):
+        raise ToolCatalogError(f"subagent bridge {bridge_id!r}._comment must be a string")
+    if manifest.get("notes") is not None and not isinstance(manifest.get("notes"), str):
+        raise ToolCatalogError(f"subagent bridge {bridge_id!r}.notes must be a string")
+
+    protocol_label = f"subagent bridge {bridge_id!r}.protocol"
+    protocol_raw = exact_fields(manifest.get("protocol"), BRIDGE_PROTOCOL_FIELDS, protocol_label)
+    missing_protocol = sorted(BRIDGE_PROTOCOL_FIELDS - set(protocol_raw))
+    if missing_protocol:
+        raise ToolCatalogError(f"{protocol_label} is missing required fields: {missing_protocol}")
+    protocol_kind = bridge_protocol_kind(protocol_raw.get("kind"), f"{protocol_label}.kind")
+    if protocol_kind not in PUBLISHED_BRIDGE_PROTOCOL_KINDS:
+        raise ToolCatalogError(
+            f"{protocol_label}.kind={protocol_kind!r} is not published by this framework"
+        )
+    command = bridge_command(protocol_raw.get("command"), f"{protocol_label}.command")
+    request_delivery = protocol_raw.get("request_delivery")
+    if request_delivery not in ENVELOPE_DELIVERIES:
+        raise ToolCatalogError(
+            f"{protocol_label}.request_delivery must be one of {ENVELOPE_DELIVERIES!r}"
+        )
+    response_format = protocol_raw.get("response_format")
+    if response_format not in BRIDGE_RESPONSE_FORMATS:
+        raise ToolCatalogError(
+            f"{protocol_label}.response_format must be one of {BRIDGE_RESPONSE_FORMATS!r}"
+        )
+
+    personas_label = f"subagent bridge {bridge_id!r}.personas"
+    personas_raw = exact_fields(manifest.get("personas"), set(ROLES), personas_label)
+    if not personas_raw:
+        raise ToolCatalogError(f"{personas_label} must declare at least one role persona")
+    personas: dict[str, str] = {}
+    for role, persona in personas_raw.items():
+        expected = SUBAGENT_PERSONAS[role]
+        if persona != expected:
+            raise ToolCatalogError(
+                f"{personas_label}.{role} must be {expected!r} under the framework role contract"
+            )
+        personas[role] = persona
+
+    return SubagentBridge(
+        id=declared_id,
+        strategy=strategy[0],
+        session_scope=SAME_SESSION_SCOPE,
+        protocol={
+            "kind": protocol_kind,
+            "command": list(command),
+            "request_delivery": request_delivery,
+            "response_format": response_format,
+        },
+        personas=personas,
+        requires_local_cli=True,
+    )
+
+
+def validate_bridge_adapter_command(
+    adapters_dir: Path,
+    adapter_name: str,
+    bridge: SubagentBridge,
+) -> None:
+    """Bind a bridge launch command to its verified local CLI adapter.
+
+    A bridge manifest is selected by a project registry, so it must not be
+    able to substitute an unrelated executable under another CLI's dedicated
+    HOME and credential policy.  The adapter is the verified launch authority:
+    it declares exact commands by published protocol kind and the command's
+    executable must also equal the adapter's ordinary CLI executable.
+    """
+    adapter_label = f"adapter {adapter_name!r}"
+    adapter = load_json(adapter_path(adapters_dir, adapter_name), adapter_label)
+    if not isinstance(adapter, dict):
+        raise ToolCatalogError(f"{adapter_label} must be an object")
+    if adapter.get("_verified") is not True:
+        raise ToolCatalogError(f"{adapter_label} is not verified")
+
+    argv = adapter.get("argv")
+    if not isinstance(argv, list) or not argv:
+        raise ToolCatalogError(f"{adapter_label}.argv must be a non-empty string array")
+    executable = bounded_text(argv[0], f"{adapter_label}.argv[0]", 4_096)
+
+    raw_commands = adapter.get("bridge_commands")
+    if not isinstance(raw_commands, dict):
+        raise ToolCatalogError(
+            f"{adapter_label}.bridge_commands must declare the published bridge command"
+        )
+    unpublished = sorted(set(raw_commands) - PUBLISHED_BRIDGE_PROTOCOL_KINDS)
+    if unpublished:
+        raise ToolCatalogError(
+            f"{adapter_label}.bridge_commands contains unpublished protocol kinds: "
+            f"{unpublished!r}"
+        )
+    commands: dict[str, tuple[str, ...]] = {}
+    for kind, command in raw_commands.items():
+        if not isinstance(kind, str):
+            raise ToolCatalogError(f"{adapter_label}.bridge_commands keys must be protocol kinds")
+        parsed_kind = bridge_protocol_kind(kind, f"{adapter_label}.bridge_commands key")
+        commands[parsed_kind] = bridge_command(
+            command, f"{adapter_label}.bridge_commands[{parsed_kind!r}]"
+        )
+
+    kind = str(bridge.protocol["kind"])
+    declared = commands.get(kind)
+    if declared is None:
+        raise ToolCatalogError(
+            f"{adapter_label}.bridge_commands does not declare {kind!r}"
+        )
+    expected = tuple(bridge.protocol["command"])
+    if declared != expected:
+        raise ToolCatalogError(
+            f"{bridge.id!r}.protocol.command must exactly match "
+            f"{adapter_label}.bridge_commands[{kind!r}]"
+        )
+    if declared[0] != executable:
+        raise ToolCatalogError(
+            f"{adapter_label}.bridge_commands[{kind!r}][0] must match {adapter_label}.argv[0]"
+        )
+    if kind == "acp-native-agent/v1" and (len(declared) < 2 or declared[1] != "acp"):
+        raise ToolCatalogError(
+            f"{adapter_label}.bridge_commands[{kind!r}] must invoke the ACP subcommand"
+        )
+
+
+ADAPTER_DOCUMENTATION_FIELDS = frozenset(
+    {
+        "_argv_placeholders",
+        "_auth_note",
+        "_comment",
+        "_flags_rationale",
+        "_not_used",
+        "_security_note",
+        "_verified_note",
+        "display_name",
+    }
+)
+
+
+def adapter_execution_contract_sha256(
+    adapter: dict[str, Any],
+    *,
+    declared_name: str,
+    adapter_tool: str,
+    adapter_family: str,
+    argv: list[str],
+    envelope_delivery: str,
+    env_allowlist_extra: list[str],
+) -> str:
+    """Hash execution-relevant adapter state while excluding explanatory text.
+
+    Unknown non-documentation fields remain in the contract by default. This
+    lets a future adapter add an execution knob without weakening the active
+    checkpoint drift guard; it need only follow the established convention
+    that explanatory fields are explicitly documentation-only.
+    """
+    contract = {
+        key: value
+        for key, value in adapter.items()
+        if key not in ADAPTER_DOCUMENTATION_FIELDS
+    }
+    # Normalize optional aliases and unordered allowlist declarations so
+    # semantically equivalent adapter JSON has one digest.
+    contract.update(
+        {
+            "name": declared_name,
+            "tool": adapter_tool,
+            "model_family": adapter_family,
+            "argv": list(argv),
+            "envelope_delivery": envelope_delivery,
+            "env_allowlist_extra": sorted(env_allowlist_extra),
+        }
+    )
+    return canonical_semantic_sha256(ADAPTER_CONTRACT_DOMAIN, contract)
+
+
 def load_adapter(
     adapters_dir: Path,
     adapter_name: str,
@@ -282,7 +670,7 @@ def load_adapter(
     configured_tool: str | None,
     model_family: str,
     owner_label: str,
-) -> tuple[str, str]:
+) -> tuple[str, str, str]:
     path = adapter_path(adapters_dir, adapter_name)
     adapter = load_json(path, f"adapter {adapter_name!r}")
     if not isinstance(adapter, dict):
@@ -313,7 +701,8 @@ def load_adapter(
     argv = adapter.get("argv")
     if not isinstance(argv, list) or not argv or any(not isinstance(item, str) or not item for item in argv):
         raise ToolCatalogError(f"adapter {adapter_name!r}.argv must be a non-empty string array")
-    if adapter.get("envelope_delivery") not in ENVELOPE_DELIVERIES:
+    envelope_delivery = adapter.get("envelope_delivery")
+    if envelope_delivery not in ENVELOPE_DELIVERIES:
         raise ToolCatalogError(
             f"adapter {adapter_name!r}.envelope_delivery must be one of "
             f"{ENVELOPE_DELIVERIES!r}"
@@ -323,7 +712,7 @@ def load_adapter(
             f"adapter {adapter_name!r} is not verified; local-cli tools cannot enter the catalog"
         )
     try:
-        external_environment_allowlist(
+        env_allowlist_extra = external_environment_allowlist(
             adapter.get("env_allowlist_extra"),
             f"adapter {adapter_name!r}.env_allowlist_extra",
         )
@@ -332,10 +721,24 @@ def load_adapter(
 
     canonical = configured_tool if configured_tool is not None else adapter_tool
     label = adapter.get("display_name", canonical)
-    return canonical, bounded_text(label, f"adapter {adapter_name!r}.display_name", 128)
+    return (
+        canonical,
+        bounded_text(label, f"adapter {adapter_name!r}.display_name", 128),
+        adapter_execution_contract_sha256(
+            adapter,
+            declared_name=declared_name,
+            adapter_tool=adapter_tool,
+            adapter_family=adapter_family,
+            argv=argv,
+            envelope_delivery=envelope_delivery,
+            env_allowlist_extra=env_allowlist_extra,
+        ),
+    )
 
 
-def legacy_canonical_tool(descriptor: dict[str, Any], adapters_dir: Path) -> tuple[str, str]:
+def legacy_canonical_tool(
+    descriptor: dict[str, Any], adapters_dir: Path
+) -> tuple[str, str, str | None]:
     invocation = descriptor.get("transport")
     descriptor_id = descriptor.get("id")
     family = bounded_text(descriptor.get("model_family"), f"agent {descriptor_id!r}.model_family", 128)
@@ -354,10 +757,10 @@ def legacy_canonical_tool(descriptor: dict[str, Any], adapters_dir: Path) -> tup
     raw_tool = descriptor.get("tool")
     if raw_tool is not None:
         value = tool_id(raw_tool, f"agent {descriptor_id!r}.tool")
-        return value, value
+        return value, value, None
     if invocation == "subagent":
-        return "claude-code", "claude-code"
-    return tool_id(family, f"agent {descriptor_id!r}.model_family"), family
+        return "claude-code", "claude-code", None
+    return tool_id(family, f"agent {descriptor_id!r}.model_family"), family, None
 
 
 def qualified_local_generator(descriptor: dict[str, Any]) -> bool:
@@ -440,7 +843,7 @@ def legacy_candidates(registry: dict[str, Any], adapters_dir: Path) -> list[Cand
         if invocation == "local-cli":
             valid_sandbox(descriptor.get("sandbox"), f"agent {agent_id!r}.sandbox", require_home=False)
         family = bounded_text(descriptor.get("model_family"), f"agent {agent_id!r}.model_family", 128)
-        canonical, tool_label = legacy_canonical_tool(descriptor, adapters_dir)
+        canonical, tool_label, adapter_contract = legacy_canonical_tool(descriptor, adapters_dir)
         target_timeout = timeout_s(descriptor.get("timeout_s"), f"agent {agent_id!r}.timeout_s")
         raw_capabilities = capabilities(descriptor.get("capabilities"), f"agent {agent_id!r}.capabilities")
         candidates.append(
@@ -460,6 +863,13 @@ def legacy_candidates(registry: dict[str, Any], adapters_dir: Path) -> list[Cand
                 endpoint=endpoint_value,
                 auth=auth,
                 agent_type=agent_type if invocation == "subagent" else None,
+                # Preserve the Coordinator route explicitly in the internal
+                # target record.  Planner/Generator wrappers already treat
+                # this as host-native; making it explicit keeps dispatch-run
+                # and provenance semantics aligned with those wrappers.
+                bridge_id="host-native" if invocation == "subagent" else None,
+                adapter_execution_contract_sha256=adapter_contract,
+                v2_selectable=invocation != "subagent",
             )
         )
     return candidates
@@ -474,10 +884,12 @@ class Integration:
     priority: int
     capabilities: tuple[str, ...]
     local_cli: dict[str, Any] | None
-    subagent: bool
+    subagent: SubagentBridge | None
 
 
-def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list[Candidate]:
+def integration_candidates(
+    registry: dict[str, Any], adapters_dir: Path, bridges_dir: Path
+) -> list[Candidate]:
     allowed_root = {"_comment", "version", "integrations", "a2a_targets"}
     exact_fields(registry, allowed_root, "tool integrations registry")
     if registry.get("version") != INTEGRATION_REGISTRY_VERSION:
@@ -493,6 +905,7 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
 
     integrations: dict[str, Integration] = {}
     candidates: list[Candidate] = []
+    pending_external_bridges: list[Integration] = []
     for index, raw in enumerate(raw_integrations):
         label = f"integrations[{index}]"
         value = exact_fields(raw, INTEGRATION_FIELDS, label)
@@ -505,8 +918,25 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
         display = bounded_text(display, f"{label}.label", 128)
         if value.get("notes") is not None and not isinstance(value.get("notes"), str):
             raise ToolCatalogError(f"{label}.notes must be a string")
-        if "subagent" in value and value["subagent"] is not True:
-            raise ToolCatalogError(f"{label}.subagent must be true when declared")
+        raw_subagent = value.get("subagent")
+        if raw_subagent is True:
+            # This legacy bit describes the fixed Coordinator's own native
+            # child capability, not a selectable external CLI transport.  A
+            # tool-labelled catalog candidate here would let a project claim
+            # (for example) "Codex subagent" while the Coordinator actually
+            # launches its own child. Keep the declaration schema-compatible
+            # for fast/default and legacy descriptor flows, but publish no
+            # signable v2 target. External CLI subagents require a verified
+            # bridge manifest below.
+            subagent = None
+        elif raw_subagent is None:
+            subagent = None
+        else:
+            declaration = exact_fields(raw_subagent, {"bridge"}, f"{label}.subagent")
+            if "bridge" not in declaration:
+                raise ToolCatalogError(f"{label}.subagent.bridge is required")
+            bridge_id = tool_id(declaration.get("bridge"), f"{label}.subagent.bridge")
+            subagent = load_subagent_bridge(bridges_dir, bridge_id)
         integration = Integration(
             id=integration_id,
             tool=canonical_tool,
@@ -515,7 +945,7 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
             priority=priority(value.get("priority"), f"{label}.priority"),
             capabilities=capabilities(value.get("capabilities"), f"{label}.capabilities"),
             local_cli=None,
-            subagent=value.get("subagent", False) is True,
+            subagent=subagent,
         )
 
         if "local_cli" in value:
@@ -527,7 +957,7 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
             sandbox = valid_sandbox(local.get("sandbox"), f"{label}.local_cli.sandbox", require_home=True)
             assert sandbox is not None
             local_timeout = timeout_s(local.get("timeout_s"), f"{label}.local_cli.timeout_s")
-            canonical, adapter_label = load_adapter(
+            canonical, adapter_label, adapter_contract = load_adapter(
                 adapters_dir,
                 adapter_name,
                 configured_tool=canonical_tool,
@@ -541,7 +971,22 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
                     "timeout_s": local_timeout,
                     "adapter_label": adapter_label,
                     "canonical_tool": canonical,
+                    "adapter_execution_contract_sha256": adapter_contract,
                 }}
+            )
+        # Validate the declared bridge before considering host availability.
+        # Otherwise a malformed manifest could masquerade as a harmless
+        # unsupported-host downgrade.
+        if integration.subagent is not None and integration.subagent.requires_local_cli:
+            if integration.local_cli is None:
+                raise ToolCatalogError(
+                    f"{label}.subagent bridge {integration.subagent.id!r} requires local_cli "
+                    "for its verified sandbox, credentials, and timeout policy"
+                )
+            validate_bridge_adapter_command(
+                adapters_dir,
+                integration.local_cli["adapter"],
+                integration.subagent,
             )
         integrations[integration_id] = integration
 
@@ -562,22 +1007,52 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
                         adapter=local["adapter"],
                         sandbox=local["sandbox"],
                         timeout_s=local["timeout_s"],
+                        adapter_execution_contract_sha256=local[
+                            "adapter_execution_contract_sha256"
+                        ],
                     )
                 )
-        if integration.subagent:
-            for role in ROLES:
+        if integration.subagent is not None:
+            pending_external_bridges.append(integration)
+
+    # A manifest proves only that the released driver understands the CLI wire
+    # protocol.  It cannot make a hostile same-UID external process safe.  Do
+    # not disclose a subagent choice until every declaration has validated and
+    # a framework-owned strict provider freshly attests the current host.
+    provider = resolved_external_same_session_bridge_provider()
+    if provider is not None:
+        for integration in pending_external_bridges:
+            bridge = integration.subagent
+            assert bridge is not None
+            bridge_local = integration.local_cli if bridge.requires_local_cli else None
+            for role, agent_type in bridge.personas.items():
                 candidates.append(
                     Candidate(
-                        target_id=generated_target_id("subagent", integration_id, role),
-                        integration_id=integration_id,
+                        target_id=generated_target_id("subagent", integration.id, role),
+                        integration_id=integration.id,
                         roles=(role,),
-                        tool=canonical_tool,
+                        tool=integration.tool,
                         invocation="subagent",
-                        model_family=family,
+                        model_family=integration.model_family,
                         priority=integration.priority,
                         capabilities=integration.capabilities,
                         label=integration.label,
-                        agent_type=SUBAGENT_PERSONAS[role],
+                        adapter=bridge_local["adapter"] if bridge_local is not None else None,
+                        sandbox=bridge_local["sandbox"] if bridge_local is not None else None,
+                        timeout_s=bridge_local["timeout_s"] if bridge_local is not None else None,
+                        agent_type=agent_type,
+                        bridge_id=bridge.id,
+                        bridge_strategy=bridge.strategy,
+                        session_scope=bridge.session_scope,
+                        bridge_protocol=bridge.protocol or None,
+                        bridge_provider_id=provider.id,
+                        bridge_provider_kind=provider.kind,
+                        bridge_provider_contract_sha256=provider.contract_sha256,
+                        adapter_execution_contract_sha256=(
+                            bridge_local["adapter_execution_contract_sha256"]
+                            if bridge_local is not None else None
+                        ),
+                        bridge_semantics=subagent_bridge_semantics(bridge),
                     )
                 )
 
@@ -627,12 +1102,23 @@ def integration_candidates(registry: dict[str, Any], adapters_dir: Path) -> list
                     endpoint=target_endpoint,
                     auth=auth,
                     remote_runner_id=remote_runner_id,
+                    # A direct A2A client can only use the catalog target
+                    # returned with a verified provenance digest.  Keep the
+                    # transport deadline in that immutable target snapshot
+                    # too, rather than asking the client to reopen registry
+                    # integration.local_cli after verification.
+                    timeout_s=integration.local_cli["timeout_s"],
+                    adapter_execution_contract_sha256=integration.local_cli[
+                        "adapter_execution_contract_sha256"
+                    ],
                 )
             )
     return candidates
 
 
-def candidates_from_registry(registry_path: Path, adapters_dir: Path) -> list[Candidate]:
+def candidates_from_registry(
+    registry_path: Path, adapters_dir: Path, bridges_dir: Path
+) -> list[Candidate]:
     registry = load_json(registry_path, "agent registry")
     if not isinstance(registry, dict):
         raise ToolCatalogError("agent registry must be an object")
@@ -640,7 +1126,7 @@ def candidates_from_registry(registry_path: Path, adapters_dir: Path) -> list[Ca
     if version == LEGACY_REGISTRY_VERSION:
         return legacy_candidates(registry, adapters_dir)
     if version == INTEGRATION_REGISTRY_VERSION:
-        return integration_candidates(registry, adapters_dir)
+        return integration_candidates(registry, adapters_dir, bridges_dir)
     raise ToolCatalogError(
         f"unsupported registry version {version!r}; expected {LEGACY_REGISTRY_VERSION!r} "
         f"or {INTEGRATION_REGISTRY_VERSION!r}"
@@ -652,7 +1138,7 @@ def build_catalog(candidates: list[Candidate]) -> dict[str, Any]:
     for role in ROLES:
         grouped: dict[tuple[str, str], list[Candidate]] = {}
         for candidate in candidates:
-            if role in candidate.roles:
+            if candidate.v2_selectable and role in candidate.roles:
                 grouped.setdefault((candidate.tool, candidate.invocation), []).append(candidate)
         entries: list[dict[str, Any]] = []
         for (tool, invocation), pool in grouped.items():
@@ -724,7 +1210,8 @@ def candidates_for(candidates: list[Candidate], role: str, binding: Binding) -> 
         (
             candidate
             for candidate in candidates
-            if role in candidate.roles
+            if candidate.v2_selectable
+            and role in candidate.roles
             and candidate.tool == binding["tool"]
             and candidate.invocation == binding["invocation"]
         ),
@@ -804,6 +1291,7 @@ def parser() -> argparse.ArgumentParser:
         command = sub.add_parser(name)
         command.add_argument("--registry", required=True, type=Path)
         command.add_argument("--adapters", type=Path, default=default_adapters_dir())
+        command.add_argument("--bridges", type=Path, default=default_bridges_dir())
         if name == "resolve":
             command.add_argument("--bindings", required=True, type=Path)
         if name == "target":
@@ -814,7 +1302,7 @@ def parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = parser().parse_args()
     try:
-        candidates = candidates_from_registry(args.registry, args.adapters)
+        candidates = candidates_from_registry(args.registry, args.adapters, args.bridges)
         if args.command == "catalog":
             output: dict[str, Any] = build_catalog(candidates)
         elif args.command == "resolve":

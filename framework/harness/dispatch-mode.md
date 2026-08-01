@@ -22,7 +22,7 @@
 
 | `transport` | 含义 | 形态 |
 |---|---|---|
-| `subagent` | 同会话隔离 subagent | 快车道（默认） |
+| `subagent` | Coordinator-native 同会话 child；外部 CLI bridge 当前未发布 | 快车道（默认） |
 | `local-cli` | 独立进程 + 独立 sandbox checkout + 异厂商模型 | **本地异构（本模式主体）** |
 | `a2a` | 自建 runner（长驻 HTTP 服务） | **真异步 / taskId 重订阅 / SSE 推送 / 跨机器**；Planner / Evaluator 已实装，Generator 因无源码回流协议被拒（见 `transports/a2a.md`） |
 
@@ -56,6 +56,28 @@ v1 的已签名 `role_assignments` 仍走兼容路径；只有 v2 将人类选�
 agent id。对控制台和用户而言，新增 CLI 只需注册 descriptor 与已验证 adapter，目录与 resolver 会自动
 把它纳入相同的角色、transport、沙箱和独立性约束。
 
+### 2.0 v2 active checkpoint 的执行语义守卫
+
+已消费的 v2 non-fast 批次会把每个非 Coordinator role 固定为六字段 resolution record：
+`{agent_id, tool, invocation, model_family, priority, execution_provenance_sha256}`。前五项保留已解析的
+角色绑定；`execution_provenance_sha256` 是对实际执行语义的 canonical SHA-256 guard，覆盖 target 的
+transport、adapter 执行契约、sandbox/timeout、A2A 端点或 same-session bridge 协议及 strict provider 契约等会改变实际派发结果的
+字段。每次进入执行或 Gate 前都要以当前 registry 与 verified adapter 重解并逐字段比对；任一漂移即
+fail-closed，不得按旧 agent id 继续派活。
+
+人类签名的 v2 `role_bindings` **仍且只**签 `{tool, invocation}`。该 hash 是运行时 checkpoint guard，
+用于发现「签名选择未变但实际执行语义变了」的漂移；它不是把 registry、adapter 或 progress 变成加密防篡改
+证明，不能替代项目文件的访问控制与签名验证。
+
+设备上报中的 bridge 名称、协议、命令和 persona 只是**本机 resolver 的观测摘要**，不构成控制台可独立
+验证的 bridge 证明。控制台可据此显示“本机声明”的能力，但不能把这种 report-shaped 元数据当作外部桥接的
+授权来源；实际签发后的目标选择、执行与 Gate 前复验始终回到本机 `tool-catalog.py` 的 fresh resolution 和
+`execution_provenance_sha256`。因此伪造或过期报告至多造成错误展示或一次被本机拒绝的意图，不能改变实际
+派发路径。
+
+旧版仅含五字段的 active v2 resolution 没有足够的执行语义基线。升级到含此守卫的 framework 后，任何仍在
+进行中的该类批次都必须重新 `/plan` 并消费新的 mode intent，不能继续复用旧 checkpoint；fast/v1 路径不受影响。
+
 ### 2.1 Coordinator 与 Planner proposal
 
 **Coordinator 是当前主会话的固定控制面，不是 Agent Card、不是注册表 role，也不可配置或派发。**
@@ -84,6 +106,33 @@ subagent 的 Planner descriptor 必须只含 `planner` 角色且 `agent_type=pla
 `a2a + generator` 被 registry 校验器拒绝：当前传输只能回流结构化 artifact，尚无可验证的
 source-handoff protocol 来回流源码 diff / commit。新增 CLI 工具只要以 descriptor 注册，就自动接受这组
 role × transport 约束和同一套 preflight。
+
+`tool-integrations/1` 的 integration 可用 `"subagent": { "bridge": "<bridge-id>" }`
+声明已知 wire protocol；它不是外部执行授权。manifest schema 是
+`subagent-bridge.schema.json`，其中 `_verified: true` 只表示框架已验证 protocol driver，不能代表
+宿主隔离或凭据安全。当前 release 没有满足
+`transports/external-bridge-provider.md` 契约的 VM/ephemeral-principal provider，故 public catalog、
+签发与 dispatch 一律不公开外部 `subagent` candidate：Kimi 与 Codex 均只可选 `local-cli`。
+`sandbox-exec`、`env -i`、专用 HOME、worktree 和临时 Kimi state 均只能作为纵深防护，不能撤销同 UID
+子进程的宿主能力或充当 credential/network/lifecycle 边界。
+
+未来 provider 必须在 `/plan` 和实际 launch 分别进行 framework-owned、nonce-bound attestation，并把
+provider id、kind 和 canonical contract SHA-256 纳入 target 的 `execution_provenance_sha256`。provider
+必须负责独立 principal、copy-in/copy-out 工作区、staged CLI digest、brokered credentials/egress、完整 job
+reap 与 supervisor result pipe。届时新的 CLI 若使用已发布的 wire protocol（当前 ACP）、匹配 verified
+adapter `bridge_commands` 和 protocol-validated manifest，就会按 manifest personas 自动进入角色选择；新
+wire protocol、凭据流或 provider kind 仍需 framework driver、负向隔离测试和真实 probe。
+
+Kimi 的原生 `plan` Agent 不能写 Planner proposal，因此未来 Kimi ACP route 只能把
+`planner-proposal` 映射为 native `coder`，并仍受 proposal artifact contract 约束；Generator 仍缺外部
+source-handoff。Codex `thread/fork` 会新建 session tree，不能冒充同会话；App Server driver 继续是
+未发布的 fail-closed probe。历史 `"subagent": true` 和 `dispatch/1` 的 `transport=subagent` 都是
+Coordinator-native 兼容信息：后者内部标记为 `bridge_id=host-native`，但 public catalog 与 v2
+`{tool, invocation}` resolver 均不公开或选择它。
+
+所有会签发、接受或执行 dispatch 的入口都会先将 registry 固定为调用项目根目录的常规（非符号链接）
+`.agents-registry.json`。传入的 `--registry` 只可证明它正是该文件，不能替换 bridge manifest、adapter command
+或 A2A endpoint；此校验发生在 catalog 解析、网络连接、状态目录和 worktree 创建之前。
 
 `auth` 只属于 `transport=a2a`，且仅允许省略（无认证）、`{ "type": "none" }` 或
 `{ "type": "bearer", "env": "REMOTE_A2A_TOKEN" }` 这两种显式形状。Bearer 的 `env` 必须是专用
@@ -251,8 +300,9 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
   没有一条阻止外部 CLI **读**主仓，也不阻止它写工作目录之外的路径。
   实测：Codex 主动 `ls` 过主仓的 `node_modules` 并复用了它（只读，且如实披露）。
   Codex 自带 `-s workspace-write` 作为第二道防线；**Kimi 在非交互模式下没有任何权限层**。
-  真要文件系统隔离得靠 OS 层（macOS `sandbox-exec`、Linux bwrap/容器），那是另一档成本。
-  当前设计是**用产物 schema 与回流校验兜底，不是用隔离兜底**。
+  严格外部 bridge 还需要独立 principal、copy-in/copy-out、brokered credentials/egress 和
+  provider-owned lifecycle；`sandbox-exec`、bwrap 或容器名称本身不构成该证明。
+  当前 `local-cli` 设计是**用产物 schema 与回流校验兜底，不是用 hostile-process 隔离兜底**。
 - **不保证对方能跑 L1。** 一次性工作目录里没有 `node_modules`，而 Codex 的沙箱禁网
   （`npm ci` 装不了）。沙箱不会再注入 Coordinator 主仓路径；外部工具跑不动必须在产物里如实写「未跑」，
   Coordinator 仍会在回流前自行重跑 L1。若要更强隔离或受控依赖缓存，须由宿主级 sandbox provider 明确提供，
@@ -262,8 +312,9 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 
 **残余风险（诚实列明）：**
 
-- ~~**R1 — HOME 凭据外溢**~~ **已关闭**：`home_dir` 升为硬性前置 + `env_set` 精确投喂认证目录后，
-  子进程既拿不到 `~/.aws` / `~/.config/gcloud`，也不会经 dotfile 还原被剥离的变量。
+- **R1 — 同 UID 宿主凭据/会话能力仍可能被外部 CLI 读取。** `home_dir`、`env -i` 与 `env_set`
+  只减少普通环境继承，不能撤销文件、Mach/launchd 或网络能力。严格 external bridge 因此未发布；
+  `local-cli` 仅在合作型工具信任模型下使用。
 - **R2 — 该 CLI 自身推理凭据的花费不受 harness 管控。** 它拿到的仅此一项（拿不到项目的生产与部署凭据），
   但这笔钱的上限在厂商账户侧，`autonomy-policy.json` 的 budget 管不到。**未解决，设计上接受。**
 - **R3 — 出网未限制。** macOS 上做进程级网络隔离成本过高，当前依赖「无凭据」而非「无网络」。**未解决。**
@@ -414,3 +465,4 @@ v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合�
 | 2026-07-25 | v1.2：`a2a` transport 实装（自建 runner + client + SSE + 落盘 task store + 幂等 + 断线重放）；`dispatch-run.sh` 统一入口使引擎 transport 无关；R4 对自建 runner 不成立 | 真实 Codex 经 a2a 演练（198s） |
 | 2026-07-25 | v1.1.1：Codex 适配器实测转正；**发现登录 shell 经 .zshenv/.zprofile 还原被剥离变量 → `sandbox.home_dir` 升为硬性前置**（R1 关闭）；新增 `sandbox.env_set`；`/autodrive` 四职责接线；tag 策略定为拒收不重写 | codex-cli 0.145.0 端到端演练 |
 | 2026-07-27 | v1.5.1：repo target preflight、effective deadline、portable process-group timeout、A2A Cancel/stop/drain/client deadline 与 deterministic lifecycle matrix | BL-DISPATCH-LIFECYCLE |
+| 2026-07-31 | v1.6.2：v2 active resolution 增加 `execution_provenance_sha256`，在执行与 Gate 前拒绝 target/adapter/sandbox/bridge/A2A 语义漂移；旧五字段 active checkpoint 要求重新 plan/consume | BL-NATIVE-SUBAGENT-BRIDGES |

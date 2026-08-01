@@ -5,6 +5,37 @@
 
 ---
 
+## v1.6.2 — 2026-07-31（严格同会话桥接 fail-closed 与执行语义防漂移）
+
+**来源：** tokenizer `BL-NATIVE-SUBAGENT-BRIDGES` dispatch 演练。
+
+- 保留并测试 `acp-native-agent/v1` 的协议驱动与 Kimi ACP same-session 语义代码：root 的一次 nonce-bearing
+  原生 `Agent`、同一 session、child terminal update、根 turn 终态和 artifact receipt 都有 focused regression。
+  但本 release **不发布** Kimi 或任何外部 CLI 的 same-session route：`sandbox-exec` 不能作为 hostile 同 UID
+  进程的凭据、网络或生命周期边界，catalog、签发与 sandbox 统一 fail-closed，只保留 `local-cli`。
+- Kimi 的只读原生 `plan` Agent 无法物化 Planner 强制的 proposal artifact；未来已 attested 的 Kimi route
+  会将 `planner-proposal` 映射给 native `coder`，仍只接受 schema-checked proposal artifact。Generator 继续
+  没有外部 source-handoff protocol。
+- Codex 当前 App Server `0.146.0` 的 `thread/fork` 会产生不同 session tree，隔离 probe 也未观测到可验证的
+  `spawnAgent` 生命周期。因此 Codex 保持 `local-cli`；App Server driver 只作为未发布的 fail-closed probe 保留，
+  不能由项目 manifest 或 `_verified` 自行启用。
+- bridge manifest 只能使用本 release 已发布的协议种类，且其启动命令必须精确绑定到同一 verified adapter 的
+  `bridge_commands`。未来遵循已发布 ACP 契约的 CLI 可声明性接入还必须经过 framework-owned strict provider 的
+  plan/launch nonce-bound attestation；新的 wire protocol、凭据流或 provider kind 仍须随 driver、负向隔离测试和
+  真实 provider probe 一起发布。
+- 所有权限入口将 registry 固定为项目根的普通、非符号链接 `.agents-registry.json`。活动 v2 checkpoint 的
+  resolution 新增 `execution_provenance_sha256`，覆盖 target、adapter 执行契约、sandbox/timeout、bridge 和 A2A
+  语义；Gate、dispatch、sandbox 和 A2A client 在启动前均复算并拒绝漂移。旧五字段 active checkpoint 必须重新
+  `/plan` 并 consume。
+- 旧 `subagent: true` 仅保留 Coordinator-native 兼容含义，不再生成可签发的 `tool + subagent` v2 candidate；
+  `dispatch/1` host-native target 也显式标记为内部、不可 v2 选择。外部 bridge manifest 只是 protocol 声明，缺少
+  strict provider 时不能制造 candidate。`process-timeout.py` 改为只使用绝对可信 `ps` 路径并可锁定工作目录，避免
+  vendor 控制的 PATH/CWD 注入回收器。ACP 原始 child-call id 仍仅在内存中关联事件，持久回执必须是固定的 64 位
+  SHA-256 token，不能成为模型或协议文本的写入通道。
+- A2A expected-provenance 路径从同一次已验证 catalog target 构造网络 descriptor，绝不在验签后重读
+  registry；active v2 下 card / list / cancel 也必须重验完整 role、agent 与 provenance。增加 registry pin、
+  bridge command、adapter/registry TOCTOU、活动 provenance 与 A2A pre-network regression coverage。
+
 ## v1.6.1 — 2026-07-31（dispatch 适配器持久化与 A2A 安全修正）
 
 **来源：** tokenizer 工具路由角色批次的框架合同审查与加固。

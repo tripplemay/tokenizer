@@ -19,6 +19,7 @@ RESOLVER = HERE / "resolve-mode-bindings.sh"
 CONSUMER = HERE / "consume-mode-intent.sh"
 RESOLVED_BINDINGS_VALIDATOR = HERE.parent / "dispatch" / "validate-resolved-mode-bindings.sh"
 ACTIVE_ROLE_RESOLVER = HERE.parent / "dispatch" / "resolve-active-mode-role.sh"
+TOOL_CATALOG = HERE.parent / "dispatch" / "tool-catalog.py"
 SCHEMA = HERE / "mode-intent.schema.json"
 REPO_KEY = "github.com/acme/mode-fixture"
 HEAD_AT_STAGING = "0123456789abcdef0123456789abcdef01234567"
@@ -85,11 +86,11 @@ def base_tool_intent(profile="heterogeneous", autonomy=True):
         bindings = {
             "planner": tool_binding("kimi", "local-cli"),
             "generator": tool_binding("codex", "local-cli"),
-            "evaluator": tool_binding("claude-code", "subagent"),
+            "evaluator": tool_binding("kimi", "local-cli"),
         }
     elif profile == "slow":
         bindings = {
-            "planner": tool_binding("claude-code", "subagent"),
+            "planner": tool_binding("kimi", "local-cli"),
             "generator": tool_binding("codex", "local-cli"),
             "evaluator": tool_binding("kimi", "a2a"),
         }
@@ -171,6 +172,15 @@ REGISTRY = {
             "model_family": "kimi",
             "constraints": {"l2": False, "write_src": False, "push": False},
             "sandbox": {"home_dir": "/tmp/mode-intent/planner-kimi"},
+        },
+        {
+            "id": "planner-claude-local",
+            "roles": ["planner"],
+            "transport": "local-cli",
+            "adapter": "claude-code",
+            "model_family": "claude",
+            "constraints": {"l2": False, "write_src": False, "push": False},
+            "sandbox": {"home_dir": "/tmp/mode-intent/planner-claude-local"},
         },
         {
             "id": "reviewer-kimi-local",
@@ -422,6 +432,31 @@ def main():
             passed += 1
             print(f"ok {passed} - {name}")
             return result
+
+        def resolve_catalog(bindings, adapters=None):
+            """Resolve records through the released catalog, including provenance."""
+            bindings_path = tmp / "catalog-bindings.json"
+            bindings_path.write_text(json.dumps(bindings), encoding="utf-8")
+            command = [
+                sys.executable,
+                str(TOOL_CATALOG),
+                "resolve",
+                "--registry",
+                str(registry_path),
+                "--bindings",
+                str(bindings_path),
+            ]
+            if adapters is not None:
+                command.extend(["--adapters", str(adapters)])
+            result = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                env={**os.environ, "HARNESS_OPENSSL": openssl},
+            )
+            assert result.returncode == 0, result.stdout + result.stderr
+            return json.loads(result.stdout)
 
         run_case("valid fast profile", base_intent(), True)
         run_case("valid heterogeneous profile", base_intent("heterogeneous"), True)
@@ -715,7 +750,7 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         next_intent = base_tool_intent("heterogeneous")
         next_intent["intent_id"] = "intent-next-batch-002"
         next_intent["desired"]["execution"]["role_bindings"]["planner"] = tool_binding(
-            "claude-code", "subagent"
+            "claude-code", "local-cli"
         )
         harness_path.write_text(
             json.dumps(
@@ -737,6 +772,24 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         assert json.loads(active_result.stdout) == original_resolution
         passed += 1
         print(f"ok {passed} - active checkpoint ignores later staged harness intent")
+
+        # v2 checkpoints pre-dating execution provenance must not silently
+        # retain a route when registry or adapter execution semantics change.
+        old_five_field_checkpoint = copy.deepcopy(active)
+        for role in ("planner", "generator", "evaluator"):
+            old_five_field_checkpoint["mode_intent"]["resolution"][role].pop(
+                "execution_provenance_sha256"
+            )
+        progress_path.write_text(json.dumps(old_five_field_checkpoint), encoding="utf-8")
+        old_five_field_result = validate_active_checkpoint()
+        assert old_five_field_result.returncode == 2
+        assert (
+            "execution_provenance_sha256" in old_five_field_result.stderr
+            or "六" in old_five_field_result.stderr
+        )
+        progress_path.write_text(json.dumps(active), encoding="utf-8")
+        passed += 1
+        print(f"ok {passed} - old five-field active checkpoint fails closed")
 
         def resolve_active_role(role, expected_agent=None, progress=progress_path):
             command = [
@@ -760,6 +813,52 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         resolved_role = resolve_active_role("planner", "planner-kimi")
         assert resolved_role.returncode == 0, resolved_role.stderr
         assert json.loads(resolved_role.stdout) == original_resolution["planner"]
+        outside_registry = tmp / "outside-registry.json"
+        outside_registry.write_text(registry_path.read_text(encoding="utf-8"), encoding="utf-8")
+        registry_pinning_commands = (
+            (
+                "mode intent validator",
+                ["bash", VALIDATOR, harness_path, outside_registry, public_key],
+            ),
+            (
+                "mode bindings resolver",
+                ["bash", RESOLVER, harness_path, outside_registry, public_key],
+            ),
+            (
+                "mode intent consumer",
+                [
+                    "bash", CONSUMER, "--batch", "BL-REGISTRY-PIN", "--progress", progress_path,
+                    "--harness", harness_path, "--registry", outside_registry, "--pub", public_key,
+                ],
+            ),
+            (
+                "resolved bindings validator",
+                [
+                    "bash", RESOLVED_BINDINGS_VALIDATOR, "--progress", progress_path,
+                    "--registry", outside_registry, "--pub", public_key,
+                ],
+            ),
+            (
+                "active role resolver",
+                [
+                    "bash", ACTIVE_ROLE_RESOLVER, "--role", "planner", "--progress", progress_path,
+                    "--registry", outside_registry, "--pub", public_key,
+                ],
+            ),
+        )
+        for label, command in registry_pinning_commands:
+            rejected_registry = subprocess.run(
+                command,
+                cwd=repo,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                env={**os.environ, "HARNESS_OPENSSL": openssl},
+            )
+            assert rejected_registry.returncode == 2, f"{label}: {rejected_registry.stderr}"
+            assert "registry" in rejected_registry.stderr.lower(), f"{label}: {rejected_registry.stderr}"
+        passed += 1
+        print(f"ok {passed} - signing, consumption, and active-role entries pin registry to project root")
         wrong_agent = resolve_active_role("planner", "planner-claude")
         assert wrong_agent.returncode == 2
         assert "不一致" in wrong_agent.stderr
@@ -866,16 +965,21 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         passed += 1
         print(f"ok {passed} - active role resolver/dispatch reject wrong or alternate progress; symlink and legacy stay compatible")
 
-        # Both mutable audit records can be changed to a plausible descriptor,
-        # but the signed original tool/invocation still rejects the swap.
+        # Both mutable audit records can be changed to a catalog-valid
+        # descriptor, including its current provenance digest, but the signed
+        # original tool/invocation still rejects the swap.
+        alternate_resolution = resolve_catalog(
+            {
+                "planner": tool_binding("claude-code", "local-cli"),
+                "generator": tool_binding("codex", "local-cli"),
+                "evaluator": tool_binding("kimi", "local-cli"),
+            }
+        )
+        assert alternate_resolution["planner"]["agent_id"] == "planner-claude-local"
         tampered = copy.deepcopy(active)
-        tampered["mode_intent"]["resolution"]["planner"] = {
-            "agent_id": "planner-claude",
-            "tool": "claude-code",
-            "invocation": "subagent",
-            "model_family": "claude",
-            "priority": 1000,
-        }
+        tampered["mode_intent"]["resolution"]["planner"] = copy.deepcopy(
+            alternate_resolution["planner"]
+        )
         tampered["role_assignments"]["planner"] = "planner-claude"
         progress_path.write_text(json.dumps(tampered), encoding="utf-8")
         tampered_result = validate_active_checkpoint()
@@ -885,7 +989,7 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         print(f"ok {passed} - synchronized resolution and assignment tamper halts")
 
         # A changed checkpoint sig cannot be made authoritative by preserving
-        # the five-field audit record.
+        # the catalog-valid audit record.
         tampered = copy.deepcopy(active)
         tampered["mode_intent"]["signed_intent"]["sig"] = "A" * 88
         progress_path.write_text(json.dumps(tampered), encoding="utf-8")
@@ -902,13 +1006,9 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         tampered["mode_intent"]["signed_intent"]["desired"]["execution"]["role_bindings"]["planner"] = tool_binding(
             "claude-code", "subagent"
         )
-        tampered["mode_intent"]["resolution"]["planner"] = {
-            "agent_id": "planner-claude",
-            "tool": "claude-code",
-            "invocation": "subagent",
-            "model_family": "claude",
-            "priority": 1000,
-        }
+        tampered["mode_intent"]["resolution"]["planner"] = copy.deepcopy(
+            alternate_resolution["planner"]
+        )
         tampered["role_assignments"]["planner"] = "planner-claude"
         progress_path.write_text(json.dumps(tampered), encoding="utf-8")
         binding_result = validate_active_checkpoint()
@@ -1004,6 +1104,12 @@ process.stdout.write(crypto.sign(null, Buffer.from(canonical(payload), "utf8"), 
         invalid = base_tool_intent("heterogeneous")
         invalid["desired"]["execution"]["role_bindings"]["planner"] = tool_binding("missing-tool", "local-cli")
         run_case("v2 rejects a tool with no local candidate", invalid, False)
+
+        invalid = base_tool_intent("heterogeneous")
+        invalid["desired"]["execution"]["role_bindings"]["planner"] = tool_binding(
+            "claude-code", "subagent"
+        )
+        run_case("v2 rejects a legacy host-native subagent tool binding", invalid, False)
 
         invalid = base_tool_intent("heterogeneous")
         invalid["desired"]["execution"]["role_bindings"]["evaluator"] = tool_binding("codex", "local-cli")

@@ -80,6 +80,17 @@ fail() { echo "[mode-intent] ⛔ $1" >&2; exit 2; }
 [ -f "$PUB" ] || fail "console.pub 不存在；签名模式意图必须用项目内公钥验签"
 command -v python3 >/dev/null 2>&1 || fail "python3 不可用"
 command -v git >/dev/null 2>&1 || fail "git 不可用，无法验证 repo_key"
+DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dispatch" && pwd)"
+PROJECT_ROOT="$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null)" \
+  || fail "无法从项目根目录确定 git 项目；不能验证 registry 归属"
+# Fast/legacy validation may intentionally run before a registry exists. When
+# one is supplied, however, every signed or replayed binding must derive from
+# the project-owned regular file rather than an arbitrary caller path.
+if [ -e "$REGISTRY" ] || [ -L "$REGISTRY" ]; then
+  REGISTRY="$(cd "$PROJECT_ROOT" && python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+    --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+    || fail "registry 必须是项目根的非符号链接 .agents-registry.json"
+fi
 
 # macOS /usr/bin/openssl is commonly LibreSSL without Ed25519. Prefer an
 # explicit override, then PATH, then standard Homebrew OpenSSL 3 locations.
@@ -98,7 +109,6 @@ PAYLOAD="$(mktemp)"
 SIG="$(mktemp)"
 BINDINGS="$(mktemp)"
 SEALED_INTENT="$(mktemp)"
-DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dispatch" && pwd)"
 TOOL_CATALOG="$DISPATCH_DIR/tool-catalog.py"
 DISPATCH_VALIDATOR="$DISPATCH_DIR/validate-dispatch.sh"
 cleanup() { rm -f "$PAYLOAD" "$SIG" "$BINDINGS" "$SEALED_INTENT"; }
@@ -332,8 +342,8 @@ else:
 
         invocations = list(invocation_by_role.values())
         if profile == "heterogeneous":
-            if "a2a" in invocations or "local-cli" not in invocations:
-                reject("profile=heterogeneous 要求所有外部角色均非 a2a 且至少一方为 local-cli")
+            if "a2a" in invocations or not any(value in ("local-cli", "subagent") for value in invocations):
+                reject("profile=heterogeneous 要求所有外部角色均非 a2a 且至少一方为 local-cli 或已验证同会话 subagent bridge")
         if profile == "slow" and "a2a" not in invocations:
             reject("profile=slow 要求至少一个角色为 a2a")
 
@@ -453,8 +463,8 @@ if profile != "fast" and execution_version == "v1":
         )
     transports = [descriptors[role]["transport"] for role in ("generator", "evaluator")]
     if profile == "heterogeneous":
-        if "a2a" in transports or "local-cli" not in transports:
-            reject("profile=heterogeneous 要求无 a2a 且至少一个 local-cli")
+        if "a2a" in transports or not any(value in ("local-cli", "subagent") for value in transports):
+            reject("profile=heterogeneous 要求无 a2a 且至少一个 local-cli 或同会话 subagent bridge")
     if profile == "slow" and "a2a" not in transports:
         reject("profile=slow 要求至少一个 a2a；另一角色可为 subagent、local-cli 或 a2a")
 

@@ -11,6 +11,7 @@ import {
   HARNESS_AUTONOMY_LIMITS,
   HarnessModeEditorValidationError,
   buildModeIntentRequest,
+  type HarnessDetailIntegration,
   type HarnessDetailToolCapability,
   type HarnessModeIssuanceBlocker
 } from "@/shared/harness-detail";
@@ -28,7 +29,10 @@ import {
   type HarnessModeRole,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
-import { toolCatalogLabelForInvocation } from "@/shared/harness-tool-catalog";
+import {
+  isV2SelectableToolCatalogEntry,
+  toolCatalogLabelForInvocation
+} from "@/shared/harness-tool-catalog";
 import {
   MODE_EDITOR_ANCHOR,
   modeEditorFocusRegion,
@@ -104,6 +108,7 @@ const INPUT =
 export function ModeEditor({
   projectId,
   tools,
+  integrations = [],
   agentFeatureVersion,
   blocker,
   selectedRole,
@@ -113,6 +118,7 @@ export function ModeEditor({
 }: {
   projectId: string;
   tools: HarnessDetailToolCapability[];
+  integrations?: readonly HarnessDetailIntegration[];
   agentFeatureVersion: number | null;
   blocker: HarnessModeIssuanceBlocker | null;
   selectedRole: HarnessModeRole | null;
@@ -126,9 +132,9 @@ export function ModeEditor({
   const [refreshing, startTransition] = useTransition();
   const initialProfile = modeEditorInitialProfile(selectedRole);
   const [profile, setProfile] = useState<HarnessExecutionProfile>(() => initialProfile);
-  const plannerOptions = roleToolOptions(tools, "planner");
-  const generatorOptions = roleToolOptions(tools, "generator");
-  const evaluatorOptions = roleToolOptions(tools, "evaluator");
+  const plannerOptions = roleToolOptions(tools, "planner", integrations);
+  const generatorOptions = roleToolOptions(tools, "generator", integrations);
+  const evaluatorOptions = roleToolOptions(tools, "evaluator", integrations);
   const initialBindings = initialNonFastBindingsForProfile(
     tools,
     initialProfile === "slow" ? "slow" : "heterogeneous"
@@ -306,6 +312,7 @@ export function ModeEditor({
             role={selectedRole}
             label={t(selectedRole)}
             capabilities={selectedRoleCapabilities}
+            integrations={integrations}
             currentBinding={currentRoleBinding}
             pendingBinding={pendingRoleBinding}
             t={t}
@@ -496,12 +503,22 @@ export function ModeEditor({
   );
 }
 
+type SubagentRoute =
+  | { path: "host-native" }
+  | {
+      path: "same-session";
+      id: string;
+      kind: string;
+      sessionScope: "same-session";
+    };
+
 type RoleToolOption = {
   tool: string;
   label: string;
   invocation: HarnessTransport;
   capabilities: string[];
   modelFamilies: string[];
+  bridge: SubagentRoute | null;
 };
 
 export type InitialNonFastBindings = {
@@ -517,6 +534,7 @@ function SelectedRoleContext({
   role,
   label,
   capabilities,
+  integrations,
   currentBinding,
   pendingBinding,
   t
@@ -524,6 +542,7 @@ function SelectedRoleContext({
   role: HarnessModeRole;
   label: string;
   capabilities: readonly HarnessDetailToolCapability[];
+  integrations: readonly HarnessDetailIntegration[];
   currentBinding: RoleBindingContext;
   pendingBinding: RoleBindingContext;
   t: ReturnType<typeof useTranslations>;
@@ -553,7 +572,11 @@ function SelectedRoleContext({
               {capabilities.map((capability) => (
                 <li key={`${capability.tool}\u0000${capability.invocation}`} className="flex flex-wrap items-baseline gap-x-1.5">
                   <span className="font-mono text-navy-700 dark:text-white">
-                    {capability.label === capability.tool ? capability.tool : `${capability.label} (${capability.tool})`} · {capability.invocation}
+                    {capability.label === capability.tool ? capability.tool : `${capability.label} (${capability.tool})`} · {invocationLabel(
+                      capability.invocation,
+                      subagentBridgeForTool(capability.tool, integrations),
+                      t
+                    )}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">{t("candidateCount", { count: capability.agentCount })}</span>
                 </li>
@@ -593,16 +616,49 @@ function BindingSummary({ binding, unavailable, coordinator }: { binding: RoleBi
   );
 }
 
-function roleToolOptions(tools: readonly HarnessDetailToolCapability[], role: HarnessDetailToolCapability["role"]): RoleToolOption[] {
+function subagentBridgeForTool(
+  tool: string,
+  integrations: readonly HarnessDetailIntegration[]
+): RoleToolOption["bridge"] {
+  const routes = integrations.filter((integration) =>
+    integration.tool === tool && integration.subagent && integration.invocations.includes("subagent")
+  );
+  if (routes.length !== 1) return null;
+  const [route] = routes;
+  if (route.bridgeId && route.bridgeKind && route.sessionScope === "same-session") {
+    return { path: "same-session", id: route.bridgeId, kind: route.bridgeKind, sessionScope: route.sessionScope };
+  }
+  return { path: "host-native" };
+}
+
+function invocationLabel(
+  invocation: HarnessTransport,
+  bridge: RoleToolOption["bridge"],
+  t: ReturnType<typeof useTranslations>
+): string {
+  if (invocation === "subagent") {
+    if (bridge?.path === "same-session") return t("invocationMode.sameSessionBridge", { kind: bridge.kind });
+    if (bridge?.path === "host-native") return t("invocationMode.hostNative");
+    return t("invocationMode.subagent");
+  }
+  return t(`invocationMode.${invocation}`);
+}
+
+function roleToolOptions(
+  tools: readonly HarnessDetailToolCapability[],
+  role: HarnessDetailToolCapability["role"],
+  integrations: readonly HarnessDetailIntegration[] = []
+): RoleToolOption[] {
   const options = new Map<string, RoleToolOption>();
   for (const capability of tools) {
-    if (capability.role !== role) continue;
+    if (!isV2SelectableToolCatalogEntry(capability) || capability.role !== role) continue;
     const option = {
       tool: capability.tool,
       label: capability.label,
       invocation: capability.invocation,
       capabilities: capability.capabilities,
-      modelFamilies: capability.modelFamilies
+      modelFamilies: capability.modelFamilies,
+      bridge: capability.invocation === "subagent" ? subagentBridgeForTool(capability.tool, integrations) : null
     };
     options.set(`${option.tool}\u0000${option.invocation}`, option);
   }
@@ -622,7 +678,7 @@ function transportsMatchProfile(
   invocations: readonly HarnessTransport[]
 ): boolean {
   if (profile === "heterogeneous") {
-    return !invocations.includes("a2a") && invocations.includes("local-cli");
+    return !invocations.includes("a2a") && invocations.some((invocation) => invocation === "local-cli" || invocation === "subagent");
   }
   return invocations.includes("a2a");
 }
@@ -754,7 +810,10 @@ function RoleToolBinding({
         {t("invocation")}
         <select id={invocationId} aria-label={`${label}: ${t("invocation")}`} aria-describedby={selected ? "mode-editor-role-context" : undefined} value={invocation} disabled={disabled || coordinatorSelected} onChange={(event) => onInvocationChange(event.target.value)} className={`${INPUT} mt-1`}>
           <option value="">{coordinatorSelected ? t("coordinator") : t("selectInvocation")}</option>
-          {invocations.map((value) => <option key={value} value={value}>{value}</option>)}
+          {invocations.map((value) => {
+            const option = options.find((candidate) => candidate.tool === tool && candidate.invocation === value);
+            return <option key={value} value={value}>{invocationLabel(value, option?.bridge ?? null, t)}</option>;
+          })}
         </select>
       </label>
     </fieldset>

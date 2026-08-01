@@ -358,6 +358,36 @@ describe("harness report mode activation and dispatch summaries", () => {
     expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
   });
 
+  it("persists a catalog-only Coordinator-native subagent report as an observation", async () => {
+    const snapshot: any = modes();
+    snapshot.dispatch.integrations = [{
+      id: "codex",
+      tool: "codex",
+      label: "Codex",
+      modelFamily: "codex",
+      roles: ["generator"],
+      invocations: ["subagent"],
+      capabilities: ["build"],
+      localCli: false,
+      subagent: true,
+      a2aTargetCount: 0,
+      sandboxed: false
+    }];
+    snapshot.dispatch.toolCatalog = [{
+      tool: "codex",
+      label: "Codex",
+      invocation: "subagent",
+      role: "generator",
+      agentCount: 1,
+      modelFamilies: ["codex"],
+      capabilities: ["build"]
+    }];
+    const response = await POST(request(report({ state: { status: "building", modes: snapshot } })));
+    expect(response.status).toBe(200);
+    expect(mocks.prisma.project.findFirst).toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].create.modes).toEqual(snapshot);
+  });
+
   it.each([
     ["unknown dispatch field", (snapshot: ReturnType<typeof legacyEmptyToolCatalogModes>) => {
       Object.assign(snapshot.dispatch, { source: "raw" });

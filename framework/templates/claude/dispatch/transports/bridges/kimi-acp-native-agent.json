@@ -1,0 +1,18 @@
+{
+  "_comment": "Protocol-validated dormant Kimi ACP bridge. The generic runner selects by protocol.kind, never by integration or CLI tool name; this manifest alone never publishes a route.",
+  "id": "kimi-acp-native-agent",
+  "_verified": true,
+  "session_scope": "same-session",
+  "strategy": "session-bridge-v1",
+  "protocol": {
+    "kind": "acp-native-agent/v1",
+    "command": ["kimi", "acp"],
+    "request_delivery": "stdin",
+    "response_format": "json"
+  },
+  "personas": {
+    "planner": "planner-proposal",
+    "evaluator": "evaluator"
+  },
+  "notes": "The bridge implementation is retained for a future strict VM or ephemeral-principal provider. This release does not publish external subagent targets because sandbox-exec is not a sufficient secret or lifecycle boundary. Generator remains local-cli only: no external source-handoff protocol exists."
+}

@@ -356,7 +356,9 @@ function currentResolvedMode(
     return binding === null ? [] : [binding.invocation];
   });
   if (invocations.includes("a2a")) return { profile: "slow", roleBindings };
-  return invocations.includes("local-cli") ? { profile: "heterogeneous", roleBindings } : null;
+  return invocations.some((invocation) => invocation === "local-cli" || invocation === "subagent")
+    ? { profile: "heterogeneous", roleBindings }
+    : null;
 }
 
 export function buildModeSnapshot(repoPath: string, now: number = Date.now()): ModeSnapshot {
@@ -382,7 +384,7 @@ export function buildModeSnapshot(repoPath: string, now: number = Date.now()): M
       .map((id) => typeof id === "string" ? byId.get(id)?.transport : undefined)
       .filter(Boolean) as string[];
     if (transports.some((t) => t === "a2a")) execution = "slow";
-    else if (transports.some((t) => t === "local-cli")) execution = "heterogeneous";
+    else if (transports.some((transport) => transport === "local-cli" || transport === "subagent")) execution = "heterogeneous";
   }
 
   const policy = readJson<{ authorized_by?: string; expires_at?: string }>(join(repoPath, "autonomy-policy.json"));

@@ -21,6 +21,7 @@ from dispatch_common import (  # noqa: E402
     DispatchContractError,
     a2a_auth_config,
     effective_timeout,
+    project_registry_path,
 )
 
 
@@ -33,6 +34,14 @@ TERMINAL = {
 TOOL_INTEGRATIONS_VERSION = "tool-integrations/1"
 A2A_TARGET_PREFIX = "a2a--"
 A2A_ROLES = ("planner", "evaluator")
+ACTIVE_MODE_RECORD_FIELDS = {
+    "agent_id",
+    "tool",
+    "invocation",
+    "model_family",
+    "priority",
+    "execution_provenance_sha256",
+}
 SAFE_TASK_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,127}\Z")
 SAFE_BATCH = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 SAFE_ARTIFACT = re.compile(
@@ -42,6 +51,7 @@ CANONICAL_COMMIT_SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 SAFE_CONFIG_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 SAFE_TOOL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 SAFE_CAPABILITY = re.compile(r"[A-Za-z0-9._-]{1,64}\Z")
+EXECUTION_PROVENANCE_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 _MISSING = object()
 _LOCAL_TERMINAL_MARKER = object()
@@ -331,6 +341,142 @@ def load_descriptor(registry, agent, *, adapters=DEFAULT_ADAPTERS_DIR):
             data, agent, registry_path=registry, adapters_dir=adapters
         )
     return _legacy_descriptor(data, agent)
+
+
+def verify_expected_execution_provenance(
+    registry, agent, adapters, expected, *, expected_role=None
+):
+    """Re-resolve a target before endpoint/auth data can be consumed.
+
+    ``dispatch-run`` carries the active checkpoint's semantic digest here.
+    The catalog is deliberately the sole interpreter of registry, adapter and
+    bridge semantics, so this direct A2A entrypoint invokes it rather than
+    maintaining a weaker parallel parser.
+    """
+    if not isinstance(expected, str) or not EXECUTION_PROVENANCE_SHA256.fullmatch(expected):
+        raise ClientError("--expected-provenance must be a lowercase SHA-256")
+    catalog = os.path.join(DISPATCH_DIR, "tool-catalog.py")
+    if not os.path.isfile(catalog):
+        raise ClientError(f"framework tool catalog missing: {catalog}")
+    command = [
+        sys.executable,
+        catalog,
+        "target",
+        "--registry",
+        os.fspath(registry),
+        "--adapters",
+        os.fspath(adapters),
+        "--target-id",
+        agent,
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ClientError(f"execution provenance catalog preflight could not run: {exc}") from exc
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "tool catalog failed").strip()
+        raise ClientError(f"execution provenance catalog preflight failed: {detail[:600]}")
+    try:
+        target = json.loads(result.stdout)
+    except (TypeError, ValueError) as exc:
+        raise ClientError(f"execution provenance catalog returned invalid JSON: {exc}") from exc
+    if not isinstance(target, dict):
+        raise ClientError("execution provenance catalog returned a non-object target")
+    actual = target.get("execution_provenance_sha256")
+    if target.get("target_id") != agent or target.get("invocation") != "a2a":
+        raise ClientError("execution provenance catalog returned an incompatible A2A target")
+    if expected_role is not None:
+        roles = target.get("roles")
+        if expected_role not in A2A_ROLES or not isinstance(roles, list) or expected_role not in roles:
+            raise ClientError(
+                "execution provenance catalog target does not declare the requested role"
+            )
+    if not isinstance(actual, str) or not EXECUTION_PROVENANCE_SHA256.fullmatch(actual):
+        raise ClientError("execution provenance catalog omitted a valid SHA-256")
+    if actual != expected:
+        raise ClientError(
+            "execution target semantics drifted; re-plan and consume before dispatch"
+        )
+    # The returned object is the one and only registry/adapter interpretation
+    # permitted to choose an A2A endpoint or bearer-token configuration below.
+    # Do not replace this with load_descriptor(): that would reopen mutable
+    # registry state after the provenance decision.
+    return target
+
+
+def descriptor_from_canonical_target(target):
+    """Build an A2A descriptor from one catalog target snapshot only.
+
+    This is deliberately separate from ``load_descriptor``.  The latter is a
+    compatibility entrypoint which reads the registry itself; invoking it after
+    an expected-provenance verification recreates the catalog-to-registry TOCTOU
+    that the verified target is meant to close.
+    """
+    if not isinstance(target, dict):
+        raise ClientError("execution provenance catalog returned a non-object target")
+    target_id = _safe_config_id(target.get("target_id"), "A2A catalog target id")
+    if target.get("invocation") != "a2a":
+        raise ClientError("A2A catalog target invocation must be 'a2a'")
+
+    roles = target.get("roles")
+    if not isinstance(roles, list) or not roles:
+        raise ClientError("A2A catalog target roles must be a non-empty array")
+    normalized_roles = []
+    for index, role in enumerate(roles):
+        if role not in A2A_ROLES:
+            raise ClientError(f"A2A catalog target roles[{index}] is unsupported: {role!r}")
+        if role not in normalized_roles:
+            normalized_roles.append(role)
+
+    integration_id = _safe_config_id(
+        target.get("integration_id"), f"A2A catalog target {target_id!r}.integration_id"
+    )
+    descriptor = {
+        "id": target_id,
+        "target_id": target_id,
+        "integration_id": integration_id,
+        "tool": _safe_tool_id(
+            target.get("tool"), f"A2A catalog target {target_id!r}.tool"
+        ),
+        "model_family": _bounded_text(
+            target.get("model_family"),
+            f"A2A catalog target {target_id!r}.model_family",
+            128,
+        ),
+        "roles": normalized_roles,
+        "capabilities": _capabilities(
+            target.get("capabilities", []),
+            f"A2A catalog target {target_id!r}.capabilities",
+        ),
+        "transport": "a2a",
+        "endpoint": _bounded_text(
+            target.get("endpoint"), f"A2A catalog target {target_id!r}.endpoint", 2048
+        ),
+    }
+    try:
+        descriptor["auth"] = a2a_auth_config(
+            target.get("auth", A2A_AUTH_UNSET), f"A2A catalog target {target_id!r}.auth"
+        )
+        descriptor["timeout_s"] = effective_timeout(None, target.get("timeout_s"))
+    except DispatchContractError as exc:
+        raise ClientError(str(exc)) from exc
+
+    # Only integration-backed A2A targets carry a runner identity.  Legacy
+    # descriptors intentionally retain their historical no-Agent-Card route.
+    if "remote_runner_id" in target:
+        descriptor["remote_runner_id"] = _safe_config_id(
+            target.get("remote_runner_id"),
+            f"A2A catalog target {target_id!r}.remote_runner_id",
+        )
+        descriptor["remote_card_required"] = True
+    return descriptor
 
 
 def auth_header(descriptor):
@@ -828,6 +974,141 @@ def _load_envelope(path):
         raise ClientError(f"envelope unreadable ({path}): {exc}")
 
 
+def _json_object_without_duplicate_keys(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key {key!r}")
+        value[key] = item
+    return value
+
+
+def _active_v2_checkpoint_present(project_root):
+    """Return whether this project has a v2-shaped active mode checkpoint.
+
+    The authoritative validation remains ``resolve-active-mode-role.sh``.  We
+    only need this bounded local shape check when a diagnostic A2A command has
+    no envelope and therefore no role to pass to that resolver.
+    """
+    progress = os.path.join(project_root, "progress.json")
+    if not os.path.isfile(progress):
+        return False
+    try:
+        with open(progress, encoding="utf-8") as stream:
+            value = json.load(stream, object_pairs_hook=_json_object_without_duplicate_keys)
+    except (OSError, ValueError) as exc:
+        raise ClientError(f"progress unreadable ({progress}): {exc}") from exc
+    if not isinstance(value, dict):
+        return False
+    mode = value.get("mode_intent")
+    return isinstance(mode, dict) and (
+        "signed_intent" in mode or "resolution" in mode
+    )
+
+
+def _fixed_role_from_target_id(agent):
+    """Infer the role only from a generated canonical A2A target id."""
+    if not isinstance(agent, str) or not agent.startswith(A2A_TARGET_PREFIX):
+        return None
+    _target_id, fixed_role = _target_selector(agent)
+    return fixed_role
+
+
+def network_command_role(args):
+    """Recover a local role before any descriptor-driven network operation."""
+    if args.cmd in ("run", "send", "get", "subscribe"):
+        if not args.envelope:
+            raise ClientError("--envelope is required")
+        envelope = _load_envelope(os.path.abspath(args.envelope))
+        if not isinstance(envelope, dict):
+            raise ClientError("envelope root must be an object")
+        role = envelope.get("role")
+        if role not in A2A_ROLES:
+            raise ClientError(
+                "a2a transport does not support generator until a source-handoff "
+                "protocol can return implementation changes safely"
+            )
+        if args.role is not None and args.role != role:
+            raise ClientError("--role must match the envelope role")
+        return role
+
+    fixed_role = _fixed_role_from_target_id(args.agent)
+    if args.role is not None and fixed_role is not None and args.role != fixed_role:
+        raise ClientError("--role must match the generated A2A target role")
+    return fixed_role or args.role
+
+
+def active_mode_expected_provenance(project_root, registry, adapters, agent, role):
+    """Replay active v2 target authority before direct A2A networking.
+
+    Active non-fast mode owns the role-to-agent binding and its semantic
+    provenance.  Direct clients must recover that same authority rather than
+    allowing a hand-written ``--agent`` to select a different remote endpoint.
+    """
+    if not _active_v2_checkpoint_present(project_root):
+        return None
+    if role not in A2A_ROLES:
+        raise ClientError(
+            "active v2 A2A checkpoint requires --role for card, ls, or cancel "
+            "when --agent is not a generated role target"
+        )
+
+    progress = os.path.join(project_root, "progress.json")
+    resolver = os.path.join(DISPATCH_DIR, "resolve-active-mode-role.sh")
+    if not os.path.isfile(resolver):
+        raise ClientError(f"framework active-mode resolver missing: {resolver}")
+    command = [
+        "bash", resolver,
+        "--role", role,
+        "--expected-agent", agent,
+        "--progress", progress,
+        "--registry", os.fspath(registry),
+        "--adapters", os.fspath(adapters),
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ClientError(f"active mode role preflight could not run: {exc}") from exc
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "active mode resolver failed").strip()
+        raise ClientError(f"active mode role preflight failed: {detail[:600]}")
+    try:
+        record = json.loads(result.stdout)
+    except (TypeError, ValueError) as exc:
+        raise ClientError(f"active mode role returned invalid JSON: {exc}") from exc
+    if record == {}:
+        raise ClientError(
+            "active v2 checkpoint disappeared during role revalidation; retry after re-planning"
+        )
+    if not isinstance(record, dict) or set(record) != ACTIVE_MODE_RECORD_FIELDS:
+        raise ClientError("active mode role returned an incomplete binding record")
+    try:
+        active_agent = _safe_config_id(record["agent_id"], "active mode role agent_id")
+        _safe_tool_id(record["tool"], "active mode role tool")
+        _bounded_text(record["model_family"], "active mode role model_family", 128)
+    except ClientError as exc:
+        raise ClientError(f"active mode role returned an invalid binding record: {exc}") from exc
+    if active_agent != agent:
+        raise ClientError("active mode role returned a different agent")
+    if record["invocation"] != "a2a":
+        raise ClientError("active mode role is not bound to the a2a invocation")
+    if isinstance(record["priority"], bool) or not isinstance(record["priority"], int) or record["priority"] < 0:
+        raise ClientError("active mode role returned an invalid priority")
+    provenance = record.get("execution_provenance_sha256")
+    if not isinstance(provenance, str) or not EXECUTION_PROVENANCE_SHA256.fullmatch(provenance):
+        raise ClientError(
+            "active v2 role lacks a valid execution_provenance_sha256; re-plan first"
+        )
+    return provenance
+
+
 def validate_dispatchable_role(descriptor, envelope):
     role = envelope.get("role")
     if role == "generator":
@@ -880,6 +1161,8 @@ def main():
     parser.add_argument("--task")
     parser.add_argument("--registry", default=".agents-registry.json")
     parser.add_argument("--adapters", default=DEFAULT_ADAPTERS_DIR)
+    parser.add_argument("--role", choices=A2A_ROLES)
+    parser.add_argument("--expected-provenance")
     parser.add_argument("--state", default=STATE_DIR_DEFAULT)
     parser.add_argument("--project-root")
     parser.add_argument("--resume-from", type=int, default=0)
@@ -891,7 +1174,37 @@ def main():
         parser.error("wait controls must be non-negative and transport grace must be positive")
 
     try:
-        descriptor = load_descriptor(args.registry, args.agent, adapters=args.adapters)
+        # Descriptor data selects the remote endpoint and must be bound to the
+        # same project root that owns any commissioned artifact.
+        root_arg = args.project_root if args.project_root is not None else os.getcwd()
+        args.registry = project_registry_path(root_arg, args.registry)
+        project_root = os.path.dirname(args.registry)
+        role = network_command_role(args)
+        active_provenance = active_mode_expected_provenance(
+            project_root, args.registry, args.adapters, args.agent, role
+        )
+        expected_provenance = args.expected_provenance
+        if active_provenance is not None:
+            if (
+                expected_provenance is not None
+                and expected_provenance != active_provenance
+            ):
+                raise ClientError(
+                    "--expected-provenance does not match the active v2 checkpoint"
+                )
+            expected_provenance = active_provenance
+
+        if expected_provenance is not None:
+            target = verify_expected_execution_provenance(
+                args.registry,
+                args.agent,
+                args.adapters,
+                expected_provenance,
+                expected_role=role,
+            )
+            descriptor = descriptor_from_canonical_target(target)
+        else:
+            descriptor = load_descriptor(args.registry, args.agent, adapters=args.adapters)
 
         if args.cmd == "card":
             print(json.dumps(fetch_agent_card(descriptor), ensure_ascii=False, indent=2))
@@ -905,7 +1218,7 @@ def main():
                 raise ClientError("--envelope is required")
             envelope_path = os.path.abspath(args.envelope)
             envelope, commission = load_commissioned_envelope(
-                descriptor, envelope_path, project_root=args.project_root
+                descriptor, envelope_path, project_root=project_root
             )
             timeout_s = effective_timeout(
                 envelope.get("deadline_s"), descriptor.get("timeout_s")
@@ -979,7 +1292,7 @@ def main():
             if not args.envelope:
                 raise ClientError("--envelope is required for get")
             envelope, commission = load_commissioned_envelope(
-                descriptor, args.envelope, project_root=args.project_root
+                descriptor, args.envelope, project_root=project_root
             )
             validate_remote_card(descriptor, commission["role"])
             if args.task != commission["task_id"]:
@@ -1002,7 +1315,7 @@ def main():
                 raise ClientError("--envelope is required for subscribe")
             envelope_path = os.path.abspath(args.envelope)
             envelope, commission = load_commissioned_envelope(
-                descriptor, envelope_path, project_root=args.project_root
+                descriptor, envelope_path, project_root=project_root
             )
             if args.task != commission["task_id"]:
                 raise ClientError("--task must equal the local envelope task_id")

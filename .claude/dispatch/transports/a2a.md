@@ -25,6 +25,12 @@
 grace。到点先 `CancelTask`；确认 CANCELED 后，即使 runner 在 drain 结束后令最终 GetTask 连接失败，
 本地仍落可解释的 CANCELED run-meta，不把已确认事实降级成未知错误。
 
+active v2 non-fast 的 client 调用还会先匹配 resolution 的
+`execution_provenance_sha256`：远端 endpoint、runner identity、adapter 执行契约、timeout 等可执行 target
+语义只要漂移，即在网络请求前 fail-closed。该 hash 不是 Agent Card 签名，也不是防篡改凭证；用户的
+Ed25519 意图签名仍只覆盖 `{tool, invocation}`。旧五字段 active v2 checkpoint 缺少此基线，升级后必须重新
+`/plan` 并 consume 新 intent。
+
 对 `/autodrive` 心跳模型尤其合适：唤醒周期不必再等外部 CLI 跑完，
 `ScheduleWakeup` 间隔与外部任务时长彻底解耦——`autonomous-mode.md` §9 那个
 「长 verify 跑超间隔导致并发唤醒抢跑」的未决问题顺手解掉。

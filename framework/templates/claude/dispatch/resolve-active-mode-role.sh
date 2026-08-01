@@ -39,8 +39,16 @@ done
 
 case "$ROLE" in planner|generator|evaluator) ;; *) die "--role 必须是 planner/generator/evaluator" ;; esac
 [ -f "$PROGRESS" ] || die "progress 不存在：$PROGRESS"
-[ -f "$REGISTRY" ] || die "registry 不存在：$REGISTRY"
 [ -f "$VALIDATOR" ] || die "validate-resolved-mode-bindings.sh 不存在"
+
+# This public resolver is also a direct entrypoint. Resolve the project from
+# the consumed progress file before letting the registry choose a target.
+PROJECT_DIR="$(cd "$(dirname "$PROGRESS")" && pwd)"
+PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
+  || die "无法从 progress 所在目录确定 git 项目根"
+REGISTRY="$(cd "$PROJECT_ROOT" && python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "registry 必须是项目根的非符号链接 .agents-registry.json"
 
 ARGS=(--progress "$PROGRESS" --registry "$REGISTRY")
 [ -z "$ADAPTERS" ] || ARGS+=(--adapters "$ADAPTERS")
@@ -55,8 +63,12 @@ import re
 import sys
 
 path, role, expected_agent = sys.argv[1:4]
-fields = {"agent_id", "tool", "invocation", "model_family", "priority"}
+fields = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
 safe_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+sha256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def fail(message):
@@ -80,9 +92,11 @@ if role == "planner" and record is None:
     print("{}")
     raise SystemExit(0)
 if not isinstance(record, dict) or set(record) != fields:
-    fail(f"resolved {role} 必须恰含五字段")
+    fail(f"resolved {role} 必须恰含六字段（含 execution_provenance_sha256）")
 if not isinstance(record["agent_id"], str) or not safe_id.fullmatch(record["agent_id"]):
     fail(f"resolved {role}.agent_id 非法")
+if not isinstance(record["execution_provenance_sha256"], str) or not sha256.fullmatch(record["execution_provenance_sha256"]):
+    fail(f"resolved {role}.execution_provenance_sha256 必须是小写 SHA-256")
 if expected_agent and expected_agent != record["agent_id"]:
     fail(
         f"显式 agent {expected_agent!r} 与已验签 active {role} "

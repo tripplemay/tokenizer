@@ -132,8 +132,8 @@ function modeSnapshot() {
 function draft(overrides: Partial<HarnessModeEditorDraft> = {}): HarnessModeEditorDraft {
   return {
     profile: "fast",
-    plannerTool: "claude-code",
-    plannerInvocation: "subagent",
+    plannerTool: "kimi",
+    plannerInvocation: "local-cli",
     generatorTool: "codex",
     generatorInvocation: "local-cli",
     evaluatorTool: "kimi",
@@ -181,10 +181,107 @@ describe("Harness detail snapshot helpers", () => {
     ]));
     expect(parsed?.dispatch.agents[2]).toMatchObject({ id: "reviewer-kimi", capabilities: [] });
     expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
-    expect(parsed?.dispatch.toolCatalog.find((tool) => tool.tool === "claude-code")).toMatchObject({
-      label: "Claude Code",
-      capabilities: ["plan"]
-    });
+    expect(parsed?.dispatch.toolCatalog).not.toContainEqual(
+      expect.objectContaining({ invocation: "subagent" })
+    );
+    expect(parsed?.dispatch.toolCatalog).toContainEqual(
+      expect.objectContaining({ tool: "kimi", invocation: "local-cli", role: "planner" })
+    );
+  });
+
+  it("reads full external same-session bridge observations while rejecting partial metadata", () => {
+    const snapshot: any = structuredClone(modeSnapshot());
+    snapshot.dispatch.integrations = [{
+      id: "kimi-bridge",
+      tool: "kimi",
+      label: "Kimi Code",
+      modelFamily: "kimi",
+      roles: ["planner", "generator", "evaluator"],
+      invocations: ["local-cli", "subagent"],
+      capabilities: ["plan", "build", "verify"],
+      localCli: true,
+      subagent: true,
+      bridgeId: "kimi-acp-agent",
+      bridgeKind: "acp-agent",
+      sessionScope: "same-session",
+      bridgeProtocol: "acp-native-agent/v1",
+      bridgeCommand: ["kimi", "acp"],
+      adapterBridgeCommand: ["kimi", "acp"],
+      bridgeRoles: ["planner", "generator", "evaluator"],
+      a2aTargetCount: 0,
+      sandboxed: true
+    }];
+    const parsed = parseHarnessDetailModes(snapshot);
+    expect(parsed?.dispatch.integrationSnapshotUsable).toBe(true);
+    expect(parsed?.dispatch.integrations).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: "kimi-bridge",
+        bridgeId: "kimi-acp-agent",
+        bridgeKind: "acp-agent",
+        sessionScope: "same-session"
+      })
+    ]));
+
+    const partial = structuredClone(snapshot);
+    delete (partial.dispatch.integrations[0] as Record<string, unknown>).bridgeKind;
+    expect(parseHarnessDetailModes(partial)?.dispatch.integrationSnapshotUsable).toBe(false);
+
+    const unverified = structuredClone(snapshot);
+    delete (unverified.dispatch.integrations[0] as Record<string, unknown>).bridgeId;
+    delete (unverified.dispatch.integrations[0] as Record<string, unknown>).bridgeKind;
+    delete (unverified.dispatch.integrations[0] as Record<string, unknown>).sessionScope;
+    expect(parseHarnessDetailModes(unverified)?.dispatch.integrationSnapshotUsable).toBe(false);
+  });
+
+  it("keeps bridge reports observable while removing external subagent choices from the editor", () => {
+    const snapshot: any = structuredClone(modeSnapshot());
+    snapshot.dispatch.integrations = [{
+      id: "kimi-bridge",
+      tool: "kimi",
+      label: "Kimi Code",
+      modelFamily: "kimi",
+      roles: ["planner", "generator", "evaluator"],
+      invocations: ["local-cli", "subagent"],
+      capabilities: ["plan", "build", "verify"],
+      localCli: true,
+      subagent: true,
+      bridgeId: "kimi-acp-agent",
+      bridgeKind: "session-bridge-v1",
+      sessionScope: "same-session",
+      bridgeProtocol: "acp-native-agent/v1",
+      bridgeCommand: ["kimi", "acp"],
+      adapterBridgeCommand: ["kimi", "acp"],
+      bridgeRoles: ["planner", "generator", "evaluator"],
+      a2aTargetCount: 0,
+      sandboxed: true
+    }];
+    snapshot.dispatch.toolCatalog = [
+      ...TOOLS.filter((entry) => entry.invocation !== "subagent"),
+      ...["planner", "generator", "evaluator"].map((role) => ({
+        tool: "kimi",
+        label: "Kimi Code",
+        invocation: "subagent",
+        role,
+        agentCount: 1,
+        modelFamilies: ["kimi"],
+        capabilities: ["plan", "build", "verify"]
+      }))
+    ];
+    const parsed = parseHarnessDetailModes(snapshot);
+    expect(parsed?.dispatch.integrationSnapshotUsable).toBe(true);
+    expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
+    expect(parsed?.dispatch.toolCatalog).not.toContainEqual(
+      expect.objectContaining({ invocation: "subagent" })
+    );
+    expect(parsed?.dispatch.toolCatalog).toContainEqual(
+      expect.objectContaining({ tool: "codex", invocation: "local-cli", role: "generator" })
+    );
+
+    const fakeBridge = structuredClone(snapshot);
+    fakeBridge.dispatch.integrations[0].adapterBridgeCommand = ["codex", "acp"];
+    const fakeParsed = parseHarnessDetailModes(fakeBridge);
+    expect(fakeParsed?.dispatch.integrationSnapshotUsable).toBe(false);
+    expect(fakeParsed?.dispatch.toolCatalogUsable).toBe(false);
   });
 
   it("does not invent assignments or transport for incomplete legacy snapshots", () => {
@@ -247,6 +344,28 @@ describe("Harness detail snapshot helpers", () => {
     expect(currentHarnessModeSummary(parsed)?.execution.roleBindings?.planner).toBeNull();
   });
 
+  it("keeps Generator and Evaluator choices usable when Coordinator owns Planner", () => {
+    const snapshot: any = structuredClone(modeSnapshot());
+    snapshot.dispatch.assignments.planner = null;
+    snapshot.dispatch.toolCatalog = TOOLS.filter((tool) =>
+      tool.role !== "planner" && tool.invocation !== "subagent"
+    );
+
+    const parsed = parseHarnessDetailModes(snapshot);
+    expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
+    expect(parsed?.dispatch.toolCatalog).toEqual(expect.arrayContaining([
+      expect.objectContaining({ role: "generator", tool: "codex", invocation: "local-cli" }),
+      expect.objectContaining({ role: "evaluator", tool: "kimi", invocation: "local-cli" })
+    ]));
+    expect(buildModeIntentRequest("project-1", draft({
+      profile: "heterogeneous",
+      plannerTool: "",
+      plannerInvocation: ""
+    }), parsed?.dispatch.toolCatalog ?? [], NOW).desired.execution).toMatchObject({
+      role_bindings: { planner: null }
+    });
+  });
+
   it("defensively drops malformed feature entries while retaining readable legacy fields", () => {
     expect(parseHarnessDetailFeatures([
       { id: "F001", title: "one", status: "completed" },
@@ -306,7 +425,7 @@ describe("Harness mode editor validation", () => {
     expect(heterogeneous.desired.execution).toEqual({
       profile: "heterogeneous",
       role_bindings: {
-        planner: { tool: "claude-code", invocation: "subagent" },
+        planner: { tool: "kimi", invocation: "local-cli" },
         generator: { tool: "codex", invocation: "local-cli" },
         evaluator: { tool: "kimi", invocation: "local-cli" }
       }
@@ -362,6 +481,9 @@ describe("Harness mode editor validation", () => {
     }), TOOLS, NOW), "invalid_string");
     expectCode(() => buildModeIntentRequest("p", draft({
       profile: "heterogeneous", evaluatorTool: "ghost"
+    }), TOOLS, NOW), "unknown_tool");
+    expectCode(() => buildModeIntentRequest("p", draft({
+      profile: "heterogeneous", plannerTool: "claude-code", plannerInvocation: "subagent"
     }), TOOLS, NOW), "unknown_tool");
     const sameFamilyTools = TOOLS.map((tool) =>
       tool.role === "evaluator" ? { ...tool, modelFamilies: ["codex"] } : tool

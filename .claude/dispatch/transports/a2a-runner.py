@@ -13,6 +13,12 @@ import time
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+
+DISPATCH_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, DISPATCH_DIR)
+from dispatch_common import DispatchContractError, project_registry_path  # noqa: E402
+
+
 MIN_CANCEL_GRACE_S = 2.25  # sandbox helper uses a 2s TERM grace before killing its CLI group
 DEFAULT_TIMEOUT_S = 3600
 TOOL_INTEGRATIONS_VERSION = "tool-integrations/1"
@@ -1023,6 +1029,10 @@ def main():
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=41241)
     parser.add_argument("--state", default=".harness-dispatch/a2a")
+    parser.add_argument(
+        "--project-root",
+        help="Project root that owns .agents-registry.json; defaults to the invocation directory.",
+    )
     parser.add_argument("--workroot", default="../.harness-dispatch")
     parser.add_argument("--sandbox", default=os.path.join(dispatch_dir, "sandbox-profile.sh"))
     parser.add_argument("--validator", default=os.path.join(dispatch_dir, "validate-dispatch.sh"))
@@ -1038,7 +1048,6 @@ def main():
 
     cfg.state = os.path.realpath(cfg.state)
     cfg.workroot = os.path.realpath(cfg.workroot)
-    cfg.registry = os.path.realpath(cfg.registry)
     cfg.sandbox = os.path.realpath(cfg.sandbox)
     cfg.validator = os.path.realpath(cfg.validator)
     cfg.adapters = os.path.realpath(cfg.adapters)
@@ -1052,6 +1061,13 @@ def main():
             f"--cancel-grace must be at least {MIN_CANCEL_GRACE_S}s so the sandbox helper "
             "can finish cleaning its independent CLI process group"
         )
+
+    try:
+        root_arg = cfg.project_root if cfg.project_root is not None else os.getcwd()
+        cfg.registry = project_registry_path(root_arg, cfg.registry)
+        cfg.project_root = os.path.dirname(cfg.registry)
+    except DispatchContractError as exc:
+        sys.exit(f"[a2a-runner] {exc}")
 
     try:
         descriptor = load_execution_descriptor(

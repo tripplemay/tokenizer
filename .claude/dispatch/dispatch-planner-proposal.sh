@@ -72,7 +72,9 @@ REQUEST_BYTES="$(wc -c < "$REQUEST_FILE" | tr -d '[:space:]')"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || die "必须从 git 项目内调用"
 cd "$PROJECT_ROOT"
-[ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
+REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "注册表必须是项目根的非符号链接 .agents-registry.json"
 
 # For a v2 non-fast batch, the explicit --agent is an assertion, never a
 # selector. The checkpoint resolver owns the Planner descriptor and rejects a
@@ -157,7 +159,29 @@ fi
 
 case "$TRANSPORT" in
   local-cli|a2a) ;;
-  subagent) die "subagent Planner 必须由 Coordinator 启动隔离 planner-proposal 路径并校验 proposal；不得回落为 Coordinator 直接规划" ;;
+  subagent)
+    SUBAGENT_ROUTE="$(python3 - "$TARGET_JSON" <<'PY'
+import json
+import sys
+
+target = json.loads(sys.argv[1])
+bridge_id = target.get("bridge_id")
+if bridge_id is None or bridge_id == "host-native":
+    print("host-native")
+elif (
+    isinstance(bridge_id, str)
+    and isinstance(target.get("bridge_strategy"), str)
+    and isinstance(target.get("bridge_protocol"), dict)
+    and target.get("session_scope") == "same-session"
+):
+    print("external-bridge")
+else:
+    raise SystemExit("[planner-dispatch] ⛔ subagent Planner bridge 元数据非法")
+PY
+)" || die "无法解析 subagent Planner bridge 路径"
+    [ "$SUBAGENT_ROUTE" = "external-bridge" ] || \
+      die "host-native Planner 必须由 Coordinator 启动隔离 planner-proposal 路径并校验 proposal；不得回落为 Coordinator 直接规划"
+    ;;
   *) die "Planner transport 非法或未声明：$TRANSPORT" ;;
 esac
 

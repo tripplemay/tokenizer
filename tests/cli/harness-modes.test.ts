@@ -122,7 +122,7 @@ describe("执行形态", () => {
     expect(s.dispatch.enabled).toBe(false);
   });
 
-  it("被指派的角色走 local-cli 即本地异构", () => {
+  it("被指派的角色走 local-cli 即异构执行", () => {
     write(".agents-registry.json", JSON.stringify(REGISTRY));
     write("progress.json", JSON.stringify({
       role_assignments: { generator: "builder-codex", evaluator: "reviewer-claude" }
@@ -184,6 +184,36 @@ describe("执行形态", () => {
     expect(JSON.stringify(snapshot.current)).not.toContain("builder-codex");
   });
 
+  it("reports a same-session subagent-only v2 resolution as heterogeneous", () => {
+    const registry = structuredClone(REGISTRY);
+    registry.agents = [
+      { id: "planner-codex", roles: ["planner"], transport: "subagent", model_family: "codex" },
+      { id: "builder-codex", roles: ["generator"], transport: "subagent", model_family: "codex" },
+      { id: "reviewer-kimi", roles: ["evaluator"], transport: "subagent", model_family: "kimi" }
+    ];
+    write(".agents-registry.json", JSON.stringify(registry));
+    write("progress.json", JSON.stringify({
+      role_assignments: {
+        planner: "planner-codex",
+        generator: "builder-codex",
+        evaluator: "reviewer-kimi"
+      },
+      mode_intent: {
+        intent_id: "intent-bridge",
+        resolution: {
+          planner: { agent_id: "planner-codex", tool: "codex", invocation: "subagent", model_family: "codex", priority: 100 },
+          generator: { agent_id: "builder-codex", tool: "codex", invocation: "subagent", model_family: "codex", priority: 100 },
+          evaluator: { agent_id: "reviewer-kimi", tool: "kimi", invocation: "subagent", model_family: "kimi", priority: 100 }
+        }
+      }
+    }));
+
+    const snapshot = buildModeSnapshot(repo);
+    expect(snapshot.execution).toBe("heterogeneous");
+    expect(snapshot.current?.profile).toBe("heterogeneous");
+    expect(snapshot.dispatch.familyExclusive).toBe(true);
+  });
+
   it("reports tool integrations and treats a null Planner resolution as the Coordinator", () => {
     installToolCatalogFixture(INTEGRATION_REGISTRY);
     write("progress.json", JSON.stringify({
@@ -229,8 +259,10 @@ describe("独立性与沙箱", () => {
 
     const snapshot = buildModeSnapshot(repo);
     expect(snapshot.dispatch.toolCatalog).toEqual(expect.arrayContaining([
-      expect.objectContaining({ tool: "claude-code", role: "planner" }),
       expect.objectContaining({ tool: "future-cli", label: "Future CLI", role: "generator" })
+    ]));
+    expect(snapshot.dispatch.toolCatalog).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ invocation: "subagent" })
     ]));
     expect(JSON.stringify(snapshot.dispatch.toolCatalog)).not.toContain("agentId");
     expect(snapshot.dispatch.issues).not.toContain("dispatch tool catalog is unavailable");

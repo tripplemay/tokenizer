@@ -28,6 +28,7 @@
       "model_family": "kimi",
       "priority": 100,
       "capabilities": ["plan", "build", "fix", "verify", "l1_local", "e2e", "security_audit"],
+      "subagent": { "bridge": "kimi-acp-native-agent" },
       "local_cli": {
         "adapter": "kimi",
         "sandbox": {

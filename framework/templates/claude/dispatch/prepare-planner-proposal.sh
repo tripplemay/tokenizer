@@ -68,7 +68,9 @@ REQUEST_BYTES="$(wc -c < "$REQUEST_FILE" | tr -d '[:space:]')"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" \
   || die "必须从 git 项目内调用"
 cd "$PROJECT_ROOT"
-[ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
+REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "注册表必须是项目根的非符号链接 .agents-registry.json"
 
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 if [ -f "$CANONICAL_PROGRESS" ]; then

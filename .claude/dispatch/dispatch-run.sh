@@ -2,6 +2,7 @@
 # dispatch-mode.md 统一派活入口 —— 按 descriptor.transport 路由，对上层隐藏 transport 差异。
 #
 #   local-cli → sandbox-profile.sh（本机 fork 子进程，阻塞）
+#   subagent  → host-native 由 Coordinator 直派；已验证 bridge 走 sandbox-profile.sh
 #   a2a       → a2a-client.py run（远端 runner，SSE 订阅至终态）
 #
 # 两条路径**输出同形的 run-meta JSON 到 stdout**，于是回执推断表、gate-arbiter、/autodrive
@@ -42,13 +43,18 @@ die() { echo "[dispatch-run] ⛔ $1" >&2; exit 2; }
 [ -n "$AGENT_ID" ] || die "缺 --agent"
 [ -n "$ENVELOPE" ] || die "缺 --envelope"
 [ -f "$ENVELOPE" ] || die "信封不存在：${ENVELOPE}"
-[ -f "$REGISTRY" ] || die "注册表不存在：${REGISTRY}"
+[ -n "$REGISTRY" ] || die "缺 --registry"
 
 # 信封白名单校验前置到这里，两条 transport 共用（铁律 12 的机械强制）
 bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE" >&2 || die "信封校验未过，不派活"
 # 本地 repo.url 必须与调用入口所在 git 仓一致。此检查发生在任何 state/workroot 目录创建之前。
 PROJECT_ROOT="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
   --envelope "$ENVELOPE" --cwd "$PWD")" || die "repo.url 前置校验未过，不派活"
+# Registry controls transport and bridge launch metadata. Pin it to the
+# invocation repository before any adapter/catalog or stateful dispatch work.
+REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "注册表必须是项目根的非符号链接 .agents-registry.json"
 
 # A generic dispatch utility is also used by isolated fixtures that have no
 # progress state. Inside a real project, however, an active v2 checkpoint owns
@@ -66,6 +72,7 @@ PY
 )" || die "无法读取 envelope role"
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 ACTIVE_PROGRESS=""
+ACTIVE_RECORD="{}"
 if [ -f "$CANONICAL_PROGRESS" ]; then
   if [ "$PROGRESS_EXPLICIT" = true ]; then
     PROVIDED_PROGRESS="$(python3 - "$PROGRESS" <<'PY'
@@ -112,13 +119,59 @@ if [ -n "$ACTIVE_PROGRESS" ]; then
   ACTIVE_ARGS=(--role "$ROLE" --expected-agent "$AGENT_ID" --progress "$ACTIVE_PROGRESS" --registry "$REGISTRY")
   ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
-  bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
+  ACTIVE_RECORD="$(bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}")" \
     || die "active mode role 复验失败；拒绝使用未验证的 --agent"
 fi
 
 TARGET_ARGS=(python3 "$DISPATCH_DIR/tool-catalog.py" target --registry "$REGISTRY" --target-id "$AGENT_ID")
 TARGET_ARGS+=(--adapters "$ADAPTERS")
 TARGET_JSON="$("${TARGET_ARGS[@]}")" || die "内部执行目标不存在或不再满足安全策略"
+# ``resolve-active-mode-role`` replays the signed checkpoint and produces the
+# current catalog record. Re-resolve once more immediately before transport,
+# then carry its semantic digest down to the execution entrypoint so a mutable
+# registry/bridge/adapter cannot drift between these reads.
+EXPECTED_PROVENANCE="$(python3 - "$ACTIVE_RECORD" "$TARGET_JSON" <<'PY'
+import json
+import re
+import sys
+
+active_raw, target_raw = sys.argv[1:3]
+fields = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
+sha256 = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def fail(message):
+    print(f"[dispatch-run] ⛔ {message}", file=sys.stderr)
+    raise SystemExit(2)
+
+
+try:
+    active = json.loads(active_raw)
+    target = json.loads(target_raw)
+except (TypeError, ValueError) as exc:
+    fail(f"active resolution 或 target JSON 非法：{exc}")
+if active == {}:
+    print("")
+    raise SystemExit(0)
+if not isinstance(active, dict) or set(active) != fields:
+    fail("active resolution 必须恰含六字段（含 execution_provenance_sha256）")
+if not isinstance(active.get("execution_provenance_sha256"), str) or not sha256.fullmatch(active["execution_provenance_sha256"]):
+    fail("active execution_provenance_sha256 必须是小写 SHA-256")
+if not isinstance(target, dict):
+    fail("内部 execution target 必须是 object")
+if target.get("target_id") != active["agent_id"]:
+    fail("内部 execution target 与 active agent_id 不一致")
+actual = target.get("execution_provenance_sha256")
+if not isinstance(actual, str) or not sha256.fullmatch(actual):
+    fail("内部 execution target 缺合法 execution_provenance_sha256")
+if actual != active["execution_provenance_sha256"]:
+    fail("执行目标语义已漂移；重新 /plan 并 consume 后才能派活")
+print(actual)
+PY
+)" || die "active execution provenance 复验失败"
 if ! TRANSPORT="$(python3 - "$TARGET_JSON" "$ROLE" <<'PY'
 import json
 import sys
@@ -156,6 +209,7 @@ case "$TRANSPORT" in
       --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE"
     )
     LOCAL_ARGS+=(--adapters "$ADAPTERS")
+    [ -z "$EXPECTED_PROVENANCE" ] || LOCAL_ARGS+=(--expected-provenance "$EXPECTED_PROVENANCE")
     if [ "${#EXTRA[@]}" -gt 0 ]; then
       LOCAL_ARGS+=("${EXTRA[@]}")
     fi
@@ -163,12 +217,57 @@ case "$TRANSPORT" in
     ;;
   a2a)
     echo "[dispatch-run] transport=a2a → 远端 runner（SSE 订阅至终态）" >&2
-    exec python3 "$DISPATCH_DIR/transports/a2a-client.py" run \
-      --agent "$AGENT_ID" --envelope "$ENVELOPE" \
-      --registry "$REGISTRY" --adapters "$ADAPTERS" --state "$STATE" --project-root "$PROJECT_ROOT" ${EXTRA[@]+"${EXTRA[@]}"}
+    A2A_ARGS=(
+      run --agent "$AGENT_ID" --envelope "$ENVELOPE"
+      --registry "$REGISTRY" --adapters "$ADAPTERS" --state "$STATE" --project-root "$PROJECT_ROOT"
+    )
+    [ -z "$EXPECTED_PROVENANCE" ] || A2A_ARGS+=(--expected-provenance "$EXPECTED_PROVENANCE")
+    if [ "${#EXTRA[@]}" -gt 0 ]; then
+      A2A_ARGS+=("${EXTRA[@]}")
+    fi
+    exec python3 "$DISPATCH_DIR/transports/a2a-client.py" "${A2A_ARGS[@]}"
     ;;
   subagent)
-    die "$AGENT_ID 的 transport=subagent —— 同会话 subagent 由编排者直接派，不走本入口"
+    if ! SUBAGENT_ROUTE="$(python3 - "$TARGET_JSON" <<'PY'
+import json
+import sys
+
+try:
+    target = json.loads(sys.argv[1])
+except (TypeError, ValueError) as exc:
+    raise SystemExit(f"[dispatch-run] ⛔ subagent target JSON 非法：{exc}")
+if not isinstance(target, dict):
+    raise SystemExit("[dispatch-run] ⛔ subagent target 必须是 object")
+bridge_id = target.get("bridge_id")
+if bridge_id == "host-native":
+    print("host-native")
+elif (
+    isinstance(bridge_id, str)
+    and isinstance(target.get("bridge_strategy"), str)
+    and isinstance(target.get("bridge_protocol"), dict)
+    and target.get("session_scope") == "same-session"
+):
+    print("external-bridge")
+else:
+    raise SystemExit("[dispatch-run] ⛔ subagent target 缺已验证同会话 bridge 元数据")
+PY
+)"; then
+      die "无法判断 subagent bridge 路径"
+    fi
+    if [ "$SUBAGENT_ROUTE" = "host-native" ]; then
+      die "$AGENT_ID 的 transport=subagent 是当前 Coordinator 的 host-native 路径；由编排者直接派，不走本入口"
+    fi
+    echo "[dispatch-run] transport=subagent bridge → 同会话沙箱" >&2
+    BRIDGE_ARGS=(
+      --agent "$AGENT_ID" --envelope "$ENVELOPE"
+      --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE"
+    )
+    BRIDGE_ARGS+=(--adapters "$ADAPTERS")
+    [ -z "$EXPECTED_PROVENANCE" ] || BRIDGE_ARGS+=(--expected-provenance "$EXPECTED_PROVENANCE")
+    if [ "${#EXTRA[@]}" -gt 0 ]; then
+      BRIDGE_ARGS+=("${EXTRA[@]}")
+    fi
+    exec bash "$DISPATCH_DIR/sandbox-profile.sh" "${BRIDGE_ARGS[@]}"
     ;;
   "")
     die "注册表中无此 agent 或未声明 transport：$AGENT_ID"

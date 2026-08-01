@@ -25,8 +25,11 @@ description: 自主开发心跳的单次唤醒入口——把 progress.json.stat
    - 若 `progress.mode_intent.resolution` 存在（已消费的 v2 non-fast），运行
      `bash .claude/dispatch/validate-resolved-mode-bindings.sh`。它必须退出 0；stdout 的完整 JSON
      作为 `resolved_mode_bindings` 注入 Gate。它会从 `progress.mode_intent.signed_intent` 重验签名、repo 和
-     bindings，再按当前 registry + verified adapter 重算五字段 `{agent_id,tool,invocation,model_family,priority}`；
-     任一 checkpoint/审计/解析漂移即 HARD_HALT，不得只按旧 agent id 派活，也绝不读取新 staged harness intent。
+     bindings，再按当前 registry + verified adapter 重算六字段
+     `{agent_id,tool,invocation,model_family,priority,execution_provenance_sha256}`；最后一项涵盖 target、adapter
+     执行契约、sandbox/timeout 与 bridge/A2A 等执行语义。任一 checkpoint/审计/解析漂移即 HARD_HALT，不得只按旧
+     agent id 派活，也绝不读取新 staged harness intent。用户签名仍只覆盖 `{tool,invocation}`，provenance hash
+     是运行时 guard 而非防篡改签名；旧五字段 active v2 checkpoint 必须先重新 plan/consume。
    - 每个被 `role_assignments` 引用的 `local-cli` descriptor，其 `adapter` 的 `_verified` 为 `true`
      （未实测核对的适配器不许接自主——沿用「机件没建好不许开车」）
    - 每个被引用的 `a2a` descriptor：若 `auth.type=bearer`，其已经过 registry 校验的 `auth.env`

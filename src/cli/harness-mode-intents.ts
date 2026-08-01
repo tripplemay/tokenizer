@@ -6,7 +6,6 @@ import { writeFileAtomic, withFileLock } from "./atomic-file";
 import { readDispatchToolCatalog } from "./harness-tool-catalog";
 import { canonicalJson } from "@/server/harness-sign";
 import {
-  HARNESS_MODE_ROLES,
   normalizeHarnessRepoKey,
   validateHarnessModeIntentPayload,
   type HarnessModeAgentDescriptor,
@@ -225,12 +224,12 @@ function readRegistryModeContext(repoPath: string): {
       })
     : undefined;
   const catalog = readDispatchToolCatalog(repoPath);
-  const catalogIsComplete = HARNESS_MODE_ROLES.every((role) =>
-    catalog.entries.some((entry) => entry.role === role)
-  );
   return {
     agents,
-    tools: catalog.issue || !catalogIsComplete ? undefined : toolCatalogModeDescriptors(catalog.entries)
+    // A v2 Planner may be Coordinator (null), so a usable catalog need only
+    // cover the roles explicitly bound by the signed payload. The payload
+    // validator below still rejects every selected tool absent from this list.
+    tools: catalog.issue ? undefined : toolCatalogModeDescriptors(catalog.entries)
   };
 }
 

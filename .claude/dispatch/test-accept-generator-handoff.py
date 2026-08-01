@@ -16,6 +16,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ACCEPT = HERE / "accept-generator-handoff.sh"
+TOOL_CATALOG = HERE / "tool-catalog.py"
 BATCH = "BL-ACCEPT-FIXTURE"
 FEATURE = "F001"
 TASK = "accept-fixture-001"
@@ -120,6 +121,33 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
     def output(self, cwd: Path, *args: str) -> str:
         return subprocess.check_output(["git", "-C", str(cwd), *args], text=True).strip()
 
+    def resolve_catalog(
+        self, registry: Path, adapters: Path, bindings: dict[str, object]
+    ) -> dict[str, object]:
+        """Build an active checkpoint from the same catalog used at runtime."""
+        bindings_path = self.root / "catalog-bindings.json"
+        write_json(bindings_path, bindings)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOL_CATALOG),
+                "resolve",
+                "--registry",
+                str(registry),
+                "--adapters",
+                str(adapters),
+                "--bindings",
+                str(bindings_path),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        value = json.loads(result.stdout)
+        self.assertIsInstance(value, dict)
+        return value
+
     def enable_active_v2_generator_checkpoint(self) -> tuple[Path, Path, Path]:
         """Create the smallest real signed v2 checkpoint for direct-accept tests."""
         openssl = os.environ.get("HARNESS_OPENSSL", "/opt/homebrew/bin/openssl")
@@ -159,6 +187,26 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
                 "_verified": True,
             },
         )
+        write_json(
+            adapters / "planner.json",
+            {
+                "name": "planner",
+                "model_family": "planner",
+                "argv": ["true"],
+                "envelope_delivery": "stdin",
+                "_verified": True,
+            },
+        )
+        write_json(
+            adapters / "evaluator.json",
+            {
+                "name": "evaluator",
+                "model_family": "evaluator",
+                "argv": ["true"],
+                "envelope_delivery": "stdin",
+                "_verified": True,
+            },
+        )
         registry = self.repo / ".agents-registry.json"
         write_json(
             registry,
@@ -168,9 +216,10 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
                     {
                         "id": "fixture-planner",
                         "roles": ["planner"],
-                        "transport": "subagent",
-                        "agent_type": "planner-proposal",
+                        "transport": "local-cli",
+                        "adapter": "planner",
                         "model_family": "planner",
+                        "sandbox": {"home_dir": str(self.root / "planner-home")},
                         "constraints": {"l2": False, "write_src": False, "push": False},
                     },
                     {
@@ -185,9 +234,10 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
                     {
                         "id": "fixture-evaluator",
                         "roles": ["evaluator"],
-                        "transport": "subagent",
-                        "agent_type": "evaluator",
+                        "transport": "local-cli",
+                        "adapter": "evaluator",
                         "model_family": "evaluator",
+                        "sandbox": {"home_dir": str(self.root / "evaluator-home")},
                         "constraints": {"l2": False, "write_src": False, "push": False},
                     },
                 ],
@@ -203,9 +253,9 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
                 "execution": {
                     "profile": "heterogeneous",
                     "role_bindings": {
-                        "planner": {"tool": "claude-code", "invocation": "subagent"},
+                        "planner": {"tool": "planner", "invocation": "local-cli"},
                         "generator": {"tool": "fixture", "invocation": "local-cli"},
-                        "evaluator": {"tool": "claude-code", "invocation": "subagent"},
+                        "evaluator": {"tool": "evaluator", "invocation": "local-cli"},
                     },
                 },
                 "autonomy": {"enabled": False},
@@ -225,11 +275,15 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
             stderr=subprocess.DEVNULL,
         )
         intent["sig"] = base64.b64encode(signature_path.read_bytes()).decode("ascii")
-        resolution = {
-            "planner": {"agent_id": "fixture-planner", "tool": "claude-code", "invocation": "subagent", "model_family": "planner", "priority": 1000},
-            "generator": {"agent_id": "fixture-generator", "tool": "fixture", "invocation": "local-cli", "model_family": "generator", "priority": 1000},
-            "evaluator": {"agent_id": "fixture-evaluator", "tool": "claude-code", "invocation": "subagent", "model_family": "evaluator", "priority": 1000},
-        }
+        resolution = self.resolve_catalog(
+            registry,
+            adapters,
+            {
+                "planner": {"tool": "planner", "invocation": "local-cli"},
+                "generator": {"tool": "fixture", "invocation": "local-cli"},
+                "evaluator": {"tool": "evaluator", "invocation": "local-cli"},
+            },
+        )
         write_json(
             self.repo / "progress.json",
             {
@@ -349,6 +403,25 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
         self.assertIn("agent_id does not match", result.stderr)
         self.assertFalse((self.repo / "src" / "generated.txt").exists())
         self.assertEqual(self.output(self.repo, "status", "--porcelain"), "")
+
+    def test_active_acceptance_rejects_outside_or_symlinked_registry_before_return_work(self) -> None:
+        (self.repo / "progress.json").write_text("{}", encoding="utf-8")
+        registry = self.repo / ".agents-registry.json"
+        registry.write_text("{}", encoding="utf-8")
+        outside = self.root / "outside-registry.json"
+        outside.write_text("{}", encoding="utf-8")
+
+        result = self.invoke("--registry", str(outside))
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("registry", result.stderr.lower())
+        self.assertFalse((self.repo / "src" / "generated.txt").exists())
+
+        registry.unlink()
+        registry.symlink_to(outside)
+        result = self.invoke()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("registry", result.stderr.lower())
+        self.assertFalse((self.repo / "src" / "generated.txt").exists())
 
     def test_l1_runs_without_coordinator_secret_or_runtime_control_env(self) -> None:
         l1 = json.loads(self.l1.read_text(encoding="utf-8"))

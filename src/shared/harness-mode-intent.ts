@@ -318,11 +318,14 @@ function normalizedProfile(value: unknown): HarnessExecutionProfile {
 }
 
 function validateProfileTransports(profile: Exclude<HarnessExecutionProfile, "fast">, transports: readonly HarnessTransport[]): void {
-  if (profile === "heterogeneous" && (transports.includes("a2a") || !transports.includes("local-cli"))) {
+  if (
+    profile === "heterogeneous" &&
+    (transports.includes("a2a") || !transports.some((transport) => transport === "local-cli" || transport === "subagent"))
+  ) {
     return reject(
       "profile_transport_mismatch",
       "desired.execution.profile",
-      "heterogeneous profile forbids a2a and requires at least one local-cli tool"
+      "heterogeneous profile forbids a2a and requires at least one local-cli or same-session subagent tool"
     );
   }
   if (profile === "slow" && !transports.includes("a2a")) {

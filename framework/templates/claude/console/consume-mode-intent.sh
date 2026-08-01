@@ -49,10 +49,19 @@ done
 [[ "$BATCH" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || die "batch 必须是安全稳定标识"
 [ -f "$PROGRESS" ] || die "progress 不存在：$PROGRESS"
 [ -f "$HARNESS" ] || die "harness.json 不存在：$HARNESS"
-[ -f "$REGISTRY" ] || die "registry 不存在：$REGISTRY"
 [ -f "$PUB" ] || die "console.pub 不存在：$PUB"
 [ -z "$ADAPTERS" ] || [ -d "$ADAPTERS" ] || die "adapter 目录不存在：$ADAPTERS"
 [ -x "$VALIDATOR" ] || die "validate-mode-intent.sh 不存在或不可执行"
+
+# This command durably writes the active checkpoint. Registry contents select
+# its runtime tool bindings, so bind them to the same project that owns
+# progress before the checkpoint lock or any persistence work begins.
+PROJECT_DIR="$(cd "$(dirname "$PROGRESS")" && pwd)"
+PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
+  || die "无法从 progress 所在目录确定 git 项目根"
+REGISTRY="$(cd "$PROJECT_ROOT" && python3 "$CONSOLE_DIR/../dispatch/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "registry 必须是项目根的非符号链接 .agents-registry.json"
 
 # mkdir is an atomic acquisition primitive. A second planner must not validate
 # one intent and then overwrite the first planner's newly consumed checkpoint.
@@ -110,7 +119,11 @@ roles = ("planner", "generator", "evaluator")
 stable_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 stable_tool = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 adapter_segment = re.compile(r"[A-Za-z0-9._-]+\Z")
-resolution_fields = {"agent_id", "tool", "invocation", "model_family", "priority"}
+resolution_fields = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
+sha256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def fail(message):
@@ -198,7 +211,7 @@ elif version == "v2":
             if not isinstance(binding, dict) or set(binding) != {"tool", "invocation"}:
                 fail(f"已签名 role_bindings.{role} shape 非法")
             if not isinstance(record, dict) or set(record) != resolution_fields:
-                fail(f"resolution.{role} 必须恰含五个审计字段")
+                fail(f"resolution.{role} 必须恰含六个审计字段（含 execution_provenance_sha256）")
             if binding.get("tool") != record.get("tool") or binding.get("invocation") != record.get("invocation"):
                 fail(f"resolution.{role} 未绑定到已签名 tool/invocation")
             if not isinstance(record["agent_id"], str) or not stable_id.fullmatch(record["agent_id"]):
@@ -211,6 +224,8 @@ elif version == "v2":
                 fail(f"resolution.{role}.model_family 非法")
             if isinstance(record["priority"], bool) or not isinstance(record["priority"], int) or record["priority"] < 0:
                 fail(f"resolution.{role}.priority 非法")
+            if not isinstance(record["execution_provenance_sha256"], str) or not sha256.fullmatch(record["execution_provenance_sha256"]):
+                fail(f"resolution.{role}.execution_provenance_sha256 必须是小写 SHA-256")
             assignments[role] = record["agent_id"]
         progress["role_assignments"] = assignments
         # Persist the full signed object, not just the canonical payload: the

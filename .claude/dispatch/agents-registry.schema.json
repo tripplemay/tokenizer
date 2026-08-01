@@ -195,6 +195,17 @@
         "timeout_s": { "type": "integer", "minimum": 60, "maximum": 86400, "default": 3600 }
       }
     },
+    "subagent_declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bridge"],
+      "properties": {
+        "bridge": {
+          "$ref": "#/definitions/tool_id",
+          "description": "Verified bridge manifest id. The catalog loads .claude/dispatch/transports/bridges/<id>.json and derives supported same-session roles from its personas."
+        }
+      }
+    },
     "integration": {
       "type": "object",
       "additionalProperties": false,
@@ -219,8 +230,14 @@
           "description": "When present, the framework automatically offers this CLI for Planner, Generator, and Evaluator with fixed role contracts."
         },
         "subagent": {
-          "const": true,
-          "description": "When true, the framework offers fixed Planner/Generator/Evaluator subagent personas for this integration."
+          "oneOf": [
+            {
+              "const": true,
+              "description": "Legacy Coordinator-native capability declaration. It remains supported for existing projects, but does not create a selectable tool-invocation candidate."
+            },
+            { "$ref": "#/definitions/subagent_declaration" }
+          ],
+          "description": "A bridge declaration references a verified same-session bridge manifest. Legacy true is Coordinator-native compatibility metadata only; only an object declaration can create a selectable external subagent candidate."
         },
         "notes": { "type": "string" }
       },

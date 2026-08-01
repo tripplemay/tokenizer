@@ -13,7 +13,9 @@ import {
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
 import {
+  hasWellFormedExternalSubagentBridgeObservation,
   toolCatalogModeDescriptors,
+  v2SelectableToolCatalogEntries,
   type HarnessToolCatalogEntry,
   type HarnessToolIntegration
 } from "@/shared/harness-tool-catalog";
@@ -25,6 +27,7 @@ import {
 
 type UnknownRecord = Record<string, unknown>;
 const TOOL_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const SAFE_CAPABILITY = /^[A-Za-z0-9._-]{1,64}$/;
 
 function record(value: unknown): UnknownRecord | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -202,7 +205,10 @@ function currentMode(value: unknown, execution: HarnessDetailModes["execution"])
   });
   if (
     (profile === "slow" && !invocations.includes("a2a")) ||
-    (profile === "heterogeneous" && (invocations.includes("a2a") || !invocations.includes("local-cli")))
+    (
+      profile === "heterogeneous" &&
+      (invocations.includes("a2a") || !invocations.some((invocation) => invocation === "local-cli" || invocation === "subagent"))
+    )
   ) return null;
   return { profile, roleBindings: parsed };
 }
@@ -254,6 +260,23 @@ function displayIntegration(value: unknown): HarnessDetailIntegration | null {
   const label = text(integration?.label);
   const modelFamily = text(integration?.modelFamily);
   if (!integration || !id || !tool || !label || !modelFamily) return null;
+  const bridgeId = text(integration.bridgeId);
+  const bridgeKind = text(integration.bridgeKind);
+  const sessionScope = integration.sessionScope === "same-session" ? "same-session" : null;
+  const bridgeProtocol = integration.bridgeProtocol === null || integration.bridgeProtocol === undefined
+    ? null
+    : text(integration.bridgeProtocol);
+  const bridgeCommand = integration.bridgeCommand === null || integration.bridgeCommand === undefined
+    ? null
+    : stringList(integration.bridgeCommand, 64);
+  const adapterBridgeCommand = integration.adapterBridgeCommand === null || integration.adapterBridgeCommand === undefined
+    ? null
+    : stringList(integration.adapterBridgeCommand, 64);
+  const bridgeRoles = integration.bridgeRoles === null || integration.bridgeRoles === undefined
+    ? null
+    : stringList(integration.bridgeRoles, 3).filter((role): role is HarnessModeRole =>
+      HARNESS_MODE_ROLES.includes(role as HarnessModeRole)
+    );
   return {
     id,
     tool,
@@ -269,6 +292,13 @@ function displayIntegration(value: unknown): HarnessDetailIntegration | null {
     capabilities: stringList(integration.capabilities, 64),
     localCli: integration.localCli === true,
     subagent: integration.subagent === true,
+    bridgeId,
+    bridgeKind,
+    sessionScope,
+    bridgeProtocol: bridgeProtocol === "acp-native-agent/v1" ? bridgeProtocol : null,
+    bridgeCommand,
+    adapterBridgeCommand,
+    bridgeRoles,
     a2aTargetCount: count(integration.a2aTargetCount) ?? -1,
     sandboxed: integration.sandboxed === true
   };
@@ -292,6 +322,13 @@ function integrationFromLegacyAgent(agent: HarnessDetailAgent): HarnessDetailInt
     capabilities: agent.capabilities,
     localCli: invocation === "local-cli",
     subagent: invocation === "subagent",
+    bridgeId: null,
+    bridgeKind: null,
+    sessionScope: null,
+    bridgeProtocol: null,
+    bridgeCommand: null,
+    adapterBridgeCommand: null,
+    bridgeRoles: null,
     a2aTargetCount: invocation === "a2a" ? 1 : 0,
     sandboxed: agent.sandboxed === true
   };
@@ -314,20 +351,36 @@ function strictIntegrationSnapshot(dispatch: UnknownRecord | null): HarnessDetai
       integration.invocations.length !== parsed.invocations.length || new Set(parsed.invocations).size !== parsed.invocations.length ||
       !Array.isArray(integration.capabilities) || integration.capabilities.length !== parsed.capabilities.length ||
       new Set(parsed.capabilities).size !== parsed.capabilities.length || parsed.a2aTargetCount < 0 || parsed.a2aTargetCount > 100 ||
-      typeof integration.localCli !== "boolean" || typeof integration.subagent !== "boolean" ||
+      typeof integration.localCli !== "boolean" ||
+      (integration.subagent !== true && integration.subagent !== false && integration.subagent !== null) ||
       typeof integration.sandboxed !== "boolean" ||
       parsed.localCli !== parsed.invocations.includes("local-cli") ||
       (parsed.localCli && !parsed.sandboxed) || (!parsed.localCli && parsed.sandboxed) ||
-      (parsed.subagent !== parsed.invocations.includes("subagent")) ||
       ((parsed.a2aTargetCount > 0) !== parsed.invocations.includes("a2a"))
     ) return null;
+    const bridgeKeys = [
+      "bridgeId", "bridgeKind", "sessionScope", "bridgeProtocol",
+      "bridgeCommand", "adapterBridgeCommand", "bridgeRoles"
+    ];
+    const hasBridgeValue = bridgeKeys.some((key) => {
+      const item = integration[key];
+      return item !== undefined && item !== null;
+    });
+    if (hasBridgeValue && !hasWellFormedExternalSubagentBridgeObservation(parsed)) return null;
+    // A legacy Coordinator-native declaration may retain `subagent: true`
+    // with missing/null bridge fields. It is readable, but never satisfies
+    // the external-bridge predicate used for selectable catalog entries.
+    if (!hasBridgeValue && parsed.subagent === false && parsed.invocations.includes("subagent")) return null;
     seen.add(parsed.id);
     integrations.push(parsed);
   }
   return integrations;
 }
 
-function strictToolCatalog(dispatch: UnknownRecord | null): HarnessDetailToolCapability[] | null {
+function strictToolCatalog(
+  dispatch: UnknownRecord | null,
+  integrations: readonly HarnessDetailIntegration[] | null
+): HarnessDetailToolCapability[] | null {
   if (!Array.isArray(dispatch?.toolCatalog) || dispatch.toolCatalog.length < 1 || dispatch.toolCatalog.length > 150) return null;
   const catalog: HarnessDetailToolCapability[] = [];
   const seen = new Set<string>();
@@ -369,7 +422,17 @@ function strictToolCatalog(dispatch: UnknownRecord | null): HarnessDetailToolCap
     seen.add(key);
     catalog.push({ tool, label, invocation, role: role as HarnessModeRole, agentCount, modelFamilies, capabilities });
   }
-  return HARNESS_MODE_ROLES.every((role) => catalog.some((entry) => entry.role === role)) ? catalog : null;
+  // A device may report an old Coordinator-native or external `subagent`
+  // route for diagnostics. Without an independently attested strict provider,
+  // it must not reach the editor's selectable tool inventory.
+  const selectableCatalog = v2SelectableToolCatalogEntries(catalog);
+  // Planner can be the built-in Coordinator, so an incomplete catalog is
+  // usable when it covers the explicitly selected Generator/Evaluator tools.
+  // The signed-intent validator checks each non-null role binding separately.
+  if (selectableCatalog.length === 0) return null;
+  const hasIntegrationInventory = dispatch !== null && Object.prototype.hasOwnProperty.call(dispatch, "integrations");
+  if (hasIntegrationInventory && !integrations) return null;
+  return selectableCatalog;
 }
 
 function count(value: unknown): number | null {
@@ -413,7 +476,7 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
   const machinery = record(modes.machinery);
   const strictAgents = strictAgentSnapshot(dispatch);
   const strictIntegrations = strictIntegrationSnapshot(dispatch);
-  const strictTools = strictToolCatalog(dispatch);
+  const strictTools = strictToolCatalog(dispatch, strictIntegrations);
   const assignments: Record<string, string | null> = {};
   for (const [role, agentId] of Object.entries(record(dispatch?.assignments) ?? {})) {
     if (role === "planner" && agentId === null) {
@@ -426,11 +489,8 @@ export function parseHarnessDetailModes(value: unknown): HarnessDetailModes | nu
   const agents = Array.isArray(dispatch?.agents)
     ? dispatch.agents.slice(0, 50).map(displayAgent).filter((agent): agent is HarnessDetailAgent => agent !== null)
     : [];
-  const reportedIntegrations = Array.isArray(dispatch?.integrations)
-    ? dispatch.integrations.slice(0, 50).map(displayIntegration).filter((item): item is HarnessDetailIntegration => item !== null)
-    : [];
-  const integrations = reportedIntegrations.length > 0
-    ? reportedIntegrations
+  const integrations = strictIntegrations && strictIntegrations.length > 0
+    ? strictIntegrations
     : agents.map(integrationFromLegacyAgent).filter((item): item is HarnessDetailIntegration => item !== null);
 
   const execution = executionProfile(modes.execution) ?? "unknown";
@@ -644,7 +704,7 @@ export function buildModeIntentRequest(
       },
       {
         now,
-        tools: toolCatalogModeDescriptors(tools)
+        tools: toolCatalogModeDescriptors(v2SelectableToolCatalogEntries(tools))
       }
     );
     return { projectId: projectId.trim(), desired: payload.desired, intentExpiresAt };

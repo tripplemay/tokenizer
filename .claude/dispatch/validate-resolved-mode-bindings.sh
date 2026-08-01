@@ -38,8 +38,17 @@ while [ "$#" -gt 0 ]; do
 done
 
 [ -f "$PROGRESS" ] || die "progress 不存在：$PROGRESS"
-[ -f "$REGISTRY" ] || die "registry 不存在：$REGISTRY"
 [ -x "$MODE_ADAPTERS" ] || die "resolve-mode-adapters.sh 不存在或不可执行"
+
+# Replaying a checkpoint is a project-bound operation, not a generic catalog
+# lookup. Pin registry authority before any resolver or signed-binding replay
+# reads it; use the progress file's repository rather than the caller's CWD.
+PROJECT_DIR="$(cd "$(dirname "$PROGRESS")" && pwd)"
+PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
+  || die "无法从 progress 所在目录确定 git 项目根；不能复验 checkpoint repo_key"
+REGISTRY="$(cd "$PROJECT_ROOT" && python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "registry 必须是项目根的非符号链接 .agents-registry.json"
 
 # A v2 checkpoint may own an explicit project-local adapter directory. Resolve
 # it before either registry preflight or signed-binding replay; an explicit
@@ -59,10 +68,14 @@ import sys
 
 progress_path, checkpoint_path, audit_path = sys.argv[1:4]
 ROLES = ("planner", "generator", "evaluator")
-RECORD_FIELDS = {"agent_id", "tool", "invocation", "model_family", "priority"}
+RECORD_FIELDS = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
 SAFE_BATCH = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 SAFE_TOOL = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+SAFE_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def fail(message):
@@ -131,7 +144,7 @@ for role in ROLES:
     if not isinstance(binding, dict) or set(binding) != {"tool", "invocation"}:
         fail(f"checkpoint role_bindings.{role} shape 非法")
     if not isinstance(record, dict) or set(record) != RECORD_FIELDS:
-        fail(f"resolution.{role} 必须恰含五个审计字段")
+        fail(f"resolution.{role} 必须恰含六个审计字段（含 execution_provenance_sha256）")
     if binding.get("tool") != record.get("tool") or binding.get("invocation") != record.get("invocation"):
         fail(f"resolution.{role} 与已签名 tool/invocation 不一致")
     if not isinstance(record["agent_id"], str) or not SAFE_ID.fullmatch(record["agent_id"]):
@@ -144,6 +157,8 @@ for role in ROLES:
         fail(f"resolution.{role}.model_family 非法")
     if isinstance(record["priority"], bool) or not isinstance(record["priority"], int) or record["priority"] < 0:
         fail(f"resolution.{role}.priority 非法")
+    if not isinstance(record["execution_provenance_sha256"], str) or not SAFE_SHA256.fullmatch(record["execution_provenance_sha256"]):
+        fail(f"resolution.{role}.execution_provenance_sha256 必须是小写 SHA-256")
     if assignments.get(role) != record["agent_id"]:
         fail(f"role_assignments.{role} 与 resolution agent_id 漂移")
 
@@ -166,10 +181,6 @@ fi
 [ -f "$VALIDATOR" ] || die "validate-mode-intent.sh 不存在"
 [ -f "$DISPATCH_DIR/tool-catalog.py" ] || die "tool-catalog.py 不存在"
 
-PROJECT_DIR="$(cd "$(dirname "$PROGRESS")" && pwd)"
-PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
-  || die "无法从 progress 所在目录确定 git 项目根；不能复验 checkpoint repo_key"
-
 if ! bash "$DISPATCH_DIR/validate-dispatch.sh" registry "$REGISTRY" --adapters "$ADAPTERS" >&2; then
   die "registry 未通过安全预检"
 fi
@@ -183,11 +194,16 @@ fi
 
 if ! python3 - "$AUDIT" "$CURRENT" <<'PY'
 import json
+import re
 import sys
 
 audit_path, current_path = sys.argv[1:3]
 ROLES = ("planner", "generator", "evaluator")
-FIELDS = {"agent_id", "tool", "invocation", "model_family", "priority"}
+FIELDS = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def fail(message):
@@ -224,7 +240,11 @@ for role in ROLES:
     if not isinstance(binding, dict) or not isinstance(before, dict) or not isinstance(after, dict):
         fail(f"{role} 复验记录缺失")
     if set(before) != FIELDS or set(after) != FIELDS:
-        fail(f"{role} resolution 必须恰含五字段")
+        fail(f"{role} resolution 必须恰含六字段（含 execution_provenance_sha256）")
+    if not isinstance(before.get("execution_provenance_sha256"), str) or not SHA256.fullmatch(before["execution_provenance_sha256"]):
+        fail(f"{role} 已存 execution_provenance_sha256 非法")
+    if not isinstance(after.get("execution_provenance_sha256"), str) or not SHA256.fullmatch(after["execution_provenance_sha256"]):
+        fail(f"{role} 当前 execution_provenance_sha256 非法")
     if binding.get("tool") != before.get("tool") or binding.get("invocation") != before.get("invocation"):
         fail(f"{role} 已存 resolution 脱离签名 binding")
     if binding.get("tool") != after.get("tool") or binding.get("invocation") != after.get("invocation"):

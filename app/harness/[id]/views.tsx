@@ -347,6 +347,7 @@ export async function ModesAndAgentsView({
       <ModeEditor
         projectId={project.id}
         tools={editorTools}
+        integrations={modes?.dispatch.integrations ?? []}
         agentFeatureVersion={project.device.agentFeatureVersion}
         blocker={blocker}
         selectedRole={selectedRole}
@@ -400,6 +401,17 @@ function IntegrationCard({
           <ModeFact label={t("modes.integration.capabilities")} value={integration.capabilities.join(", ") || t("notReported")} />
           <ModeFact label={t("modes.integration.modelFamily")} value={integration.modelFamily} />
           <ModeFact label={t("modes.integration.invocations")} value={integration.invocations.join(", ")} />
+          {integration.subagent ? (
+            <>
+              <ModeFact
+                label={t("modes.integration.subagentPath")}
+                value={integration.sessionScope === "same-session" && integration.bridgeKind
+                  ? t("modes.integration.sameSessionBridge", { kind: integration.bridgeKind })
+                  : t("modes.integration.hostNative")}
+              />
+              {integration.bridgeId ? <ModeFact label={t("modes.integration.bridgeId")} value={integration.bridgeId} /> : null}
+            </>
+          ) : null}
           <ModeFact
             label={t("modes.integration.sandbox")}
             value={integration.localCli

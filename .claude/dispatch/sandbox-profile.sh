@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
-# dispatch-mode.md 机件 #7「外部 CLI 沙箱契约」——local-cli transport 的开车前置条件。
+# dispatch-mode.md 机件 #7「外部 CLI / 同会话桥接沙箱契约」——开车前置条件。
 #
 # 为什么需要它：autonomous-mode.md §6 的 deny-list 写在 .claude/settings.json 里，
 # 只约束 Claude Code 自己的工具调用。一旦编排者拉起外部 CLI 子进程（codex/gemini/...），
 # 那个进程有自己的权限模型、自己的工具集、自己的 shell —— deny-list 一条都拦不住，
 # 闸门分类器更看不见（那是阶段内部的工具调用）。工具层拦不住，就在进程层拦。
 #
-# 四道锁：env 白名单（没凭据就花不了钱）· 独立 worktree · 禁 push · wall-clock 封顶。
+# local-cli guardrails：env 白名单 · 独立 worktree · 禁 push · wall-clock 封顶。
+# 历史 Seatbelt bridge 分支保留在本文件下方供未来 provider 迁移参考，但当前入口会在创建
+# 任何 runtime 前拒绝它；它不是 external same-session 的发布基础。
 #
 # 用法：
 #   sandbox-profile.sh --agent <agent-id> --envelope <envelope.json> [--ref <sha>]
 #                      [--registry .agents-registry.json] [--adapters <dir>]
+#                      [--expected-provenance <64-lowercase-hex>]
 #                      [--timeout-helper <file>]
 #                      [--workroot <dir>] [--state .harness-dispatch]
 #
@@ -40,6 +43,7 @@ INTEGRATION_ID=""
 ENVELOPE=""
 REF=""
 PROFILE=""
+EXPECTED_PROVENANCE=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -49,6 +53,7 @@ while [ $# -gt 0 ]; do
     --ref)      [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --ref 缺值" >&2; exit 2; }; REF="$2"; shift 2 ;;
     --registry) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --registry 缺值" >&2; exit 2; }; REGISTRY="$2"; shift 2 ;;
     --adapters) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --adapters 缺值" >&2; exit 2; }; ADAPTERS="$2"; shift 2 ;;
+    --expected-provenance) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --expected-provenance 缺值" >&2; exit 2; }; EXPECTED_PROVENANCE="$2"; shift 2 ;;
     --timeout-helper) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --timeout-helper 缺值" >&2; exit 2; }; TIMEOUT_HELPER="$2"; shift 2 ;;
     --workroot) [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --workroot 缺值" >&2; exit 2; }; WORKROOT="$2"; shift 2 ;;
     --state)    [ "$#" -ge 2 ] || { echo "[sandbox] ⛔ --state 缺值" >&2; exit 2; }; STATE="$2"; shift 2 ;;
@@ -73,10 +78,13 @@ if [ -n "$INTEGRATION_ID" ]; then
 fi
 [ -n "$ENVELOPE" ]   || die "缺 --envelope"
 [ -f "$ENVELOPE" ]   || die "信封文件不存在：$ENVELOPE"
-[ -f "$REGISTRY" ]   || die "注册表不存在：${REGISTRY}（机件未装，不许开车）"
+[ -n "$REGISTRY" ]   || die "缺 --registry"
 command -v python3 >/dev/null 2>&1 || die "python3 不可用"
 command -v git     >/dev/null 2>&1 || die "git 不可用"
 [ -f "$TIMEOUT_HELPER" ] || die "timeout helper 不存在：$TIMEOUT_HELPER"
+if [ -n "$EXPECTED_PROVENANCE" ] && ! [[ "$EXPECTED_PROVENANCE" =~ ^[0-9a-f]{64}$ ]]; then
+  die "--expected-provenance 必须是 64 位小写十六进制 SHA-256"
+fi
 
 # repo.url 的本地目标身份必须在创建 workroot/state/clone/worktree 之前确定。
 ENVELOPE_ABS="$(cd "$(dirname "$ENVELOPE")" && pwd)/$(basename "$ENVELOPE")"
@@ -88,6 +96,9 @@ bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE_ABS" >&2 \
   || die "信封校验未过，不创建沙箱"
 MAIN_REPO="$(python3 "$DISPATCH_DIR/dispatch_common.py" repo-preflight \
   --envelope "$ENVELOPE_ABS" --cwd "$PWD")" || die "repo.url 前置校验未过，不创建沙箱"
+REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+  --project-root "$MAIN_REPO" --registry "$REGISTRY")" \
+  || die "注册表必须是项目根的非符号链接 .agents-registry.json"
 
 # Direct sandbox use must obey the same active checkpoint as dispatch-run.sh.
 # Without this recovery a custom adapter selected during /plan would validate
@@ -110,6 +121,64 @@ PY
 )"
 fi
 
+# sandbox-profile.sh is a supported direct entrypoint. An active v2 checkpoint
+# owns both the selected target and its execution provenance, so a caller must
+# not bypass dispatch-run.sh by calling this lower-level profile with a
+# different --agent *or* a differently-derived --integration target.
+# Legacy/v1/fast progress returns {} and intentionally keeps the historical
+# direct behavior.
+if { [ -n "$AGENT_ID" ] || [ -n "$INTEGRATION_ID" ]; } && [ -f "$CANONICAL_PROGRESS" ]; then
+  ENVELOPE_ROLE="$(python3 - "$ENVELOPE_ABS" <<'PY'
+import json
+import sys
+
+try:
+    role = json.load(open(sys.argv[1], encoding="utf-8")).get("role")
+except (OSError, ValueError) as exc:
+    raise SystemExit(f"[sandbox] ⛔ 无法读取已校验信封 role：{exc}")
+if role not in ("planner", "generator", "evaluator"):
+    raise SystemExit(f"[sandbox] ⛔ 已校验信封 role 非法：{role!r}")
+print(role)
+PY
+)" || die "无法读取已校验信封 role"
+  ACTIVE_TARGET_ID="$AGENT_ID"
+  if [ -n "$INTEGRATION_ID" ]; then
+    [[ "$INTEGRATION_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || \
+      die "--integration 必须是 1..128 位安全稳定标识"
+    ACTIVE_TARGET_ID="local-cli--${INTEGRATION_ID}--${ENVELOPE_ROLE}"
+  fi
+  ACTIVE_ARGS=(--role "$ENVELOPE_ROLE" --expected-agent "$ACTIVE_TARGET_ID" --progress "$CANONICAL_PROGRESS" --registry "$REGISTRY")
+  ACTIVE_ARGS+=(--adapters "$ADAPTERS")
+  ACTIVE_ROLE="$(bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}")" \
+    || die "active mode role 复验失败；拒绝绕过 dispatch-run 的 target 选择"
+  ACTIVE_EXPECTED_PROVENANCE="$(python3 - "$ACTIVE_ROLE" <<'PY'
+import json
+import re
+import sys
+
+try:
+    value = json.loads(sys.argv[1])
+except (TypeError, ValueError) as exc:
+    raise SystemExit(f"[sandbox] ⛔ active mode role JSON 非法：{exc}")
+if value == {}:
+    print("")
+    raise SystemExit(0)
+if not isinstance(value, dict):
+    raise SystemExit("[sandbox] ⛔ active mode role 必须是 object 或 {}")
+provenance = value.get("execution_provenance_sha256")
+if not isinstance(provenance, str) or not re.fullmatch(r"[0-9a-f]{64}", provenance):
+    raise SystemExit("[sandbox] ⛔ active v2 role 缺有效 execution_provenance_sha256；需重新规划")
+print(provenance)
+PY
+)" || die "无法恢复 active mode execution provenance"
+  if [ -n "$ACTIVE_EXPECTED_PROVENANCE" ]; then
+    if [ -n "$EXPECTED_PROVENANCE" ] && [ "$EXPECTED_PROVENANCE" != "$ACTIVE_EXPECTED_PROVENANCE" ]; then
+      die "--expected-provenance 与 active v2 checkpoint 不一致"
+    fi
+    EXPECTED_PROVENANCE="$ACTIVE_EXPECTED_PROVENANCE"
+  fi
+fi
+
 # ── 1. 解析 descriptor + adapter（受限 JSON 配置，绝不 eval）───────────────
 # Registry and adapter strings are untrusted at this direct entrypoint. Keep
 # them as JSON values, then read scalars/arrays without ever re-parsing them as
@@ -118,9 +187,15 @@ fi
 PROFILE="$(mktemp)"
 cleanup_profile() { [ -z "$PROFILE" ] || rm -f "$PROFILE"; }
 trap cleanup_profile EXIT
-if ! python3 - "$REGISTRY" "$AGENT_ID" "$INTEGRATION_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" "$PROFILE" <<'PY'
-import json, sys, os, re, subprocess
-reg_path, agent_id, integration_id, adapters_dir, env_path, dispatch_dir, output_path = sys.argv[1:8]
+if ! python3 - "$REGISTRY" "$AGENT_ID" "$INTEGRATION_ID" "$ADAPTERS" "$ENVELOPE_ABS" "$DISPATCH_DIR" "$PROFILE" "$EXPECTED_PROVENANCE" <<'PY'
+import hmac
+import importlib.util
+import json
+import os
+import re
+import sys
+import subprocess
+reg_path, agent_id, integration_id, adapters_dir, env_path, dispatch_dir, output_path, expected_provenance = sys.argv[1:9]
 sys.path.insert(0, dispatch_dir)
 from dispatch_common import (
     DispatchContractError,
@@ -165,19 +240,29 @@ except (TypeError, ValueError) as exc:
     fail(f"内部执行目标 JSON 非法：{exc}")
 if not isinstance(target, dict):
     fail("内部执行目标必须是 object")
-if target.get("invocation") != "local-cli":
-    fail(f"{target_id} 的 invocation={target.get('invocation')!r}，本脚本只处理 local-cli")
+target_provenance = target.get("execution_provenance_sha256")
+if not isinstance(target_provenance, str) or not re.fullmatch(r"[0-9a-f]{64}", target_provenance):
+    fail("内部执行目标缺有效 execution_provenance_sha256")
+if expected_provenance and not hmac.compare_digest(target_provenance, expected_provenance):
+    fail("fresh target execution_provenance_sha256 与期望值不一致；拒绝 provenance drift")
+transport = target.get("invocation")
+if transport not in ("local-cli", "subagent"):
+    fail(f"{target_id} 的 invocation={transport!r}，本脚本只处理 local-cli 或已验证同会话 bridge")
 if role not in (target.get("roles") or []):
     fail(f"{target_id} 的 roles={target.get('roles')!r} 不含信封 role={role!r}")
 d = {
     "id": target_id,
     "tool": target.get("tool"),
-    "transport": target.get("invocation"),
+    "transport": transport,
     "adapter": target.get("adapter"),
     "model_family": target.get("model_family"),
     "sandbox": target.get("sandbox"),
     "timeout_s": target.get("timeout_s"),
     "roles": target.get("roles"),
+    "agent_type": target.get("agent_type"),
+    "bridge_id": target.get("bridge_id"),
+    "bridge_strategy": target.get("bridge_strategy"),
+    "bridge_protocol": target.get("bridge_protocol"),
     "constraints": {"l2": False, "write_src": role == "generator", "push": False},
 }
 
@@ -197,7 +282,8 @@ if ad.get("name") != adapter_name:
     fail(f"适配器文件名 {adapter_name!r} 与 adapter.name={ad.get('name')!r} 不一致")
 if ad.get("_verified") is not True:
     fail(f"适配器 {adapter_name!r} 未标记 _verified=true，不能执行")
-if ad.get("model_family") != d.get("model_family"):
+adapter_family = ad.get("model_family")
+if adapter_family != d.get("model_family"):
     fail(f"适配器 {adapter_name!r} model_family 与 descriptor 不一致")
 delivery = ad.get("envelope_delivery")
 if delivery not in ("stdin", "argv", "env"):
@@ -221,6 +307,64 @@ try:
     )
 except DispatchContractError as e:
     fail(str(e))
+
+# The catalog read this adapter while resolving target. Re-read the exact
+# execution contract and compare its domain-separated digest before emitting a
+# profile, so a file swap between catalog resolution and launch cannot alter
+# argv, delivery, environment policy, or a future execution-relevant knob.
+target_adapter_contract = target.get("adapter_execution_contract_sha256")
+if not isinstance(target_adapter_contract, str) or not re.fullmatch(r"[0-9a-f]{64}", target_adapter_contract):
+    fail(f"{target_id} 缺有效 adapter_execution_contract_sha256")
+catalog_spec = importlib.util.spec_from_file_location(
+    "harness_tool_catalog_contract", os.path.join(dispatch_dir, "tool-catalog.py")
+)
+if catalog_spec is None or catalog_spec.loader is None:
+    fail("无法加载 tool-catalog adapter contract 算法")
+catalog_module = importlib.util.module_from_spec(catalog_spec)
+sys.modules[catalog_spec.name] = catalog_module
+try:
+    catalog_spec.loader.exec_module(catalog_module)
+    observed_adapter_contract = catalog_module.adapter_execution_contract_sha256(
+        ad,
+        declared_name=adapter_name,
+        adapter_tool=adapter_tool,
+        adapter_family=adapter_family,
+        argv=argv,
+        envelope_delivery=delivery,
+        env_allowlist_extra=adapter_env_allow,
+    )
+except Exception as exc:
+    fail(f"无法复算适配器 execution contract：{exc}")
+if not hmac.compare_digest(target_adapter_contract, observed_adapter_contract):
+    fail("适配器 execution contract 与 fresh target 不一致；拒绝 catalog-to-adapter drift")
+
+bridge_id = ""
+bridge_strategy = ""
+bridge_protocol = None
+agent_type = d.get("agent_type")
+if transport == "subagent":
+    bridge_id = d.get("bridge_id")
+    bridge_strategy = d.get("bridge_strategy")
+    bridge_protocol = d.get("bridge_protocol")
+    if not isinstance(bridge_id, str) or bridge_id == "host-native" or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", bridge_id):
+        fail(f"{target_id} 不是可执行的同会话 bridge target")
+    if not isinstance(bridge_strategy, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", bridge_strategy):
+        fail(f"{target_id} 的 bridge strategy 非法")
+    if not isinstance(agent_type, str) or not agent_type:
+        fail(f"{target_id} 的 bridge subagent persona 缺失")
+    if not isinstance(bridge_protocol, dict) or set(bridge_protocol) != {"kind", "command", "request_delivery", "response_format"}:
+        fail(f"{target_id} 的 bridge protocol 非法")
+    if not isinstance(bridge_protocol.get("kind"), str) or not bridge_protocol["kind"]:
+        fail(f"{target_id} 的 bridge protocol.kind 非法")
+    if not isinstance(bridge_protocol.get("command"), list) or not bridge_protocol["command"] or any(not isinstance(item, str) or not item for item in bridge_protocol["command"]):
+        fail(f"{target_id} 的 bridge protocol.command 非法")
+    if bridge_protocol.get("request_delivery") not in ("stdin", "argv", "env") or bridge_protocol.get("response_format") != "json":
+        fail(f"{target_id} 的 bridge protocol delivery/response 非法")
+    # The Harness process owns the bridge invocation. It receives the envelope
+    # by argv and then speaks the vendor protocol internally; never route the
+    # untrusted envelope through a command template from the registry.
+    delivery = "argv"
+    argv = []
 
 batch    = env.get("batch") or fail("信封缺 batch")
 task_id  = env.get("task_id") or fail("信封缺 task_id（幂等键）")
@@ -286,6 +430,7 @@ for k in allow:
 config = {
     "target_id": target_id,
     "adapter": adapter_name,
+    "transport": transport,
     "family": d.get("model_family", ""),
     "timeout_cap": timeout_cap,
     "timeout": timeout,
@@ -302,6 +447,10 @@ config = {
     "argv": argv,
     "env_allow": uniq,
     "env_set": [f"{key}={os.path.expanduser(value)}" for key, value in sandbox_env_set.items()],
+    "agent_type": agent_type or "",
+    "bridge_id": bridge_id,
+    "bridge_strategy": bridge_strategy,
+    "bridge_protocol_json": json.dumps(bridge_protocol, ensure_ascii=False, separators=(",", ":")) if bridge_protocol is not None else "",
 }
 json.dump(config, open(output_path, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 PY
@@ -342,6 +491,7 @@ PY
 E_TARGET_ID="$(profile_scalar target_id)"
 [ -n "$E_TARGET_ID" ] || die "内部 profile 缺 target_id"
 D_ADAPTER="$(profile_scalar adapter)"
+D_TRANSPORT="$(profile_scalar transport)"
 D_FAMILY="$(profile_scalar family)"
 D_TIMEOUT_CAP="$(profile_scalar timeout_cap)"
 D_TIMEOUT="$(profile_scalar timeout)"
@@ -355,6 +505,10 @@ E_REF="$(profile_scalar ref)"
 E_ROLE="$(profile_scalar role)"
 E_DELIVERABLE="$(profile_scalar deliverable_json)"
 E_ARTIFACT="$(profile_scalar artifact)"
+D_AGENT_TYPE="$(profile_scalar agent_type)"
+D_BRIDGE_ID="$(profile_scalar bridge_id)"
+D_BRIDGE_STRATEGY="$(profile_scalar bridge_strategy)"
+D_BRIDGE_PROTOCOL_JSON="$(profile_scalar bridge_protocol_json)"
 D_ARGV_TEMPLATE=()
 while IFS= read -r -d '' item; do D_ARGV_TEMPLATE+=("$item"); done < <(profile_array argv)
 D_ENV_ALLOW=()
@@ -364,12 +518,35 @@ while IFS= read -r -d '' item; do D_ENV_SET+=("$item"); done < <(profile_array e
 
 [ -n "$REF" ] || REF="$E_REF"
 [ -n "$REF" ] || REF="$(git -C "$MAIN_REPO" rev-parse HEAD)"
+[ "$D_TRANSPORT" = "local-cli" ] || [ "$D_TRANSPORT" = "subagent" ] || \
+  die "内部 profile transport 非法：$D_TRANSPORT"
+
+# A project manifest and a Seatbelt profile cannot create a strict external
+# same-session trust boundary.  This release has no framework-integrated VM
+# or ephemeral-principal provider with brokered credentials/network and
+# provider-owned lifecycle, so reject even a stale target before any worktree,
+# runtime state, or vendor process can be created.  A future provider must
+# replace this branch and re-attest during this fresh target resolution.
+if [ "$D_TRANSPORT" = "subagent" ]; then
+  die "external same-session bridge is unavailable: no strict VM/ephemeral-principal provider is integrated"
+fi
 
 # ── 2. 独立 worktree（锁定到 sha，detach，不设 upstream）────────────────────
 mkdir -p "$WORKROOT"
 mkdir -p "$STATE"
+WORKROOT_ABS="$(cd "$WORKROOT" && pwd)"
 STATE_ROOT="$(cd "$STATE" && pwd)"
-WT="$(cd "$WORKROOT" && pwd)/${E_BATCH}-${E_TARGET_ID}-${E_TASK_ID}"
+BRIDGE_RUNTIME_ROOT=""
+cleanup_bridge_runtime() {
+  if [ -n "${BRIDGE_RUNTIME_ROOT:-}" ]; then
+    case "$BRIDGE_RUNTIME_ROOT" in
+      "$WORKROOT_ABS"/.bridge-runtime-"$E_TASK_ID".*) rm -rf -- "$BRIDGE_RUNTIME_ROOT" ;;
+      *) echo "[sandbox] ⛔ 拒绝清理非本次 bridge runtime 目录" >&2 ;;
+    esac
+  fi
+}
+trap 'cleanup_bridge_runtime; cleanup_profile' EXIT
+WT="$WORKROOT_ABS/${E_BATCH}-${E_TARGET_ID}-${E_TASK_ID}"
 [ -e "$WT" ] && die "worktree 已存在：${WT}（同 task_id 重复派活？幂等键应去重）"
 # 🔴 写代码的角色不能用 worktree。git worktree 把元数据放在**主仓**的
 # `.git/worktrees/<name>/`，而外部 CLI 的厂商沙箱（Codex 的 -s workspace-write）只允许
@@ -417,6 +594,71 @@ ENV_ARGS+=("GIT_CONFIG_COUNT=1" "GIT_CONFIG_KEY_0=remote.origin.pushurl" \
    其 .zshenv/.zprofile 中的 export 将绕过 env 白名单还原敏感变量（dispatch-mode.md §5.1 L1）。
    请配置专用 HOME，并用 sandbox.env_set 投喂该 CLI 的认证目录（如 CODEX_HOME）。"
 case "$D_HOME" in /*) ;; *) die "sandbox.home_dir 必须是绝对路径或 ~ 开头（当前解析为 ${D_HOME}）" ;; esac
+
+# Historical, unreachable Seatbelt scaffold. It is not a strict provider and
+# must not be re-enabled without replacing it with the VM/ephemeral-principal
+# contract documented in transports/external-bridge-provider.md.
+BRIDGE_PRIVATE_STATE_ROOT=""
+BRIDGE_TMPDIR=""
+SEATBELT_PROFILE=""
+SEATBELT_EXEC=""
+if [ "$D_TRANSPORT" = "subagent" ]; then
+  [ "$(uname -s)" = "Darwin" ] || die "external same-session bridge 需要宿主文件系统隔离 provider；当前仅支持 macOS sandbox-exec"
+  SEATBELT_EXEC="/usr/bin/sandbox-exec"
+  [ -x "$SEATBELT_EXEC" ] || die "external same-session bridge 需要受信任的 /usr/bin/sandbox-exec，当前主机不可用"
+  python3 - "$MAIN_REPO" "$WORKROOT_ABS" "$STATE_ROOT" "$WT" <<'PY' || die "external bridge writable roots 与 Coordinator/state 不得重叠"
+import os
+import sys
+
+main_repo, workroot, state_root, worktree = (
+    os.path.realpath(value) for value in sys.argv[1:5]
+)
+if os.path.commonpath((main_repo, workroot)) in {main_repo, workroot}:
+    raise SystemExit(1)
+if os.path.commonpath((state_root, worktree)) in {state_root, worktree}:
+    raise SystemExit(1)
+PY
+  BRIDGE_RUNTIME_ROOT="$(mktemp -d "$WORKROOT_ABS/.bridge-runtime-${E_TASK_ID}.XXXXXX")" \
+    || die "同会话 bridge runtime 目录创建失败"
+  chmod 700 "$BRIDGE_RUNTIME_ROOT" || die "同会话 bridge runtime 目录权限设置失败"
+  BRIDGE_PRIVATE_STATE_ROOT="$BRIDGE_RUNTIME_ROOT/kimi-state"
+  BRIDGE_TMPDIR="$BRIDGE_RUNTIME_ROOT/tmp"
+  SEATBELT_PROFILE="$BRIDGE_RUNTIME_ROOT/macos-seatbelt.sb"
+  BRIDGE_RESULT="$BRIDGE_RUNTIME_ROOT/bridge-result.json"
+  mkdir -p "$BRIDGE_PRIVATE_STATE_ROOT" "$BRIDGE_TMPDIR" || die "同会话 bridge runtime 子目录创建失败"
+  chmod 700 "$BRIDGE_PRIVATE_STATE_ROOT" "$BRIDGE_TMPDIR" || die "同会话 bridge runtime 子目录权限设置失败"
+  # The configured home remains a catalog precondition, but an external bridge
+  # receives an empty ephemeral HOME instead of any user-writable directory.
+  D_HOME="$BRIDGE_RUNTIME_ROOT/home"
+  if ! python3 - "$SEATBELT_PROFILE" "$WT" "$BRIDGE_RUNTIME_ROOT" <<'PY'
+import json
+import os
+import sys
+
+profile_path, worktree, runtime_root = sys.argv[1:4]
+writable_roots = [os.path.realpath(value) for value in (worktree, runtime_root)]
+if any(not os.path.isabs(value) or value == os.path.sep for value in writable_roots):
+    raise SystemExit("invalid bridge writable root")
+if os.path.commonpath(writable_roots) in writable_roots:
+    raise SystemExit("bridge writable roots must be separate")
+profile = "\n".join((
+    "(version 1)",
+    "(deny default)",
+    "(allow process*)",
+    "(allow file-read*)",
+    "(allow network*)",
+    *(f"(allow file-write* (subpath {json.dumps(root)}))" for root in writable_roots),
+    "",
+))
+with open(profile_path, "x", encoding="utf-8") as stream:
+    stream.write(profile)
+os.chmod(profile_path, 0o600)
+PY
+  then
+    die "无法生成 macOS bridge 文件系统隔离 profile"
+  fi
+fi
+
 mkdir -p "$D_HOME"
 # 专用 HOME 里若混入 shell 初始化文件，同一个洞照样重开 —— fail-closed
 for dotf in .zshenv .zprofile .zlogin .bashrc .bash_profile .profile .envrc; do
@@ -424,27 +666,51 @@ for dotf in .zshenv .zprofile .zlogin .bashrc .bash_profile .profile .envrc; do
 done
 ENV_ARGS+=("HOME=$D_HOME")
 echo "[sandbox] 专用 HOME: ${D_HOME}（已确认无 shell 初始化文件）" >&2
+if [ -n "$BRIDGE_TMPDIR" ]; then
+  ENV_ARGS+=("TMPDIR=$BRIDGE_TMPDIR")
+fi
 ENV_ARGS+=("HARNESS_ENVELOPE=$ENVELOPE_ABS")
 ENV_ARGS+=("HARNESS_ARTIFACT=$E_ARTIFACT" "HARNESS_BATCH=$E_BATCH" "HARNESS_TASK_ID=$E_TASK_ID")
-# Do not disclose the Coordinator checkout path to external CLIs. local-cli
-# isolation is an env/worktree convention, not OS filesystem containment; an
-# adapter remains a verified/trusted integration and stronger isolation needs
-# an explicit host sandbox provider.
+# Do not disclose the Coordinator checkout path to external CLIs. For local-cli
+# this remains a cooperative env/worktree convention, not a hostile-process
+# filesystem boundary.
 ENV_ARGS+=("HARNESS_EFFECTIVE_TIMEOUT_S=$D_TIMEOUT")
 
-# ── 4. 渲染 argv 模板 ──────────────────────────────────────────────────────
+# ── 4. 渲染 argv 模板 / 启动已验证 bridge runner ─────────────────────────
 ARGV=()
-for tok in "${D_ARGV_TEMPLATE[@]}"; do
-  tok="${tok//\{\{worktree\}\}/$WT}"
-  tok="${tok//\{\{envelope\}\}/$ENVELOPE_ABS}"
-  # {{envelope_json}}：内联信封**内容**（不是路径），供只接受 `-p <text>` 的 CLI（如 Kimi）。
-  # 作为单个 argv 元素直接 exec，无 shell 解释；信封 ~1KB，远低于 ARG_MAX。
-  tok="${tok//\{\{envelope_json\}\}/$ENVELOPE_JSON}"
-  tok="${tok//\{\{batch\}\}/$E_BATCH}"
-  tok="${tok//\{\{artifact\}\}/$E_ARTIFACT}"
-  ARGV+=("$tok")
-done
-command -v "${ARGV[0]}" >/dev/null 2>&1 || die "适配器可执行文件不在 PATH：${ARGV[0]}"
+case "$D_TRANSPORT" in
+  local-cli)
+    for tok in "${D_ARGV_TEMPLATE[@]}"; do
+      tok="${tok//\{\{worktree\}\}/$WT}"
+      tok="${tok//\{\{envelope\}\}/$ENVELOPE_ABS}"
+      # {{envelope_json}}：内联信封**内容**（不是路径），供只接受 `-p <text>` 的 CLI（如 Kimi）。
+      # 作为单个 argv 元素直接 exec，无 shell 解释；信封 ~1KB，远低于 ARG_MAX。
+      tok="${tok//\{\{envelope_json\}\}/$ENVELOPE_JSON}"
+      tok="${tok//\{\{batch\}\}/$E_BATCH}"
+      tok="${tok//\{\{artifact\}\}/$E_ARTIFACT}"
+      ARGV+=("$tok")
+    done
+    [ "${#ARGV[@]}" -gt 0 ] || die "local-cli adapter 未生成 argv"
+    command -v "${ARGV[0]}" >/dev/null 2>&1 || die "适配器可执行文件不在 PATH：${ARGV[0]}"
+    ;;
+  subagent)
+    [ -n "$D_BRIDGE_ID" ] && [ -n "$D_BRIDGE_STRATEGY" ] && [ -n "$D_BRIDGE_PROTOCOL_JSON" ] && [ -n "$D_AGENT_TYPE" ] || \
+      die "同会话 bridge profile 缺少已验证元数据"
+    BRIDGE_RUNNER="$DISPATCH_DIR/transports/session-bridge.py"
+    [ -f "$BRIDGE_RUNNER" ] || die "同会话 bridge runner 不存在：$BRIDGE_RUNNER"
+    [ -n "$BRIDGE_RUNTIME_ROOT" ] && [ -n "$BRIDGE_RESULT" ] && [ -n "$BRIDGE_PRIVATE_STATE_ROOT" ] || \
+      die "同会话 bridge 缺少受控 runtime 目录"
+    [ ! -e "$BRIDGE_RESULT" ] || die "task_id 已有 bridge 回执：$BRIDGE_RESULT"
+    ARGV=(
+      python3 "$BRIDGE_RUNNER" run
+      --bridge-id "$D_BRIDGE_ID" --strategy "$D_BRIDGE_STRATEGY"
+      --protocol-json "$D_BRIDGE_PROTOCOL_JSON" --persona "$D_AGENT_TYPE"
+      --envelope "$ENVELOPE_ABS" --worktree "$WT" --result "$BRIDGE_RESULT"
+      --timeout-s "$D_TIMEOUT" --private-state-root "$BRIDGE_PRIVATE_STATE_ROOT"
+    )
+    ;;
+  *) die "未知 sandbox transport：$D_TRANSPORT" ;;
+esac
 
 # ── 5. 绝对 wall-clock 封顶执行（单一 portable helper）────────────────────
 LOG="$(cd "$WORKROOT" && pwd)/run-${E_TASK_ID}.log"
@@ -469,16 +735,27 @@ set +e
 # 不依赖各家 CLI 的 --cd/-C 是否存在、是否被遵守；Kimi 无此类参数，完全靠这条。
 # 封顶对每种投递方式都必须生效。env 只通过 HARNESS_ENVELOPE 交付，argv
 # 只通过适配器模板交付；两者都不应意外继承调用方 stdin。
+run_timeout_helper() {
+  if [ "$D_TRANSPORT" = "subagent" ]; then
+    [ -n "$SEATBELT_EXEC" ] && [ -n "$SEATBELT_PROFILE" ] && [ -n "$BRIDGE_TMPDIR" ] || \
+      die "同会话 bridge 缺少宿主文件系统隔离"
+    # The deadline helper stays outside Seatbelt as the trusted group reaper.
+    # The contained bridge inherits that group rather than starting another
+    # session, so it needs no broad signal permission and cannot strand Kimi
+    # after cancellation or normal bridge completion.
+    exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 --status-file "$TIMEOUT_STATUS" --cwd "$WT" -- \
+      env -i "${ENV_ARGS[@]}" "HARNESS_BRIDGE_OUTER_GROUP_CLEANUP=1" \
+      "$SEATBELT_EXEC" -f "$SEATBELT_PROFILE" "${ARGV[@]}"
+  fi
+  exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 --status-file "$TIMEOUT_STATUS" --cwd "$WT" -- \
+    env -i "${ENV_ARGS[@]}" "${ARGV[@]}"
+}
 case "$D_ENVELOPE_DELIVERY" in
   stdin)
-    ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
-        --status-file "$TIMEOUT_STATUS" -- \
-        env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < "$ENVELOPE_ABS" > "$LOG" 2>&1 ) &
+    ( cd "$WT" && run_timeout_helper < "$ENVELOPE_ABS" > "$LOG" 2>&1 ) &
     ;;
   argv|env)
-    ( cd "$WT" && exec python3 "$TIMEOUT_HELPER" --timeout "$D_TIMEOUT" --term-grace 2 \
-        --status-file "$TIMEOUT_STATUS" -- \
-        env -i "${ENV_ARGS[@]}" "${ARGV[@]}" < /dev/null > "$LOG" 2>&1 ) &
+    ( cd "$WT" && run_timeout_helper < /dev/null > "$LOG" 2>&1 ) &
     ;;
   *)
     die "适配器 envelope_delivery 非法：$D_ENVELOPE_DELIVERY"
@@ -506,23 +783,139 @@ elif [ ! -f "$ARTIFACT_ABS" ];                   then OUTCOME="ARTIFACT_MISSING"
 else                                                  OUTCOME="RETURNED"
 fi
 
+# A process exit and an artifact are not enough for a same-session bridge:
+# the generic runner must also prove the declared bridge reached its child
+# terminal state in the same session.  The persisted object contains only
+# scalar protocol lineage and an artifact hash; it never contains prompts,
+# model output, credentials, or raw ACP/App Server messages.
+BRIDGE_META_JSON="null"
+if [ "$D_TRANSPORT" = "subagent" ] && [ "$EXIT" -eq 0 ]; then
+  set +e
+  BRIDGE_META_JSON="$(python3 - "$BRIDGE_RESULT" "$D_BRIDGE_ID" "$D_BRIDGE_STRATEGY" "$D_BRIDGE_PROTOCOL_JSON" "$ARTIFACT_ABS" <<'PY'
+import hashlib
+import json
+import os
+import re
+import sys
+
+result_path, bridge_id, strategy, protocol_json, artifact = sys.argv[1:6]
+try:
+    protocol = json.loads(protocol_json)
+    result = json.load(open(result_path, encoding="utf-8"))
+except (OSError, TypeError, ValueError) as exc:
+    raise SystemExit("bridge result is unreadable")
+if not isinstance(protocol, dict) or not isinstance(result, dict):
+    raise SystemExit("bridge result shape is invalid")
+kind = protocol.get("kind")
+allowed = {
+    "acp-native-agent/v1": {
+        "bridge_id", "bridge_strategy", "bridge_kind", "session_scope",
+        "session_id", "child_call_id", "terminal_status", "artifact_sha256",
+    },
+}
+if kind not in allowed or set(result) != allowed[kind]:
+    raise SystemExit("bridge result contains invalid fields")
+if result.get("bridge_id") != bridge_id or result.get("bridge_strategy") != strategy:
+    raise SystemExit("bridge result declaration does not match target")
+if result.get("bridge_kind") != kind or result.get("session_scope") != "same-session":
+    raise SystemExit("bridge result session scope is invalid")
+if result.get("terminal_status") != "completed":
+    raise SystemExit("bridge child did not complete")
+lineage_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")
+if not isinstance(result.get("session_id"), str) or lineage_id.fullmatch(result["session_id"]) is None:
+    raise SystemExit("bridge session identifier is invalid")
+if not isinstance(result.get("child_call_id"), str) or re.fullmatch(r"[0-9a-f]{64}", result["child_call_id"]) is None:
+    raise SystemExit("bridge child-call receipt token is invalid")
+digest = hashlib.sha256()
+with open(artifact, "rb") as stream:
+    for block in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(block)
+if result.get("artifact_sha256") != digest.hexdigest():
+    raise SystemExit("bridge artifact hash does not match")
+print(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
+PY
+)"
+  BRIDGE_RC=$?
+  set -e
+  if [ "$BRIDGE_RC" -ne 0 ]; then
+    BRIDGE_META_JSON="null"
+    OUTCOME="FAILED"
+    TERMINATION_REASON="bridge_proof_invalid"
+  fi
+fi
+
+# Planner and Evaluator may return exactly their commissioned artifact, never
+# source edits. Host containment keeps writes away from the Coordinator checkout;
+# this receipt check additionally rejects a bridge child that dirtied its own
+# isolated worktree before any artifact can enter the Coordinator flow.
+if [ "$D_TRANSPORT" = "subagent" ] && [ "$EXIT" -eq 0 ] && [ "$OUTCOME" = "RETURNED" ] && [ "$E_ROLE" != "generator" ]; then
+  set +e
+  python3 - "$WT" "$E_ARTIFACT" >/dev/null 2>&1 <<'PY'
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+worktree = Path(sys.argv[1]).resolve()
+artifact_rel = sys.argv[2]
+artifact = worktree / artifact_rel
+try:
+    artifact.lstat()
+except OSError:
+    raise SystemExit(1)
+if artifact.is_symlink() or not artifact.is_file() or artifact.stat().st_nlink != 1:
+    raise SystemExit(1)
+
+for command in (
+    ["git", "-C", str(worktree), "diff", "--no-ext-diff", "--quiet"],
+    ["git", "-C", str(worktree), "diff", "--cached", "--no-ext-diff", "--quiet"],
+):
+    result = subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if result.returncode != 0:
+        raise SystemExit(1)
+
+untracked = subprocess.run(
+    ["git", "-C", str(worktree), "ls-files", "--others", "--exclude-standard", "-z"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.DEVNULL,
+    check=False,
+).stdout.split(b"\0")
+entries = [item.decode("utf-8", "strict") for item in untracked if item]
+if entries != [artifact_rel]:
+    raise SystemExit(1)
+PY
+  READONLY_RC=$?
+  set -e
+  if [ "$READONLY_RC" -ne 0 ]; then
+    BRIDGE_META_JSON="null"
+    OUTCOME="FAILED"
+    TERMINATION_REASON="readonly_worktree_mutation"
+  fi
+fi
+
 META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
 python3 - "$META" "$E_TASK_ID" "$E_TARGET_ID" "$D_ADAPTER" "$D_FAMILY" "$E_ROLE" "$E_DELIVERABLE" \
                   "$E_BATCH" "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
-                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" <<'PY'
+                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" "$D_TRANSPORT" "$BRIDGE_META_JSON" <<'PY'
 import json, sys
-p, task, agent, adapter, family, role, deliverable_json, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason, envelope_path = sys.argv[1:20]
+p, task, agent, adapter, family, role, deliverable_json, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason, envelope_path, transport, bridge_json = sys.argv[1:22]
 try:
     deliverable = json.loads(deliverable_json)
 except (TypeError, ValueError):
     deliverable = {}
+try:
+    bridge = json.loads(bridge_json)
+except (TypeError, ValueError):
+    bridge = None
 meta = {"task_id": task, "agent_id": agent, "adapter": adapter, "model_family": family,
         "role": role, "deliverable": deliverable,
         "batch": batch, "ref": ref, "worktree": wt, "artifact": art, "log": log,
         "envelope_path": envelope_path,
         "outcome": outcome, "exit_code": int(code), "duration_s": int(dur),
         "effective_timeout_s": int(effective), "descriptor_timeout_s": int(cap),
-        "termination_reason": reason, "transport": "local-cli"}
+        "termination_reason": reason, "transport": transport}
+if isinstance(bridge, dict):
+    meta["bridge"] = bridge
 json.dump(meta, open(p, "w"), ensure_ascii=False, indent=2)
 print(json.dumps(meta, ensure_ascii=False))
 PY

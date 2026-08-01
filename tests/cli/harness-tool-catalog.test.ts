@@ -13,6 +13,48 @@ function write(rel: string, value: unknown): string {
   return path;
 }
 
+function writeKimiAcpBridge(
+  protocolKind = "acp-native-agent/v1",
+  command: string[] = ["kimi", "acp"]
+): void {
+  write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", {
+    id: "kimi-acp-native-agent",
+    _verified: true,
+    session_scope: "same-session",
+    strategy: "session-bridge-v1",
+    protocol: {
+      kind: protocolKind,
+      command,
+      request_delivery: "stdin",
+      response_format: "json"
+    },
+    personas: {
+      planner: "planner-proposal",
+      generator: "generator-restricted",
+      evaluator: "evaluator"
+    }
+  });
+}
+
+function writeKimiExternalIntegration(): void {
+  write(".agents-registry.json", {
+    version: "tool-integrations/1",
+    integrations: [{
+      id: "kimi",
+      tool: "kimi",
+      label: "Kimi Code",
+      model_family: "kimi",
+      subagent: { bridge: "kimi-acp-native-agent" },
+      local_cli: {
+        adapter: "kimi",
+        sandbox: { home_dir: "~/.harness-sandbox/kimi" },
+        timeout_s: 1800
+      }
+    }],
+    a2a_targets: []
+  });
+}
+
 function installCatalogFixture(): void {
   write(".agents-registry.json", {
     version: "dispatch/1",
@@ -77,6 +119,7 @@ function installCatalogFixture(): void {
     argv: ["future-cli"],
     envelope_delivery: "env",
     env_allowlist_extra: ["FUTURE_CLI_TOKEN"],
+    bridge_commands: { "acp-native-agent/v1": ["future-cli", "acp"] },
     _verified: true
   });
   write(".claude/dispatch/transports/adapters/kimi.json", {
@@ -87,6 +130,7 @@ function installCatalogFixture(): void {
     argv: ["kimi"],
     envelope_delivery: "stdin",
     env_allowlist_extra: ["KIMI_CODE_HOME"],
+    bridge_commands: { "acp-native-agent/v1": ["kimi", "acp"] },
     _verified: true
   });
 }
@@ -98,8 +142,309 @@ beforeEach(() => {
 
 afterEach(() => rmSync(repo, { recursive: true, force: true }));
 
+function withPlatform<T>(platform: NodeJS.Platform, action: () => T): T {
+  const original = Object.getOwnPropertyDescriptor(process, "platform");
+  if (!original) throw new Error("process.platform descriptor is unavailable");
+  Object.defineProperty(process, "platform", { ...original, value: platform });
+  try {
+    return action();
+  } finally {
+    Object.defineProperty(process, "platform", original);
+  }
+}
+
 describe("data-only dispatch tool catalog", () => {
-  it("accepts a subagent-only integration while requiring local-cli for A2A targets", () => {
+  it("keeps Kimi and Codex local-cli while a declared bridge has no strict provider", () => {
+    write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", {
+      _comment: "Verified same-session Kimi bridge.",
+      id: "kimi-acp-native-agent",
+      _verified: true,
+      session_scope: "same-session",
+      strategy: "session-bridge-v1",
+      protocol: {
+        kind: "acp-native-agent/v1",
+        command: ["kimi", "acp"],
+        request_delivery: "stdin",
+        response_format: "json"
+      },
+      personas: {
+        planner: "planner-proposal",
+        generator: "generator-restricted",
+        evaluator: "evaluator"
+      },
+      notes: "Uses the integration local_cli sandbox and timeout."
+    });
+    write(".claude/dispatch/transports/adapters/codex.json", {
+      name: "codex",
+      tool: "codex",
+      display_name: "Codex",
+      model_family: "codex",
+      argv: ["codex"],
+      envelope_delivery: "stdin",
+      _verified: true
+    });
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "codex",
+          tool: "codex",
+          label: "Codex",
+          model_family: "codex",
+          local_cli: {
+            adapter: "codex",
+            sandbox: { home_dir: "~/.harness-sandbox/codex" },
+            timeout_s: 2400
+          }
+        },
+        {
+          id: "kimi",
+          tool: "kimi",
+          label: "Kimi Code",
+          model_family: "kimi",
+          subagent: { bridge: "kimi-acp-native-agent" },
+          local_cli: {
+            adapter: "kimi",
+            sandbox: { home_dir: "~/.harness-sandbox/kimi" },
+            timeout_s: 1800
+          }
+        }
+      ],
+      a2a_targets: []
+    });
+
+    expect(readDispatchToolCatalog(repo)).toMatchObject({
+      issue: null,
+      entries: expect.arrayContaining([
+        expect.objectContaining({ role: "generator", tool: "codex", invocation: "local-cli" }),
+        expect.objectContaining({ role: "evaluator", tool: "kimi", invocation: "local-cli" })
+      ])
+    });
+    expect(readDispatchToolCatalog(repo).entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ invocation: "subagent" })
+    ]));
+    expect(readDispatchToolIntegrations(repo)).toMatchObject({
+      issue: null,
+      integrations: expect.arrayContaining([
+        expect.objectContaining({
+          id: "codex",
+          invocations: ["local-cli"],
+          subagent: false,
+          bridgeId: null,
+          bridgeKind: null,
+          sessionScope: null
+        }),
+        expect.objectContaining({
+          id: "kimi",
+          invocations: ["local-cli"],
+          subagent: false,
+          bridgeId: null,
+          bridgeKind: null,
+          sessionScope: null,
+          bridgeProtocol: null,
+          bridgeCommand: null,
+          adapterBridgeCommand: null,
+          bridgeRoles: null
+        })
+      ])
+    });
+  });
+
+  it.each(["codex-app-server-session-fork/v1", "unpublished-native-agent/v1"])(
+    "fails closed for unsupported external bridge protocol %s",
+    (protocolKind) => {
+      writeKimiAcpBridge(protocolKind);
+      writeKimiExternalIntegration();
+
+      expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+    }
+  );
+
+  it("fails closed when an ACP bridge command differs from its verified adapter declaration", () => {
+    writeKimiAcpBridge("acp-native-agent/v1", ["kimi", "acp", "--child"]);
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("fails closed when an external bridge adapter omits its published ACP command", () => {
+    writeKimiAcpBridge();
+    const adapter = JSON.parse(readFileSync(join(repo, ".claude/dispatch/transports/adapters/kimi.json"), "utf8")) as Record<string, unknown>;
+    delete adapter.bridge_commands;
+    write(".claude/dispatch/transports/adapters/kimi.json", adapter);
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("fails closed when an adapter bridge command does not begin with its executable and acp", () => {
+    writeKimiAcpBridge();
+    const adapter = JSON.parse(readFileSync(join(repo, ".claude/dispatch/transports/adapters/kimi.json"), "utf8")) as Record<string, unknown>;
+    adapter.bridge_commands = { "acp-native-agent/v1": ["other-cli", "acp"] };
+    write(".claude/dispatch/transports/adapters/kimi.json", adapter);
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("fails closed when an adapter advertises an unrecognized bridge command protocol", () => {
+    writeKimiAcpBridge();
+    const adapter = JSON.parse(readFileSync(join(repo, ".claude/dispatch/transports/adapters/kimi.json"), "utf8")) as Record<string, unknown>;
+    adapter.bridge_commands = { "unpublished-native-agent/v1": ["kimi", "acp"] };
+    write(".claude/dispatch/transports/adapters/kimi.json", adapter);
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("keeps a future CLI local-only until a strict provider is released", () => {
+    write(".claude/dispatch/transports/bridges/future-generator-only.json", {
+      id: "future-generator-only",
+      _verified: true,
+      session_scope: "same-session",
+      strategy: "session-bridge-v1",
+      protocol: {
+        kind: "acp-native-agent/v1",
+        command: ["future-cli", "acp"],
+        request_delivery: "stdin",
+        response_format: "json"
+      },
+      personas: { generator: "generator-restricted" }
+    });
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [{
+        id: "future-bridge",
+        tool: "future-cli",
+        label: "Future CLI",
+        model_family: "future",
+        subagent: { bridge: "future-generator-only" },
+        local_cli: {
+          adapter: "future-cli",
+          sandbox: { home_dir: "~/.harness-sandbox/future" },
+          timeout_s: 2400
+        }
+      }],
+      a2a_targets: []
+    });
+
+    const catalog = readDispatchToolCatalog(repo);
+    expect(catalog.issue).toBeNull();
+    expect(catalog.entries.filter((entry) => entry.tool === "future-cli" && entry.invocation === "subagent"))
+      .toEqual([]);
+    expect(catalog.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "future-cli", invocation: "local-cli", role: "generator" })
+    ]));
+  });
+
+  it("does not fall back to a user-facing example registry", () => {
+    unlinkSync(join(repo, ".agents-registry.json"));
+    write(".claude/dispatch/agents-registry.example.json", {
+      version: "dispatch/1",
+      agents: [{
+        id: "example-only",
+        roles: ["planner"],
+        transport: "subagent",
+        agent_type: "planner-proposal",
+        model_family: "example"
+      }]
+    });
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+    expect(readDispatchToolIntegrations(repo)).toEqual({ integrations: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it.each([
+    ["unknown bridge", { bridge: "missing-bridge" }],
+    ["legacy false", false],
+    ["missing bridge key", {}]
+  ])("fails closed for %s subagent declaration", (_label, subagent) => {
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [{
+        id: "future-bridge",
+        tool: "future-cli",
+        model_family: "future",
+        subagent
+      }],
+      a2a_targets: []
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("fails closed when an external bridge omits its verified local-cli contract", () => {
+    write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", {
+      id: "kimi-acp-native-agent",
+      _verified: true,
+      session_scope: "same-session",
+      strategy: "session-bridge-v1",
+      protocol: {
+        kind: "acp-native-agent/v1",
+        command: ["kimi", "acp"],
+        request_delivery: "stdin",
+        response_format: "json"
+      },
+      personas: {
+        planner: "planner-proposal",
+        generator: "generator-restricted",
+        evaluator: "evaluator"
+      }
+    });
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [{
+        id: "kimi-bridge",
+        tool: "kimi",
+        model_family: "kimi",
+        subagent: { bridge: "kimi-acp-native-agent" }
+      }],
+      a2a_targets: []
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("does not publish an external bridge even when the reported host is darwin", () => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+
+    const { catalog, integrations } = withPlatform("darwin", () => ({
+      catalog: readDispatchToolCatalog(repo),
+      integrations: readDispatchToolIntegrations(repo)
+    }));
+
+    expect(catalog).toMatchObject({ issue: null });
+    expect(catalog.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({ role: "planner", tool: "kimi", invocation: "local-cli" })
+    ]));
+    expect(catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "kimi", invocation: "subagent" })
+    ]));
+    expect(integrations).toMatchObject({
+      issue: null,
+      integrations: [expect.objectContaining({
+        id: "kimi",
+        invocations: ["local-cli"],
+        subagent: false,
+        bridgeId: null,
+        bridgeKind: null,
+        sessionScope: null,
+        bridgeProtocol: null,
+        bridgeCommand: null,
+        adapterBridgeCommand: null,
+        bridgeRoles: null
+      })]
+    });
+  });
+
+  it("rejects a malformed bridge before the strict-provider gate", () => {
+    writeKimiAcpBridge("unpublished-native-agent/v1");
+    writeKimiExternalIntegration();
+
+    const catalog = withPlatform("darwin", () => readDispatchToolCatalog(repo));
+    expect(catalog).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("keeps legacy Coordinator-native metadata out of selectable tool inventory", () => {
     write(".agents-registry.json", {
       version: "tool-integrations/1",
       integrations: [
@@ -116,24 +461,8 @@ describe("data-only dispatch tool catalog", () => {
       a2a_targets: []
     });
 
-    expect(readDispatchToolCatalog(repo)).toMatchObject({
-      issue: null,
-      entries: expect.arrayContaining([
-        expect.objectContaining({ role: "planner", tool: "claude-code", invocation: "subagent" }),
-        expect.objectContaining({ role: "generator", tool: "claude-code", invocation: "subagent" }),
-        expect.objectContaining({ role: "evaluator", tool: "claude-code", invocation: "subagent" })
-      ])
-    });
-    expect(readDispatchToolIntegrations(repo)).toMatchObject({
-      issue: null,
-      integrations: [expect.objectContaining({
-        id: "claude-subagent",
-        invocations: ["subagent"],
-        localCli: false,
-        sandboxed: false,
-        a2aTargetCount: 0
-      })]
-    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: null });
+    expect(readDispatchToolIntegrations(repo)).toEqual({ integrations: [], issue: null });
 
     write(".agents-registry.json", {
       version: "tool-integrations/1",
@@ -158,6 +487,64 @@ describe("data-only dispatch tool catalog", () => {
           auth: { type: "none" }
         }
       ]
+    });
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("keeps dispatch/1 Coordinator-native subagents observable but out of the v2 catalog", () => {
+    const catalog = readDispatchToolCatalog(repo);
+    const integrations = readDispatchToolIntegrations(repo);
+
+    expect(catalog.issue).toBeNull();
+    expect(catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ invocation: "subagent" })
+    ]));
+    expect(integrations).toMatchObject({
+      issue: null,
+      integrations: expect.arrayContaining([
+        expect.objectContaining({
+          id: "planner-claude",
+          tool: "claude-code",
+          invocations: ["subagent"],
+          subagent: true,
+          bridgeId: null,
+          bridgeKind: null,
+          sessionScope: null
+        })
+      ])
+    });
+  });
+
+  it("rejects duplicate integration ids even when a legacy declaration has no public route", () => {
+    write(".claude/dispatch/transports/adapters/codex.json", {
+      name: "codex",
+      tool: "codex",
+      display_name: "Codex",
+      model_family: "codex",
+      argv: ["codex"],
+      envelope_delivery: "stdin",
+      _verified: true
+    });
+    write(".agents-registry.json", {
+      version: "tool-integrations/1",
+      integrations: [
+        {
+          id: "codex",
+          tool: "codex",
+          model_family: "codex",
+          subagent: true
+        },
+        {
+          id: "codex",
+          tool: "codex",
+          model_family: "codex",
+          local_cli: {
+            adapter: "codex",
+            sandbox: { home_dir: "~/.harness-sandbox/codex" }
+          }
+        }
+      ],
+      a2a_targets: []
     });
     expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
   });
@@ -307,6 +694,23 @@ describe("data-only dispatch tool catalog", () => {
       envelope_delivery: "stdin",
       _verified: true
     });
+    write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", {
+      id: "kimi-acp-native-agent",
+      _verified: true,
+      session_scope: "same-session",
+      strategy: "session-bridge-v1",
+      protocol: {
+        kind: "acp-native-agent/v1",
+        command: ["kimi", "acp"],
+        request_delivery: "stdin",
+        response_format: "json"
+      },
+      personas: {
+        planner: "planner-proposal",
+        generator: "generator-restricted",
+        evaluator: "evaluator"
+      }
+    });
     write(".agents-registry.json", {
       version: "tool-integrations/1",
       integrations: [
@@ -321,8 +725,7 @@ describe("data-only dispatch tool catalog", () => {
             adapter: "codex",
             sandbox: { home_dir: "~/.harness-sandbox/codex", env_set: { CODEX_HOME: "~/.codex" } },
             timeout_s: 2400
-          },
-          subagent: true
+          }
         },
         {
           id: "kimi-local",
@@ -335,7 +738,8 @@ describe("data-only dispatch tool catalog", () => {
             adapter: "kimi",
             sandbox: { home_dir: "~/.harness-sandbox/kimi" },
             timeout_s: 1800
-          }
+          },
+          subagent: { bridge: "kimi-acp-native-agent" }
         }
       ],
       a2a_targets: [
@@ -357,22 +761,32 @@ describe("data-only dispatch tool catalog", () => {
     expect(catalog.issue).toBeNull();
     expect(catalog.entries).toEqual(expect.arrayContaining([
       expect.objectContaining({ role: "planner", tool: "codex", invocation: "local-cli" }),
-      expect.objectContaining({ role: "planner", tool: "codex", invocation: "subagent" }),
       expect.objectContaining({ role: "planner", tool: "codex", invocation: "a2a" }),
       expect.objectContaining({ role: "generator", tool: "codex", invocation: "local-cli" }),
-      expect.objectContaining({ role: "generator", tool: "codex", invocation: "subagent" }),
-      expect.objectContaining({ role: "evaluator", tool: "codex", invocation: "a2a" })
+      expect.objectContaining({ role: "evaluator", tool: "codex", invocation: "a2a" }),
+      expect.objectContaining({ role: "generator", tool: "kimi", invocation: "local-cli" })
     ]));
     expect(catalog.entries).not.toEqual(expect.arrayContaining([
       expect.objectContaining({ role: "generator", tool: "codex", invocation: "a2a" })
+    ]));
+    expect(catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "codex", invocation: "subagent" })
     ]));
     expect(integrations.issue).toBeNull();
     expect(integrations.integrations).toEqual(expect.arrayContaining([
         expect.objectContaining({
           id: "codex-local",
           tool: "codex",
-          invocations: ["local-cli", "subagent", "a2a"],
+          invocations: ["local-cli", "a2a"],
           a2aTargetCount: 1
+        }),
+        expect.objectContaining({
+          id: "kimi-local",
+          tool: "kimi",
+          invocations: ["local-cli"],
+          subagent: false,
+          bridgeId: null,
+          sessionScope: null
         })
       ]));
     const publicInventory = JSON.stringify(integrations);

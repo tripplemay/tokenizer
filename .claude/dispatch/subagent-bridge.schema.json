@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "harness same-session subagent bridge",
+  "description": "A verified bridge manifest consumed by tool-catalog.py. Integrations reference it through subagent.bridge; the bridge, rather than a CLI tool id, selects the generic bridge runner protocol.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "_verified", "session_scope", "strategy", "protocol", "personas"],
+  "properties": {
+    "_comment": { "type": "string" },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    },
+    "_verified": {
+      "const": true,
+      "description": "The framework has protocol-tested this bridge driver. It is still unpublished until a strict external-bridge provider independently attests the host at plan and launch time."
+    },
+    "session_scope": {
+      "const": "same-session"
+    },
+    "strategy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "command", "request_delivery", "response_format"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,63}$"
+        },
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^[^\\u0000-\\u001F\\u007F]+$"
+          }
+        },
+        "request_delivery": {
+          "type": "string",
+          "enum": ["stdin", "argv", "env"]
+        },
+        "response_format": {
+          "const": "json"
+        }
+      }
+    },
+    "personas": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "planner": { "const": "planner-proposal" },
+        "generator": { "const": "generator-restricted" },
+        "evaluator": { "const": "evaluator" }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

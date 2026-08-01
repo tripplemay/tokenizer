@@ -239,7 +239,10 @@ Planner、Generator、Evaluator 三个键，其中 Planner 可以是 `null`；�
 `progress.mode_intent.resolution` 中，绝不可回写进签名 intent。消费者还必须把**完整原始 signed
 intent（含 `sig`）**写入 `progress.mode_intent.signed_intent`：它是 active batch 的 checkpoint；随后可为
 下一批替换的 `harness.json.project.mode_defaults` 绝不能改变本批执行者。运行路径从 checkpoint 重验后取得
-五字段 active record，`role_assignments` 与 `resolution` 只保留审计用途。
+六字段 active record（含 `execution_provenance_sha256`）；该摘要同时固定 target、adapter、sandbox、timeout、
+bridge/A2A 等执行语义。`role_assignments` 与 `resolution` 只保留审计用途。用户签名仍只覆盖
+`{tool, invocation}`，摘要用于运行时 drift guard，不是项目文件的加密防篡改证明；旧五字段 active v2 checkpoint
+升级后必须重新 `/plan` 并 consume。
 
 设备在**可信端**解析 `tool-integrations/1` registry 与已验证 adapter 的 data-only `tool-catalog/1` 契约，生成按角色分组、
 只含 `{tool, label, invocation, agent_count, model_families, capabilities}` 的能力目录。目录不含 agent id；

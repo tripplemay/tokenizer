@@ -523,7 +523,7 @@
       "gateHeadCompare": "闸门比对 HEAD",
       "execution": {
         "fast": "快车道",
-        "heterogeneous": "本地异构",
+        "heterogeneous": "异构执行",
         "slow": "跨机器",
         "unknown": "形态未知"
       },
@@ -590,7 +590,7 @@
         "autonomyOff": "已关闭",
         "profile": {
           "fast": "快车道",
-          "heterogeneous": "本地异构",
+          "heterogeneous": "异构执行",
           "slow": "慢车道"
         },
         "agents": "已注册 Agent 诊断",
@@ -614,6 +614,10 @@
           "capabilities": "能力",
           "modelFamily": "模型家族",
           "invocations": "调用方式",
+          "subagentPath": "子代理路径",
+          "hostNative": "Coordinator 原生子代理",
+          "sameSessionBridge": "同会话 bridge · {kind}",
+          "bridgeId": "Bridge ID",
           "sandbox": "本地 CLI 沙箱",
           "notApplicable": "不适用",
           "a2aTargets": "远程目标数",
@@ -666,7 +670,7 @@
       "execution": "执行形态",
       "profile": {
         "fast": "快车道",
-        "heterogeneous": "本地异构",
+        "heterogeneous": "异构执行",
         "slow": "慢车道"
       },
       "generator": "Generator",
@@ -685,6 +689,13 @@
       "noRoleTools": "该角色尚未上报兼容的工具路由。",
       "tool": "工具",
       "invocation": "调用方式",
+      "invocationMode": {
+        "subagent": "子代理",
+        "hostNative": "Coordinator 原生子代理",
+        "sameSessionBridge": "同会话 bridge · {kind}",
+        "local-cli": "本地 CLI",
+        "a2a": "A2A"
+      },
       "selectTool": "选择工具",
       "selectInvocation": "选择调用方式",
       "intentExpiresAt": "意图绝对到期时间",

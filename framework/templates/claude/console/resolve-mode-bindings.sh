@@ -47,10 +47,19 @@ trap cleanup EXIT
 
 die() { echo "[mode-bindings] ⛔ $1" >&2; exit 2; }
 [ -f "$HARNESS" ] || die "harness.json 不存在：$HARNESS"
-[ -f "$REGISTRY" ] || die "注册表不存在：$REGISTRY"
 [ -f "$TOOL_CATALOG" ] || die "框架缺少 tool-catalog.py；请升级 harness"
 [ -f "$VALIDATOR" ] || die "框架缺少 validate-mode-intent.sh；不能安全解析 bindings"
 [ -z "$ADAPTERS" ] || [ -d "$ADAPTERS" ] || die "adapter 目录不存在：$ADAPTERS"
+
+# Resolution is an authority-bearing operation even before a checkpoint has
+# been persisted. Derive its root from the staged harness document, then pin
+# the target catalog to that project's regular registry file.
+PROJECT_DIR="$(cd "$(dirname "$HARNESS")" && pwd)"
+PROJECT_ROOT="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)" \
+  || die "无法从 harness.json 所在目录确定 git 项目根"
+REGISTRY="$(cd "$PROJECT_ROOT" && python3 "$CONSOLE_DIR/../dispatch/dispatch_common.py" project-registry \
+  --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+  || die "注册表必须是项目根的非符号链接 .agents-registry.json"
 
 # This validates the mutable source exactly once and emits the resulting
 # signed snapshot. Do not redirect stdout: it is the only trusted input to the
@@ -85,9 +94,13 @@ if not isinstance(bindings, dict):
     raise SystemExit("[mode-bindings] ⛔ 已验签 role_bindings 必须是 object")
 resolution = sealed["resolution"]
 roles = ("planner", "generator", "evaluator")
-fields = {"agent_id", "tool", "invocation", "model_family", "priority"}
+fields = {
+    "agent_id", "tool", "invocation", "model_family", "priority",
+    "execution_provenance_sha256",
+}
 safe_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 safe_tool = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+sha256 = re.compile(r"[0-9a-f]{64}\Z")
 if not isinstance(resolution, dict) or set(resolution) != set(roles):
     raise SystemExit("[mode-bindings] ⛔ 已验签解析结果必须恰含三角色")
 for role in roles:
@@ -95,7 +108,7 @@ for role in roles:
     if role == "planner" and item is None:
         continue
     if not isinstance(item, dict) or set(item) != fields:
-        raise SystemExit(f"[mode-bindings] ⛔ resolution.{role} 必须恰含五个审计字段")
+        raise SystemExit(f"[mode-bindings] ⛔ resolution.{role} 必须恰含六个审计字段（含 execution_provenance_sha256）")
     if not isinstance(item["agent_id"], str) or not safe_id.fullmatch(item["agent_id"]):
         raise SystemExit(f"[mode-bindings] ⛔ resolution.{role}.agent_id 非法")
     if not isinstance(item["tool"], str) or not safe_tool.fullmatch(item["tool"]):
@@ -106,6 +119,8 @@ for role in roles:
         raise SystemExit(f"[mode-bindings] ⛔ resolution.{role}.model_family 非法")
     if isinstance(item["priority"], bool) or not isinstance(item["priority"], int) or item["priority"] < 0:
         raise SystemExit(f"[mode-bindings] ⛔ resolution.{role}.priority 非法")
+    if not isinstance(item["execution_provenance_sha256"], str) or not sha256.fullmatch(item["execution_provenance_sha256"]):
+        raise SystemExit(f"[mode-bindings] ⛔ resolution.{role}.execution_provenance_sha256 必须是小写 SHA-256")
 json.dump(resolution, open(bindings_path, "w", encoding="utf-8"),
           sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 PY

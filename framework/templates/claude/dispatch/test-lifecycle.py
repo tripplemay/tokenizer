@@ -2,6 +2,7 @@
 """Fast deterministic dispatch deadline and A2A lifecycle regression matrix."""
 
 import importlib.util
+import hashlib
 import json
 import os
 import shutil
@@ -22,6 +23,12 @@ RUNNER = DISPATCH / "transports" / "a2a-runner.py"
 CLIENT = DISPATCH / "transports" / "a2a-client.py"
 TIMEOUT = DISPATCH / "process-timeout.py"
 VALIDATOR = DISPATCH / "validate-dispatch.sh"
+TIMEOUT_SPEC = importlib.util.spec_from_file_location("dispatch_process_timeout", TIMEOUT)
+if TIMEOUT_SPEC is None or TIMEOUT_SPEC.loader is None:
+    raise RuntimeError("could not load process-timeout helper")
+timeout_helper = importlib.util.module_from_spec(TIMEOUT_SPEC)
+sys.modules[TIMEOUT_SPEC.name] = timeout_helper
+TIMEOUT_SPEC.loader.exec_module(timeout_helper)
 sys.path.insert(0, str(DISPATCH))
 from dispatch_common import (  # noqa: E402
     DispatchContractError,
@@ -260,6 +267,289 @@ class DeadlineAndPreflightTests(unittest.TestCase):
                 self.assertFalse(workroot.exists())
                 self.assertFalse(state.exists())
 
+    def test_sandbox_rejects_external_same_session_target_before_creating_runtime(self):
+        """No stale Kimi bridge target may reach the old Seatbelt path."""
+        registry = self.repo / ".agents-registry.json"
+        registry.write_text(
+            json.dumps(
+                {
+                    "version": "tool-integrations/1",
+                    "integrations": [
+                        {
+                            "id": "kimi",
+                            "tool": "kimi",
+                            "model_family": "kimi",
+                            "local_cli": {
+                                "adapter": "kimi",
+                                "sandbox": {"home_dir": str(self.root / "safe-kimi-home")},
+                                "timeout_s": 60,
+                            },
+                            "subagent": {"bridge": "kimi-acp-native-agent"},
+                        }
+                    ],
+                    "a2a_targets": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+        envelope = self.root / "bridge-envelope.json"
+        envelope.write_text(json.dumps(self.envelope(self.repo, 60)), encoding="utf-8")
+        workroot = self.root / "unavailable-bridge-work"
+        state = self.root / "unavailable-bridge-state"
+        result = subprocess.run(
+            [
+                "bash",
+                str(DISPATCH / "sandbox-profile.sh"),
+                "--agent",
+                "subagent--kimi--evaluator",
+                "--envelope",
+                str(envelope),
+                "--registry",
+                str(registry),
+                "--workroot",
+                str(workroot),
+                "--state",
+                str(state),
+            ],
+            cwd=self.repo,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("target id is not registered", result.stderr)
+        self.assertFalse(workroot.exists())
+        self.assertFalse(state.exists())
+
+    def test_execution_entries_pin_registry_to_project_root_before_creating_paths(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        outside = self.root / "outside-registry.json"
+        outside.write_text(registry.read_text(encoding="utf-8"), encoding="utf-8")
+
+        def run_entry(entry, requested_registry, suffix):
+            workroot = self.root / f"registry-{entry}-{suffix}-work"
+            state = self.root / f"registry-{entry}-{suffix}-state"
+            command = [
+                "bash",
+                str(DISPATCH / ("sandbox-profile.sh" if entry == "sandbox" else "dispatch-run.sh")),
+                "--agent", "fixture-agent",
+                "--envelope", str(envelope),
+                "--registry", str(requested_registry),
+                "--adapters", str(adapters),
+                "--workroot", str(workroot),
+                "--state", str(state),
+            ]
+            result = subprocess.run(
+                command,
+                cwd=self.repo,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("registry", result.stderr.lower())
+            self.assertFalse(workroot.exists(), result.stderr)
+            self.assertFalse(state.exists(), result.stderr)
+
+        for entry in ("sandbox", "dispatch"):
+            with self.subTest(entry=entry, case="outside"):
+                run_entry(entry, outside, "outside")
+
+        registry.unlink()
+        os.symlink(outside, registry)
+        for entry in ("sandbox", "dispatch"):
+            with self.subTest(entry=entry, case="symlink"):
+                run_entry(entry, registry, "symlink")
+
+    def test_direct_sandbox_enforces_expected_provenance_before_creating_paths(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        target = subprocess.run(
+            [
+                sys.executable, str(DISPATCH / "tool-catalog.py"), "target",
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--target-id", "fixture-agent",
+            ],
+            cwd=self.repo,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(target.returncode, 0, target.stderr)
+        provenance = json.loads(target.stdout)["execution_provenance_sha256"]
+
+        rejected_workroot = self.root / "provenance-rejected-work"
+        rejected_state = self.root / "provenance-rejected-state"
+        rejected = subprocess.run(
+            [
+                "bash", str(DISPATCH / "sandbox-profile.sh"),
+                "--agent", "fixture-agent", "--envelope", str(envelope),
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--expected-provenance", "0" * 64,
+                "--workroot", str(rejected_workroot), "--state", str(rejected_state),
+            ],
+            cwd=self.repo,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(rejected.returncode, 2, rejected.stderr)
+        self.assertIn("provenance", rejected.stderr)
+        self.assertFalse(rejected_workroot.exists(), rejected.stderr)
+        self.assertFalse(rejected_state.exists(), rejected.stderr)
+
+        accepted_workroot = self.root / "provenance-accepted-work"
+        accepted_state = self.root / "provenance-accepted-state"
+        accepted = subprocess.run(
+            [
+                "bash", str(DISPATCH / "sandbox-profile.sh"),
+                "--agent", "fixture-agent", "--envelope", str(envelope),
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--expected-provenance", provenance,
+                "--workroot", str(accepted_workroot), "--state", str(accepted_state),
+            ],
+            cwd=self.repo,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(accepted.returncode, 0, accepted.stderr)
+        self.assertEqual(json.loads(accepted.stdout)["outcome"], "RETURNED")
+
+    def test_direct_sandbox_active_checkpoint_rejects_wrong_agent_and_provenance_early(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        installed = self.root / "active-checkpoint-dispatch"
+        shutil.copytree(DISPATCH, installed)
+        resolver = installed / "resolve-active-mode-role.sh"
+        write_executable(
+            resolver,
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            "expected=''\n"
+            "while [ \"$#\" -gt 0 ]; do\n"
+            "  case \"$1\" in\n"
+            "    --expected-agent) expected=\"$2\"; shift 2 ;;\n"
+            "    *) shift ;;\n"
+            "  esac\n"
+            "done\n"
+            "if [ \"$expected\" != \"${HARNESS_ACTIVE_AGENT:?}\" ]; then\n"
+            "  echo '[fixture active resolver] expected agent mismatch' >&2\n"
+            "  exit 2\n"
+            "fi\n"
+            "printf '{\\\"execution_provenance_sha256\\\":\\\"%s\\\"}\\n' \"${HARNESS_ACTIVE_PROVENANCE:?}\"\n",
+        )
+        # The copied resolver is the trusted active-checkpoint boundary here;
+        # a real signed v2 record is covered by its own resolver tests.  Its
+        # presence exercises the sandbox's direct-entry recovery path.
+        (self.repo / "progress.json").write_text(
+            json.dumps({"mode_intent": {"signed_intent": {}, "resolution": {}}}),
+            encoding="utf-8",
+        )
+        environment = {
+            **os.environ,
+            "HARNESS_ACTIVE_AGENT": "fixture-agent",
+            "HARNESS_ACTIVE_PROVENANCE": "0" * 64,
+        }
+
+        wrong_agent_workroot = self.root / "active-wrong-agent-work"
+        wrong_agent_state = self.root / "active-wrong-agent-state"
+        wrong_agent = subprocess.run(
+            [
+                "bash", str(installed / "sandbox-profile.sh"),
+                "--agent", "other-agent", "--envelope", str(envelope),
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--workroot", str(wrong_agent_workroot), "--state", str(wrong_agent_state),
+            ],
+            cwd=self.repo,
+            env=environment,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(wrong_agent.returncode, 2, wrong_agent.stderr)
+        self.assertIn("expected agent mismatch", wrong_agent.stderr)
+        self.assertFalse(wrong_agent_workroot.exists(), wrong_agent.stderr)
+        self.assertFalse(wrong_agent_state.exists(), wrong_agent.stderr)
+
+        provenance_workroot = self.root / "active-provenance-work"
+        provenance_state = self.root / "active-provenance-state"
+        provenance = subprocess.run(
+            [
+                "bash", str(installed / "sandbox-profile.sh"),
+                "--agent", "fixture-agent", "--envelope", str(envelope),
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--workroot", str(provenance_workroot), "--state", str(provenance_state),
+            ],
+            cwd=self.repo,
+            env=environment,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(provenance.returncode, 2, provenance.stderr)
+        self.assertIn("provenance", provenance.stderr)
+        self.assertFalse(provenance_workroot.exists(), provenance.stderr)
+        self.assertFalse(provenance_state.exists(), provenance.stderr)
+
+    def test_direct_sandbox_rejects_catalog_to_adapter_drift_before_creating_paths(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        installed = self.root / "adapter-drift-dispatch"
+        shutil.copytree(DISPATCH, installed)
+        real_catalog = installed / "tool_catalog_real.py"
+        shutil.copy2(installed / "tool-catalog.py", real_catalog)
+        catalog_wrapper = installed / "tool-catalog.py"
+        catalog_wrapper.write_text(
+            "import importlib.util\n"
+            "import json\n"
+            "import os\n"
+            "import sys\n"
+            "from pathlib import Path\n"
+            "\n"
+            "_real = Path(__file__).with_name('tool_catalog_real.py')\n"
+            "_spec = importlib.util.spec_from_file_location('_fixture_real_catalog', _real)\n"
+            "assert _spec is not None and _spec.loader is not None\n"
+            "_module = importlib.util.module_from_spec(_spec)\n"
+            "sys.modules[_spec.name] = _module\n"
+            "_spec.loader.exec_module(_module)\n"
+            "adapter_execution_contract_sha256 = _module.adapter_execution_contract_sha256\n"
+            "\n"
+            "if __name__ == '__main__':\n"
+            "    exit_code = _module.main()\n"
+            "    if exit_code == 0 and len(sys.argv) > 1 and sys.argv[1] == 'target':\n"
+            "        adapter = Path(os.environ['HARNESS_DRIFT_ADAPTER'])\n"
+            "        data = json.loads(adapter.read_text(encoding='utf-8'))\n"
+            "        data['argv'] = ['bash', os.environ['HARNESS_DRIFT_EXECUTABLE'], '--drift']\n"
+            "        adapter.write_text(json.dumps(data), encoding='utf-8')\n"
+            "        Path(os.environ['HARNESS_DRIFT_MARKER']).write_text('changed', encoding='utf-8')\n"
+            "    raise SystemExit(exit_code)\n",
+            encoding="utf-8",
+        )
+        marker = self.root / "adapter-drift-marker"
+        workroot = self.root / "adapter-drift-work"
+        state = self.root / "adapter-drift-state"
+        result = subprocess.run(
+            [
+                "bash", str(installed / "sandbox-profile.sh"),
+                "--agent", "fixture-agent", "--envelope", str(envelope),
+                "--registry", str(registry), "--adapters", str(adapters),
+                "--workroot", str(workroot), "--state", str(state),
+            ],
+            cwd=self.repo,
+            env={
+                **os.environ,
+                "HARNESS_DRIFT_ADAPTER": str(adapters / "fixture.json"),
+                "HARNESS_DRIFT_EXECUTABLE": str(self.root / "fake-cli.sh"),
+                "HARNESS_DRIFT_MARKER": str(marker),
+            },
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertTrue(marker.exists(), result.stderr)
+        self.assertIn("execution contract", result.stderr)
+        self.assertFalse(workroot.exists(), result.stderr)
+        self.assertFalse(state.exists(), result.stderr)
+
     def test_integration_sandbox_run_meta_uses_generated_target_id(self):
         registry, envelope, adapters = self._sandbox_inputs(self.repo)
         registry.write_text(json.dumps({
@@ -298,6 +588,81 @@ class DeadlineAndPreflightTests(unittest.TestCase):
         self.assertEqual(meta["agent_id"], "local-cli--fixture--evaluator")
         persisted = json.loads((state / "run-meta-lifecycle-fixture.json").read_text())
         self.assertEqual(persisted["agent_id"], meta["agent_id"])
+
+    def test_integration_sandbox_active_checkpoint_rejects_derived_target_bypass_early(self):
+        registry, envelope, adapters = self._sandbox_inputs(self.repo)
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "fixture",
+                "tool": "fixture",
+                "model_family": "fixture",
+                "local_cli": {
+                    "adapter": "fixture",
+                    "sandbox": {"home_dir": str(self.root / "safe-home"), "env_allow": []},
+                    "timeout_s": 90,
+                },
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        installed = self.root / "integration-active-dispatch"
+        shutil.copytree(DISPATCH, installed)
+        write_executable(
+            installed / "resolve-active-mode-role.sh",
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            "expected=''\n"
+            "while [ \"$#\" -gt 0 ]; do\n"
+            "  case \"$1\" in\n"
+            "    --expected-agent) expected=\"$2\"; shift 2 ;;\n"
+            "    *) shift ;;\n"
+            "  esac\n"
+            "done\n"
+            "if [ \"$expected\" != \"${HARNESS_ACTIVE_AGENT:?}\" ]; then\n"
+            "  echo '[fixture active resolver] expected agent mismatch' >&2\n"
+            "  exit 2\n"
+            "fi\n"
+            "printf '{\\\"execution_provenance_sha256\\\":\\\"%s\\\"}\\n' \"${HARNESS_ACTIVE_PROVENANCE:?}\"\n",
+        )
+        (self.repo / "progress.json").write_text(
+            json.dumps({"mode_intent": {"signed_intent": {}, "resolution": {}}}),
+            encoding="utf-8",
+        )
+
+        def invoke(suffix, environment):
+            workroot = self.root / f"integration-active-{suffix}-work"
+            state = self.root / f"integration-active-{suffix}-state"
+            result = subprocess.run(
+                [
+                    "bash", str(installed / "sandbox-profile.sh"),
+                    "--integration", "fixture", "--envelope", str(envelope),
+                    "--registry", str(registry), "--adapters", str(adapters),
+                    "--workroot", str(workroot), "--state", str(state),
+                ],
+                cwd=self.repo,
+                env=environment,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertFalse(workroot.exists(), result.stderr)
+            self.assertFalse(state.exists(), result.stderr)
+            return result
+
+        wrong_target = invoke("wrong-target", {
+            **os.environ,
+            "HARNESS_ACTIVE_AGENT": "local-cli--other--evaluator",
+            "HARNESS_ACTIVE_PROVENANCE": "0" * 64,
+        })
+        self.assertIn("expected agent mismatch", wrong_target.stderr)
+
+        wrong_provenance = invoke("wrong-provenance", {
+            **os.environ,
+            "HARNESS_ACTIVE_AGENT": "local-cli--fixture--evaluator",
+            "HARNESS_ACTIVE_PROVENANCE": "0" * 64,
+        })
+        self.assertIn("provenance", wrong_provenance.stderr)
 
     def test_assignments_accept_canonical_targets_and_coordinator_planner(self):
         adapters = self.root / "assignment-adapters"
@@ -473,6 +838,232 @@ class DeadlineAndPreflightTests(unittest.TestCase):
         self.assertEqual(meta["termination_reason"], "external_signal")
         assert_pids_gone(self, pids)
 
+    @unittest.skip(
+        "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated"
+    )
+    def test_subagent_bridge_term_reaps_the_outer_acp_process_group(self):
+        """The trusted timeout group must reap a contained ACP child tree."""
+        registry, envelope, _unused_adapters = self._sandbox_inputs(self.repo)
+        fake_bin = self.root / "fake-kimi-bin"
+        fake_bin.mkdir()
+        workroot = self.root / "kimi-cancel-work"
+        pids_filename = "kimi-acp-pids.json"
+        # The contained fake vendor may publish test PIDs only in its current
+        # task worktree, never in the shared coordinator workroot.
+        fake_kimi = fake_bin / "kimi"
+        write_executable(
+            fake_kimi,
+            "#!/usr/bin/env python3\n"
+            "import json, os, signal, subprocess, sys, time\n"
+            "if sys.argv[1:] != ['acp']:\n"
+            " raise SystemExit(64)\n"
+            "child = subprocess.Popen([sys.executable, '-c', "
+            "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+            "\\nwhile True: time.sleep(1)'])\n"
+            f"open({pids_filename!r}, 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "request = json.loads(sys.stdin.readline())\n"
+            "print(json.dumps({'jsonrpc':'2.0','id':request['id'],"
+            "'result':{'protocolVersion':1}}), flush=True)\n"
+            "while True: time.sleep(1)\n",
+        )
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "kimi",
+                "tool": "kimi",
+                "model_family": "kimi",
+                "local_cli": {
+                    "adapter": "kimi",
+                    "sandbox": {"home_dir": str(self.root / "safe-home"), "env_allow": []},
+                    "timeout_s": 60,
+                },
+                "subagent": {"bridge": "kimi-acp-native-agent"},
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        state = self.root / "kimi-cancel-state"
+        proc = subprocess.Popen([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "subagent--kimi--evaluator",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env={
+            **os.environ,
+            "PATH": str(fake_bin) + os.pathsep + os.environ.get("PATH", ""),
+        })
+        pids: list[int] = []
+        try:
+            pids_path = wait_until(
+                lambda: next(workroot.glob(f"*/{pids_filename}"), None)
+            )
+            self.assertIsNotNone(pids_path)
+            assert pids_path is not None
+            pids = json.loads(pids_path.read_text())
+            proc.send_signal(signal.SIGTERM)
+            stdout, stderr = proc.communicate(timeout=7)
+            self.assertEqual(proc.returncode, 143, stderr)
+            meta = json.loads(stdout)
+            self.assertEqual(meta["outcome"], "CANCELED")
+            self.assertEqual(meta["termination_reason"], "external_signal")
+            assert_pids_gone(self, pids)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=2)
+            # Keep a failing regression self-cleaning while never addressing
+            # anything except PIDs created by this exact fixture.
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+
+    @unittest.skip(
+        "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated"
+    )
+    def test_subagent_bridge_persists_only_a_child_receipt_and_blocks_checkout_writes(self):
+        """A contained bridge cannot write the main checkout or retain raw ACP state."""
+        registry, envelope, _unused_adapters = self._sandbox_inputs(self.repo)
+        fake_bin = self.root / "private-kimi-bin"
+        fake_bin.mkdir()
+        source_kimi_home = self.root / "source-kimi-home"
+        (source_kimi_home / "credentials").mkdir(parents=True)
+        (source_kimi_home / "credentials" / "token.json").write_text('{"token":"fixture"}', encoding="utf-8")
+        (source_kimi_home / "sessions").mkdir()
+        fake_kimi = fake_bin / "kimi"
+        raw_child_call_id = "vendor child call id"
+        escape_marker = self.repo / "seatbelt-escape-marker.txt"
+        workroot = self.root / "private-kimi-work"
+        sibling_marker = workroot / "seatbelt-sibling-marker.txt"
+        write_executable(
+            fake_kimi,
+            "#!/usr/bin/env python3\n"
+            "import json, os, pathlib, re, subprocess, sys\n"
+            f"RAW_ID = {raw_child_call_id!r}\n"
+            "for line in sys.stdin:\n"
+            " request = json.loads(line); method = request.get('method'); ident = request['id']\n"
+            " if method == 'initialize':\n"
+            "  result = {'protocolVersion': 1}\n"
+            " elif method == 'session/new':\n"
+            "  result = {'sessionId': 'session-fixture'}\n"
+            " elif method == 'session/set_config_option':\n"
+            "  result = {}\n"
+            " elif method == 'session/prompt':\n"
+            "  prompt = request['params']['prompt'][0]['text']\n"
+            "  nonce = re.search(r'harness-child:([0-9a-f]{32})', prompt).group(1)\n"
+            "  state = pathlib.Path(os.environ['KIMI_CODE_HOME'])\n"
+            "  (state / 'raw-acp-id.log').write_text(RAW_ID, encoding='utf-8')\n"
+            f"  escape_marker = pathlib.Path({str(escape_marker)!r})\n"
+            "  try:\n"
+            "   escape_marker.write_text('must be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            f"  sibling_marker = pathlib.Path({str(sibling_marker)!r})\n"
+            "  try:\n"
+            "   sibling_marker.write_text('must be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  try:\n"
+            f"   subprocess.run(['git', '-C', {str(self.repo)!r}, 'config', 'harness.seatbelt_escape', 'must-be-denied'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  escape_link = pathlib.Path.cwd() / 'bridge-escape-link'\n"
+            "  try:\n"
+            "   escape_link.unlink(missing_ok=True)\n"
+            "   escape_link.symlink_to(escape_marker)\n"
+            "   escape_link.write_text('must also be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  finally:\n"
+            "   escape_link.unlink(missing_ok=True)\n"
+            "  artifact = pathlib.Path(os.environ['HARNESS_ARTIFACT'])\n"
+            "  artifact.parent.mkdir(parents=True, exist_ok=True); artifact.write_text('{\\\"ok\\\":true}\\n', encoding='utf-8')\n"
+            "  updates = [\n"
+            "   {'sessionUpdate':'tool_call','toolCallId':RAW_ID,'status':'pending','title':'Agent'},\n"
+            "   {'sessionUpdate':'tool_call_update','toolCallId':RAW_ID,'status':'in_progress','rawInput':{'description':'harness-child:' + nonce,'subagent_type':'coder'}},\n"
+            "   {'sessionUpdate':'tool_call_update','toolCallId':RAW_ID,'status':'completed'}]\n"
+            "  for update in updates: print(json.dumps({'jsonrpc':'2.0','method':'session/update','params':{'sessionId':'session-fixture','update':update}}), flush=True)\n"
+            "  result = {'stopReason': 'end_turn'}\n"
+            " else: raise SystemExit(64)\n"
+            " print(json.dumps({'jsonrpc':'2.0','id':ident,'result':result}), flush=True)\n"
+            " if method == 'session/prompt': break\n",
+        )
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "kimi",
+                "tool": "kimi",
+                "model_family": "kimi",
+                "local_cli": {
+                    "adapter": "kimi",
+                    "sandbox": {
+                        "home_dir": str(self.root / "safe-home"),
+                        "env_set": {"KIMI_CODE_HOME": str(source_kimi_home)},
+                        "env_allow": [],
+                    },
+                    "timeout_s": 60,
+                },
+                "subagent": {"bridge": "kimi-acp-native-agent"},
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        state = self.root / "private-kimi-state"
+        main_status_before = subprocess.check_output(
+            ["git", "-C", str(self.repo), "status", "--porcelain=v1"], text=True
+        )
+        main_head_before = subprocess.check_output(
+            ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "subagent--kimi--evaluator",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env={
+            **os.environ,
+            "PATH": str(fake_bin) + os.pathsep + os.environ.get("PATH", ""),
+        })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        meta = json.loads(result.stdout)
+        expected_token = hashlib.sha256(raw_child_call_id.encode("utf-8")).hexdigest()
+        self.assertEqual(meta["outcome"], "RETURNED")
+        self.assertEqual(meta["bridge"]["child_call_id"], expected_token)
+        run_meta = (state / "run-meta-lifecycle-fixture.json").read_text(encoding="utf-8")
+        log = Path(meta["log"]).read_text(encoding="utf-8")
+        self.assertNotIn(raw_child_call_id, run_meta)
+        self.assertNotIn(raw_child_call_id, log)
+        self.assertFalse((state / "bridge-lifecycle-fixture.json").exists())
+        self.assertFalse((source_kimi_home / "raw-acp-id.log").exists())
+        self.assertEqual(list(state.glob("bridge-state-*")), [])
+        self.assertEqual(list(workroot.glob(".bridge-runtime-lifecycle-fixture.*")), [])
+        self.assertFalse(escape_marker.exists())
+        self.assertFalse(sibling_marker.exists())
+        self.assertNotEqual(
+            subprocess.run(
+                ["git", "-C", str(self.repo), "config", "--local", "--get", "harness.seatbelt_escape"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            ).returncode,
+            0,
+        )
+        self.assertEqual(
+            subprocess.check_output(
+                ["git", "-C", str(self.repo), "status", "--porcelain=v1"], text=True
+            ),
+            main_status_before,
+        )
+        self.assertEqual(
+            subprocess.check_output(
+                ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+            ).strip(),
+            main_head_before,
+        )
+
 
 class ProcessTimeoutTests(unittest.TestCase):
     def setUp(self):
@@ -526,6 +1117,53 @@ class ProcessTimeoutTests(unittest.TestCase):
         pids = json.loads(pids_path.read_text())
         assert_pids_gone(self, pids)
 
+    @unittest.skipUnless(os.name == "posix", "requires POSIX process inspection")
+    def test_descendant_reaper_never_resolves_ps_from_path_or_cwd(self):
+        """A vendor-controlled worktree or PATH cannot replace the reaper's ps."""
+        fake_bin = self.root / "fake-bin"
+        fake_bin.mkdir()
+        marker = self.root / "fake-ps-ran"
+        fake_ps = fake_bin / "ps"
+        write_executable(
+            fake_ps,
+            "#!/bin/sh\n"
+            f"printf forged > {str(marker)!r}\n",
+        )
+        prior_cwd = os.getcwd()
+        try:
+            os.chdir(fake_bin)
+            with mock.patch.dict(
+                os.environ,
+                {"PATH": "." + os.pathsep + str(fake_bin)},
+                clear=False,
+            ):
+                groups = timeout_helper._separate_descendant_groups(os.getpid())
+        finally:
+            os.chdir(prior_cwd)
+        self.assertIsInstance(groups, set)
+        self.assertFalse(marker.exists(), "process-timeout must use an absolute trusted ps")
+
+    def test_timeout_rejects_a_missing_trusted_working_directory(self):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(TIMEOUT),
+                "--timeout",
+                "2",
+                "--cwd",
+                str(self.root / "missing-cwd"),
+                "--",
+                sys.executable,
+                "-c",
+                "pass",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("--cwd must name an existing directory", result.stderr)
+
     def test_external_term_is_not_reported_as_timeout(self):
         pids_path = self.root / "external-pids.json"
         proc = subprocess.Popen([
@@ -537,6 +1175,43 @@ class ProcessTimeoutTests(unittest.TestCase):
         proc.send_signal(signal.SIGTERM)
         self.assertEqual(proc.wait(timeout=4), 143)
         assert_pids_gone(self, pids)
+
+    @unittest.skipUnless(os.name == "posix", "requires POSIX process groups")
+    def test_external_cancel_reaps_a_descendant_that_started_its_own_session(self):
+        pids_path = self.root / "detached-pids.json"
+        detached = self.root / "detached-tree.py"
+        detached.write_text(
+            "import json, os, signal, subprocess, sys, time\n"
+            "if sys.argv[1] == 'child':\n"
+            " signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            " while True: time.sleep(1)\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "child = subprocess.Popen([sys.executable, __file__, 'child'], start_new_session=True)\n"
+            "open(sys.argv[2], 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "while True: time.sleep(1)\n",
+            encoding="utf-8",
+        )
+        proc = subprocess.Popen([
+            sys.executable, str(TIMEOUT), "--timeout", "60", "--term-grace", "0.1", "--",
+            sys.executable, str(detached), "parent", str(pids_path),
+        ])
+        pids: list[int] = []
+        try:
+            self.assertTrue(wait_until(pids_path.exists))
+            pids = json.loads(pids_path.read_text())
+            proc.send_signal(signal.SIGTERM)
+            self.assertEqual(proc.wait(timeout=4), 143)
+            assert_pids_gone(self, pids)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=2)
+            # A failed regression must only clean exact fixture PIDs.
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
 
     def test_injected_wall_clock_simulates_suspend_gap(self):
         pids_path = self.root / "clock-pids.json"
@@ -568,7 +1243,7 @@ class RunnerFixture:
         self.root = Path(self.temp.name)
         self.state = self.root / "state"
         self.workroot = self.root / "work"
-        self.registry = self.root / "registry.json"
+        self.registry = self.root / ".agents-registry.json"
         self.registry.write_text(json.dumps({
             "version": "dispatch/1",
             "agents": [{
@@ -644,6 +1319,7 @@ class RunnerFixture:
         command = [
             sys.executable, str(RUNNER),
             "--registry", str(self.registry),
+            "--project-root", str(self.root),
             "--agent", "fixture-agent",
             "--port", "0",
             "--state", str(self.state),
@@ -967,6 +1643,276 @@ class A2AClientTests(unittest.TestCase):
             with self.assertRaisesRegex(self.client.ClientError, "protected"):
                 self.client.load_descriptor(str(registry), "remote")
 
+    def test_client_pins_project_registry_before_descriptor_or_network(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw) / "project"
+            root.mkdir()
+            outside = Path(raw) / "outside-registry.json"
+            outside.write_text("{}", encoding="utf-8")
+            expected = root / ".agents-registry.json"
+            cases = [("outside", outside)]
+
+            os.symlink(outside, expected)
+            cases.append(("symlink", expected))
+
+            for label, requested_registry in cases:
+                with self.subTest(case=label), mock.patch.object(
+                    self.client, "load_descriptor"
+                ) as load_descriptor, mock.patch.object(
+                    self.client, "fetch_agent_card"
+                ) as fetch_agent_card, mock.patch.object(
+                    urllib.request, "urlopen"
+                ) as urlopen, mock.patch.object(self.client, "log") as log:
+                    argv = [
+                        str(CLIENT), "card", "--agent", "remote",
+                        "--registry", str(requested_registry),
+                        "--project-root", str(root),
+                    ]
+                    with mock.patch.object(sys, "argv", argv), self.assertRaises(
+                        SystemExit
+                    ) as raised:
+                        self.client.main()
+                    self.assertEqual(raised.exception.code, 2)
+                    self.assertIn("registry", log.call_args.args[0].lower())
+                    load_descriptor.assert_not_called()
+                    fetch_agent_card.assert_not_called()
+                    urlopen.assert_not_called()
+
+    def test_client_expected_provenance_rejects_before_descriptor_or_network(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw) / "project"
+            root.mkdir()
+            registry = root / ".agents-registry.json"
+            registry.write_text(json.dumps(self.integration_registry()), encoding="utf-8")
+            adapters = root / "adapters"
+            adapters.mkdir()
+            shutil.copy2(
+                DISPATCH / "transports" / "adapters" / "codex.json",
+                adapters / "codex.json",
+            )
+
+            target = subprocess.run(
+                [
+                    sys.executable, str(DISPATCH / "tool-catalog.py"), "target",
+                    "--registry", str(registry), "--adapters", str(adapters),
+                    "--target-id", "a2a--codex-remote--evaluator",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(target.returncode, 0, target.stderr)
+            expected = json.loads(target.stdout)["execution_provenance_sha256"]
+            self.client.verify_expected_execution_provenance(
+                str(registry), "a2a--codex-remote--evaluator", str(adapters), expected
+            )
+            with self.assertRaisesRegex(self.client.ClientError, "semantics drifted"):
+                self.client.verify_expected_execution_provenance(
+                    str(registry), "a2a--codex-remote--evaluator", str(adapters), "0" * 64
+                )
+
+            argv = [
+                str(CLIENT), "card", "--agent", "a2a--codex-remote--evaluator",
+                "--registry", str(registry), "--project-root", str(root),
+                "--adapters", str(adapters), "--expected-provenance", "0" * 64,
+            ]
+            with mock.patch.object(self.client, "load_descriptor") as load_descriptor, \
+                    mock.patch.object(self.client, "fetch_agent_card") as fetch_agent_card, \
+                    mock.patch.object(urllib.request, "urlopen") as urlopen, \
+                    mock.patch.object(self.client, "log") as log, \
+                    mock.patch.object(sys, "argv", argv), self.assertRaises(SystemExit) as raised:
+                self.client.main()
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("semantics drifted", log.call_args.args[0])
+            load_descriptor.assert_not_called()
+            fetch_agent_card.assert_not_called()
+            urlopen.assert_not_called()
+
+    def test_client_expected_provenance_uses_catalog_snapshot_after_registry_swap(self):
+        """A verified target must remain the sole source of remote authority."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw) / "project"
+            root.mkdir()
+            registry = root / ".agents-registry.json"
+            original = self.integration_registry()
+            registry.write_text(json.dumps(original), encoding="utf-8")
+            adapters = root / "adapters"
+            adapters.mkdir()
+            shutil.copy2(
+                DISPATCH / "transports" / "adapters" / "codex.json",
+                adapters / "codex.json",
+            )
+
+            catalog = subprocess.run(
+                [
+                    sys.executable, str(DISPATCH / "tool-catalog.py"), "target",
+                    "--registry", str(registry), "--adapters", str(adapters),
+                    "--target-id", "a2a--codex-remote--evaluator",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(catalog.returncode, 0, catalog.stderr)
+            expected = json.loads(catalog.stdout)["execution_provenance_sha256"]
+
+            swapped = self.integration_registry()
+            swapped["a2a_targets"][0]["endpoint"] = "http://127.0.0.1:9/attacker"
+            swapped["a2a_targets"][0]["auth"] = {
+                "type": "bearer", "env": "REMOTE_A2A_ATTACKER"
+            }
+            real_verify = self.client.verify_expected_execution_provenance
+            captured = {}
+
+            def verify_then_swap(*args, **kwargs):
+                target = real_verify(*args, **kwargs)
+                registry.write_text(json.dumps(swapped), encoding="utf-8")
+                return target
+
+            def observe_card(descriptor):
+                captured.update(descriptor)
+                return {"name": "catalog-snapshot"}
+
+            argv = [
+                str(CLIENT), "card", "--agent", "a2a--codex-remote--evaluator",
+                "--registry", str(registry), "--project-root", str(root),
+                "--adapters", str(adapters), "--expected-provenance", expected,
+            ]
+            with mock.patch.object(
+                self.client,
+                "verify_expected_execution_provenance",
+                side_effect=verify_then_swap,
+            ), mock.patch.object(
+                self.client,
+                "load_descriptor",
+                side_effect=AssertionError("expected provenance must not reopen registry"),
+            ) as load_descriptor, mock.patch.object(
+                self.client, "fetch_agent_card", side_effect=observe_card
+            ), mock.patch("builtins.print"), mock.patch.object(sys, "argv", argv):
+                self.assertEqual(self.client.main(), 0)
+
+            load_descriptor.assert_not_called()
+            self.assertEqual(captured["endpoint"], original["a2a_targets"][0]["endpoint"])
+            self.assertEqual(
+                captured["auth"], {"type": "bearer", "env": "REMOTE_A2A_CODEX"}
+            )
+            self.assertEqual(captured["timeout_s"], 2400)
+            self.assertEqual(
+                json.loads(registry.read_text(encoding="utf-8"))["a2a_targets"][0]["endpoint"],
+                swapped["a2a_targets"][0]["endpoint"],
+            )
+
+    def test_direct_a2a_active_checkpoint_guards_every_network_command(self):
+        """The direct client must not let any command bypass active v2 binding."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw) / "project"
+            root.mkdir()
+            registry = root / ".agents-registry.json"
+            remote = self.integration_registry()
+            remote["a2a_targets"][0]["endpoint"] = "http://127.0.0.1:9/a2a"
+            registry.write_text(json.dumps(remote), encoding="utf-8")
+            adapters = root / "adapters"
+            adapters.mkdir()
+            shutil.copy2(
+                DISPATCH / "transports" / "adapters" / "codex.json",
+                adapters / "codex.json",
+            )
+            envelope = root / "envelope.json"
+            envelope.write_text(json.dumps({"role": "evaluator"}), encoding="utf-8")
+            (root / "progress.json").write_text(
+                json.dumps({"mode_intent": {"signed_intent": {}, "resolution": {}}}),
+                encoding="utf-8",
+            )
+
+            installed = Path(raw) / "framework"
+            shutil.copytree(DISPATCH, installed)
+            write_executable(
+                installed / "resolve-active-mode-role.sh",
+                "#!/usr/bin/env bash\n"
+                "set -euo pipefail\n"
+                "role=''\n"
+                "expected=''\n"
+                "while [ \"$#\" -gt 0 ]; do\n"
+                "  case \"$1\" in\n"
+                "    --role) role=\"$2\"; shift 2 ;;\n"
+                "    --expected-agent) expected=\"$2\"; shift 2 ;;\n"
+                "    *) shift ;;\n"
+                "  esac\n"
+                "done\n"
+                "if [ \"$role\" != \"evaluator\" ]; then\n"
+                "  echo '[fixture active resolver] role mismatch' >&2\n"
+                "  exit 2\n"
+                "fi\n"
+                "if [ \"$expected\" != \"${HARNESS_ACTIVE_AGENT:?}\" ]; then\n"
+                "  echo '[fixture active resolver] expected agent mismatch' >&2\n"
+                "  exit 2\n"
+                "fi\n"
+                "printf '{\"agent_id\":\"%s\",\"tool\":\"codex\",\"invocation\":\"a2a\","
+                "\"model_family\":\"codex\",\"priority\":100,"
+                "\"execution_provenance_sha256\":\"%s\"}\\n' \\\n"
+                "  \"$expected\" \"${HARNESS_ACTIVE_PROVENANCE:?}\"\n",
+            )
+
+            client = installed / "transports" / "a2a-client.py"
+            common = [
+                "--registry", str(registry), "--project-root", str(root),
+                "--adapters", str(adapters),
+            ]
+            environment = {
+                **os.environ,
+                "HARNESS_ACTIVE_AGENT": "a2a--codex-remote--evaluator",
+                "HARNESS_ACTIVE_PROVENANCE": "0" * 64,
+            }
+
+            def invoke(command, *, agent, with_envelope=False, task=False):
+                args = [sys.executable, str(client), command, "--agent", agent]
+                if with_envelope:
+                    args.extend(["--envelope", str(envelope)])
+                if task:
+                    args.extend(["--task", "fixture-task"])
+                return subprocess.run(
+                    [*args, *common],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    env=environment,
+                    timeout=10,
+                )
+
+            # Commands carrying an envelope derive its role, then force the
+            # resolver to reject a target that is not the active assignment.
+            for command in ("run", "send", "get", "subscribe"):
+                with self.subTest(command=command):
+                    result = invoke(
+                        command,
+                        agent="a2a--other-remote--evaluator",
+                        with_envelope=True,
+                        task=command in ("get", "subscribe"),
+                    )
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertIn("expected agent mismatch", result.stderr)
+
+            # No-envelope network commands require a role when callers use a
+            # compatibility target id that does not encode one.
+            for command in ("card", "ls", "cancel"):
+                with self.subTest(command=command):
+                    result = invoke(
+                        command,
+                        agent="codex-remote",
+                        task=command == "cancel",
+                    )
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertIn("requires --role", result.stderr)
+
+            # A generated target supplies its role, so its active provenance
+            # still has to agree with the fresh catalog before any endpoint is
+            # parsed or contacted.
+            result = invoke("card", agent="a2a--codex-remote--evaluator")
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("semantics drifted", result.stderr)
+
     def test_tool_integration_target_resolves_per_role_and_rejects_generator(self):
         with tempfile.TemporaryDirectory() as raw:
             registry = Path(raw) / "tool-integrations.json"
@@ -1001,7 +1947,7 @@ class A2AClientTests(unittest.TestCase):
     def test_canonical_target_preflight_rejects_unverified_adapter_before_network(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            registry = root / "tool-integrations.json"
+            registry = root / ".agents-registry.json"
             registry.write_text(json.dumps(self.integration_registry()), encoding="utf-8")
             adapters = root / "adapters"
             adapters.mkdir()
@@ -1024,7 +1970,8 @@ class A2AClientTests(unittest.TestCase):
 
                 argv = [
                     str(CLIENT), "card", "--agent", "a2a--codex-remote--planner",
-                    "--registry", str(registry), "--adapters", str(adapters),
+                    "--registry", str(registry), "--project-root", str(root),
+                    "--adapters", str(adapters),
                 ]
                 with mock.patch.object(sys, "argv", argv), self.assertRaises(SystemExit):
                     self.client.main()
@@ -1348,7 +2295,7 @@ class RunnerCoreTests(unittest.TestCase):
             agent="fixture-agent",
             integration=None,
             runner_id="fixture-agent",
-            registry=str(self.root / "registry.json"),
+            registry=str(self.root / ".agents-registry.json"),
             adapters=str(self.root / "adapters"),
             workroot=str(self.root / "work"),
             cancel_grace=0.1,
@@ -1512,6 +2459,7 @@ class RunnerCoreTests(unittest.TestCase):
         argv = [
             str(RUNNER),
             "--registry", self.cfg.registry,
+            "--project-root", str(self.root),
             "--integration", "codex",
             "--state", str(state),
             "--sandbox", self.cfg.sandbox,
@@ -1525,6 +2473,60 @@ class RunnerCoreTests(unittest.TestCase):
                 self.runner_module.main()
         self.assertIn("not verified", str(raised.exception))
         server.assert_not_called()
+        self.assertFalse(state.exists())
+
+    def test_runner_pins_project_registry_before_descriptor_or_listening(self):
+        outside = self.root / "outside-registry.json"
+        outside.write_text("{}", encoding="utf-8")
+        expected = self.root / ".agents-registry.json"
+        cases = [("outside", outside)]
+
+        expected.unlink()
+        os.symlink(outside, expected)
+        cases.append(("symlink", expected))
+
+        for label, requested_registry in cases:
+            state = self.root / f"registry-pin-{label}-state"
+            argv = [
+                str(RUNNER),
+                "--agent", "fixture-agent",
+                "--registry", str(requested_registry),
+                "--project-root", str(self.root),
+                "--state", str(state),
+            ]
+            with self.subTest(case=label), mock.patch.object(
+                sys, "argv", argv
+            ), mock.patch.object(
+                self.runner_module, "load_execution_descriptor"
+            ) as load_descriptor, mock.patch.object(
+                self.runner_module, "ThreadingHTTPServer"
+            ) as server:
+                with self.assertRaises(SystemExit) as raised:
+                    self.runner_module.main()
+            self.assertIn("registry", str(raised.exception).lower())
+            load_descriptor.assert_not_called()
+            server.assert_not_called()
+            self.assertFalse(state.exists())
+
+    def test_runner_stop_does_not_require_project_registry(self):
+        no_registry_root = self.root / "no-registry-project"
+        no_registry_root.mkdir()
+        state = no_registry_root / "state"
+        result = subprocess.run(
+            [
+                sys.executable, str(RUNNER),
+                "--agent", "fixture-agent",
+                "--registry", str(no_registry_root / "missing-registry.json"),
+                "--state", str(state),
+                "--stop",
+            ],
+            cwd=no_registry_root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("no valid pidfile", result.stdout)
         self.assertFalse(state.exists())
 
     def test_runner_uses_catalog_timeout_default_and_accepts_legacy_long_id(self):

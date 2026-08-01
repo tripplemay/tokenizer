@@ -460,6 +460,85 @@ class PlannerProposalDispatchTest(unittest.TestCase):
         self.assertEqual(json.loads(canonical_progress.read_text(encoding="utf-8")), {"status": "planning"})
         self.assertFalse((repo / "features.json").exists())
 
+    def test_planner_entrypoints_pin_the_project_registry_before_creating_state(self) -> None:
+        repo = self.root / "registry-pinning-project"
+        repo.mkdir()
+        subprocess.run(["git", "-C", str(repo), "init", "-q"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.email", "fixture@example.invalid"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.name", "fixture"],
+            check=True,
+        )
+        (repo / "README.md").write_text("fixture\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo), "add", "README.md"], check=True)
+        subprocess.run(["git", "-C", str(repo), "commit", "-qm", "fixture"], check=True)
+        ref = subprocess.check_output(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+        registry = repo / ".agents-registry.json"
+        registry.write_text("{}", encoding="utf-8")
+        outside = self.root / "outside-registry.json"
+        outside.write_text("{}", encoding="utf-8")
+        request = repo / "planner-request.md"
+        request.write_text("Plan the fixture batch.", encoding="utf-8")
+        envelope = repo / "prepared-envelope.json"
+        envelope.write_text("{}", encoding="utf-8")
+        proposal = repo / "returned-proposal.json"
+        proposal.write_text("{}", encoding="utf-8")
+
+        def command_for(entry: str, requested_registry: Path, state: Path) -> list[str]:
+            if entry == "dispatch":
+                return [
+                    "bash", str(PLANNER_WRAPPER), "--agent", "fixture-planner",
+                    "--batch", BATCH_ID, "--ref", ref, "--request-file", str(request),
+                    "--task-id", "planner-pin-001", "--registry", str(requested_registry),
+                    "--state", str(state), "--workroot", str(self.root / f"{state.name}-work"),
+                ]
+            if entry == "prepare":
+                return [
+                    "bash", str(PLANNER_PREPARE), "--agent", "fixture-planner",
+                    "--batch", BATCH_ID, "--ref", ref, "--request-file", str(request),
+                    "--task-id", "planner-pin-001", "--registry", str(requested_registry),
+                    "--state", str(state),
+                ]
+            return [
+                "bash", str(PLANNER_ACCEPT), "--agent", "fixture-planner",
+                "--envelope", str(envelope), "--proposal-file", str(proposal),
+                "--registry", str(requested_registry), "--state", str(state),
+            ]
+
+        for case, requested_registry in (("outside", outside),):
+            for entry in ("dispatch", "prepare", "accept"):
+                state = repo / f".{entry}-{case}-state"
+                result = subprocess.run(
+                    command_for(entry, requested_registry, state),
+                    cwd=repo,
+                    capture_output=True,
+                    text=True,
+                )
+                with self.subTest(entry=entry, case=case):
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                    self.assertIn("registry", result.stderr.lower())
+                    self.assertFalse(state.exists(), result.stderr)
+
+        registry.unlink()
+        registry.symlink_to(outside)
+        for entry in ("dispatch", "prepare", "accept"):
+            state = repo / f".{entry}-symlink-state"
+            result = subprocess.run(
+                command_for(entry, registry, state),
+                cwd=repo,
+                capture_output=True,
+                text=True,
+            )
+            with self.subTest(entry=entry, case="symlink"):
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn("registry", result.stderr.lower())
+                self.assertFalse(state.exists(), result.stderr)
+
     def test_rejects_extra_writeback_fields_and_snapshot_mismatch(self) -> None:
         proposal = valid_proposal()
         proposal["progress_update"] = {"status": "building"}

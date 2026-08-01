@@ -107,11 +107,25 @@ describe("normalizeHarnessModeIntentPayload", () => {
     } satisfies HarnessModeIntentPayload);
   });
 
-  it("accepts heterogeneous only with no a2a and at least one local-cli", () => {
+  it("accepts heterogeneous with a non-A2A local-cli or same-session subagent route", () => {
     const result = normalizeHarnessModeIntentPayload(intent("heterogeneous"), { now: NOW, agents: AGENTS });
     expect(result.desired.execution).toEqual({
       profile: "heterogeneous",
       role_assignments: { generator: "builder-codex", evaluator: "reviewer-kimi" }
+    });
+
+    const bridgeAgents: HarnessModeAgentDescriptor[] = [
+      { id: "builder-codex-bridge", roles: ["generator"], transport: "subagent", model_family: "codex" },
+      { id: "reviewer-kimi-bridge", roles: ["evaluator"], transport: "subagent", model_family: "kimi" }
+    ];
+    const bridgeIntent = intent("heterogeneous");
+    bridgeIntent.desired.execution.role_assignments = {
+      generator: "builder-codex-bridge",
+      evaluator: "reviewer-kimi-bridge"
+    };
+    expect(normalizeHarnessModeIntentPayload(bridgeIntent, { now: NOW, agents: bridgeAgents }).desired.execution).toEqual({
+      profile: "heterogeneous",
+      role_assignments: { generator: "builder-codex-bridge", evaluator: "reviewer-kimi-bridge" }
     });
   });
 
@@ -230,14 +244,14 @@ describe("execution profiles and agent assignments", () => {
     expectCode(value, "profile_transport_mismatch");
   });
 
-  it("rejects heterogeneous when neither assigned agent uses local-cli", () => {
+  it("accepts heterogeneous when the independent pair uses same-session subagents", () => {
     const agents: HarnessModeAgentDescriptor[] = [
-      AGENTS[0],
+      { id: "sub-builder", roles: ["generator"], transport: "subagent", model_family: "codex" },
       { id: "sub-reviewer", roles: ["evaluator"], transport: "subagent", model_family: "kimi" }
     ];
     const value = intent("heterogeneous");
-    value.desired.execution.role_assignments = { generator: "main-claude", evaluator: "sub-reviewer" };
-    expectCode(value, "profile_transport_mismatch", agents);
+    value.desired.execution.role_assignments = { generator: "sub-builder", evaluator: "sub-reviewer" };
+    expect(normalizeHarnessModeIntentPayload(value, { now: NOW, agents }).desired.execution.profile).toBe("heterogeneous");
   });
 
   it("rejects slow unless at least one assigned agent uses a2a", () => {
@@ -326,6 +340,19 @@ describe("v2 execution profiles and tool bindings", () => {
     const noA2a = toolBindingIntent("slow");
     noA2a.desired.execution.role_bindings.evaluator.invocation = "local-cli";
     expectToolCode(noA2a, "profile_transport_mismatch");
+
+    const bridgeTools: HarnessModeToolDescriptor[] = [
+      { tool: "codex", invocation: "subagent", role: "generator", model_family: "codex" },
+      { tool: "kimi", invocation: "subagent", role: "evaluator", model_family: "kimi" },
+      { tool: "codex", invocation: "subagent", role: "planner", model_family: "codex" }
+    ];
+    const bridge = toolBindingIntent();
+    bridge.desired.execution.role_bindings = {
+      planner: null,
+      generator: { tool: "codex", invocation: "subagent" },
+      evaluator: { tool: "kimi", invocation: "subagent" }
+    };
+    expect(normalizeHarnessModeIntentPayload(bridge, { now: NOW, tools: bridgeTools }).desired.execution.profile).toBe("heterogeneous");
   });
 
   it("rejects non-null v2 bindings for fast and v1/v2 mixed execution objects", () => {

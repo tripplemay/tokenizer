@@ -3,7 +3,7 @@ import { buildModeSnapshot, type ModeSnapshot } from "./harness-modes";
 
 const EXECUTION_LABELS: Record<ModeSnapshot["execution"], string> = {
   fast: "快车道",
-  heterogeneous: "本地异构",
+  heterogeneous: "异构执行",
   slow: "跨机器",
   unknown: "形态未知"
 };

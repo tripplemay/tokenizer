@@ -16,6 +16,10 @@ const workflow = new AsyncFunction("args", "agent", "phase", source);
 
 const ref = "a".repeat(40);
 
+function provenance(seed) {
+  return seed.repeat(64);
+}
+
 function baseArgs(overrides = {}) {
   return {
     state: {
@@ -222,7 +226,7 @@ async function testExternalGeneratorWithoutFixedSourceReturnCapabilityHalts() {
   assert.equal(calls.length, 0);
 }
 
-async function testV2ResolutionFiveFieldDriftFailsClosed() {
+async function testV2ResolutionProvenanceDriftFailsClosed() {
   const registry = {
     agents: [
       { id: "selected-planner", roles: ["planner"], transport: "subagent", agent_type: "planner-proposal", model_family: "claude", priority: 10 },
@@ -231,9 +235,9 @@ async function testV2ResolutionFiveFieldDriftFailsClosed() {
     ],
   };
   const resolution = {
-    planner: { agent_id: "selected-planner", tool: "claude-code", invocation: "subagent", model_family: "claude", priority: 10 },
-    generator: { agent_id: "selected-generator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 20 },
-    evaluator: { agent_id: "selected-evaluator", tool: "claude-code", invocation: "subagent", model_family: "kimi", priority: 30 },
+    planner: { agent_id: "selected-planner", tool: "claude-code", invocation: "subagent", model_family: "claude", priority: 10, execution_provenance_sha256: provenance("a") },
+    generator: { agent_id: "selected-generator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 20, execution_provenance_sha256: provenance("b") },
+    evaluator: { agent_id: "selected-evaluator", tool: "claude-code", invocation: "subagent", model_family: "kimi", priority: 30, execution_provenance_sha256: provenance("c") },
   };
   const valid = await run(
     baseArgs({
@@ -256,12 +260,29 @@ async function testV2ResolutionFiveFieldDriftFailsClosed() {
     },
   );
   assert.equal(valid.result.decision, "ADVANCE");
+  const missingSnapshot = await run(
+    baseArgs({
+      registry,
+      state: {
+        ...baseArgs().state,
+        role_assignments: {
+          planner: "selected-planner", generator: "selected-generator", evaluator: "selected-evaluator",
+        },
+        mode_intent: { resolution },
+      },
+    }),
+    () => { throw new Error("dispatcher must not run without current resolution snapshot"); },
+  );
+  assert.equal(missingSnapshot.result.decision, "HALT");
+  assert.deepEqual(missingSnapshot.result.reasons, ["configured_role_resolution_drift:planner"]);
+  assert.equal(missingSnapshot.calls.length, 0);
   for (const [field, changed] of Object.entries({
     agent_id: "other-generator",
     tool: "other-cli",
     invocation: "a2a",
     model_family: "other-family",
     priority: 21,
+    execution_provenance_sha256: provenance("d"),
   })) {
     const mutated = structuredClone(resolution);
     mutated.generator[field] = changed;
@@ -313,8 +334,8 @@ async function testCanonicalRegistryKeepsCoordinatorAndLongA2ATarget() {
   };
   const resolution = {
     planner: null,
-    generator: { agent_id: "local-cli--codex--generator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000 },
-    evaluator: { agent_id: evaluatorId, tool: "claude-code", invocation: "a2a", model_family: "claude", priority: 1000 },
+    generator: { agent_id: "local-cli--codex--generator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000, execution_provenance_sha256: provenance("e") },
+    evaluator: { agent_id: evaluatorId, tool: "claude-code", invocation: "a2a", model_family: "claude", priority: 1000, execution_provenance_sha256: provenance("f") },
   };
   const { result, calls } = await run(
     baseArgs({
@@ -358,7 +379,7 @@ async function testCanonicalRegistryUsesPythonModelFamilyStripRules() {
         id: "preserved",
         tool: "claude-code",
         model_family: preservedFamily,
-        subagent: true,
+        local_cli: { adapter: "claude-code", sandbox: { home_dir: "/tmp/claude" } },
       },
       {
         id: "codex",
@@ -371,8 +392,8 @@ async function testCanonicalRegistryUsesPythonModelFamilyStripRules() {
   };
   const resolution = {
     planner: null,
-    generator: { agent_id: "subagent--preserved--generator", tool: "claude-code", invocation: "subagent", model_family: preservedFamily, priority: 1000 },
-    evaluator: { agent_id: "local-cli--codex--evaluator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000 },
+    generator: { agent_id: "local-cli--preserved--generator", tool: "claude-code", invocation: "local-cli", model_family: preservedFamily, priority: 1000, execution_provenance_sha256: provenance("0") },
+    evaluator: { agent_id: "local-cli--codex--evaluator", tool: "codex", invocation: "local-cli", model_family: "codex", priority: 1000, execution_provenance_sha256: provenance("1") },
   };
   const { result, calls } = await run(
     baseArgs({
@@ -382,13 +403,20 @@ async function testCanonicalRegistryUsesPythonModelFamilyStripRules() {
         ...baseArgs().state,
         role_assignments: {
           planner: null,
-          generator: "subagent--preserved--generator",
+          generator: "local-cli--preserved--generator",
           evaluator: "local-cli--codex--evaluator",
         },
         mode_intent: { resolution },
       },
     }),
     (options) => {
+      if (options.label === "dispatch:generator:local-cli--preserved--generator") {
+        return {
+          state: "COMPLETED", artifact_path: "handoff.json", run_meta_path: "run-meta.json",
+          envelope_path: "envelope.json", worktree_path: "/tmp/preserved-generator",
+          verdict_summary: { all_pass: false },
+        };
+      }
       if (options.label === "build:F001") {
         return { feature_id: "F001", result: "completed", files_touched: [] };
       }
@@ -397,7 +425,100 @@ async function testCanonicalRegistryUsesPythonModelFamilyStripRules() {
     },
   );
   assert.equal(result.decision, "ADVANCE");
-  assert.equal(calls[0].options.agentType, "generator-restricted");
+  assert.equal(calls[0].options.agentType, "general-purpose");
+}
+
+async function testRawBridgeDeclarationIsNotAnAuthorizedAssignment() {
+  const registry = {
+    version: "tool-integrations/1",
+    integrations: [{
+      id: "kimi",
+      tool: "kimi",
+      model_family: "kimi",
+      subagent: { bridge: "claimed-but-unverified" },
+      local_cli: { adapter: "kimi", sandbox: { home_dir: "/tmp/kimi" } },
+    }],
+    a2a_targets: [],
+  };
+  const { result, calls } = await run(
+    baseArgs({
+      registry,
+      state: {
+        ...baseArgs().state,
+        role_assignments: { generator: "subagent--kimi--generator" },
+      },
+    }),
+    () => { throw new Error("a raw bridge declaration must not dispatch"); },
+  );
+  assert.equal(result.decision, "HALT");
+  assert.deepEqual(result.reasons, ["configured_role_unresolvable:generator"]);
+  assert.equal(calls.length, 0);
+}
+
+async function testVerifiedResolutionProjectsExternalBridgeAssignment() {
+  const registry = {
+    version: "tool-integrations/1",
+    integrations: [
+      {
+        id: "kimi",
+        tool: "kimi",
+        model_family: "kimi",
+        priority: 7,
+        // The workflow intentionally cannot validate this string. It only
+        // accepts the external target because the durable caller supplied a
+        // matching, freshly validated resolution snapshot.
+        subagent: { bridge: "kimi-acp-native-agent" },
+        local_cli: { adapter: "kimi", sandbox: { home_dir: "/tmp/kimi" } },
+      },
+      {
+        id: "codex",
+        tool: "codex",
+        model_family: "codex",
+        priority: 8,
+        local_cli: { adapter: "codex", sandbox: { home_dir: "/tmp/codex" } },
+      },
+    ],
+    a2a_targets: [],
+  };
+  const resolution = {
+    planner: null,
+    generator: {
+      agent_id: "subagent--kimi--generator", tool: "kimi", invocation: "subagent",
+      model_family: "kimi", priority: 7, execution_provenance_sha256: provenance("2"),
+    },
+    evaluator: {
+      agent_id: "local-cli--codex--evaluator", tool: "codex", invocation: "local-cli",
+      model_family: "codex", priority: 8, execution_provenance_sha256: provenance("3"),
+    },
+  };
+  const { result, calls } = await run(
+    baseArgs({
+      registry,
+      resolved_mode_bindings: resolution,
+      state: {
+        ...baseArgs().state,
+        role_assignments: {
+          planner: null,
+          generator: "subagent--kimi--generator",
+          evaluator: "local-cli--codex--evaluator",
+        },
+        mode_intent: { resolution },
+      },
+    }),
+    (options) => {
+      if (options.label === "dispatch:generator:subagent--kimi--generator") {
+        return {
+          state: "COMPLETED", artifact_path: "handoff.json", run_meta_path: "run-meta.json",
+          envelope_path: "envelope.json", worktree_path: "/tmp/kimi-generator",
+        };
+      }
+      if (options.label === "critic:spec-lock") return { violation: false, detail: "clean" };
+      throw new Error(`unexpected agent call ${options.label}`);
+    },
+  );
+  assert.equal(result.decision, "ADVANCE");
+  assert.equal(result.writeback.agent_id, "subagent--kimi--generator");
+  assert.equal(calls[0].options.label, "dispatch:generator:subagent--kimi--generator");
 }
 
 await testConfiguredGeneratorWinsOverRegistryOrder();
@@ -407,7 +528,9 @@ await testConfiguredSubagentUsesItsDescriptorPersona();
 await testExternalGeneratorWithoutReturnEvidenceHalts();
 await testUnsafeBatchCannotReachDispatcher();
 await testExternalGeneratorWithoutFixedSourceReturnCapabilityHalts();
-await testV2ResolutionFiveFieldDriftFailsClosed();
+await testV2ResolutionProvenanceDriftFailsClosed();
 await testCanonicalRegistryKeepsCoordinatorAndLongA2ATarget();
 await testCanonicalRegistryUsesPythonModelFamilyStripRules();
-console.log("[gate-arbiter] 10/10 role-routing and dispatch-id checks passed");
+await testRawBridgeDeclarationIsNotAnAuthorizedAssignment();
+await testVerifiedResolutionProjectsExternalBridgeAssignment();
+console.log("[gate-arbiter] 12/12 role-routing and dispatch-id checks passed");

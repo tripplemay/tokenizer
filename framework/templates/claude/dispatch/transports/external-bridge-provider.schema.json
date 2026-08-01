@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "harness strict external same-session bridge provider",
+  "description": "Framework-owned, nonce-bound provider attestation required before publishing an external same-session bridge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "provider_id",
+    "provider_kind",
+    "same_session_bridge",
+    "isolation_principal",
+    "workspace_transport",
+    "host_filesystem",
+    "coordinator_paths_hidden",
+    "launch_binding",
+    "credential_flow",
+    "network_egress",
+    "lifecycle",
+    "result_channel",
+    "attestation"
+  ],
+  "properties": {
+    "contract_version": { "const": "harness/external-bridge-provider/1" },
+    "provider_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    },
+    "provider_kind": { "enum": ["vm-v1", "ephemeral-uid-v1"] },
+    "same_session_bridge": { "const": true },
+    "isolation_principal": { "enum": ["vm", "ephemeral_uid"] },
+    "workspace_transport": { "const": "copy-in-copy-out" },
+    "host_filesystem": { "const": "deny-by-default" },
+    "coordinator_paths_hidden": { "const": true },
+    "launch_binding": { "const": "staged-sha256-v1" },
+    "credential_flow": { "const": "brokered-no-raw-secret-v1" },
+    "network_egress": { "const": "brokered-only-v1" },
+    "lifecycle": { "const": "provider-job-reap-v1" },
+    "result_channel": { "const": "supervisor-pipe-v1" },
+    "attestation": { "const": "nonce-bound-v1" }
+  }
+}

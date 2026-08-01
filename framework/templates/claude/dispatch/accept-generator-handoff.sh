@@ -94,7 +94,9 @@ fi
 
 ACTIVE_AGENT=""
 if [ -f "$CANONICAL_PROGRESS" ]; then
-  [ -f "$REGISTRY" ] || die "active mode checkpoint requires registry: $REGISTRY"
+  REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+    --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
+    || die "active mode checkpoint requires the project-root non-symlink .agents-registry.json"
   ACTIVE_ARGS=(--role generator --progress "$PROGRESS" --registry "$REGISTRY")
   [ -z "$ADAPTERS" ] || ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")

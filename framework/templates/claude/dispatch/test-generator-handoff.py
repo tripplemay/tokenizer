@@ -387,6 +387,27 @@ class ManualGeneratorDispatchTest(unittest.TestCase):
         self.assertIn("descriptor.agent_type=generator-restricted", result.stderr)
         self.assertFalse(self.state.exists())
 
+    def test_registry_is_pinned_before_generator_dispatch_state_is_created(self) -> None:
+        self.write_build_state({"generator": "fixture-generator"})
+        registry = self.write_local_cli_registry()
+        self.commit_fixture()
+        outside = self.root / "outside-registry.json"
+        outside.write_text(registry.read_text(encoding="utf-8"), encoding="utf-8")
+
+        result = self.run_wrapper("--registry", str(outside))
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("registry", result.stderr.lower())
+        self.assertFalse(self.state.exists())
+        self.assertFalse(self.workroot.exists())
+
+        registry.unlink()
+        registry.symlink_to(outside)
+        result = self.run_wrapper()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("registry", result.stderr.lower())
+        self.assertFalse(self.state.exists())
+        self.assertFalse(self.workroot.exists())
+
     def test_a2a_generator_fails_closed_without_creating_dispatch_state(self) -> None:
         self.write_build_state({"generator": "remote-generator"})
         write_json(
