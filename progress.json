@@ -41,6 +41,15 @@
       "docs/test-reports/BL-AGENT-REPORT-COMPAT-verdict.json",
       "docs/specs/BL-AGENT-REPORT-COMPAT-spec.md"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-AGENT-REPORT-COMPAT-verifying-done-w1",
+      "action": "approve",
+      "by": "tripplemay",
+      "at": "2026-08-01T00:40:14Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "NXJzZpb2lRRU+VI0UckU/1NNwoyN1uOZWMVghvKynOA+0vgAoucKZvfWhEOqpDTXKfggHuC6LygtoGtcfRqIBg=="
+    }
   }
 }
