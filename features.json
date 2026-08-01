@@ -39,7 +39,7 @@
       "priority": "high",
       "status": "pending",
       "executor": "evaluator",
-      "acceptance": "在本机已认证 Codex 与 Kimi 上分别执行无源码写入的真实 bridge probe，并保存不含 prompt/wire/凭据的结构化审计证据；运行 framework 与 Tokenizer 聚焦回归、全量 npm test/typecheck/lint/build。fresh-context Evaluator 锁定 SHA 独立复验 F001-F004，全 PASS 后举 verifying-to-done 人工闸门；批准前不得 push、部署或更新安装 Agent。"
+      "acceptance": "在 strict provider 中对本机已认证 Kimi 执行无源码写入的真实 parent-child bridge probe，并保存不含 prompt/wire/凭据的结构化审计证据；Codex 只执行 local-cli 健康检查。运行 framework 与 Tokenizer 聚焦回归、全量 npm test/typecheck/lint/build。fresh-context Evaluator 锁定 SHA 独立复验 F001-F004，全 PASS 后举 verifying-to-done 人工闸门；批准前不得推送产品部署或更新安装 Agent。"
     }
   ]
 }
