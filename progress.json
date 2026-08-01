@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-REPORT-COMPAT",
   "dashboard_url": null,
-  "last_updated": "2026-08-01T00:41:16Z",
+  "last_updated": "2026-08-01T01:08:09Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -15,7 +15,7 @@
   "docs": {
     "spec": "docs/specs/BL-AGENT-REPORT-COMPAT-spec.md",
     "test_cases": "docs/test-reports/BL-AGENT-REPORT-COMPAT-verdict.json",
-    "signoff": "docs/test-reports/BL-AGENT-REPORT-COMPAT-verdict.json",
+    "signoff": "docs/test-reports/BL-AGENT-REPORT-COMPAT-signoff-2026-08-01.md",
     "framework_reviewed": true
   },
   "role_assignments": null,
@@ -26,7 +26,8 @@
     "planning": "【BL-AGENT-REPORT-COMPAT 2026-07-31】用户已批准启动并授权上线。根因已实测：旧安装 Agent 在 tool-integrations/1 下上报 dispatch.enabled=false/toolCatalog=[]；服务端把该遗留空目录按新版可用目录验证，拒绝 report，使 reportedAt 过期。Heartbeat 的 agent SHA 未纳入升级判定，而 feature 6/release 1.0.0 与当前服务端相同，首页错误显示 latest。无新的已签发 mode intent，故使用默认快车道；F001/F002 可并行，F003 依赖正式 1.1.0 发行，F004 由 fresh-context Evaluator 验收。人工 done 闸门仍是提交、推送、部署与本机更新前置条件。",
     "building": "【BL-AGENT-REPORT-COMPAT】F001-F003 已在集成树完成：仅 disabled+empty catalog 走 report 兼容分支，v2 requireUsable 仍拒绝；Agent manifest 新增 1.1.0/capability 7，global 与 tool-bound 阈值均为 7，v1 保持 4；首页区分 upgrade 与 unknown-only。真实旧安装 daf106c 的 buildModeSnapshot 经新 parser 接受且 v2 提取拒绝。聚焦 187/187、全量 59 files/835 passed/4 skipped、typecheck、lint、build 均绿；准备 fresh-context Evaluator。",
     "verifying": "【BL-AGENT-REPORT-COMPAT Kimi A2A 2026-07-31】fresh context 锁定 ec74c22935978a3a14e20d2b05352a76086a4b26，615 秒经 SUBMITTED→WORKING→artifact→COMPLETED 返回 schema-valid verdict；F001-F004 全 PASS、waiting=null。独立复验 legacy report 持久化/v2 拒绝、capability/release 合同与升级 banner 三态；聚焦 187/187、全量 59 files / 835 passed / 4 skipped、typecheck/lint/build 全绿。状态保持 verifying，等待 BL-AGENT-REPORT-COMPAT-verifying-done-w1 由持私钥的人类签名批准；批准前不得推送、部署或更新本机 Agent。",
-    "gate_approved": "持私钥的人类 tripplemay 于 2026-08-01T00:40:14Z 对 BL-AGENT-REPORT-COMPAT-verifying-done-w1 签发一次性 approve；提交 398c7d9，Ed25519 签名已由本机 guard 验证，协调器于 2026-08-01T00:41:16Z 消费批准并进入 done。"
+    "gate_approved": "持私钥的人类 tripplemay 于 2026-08-01T00:40:14Z 对 BL-AGENT-REPORT-COMPAT-verifying-done-w1 签发一次性 approve；提交 398c7d9，Ed25519 签名已由本机 guard 验证，协调器于 2026-08-01T00:41:16Z 消费批准并进入 done。",
+    "released": "【BL-AGENT-REPORT-COMPAT 2026-08-01】main 已推送至 1ea3ebe；GitHub Actions 30676280404 的 Linux Verify、Windows Verify、Deploy 全部成功，公开 /api/health 回报同一 commit。安装器已将本机 Agent 从 daf106c 更新至 1ea3ebe；post-install heartbeat 成功，强制 Harness sync reported=9、failed=0、issues=[]，invalid_tool_catalog 未再出现。"
   },
   "features": [],
   "pending_gate": null
