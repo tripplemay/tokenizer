@@ -5,18 +5,14 @@ type: project
 ---
 ## 当前批次
 
-- **BL-AGENT-REPORT-COMPAT（done，4/4）**：修复旧 Agent 因工具目录协议升级导致 Harness report 被 `invalid_tool_catalog` 拒绝，以及首页未提示该本机 Agent 更新的问题。
-- 旧安装副本报告 feature 6 / release `1.0.0`，在 `tool-integrations/1` 下生成 `dispatch.enabled=false` 和空 `toolCatalog`；服务端误把空遗留目录按新版可用目录验证，`reportedAt` 因此不刷新。
-- F001 仅兼容这一精确空目录形状，仍禁止将它用于 v2 签发；F002 已发布 Agent `1.1.0` / capability 7；F003 已补齐 outdated/unknown 首页语义；F004 已由 fresh Kimi A2A Evaluator 全量验收通过。
-- 无新签名 mode intent，使用默认快车道；`BL-AGENT-REPORT-COMPAT-verifying-done-w1` 已由 `tripplemay` 签名批准并消费，生产与本机 Agent 收敛均已完成。
+- **BL-NATIVE-SUBAGENT-BRIDGES（fixing，1/5，fix_rounds=0）**：默认 host-native fresh-context fan-out 已完成，F001/F003/F004 为 FAIL，F002 为 PASS，F005 为 PARTIAL。
+- 独立 evaluator 与三份证伪复核一致确认：Kimi bridge 虽在 registry 声明，却被 strict-provider gate、目录、选择器和签发路径全部隐藏；当前没有可发布或可签发的 Kimi external same-session target。
+- F003 还缺少可独立重验的 nonce/type receipt 字段，且 Kimi adapter 的临时凭据复制不满足 hostile-process 凭据隔离；这些是验收事实，不因局部协议测试通过而消失。
+- F005 的全部 L1 已通过：Tokenizer 59 files / 865 passed / 4 skipped，verify、lint、build，以及 Framework bridge/catalog 71 项；真实 Kimi L2 probe 未获授权、未执行，因此不能 PASS。
+- 原始 fan-out 与复核证据：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-fanout-2026-08-01.json`；schema verdict：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-verdict.json`。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
-
-## 最近发布
-
-- 产品 `1ea3ebe` 已部署，Actions `30676280404` 的 Verify、Windows Verify、Deploy 均成功；公开 `/api/health` 回报该 commit。本机 Agent 已更新为 release `1.1.0` / capability 7，Harness 实测 `reported=9`、`failed=0`。
-- Harness framework `f518682`（v1.6.1）已推送；本批不修改 framework、Prisma schema 或用户保存的下批次模式意图。
 
 ## 已知边界
 
-- Git SHA 仅作诊断，不作为升级顺序；正式 release + capability 是可操作的兼容合同。
-- 旧 Agent 在兼容服务端恢复 report 后仍不得签发 tool-bound intent，直至更新到 capability 7；现场 daf106c 快照已被新 parser 接受，但 v2 catalog 提取仍拒绝。
+- 修复阶段必须先解决“规格要求发布 external bridge”与“当前 strict-provider fail-closed 策略”的冲突，再重新获取 Kimi 的真实、脱敏 parent-child 审计证据；不得以隐藏 bridge 或实施阶段叙述作为替代。
+- 当前没有 done 人工闸门，也没有 mode intent；本轮未调用认证 Codex/Kimi 服务、未修改产品代码、未部署。

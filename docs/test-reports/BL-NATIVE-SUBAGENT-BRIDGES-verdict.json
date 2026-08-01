@@ -1,0 +1,38 @@
+{
+  "batch_id": "BL-NATIVE-SUBAGENT-BRIDGES",
+  "fix_round": 0,
+  "created_at": "2026-08-01T17:09:54Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "FAIL",
+      "evidence": "Fresh evaluator and adversarial review agree that the shipped Kimi manifest is dormant, the Framework provider is unavailable, and the Tokenizer TypeScript mirror host gate is false. The real catalog contains zero Kimi subagent candidates; the target subagent--kimi--planner is not registered. Local catalog suites pass precisely because they assert this hidden behavior, not because F001 publishes the required external bridge.",
+      "steps_to_reproduce": "Run `PYTHONDONTWRITEBYTECODE=1 python3 framework/templates/claude/dispatch/tool-catalog.py catalog --registry .agents-registry.json`; query `subagent--kimi--planner`; then run the Framework tool catalog suite and `tests/cli/harness-tool-catalog.test.ts`."
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "Codex remains a verified local-cli integration with its adapter, isolated home/environment and timeout; no Codex subagent manifest or catalog target is published. Focused Framework and Tokenizer checks passed, and the full local L1 matrix also passed.",
+      "steps_to_reproduce": "Generate the catalog, compare local-cli--codex--generator with the absent subagent--codex--generator target, and run the focused catalog/session-bridge tests plus the Tokenizer test files named in the fan-out report."
+    },
+    {
+      "feature_id": "F003",
+      "result": "FAIL",
+      "evidence": "The Kimi ACP driver has local nonce/type/completion checks, but all external same-session bridge execution is hidden and rejected. The persisted receipt omits nonce summary and subagent type, and the adapter copies Kimi credential state into a same-UID temporary directory, which does not meet the required isolation. Fresh evaluator and adversarial review both confirmed these facts.",
+      "steps_to_reproduce": "Generate and query the Kimi subagent catalog target, inspect the subagent rejection in sandbox-profile.sh and the Kimi proof/credential paths, then run the generic and Kimi bridge test suites."
+    },
+    {
+      "feature_id": "F004",
+      "result": "FAIL",
+      "evidence": "Although the registry declares Kimi bridge metadata, catalog selection, editor options and server signing explicitly exclude external subagent entries. A Kimi external bridge plus Codex local-cli heterogeneous configuration cannot be resolved or signed. The adversarial review reproduced this and the existing passing tests codify the exclusion.",
+      "steps_to_reproduce": "Generate the catalog, attempt a binding containing kimi+subagent and codex+local-cli, then inspect the shared selectable-entry filter and server signing filter with their focused Vitest coverage."
+    },
+    {
+      "feature_id": "F005",
+      "result": "PARTIAL",
+      "evidence": "All local L1 checks passed: npm test (865 passed, 4 skipped), verify, lint, build, and the 71 focused Framework bridge/catalog tests. The mandatory fresh authenticated Kimi probe was not run because L2 authorization is false. The adversarial review also found a wording mismatch about Codex between features.json and the spec, but both require the Kimi probe, so F005 cannot pass.",
+      "steps_to_reproduce": "Obtain explicit L2 authorization, execute the no-source-write authenticated Kimi parent-child probe with a redacted structured audit record, run the Codex local-cli health check required by the spec, and repeat fresh-context evaluation."
+    }
+  ]
+}

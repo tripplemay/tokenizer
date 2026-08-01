@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "fixing",
   "user_goal": "为 Codex 与 Kimi 建立并验证 Harness 自有的同会话子代理桥接；将子代理能力改为声明式、可探测的 bridge，使未来具备相同能力的 CLI 自动进入工具目录与角色调度规则。",
   "total_features": 5,
-  "completed_features": 4,
+  "completed_features": 1,
   "fix_rounds": 0,
   "current_sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "dashboard_url": null,
-  "last_updated": "2026-08-01T07:57:30Z",
+  "last_updated": "2026-08-01T17:09:54Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -20,11 +20,56 @@
   },
   "role_assignments": null,
   "mode_intent": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "summary": "Mechanical aggregation of fresh-context fan-out verdicts. Full raw evaluator and adversarial-review evidence is preserved in docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-fanout-2026-08-01.json.",
+    "pass_count": 1,
+    "partial_count": 1,
+    "fail_count": 3,
+    "issues": [
+      {
+        "feature_id": "F001",
+        "result": "FAIL",
+        "description": "声明式校验和 fail-closed 防线已实现，但核心验收未满足：当前 Kimi bridge 被刻意设为 dormant，Framework 与 Tokenizer 均不发布任何 Kimi subagent candidate；manifest 也只声明 planner/evaluator，而非要求的三角色。因此不存在携带 bridge provenance 和 execution_provenance_sha256 的当前 Kimi target，future CLI 也无法仅凭兼容 manifest 自动进入当前目录。",
+        "steps_to_reproduce": "1. 在 HEAD f20b1e2287cafc75fd3a3d36966c769a3e858949 运行 `PYTHONDONTWRITEBYTECODE=1 python3 framework/templates/claude/dispatch/tool-catalog.py catalog --registry .agents-registry.json`，确认三角色均没有 `invocation: subagent`。2. 运行 `PYTHONDONTWRITEBYTECODE=1 python3 framework/templates/claude/dispatch/tool-catalog.py target --registry .agents-registry.json --target-id subagent--kimi--planner`，得到 `target id is not registered`。3. 使用 Kimi subagent planner binding 运行 resolver，得到 `no eligible agent for binding(s): planner=kimi+subagent`。4. 运行 `PYTHONDONTWRITEBYTECODE=1 python3 framework/templates/claude/dispatch/test-tool-catalog.py` 和 `npx vitest run tests/cli/harness-tool-catalog.test.ts --no-file-parallelism`；测试通过，但相关用例明确断言 bridge 默认隐藏。",
+        "l2_pending": false,
+        "adversarial_review": "confirmed"
+      },
+      {
+        "feature_id": "F003",
+        "result": "FAIL",
+        "description": "ACP 协议驱动及 nonce、类型、completion、权限请求的局部校验已实现，但当前 Kimi subagent bridge 被明确设为 dormant 且运行入口无条件拒绝，无法形成可用的 F003 bridge。此外，持久化 receipt 缺少规范要求的 nonce 标识和子代理类型，driver 还会复制用户 KIMI_CODE_HOME 下的凭据状态，与规格的不读取凭据要求冲突。",
+        "steps_to_reproduce": "1. 运行 `python3 .claude/dispatch/tool-catalog.py catalog --registry .agents-registry.json`，确认所有角色均无 Kimi subagent。2. 运行 `python3 .claude/dispatch/tool-catalog.py target --registry .agents-registry.json --target-id subagent--kimi--evaluator`，得到 exit 2 和 target not registered。3. 检查 `.claude/dispatch/sandbox-profile.sh:524-532`，确认 subagent transport 在创建运行环境前被无条件拒绝。4. 检查 `session_bridge_kimi.py:658-665` 的 proof 字段及 `session_bridge_kimi.py:107-126` 的凭据复制逻辑。5. 运行聚焦 mock 测试 `test-session-bridge-kimi.py` 和 `test-session-bridge.py`。",
+        "l2_pending": true,
+        "adversarial_review": "confirmed"
+      },
+      {
+        "feature_id": "F004",
+        "result": "FAIL",
+        "description": "当前实现与 F004 核心验收要求冲突：Kimi bridge 虽已声明，但被刻意保持 dormant 并从目录、动态角色选择器和签发路径中过滤；因此无法签发 Kimi external same-session bridge 与 Codex local-cli 的 heterogeneous 组合。Codex local-cli、A2A 限制和 model-family 互斥仍保留。",
+        "steps_to_reproduce": "1. 运行 `python3 .claude/dispatch/tool-catalog.py catalog --registry .agents-registry.json`，确认三个角色均无 `kimi + subagent` 候选。2. 检查 `roleToolOptions`，所有 `subagent` 条目都被 `isV2SelectableToolCatalogEntry` 排除。3. 运行聚焦 Vitest，现有测试明确验证 external bridge 签发返回 409，并断言 bridge heterogeneous 初始化结果为 null。",
+        "l2_pending": false,
+        "adversarial_review": "confirmed"
+      },
+      {
+        "feature_id": "F005",
+        "result": "PARTIAL",
+        "description": "L2 授权为 false，无法执行 F005 必需的真实已认证 Codex 与 Kimi bridge probes，因此该部分不能 PASS。现有状态仅声明 Kimi 已验证，而 Codex 未达到严格 child-agent 证据标准并回退到 local-cli。",
+        "steps_to_reproduce": [
+          "取得 L2 授权。",
+          "在本机已认证 Codex 上执行无源码写入的真实 bridge probe，并保存脱敏结构化审计证据。",
+          "在本机已认证 Kimi 上执行同等 probe，并保存脱敏结构化审计证据。",
+          "确认两项 probe 均满足 F005 验收标准后重新独立评估。"
+        ],
+        "l2_pending": true,
+        "adversarial_review": "confirmed"
+      }
+    ]
+  },
   "generator_handoff": null,
   "session_notes": {
     "planning": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-07-31】用户明确要求为 Codex 与 Kimi 建立并验证同会话子代理桥接，并让未来同类 CLI 自动进入规则体系。实测 Codex CLI 0.146.0 的 App Server 可创建持久 thread fork（同 sessionId、forkedFromId）；该路径必须准确标记为 session-fork，不得伪称 vendor spawn。Kimi Code 0.31.0 的 ACP 可创建 Harness 自有根会话，且原生 Agent/AgentSwarm 子代理会以 ACP tool_call nonce 回执证明。无新的已签发 mode intent，当前批采用默认快车道完成框架与控制台实现；正式发布仍受 verifying-to-done 人工签名闸门约束。",
-    "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。"
+    "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。",
+    "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。"
   },
   "features": [],
   "pending_gate": null
