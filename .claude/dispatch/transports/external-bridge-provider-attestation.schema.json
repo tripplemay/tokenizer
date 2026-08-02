@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "harness strict external bridge provider attestation",
+  "description": "Short-lived Framework-owned observation used to publish or launch an external same-session bridge. It contains measurements and nonce hashes only; never credentials, prompts, wire records, or raw session identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "provider_id",
+    "provider_kind",
+    "contract_sha256",
+    "phase",
+    "nonce_sha256",
+    "issued_at",
+    "expires_at",
+    "image_sha256",
+    "runner_sha256",
+    "cli_bundle_sha256",
+    "broker_policy_sha256"
+  ],
+  "properties": {
+    "version": { "const": "harness/external-bridge-provider-attestation/1" },
+    "provider_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    },
+    "provider_kind": { "const": "vm-v1" },
+    "contract_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "phase": { "enum": ["catalog", "launch"] },
+    "nonce_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "image_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "runner_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "cli_bundle_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "broker_policy_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "target_provenance_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "phase": { "const": "launch" } } },
+      "then": { "required": ["target_provenance_sha256"] },
+      "else": { "not": { "required": ["target_provenance_sha256"] } }
+    }
+  ]
+}

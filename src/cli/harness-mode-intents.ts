@@ -13,7 +13,7 @@ import {
   type HarnessSignedModeIntent,
   type HarnessTransport
 } from "@/shared/harness-mode-intent";
-import { toolCatalogModeDescriptors } from "@/shared/harness-tool-catalog";
+import { toolCatalogModeDescriptors, v2SelectableToolCatalogEntries } from "@/shared/harness-tool-catalog";
 
 const HEAD_SHA_PATTERN = /^[0-9a-f]{40}$/;
 const UTC_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
@@ -229,7 +229,11 @@ function readRegistryModeContext(repoPath: string): {
     // A v2 Planner may be Coordinator (null), so a usable catalog need only
     // cover the roles explicitly bound by the signed payload. The payload
     // validator below still rejects every selected tool absent from this list.
-    tools: catalog.issue ? undefined : toolCatalogModeDescriptors(catalog.entries)
+    // A provider proof is intentionally short-lived. Recheck it immediately
+    // before this staging path turns catalog entries into signable bindings.
+    tools: catalog.issue
+      ? undefined
+      : toolCatalogModeDescriptors(v2SelectableToolCatalogEntries(catalog.entries, Date.now()))
   };
 }
 

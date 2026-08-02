@@ -4,7 +4,8 @@ import {
   DEVICE_STALE_MS,
   DEVICE_STATUS_COLOR,
   deviceStatusBadge,
-  deviceStatusKey
+  deviceStatusKey,
+  isFreshHarnessProjectReport
 } from "@/shared/device-status";
 
 // A fixed reference "now" keeps every case deterministic — the whole point of
@@ -62,5 +63,20 @@ describe("deviceStatusBadge", () => {
     for (const key of ["online", "stale", "offline", "neverSeen"] as const) {
       expect(DEVICE_STATUS_COLOR[key]).toBeTruthy();
     }
+  });
+});
+
+describe("isFreshHarnessProjectReport", () => {
+  it("accepts reports inside the signing window and rejects its inclusive stale boundary", () => {
+    expect(isFreshHarnessProjectReport(iso(0), NOW)).toBe(true);
+    expect(isFreshHarnessProjectReport(iso(DEVICE_ONLINE_MS - 1), NOW)).toBe(true);
+    expect(isFreshHarnessProjectReport(iso(DEVICE_ONLINE_MS), NOW)).toBe(false);
+  });
+
+  it("fails closed for missing, malformed, and implausibly future reports", () => {
+    expect(isFreshHarnessProjectReport(null, NOW)).toBe(false);
+    expect(isFreshHarnessProjectReport("not-a-date", NOW)).toBe(false);
+    expect(isFreshHarnessProjectReport(iso(-5 * MIN - 1), NOW)).toBe(false);
+    expect(isFreshHarnessProjectReport(iso(-5 * MIN), NOW)).toBe(true);
   });
 });

@@ -1,5 +1,7 @@
+import * as childProcess from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   HARNESS_MODE_ROLES,
   HARNESS_TRANSPORTS,
@@ -9,8 +11,10 @@ import {
 import type {
   HarnessSubagentBridge,
   HarnessToolCatalogEntry,
-  HarnessToolIntegration
+  HarnessToolIntegration,
+  HarnessVmBridgeProviderProof
 } from "@/shared/harness-tool-catalog";
+import { hasLiveVmBridgeProviderProof } from "@/shared/harness-tool-catalog";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -33,6 +37,18 @@ const A2A_BEARER_ENV_PREFIX = "REMOTE_A2A_";
 const MAX_REGISTRY_BYTES = 512 * 1024;
 const MAX_ADAPTER_BYTES = 128 * 1024;
 const MAX_BRIDGE_BYTES = 128 * 1024;
+const MAX_PROVIDER_BYTES = 128 * 1024;
+const MAX_PROVIDER_ATTESTATION_BYTES = 64 * 1024;
+const VM_BRIDGE_PROVIDER_TEMPLATE_RELATIVE_PATH =
+  "framework/templates/claude/dispatch/transports/vm-bridge-provider.py";
+const VM_BRIDGE_RUNTIME_FILES = [
+  "vm-bridge-provider.py",
+  "session-bridge.py",
+  "session_bridge_kimi.py",
+  "vm-bridge-worker.py"
+] as const;
+const VM_BRIDGE_PROJECT_TRANSPORTS_PREFIX = ".claude/dispatch/transports";
+const VM_BRIDGE_TEMPLATE_TRANSPORTS_PREFIX = "framework/templates/claude/dispatch/transports";
 const LEGACY_REGISTRY_FIELDS = new Set(["_comment", "version", "agents"]);
 const INTEGRATION_REGISTRY_FIELDS = new Set(["_comment", "version", "integrations", "a2a_targets"]);
 const DESCRIPTOR_FIELDS = new Set([
@@ -51,10 +67,12 @@ const ADAPTER_FIELDS = new Set([
   "env_allowlist_extra", "bridge_commands", "_verified"
 ]);
 const BRIDGE_FIELDS = new Set([
-  "_comment", "id", "_verified", "session_scope", "strategy", "protocol", "personas", "notes"
+  "_comment", "id", "_verified", "session_scope", "strategy", "protocol", "personas", "native_agent_types", "notes"
 ]);
 const BRIDGE_PROTOCOL_FIELDS = new Set(["kind", "command", "request_delivery", "response_format"]);
 const BRIDGE_PERSONA_FIELDS = new Set(HARNESS_MODE_ROLES);
+const BRIDGE_NATIVE_AGENT_TYPE_FIELDS = new Set(HARNESS_MODE_ROLES);
+const PUBLISHED_NATIVE_AGENT_TYPES = new Set<string>(["plan", "coder", "explore"]);
 const ACP_NATIVE_AGENT_PROTOCOL = "acp-native-agent/v1";
 const ADAPTER_BRIDGE_COMMAND_FIELDS = new Set([ACP_NATIVE_AGENT_PROTOCOL]);
 const BRIDGE_PERSONAS: Record<HarnessModeRole, string> = {
@@ -73,6 +91,11 @@ export type ToolIntegrationReadResult = {
   issue: string | null;
 };
 
+export type ToolInventoryReadResult = {
+  catalog: ToolCatalogReadResult;
+  integrations: ToolIntegrationReadResult;
+};
+
 type CatalogCandidate = {
   id: string;
   roles: HarnessModeRole[];
@@ -88,6 +111,8 @@ type CatalogCandidate = {
    * that path by its internal descriptor, not by an external CLI label.
    */
   v2Selectable: boolean;
+  /** Only emitted by the framework-owned VM bridge provider command. */
+  subagentProvider: HarnessVmBridgeProviderProof | null;
 };
 
 type ParsedCatalog = {
@@ -98,6 +123,7 @@ type ParsedCatalog = {
 type VerifiedExternalBridge = HarnessSubagentBridge & {
   protocol: typeof ACP_NATIVE_AGENT_PROTOCOL;
   command: string[];
+  nativeAgentTypes: Partial<Record<HarnessModeRole, string>>;
 };
 
 type ParsedSubagent = {
@@ -126,20 +152,6 @@ function commandList(value: unknown, itemMaxLength: number): string[] | null {
 
 function sameCommand(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((item, index) => item === right[index]);
-}
-
-/**
- * This release has no strict external same-session provider.
- *
- * `sandbox-exec` can add write restrictions, but an external process still
- * runs as the Coordinator user and retains host bootstrap/network capability.
- * It is therefore not an isolation or credential boundary for a hostile CLI.
- * Do not turn a project manifest, PATH entry, or Seatbelt availability into a
- * published subagent route. A future VM/ephemeral-principal provider must be
- * integrated and attested by the framework before this may return true.
- */
-function externalSameSessionBridgeHostAvailable(): boolean {
-  return false;
 }
 
 /** Match the dispatch sandbox boundary: adapters cannot override process controls. */
@@ -303,6 +315,142 @@ function readJsonUnder(repoPath: string, relativePath: string, maxBytes: number)
   }
 }
 
+function hasExactKeys(value: UnknownRecord, keys: readonly string[]): boolean {
+  return Object.keys(value).length === keys.length &&
+    keys.every((key) => Object.prototype.hasOwnProperty.call(value, key));
+}
+
+/** `resolve("/")` already ends in the platform separator. */
+function isSameOrNestedPath(parentPath: string, candidatePath: string): boolean {
+  const boundary = parentPath.endsWith(sep) ? parentPath : `${parentPath}${sep}`;
+  return candidatePath === parentPath || candidatePath.startsWith(boundary);
+}
+
+/**
+ * The provider is an app-owned executable, not a project-owned resolver.
+ * Project copies of the provider and the runner bundle only prove that the
+ * later project-side launch path matches bundled bytes; they are never
+ * executed here. A registry, lock file, bridge declaration, adapter, or
+ * process environment can never nominate a provider command.
+ */
+function frameworkOwnedVmBridgeProviderPath(repoPath: string): string | null {
+  const installRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const resolvedRepoPath = resolve(repoPath);
+  // Do not allow the running app to authorize a catalog for itself. In normal
+  // operation repoPath is a customer project and installRoot is the agent's
+  // separately managed application bundle.
+  if (
+    isSameOrNestedPath(installRoot, resolvedRepoPath) ||
+    isSameOrNestedPath(resolvedRepoPath, installRoot)
+  ) return null;
+
+  for (const filename of VM_BRIDGE_RUNTIME_FILES) {
+    const projectPath = regularFileUnder(
+      repoPath,
+      `${VM_BRIDGE_PROJECT_TRANSPORTS_PREFIX}/${filename}`,
+      MAX_PROVIDER_BYTES
+    );
+    const bundledPath = regularFileUnder(
+      installRoot,
+      `${VM_BRIDGE_TEMPLATE_TRANSPORTS_PREFIX}/${filename}`,
+      MAX_PROVIDER_BYTES
+    );
+    if (!projectPath || !bundledPath) return null;
+    try {
+      if (!readFileSync(projectPath).equals(readFileSync(bundledPath))) return null;
+    } catch {
+      return null;
+    }
+  }
+  return join(installRoot, VM_BRIDGE_PROVIDER_TEMPLATE_RELATIVE_PATH);
+}
+
+function providerProofFromCatalogAttestation(
+  value: unknown,
+  now: number
+): HarnessVmBridgeProviderProof | null {
+  const result = record(value);
+  if (!result || !hasExactKeys(result, ["available", "provider", "attestation"]) || result.available !== true) {
+    return null;
+  }
+  const provider = record(result.provider);
+  const attestation = record(result.attestation);
+  if (
+    !provider ||
+    !attestation ||
+    !hasExactKeys(provider, ["id", "kind", "contract_sha256"]) ||
+    !hasExactKeys(attestation, [
+      "version",
+      "provider_id",
+      "provider_kind",
+      "contract_sha256",
+      "phase",
+      "nonce_sha256",
+      "issued_at",
+      "expires_at",
+      "image_sha256",
+      "runner_sha256",
+      "cli_bundle_sha256",
+      "broker_policy_sha256"
+    ])
+  ) return null;
+
+  const proof: unknown = {
+    id: provider.id,
+    kind: provider.kind,
+    contractSha256: provider.contract_sha256,
+    attestation: {
+      version: attestation.version,
+      providerId: attestation.provider_id,
+      providerKind: attestation.provider_kind,
+      contractSha256: attestation.contract_sha256,
+      phase: attestation.phase,
+      nonceSha256: attestation.nonce_sha256,
+      issuedAt: attestation.issued_at,
+      expiresAt: attestation.expires_at,
+      imageSha256: attestation.image_sha256,
+      runnerSha256: attestation.runner_sha256,
+      cliBundleSha256: attestation.cli_bundle_sha256,
+      brokerPolicySha256: attestation.broker_policy_sha256
+    }
+  };
+  return hasLiveVmBridgeProviderProof(proof, now) ? proof : null;
+}
+
+/**
+ * Invoke the exact framework provider under Python isolated mode. The child
+ * receives a fixed environment and no project-derived arguments. Any process,
+ * output, lock, identity, hash, or freshness failure is simply unavailable.
+ */
+function readFrameworkVmBridgeProviderProof(repoPath: string): HarnessVmBridgeProviderProof | null {
+  if (process.platform === "win32") return null;
+  const providerPath = frameworkOwnedVmBridgeProviderPath(repoPath);
+  if (!providerPath) return null;
+  try {
+    const raw = childProcess.execFileSync("/usr/bin/python3", ["-I", providerPath, "catalog-attest"], {
+      cwd: repoPath,
+      encoding: "utf8",
+      env: {
+        LANG: "C",
+        LC_ALL: "C",
+        NODE_ENV: "production",
+        PATH: "/usr/bin:/bin",
+        TZ: "UTC"
+      },
+      maxBuffer: MAX_PROVIDER_ATTESTATION_BYTES,
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5_000,
+      windowsHide: true
+    });
+    // The provider call may take up to five seconds. Re-read the clock after
+    // it returns so a proof cannot be admitted solely against a stale pre-run
+    // timestamp.
+    return providerProofFromCatalogAttestation(parseJsonWithUniqueKeys(raw), Date.now());
+  } catch {
+    return null;
+  }
+}
+
 function roleList(value: unknown): HarnessModeRole[] | null {
   if (!Array.isArray(value) || value.length < 1 || value.length > HARNESS_MODE_ROLES.length) return null;
   const roles: HarnessModeRole[] = [];
@@ -452,6 +600,7 @@ function bridgeCatalogInfo(repoPath: string, bridgeId: string): VerifiedExternal
   const kind = safeText(bridge.strategy, 64);
   const protocol = record(bridge.protocol);
   const personas = record(bridge.personas);
+  const nativeAgentTypes = record(bridge.native_agent_types);
   const protocolKind = safeText(protocol?.kind, 64);
   const command = commandList(protocol?.command, 4_096);
   if (
@@ -460,7 +609,8 @@ function bridgeCatalogInfo(repoPath: string, bridgeId: string): VerifiedExternal
     protocolKind !== ACP_NATIVE_AGENT_PROTOCOL || !command ||
     (protocol.request_delivery !== "stdin" && protocol.request_delivery !== "argv" && protocol.request_delivery !== "env") ||
     protocol.response_format !== "json" ||
-    !personas || !onlyKnownKeys(personas, BRIDGE_PERSONA_FIELDS)
+    !personas || !onlyKnownKeys(personas, BRIDGE_PERSONA_FIELDS) ||
+    !nativeAgentTypes || !onlyKnownKeys(nativeAgentTypes, BRIDGE_NATIVE_AGENT_TYPE_FIELDS)
   ) return null;
 
   const roles: HarnessModeRole[] = [];
@@ -470,13 +620,22 @@ function bridgeCatalogInfo(repoPath: string, bridgeId: string): VerifiedExternal
     roles.push(role);
   }
   if (roles.length === 0) return null;
+  if (Object.keys(nativeAgentTypes).length !== roles.length) return null;
+
+  const parsedNativeAgentTypes: Partial<Record<HarnessModeRole, string>> = {};
+  for (const role of roles) {
+    const nativeAgentType = safeText(nativeAgentTypes[role], 32);
+    if (!nativeAgentType || !PUBLISHED_NATIVE_AGENT_TYPES.has(nativeAgentType)) return null;
+    parsedNativeAgentTypes[role] = nativeAgentType;
+  }
   return {
     id: bridgeId,
     kind,
     sessionScope: "same-session",
     protocol: ACP_NATIVE_AGENT_PROTOCOL,
     roles,
-    command
+    command,
+    nativeAgentTypes: parsedNativeAgentTypes
   };
 }
 
@@ -547,7 +706,8 @@ function candidateFromDescriptor(repoPath: string, value: unknown, seenIds: Set<
     modelFamily,
     priority: parsedPriority,
     capabilities: parsedCapabilities,
-    v2Selectable: invocation !== "subagent"
+    v2Selectable: invocation !== "subagent",
+    subagentProvider: null
   };
 }
 
@@ -591,6 +751,7 @@ function legacyCatalogCandidates(repoPath: string, registry: UnknownRecord): Par
       bridgeCommand: null,
       adapterBridgeCommand: null,
       bridgeRoles: null,
+      subagentProvider: null,
       a2aTargetCount: candidate.invocation === "a2a" ? 1 : 0,
       sandboxed: candidate.invocation === "local-cli"
     }))
@@ -613,6 +774,11 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
   const seenIntegrationIds = new Set<string>();
   const integrationPriorities = new Map<string, number>();
   const integrationBaseCapabilities = new Map<string, string[]>();
+  let providerProof: HarnessVmBridgeProviderProof | null | undefined;
+  const strictVmBridgeProvider = (): HarnessVmBridgeProviderProof | null => {
+    if (providerProof === undefined) providerProof = readFrameworkVmBridgeProviderProof(repoPath);
+    return providerProof;
+  };
   for (const value of registry.integrations) {
     const integration = record(value);
     const id = toolId(integration?.id);
@@ -666,10 +832,11 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
       return null;
     }
 
-    // Manifest and adapter validation must happen before the host gate. That
-    // preserves fail-closed handling for malformed declarations, while a
-    // valid bridge on an unsupported host still leaves its local CLI usable.
-    const subagent = declaredBridge !== null && externalSameSessionBridgeHostAvailable();
+    // Manifest and adapter validation must happen before provider lookup. A
+    // valid bridge without a live framework provider still leaves local CLI
+    // usable, but cannot become a public subagent route.
+    const subagentProvider = declaredBridge ? strictVmBridgeProvider() : null;
+    const subagent = declaredBridge !== null && subagentProvider !== null;
     const localCliRoles = localCli ? [...HARNESS_MODE_ROLES] : [];
     const subagentRoles = subagent ? declaredBridge.roles : [];
     const roles = [...new Set([...localCliRoles, ...subagentRoles])];
@@ -683,7 +850,8 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
         modelFamily,
         priority: parsedPriority,
         capabilities: parsedCapabilities,
-        v2Selectable: true
+        v2Selectable: true,
+        subagentProvider: null
       });
     }
     if (subagent) {
@@ -696,7 +864,8 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
         modelFamily,
         priority: parsedPriority,
         capabilities: parsedCapabilities,
-        v2Selectable: true
+        v2Selectable: true,
+        subagentProvider
       });
     }
     // Coordinator-native compatibility metadata has no public CLI route. Do
@@ -725,6 +894,7 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
           ? [...localAdapter.bridgeCommand]
           : null,
         bridgeRoles: subagent ? [...declaredBridge.roles] : null,
+        subagentProvider: subagent ? subagentProvider : null,
         a2aTargetCount: 0,
         sandboxed: localCli !== null
       });
@@ -773,7 +943,8 @@ function integrationCatalogCandidates(repoPath: string, registry: UnknownRecord)
       modelFamily: source.modelFamily,
       priority: parsedPriority,
       capabilities: capabilitiesForTarget,
-      v2Selectable: true
+      v2Selectable: true,
+      subagentProvider: null
     });
     source.a2aTargetCount += 1;
     if (!source.invocations.includes("a2a")) source.invocations.push("a2a");
@@ -797,7 +968,28 @@ function catalogCandidates(repoPath: string): ParsedCatalog | null {
   return null;
 }
 
-function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatalogEntry[] | null {
+function sameVmBridgeProviderProof(
+  left: HarnessVmBridgeProviderProof,
+  right: HarnessVmBridgeProviderProof
+): boolean {
+  return left.id === right.id &&
+    left.kind === right.kind &&
+    left.contractSha256 === right.contractSha256 &&
+    left.attestation.version === right.attestation.version &&
+    left.attestation.providerId === right.attestation.providerId &&
+    left.attestation.providerKind === right.attestation.providerKind &&
+    left.attestation.contractSha256 === right.attestation.contractSha256 &&
+    left.attestation.phase === right.attestation.phase &&
+    left.attestation.nonceSha256 === right.attestation.nonceSha256 &&
+    left.attestation.issuedAt === right.attestation.issuedAt &&
+    left.attestation.expiresAt === right.attestation.expiresAt &&
+    left.attestation.imageSha256 === right.attestation.imageSha256 &&
+    left.attestation.runnerSha256 === right.attestation.runnerSha256 &&
+    left.attestation.cliBundleSha256 === right.attestation.cliBundleSha256 &&
+    left.attestation.brokerPolicySha256 === right.attestation.brokerPolicySha256;
+}
+
+function buildCatalog(candidates: readonly CatalogCandidate[], now: number): HarnessToolCatalogEntry[] | null {
   const entries: HarnessToolCatalogEntry[] = [];
   for (const role of HARNESS_MODE_ROLES) {
     const pools = new Map<string, CatalogCandidate[]>();
@@ -809,6 +1001,16 @@ function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatal
     for (const pool of pools.values()) {
       const labels = new Set(pool.map((candidate) => candidate.label));
       if (labels.size !== 1) return null;
+      const subagentProvider = pool[0].invocation === "subagent" ? pool[0].subagentProvider : null;
+      if (
+        pool[0].invocation === "subagent" &&
+        (!subagentProvider ||
+          !hasLiveVmBridgeProviderProof(subagentProvider, now) ||
+          !pool.every((candidate) =>
+            candidate.subagentProvider !== null &&
+            sameVmBridgeProviderProof(candidate.subagentProvider, subagentProvider)
+          ))
+      ) return null;
       entries.push({
         tool: pool[0].tool,
         label: pool[0].label,
@@ -816,7 +1018,8 @@ function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatal
         role,
         agentCount: pool.length,
         modelFamilies: [...new Set(pool.map((candidate) => candidate.modelFamily))].sort((left, right) => left.localeCompare(right)),
-        capabilities: [...new Set(pool.flatMap((candidate) => candidate.capabilities))].sort((left, right) => left.localeCompare(right))
+        capabilities: [...new Set(pool.flatMap((candidate) => candidate.capabilities))].sort((left, right) => left.localeCompare(right)),
+        ...(subagentProvider ? { subagentProvider } : {})
       });
     }
   }
@@ -829,16 +1032,25 @@ function buildCatalog(candidates: readonly CatalogCandidate[]): HarnessToolCatal
 
 /**
  * Data-only mirror of the framework's `tool-catalog/1` catalog command.
- * Project-owned scripts are deliberately never executed by the Tokenizer
- * device agent. New compatible descriptors/adapters become visible through
- * this registry-driven parser without an application/UI release.
+ * Project-owned scripts are never executed by the Tokenizer device agent. The
+ * one exception is the lock-verified framework VM provider, which emits a
+ * bounded catalog attestation for external same-session routes.
  */
+export function readDispatchToolInventory(repoPath: string): ToolInventoryReadResult {
+  const parsed = catalogCandidates(repoPath);
+  const entries = parsed ? buildCatalog(parsed.candidates, Date.now()) : null;
+  return {
+    catalog: entries
+      ? { entries, issue: null }
+      : { entries: [], issue: "dispatch tool catalog is unavailable" },
+    integrations: parsed
+      ? { integrations: parsed.integrations, issue: null }
+      : { integrations: [], issue: "dispatch tool catalog is unavailable" }
+  };
+}
+
 export function readDispatchToolCatalog(repoPath: string): ToolCatalogReadResult {
-  const catalog = catalogCandidates(repoPath);
-  const entries = catalog ? buildCatalog(catalog.candidates) : null;
-  return entries
-    ? { entries, issue: null }
-    : { entries: [], issue: "dispatch tool catalog is unavailable" };
+  return readDispatchToolInventory(repoPath).catalog;
 }
 
 /**
@@ -846,8 +1058,5 @@ export function readDispatchToolCatalog(repoPath: string): ToolCatalogReadResult
  * are intentionally resolved only on the device and never cross this API.
  */
 export function readDispatchToolIntegrations(repoPath: string): ToolIntegrationReadResult {
-  const catalog = catalogCandidates(repoPath);
-  return catalog
-    ? { integrations: catalog.integrations, issue: null }
-    : { integrations: [], issue: "dispatch tool catalog is unavailable" };
+  return readDispatchToolInventory(repoPath).integrations;
 }

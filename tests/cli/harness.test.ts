@@ -278,6 +278,37 @@ describe("applyHarnessDecisions", () => {
       .toContain("chore(gate): relay");
   });
 
+  it("does not route an unbound legacy gate relay onto the current repository", async () => {
+    mockDecisions([{
+      repoKey: "git@GITHUB.com:acme/myproject.git",
+      gate_id: "BL-042-verifying-done-w7",
+      decision: signedDecision("BL-042-verifying-done-w7")
+    }]);
+
+    const result = await applyHarnessDecisions(config());
+
+    expect(result.applied).toBe(0);
+    expect(result.issues).toContainEqual(expect.objectContaining({ code: "repo_not_found", retryable: false }));
+    expect(JSON.parse(readFileSync(join(repo, "progress.json"), "utf8")).pending_gate.decision).toBeNull();
+  });
+
+  it("fails closed when the signed decision wrapper matches multiple local repositories", async () => {
+    const second = makeSecondRepo("same-remote");
+    git(["remote", "add", "origin", "git@github.com:acme/myproject.git"], second);
+    mockDecisions([{
+      repoKey: "github.com/acme/myproject",
+      gate_id: "BL-042-verifying-done-w7",
+      decision: signedDecision("BL-042-verifying-done-w7")
+    }]);
+
+    const result = await applyHarnessDecisions(config());
+
+    expect(result.applied).toBe(0);
+    expect(result.skipped[0]).toContain("多个相同 repoKey");
+    expect(result.issues).toContainEqual(expect.objectContaining({ code: "repo_identity_ambiguous", retryable: false }));
+    expect(JSON.parse(readFileSync(join(repo, "progress.json"), "utf8")).pending_gate.decision).toBeNull();
+  });
+
   it("🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准", async () => {
     const forged = signedDecision("BL-042-verifying-done-w7");
     forged.by = "attacker";            // 载荷改了，签名没跟着改

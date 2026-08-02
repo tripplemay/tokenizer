@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import base64
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -25,6 +26,19 @@ TASK = "accept-fixture-001"
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value), encoding="utf-8")
+
+
+def provider_attestation_digest(value: dict[str, object]) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=True,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(
+        b"harness/external-bridge-provider-attestation/1\0" + encoded
+    ).hexdigest()
 
 
 class AcceptGeneratorHandoffTest(unittest.TestCase):
@@ -317,12 +331,90 @@ class AcceptGeneratorHandoffTest(unittest.TestCase):
             env={**os.environ, **(env or {})},
         )
 
+    def configure_provider_subagent_result(self) -> None:
+        """Create the exact provider-owned staging layout returned by vm-v1."""
+        state = self.root / "provider-state"
+        staging = state / "vm-v1-runs" / f"{TASK}-{'a' * 24}" / "copyout"
+        staging.parent.mkdir(parents=True)
+        self.git(self.root, "clone", "-q", str(self.repo), str(staging))
+        (staging / "src" / "generated.txt").write_text("generated\n", encoding="utf-8")
+        self.handoff = staging / "docs" / "test-reports" / f"generator-handoff-{TASK}.json"
+        write_json(
+            self.handoff,
+            {
+                "batch_id": BATCH,
+                "created_at": "2026-07-31T00:00:00Z",
+                "features": [{"feature_id": FEATURE, "files_touched": ["src/generated.txt"], "commits": []}],
+                "l1_ran": {"lint": "fixture", "typecheck": "fixture", "test": "fixture"},
+                "waiting": None,
+            },
+        )
+        attestation: dict[str, object] = {
+            "version": "harness/external-bridge-provider-attestation/1",
+            "provider_id": "harness-vm-v1",
+            "provider_kind": "vm-v1",
+            "contract_sha256": "b" * 64,
+            "phase": "launch",
+            "nonce_sha256": "c" * 64,
+            "issued_at": "2026-08-01T00:00:00Z",
+            "expires_at": "2026-08-01T00:05:00Z",
+            "image_sha256": "d" * 64,
+            "runner_sha256": "e" * 64,
+            "cli_bundle_sha256": "f" * 64,
+            "broker_policy_sha256": "0" * 64,
+            "target_provenance_sha256": "1" * 64,
+        }
+        bridge = {
+            "bridge_id": "fixture-acp",
+            "bridge_strategy": "session-bridge-v1",
+            "bridge_kind": "acp-native-agent/v1",
+            "session_scope": "same-session",
+            "session_id_sha256": "2" * 64,
+            "nonce_sha256": attestation["nonce_sha256"],
+            "child_call_id_sha256": "3" * 64,
+            "subagent_type": "coder",
+            "terminal_status": "completed",
+            "provider_launch_attestation_sha256": provider_attestation_digest(attestation),
+            "artifact_sha256": hashlib.sha256(self.handoff.read_bytes()).hexdigest(),
+            "provider_launch_attestation": attestation,
+        }
+        self.meta = state / f"run-meta-{TASK}.json"
+        write_json(
+            self.meta,
+            {
+                "task_id": TASK,
+                "agent_id": "fixture-generator",
+                "model_family": "fixture",
+                "batch": BATCH,
+                "ref": self.ref,
+                "role": "generator",
+                "deliverable": json.loads(self.envelope.read_text())["deliverable"],
+                "artifact": str(self.handoff.resolve()),
+                "envelope_path": str(self.envelope.resolve()),
+                "worktree": str(staging.resolve()),
+                "outcome": "RETURNED",
+                "exit_code": 0,
+                "duration_s": 1,
+                "transport": "subagent",
+                "bridge": bridge,
+                "source_changes": ["src/generated.txt"],
+            },
+        )
+
     def test_dry_run_validates_exact_diff_without_touching_main(self) -> None:
         result = self.invoke()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         outcome = json.loads(result.stdout)
         self.assertEqual(outcome["state"], "READY_TO_APPLY")
         self.assertEqual(outcome["files_touched"], ["src/generated.txt"])
+        self.assertFalse((self.repo / "src" / "generated.txt").exists())
+        self.assertEqual(self.output(self.repo, "status", "--porcelain"), "")
+
+    def test_provider_subagent_handoff_requires_a_signed_active_route(self) -> None:
+        self.configure_provider_subagent_result()
+        result = self.invoke()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("signed active Generator subagent route", result.stderr)
         self.assertFalse((self.repo / "src" / "generated.txt").exists())
         self.assertEqual(self.output(self.repo, "status", "--porcelain"), "")
 

@@ -6,7 +6,8 @@
 #   validate-dispatch.sh envelope    <envelope.json>                L2 信封（字段白名单 = 铁律 12 强制）
 #   validate-dispatch.sh assignments [progress.json] [registry] [--adapters <dir>]
 #                                                              ⚠️ 独立性互斥：generator/evaluator 的 model_family 必须不同
-#   validate-dispatch.sh receipt     <run-meta.json>                L3 回执推断（exit code + 产物 + waiting → 状态）
+#   validate-dispatch.sh receipt     <run-meta.json> [--expected-envelope <f> --active-role-json <json> --project-root <dir>]
+#                                                              L3 回执推断（external Generator subagent 必须带已验签上下文）
 #   validate-dispatch.sh hook                                       PostToolUse：stdin 取 file_path，命中即校验
 #
 # 退出码：0 通过 / 2 校验失败（fail-closed）
@@ -18,6 +19,7 @@ set -euo pipefail
 MODE="${1:-all}"
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
+EXTERNAL_RECEIPT_VALIDATOR="$DISPATCH_DIR/validate-external-bridge-receipt.py"
 
 resolve_active_adapters() {
   local progress_path="$1"
@@ -516,7 +518,35 @@ PY
   ;;
 
 receipt)
-  META="${2:?用法: validate-dispatch.sh receipt <run-meta.json>}"
+  shift
+  META="${1:?用法: validate-dispatch.sh receipt <run-meta.json> [--expected-envelope <f> --active-role-json <json> --project-root <dir>]}"
+  shift
+  EXPECTED_ENVELOPE=""
+  ACTIVE_ROLE_JSON=""
+  PROJECT_ROOT=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --expected-envelope)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ receipt --expected-envelope 缺值" >&2; exit 2; }
+        EXPECTED_ENVELOPE="$2"
+        shift 2
+        ;;
+      --active-role-json)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ receipt --active-role-json 缺值" >&2; exit 2; }
+        ACTIVE_ROLE_JSON="$2"
+        shift 2
+        ;;
+      --project-root)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ receipt --project-root 缺值" >&2; exit 2; }
+        PROJECT_ROOT="$2"
+        shift 2
+        ;;
+      *)
+        echo "[dispatch] ⛔ receipt 未知参数：$1" >&2
+        exit 2
+        ;;
+    esac
+  done
   [ -f "$META" ] || { echo "[dispatch] ⛔ run-meta 不存在：$META"; exit 2; }
   set +e
   RC_JSON=$(python3 - "$META" <<'PY'
@@ -585,6 +615,12 @@ PY
   ROLE=$(python3 - "$META" <<'PY'
 import json, sys
 try: print(json.load(open(sys.argv[1])).get("role") or "")
+except Exception: print("")
+PY
+)
+  TRANSPORT=$(python3 - "$META" <<'PY'
+import json, sys
+try: print(json.load(open(sys.argv[1])).get("transport") or "")
 except Exception: print("")
 PY
 )
@@ -668,6 +704,24 @@ PY
       invalidate_receipt "generator run-meta lacks a readable envelope_path"
     elif ! "$DISPATCH_DIR/validate-generator-handoff.sh" "$ART" --envelope "$ENVELOPE_PATH" >&2; then
       invalidate_receipt "generator handoff failed schema and envelope validation"
+    fi
+  fi
+  # Generic receipt inference must never turn a hand-written `transport=subagent`
+  # record into a gate-facing completed Generator result.  The provider receipt
+  # is meaningful only when it is bound to this exact envelope and the
+  # re-verified signed Generator route.
+  if [ "$ROLE" = "generator" ] && [ "$TRANSPORT" = "subagent" ] && [ "$STATE" = "COMPLETED" ]; then
+    if [ -z "$EXPECTED_ENVELOPE" ] || [ -z "$ACTIVE_ROLE_JSON" ] || [ -z "$PROJECT_ROOT" ]; then
+      echo "[dispatch] ⛔ external Generator receipt 缺少 envelope、active role 或 project root 上下文" >&2
+      invalidate_receipt "external Generator receipt lacks signed validation context"
+    elif [ ! -f "$EXTERNAL_RECEIPT_VALIDATOR" ]; then
+      echo "[dispatch] ⛔ external bridge receipt validator 不存在" >&2
+      invalidate_receipt "external Generator receipt validator is unavailable"
+    elif ! python3 "$EXTERNAL_RECEIPT_VALIDATOR" \
+      --role generator --run-meta "$META" --handoff "$ART" \
+      --envelope "$EXPECTED_ENVELOPE" --project-root "$PROJECT_ROOT" \
+      --active-role-json "$ACTIVE_ROLE_JSON" >&2; then
+      invalidate_receipt "provider-attested external Generator receipt validation failed"
     fi
   fi
   if [ "$ROLE" = "evaluator" ] && [ "$STATE" = "COMPLETED" ]; then

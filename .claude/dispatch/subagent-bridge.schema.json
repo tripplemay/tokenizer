@@ -4,7 +4,16 @@
   "description": "A verified bridge manifest consumed by tool-catalog.py. Integrations reference it through subagent.bridge; the bridge, rather than a CLI tool id, selects the generic bridge runner protocol.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "_verified", "session_scope", "strategy", "protocol", "personas"],
+  "required": ["id", "_verified", "session_scope", "strategy", "protocol", "personas", "native_agent_types"],
+  "definitions": {
+    "native_agent_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[^\\u0000-\\u001F\\u007F]+$",
+      "enum": ["plan", "coder", "explore"]
+    }
+  },
   "properties": {
     "_comment": { "type": "string" },
     "id": {
@@ -67,6 +76,54 @@
         "evaluator": { "const": "evaluator" }
       }
     },
+    "native_agent_types": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "planner": { "$ref": "#/definitions/native_agent_type" },
+        "generator": { "$ref": "#/definitions/native_agent_type" },
+        "evaluator": { "$ref": "#/definitions/native_agent_type" }
+      }
+    },
     "notes": { "type": "string" }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["personas"],
+        "properties": { "personas": { "required": ["planner"] } }
+      },
+      "then": {
+        "properties": { "native_agent_types": { "required": ["planner"] } }
+      },
+      "else": {
+        "properties": { "native_agent_types": { "not": { "required": ["planner"] } } }
+      }
+    },
+    {
+      "if": {
+        "required": ["personas"],
+        "properties": { "personas": { "required": ["generator"] } }
+      },
+      "then": {
+        "properties": { "native_agent_types": { "required": ["generator"] } }
+      },
+      "else": {
+        "properties": { "native_agent_types": { "not": { "required": ["generator"] } } }
+      }
+    },
+    {
+      "if": {
+        "required": ["personas"],
+        "properties": { "personas": { "required": ["evaluator"] } }
+      },
+      "then": {
+        "properties": { "native_agent_types": { "required": ["evaluator"] } }
+      },
+      "else": {
+        "properties": { "native_agent_types": { "not": { "required": ["evaluator"] } } }
+      }
+    }
+  ]
 }

@@ -30,14 +30,14 @@ describe("Agent release update copy", () => {
 
   it("uses the release manifest as the source of the newest feature description", () => {
     const latest = agentReleasesManifest.releases.at(-1);
-    expect(latest).toMatchObject({ version: "1.1.0", agent_feature_version: 7 });
+    expect(latest).toMatchObject({ version: "1.2.0", agent_feature_version: 8 });
     expect(latest?.highlights["zh-CN"]).toEqual([
-      "改善 Harness 工具目录升级期间的项目上报兼容性，避免旧 Agent 的空目录中断上报。",
-      "区分必须升级与版本待核验的设备，并在首页展示可操作的升级提示。"
+      "支持 Harness bridge 对象形式的子代理声明，避免旧 Tokenizer Agent 将有效的 Dispatch 工具目录误判为不可用。",
+      "将工具绑定编排的兼容门槛提升到 capability 8，并明确提示旧 Agent 升级。"
     ]);
     expect(latest?.highlights.en).toEqual([
-      "Improves Harness project-report compatibility during the tool-catalog rollout, preventing legacy empty catalogs from interrupting reporting.",
-      "Distinguishes required upgrades from unverified releases and surfaces actionable upgrade guidance on the home page."
+      "Supports Harness bridge-object subagent declarations, preventing older Tokenizer Agents from marking valid Dispatch tool catalogs unavailable.",
+      "Raises the tool-bound orchestration compatibility level to 8 and clearly prompts older Agents to upgrade."
     ]);
 
     const allCopy = `${readFileSync("messages/en.json", "utf8")} ${readFileSync("messages/zh-CN.json", "utf8")}`;

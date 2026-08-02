@@ -20,6 +20,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -29,136 +30,117 @@ _MAX_PEER_EVENT_BYTES = 1_048_576
 _MAX_PEER_EVENT_COUNT = 1_024
 _MAX_PEER_TOTAL_BYTES = 8 * 1_048_576
 _MAX_RAW_CHILD_CALL_ID_CHARS = 512
-_MAX_PRIVATE_STATE_FILES = 256
-_MAX_PRIVATE_STATE_BYTES = 16 * 1024 * 1024
-_KIMI_PRIVATE_STATE_ENTRIES = ("credentials", "oauth", "config.toml", "device_id")
 # These values are persisted into run-meta. ACP display strings and arbitrary
 # JSON values are never lineage identifiers, even if they happen to be strings.
 _LINEAGE_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_LAUNCH_NONCE = re.compile(r"^[0-9a-f]{32}$")
+
+# The provider constructs this complete worker environment.  The ACP process
+# never inherits ``os.environ`` and cannot receive a host credential, loader,
+# or an arbitrary KIMI_* setting through this module.
+_WORKER_ENV_ALLOWLIST = frozenset({
+    "HOME",
+    "TMPDIR",
+    "PATH",
+    "LANG",
+    "LC_ALL",
+    "KIMI_CODE_HOME",
+    "KIMI_DISABLE_TELEMETRY",
+    "KIMI_CODE_NO_AUTO_UPDATE",
+    "KIMI_CODE_BACKGROUND_KEEP_ALIVE_ON_EXIT",
+    "KIMI_MODEL_NAME",
+    "KIMI_MODEL_API_KEY",
+    "KIMI_MODEL_PROVIDER_TYPE",
+    "KIMI_MODEL_BASE_URL",
+    "KIMI_MODEL_MAX_CONTEXT_SIZE",
+    "KIMI_MODEL_CAPABILITIES",
+    "KIMI_SUBAGENT_TIMEOUT_MS",
+    "KIMI_BASE_URL",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "SSL_CERT_FILE",
+})
+_REQUIRED_WORKER_ENV = frozenset({"HOME", "TMPDIR"})
 
 
 class KimiBridgeError(RuntimeError):
     """The ACP peer did not prove a native child-agent execution."""
 
 
-@dataclass
-class _PrivateStateBudget:
-    files: int = 0
-    bytes: int = 0
-
-
-def _copy_private_state_entry(source: Path, destination: Path, budget: _PrivateStateBudget) -> None:
-    """Copy one allowed Kimi state entry without preserving symlink reachability."""
-    try:
-        source_stat = source.lstat()
-    except OSError as exc:
-        raise KimiBridgeError("Kimi credential state is unreadable") from exc
-    if stat.S_ISLNK(source_stat.st_mode):
-        raise KimiBridgeError("Kimi credential state must not contain symlinks")
-    if stat.S_ISDIR(source_stat.st_mode):
-        destination.mkdir(mode=0o700)
-        for child in sorted(source.iterdir(), key=lambda item: item.name):
-            _copy_private_state_entry(child, destination / child.name, budget)
-        return
-    if not stat.S_ISREG(source_stat.st_mode):
-        raise KimiBridgeError("Kimi credential state contains an unsupported entry")
-    budget.files += 1
-    budget.bytes += source_stat.st_size
-    if budget.files > _MAX_PRIVATE_STATE_FILES or budget.bytes > _MAX_PRIVATE_STATE_BYTES:
-        raise KimiBridgeError("Kimi credential state exceeds the bridge copy limit")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        with source.open("rb") as reader, destination.open("xb") as writer:
-            shutil.copyfileobj(reader, writer, length=1024 * 1024)
-        os.chmod(destination, 0o600)
-    except OSError as exc:
-        raise KimiBridgeError("Kimi credential state could not be copied") from exc
-
-
-def _private_kimi_environment(
-    cwd: str,
-    private_state_root: Path | None,
-    environment_overrides: dict[str, str] | None = None,
+def _provider_worker_environment(
+    worker_env: Mapping[str, str], worker_state_root: Path | None
 ) -> tuple[dict[str, str], Path]:
-    """Build a disposable Kimi data home for ACP-only execution.
+    """Build an empty per-launch Kimi state home from provider-owned inputs.
 
-    Kimi may persist ACP sessions in ``KIMI_CODE_HOME``. Copy only the minimal
-    authentication/configuration entries into a 0700 disposable directory,
-    then override the child environment so raw ACP traffic never reaches the
-    user's regular Kimi history, logs, or plugins. The normal sandbox supplies
-    a parent-owned state root; direct callers fall back to the system temp dir.
+    The provider owns authentication, network egress, and the VM lifecycle.
+    This driver receives only its explicit, bounded worker environment and a
+    writable state root inside that worker.  It must never inspect or copy the
+    Coordinator's KIMI_CODE_HOME, credentials, OAuth state, or host environment.
     """
+    if worker_state_root is None:
+        raise KimiBridgeError("Kimi ACP bridge requires a provider worker state root")
+    if not isinstance(worker_env, Mapping):
+        raise KimiBridgeError("Kimi ACP bridge requires a provider worker environment")
+    environment: dict[str, str] = {}
+    for key, value in worker_env.items():
+        if not isinstance(key, str) or key not in _WORKER_ENV_ALLOWLIST:
+            raise KimiBridgeError("Kimi provider worker environment contains an unsupported key")
+        if not isinstance(value, str) or not value or "\x00" in value:
+            raise KimiBridgeError("Kimi provider worker environment value is invalid")
+        environment[key] = value
+    if not _REQUIRED_WORKER_ENV.issubset(environment):
+        raise KimiBridgeError("Kimi provider worker environment is incomplete")
     try:
-        if private_state_root is None:
-            private_home = Path(tempfile.mkdtemp(prefix="harness-kimi-acp-"))
+        root_stat = worker_state_root.lstat()
+        if stat.S_ISLNK(root_stat.st_mode) or not stat.S_ISDIR(root_stat.st_mode):
+            raise KimiBridgeError("Kimi provider worker state root is invalid")
+        root = worker_state_root.resolve()
+        requested_home = environment.get("KIMI_CODE_HOME")
+        if requested_home is None:
+            private_home = Path(tempfile.mkdtemp(prefix="kimi-code-", dir=root))
         else:
-            root_stat = private_state_root.lstat()
-            if stat.S_ISLNK(root_stat.st_mode) or not stat.S_ISDIR(root_stat.st_mode):
-                raise KimiBridgeError("Kimi private bridge state root is invalid")
-            private_home = private_state_root / "kimi-code"
-            private_home.mkdir(mode=0o700)
+            candidate = Path(requested_home)
+            if not candidate.is_absolute():
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be absolute")
+            try:
+                candidate_stat = candidate.lstat()
+            except OSError as exc:
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be a pre-created directory") from exc
+            if stat.S_ISLNK(candidate_stat.st_mode) or not stat.S_ISDIR(candidate_stat.st_mode):
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME is invalid")
+            private_home = candidate.resolve()
+            try:
+                is_child_of_root = os.path.commonpath((str(root), str(private_home))) == str(root)
+            except ValueError:
+                is_child_of_root = False
+            if private_home == root or not is_child_of_root:
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME escapes the worker state root")
+            if any(private_home.iterdir()):
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be empty at launch")
         os.chmod(private_home, 0o700)
     except KimiBridgeError:
         raise
     except OSError as exc:
-        raise KimiBridgeError("Kimi private bridge state could not be created") from exc
-
-    try:
-        raw_source = os.environ.get("KIMI_CODE_HOME")
-        if raw_source:
-            source = Path(raw_source)
-            try:
-                source_stat = source.lstat()
-            except FileNotFoundError:
-                source_stat = None
-            except OSError as exc:
-                raise KimiBridgeError("Kimi credential state is unreadable") from exc
-            if source_stat is not None:
-                if stat.S_ISLNK(source_stat.st_mode) or not stat.S_ISDIR(source_stat.st_mode):
-                    raise KimiBridgeError("Kimi credential state must be a regular directory")
-                budget = _PrivateStateBudget()
-                for name in _KIMI_PRIVATE_STATE_ENTRIES:
-                    candidate = source / name
-                    try:
-                        candidate.lstat()
-                    except FileNotFoundError:
-                        continue
-                    _copy_private_state_entry(candidate, private_home / name, budget)
-        environment = dict(os.environ)
-        environment["KIMI_CODE_HOME"] = str(private_home)
-        if environment_overrides is not None:
-            if any(
-                not isinstance(key, str)
-                or not key
-                or "=" in key
-                or not isinstance(value, str)
-                or "\x00" in value
-                for key, value in environment_overrides.items()
-            ):
-                raise KimiBridgeError("Kimi bridge environment override is invalid")
-            if "KIMI_CODE_HOME" in environment_overrides:
-                raise KimiBridgeError("Kimi bridge may not override its private state home")
-            environment.update(environment_overrides)
-        return environment, private_home
-    except BaseException:
-        shutil.rmtree(private_home, ignore_errors=True)
-        raise
+        raise KimiBridgeError("Kimi ephemeral bridge state could not be created") from exc
+    environment["KIMI_CODE_HOME"] = str(private_home)
+    return environment, private_home
 
 
-def _remove_private_kimi_state(private_home: Path | None) -> None:
+def _remove_ephemeral_kimi_state(private_home: Path | None) -> None:
     if private_home is None:
         return
     try:
         if private_home.is_symlink():
-            raise KimiBridgeError("Kimi private bridge state was replaced by a symlink")
+            raise KimiBridgeError("Kimi ephemeral bridge state was replaced by a symlink")
         if private_home.exists():
             shutil.rmtree(private_home)
         if private_home.exists() or private_home.is_symlink():
-            raise KimiBridgeError("Kimi private bridge state cleanup was incomplete")
+            raise KimiBridgeError("Kimi ephemeral bridge state cleanup was incomplete")
     except KimiBridgeError:
         raise
     except OSError as exc:
-        raise KimiBridgeError("Kimi private bridge state cleanup failed") from exc
+        raise KimiBridgeError("Kimi ephemeral bridge state cleanup failed") from exc
 
 
 def _owned_process_group(process: subprocess.Popen[str]) -> int | None:
@@ -195,17 +177,14 @@ def _terminate_process(
     """Close the ACP server and every child it could have started.
 
     Kimi currently runs native Agents in-process, but that is an implementation
-    detail rather than a harness guarantee. Direct callers create and reap a
-    dedicated POSIX session. The contained dispatch path instead delegates the
-    entire inherited group to the trusted outer timeout helper, so the vendor
-    process needs no Seatbelt signal permission.
+    detail rather than a harness guarantee. Direct protocol fixtures create and
+    reap a dedicated POSIX session. A real provider owns the complete VM job
+    tree and may keep reaping authority outside this worker.
     """
     if outer_group_owns_cleanup:
-        # The trusted process-timeout helper owns this bridge's process group.
-        # Seatbelt deliberately denies signal() to the vendor process tree; if
-        # stdin close did not make ACP exit, return and let that outer reaper
-        # terminate the whole group without granting the child broad signal
-        # authority over host processes.
+        # The strict provider owns this bridge's VM job tree. If stdin close
+        # did not make ACP exit, return and let that provider reap the worker
+        # without granting the vendor process broad host signal authority.
         try:
             process.wait(timeout=2)
         except subprocess.TimeoutExpired:
@@ -468,6 +447,11 @@ def _receipt_child_call_id(raw_call_id: str) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _receipt_identifier(value: str) -> str:
+    """Return a non-reversible receipt token for a bounded ACP identifier."""
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
 def _agent_tool_event(message: dict[str, Any], session_id: str) -> tuple[str | None, dict[str, Any], str | None]:
     """Normalize ACP tool-call updates without trusting vendor text fields.
 
@@ -520,7 +504,7 @@ def _agent_completion_event(message: dict[str, Any], session_id: str, call_id: s
     return status in {"completed", "complete", "success"}
 
 
-def run_kimi_acp_native_agent(
+def run_acp_native_agent(
     command: list[str],
     cwd: str,
     prompt: str,
@@ -529,8 +513,9 @@ def run_kimi_acp_native_agent(
     timeout_s: int,
     *,
     popen: Callable[..., subprocess.Popen[str]] = subprocess.Popen,
-    private_state_root: Path | None = None,
-    environment_overrides: dict[str, str] | None = None,
+    worker_env: Mapping[str, str],
+    worker_state_root: Path | None,
+    provider_owns_cleanup: bool = False,
 ) -> dict[str, Any]:
     """Run one native Kimi Agent and prove it happened through ACP updates.
 
@@ -542,10 +527,9 @@ def run_kimi_acp_native_agent(
         raise KimiBridgeError("Kimi ACP command is invalid")
     if subagent_type not in {"plan", "coder", "explore"}:
         raise KimiBridgeError("Kimi native subagent type is invalid")
-    if not isinstance(nonce, str) or len(nonce) < 16:
+    if not isinstance(nonce, str) or _LAUNCH_NONCE.fullmatch(nonce) is None:
         raise KimiBridgeError("Kimi bridge nonce is invalid")
 
-    outer_group_owns_cleanup = os.environ.get("HARNESS_BRIDGE_OUTER_GROUP_CLEANUP") == "1"
     interrupt_cleanup = _install_interrupt_cleanup()
     process: subprocess.Popen[str] | None = None
     process_group: int | None = None
@@ -554,10 +538,9 @@ def run_kimi_acp_native_agent(
         # A cancellation which arrived while handlers were being installed
         # must prevent a later Popen from starting an unnecessary CLI session.
         interrupt_cleanup.raise_if_interrupted()
-        environment, private_kimi_home = _private_kimi_environment(
-            cwd,
-            private_state_root,
-            environment_overrides,
+        environment, private_kimi_home = _provider_worker_environment(
+            worker_env,
+            worker_state_root,
         )
         interrupt_cleanup.raise_if_interrupted()
         try:
@@ -570,20 +553,20 @@ def run_kimi_acp_native_agent(
                 "bufsize": 1,
                 "env": environment,
             }
-            if os.name == "posix" and not outer_group_owns_cleanup:
+            if os.name == "posix" and not provider_owns_cleanup:
                 popen_options["start_new_session"] = True
             process = popen(command, **popen_options)
         except OSError as exc:
             raise KimiBridgeError("Kimi ACP command could not start") from exc
 
-        process_group = None if outer_group_owns_cleanup else _owned_process_group(process)
+        process_group = None if provider_owns_cleanup else _owned_process_group(process)
         # Direct callers must prove a dedicated session; falling back to a
         # single-PID cleanup could strand native children. The contained path
         # intentionally has no dedicated group because the outer helper owns
         # the complete bridge process tree.
         if (
             os.name == "posix"
-            and not outer_group_owns_cleanup
+            and not provider_owns_cleanup
             and type(getattr(process, "pid", None)) is int
             and process_group is None
         ):
@@ -657,10 +640,12 @@ def run_kimi_acp_native_agent(
             raise KimiBridgeError("Kimi ACP native Agent did not reach completion")
         return {
             "bridge_kind": "acp-native-agent/v1",
-            "session_id": session_id,
+            "session_id_sha256": _receipt_identifier(session_id),
+            "nonce_sha256": _receipt_identifier(nonce),
             # The raw ACP ID is used only for in-memory event correlation.
             # The receipt field is a fixed-size digest, never vendor text.
-            "child_call_id": _receipt_child_call_id(child_call_id),
+            "child_call_id_sha256": _receipt_child_call_id(child_call_id),
+            "subagent_type": subagent_type,
             "terminal_status": "completed",
         }
     finally:
@@ -674,7 +659,7 @@ def run_kimi_acp_native_agent(
                 _terminate_process(
                     process,
                     process_group,
-                    outer_group_owns_cleanup=outer_group_owns_cleanup,
+                    outer_group_owns_cleanup=provider_owns_cleanup,
                 )
                 # Do not let a late signal interrupt private-state deletion.
                 # In contained mode the outer helper still owns and reports
@@ -682,6 +667,12 @@ def run_kimi_acp_native_agent(
                 interrupt_cleanup.bind_process_group(None)
         finally:
             try:
-                _remove_private_kimi_state(private_kimi_home)
+                _remove_ephemeral_kimi_state(private_kimi_home)
             finally:
                 _restore_interrupt_handlers(interrupt_cleanup)
+
+
+# Keep the old public symbol as a narrow compatibility shim for focused ACP
+# fixtures. The protocol-driven bridge runner uses ``run_acp_native_agent`` so
+# future CLI manifests are never selected by tool name.
+run_kimi_acp_native_agent = run_acp_native_agent

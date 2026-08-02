@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => {
   const tx = {
-    harnessProject: { findUnique: vi.fn(), upsert: vi.fn() },
-    harnessGate: { findUnique: vi.fn(), updateMany: vi.fn(), upsert: vi.fn() },
+    harnessProject: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn(), upsert: vi.fn() },
+    harnessGate: { findMany: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn(), upsert: vi.fn() },
     harnessModeIntent: { updateMany: vi.fn() },
     harnessDispatchRun: { upsert: vi.fn() }
   };
@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => {
     prisma: {
       project: { findFirst: vi.fn() },
       $transaction: vi.fn(),
-      harnessProject: { findFirst: vi.fn() }
+      harnessProject: { findFirst: vi.fn(), findMany: vi.fn() }
     }
   };
 });
@@ -25,7 +25,7 @@ vi.mock("@/server/auth", () => ({
 }));
 vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 
-import { POST } from "../../app/api/harness/report/route";
+import { GET, POST } from "../../app/api/harness/report/route";
 
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
 const F001_TITLE = "Harness 通用契约：签名 mode defaults、/plan 消费与 dispatch 摘要落点";
@@ -153,12 +153,16 @@ describe("harness report mode activation and dispatch summaries", () => {
     vi.clearAllMocks();
     mocks.authenticateDeviceToken.mockResolvedValue({ userId: "user-1", deviceId: "device-1" });
     mocks.prisma.project.findFirst.mockResolvedValue({ id: "usage-project-1" });
+    mocks.prisma.harnessProject.findMany.mockResolvedValue([]);
+    mocks.tx.harnessProject.findMany.mockResolvedValue([]);
     mocks.tx.harnessProject.findUnique.mockResolvedValue(null);
+    mocks.tx.harnessProject.update.mockResolvedValue({ id: "legacy-project" });
     mocks.tx.harnessProject.upsert.mockResolvedValue({
       id: "harness-project-1",
       userId: "user-1",
       batch: "BL-TEST"
     });
+    mocks.tx.harnessGate.findMany.mockResolvedValue([]);
     mocks.tx.harnessGate.findUnique.mockResolvedValue(null);
     mocks.tx.harnessGate.updateMany.mockResolvedValue({ count: 0 });
     mocks.tx.harnessGate.upsert.mockResolvedValue({});
@@ -244,7 +248,7 @@ describe("harness report mode activation and dispatch summaries", () => {
     const response = await POST(
       request(
         report({
-          repoKey: `local:sha256:${"a".repeat(64)}`,
+          repoKey: `local:sha256:${"A".repeat(64)}`,
           state: {
             status: "building",
             features: titles.map((title, index) => ({ id: `F00${index + 1}`, title, status: "pending", executor: "generator" }))
@@ -255,7 +259,238 @@ describe("harness report mode activation and dispatch summaries", () => {
     );
 
     expect(response.status).toBe(200);
+    expect(mocks.prisma.project.findFirst).toHaveBeenCalledWith({
+      where: { userId: "user-1", repoKey: `local:sha256:${"a".repeat(64)}` },
+      select: { id: true }
+    });
     expect(mocks.tx.harnessProject.upsert.mock.calls[0][0].create.repoKey).toBe(`local:sha256:${"a".repeat(64)}`);
+  });
+
+  it.each([
+    ["https://GitHub.com/Acme/Tokenizer.git", "github.com/acme/tokenizer"],
+    ["git@GITHUB.com:Acme/Tokenizer.git", "github.com/acme/tokenizer"],
+    ["ssh://git@github.com/Acme/Tokenizer.git", "github.com/acme/tokenizer"],
+    ["git://github.com/Acme/Tokenizer.git", "github.com/acme/tokenizer"]
+  ])("canonicalizes the %s report identity before any project lookup or upsert", async (rawRepoKey, repoKey) => {
+    const response = await POST(request(report({ repoKey: rawRepoKey })));
+
+    expect(response.status).toBe(200);
+    expect(mocks.prisma.project.findFirst).toHaveBeenCalledWith({
+      where: { userId: "user-1", repoKey },
+      select: { id: true }
+    });
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { deviceId_repoKey: { deviceId: "device-1", repoKey } },
+        create: expect.objectContaining({ repoKey })
+      })
+    );
+  });
+
+  it("rekeys one owned legacy identity in place and reissues its stale relay", async () => {
+    const legacyProject = { id: "legacy-project", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" };
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([legacyProject]);
+    mocks.tx.harnessProject.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: "legacy-project", userId: "user-1" });
+    mocks.tx.harnessProject.upsert.mockResolvedValueOnce({
+      id: "legacy-project",
+      userId: "user-1",
+      batch: "BL-TEST"
+    });
+
+    const response = await POST(request(report({ repoKey: "https://github.com/Acme/Tokenizer.git" })));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ harnessProjectId: "legacy-project" });
+    expect(mocks.tx.harnessProject.findMany).toHaveBeenCalledWith({
+      where: { userId: "user-1", deviceId: "device-1" },
+      select: { id: true, userId: true, repoKey: true }
+    });
+    expect(mocks.tx.harnessProject.update).toHaveBeenCalledWith({
+      where: { id: "legacy-project" },
+      data: { repoKey: "github.com/acme/tokenizer" }
+    });
+    expect(mocks.tx.harnessGate.updateMany).toHaveBeenNthCalledWith(1, {
+      where: {
+        userId: "user-1",
+        harnessProjectId: "legacy-project",
+        consumedAt: null,
+        relayedAt: { not: null }
+      },
+      data: { relayedAt: null }
+    });
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { deviceId_repoKey: { deviceId: "device-1", repoKey: "github.com/acme/tokenizer" } }
+      })
+    );
+  });
+
+  it("keeps a legacy history from blocking reports to an existing canonical project", async () => {
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "canonical-project", userId: "user-1", repoKey: "github.com/acme/tokenizer" },
+      { id: "legacy-project", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+
+    const response = await POST(request(report({ repoKey: "https://github.com/Acme/Tokenizer.git" })));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessProject.update).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { deviceId_repoKey: { deviceId: "device-1", repoKey: "github.com/acme/tokenizer" } }
+      })
+    );
+    expect(mocks.tx.harnessGate.updateMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("reissues one approved legacy gate through the canonical project without changing its signature", async () => {
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "canonical-project", userId: "user-1", repoKey: "github.com/acme/tokenizer" },
+      { id: "legacy-project", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+    mocks.tx.harnessGate.findMany.mockResolvedValueOnce([{ id: "legacy-gate", gateId: "gate-1" }]);
+    mocks.tx.harnessGate.updateMany.mockResolvedValueOnce({ count: 1 });
+
+    const response = await POST(request(report({ repoKey: "https://github.com/Acme/Tokenizer.git" })));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessGate.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        harnessProjectId: "legacy-project",
+        decisionSig: { not: null },
+        consumedAt: null
+      },
+      select: { id: true, gateId: true }
+    });
+    expect(mocks.tx.harnessGate.updateMany).toHaveBeenNthCalledWith(1, {
+      where: {
+        id: "legacy-gate",
+        userId: "user-1",
+        harnessProjectId: "legacy-project",
+        decisionSig: { not: null },
+        consumedAt: null
+      },
+      data: { harnessProjectId: "canonical-project", relayedAt: null }
+    });
+    expect(mocks.tx.harnessGate.updateMany.mock.calls[0][0].data).not.toHaveProperty("decisionSig");
+  });
+
+  it("does not reissue a legacy gate when the canonical project already has that gate ID", async () => {
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "canonical-project", userId: "user-1", repoKey: "github.com/acme/tokenizer" },
+      { id: "legacy-project", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+    mocks.tx.harnessGate.findMany.mockResolvedValueOnce([{ id: "legacy-gate", gateId: "gate-1" }]);
+    mocks.tx.harnessGate.findUnique.mockResolvedValueOnce({ id: "canonical-gate" });
+
+    const response = await POST(request(report({ repoKey: "https://github.com/Acme/Tokenizer.git" })));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessGate.updateMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails closed when a canonical device identity belongs to another user", async () => {
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "legacy-project", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+    mocks.tx.harnessProject.findUnique.mockResolvedValueOnce({ id: "foreign-project", userId: "user-2" });
+
+    const response = await POST(request(report({ repoKey: "https://github.com/Acme/Tokenizer.git" })));
+
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ code: "project_ownership_conflict" });
+    expect(mocks.tx.harnessProject.update).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when more than one legacy alias matches the canonical identity", async () => {
+    mocks.tx.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "legacy-https", userId: "user-1", repoKey: "https://github.com/Acme/Tokenizer.git" },
+      { id: "legacy-ssh", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+
+    const response = await POST(request(report()));
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "repo_identity_ambiguous" });
+    expect(mocks.tx.harnessProject.update).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects a repoKey that becomes empty during canonicalization before Prisma access", async () => {
+    const response = await POST(request(report({ repoKey: "https://" })));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "invalid_repo_key" });
+    expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the canonical repo identity after an exact report read misses", async () => {
+    mocks.prisma.harnessProject.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: "harness-project-1" });
+    const response = await GET(
+      new Request("http://localhost/api/harness/report?repoKey=git%40GITHUB.com%3AAcme%2FTokenizer.git") as never
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.prisma.harnessProject.findFirst).toHaveBeenNthCalledWith(1, {
+      where: { deviceId: "device-1", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    });
+    expect(mocks.prisma.harnessProject.findFirst).toHaveBeenNthCalledWith(2, {
+      where: { deviceId: "device-1", userId: "user-1", repoKey: "github.com/acme/tokenizer" }
+    });
+  });
+
+  it("returns a historical noncanonical report row before attempting canonical fallback", async () => {
+    const historicalProject = { id: "legacy-project", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" };
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(historicalProject);
+    const response = await GET(
+      new Request("http://localhost/api/harness/report?repoKey=git%40GITHUB.com%3AAcme%2FTokenizer.git") as never
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ project: historicalProject });
+    expect(mocks.prisma.harnessProject.findFirst).toHaveBeenCalledTimes(1);
+    expect(mocks.prisma.harnessProject.findFirst).toHaveBeenCalledWith({
+      where: { deviceId: "device-1", userId: "user-1", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    });
+  });
+
+  it("finds a unique historical alias when the report is requested by canonical identity", async () => {
+    const historicalProject = { id: "legacy-project", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" };
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(null);
+    mocks.prisma.harnessProject.findMany.mockResolvedValueOnce([historicalProject]);
+
+    const response = await GET(
+      new Request("http://localhost/api/harness/report?repoKey=github.com%2Facme%2Ftokenizer") as never
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ project: historicalProject });
+    expect(mocks.prisma.harnessProject.findFirst).toHaveBeenCalledTimes(1);
+    expect(mocks.prisma.harnessProject.findMany).toHaveBeenCalledWith({
+      where: { deviceId: "device-1", userId: "user-1" }
+    });
+  });
+
+  it("does not choose between multiple historical aliases on a canonical report read", async () => {
+    mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(null);
+    mocks.prisma.harnessProject.findMany.mockResolvedValueOnce([
+      { id: "legacy-https", repoKey: "https://github.com/Acme/Tokenizer.git" },
+      { id: "legacy-ssh", repoKey: "git@GITHUB.com:Acme/Tokenizer.git" }
+    ]);
+
+    const response = await GET(
+      new Request("http://localhost/api/harness/report?repoKey=github.com%2Facme%2Ftokenizer") as never
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ project: null });
   });
 
   it.each([

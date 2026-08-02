@@ -2,7 +2,7 @@
 # dispatch-mode.md 统一派活入口 —— 按 descriptor.transport 路由，对上层隐藏 transport 差异。
 #
 #   local-cli → sandbox-profile.sh（本机 fork 子进程，阻塞）
-#   subagent  → host-native 由 Coordinator 直派；已验证 bridge 走 sandbox-profile.sh
+#   subagent  → host-native 由 Coordinator 直派；外部 bridge 仅走受管 VM provider
 #   a2a       → a2a-client.py run（远端 runner，SSE 订阅至终态）
 #
 # 两条路径**输出同形的 run-meta JSON 到 stdout**，于是回执推断表、gate-arbiter、/autodrive
@@ -228,28 +228,64 @@ case "$TRANSPORT" in
     exec python3 "$DISPATCH_DIR/transports/a2a-client.py" "${A2A_ARGS[@]}"
     ;;
   subagent)
-    if ! SUBAGENT_ROUTE="$(python3 - "$TARGET_JSON" <<'PY'
+    if ! SUBAGENT_ROUTE="$(python3 - "$TARGET_JSON" "$AGENT_ID" "$ROLE" "$EXPECTED_PROVENANCE" <<'PY'
 import json
+import re
 import sys
 
+target_raw, agent_id, role, expected_provenance = sys.argv[1:5]
+safe_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+sha256 = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def reject_duplicates(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key {key!r}")
+        value[key] = item
+    return value
+
+
 try:
-    target = json.loads(sys.argv[1])
+    target = json.loads(target_raw, object_pairs_hook=reject_duplicates)
 except (TypeError, ValueError) as exc:
     raise SystemExit(f"[dispatch-run] ⛔ subagent target JSON 非法：{exc}")
 if not isinstance(target, dict):
     raise SystemExit("[dispatch-run] ⛔ subagent target 必须是 object")
+if target.get("target_id") != agent_id or role not in target.get("roles", []):
+    raise SystemExit("[dispatch-run] ⛔ subagent target 未绑定本次 agent/role")
 bridge_id = target.get("bridge_id")
 if bridge_id == "host-native":
     print("host-native")
-elif (
-    isinstance(bridge_id, str)
-    and isinstance(target.get("bridge_strategy"), str)
-    and isinstance(target.get("bridge_protocol"), dict)
-    and target.get("session_scope") == "same-session"
+    raise SystemExit(0)
+protocol = target.get("bridge_protocol")
+if (
+    not isinstance(bridge_id, str)
+    or safe_id.fullmatch(bridge_id) is None
+    or not isinstance(target.get("bridge_strategy"), str)
+    or safe_id.fullmatch(target["bridge_strategy"]) is None
+    or target.get("session_scope") != "same-session"
+    or target.get("bridge_provider_id") != "harness-vm-v1"
+    or target.get("bridge_provider_kind") != "vm-v1"
+    or not isinstance(target.get("bridge_provider_contract_sha256"), str)
+    or sha256.fullmatch(target["bridge_provider_contract_sha256"]) is None
+    or not isinstance(target.get("execution_provenance_sha256"), str)
+    or sha256.fullmatch(target["execution_provenance_sha256"]) is None
+    or not isinstance(expected_provenance, str)
+    or sha256.fullmatch(expected_provenance) is None
+    or target["execution_provenance_sha256"] != expected_provenance
+    or not isinstance(protocol, dict)
+    or set(protocol) != {"kind", "command", "request_delivery", "response_format"}
+    or protocol.get("kind") != "acp-native-agent/v1"
+    or protocol.get("request_delivery") != "stdin"
+    or protocol.get("response_format") != "json"
+    or not isinstance(protocol.get("command"), list)
+    or not protocol["command"]
+    or any(not isinstance(item, str) or not item for item in protocol["command"])
 ):
-    print("external-bridge")
-else:
-    raise SystemExit("[dispatch-run] ⛔ subagent target 缺已验证同会话 bridge 元数据")
+    raise SystemExit("[dispatch-run] ⛔ subagent target 不是已签发的 vm-v1 external bridge")
+print("external-vm-v1")
 PY
 )"; then
       die "无法判断 subagent bridge 路径"
@@ -257,17 +293,134 @@ PY
     if [ "$SUBAGENT_ROUTE" = "host-native" ]; then
       die "$AGENT_ID 的 transport=subagent 是当前 Coordinator 的 host-native 路径；由编排者直接派，不走本入口"
     fi
-    echo "[dispatch-run] transport=subagent bridge → 同会话沙箱" >&2
-    BRIDGE_ARGS=(
-      --agent "$AGENT_ID" --envelope "$ENVELOPE"
-      --registry "$REGISTRY" --workroot "$WORKROOT" --state "$STATE"
-    )
-    BRIDGE_ARGS+=(--adapters "$ADAPTERS")
-    [ -z "$EXPECTED_PROVENANCE" ] || BRIDGE_ARGS+=(--expected-provenance "$EXPECTED_PROVENANCE")
     if [ "${#EXTRA[@]}" -gt 0 ]; then
-      BRIDGE_ARGS+=("${EXTRA[@]}")
+      die "external vm-v1 bridge 不接受未声明的 dispatch 参数"
     fi
-    exec bash "$DISPATCH_DIR/sandbox-profile.sh" "${BRIDGE_ARGS[@]}"
+    [ "$SUBAGENT_ROUTE" = "external-vm-v1" ] || die "未知 subagent bridge 路径"
+    [ -n "$ACTIVE_PROGRESS" ] || die "external vm-v1 bridge 必须由已验签 active mode 签发"
+    [ -n "$EXPECTED_PROVENANCE" ] || die "external vm-v1 bridge 缺少已签发 execution provenance"
+    # The project copy is a managed compatibility mirror, never the provider
+    # trust root.  Resolve the installed Tokenizer application through the
+    # account database rather than HOME/PATH/registry/lock data, and execute
+    # only its framework bundle.  A pre-release or drifted installation fails
+    # closed; it cannot nominate a project-local replacement.
+    if ! VM_PROVIDER="$(/usr/bin/python3 -I - "$PROJECT_ROOT" <<'PY'
+import hashlib
+import os
+import pwd
+import stat
+import sys
+from pathlib import Path
+
+try:
+    home = Path(pwd.getpwuid(os.geteuid()).pw_dir)
+except (KeyError, OSError):
+    raise SystemExit(2)
+project_root = Path(sys.argv[1])
+root = home / ".tokenizer" / "app"
+required = (
+    "framework/templates/claude/dispatch/tool-catalog.py",
+    "framework/templates/claude/dispatch/transports/vm-bridge-provider.py",
+    "framework/templates/claude/dispatch/transports/session-bridge.py",
+    "framework/templates/claude/dispatch/transports/session_bridge_kimi.py",
+    "framework/templates/claude/dispatch/transports/vm-bridge-worker.py",
+)
+current = root
+for segment in ("framework", "templates", "claude", "dispatch"):
+    try:
+        current_entry = current.lstat()
+    except OSError:
+        raise SystemExit(2)
+    if (
+        stat.S_ISLNK(current_entry.st_mode)
+        or not stat.S_ISDIR(current_entry.st_mode)
+        or current_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+    ):
+        raise SystemExit(2)
+    current = current / segment
+try:
+    current_entry = current.lstat()
+except OSError:
+    raise SystemExit(2)
+if (
+    stat.S_ISLNK(current_entry.st_mode)
+    or not stat.S_ISDIR(current_entry.st_mode)
+    or current_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+):
+    raise SystemExit(2)
+
+def identical(left, right):
+    try:
+        left_entry, right_entry = left.lstat(), right.lstat()
+    except OSError:
+        return False
+    if (
+        stat.S_ISLNK(left_entry.st_mode)
+        or stat.S_ISLNK(right_entry.st_mode)
+        or not stat.S_ISREG(left_entry.st_mode)
+        or not stat.S_ISREG(right_entry.st_mode)
+        or left_entry.st_size != right_entry.st_size
+    ):
+        return False
+    digest = hashlib.sha256()
+    try:
+        with left.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        left_hash = digest.digest()
+        digest = hashlib.sha256()
+        with right.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+    except OSError:
+        return False
+    return left_hash == digest.digest()
+
+project_dispatch = project_root / ".claude" / "dispatch"
+for relative in required:
+    parent = root / "framework/templates/claude/dispatch"
+    for segment in Path(relative).parts[:-1]:
+        parent = parent / segment
+        try:
+            parent_entry = parent.lstat()
+        except OSError:
+            raise SystemExit(2)
+        if (
+            stat.S_ISLNK(parent_entry.st_mode)
+            or not stat.S_ISDIR(parent_entry.st_mode)
+            or parent_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+        ):
+            raise SystemExit(2)
+    candidate = root / relative
+    try:
+        entry = candidate.lstat()
+    except OSError:
+        raise SystemExit(2)
+    if stat.S_ISLNK(entry.st_mode) or not stat.S_ISREG(entry.st_mode):
+        raise SystemExit(2)
+    if entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH):
+        raise SystemExit(2)
+    if not identical(project_dispatch / relative, candidate):
+        raise SystemExit(2)
+print(root / "framework/templates/claude/dispatch/transports/vm-bridge-provider.py")
+PY
+)"; then
+      die "未找到受信任的 Tokenizer app VM provider bundle；更新安装 Agent 后重试"
+    fi
+    STATE_ABS="$(python3 - "$PROJECT_ROOT" "$STATE" <<'PY'
+import os
+import sys
+
+root, value = sys.argv[1:3]
+print(os.path.abspath(value if os.path.isabs(value) else os.path.join(root, value)))
+PY
+)" || die "无法解析 external vm-v1 provider state 路径"
+    echo "[dispatch-run] transport=subagent bridge → framework VM provider" >&2
+    cd "$PROJECT_ROOT"
+    exec /usr/bin/python3 -I "$VM_PROVIDER" launch \
+      --agent "$AGENT_ID" --envelope "$ENVELOPE" --registry "$REGISTRY" \
+      --adapters "$ADAPTERS" --project-root "$PROJECT_ROOT" --state "$STATE_ABS" \
+      --expected-provenance "$EXPECTED_PROVENANCE"
     ;;
   "")
     die "注册表中无此 agent 或未声明 transport：$AGENT_ID"

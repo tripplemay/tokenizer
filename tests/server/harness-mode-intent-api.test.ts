@@ -15,6 +15,28 @@ import {
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
 const SHA256 = "a".repeat(64);
 
+function vmProviderProof(now: Date) {
+  return {
+    id: "harness-vm-v1",
+    kind: "vm-v1",
+    contractSha256: SHA256,
+    attestation: {
+      version: "harness/external-bridge-provider-attestation/1",
+      providerId: "harness-vm-v1",
+      providerKind: "vm-v1",
+      contractSha256: SHA256,
+      phase: "catalog",
+      nonceSha256: "b".repeat(64),
+      issuedAt: new Date(now.getTime() - 1_000).toISOString(),
+      expiresAt: new Date(now.getTime() + 120_000).toISOString(),
+      imageSha256: "c".repeat(64),
+      runnerSha256: "d".repeat(64),
+      cliBundleSha256: "e".repeat(64),
+      brokerPolicySha256: "f".repeat(64)
+    }
+  };
+}
+
 function toolCatalog() {
   return [
     {
@@ -484,6 +506,39 @@ describe("persisted mode snapshot validation", () => {
     const incomplete = structuredClone(snapshot);
     delete incomplete.dispatch.integrations[0].bridgeKind;
     expect(() => parseModeSnapshot(incomplete)).toThrow(/bridgeKind must be a string/);
+  });
+
+  it("accepts only a live strict VM proof carried by the catalog", () => {
+    const now = new Date("2026-08-01T12:00:00.000Z");
+    const snapshot: any = verifiedBridgeSnapshot();
+    const proof = vmProviderProof(now);
+    snapshot.dispatch.toolCatalog = snapshot.dispatch.toolCatalog.map((entry: Record<string, unknown>) => ({
+      ...entry,
+      subagentProvider: proof
+    }));
+
+    expect(parseModeSnapshot(snapshot)).toBe(snapshot);
+    expect(modeToolCatalogFromSnapshot(snapshot, now)).toEqual(expect.arrayContaining([
+      { tool: "kimi", invocation: "subagent", role: "generator", model_family: "kimi" }
+    ]));
+
+    const integrationOnly = structuredClone(snapshot);
+    for (const entry of integrationOnly.dispatch.toolCatalog) delete entry.subagentProvider;
+    integrationOnly.dispatch.integrations[0].subagentProvider = proof;
+    expect(parseModeSnapshot(integrationOnly)).toBe(integrationOnly);
+    expect(() => modeToolCatalogFromSnapshot(integrationOnly, now)).toThrow(/selectable tool capability catalog/);
+
+    const expired = structuredClone(snapshot);
+    for (const entry of expired.dispatch.toolCatalog) {
+      entry.subagentProvider = vmProviderProof(new Date(now.getTime() - 10 * 60 * 1_000));
+    }
+    // Historical reports remain parsable, but the signing path rechecks time.
+    expect(parseModeSnapshot(expired)).toBe(expired);
+    expect(() => modeToolCatalogFromSnapshot(expired, now)).toThrow(/selectable tool capability catalog/);
+
+    const forged = structuredClone(snapshot);
+    forged.dispatch.toolCatalog[0].subagentProvider.attestation.phase = "launch";
+    expect(() => parseModeSnapshot(forged)).toThrow(/invalid provider proof/);
   });
 
   it("keeps a catalog-only Coordinator-native subagent route observable but not signable", () => {

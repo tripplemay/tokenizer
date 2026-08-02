@@ -19,37 +19,57 @@ import json
 import os
 import re
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from session_bridge_kimi import KimiBridgeError, run_kimi_acp_native_agent
+from session_bridge_kimi import KimiBridgeError, run_acp_native_agent
 
 
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
-# Session/tool-call lineage is durable receipt metadata, not arbitrary ACP
-# display content. Keep it token-like and bounded at every protocol boundary.
-SAFE_LINEAGE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
+LAUNCH_NONCE = re.compile(r"^[0-9a-f]{32}$")
 PERSONAS = {
     "planner": "planner-proposal",
     "generator": "generator-restricted",
     "evaluator": "evaluator",
 }
-KIMI_AGENT_TYPES = {
-    # A Harness Planner must materialize its schema-checked proposal artifact.
-    # Kimi's native ``plan`` Agent is intentionally read-only, so it cannot
-    # meet that receipt contract. The ``coder`` Agent runs inside the same
-    # isolated worktree and remains bound to the narrower planner prompt.
-    "planner-proposal": "coder",
-    "generator-restricted": "coder",
-    "evaluator": "coder",
-}
+NATIVE_AGENT_TYPES = frozenset({"plan", "coder", "explore"})
 PROTOCOL_FIELDS = {"kind", "command", "request_delivery", "response_format"}
 ACP_NATIVE_AGENT_PROTOCOL = "acp-native-agent/v1"
 # Keep the runtime publication boundary identical to the catalog boundary.
 # The dormant App Server probe deliberately does not appear here: a project
 # manifest cannot promote an unverified protocol into an executable route.
 PUBLISHED_PROTOCOL_KINDS = {ACP_NATIVE_AGENT_PROTOCOL}
+PROVIDER_LAUNCH_NONCE_ENV = "HARNESS_PROVIDER_LAUNCH_NONCE"
+PROVIDER_LAUNCH_ATTESTATION_ENV = "HARNESS_PROVIDER_LAUNCH_ATTESTATION_SHA256"
+VENDOR_WORKER_ENV_KEYS = frozenset({
+    "HOME",
+    "TMPDIR",
+    "PATH",
+    "LANG",
+    "LC_ALL",
+    "KIMI_CODE_HOME",
+    "KIMI_DISABLE_TELEMETRY",
+    "KIMI_CODE_NO_AUTO_UPDATE",
+    "KIMI_CODE_BACKGROUND_KEEP_ALIVE_ON_EXIT",
+    "KIMI_MODEL_NAME",
+    "KIMI_MODEL_API_KEY",
+    "KIMI_MODEL_PROVIDER_TYPE",
+    "KIMI_MODEL_BASE_URL",
+    "KIMI_MODEL_MAX_CONTEXT_SIZE",
+    "KIMI_MODEL_CAPABILITIES",
+    "KIMI_SUBAGENT_TIMEOUT_MS",
+    "KIMI_BASE_URL",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "SSL_CERT_FILE",
+})
+PROVIDER_WORKER_ENV_KEYS = VENDOR_WORKER_ENV_KEYS | {
+    PROVIDER_LAUNCH_NONCE_ENV,
+    PROVIDER_LAUNCH_ATTESTATION_ENV,
+}
 
 
 class SessionBridgeError(RuntimeError):
@@ -68,10 +88,6 @@ def _bounded_text(value: Any, label: str, maximum: int = 4096) -> str:
     if any(ord(character) < 32 or ord(character) == 127 for character in value):
         raise SessionBridgeError(f"{label} contains control characters")
     return value
-
-
-def _safe_lineage_id(value: Any) -> bool:
-    return isinstance(value, str) and SAFE_LINEAGE_ID.fullmatch(value) is not None
 
 
 def _load_protocol(raw: str) -> dict[str, Any]:
@@ -147,14 +163,15 @@ def _child_prompt(envelope: dict[str, Any], persona: str) -> str:
     )
 
 
-def _kimi_root_prompt(envelope: dict[str, Any], persona: str, nonce: str) -> str:
+def _native_root_prompt(
+    envelope: dict[str, Any], persona: str, nonce: str, native_agent_type: str
+) -> str:
     child = _child_prompt(envelope, persona)
-    subagent_type = KIMI_AGENT_TYPES[persona]
     return (
         "You are the root of a Harness same-session bridge. Before doing any task "
         "work, launch exactly one native Agent tool call. Do not perform task work "
         "yourself. Its description must be exactly "
-        f"harness-child:{nonce}. Its subagent_type must be {subagent_type}. Give it "
+        f"harness-child:{nonce}. Its subagent_type must be {native_agent_type}. Give it "
         "the following child prompt verbatim. After that Agent has completed, reply "
         "with a short status only.\n\nCHILD_PROMPT:\n"
         + child
@@ -181,38 +198,86 @@ def _write_result(path: Path, value: dict[str, Any]) -> None:
         raise SessionBridgeError("bridge result already exists") from exc
 
 
+def _provider_worker_environment_from_process() -> dict[str, str]:
+    """Read only framework-defined worker values from the provider launch env.
+
+    The provider must use an explicit restricted environment.  We intentionally
+    do not clone ``os.environ``: a direct or stale invocation cannot make a
+    host KIMI_CODE_HOME, credential, loader, or arbitrary runtime variable reach
+    the native ACP process.
+    """
+    return {
+        key: os.environ[key]
+        for key in PROVIDER_WORKER_ENV_KEYS
+        if key in os.environ
+    }
+
+
+def _provider_launch_context(
+    worker_env: Mapping[str, str] | None,
+) -> tuple[dict[str, str], str, str]:
+    if not isinstance(worker_env, Mapping):
+        raise SessionBridgeError("bridge requires a provider worker environment")
+    normalized: dict[str, str] = {}
+    for key, value in worker_env.items():
+        if not isinstance(key, str) or key not in PROVIDER_WORKER_ENV_KEYS:
+            raise SessionBridgeError("provider worker environment contains an unsupported key")
+        if not isinstance(value, str) or not value or "\x00" in value:
+            raise SessionBridgeError("provider worker environment value is invalid")
+        normalized[key] = value
+
+    nonce = normalized.get(PROVIDER_LAUNCH_NONCE_ENV)
+    if not isinstance(nonce, str) or LAUNCH_NONCE.fullmatch(nonce) is None:
+        raise SessionBridgeError("bridge requires a valid provider launch nonce")
+    attestation = normalized.get(PROVIDER_LAUNCH_ATTESTATION_ENV)
+    if not isinstance(attestation, str) or SHA256_HEX.fullmatch(attestation) is None:
+        raise SessionBridgeError("bridge requires a valid provider launch attestation")
+    return (
+        {key: value for key, value in normalized.items() if key in VENDOR_WORKER_ENV_KEYS},
+        nonce,
+        attestation,
+    )
+
+
 def run_bridge(
     *,
     bridge_id: str,
     strategy: str,
     protocol: dict[str, Any],
     persona: str,
+    native_agent_type: str,
     envelope: dict[str, Any],
     worktree: Path,
     timeout_s: int,
-    private_state_root: Path | None = None,
+    worker_env: Mapping[str, str] | None = None,
+    worker_state_root: Path | None = None,
 ) -> dict[str, Any]:
     _safe_id(bridge_id, "bridge id")
     _safe_id(strategy, "bridge strategy")
     role = envelope["role"]
     if persona != PERSONAS[role]:
         raise SessionBridgeError("bridge persona does not match envelope role")
+    native_agent_type = _bounded_text(native_agent_type, "bridge native agent type", 32)
+    if native_agent_type not in NATIVE_AGENT_TYPES:
+        raise SessionBridgeError("bridge native agent type is not published")
     if not worktree.is_dir():
         raise SessionBridgeError("bridge worktree does not exist")
+    vendor_worker_env, nonce, provider_attestation = _provider_launch_context(worker_env)
 
     kind = protocol["kind"]
     command = protocol["command"]
     if kind == ACP_NATIVE_AGENT_PROTOCOL:
-        nonce = os.urandom(16).hex()
         try:
-            proof = run_kimi_acp_native_agent(
+            proof = run_acp_native_agent(
                 command=command,
                 cwd=str(worktree),
-                prompt=_kimi_root_prompt(envelope, persona, nonce),
+                prompt=_native_root_prompt(envelope, persona, nonce, native_agent_type),
                 nonce=nonce,
-                subagent_type=KIMI_AGENT_TYPES[persona],
+                subagent_type=native_agent_type,
                 timeout_s=timeout_s,
-                private_state_root=private_state_root,
+                worker_env=vendor_worker_env,
+                worker_state_root=worker_state_root,
+                provider_owns_cleanup=True,
             )
         except KimiBridgeError as exc:
             raise SessionBridgeError("ACP native-agent bridge failed") from exc
@@ -231,26 +296,28 @@ def run_bridge(
     # fields and reject accidental model text or raw protocol objects.
     allowed_by_kind = {
         ACP_NATIVE_AGENT_PROTOCOL: {
-            "bridge_kind", "session_id", "child_call_id", "terminal_status",
+            "bridge_kind", "session_id_sha256", "nonce_sha256",
+            "child_call_id_sha256", "subagent_type", "terminal_status",
         },
     }
     if set(proof) != allowed_by_kind[kind] or proof.get("bridge_kind") != kind:
         raise SessionBridgeError("bridge proof shape is invalid")
-    if not _safe_lineage_id(proof.get("session_id")):
-        raise SessionBridgeError("bridge proof session identifier is invalid")
-    # ACP child-call IDs are vendor-controlled composite values. A driver may
-    # use them transiently to correlate events, but durable receipt metadata
-    # is always the driver's lower-case SHA-256 token, never a token-shaped
-    # raw value that a future driver could accidentally reintroduce.
-    if not isinstance(proof.get("child_call_id"), str) or SHA256_HEX.fullmatch(proof["child_call_id"]) is None:
-        raise SessionBridgeError("bridge proof child-call receipt token is invalid")
-
+    for field in ("session_id_sha256", "nonce_sha256", "child_call_id_sha256"):
+        if not isinstance(proof.get(field), str) or SHA256_HEX.fullmatch(proof[field]) is None:
+            raise SessionBridgeError(f"bridge proof {field} is invalid")
+    if proof["nonce_sha256"] != hashlib.sha256(nonce.encode("utf-8")).hexdigest():
+        raise SessionBridgeError("bridge proof nonce does not match provider launch")
+    if proof.get("subagent_type") != native_agent_type:
+        raise SessionBridgeError("bridge proof native agent type does not match manifest")
+    if proof.get("terminal_status") != "completed":
+        raise SessionBridgeError("bridge proof child terminal status is invalid")
     return {
         "bridge_id": bridge_id,
         "bridge_strategy": strategy,
         "bridge_kind": kind,
         "session_scope": "same-session",
         **proof,
+        "provider_launch_attestation_sha256": provider_attestation,
         "artifact_sha256": _sha256(artifact),
     }
 
@@ -263,11 +330,12 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("--strategy", required=True)
     run.add_argument("--protocol-json", required=True)
     run.add_argument("--persona", required=True)
+    run.add_argument("--native-agent-type", required=True)
     run.add_argument("--envelope", required=True, type=Path)
     run.add_argument("--worktree", required=True, type=Path)
     run.add_argument("--result", required=True, type=Path)
     run.add_argument("--timeout-s", required=True, type=int)
-    run.add_argument("--private-state-root", type=Path)
+    run.add_argument("--worker-state-root", required=True, type=Path)
     return root
 
 
@@ -286,10 +354,12 @@ def main() -> int:
             strategy=args.strategy,
             protocol=protocol,
             persona=persona,
+            native_agent_type=args.native_agent_type,
             envelope=envelope,
             worktree=args.worktree,
             timeout_s=args.timeout_s,
-            private_state_root=args.private_state_root,
+            worker_env=_provider_worker_environment_from_process(),
+            worker_state_root=args.worker_state_root,
         )
         _write_result(args.result, result)
         return 0

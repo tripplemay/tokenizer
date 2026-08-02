@@ -28,6 +28,21 @@
           "Distinguishes required upgrades from unverified releases and surfaces actionable upgrade guidance on the home page."
         ]
       }
+    },
+    {
+      "version": "1.2.0",
+      "released_on": "2026-08-02",
+      "agent_feature_version": 8,
+      "highlights": {
+        "zh-CN": [
+          "支持 Harness bridge 对象形式的子代理声明，避免旧 Tokenizer Agent 将有效的 Dispatch 工具目录误判为不可用。",
+          "将工具绑定编排的兼容门槛提升到 capability 8，并明确提示旧 Agent 升级。"
+        ],
+        "en": [
+          "Supports Harness bridge-object subagent declarations, preventing older Tokenizer Agents from marking valid Dispatch tool catalogs unavailable.",
+          "Raises the tool-bound orchestration compatibility level to 8 and clearly prompts older Agents to upgrade."
+        ]
+      }
     }
   ]
 }

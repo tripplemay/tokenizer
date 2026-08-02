@@ -17,6 +17,7 @@ import {
   type ReportModeDefaultsSummary,
   type ReportModeIntentSummary
 } from "@/server/harness-mode-intent-api";
+import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,7 @@ const GATE_KINDS = new Set([
   "spec_lock",
   "other"
 ]);
+const OPAQUE_LOCAL_REPO_KEY_PATTERN = /^local:sha256:[0-9a-fA-F]{64}$/;
 
 function reject(code: string, message: string): never {
   throw new HarnessApiInputError(code, message);
@@ -102,6 +104,154 @@ function countValue(value: unknown, label: string): number {
     return reject("invalid_number", `${label} must be a nonnegative integer`);
   }
   return value;
+}
+
+function canonicalRepoKey(value: string): string {
+  // Local workspace identities are content-addressed opaque keys. They are not
+  // Git remotes, so retain their shape while canonicalizing the hexadecimal
+  // digest spelling to avoid a case-only duplicate identity.
+  if (OPAQUE_LOCAL_REPO_KEY_PATTERN.test(value)) return value.toLowerCase();
+  try {
+    return normalizeHarnessRepoKey(value);
+  } catch {
+    return reject("invalid_repo_key", "repoKey must identify a repository");
+  }
+}
+
+/**
+ * Historical rows predate the report write-boundary normalization, so they
+ * cannot be assumed valid. A malformed stored key is not a migration
+ * candidate; it remains reachable only through its literal GET lookup.
+ */
+function canonicalStoredRepoKey(value: string): string | null {
+  try {
+    return canonicalRepoKey(value);
+  } catch {
+    return null;
+  }
+}
+
+async function reissueOneLegacyApprovedGate(
+  tx: Prisma.TransactionClient,
+  scope: { userId: string; legacyProjectId: string; canonicalProjectId: string }
+): Promise<void> {
+  const gates = await tx.harnessGate.findMany({
+    where: {
+      userId: scope.userId,
+      harnessProjectId: scope.legacyProjectId,
+      decisionSig: { not: null },
+      consumedAt: null
+    },
+    select: { id: true, gateId: true }
+  });
+
+  // A signed decision does not bind its repo wrapper. Preserve exact-only
+  // delivery unless there is one unambiguous approved gate and no same-ID
+  // gate on the canonical project.
+  if (gates.length !== 1) return;
+  const gate = gates[0];
+  const canonicalGate = await tx.harnessGate.findUnique({
+    where: {
+      harnessProjectId_gateId: {
+        harnessProjectId: scope.canonicalProjectId,
+        gateId: gate.gateId
+      }
+    },
+    select: { id: true }
+  });
+  if (canonicalGate) return;
+
+  const moved = await tx.harnessGate.updateMany({
+    where: {
+      id: gate.id,
+      userId: scope.userId,
+      harnessProjectId: scope.legacyProjectId,
+      decisionSig: { not: null },
+      consumedAt: null
+    },
+    // Keep the original decision fields and signature byte-for-byte intact.
+    // Only its trusted database wrapper moves to the equivalent canonical key.
+    data: { harnessProjectId: scope.canonicalProjectId, relayedAt: null }
+  });
+  if (moved.count !== 1) {
+    throw new HarnessApiInputError("repo_identity_conflict", "legacy gate changed during identity reconciliation", 409);
+  }
+}
+
+/**
+ * Reconcile a single pre-normalization HarnessProject identity before the
+ * current report is written. The agent deliberately routes gate wrappers by
+ * exact repoKey, so this server-side, proof-bound migration is the only place
+ * a legacy alias may become the canonical identity.
+ */
+async function reconcileHarnessProjectIdentity(
+  tx: Prisma.TransactionClient,
+  scope: { userId: string; deviceId: string; repoKey: string }
+): Promise<void> {
+  const projects = await tx.harnessProject.findMany({
+    where: { userId: scope.userId, deviceId: scope.deviceId },
+    select: { id: true, userId: true, repoKey: true }
+  });
+  const canonicalProject = projects.find((project) => project.repoKey === scope.repoKey) ?? null;
+  const legacyProjects = projects.filter(
+    (project) => project.repoKey !== scope.repoKey && canonicalStoredRepoKey(project.repoKey) === scope.repoKey
+  );
+
+  if (legacyProjects.length === 0) return;
+  if (canonicalProject) {
+    // Keep historical observations in place. A single approved, unconsumed
+    // Gate is the only child relation safe to reissue without merging two
+    // histories or changing an already-signed decision payload.
+    if (legacyProjects.length === 1) {
+      await reissueOneLegacyApprovedGate(tx, {
+        userId: scope.userId,
+        legacyProjectId: legacyProjects[0].id,
+        canonicalProjectId: canonicalProject.id
+      });
+    }
+    return;
+  }
+  if (legacyProjects.length > 1) {
+    throw new HarnessApiInputError(
+      "repo_identity_ambiguous",
+      "multiple legacy harness project identities match this repository",
+      409
+    );
+  }
+
+  const legacyProject = legacyProjects[0];
+
+  // The scoped scan intentionally excludes other users' rows. Check the
+  // device-wide unique key before re-keying so a malformed cross-tenant row
+  // fails closed instead of surfacing as an unhandled unique violation.
+  const existingCanonicalProject = await tx.harnessProject.findUnique({
+    where: { deviceId_repoKey: { deviceId: scope.deviceId, repoKey: scope.repoKey } },
+    select: { id: true, userId: true }
+  });
+  if (existingCanonicalProject) {
+    if (existingCanonicalProject.userId !== scope.userId) {
+      throw new HarnessApiInputError("project_ownership_conflict", "harness project ownership conflict", 403);
+    }
+    throw new HarnessApiInputError(
+      "repo_identity_conflict",
+      "legacy and canonical harness project identities cannot be merged automatically",
+      409
+    );
+  }
+
+  // Re-keying preserves the same parent ID and every child relation. Reset
+  // only pending gates relayed under the obsolete wrapper, allowing one fresh
+  // canonical delivery to the exact-only Agent.
+  await tx.harnessProject.update({ where: { id: legacyProject.id }, data: { repoKey: scope.repoKey } });
+  await tx.harnessGate.updateMany({
+    where: {
+      userId: scope.userId,
+      harnessProjectId: legacyProject.id,
+      consumedAt: null,
+      relayedAt: { not: null }
+    },
+    data: { relayedAt: null }
+  });
 }
 
 function parseFeatures(value: unknown): ParsedState["features"] {
@@ -227,7 +377,10 @@ function parseReport(value: unknown): ParsedReport {
     "modeIntent"
   ]);
   return {
-    repoKey: stringValue(body.repoKey, "repoKey", 512)!,
+    // The client already emits this spelling, but the server is the durable
+    // identity boundary. Do not create a second device report for an HTTPS,
+    // SSH, or case-only alias of the same remote.
+    repoKey: canonicalRepoKey(stringValue(body.repoKey, "repoKey", 512)!),
     name: stringValue(body.name, "name", 200)!,
     state: parseState(body.state, body),
     gate: parseGate(body.gate),
@@ -256,6 +409,12 @@ export async function POST(request: NextRequest) {
   try {
     result = await prisma.$transaction(
       async (tx) => {
+        await reconcileHarnessProjectIdentity(tx, {
+          userId: token.userId,
+          deviceId: token.deviceId,
+          repoKey: report.repoKey
+        });
+
         const state = report.state;
         const data = {
           name: report.name,
@@ -429,10 +588,39 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const token = await authenticateDeviceToken(request);
   if (!token) return unauthorized();
-  const repoKey = new URL(request.url).searchParams.get("repoKey")?.trim();
-  if (!repoKey || repoKey.length > 512) return forbidden("repoKey is required");
-  const project = await prisma.harnessProject.findFirst({
-    where: { deviceId: token.deviceId, userId: token.userId, repoKey }
+  const rawRepoKey = new URL(request.url).searchParams.get("repoKey")?.trim();
+  if (!rawRepoKey || rawRepoKey.length > 512) return forbidden("repoKey is required");
+
+  // Preserve access to rows written before write-boundary normalization. New
+  // callers can still find their canonical row after the exact lookup misses.
+  const exactProject = await prisma.harnessProject.findFirst({
+    where: { deviceId: token.deviceId, userId: token.userId, repoKey: rawRepoKey }
   });
-  return Response.json({ project });
+  if (exactProject) return Response.json({ project: exactProject });
+
+  let repoKey: string;
+  try {
+    repoKey = canonicalRepoKey(rawRepoKey);
+  } catch {
+    // GET historically treated any bounded query value as a literal lookup.
+    // Keep that behavior when no canonical fallback can be derived.
+    return Response.json({ project: null });
+  }
+  if (repoKey !== rawRepoKey) {
+    const canonicalProject = await prisma.harnessProject.findFirst({
+      where: { deviceId: token.deviceId, userId: token.userId, repoKey }
+    });
+    if (canonicalProject) return Response.json({ project: canonicalProject });
+  }
+
+  // Canonical callers must also be able to inspect a single legacy row until
+  // its next report writes through the transactional migration above. More
+  // than one alias is deliberately ambiguous rather than picked arbitrarily.
+  const legacyProjects = await prisma.harnessProject.findMany({
+    where: { deviceId: token.deviceId, userId: token.userId }
+  });
+  const matchingLegacyProjects = legacyProjects.filter(
+    (project) => project.repoKey !== repoKey && canonicalStoredRepoKey(project.repoKey) === repoKey
+  );
+  return Response.json({ project: matchingLegacyProjects.length === 1 ? matchingLegacyProjects[0] : null });
 }

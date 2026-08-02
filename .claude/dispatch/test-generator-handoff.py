@@ -150,6 +150,38 @@ class GeneratorHandoffValidatorTest(unittest.TestCase):
         )
         self.assertEqual(receipts[0]["worktree_path"], str(self.root))
 
+    def test_completed_subagent_receipt_requires_signed_validation_context(self) -> None:
+        write_json(self.artifact, valid_handoff())
+        meta = self.root / "run-meta-subagent.json"
+        write_json(
+            meta,
+            {
+                "task_id": TASK_ID,
+                "agent_id": "fixture-generator",
+                "model_family": "fixture",
+                "batch": BATCH_ID,
+                "ref": "a" * 40,
+                "role": "generator",
+                "deliverable": generator_envelope()["deliverable"],
+                "artifact": str(self.artifact),
+                "envelope_path": str(self.envelope),
+                "worktree": str(self.root),
+                "outcome": "RETURNED",
+                "exit_code": 0,
+                "duration_s": 1,
+                "transport": "subagent",
+            },
+        )
+        result = subprocess.run(
+            ["bash", str(DISPATCH_VALIDATOR), "receipt", str(meta)],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
+        self.assertIn("signed validation context", receipt["reason"])
+
 
 class ManualGeneratorDispatchTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -298,6 +330,47 @@ class ManualGeneratorDispatchTest(unittest.TestCase):
             capture_output=True,
         )
 
+    def resolve_generator_context(
+        self, descriptor: dict[str, object]
+    ) -> dict[str, object]:
+        """Exercise the script's route/context block with a fixed catalog reply."""
+        dispatch_dir = self.root / "context-dispatch"
+        dispatch_dir.mkdir()
+        catalog = dispatch_dir / "tool-catalog.py"
+        catalog.write_text(
+            "import json\n"
+            f"print({json.dumps(json.dumps(descriptor))})\n",
+            encoding="utf-8",
+        )
+        progress = self.repo / "progress.json"
+        features = self.repo / "features.json"
+        registry = self.repo / ".agents-registry.json"
+        output = self.root / "generator-context.json"
+        source = GENERATOR_DISPATCH.read_text(encoding="utf-8")
+        block_anchor = source.index('CONTEXT="$(mktemp)"')
+        block_start = source.index("<<'PY'\n", block_anchor) + len("<<'PY'\n")
+        block_end = source.index("\nPY\nthen", block_start)
+        block = source[block_start:block_end]
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                block,
+                str(progress),
+                str(features),
+                str(registry),
+                str(self.repo),
+                str(output),
+                "",
+                str(dispatch_dir),
+                str(self.adapters),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return json.loads(output.read_text(encoding="utf-8"))
+
     def test_local_cli_receives_fixed_envelope_and_returns_uncommitted_handoff(self) -> None:
         self.write_build_state({"generator": "fixture-generator"})
         self.write_local_cli_registry()
@@ -331,6 +404,33 @@ class ManualGeneratorDispatchTest(unittest.TestCase):
             subprocess.run(["git", "-C", str(self.repo), "diff", "--quiet"]).returncode,
             0,
         )
+
+    def test_external_bridge_route_keeps_full_generator_context(self) -> None:
+        self.write_build_state({"generator": "fixture-external"})
+        self.write_local_cli_registry()
+        context = self.resolve_generator_context(
+            {
+                "target_id": "fixture-external",
+                "roles": ["generator"],
+                "invocation": "subagent",
+                "agent_type": "generator-restricted",
+                "bridge_id": "fixture-acp",
+                "bridge_strategy": "session-bridge-v1",
+                "bridge_protocol": {
+                    "kind": "acp-native-agent/v1",
+                    "command": ["fixture", "acp"],
+                    "request_delivery": "stdin",
+                    "response_format": "json",
+                },
+                "session_scope": "same-session",
+            }
+        )
+        self.assertEqual(context["route"], "external-bridge-subagent")
+        self.assertEqual(context["agent_id"], "fixture-external")
+        self.assertEqual(context["batch"], BATCH_ID)
+        self.assertEqual(context["spec"], "docs/specs/fixture.md")
+        self.assertEqual(context["feature_ids"], ["F001"])
+        self.assertEqual(context["agent_type"], "generator-restricted")
 
     def test_explicit_feature_selects_only_that_pending_generator_feature(self) -> None:
         self.write_build_state({"generator": "fixture-generator"})

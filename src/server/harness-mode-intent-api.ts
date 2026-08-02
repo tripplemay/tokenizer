@@ -9,6 +9,7 @@ import {
 } from "@/shared/harness-mode-intent";
 import {
   hasWellFormedExternalSubagentBridgeObservation,
+  hasWellFormedVmBridgeProviderProof,
   toolCatalogModeDescriptors,
   v2SelectableToolCatalogEntries,
   type HarnessToolCatalogEntry,
@@ -361,7 +362,7 @@ function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrat
       "subagent",
       "a2aTargetCount",
       "sandboxed"
-    ], [...BRIDGE_REPORT_FIELDS]);
+    ], [...BRIDGE_REPORT_FIELDS, "subagentProvider"]);
     const id = modeString(integration.id, "state.modes.dispatch integration id", 64)!;
     const tool = modeString(integration.tool, "state.modes.dispatch integration tool", 64)!;
     if (seenIntegrations.has(id) || !TOOL_ID_PATTERN.test(id) || !TOOL_ID_PATTERN.test(tool)) {
@@ -421,6 +422,13 @@ function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrat
     let bridgeCommand: string[] | null = null;
     let adapterBridgeCommand: string[] | null = null;
     let bridgeRoles: HarnessModeRole[] | null = null;
+    let subagentProvider: HarnessToolIntegration["subagentProvider"] = null;
+    if (integration.subagentProvider !== undefined && integration.subagentProvider !== null) {
+      if (!hasWellFormedVmBridgeProviderProof(integration.subagentProvider)) {
+        return reject("invalid_mode_snapshot", "state.modes.dispatch integration provider proof is invalid");
+      }
+      subagentProvider = integration.subagentProvider;
+    }
     if (hasExternalBridgeValue) {
       bridgeId = modeString(integration.bridgeId, "state.modes.dispatch integration bridgeId", 64)!;
       bridgeKind = modeString(integration.bridgeKind, "state.modes.dispatch integration bridgeKind", 64)!;
@@ -459,6 +467,7 @@ function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrat
       bridgeCommand,
       adapterBridgeCommand,
       bridgeRoles,
+      subagentProvider,
       a2aTargetCount,
       sandboxed
     };
@@ -468,7 +477,8 @@ function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrat
       (!localCli && sandboxed) ||
       ((a2aTargetCount > 0) !== invocations.includes("a2a")) ||
       (!hasExternalBridgeValue && !subagent && invocations.includes("subagent")) ||
-      (hasExternalBridgeValue && !hasWellFormedExternalSubagentBridgeObservation(normalized))
+      (hasExternalBridgeValue && !hasWellFormedExternalSubagentBridgeObservation(normalized)) ||
+      (subagentProvider !== null && (!subagent || !invocations.includes("subagent")))
     ) return reject("invalid_mode_snapshot", "state.modes.dispatch integration transport facts are inconsistent");
     integrations.push(normalized);
   }
@@ -482,7 +492,8 @@ function reportedIntegrationInventory(dispatch: UnknownRecord): ReportedIntegrat
  */
 function reportedToolCatalog(
   value: unknown,
-  requireUsable: boolean
+  requireUsable: boolean,
+  now: Date | number = Date.now()
 ): HarnessToolCatalogEntry[] {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     return reject("invalid_tool_catalog", "project does not have a usable tool capability catalog", 409);
@@ -516,7 +527,7 @@ function reportedToolCatalog(
       "agentCount",
       "modelFamilies",
       "capabilities"
-    ]);
+    ], ["subagentProvider"]);
     const tool = modeString(capability.tool, "mode snapshot tool capability tool", 64)!;
     const label = modeString(capability.label, "mode snapshot tool capability label", 128)!;
     const invocation = modeString(capability.invocation, "mode snapshot tool capability invocation", 32)!;
@@ -543,6 +554,13 @@ function reportedToolCatalog(
       return reject("invalid_tool_catalog", "project tool capability catalog contains duplicate capabilities", 409);
     }
     const agentCount = safeInteger(capability.agentCount, "mode snapshot tool capability agentCount", 1, 50);
+    let subagentProvider: HarnessToolCatalogEntry["subagentProvider"];
+    if (capability.subagentProvider !== undefined) {
+      if (invocation !== "subagent" || !hasWellFormedVmBridgeProviderProof(capability.subagentProvider)) {
+        return reject("invalid_tool_catalog", "project tool capability catalog contains an invalid provider proof", 409);
+      }
+      subagentProvider = capability.subagentProvider;
+    }
     const key = `${role}\u0000${tool}\u0000${invocation}`;
     if (seen.has(key)) {
       return reject("invalid_tool_catalog", "project tool capability catalog contains duplicate entries", 409);
@@ -555,14 +573,13 @@ function reportedToolCatalog(
       role: role as HarnessModeRole,
       agentCount,
       modelFamilies,
-      capabilities
+      capabilities,
+      ...(subagentProvider ? { subagentProvider } : {})
     });
   }
-  // A report may still contain a historical Coordinator-native or external
-  // `subagent` observation. This release has no independently attested
-  // VM/ephemeral-principal provider, so reports cannot elevate it into a
-  // mode-intent choice. Only the filtered inventory reaches signing.
-  const selectableCatalog = v2SelectableToolCatalogEntries(catalog);
+  // A report may retain historical `subagent` observations after a provider
+  // proof expires. Only a live, strict VM provider proof reaches signing.
+  const selectableCatalog = v2SelectableToolCatalogEntries(catalog, now);
   if (requireUsable && selectableCatalog.length === 0) {
     return reject("invalid_tool_catalog", "project does not have a selectable tool capability catalog", 409);
   }
@@ -570,8 +587,11 @@ function reportedToolCatalog(
 }
 
 /** Expand public candidate pools into the model-family facts required by v2 signing validation. */
-export function modeToolCatalogFromSnapshot(value: unknown): HarnessModeToolDescriptor[] {
-  return toolCatalogModeDescriptors(reportedToolCatalog(value, true));
+export function modeToolCatalogFromSnapshot(
+  value: unknown,
+  now: Date | number = Date.now()
+): HarnessModeToolDescriptor[] {
+  return toolCatalogModeDescriptors(reportedToolCatalog(value, true, now));
 }
 
 export type RelayModeIntentAck =

@@ -24,6 +24,7 @@ import {
 } from "@/shared/harness-detail";
 import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-intent";
 import { formatDateTimeSeconds, formatRelativeTime } from "@/shared/format";
+import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import {
   isConfigurableModeRole,
   modeDrilldownHref,
@@ -80,9 +81,16 @@ export async function OverviewView({ project, timezone }: { project: OwnedHarnes
     : 0;
   const phaseIndex = PHASES.findIndex((phase) => phase === project.status);
   const pendingGate = project.gates.find((gate) => !gate.consumedAt) ?? null;
+  const reportIsFresh = isFreshHarnessProjectReport(project.reportedAt, Date.now());
 
   return (
     <div className="min-w-0 space-y-7">
+      {!reportIsFresh ? (
+        <div role="alert" className="flex items-start gap-2 border-y border-amber-300 py-3 text-sm text-amber-700 dark:border-amber-500/40 dark:text-amber-300">
+          <MdErrorOutline className="mt-0.5 h-5 w-5 shrink-0" />
+          <span>{t("overview.historicalSnapshot")}</span>
+        </div>
+      ) : null}
       <section className="space-y-3">
         <SectionTitle icon={MdComputer}>{t("overview.identity")}</SectionTitle>
         <dl className="grid min-w-0 grid-cols-1 divide-y divide-gray-200 border-y border-gray-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 dark:divide-white/10 dark:border-white/10">
@@ -273,7 +281,11 @@ export async function ModesAndAgentsView({
     agentFeatureVersion: project.device.agentFeatureVersion,
     headSha: project.headSha,
     modes,
-    now: new Date()
+    now: new Date(),
+    // This screen issues the tool-bound role contract. Check the Agent's
+    // bridge/catalog capability before parsing a legacy snapshot so users see
+    // the actionable upgrade requirement instead of a generic catalog error.
+    requiresToolBindings: true
   });
   const editorTools = modes?.dispatch.toolCatalogUsable ? modes.dispatch.toolCatalog : [];
   const selectedRole = isConfigurableModeRole(selectedFocus) ? selectedFocus : null;

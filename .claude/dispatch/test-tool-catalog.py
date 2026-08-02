@@ -57,7 +57,16 @@ def subagent_bridge(
     protocol_kind: str = "acp-native-agent/v1",
     command: list[str] | None = None,
     personas: dict[str, str] | None = None,
+    native_agent_types: dict[str, str] | None = None,
 ) -> dict:
+    selected_personas = personas or {
+        "planner": "planner-proposal",
+        "evaluator": "evaluator",
+    }
+    selected_native_types = native_agent_types or {
+        role: {"planner": "plan", "generator": "coder", "evaluator": "explore"}[role]
+        for role in selected_personas
+    }
     return {
         "id": bridge_id,
         "_verified": verified,
@@ -69,10 +78,8 @@ def subagent_bridge(
             "request_delivery": "stdin",
             "response_format": "json",
         },
-        "personas": personas or {
-            "planner": "planner-proposal",
-            "evaluator": "evaluator",
-        },
+        "personas": selected_personas,
+        "native_agent_types": selected_native_types,
     }
 
 
@@ -1086,7 +1093,11 @@ class ToolCatalogTests(unittest.TestCase):
         manifest = json.loads(source.read_text(encoding="utf-8"))
         self.assertEqual(
             manifest["personas"],
-            {"planner": "planner-proposal", "evaluator": "evaluator"},
+            {
+                "planner": "planner-proposal",
+                "generator": "generator-restricted",
+                "evaluator": "evaluator",
+            },
         )
         self.write_adapter("codex", "codex")
         self.write_adapter("kimi", "kimi")
@@ -1129,24 +1140,19 @@ class ToolCatalogTests(unittest.TestCase):
 
         candidates = self.candidates_with_attested_strict_provider()
         attested_catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
-        for role in ("planner", "evaluator"):
+        for role in ("planner", "generator", "evaluator"):
             choices = {
                 (entry["tool"], entry["invocation"])
                 for entry in attested_catalog["roles"][role]
             }
             self.assertIn(("kimi", "subagent"), choices)
             self.assertNotIn(("codex", "subagent"), choices)
-        generator_choices = {
-            (entry["tool"], entry["invocation"])
-            for entry in attested_catalog["roles"]["generator"]
-        }
-        self.assertNotIn(("kimi", "subagent"), generator_choices)
-
         kimi_target = TOOL_CATALOG_MODULE.resolve_target(
             candidates, "subagent--kimi--planner"
         )
         self.assertEqual(kimi_target["bridge_protocol"]["kind"], "acp-native-agent/v1")
         self.assertEqual(kimi_target["bridge_provider_id"], "fixture-vm-provider")
+        self.assertEqual(kimi_target["native_agent_type"], "plan")
         self.assertRegex(kimi_target["adapter_execution_contract_sha256"], r"^[0-9a-f]{64}$")
         self.assertRegex(kimi_target["execution_provenance_sha256"], r"^[0-9a-f]{64}$")
 

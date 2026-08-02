@@ -106,6 +106,8 @@ ADAPTERS="$(bash "$MODE_ADAPTERS" "${MODE_ADAPTER_ARGS[@]}")" \
 [ -f "$DISPATCH_DIR/validate-dispatch.sh" ] || die "validate-dispatch.sh is missing"
 [ -f "$DISPATCH_DIR/validate-generator-handoff.sh" ] || \
   die "validate-generator-handoff.sh is missing"
+[ -f "$DISPATCH_DIR/validate-external-bridge-receipt.py" ] || \
+  die "validate-external-bridge-receipt.py is missing"
 
 # A v2 non-fast batch has a signed role checkpoint. Resolve it before touching
 # progress.role_assignments: the latter is audit state, not an authorization
@@ -262,6 +264,8 @@ if not isinstance(descriptor, dict) or "generator" not in (descriptor.get("roles
     fail(f"assigned Generator {agent_id!r} does not permit the generator role")
 
 transport = descriptor.get("invocation")
+route = None
+agent_type = None
 if transport == "subagent":
     agent_type = descriptor.get("agent_type")
     if not isinstance(agent_type, str) or not agent_type:
@@ -278,16 +282,14 @@ if transport == "subagent":
         route = "external-bridge-subagent"
     else:
         fail(f"subagent Generator {agent_id!r} has invalid bridge metadata")
-    json.dump({"route": route, "agent_id": agent_id, "agent_type": agent_type},
-              open(output_path, "w", encoding="utf-8"))
-    raise SystemExit(0)
-if transport == "a2a":
-    json.dump({"route": "a2a", "agent_id": agent_id}, open(output_path, "w", encoding="utf-8"))
-    raise SystemExit(0)
-if transport != "local-cli":
+elif transport == "a2a":
+    route = "a2a"
+elif transport != "local-cli":
     fail(f"assigned Generator {agent_id!r} has unsupported transport {transport!r}")
-if not isinstance(descriptor.get("adapter"), str) or not isinstance(descriptor.get("sandbox"), dict):
+elif not isinstance(descriptor.get("adapter"), str) or not isinstance(descriptor.get("sandbox"), dict):
     fail(f"local-cli Generator {agent_id!r} lacks its verified adapter or sandbox")
+else:
+    route = "local-cli"
 
 batch = progress.get("current_sprint")
 if not isinstance(batch, str) or not batch.strip():
@@ -344,18 +346,16 @@ else:
 if not selected_ids:
     fail("there are no pending generator features to dispatch")
 
-json.dump(
-    {
-        "route": "local-cli",
-        "agent_id": agent_id,
-        "batch": batch,
-        "spec": spec,
-        "feature_ids": selected_ids,
-    },
-    open(output_path, "w", encoding="utf-8"),
-    ensure_ascii=True,
-    sort_keys=True,
-)
+context = {
+    "route": route,
+    "agent_id": agent_id,
+    "batch": batch,
+    "spec": spec,
+    "feature_ids": selected_ids,
+}
+if agent_type is not None:
+    context["agent_type"] = agent_type
+json.dump(context, open(output_path, "w", encoding="utf-8"), ensure_ascii=True, sort_keys=True)
 PY
 then
   exit 2
@@ -473,7 +473,9 @@ if [ ! -f "$RUN_META" ]; then
 fi
 
 set +e
-RECEIPT_JSON="$(bash "$DISPATCH_DIR/validate-dispatch.sh" receipt "$RUN_META")"
+RECEIPT_JSON="$(bash "$DISPATCH_DIR/validate-dispatch.sh" receipt "$RUN_META" \
+  --expected-envelope "$ENVELOPE" --active-role-json "$ACTIVE_ROLE" \
+  --project-root "$PROJECT_ROOT")"
 RECEIPT_RC=$?
 set -e
 
@@ -514,6 +516,35 @@ bash "$DISPATCH_DIR/validate-generator-handoff.sh" "$HANDOFF_PATH" --envelope "$
   printf '%s\n' '{"state":"ARTIFACT_INVALID","reason":"generator handoff failed schema and envelope validation"}'
   exit 4
 }
+
+RETURN_TRANSPORT="$(python3 - "$RUN_META" <<'PY'
+import json
+import sys
+
+try:
+    value = json.load(open(sys.argv[1], encoding="utf-8")).get("transport")
+except (OSError, ValueError):
+    value = None
+print(value if isinstance(value, str) else "")
+PY
+)" || die "cannot read Generator return transport"
+case "$ROUTE:$RETURN_TRANSPORT" in
+  local-cli:local-cli)
+    ;;
+  external-bridge-subagent:subagent)
+    if ! python3 "$DISPATCH_DIR/validate-external-bridge-receipt.py" \
+      --role generator --run-meta "$RUN_META" --handoff "$HANDOFF_PATH" \
+      --envelope "$ENVELOPE" --project-root "$PROJECT_ROOT" \
+      --active-role-json "$ACTIVE_ROLE" >&2; then
+      printf '%s\n' '{"state":"ARTIFACT_INVALID","reason":"provider-attested external Generator receipt validation failed"}'
+      exit 4
+    fi
+    ;;
+  *)
+    printf '%s\n' '{"state":"ARTIFACT_INVALID","reason":"Generator return transport differs from its commissioned route"}'
+    exit 4
+    ;;
+esac
 
 python3 - "$RECEIPT_JSON" "$HANDOFF_PATH" "$RUN_META" "$ENVELOPE" <<'PY'
 import json

@@ -21,7 +21,7 @@ import {
   usesHarnessToolBindings,
   type HarnessModeIntentPayload
 } from "@/shared/harness-mode-intent";
-import { DEVICE_ONLINE_MS } from "@/shared/device-status";
+import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import {
   MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
   MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
@@ -127,11 +127,7 @@ export async function POST(request: Request) {
   const now = new Date();
   const isV2ToolBindingIntent = usesHarnessToolBindings(input.desired);
   const needsToolCatalog = requiresHarnessToolCatalog(input.desired);
-  if (
-    !project.reportedAt ||
-    project.reportedAt.getTime() > now.getTime() + 5 * 60 * 1000 ||
-    now.getTime() - project.reportedAt.getTime() >= DEVICE_ONLINE_MS
-  ) {
+  if (!isFreshHarnessProjectReport(project.reportedAt, now.getTime())) {
     return Response.json(
       { error: "project report is stale; wait for the device agent to report again", code: "stale_report" },
       { status: 409 }

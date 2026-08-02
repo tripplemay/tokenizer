@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { readDispatchToolCatalog, readDispatchToolIntegrations } from "./harness-tool-catalog";
+import { readDispatchToolInventory } from "./harness-tool-catalog";
 import type { HarnessToolCatalogEntry, HarnessToolIntegration } from "@/shared/harness-tool-catalog";
 import {
   HARNESS_MODE_ROLES,
@@ -185,8 +185,11 @@ export function readDispatch(repoPath: string, assignments: DispatchAssignments)
   const legacyAgents = Array.isArray(registry?.agents)
     ? registry.agents
     : [];
-  const catalog = readDispatchToolCatalog(repoPath);
-  const integrationCatalog = readDispatchToolIntegrations(repoPath);
+  // Resolve the catalog and cards from one provider attestation. Calling the
+  // provider twice could produce two short-lived nonces in one mode snapshot.
+  const inventory = readDispatchToolInventory(repoPath);
+  const catalog = inventory.catalog;
+  const integrationCatalog = inventory.integrations;
   const enabled = legacyAgents.length > 0 || integrationCatalog.issue === null;
   if (!enabled) {
     const issues = [...new Set([catalog.issue, integrationCatalog.issue].filter(

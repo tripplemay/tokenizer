@@ -1,8 +1,21 @@
+import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { readDispatchToolCatalog, readDispatchToolIntegrations } from "@/cli/harness-tool-catalog";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const { execFileSyncMock } = vi.hoisted(() => ({ execFileSyncMock: vi.fn() }));
+
+vi.mock("node:child_process", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("node:child_process")>()),
+  execFileSync: execFileSyncMock
+}));
+
+import {
+  readDispatchToolCatalog,
+  readDispatchToolIntegrations,
+  readDispatchToolInventory
+} from "@/cli/harness-tool-catalog";
 
 let repo: string;
 
@@ -11,6 +24,88 @@ function write(rel: string, value: unknown): string {
   mkdirSync(join(path, ".."), { recursive: true });
   writeFileSync(path, typeof value === "string" ? value : `${JSON.stringify(value)}\n`);
   return path;
+}
+
+const PROVIDER_DIGEST = "a".repeat(64);
+const providerTest = process.platform === "win32" ? it.skip : it;
+const VM_PROVIDER_TEMPLATE = "framework/templates/claude/dispatch/transports/vm-bridge-provider.py";
+const VM_RUNTIME_FILES = [
+  "vm-bridge-provider.py",
+  "session-bridge.py",
+  "session_bridge_kimi.py",
+  "vm-bridge-worker.py"
+] as const;
+const KIMI_NATIVE_AGENT_TYPES = {
+  planner: "plan",
+  generator: "coder",
+  evaluator: "explore"
+};
+const KIMI_ACP_BRIDGE_TEMPLATE =
+  "framework/templates/claude/dispatch/transports/bridges/kimi-acp-native-agent.json";
+
+function vmProviderResponse(options: {
+  available?: boolean;
+  provider?: Record<string, unknown>;
+  attestation?: Record<string, unknown>;
+} = {}): Record<string, unknown> {
+  const issuedAt = new Date(Date.now() - 1_000).toISOString();
+  const expiresAt = new Date(Date.now() + 120_000).toISOString();
+  return {
+    available: options.available ?? true,
+    provider: {
+      id: "harness-vm-v1",
+      kind: "vm-v1",
+      contract_sha256: PROVIDER_DIGEST,
+      ...options.provider
+    },
+    attestation: {
+      version: "harness/external-bridge-provider-attestation/1",
+      provider_id: "harness-vm-v1",
+      provider_kind: "vm-v1",
+      contract_sha256: PROVIDER_DIGEST,
+      phase: "catalog",
+      nonce_sha256: "b".repeat(64),
+      issued_at: issuedAt,
+      expires_at: expiresAt,
+      image_sha256: "c".repeat(64),
+      runner_sha256: "d".repeat(64),
+      cli_bundle_sha256: "e".repeat(64),
+      broker_policy_sha256: "f".repeat(64),
+      ...options.attestation
+    }
+  };
+}
+
+function writeBundledVmBridgeProvider(): void {
+  for (const filename of VM_RUNTIME_FILES) {
+    write(
+      ".claude/dispatch/transports/" + filename,
+      readFileSync(join(process.cwd(), "framework/templates/claude/dispatch/transports", filename), "utf8")
+    );
+  }
+}
+
+/** Simulates a project-controlled provider plus its self-authored lock. */
+function writeUntrustedVmBridgeProvider(response: unknown): void {
+  for (const filename of VM_RUNTIME_FILES.filter((filename) => filename !== "vm-bridge-provider.py")) {
+    write(
+      ".claude/dispatch/transports/" + filename,
+      readFileSync(join(process.cwd(), "framework/templates/claude/dispatch/transports", filename), "utf8")
+    );
+  }
+  const body = `import sys\nsys.stdout.write(${JSON.stringify(JSON.stringify(response))})\n`;
+  const path = write(".claude/dispatch/transports/vm-bridge-provider.py", body);
+  const sha256 = createHash("sha256").update(readFileSync(path)).digest("hex");
+  write("harness.lock", {
+    lock_version: 1,
+    managed: {
+      ".claude/dispatch/transports/vm-bridge-provider.py": {
+        src: "templates/claude/dispatch/transports/vm-bridge-provider.py",
+        sha256,
+        upstream: sha256
+      }
+    }
+  });
 }
 
 function writeKimiAcpBridge(
@@ -32,7 +127,8 @@ function writeKimiAcpBridge(
       planner: "planner-proposal",
       generator: "generator-restricted",
       evaluator: "evaluator"
-    }
+    },
+    native_agent_types: KIMI_NATIVE_AGENT_TYPES
   });
 }
 
@@ -138,9 +234,13 @@ function installCatalogFixture(): void {
 beforeEach(() => {
   repo = mkdtempSync(join(tmpdir(), "tool-catalog-"));
   installCatalogFixture();
+  execFileSyncMock.mockReset();
 });
 
-afterEach(() => rmSync(repo, { recursive: true, force: true }));
+afterEach(() => {
+  execFileSyncMock.mockReset();
+  rmSync(repo, { recursive: true, force: true });
+});
 
 function withPlatform<T>(platform: NodeJS.Platform, action: () => T): T {
   const original = Object.getOwnPropertyDescriptor(process, "platform");
@@ -172,6 +272,7 @@ describe("data-only dispatch tool catalog", () => {
         generator: "generator-restricted",
         evaluator: "evaluator"
       },
+      native_agent_types: KIMI_NATIVE_AGENT_TYPES,
       notes: "Uses the integration local_cli sandbox and timeout."
     });
     write(".claude/dispatch/transports/adapters/codex.json", {
@@ -250,6 +351,138 @@ describe("data-only dispatch tool catalog", () => {
     });
   });
 
+  providerTest("publishes an external bridge only from one live framework-provider attestation", () => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+    writeBundledVmBridgeProvider();
+    execFileSyncMock.mockReturnValue(JSON.stringify(vmProviderResponse()));
+
+    const inventory = readDispatchToolInventory(repo);
+    expect(inventory.catalog.issue).toBeNull();
+    expect(inventory.catalog.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        tool: "kimi",
+        invocation: "subagent",
+        role: "planner",
+        subagentProvider: expect.objectContaining({
+          id: "harness-vm-v1",
+          kind: "vm-v1",
+          contractSha256: PROVIDER_DIGEST,
+          attestation: expect.objectContaining({ phase: "catalog" })
+        })
+      }),
+      expect.objectContaining({ tool: "kimi", invocation: "subagent", role: "generator" }),
+      expect.objectContaining({ tool: "kimi", invocation: "subagent", role: "evaluator" })
+    ]));
+    expect(inventory.integrations).toMatchObject({
+      issue: null,
+      integrations: [expect.objectContaining({
+        id: "kimi",
+        invocations: ["local-cli", "subagent"],
+        subagent: true,
+        subagentProvider: expect.objectContaining({ id: "harness-vm-v1" })
+      })]
+    });
+    const [command, args] = execFileSyncMock.mock.calls[0] ?? [];
+    expect(command).toBe("/usr/bin/python3");
+    expect(args).toEqual([
+      "-I",
+      join(process.cwd(), VM_PROVIDER_TEMPLATE),
+      "catalog-attest"
+    ]);
+  });
+
+  it("accepts the framework Kimi ACP native agent-type mapping", () => {
+    write(
+      ".claude/dispatch/transports/bridges/kimi-acp-native-agent.json",
+      readFileSync(join(process.cwd(), KIMI_ACP_BRIDGE_TEMPLATE), "utf8")
+    );
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toMatchObject({
+      issue: null,
+      entries: expect.arrayContaining([
+        expect.objectContaining({ tool: "kimi", invocation: "local-cli", role: "planner" }),
+        expect.objectContaining({ tool: "kimi", invocation: "local-cli", role: "generator" }),
+        expect.objectContaining({ tool: "kimi", invocation: "local-cli", role: "evaluator" })
+      ])
+    });
+  });
+
+  providerTest("fails closed for a project provider and self-authored lock even when it prints a valid attestation", () => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+    writeUntrustedVmBridgeProvider(vmProviderResponse());
+
+    const catalog = readDispatchToolCatalog(repo);
+    expect(catalog.issue).toBeNull();
+    expect(catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "kimi", invocation: "subagent" })
+    ]));
+    expect(execFileSyncMock).not.toHaveBeenCalled();
+  });
+
+  providerTest("fails closed when a project VM runner diverges from the app-owned bundle", () => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+    writeBundledVmBridgeProvider();
+    write(".claude/dispatch/transports/vm-bridge-worker.py", "raise SystemExit('project drift')\n");
+    execFileSyncMock.mockReturnValue(JSON.stringify(vmProviderResponse()));
+
+    expect(readDispatchToolCatalog(repo).entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "kimi", invocation: "subagent" })
+    ]));
+    expect(execFileSyncMock).not.toHaveBeenCalled();
+  });
+
+  providerTest.each([
+    ["expired", vmProviderResponse({ attestation: { expires_at: new Date(Date.now() - 1_000).toISOString() } })],
+    ["issued time beyond clock skew", vmProviderResponse({ attestation: {
+      issued_at: new Date(Date.now() + 31_000).toISOString(),
+      expires_at: new Date(Date.now() + 151_000).toISOString()
+    } })],
+    ["TTL beyond five minutes", vmProviderResponse({ attestation: {
+      issued_at: new Date(Date.now() - 1_000).toISOString(),
+      expires_at: new Date(Date.now() + 10 * 60 * 1_000).toISOString()
+    } })],
+    ["provider identity mismatch", vmProviderResponse({ provider: { id: "forged-vm" } })],
+    ["contract mismatch", vmProviderResponse({ attestation: { contract_sha256: "0".repeat(64) } })],
+    ["upper-case digest", vmProviderResponse({ attestation: { runner_sha256: "D".repeat(64) } })]
+  ])("fails closed for a %s provider attestation", (_label, response) => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+    writeBundledVmBridgeProvider();
+    execFileSyncMock.mockReturnValue(JSON.stringify(response));
+
+    const inventory = readDispatchToolInventory(repo);
+    expect(inventory.catalog.issue).toBeNull();
+    expect(inventory.catalog.entries).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "kimi", invocation: "subagent" })
+    ]));
+    expect(inventory.integrations.integrations).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "kimi", invocations: ["local-cli"], subagent: false })
+    ]));
+  });
+
+  providerTest("does not inherit an environment-selected provider decision", () => {
+    writeKimiAcpBridge();
+    writeKimiExternalIntegration();
+    writeBundledVmBridgeProvider();
+    execFileSyncMock.mockReturnValue(JSON.stringify(vmProviderResponse()));
+    const original = process.env.TOKENIZER_TEST_PROVIDER;
+    process.env.TOKENIZER_TEST_PROVIDER = "enabled";
+    try {
+      expect(readDispatchToolCatalog(repo).entries).toEqual(expect.arrayContaining([
+        expect.objectContaining({ tool: "kimi", invocation: "subagent" })
+      ]));
+      const options = execFileSyncMock.mock.calls[0]?.[2] as { env?: Record<string, string> } | undefined;
+      expect(options?.env).not.toHaveProperty("TOKENIZER_TEST_PROVIDER");
+    } finally {
+      if (original === undefined) delete process.env.TOKENIZER_TEST_PROVIDER;
+      else process.env.TOKENIZER_TEST_PROVIDER = original;
+    }
+  });
+
   it.each(["codex-app-server-session-fork/v1", "unpublished-native-agent/v1"])(
     "fails closed for unsupported external bridge protocol %s",
     (protocolKind) => {
@@ -259,6 +492,36 @@ describe("data-only dispatch tool catalog", () => {
       expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
     }
   );
+
+  it.each([
+    ["missing native agent types", (bridge: Record<string, unknown>) => {
+      delete bridge.native_agent_types;
+    }],
+    ["native types missing a persona role", (bridge: Record<string, unknown>) => {
+      bridge.native_agent_types = { planner: "plan", evaluator: "explore" };
+    }],
+    ["native types declaring an extra role", (bridge: Record<string, unknown>) => {
+      bridge.personas = { planner: "planner-proposal" };
+      bridge.native_agent_types = { planner: "plan", generator: "coder" };
+    }],
+    ["unknown native agent type", (bridge: Record<string, unknown>) => {
+      bridge.native_agent_types = { ...KIMI_NATIVE_AGENT_TYPES, planner: "reviewer" };
+    }],
+    ["non-string native agent type", (bridge: Record<string, unknown>) => {
+      bridge.native_agent_types = { ...KIMI_NATIVE_AGENT_TYPES, planner: 1 };
+    }]
+  ])("fails closed for %s", (_label, mutate) => {
+    writeKimiAcpBridge();
+    const bridge = JSON.parse(readFileSync(
+      join(repo, ".claude/dispatch/transports/bridges/kimi-acp-native-agent.json"),
+      "utf8"
+    )) as Record<string, unknown>;
+    mutate(bridge);
+    write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", bridge);
+    writeKimiExternalIntegration();
+
+    expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
 
   it("fails closed when an ACP bridge command differs from its verified adapter declaration", () => {
     writeKimiAcpBridge("acp-native-agent/v1", ["kimi", "acp", "--child"]);
@@ -309,7 +572,8 @@ describe("data-only dispatch tool catalog", () => {
         request_delivery: "stdin",
         response_format: "json"
       },
-      personas: { generator: "generator-restricted" }
+      personas: { generator: "generator-restricted" },
+      native_agent_types: { generator: "coder" }
     });
     write(".agents-registry.json", {
       version: "tool-integrations/1",
@@ -388,7 +652,8 @@ describe("data-only dispatch tool catalog", () => {
         planner: "planner-proposal",
         generator: "generator-restricted",
         evaluator: "evaluator"
-      }
+      },
+      native_agent_types: KIMI_NATIVE_AGENT_TYPES
     });
     write(".agents-registry.json", {
       version: "tool-integrations/1",
@@ -709,7 +974,8 @@ describe("data-only dispatch tool catalog", () => {
         planner: "planner-proposal",
         generator: "generator-restricted",
         evaluator: "evaluator"
-      }
+      },
+      native_agent_types: KIMI_NATIVE_AGENT_TYPES
     });
     write(".agents-registry.json", {
       version: "tool-integrations/1",

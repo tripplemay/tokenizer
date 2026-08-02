@@ -17,9 +17,9 @@ vi.mock("@/server/db", () => ({
 import { deviceAgentUpdateStatus, getAgentUpdateSummary, isDeviceOutdated } from "@/server/agent-version";
 
 describe("isDeviceOutdated", () => {
-  it("advertises the 1.1.0 report-compatibility capability level", () => {
-    expect(AGENT_FEATURE_VERSION).toBe(7);
-    expect(MIN_AGENT_FEATURE_VERSION).toBe(7);
+  it("advertises the 1.2.0 bridge-schema compatibility level", () => {
+    expect(AGENT_FEATURE_VERSION).toBe(8);
+    expect(MIN_AGENT_FEATURE_VERSION).toBe(8);
   });
 
   it("AGENT_FEATURE_VERSION and MIN_AGENT_FEATURE_VERSION are positive integers", () => {
@@ -56,9 +56,9 @@ describe("isDeviceOutdated", () => {
 });
 
 describe("mode intent capability notices", () => {
-  it("keeps v1 intents at capability 4 while tool-bound intents require capability 7", () => {
+  it("keeps v1 intents at capability 4 while tool-bound intents require capability 8", () => {
     expect(MIN_MODE_INTENT_AGENT_FEATURE_VERSION).toBe(4);
-    expect(MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION).toBe(7);
+    expect(MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION).toBe(8);
     expect(requiredModeIntentAgentFeatureVersion("agentUpgradeRequired")).toBe(
       MIN_MODE_INTENT_AGENT_FEATURE_VERSION
     );
@@ -83,12 +83,12 @@ describe("strict Agent release update state", () => {
       .toMatchObject({ kind: "upgrade-required", reported: "0.9.9", latest: CURRENT_AGENT_RELEASE_VERSION });
   });
 
-  it("requires the installed 1.0.0 / capability-6 Agent to upgrade to 1.1.0", () => {
-    expect(deviceAgentUpdateStatus({ featureVersion: 6, releaseVersion: "1.0.0" })).toEqual({
+  it("requires the installed 1.1.0 / capability-7 Agent to upgrade to 1.2.0", () => {
+    expect(deviceAgentUpdateStatus({ featureVersion: 7, releaseVersion: "1.1.0" })).toEqual({
       kind: "upgrade-required",
-      reported: "1.0.0",
+      reported: "1.1.0",
       behind: 1,
-      latest: "1.1.0"
+      latest: "1.2.0"
     });
   });
 

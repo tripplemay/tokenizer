@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
 
   const gates = await prisma.harnessGate.findMany({
     where: {
-      harnessProject: { deviceId: token.deviceId },
+      userId: token.userId,
+      harnessProject: { deviceId: token.deviceId, userId: token.userId },
       decisionSig: { not: null },     // 只下发已签名的
       consumedAt: null
     },
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
   // 标记已中继。仍不设 consumedAt——那要等机器侧真正写入并清空 pending_gate 后由 report 端点回收。
   if (gates.length > 0) {
     await prisma.harnessGate.updateMany({
-      where: { id: { in: gates.map((g) => g.id) }, relayedAt: null },
+      where: { id: { in: gates.map((g) => g.id) }, userId: token.userId, relayedAt: null },
       data: { relayedAt: new Date() }
     });
   }

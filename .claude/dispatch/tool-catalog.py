@@ -18,10 +18,14 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
 import json
 import os
+import pwd
 import re
+import stat
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -50,6 +54,8 @@ SAME_SESSION_SCOPE = "same-session"
 # a framework release with its own runner and probe first.
 PUBLISHED_BRIDGE_PROTOCOL_KINDS = frozenset({"acp-native-agent/v1"})
 STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS = frozenset({"vm-v1", "ephemeral-uid-v1"})
+EXTERNAL_BRIDGE_PROVIDER_ATTESTATION_VERSION = "harness/external-bridge-provider-attestation/1"
+EXTERNAL_BRIDGE_PROVIDER_MAX_TTL_SECONDS = 300
 EXECUTION_PROVENANCE_FIELD = "execution_provenance_sha256"
 EXECUTION_PROVENANCE_DOMAIN = "harness/execution-provenance/v1"
 ADAPTER_CONTRACT_DOMAIN = "harness/adapter-execution-contract/v1"
@@ -86,6 +92,7 @@ BRIDGE_MANIFEST_FIELDS = {
     "strategy",
     "protocol",
     "personas",
+    "native_agent_types",
     "notes",
 }
 BRIDGE_PROTOCOL_FIELDS = {"kind", "command", "request_delivery", "response_format"}
@@ -267,16 +274,224 @@ class StrictExternalBridgeProvider:
     contract_sha256: str
 
 
+APP_DISPATCH_RELATIVE = Path("framework/templates/claude/dispatch")
+APP_RUNTIME_FILES = (
+    Path("tool-catalog.py"),
+    Path("transports/vm-bridge-provider.py"),
+    Path("transports/session-bridge.py"),
+    Path("transports/session_bridge_kimi.py"),
+    Path("transports/vm-bridge-worker.py"),
+)
+
+
+def _secure_app_runtime(root: Path) -> bool:
+    """Prove the fixed installed app bundle is not a project-controlled path."""
+    current = root
+    for part in APP_DISPATCH_RELATIVE.parts:
+        try:
+            entry = current.lstat()
+        except OSError:
+            return False
+        if (
+            stat.S_ISLNK(entry.st_mode)
+            or not stat.S_ISDIR(entry.st_mode)
+            or entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+        ):
+            return False
+        current = current / part
+    try:
+        entry = current.lstat()
+    except OSError:
+        return False
+    if (
+        stat.S_ISLNK(entry.st_mode)
+        or not stat.S_ISDIR(entry.st_mode)
+        or entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+    ):
+        return False
+    for relative in APP_RUNTIME_FILES:
+        candidate = root / APP_DISPATCH_RELATIVE / relative
+        parent = candidate.parent
+        while parent != root / APP_DISPATCH_RELATIVE:
+            try:
+                parent_entry = parent.lstat()
+            except OSError:
+                return False
+            if (
+                stat.S_ISLNK(parent_entry.st_mode)
+                or not stat.S_ISDIR(parent_entry.st_mode)
+                or parent_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+            ):
+                return False
+            parent = parent.parent
+        try:
+            entry = candidate.lstat()
+        except OSError:
+            return False
+        if (
+            stat.S_ISLNK(entry.st_mode)
+            or not stat.S_ISREG(entry.st_mode)
+            or entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+        ):
+            return False
+    return True
+
+
+def _same_regular_bytes(left: Path, right: Path) -> bool:
+    try:
+        left_entry = left.lstat()
+        right_entry = right.lstat()
+    except OSError:
+        return False
+    if (
+        stat.S_ISLNK(left_entry.st_mode)
+        or stat.S_ISLNK(right_entry.st_mode)
+        or not stat.S_ISREG(left_entry.st_mode)
+        or not stat.S_ISREG(right_entry.st_mode)
+        or left_entry.st_size != right_entry.st_size
+    ):
+        return False
+    digest = hashlib.sha256()
+    try:
+        with left.open("rb") as source:
+            for block in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(block)
+        left_digest = digest.digest()
+        digest = hashlib.sha256()
+        with right.open("rb") as source:
+            for block in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(block)
+    except OSError:
+        return False
+    return left_digest == digest.digest()
+
+
+def _installed_provider_path() -> Path | None:
+    """Find the app-owned provider and verify an optional project mirror."""
+    try:
+        home = Path(pwd.getpwuid(os.geteuid()).pw_dir)
+    except (KeyError, OSError):
+        return None
+    app_root = home / ".tokenizer" / "app"
+    if not _secure_app_runtime(app_root):
+        return None
+    app_dispatch = app_root / APP_DISPATCH_RELATIVE
+    local_dispatch = Path(__file__).absolute().parent
+    if local_dispatch != app_dispatch:
+        for relative in APP_RUNTIME_FILES:
+            if not _same_regular_bytes(local_dispatch / relative, app_dispatch / relative):
+                return None
+    return app_dispatch / "transports" / "vm-bridge-provider.py"
+
+
 def external_same_session_bridge_provider() -> StrictExternalBridgeProvider | None:
     """Return a trusted strict provider after a fresh framework-owned probe.
 
-    This release intentionally has no such provider.  ``sandbox-exec`` can
-    provide defense-in-depth write restrictions, but a same-UID child retains
-    host bootstrap and network capabilities; it must never be returned here.
-    A future implementation must be framework-owned rather than selected by a
-    project registry, PATH entry, adapter command, or environment variable.
+    The provider executable is fixed under the installed app bundle. A project
+    mirror can only prove byte identity with that bundle; it is never executed.
+    This function never consults the project registry, an adapter command,
+    PATH, a device report, or an environment-selected provider. A missing
+    runtime is a normal unavailable observation. A malformed *available*
+    response is treated the same way: the catalog simply withholds external
+    bridge choices.
     """
-    return None
+    provider = _installed_provider_path()
+    if provider is None:
+        return None
+    try:
+        entry = provider.lstat()
+        if not provider.is_file() or provider.is_symlink():
+            return None
+        # The provider gets its durable configuration from a framework-fixed
+        # passwd-derived location. Do not pass the caller's environment into a
+        # process which becomes part of a signed execution decision.
+        completed = subprocess.run(
+            ["/usr/bin/python3", "-I", str(provider), "catalog-attest"],
+            cwd=str(provider.parent),
+            env={"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if completed.returncode != 0:
+        return None
+    try:
+        raw = json.loads(completed.stdout)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(raw, dict):
+        return None
+    if raw.get("available") is False:
+        return None
+    if set(raw) != {"available", "provider", "attestation"} or raw.get("available") is not True:
+        return None
+    provider_record = raw.get("provider")
+    attestation = raw.get("attestation")
+    if not isinstance(provider_record, dict) or set(provider_record) != {
+        "id", "kind", "contract_sha256"
+    }:
+        return None
+    if not isinstance(attestation, dict) or set(attestation) != {
+        "version",
+        "provider_id",
+        "provider_kind",
+        "contract_sha256",
+        "phase",
+        "nonce_sha256",
+        "issued_at",
+        "expires_at",
+        "image_sha256",
+        "runner_sha256",
+        "cli_bundle_sha256",
+        "broker_policy_sha256",
+    }:
+        return None
+    try:
+        provider_id = tool_id(provider_record.get("id"), "external bridge provider id")
+        provider_kind = bounded_text(
+            provider_record.get("kind"), "external bridge provider kind", 128
+        )
+        contract_sha256 = provider_record.get("contract_sha256")
+        if provider_kind != "vm-v1" or not isinstance(contract_sha256, str) or SHA256_HEX.fullmatch(contract_sha256) is None:
+            return None
+        if (
+            attestation.get("version") != EXTERNAL_BRIDGE_PROVIDER_ATTESTATION_VERSION
+            or attestation.get("provider_id") != provider_id
+            or attestation.get("provider_kind") != provider_kind
+            or attestation.get("contract_sha256") != contract_sha256
+            or attestation.get("phase") != "catalog"
+        ):
+            return None
+        for field in (
+            "nonce_sha256",
+            "image_sha256",
+            "runner_sha256",
+            "cli_bundle_sha256",
+            "broker_policy_sha256",
+        ):
+            if not isinstance(attestation.get(field), str) or SHA256_HEX.fullmatch(attestation[field]) is None:
+                return None
+        issued = dt.datetime.fromisoformat(str(attestation["issued_at"]).replace("Z", "+00:00"))
+        expires = dt.datetime.fromisoformat(str(attestation["expires_at"]).replace("Z", "+00:00"))
+        if issued.tzinfo is None or expires.tzinfo is None:
+            return None
+        now = dt.datetime.now(dt.timezone.utc)
+        if issued > now + dt.timedelta(seconds=30) or expires <= now or expires <= issued:
+            return None
+        if (expires - issued).total_seconds() > EXTERNAL_BRIDGE_PROVIDER_MAX_TTL_SECONDS:
+            return None
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return StrictExternalBridgeProvider(
+        id=provider_id,
+        kind=provider_kind,
+        contract_sha256=contract_sha256,
+    )
 
 
 def resolved_external_same_session_bridge_provider() -> StrictExternalBridgeProvider | None:
@@ -330,6 +545,7 @@ class Candidate:
     auth: dict[str, str] | None = None
     remote_runner_id: str | None = None
     agent_type: str | None = None
+    native_agent_type: str | None = None
     bridge_id: str | None = None
     bridge_strategy: str | None = None
     session_scope: str | None = None
@@ -378,6 +594,8 @@ class Candidate:
             value["remote_runner_id"] = self.remote_runner_id
         if self.agent_type is not None:
             value["agent_type"] = self.agent_type
+        if self.native_agent_type is not None:
+            value["native_agent_type"] = self.native_agent_type
         if self.bridge_id is not None:
             value["bridge_id"] = self.bridge_id
         if self.bridge_strategy is not None:
@@ -439,6 +657,7 @@ class SubagentBridge:
     session_scope: str
     protocol: dict[str, Any]
     personas: dict[str, str]
+    native_agent_types: dict[str, str]
     requires_local_cli: bool
 
 
@@ -450,6 +669,7 @@ def subagent_bridge_semantics(bridge: SubagentBridge) -> dict[str, Any]:
         "session_scope": bridge.session_scope,
         "protocol": bridge.protocol,
         "personas": bridge.personas,
+        "native_agent_types": bridge.native_agent_types,
         "requires_local_cli": bridge.requires_local_cli,
     }
 
@@ -530,6 +750,23 @@ def load_subagent_bridge(bridges_dir: Path, bridge_id: str) -> SubagentBridge:
             )
         personas[role] = persona
 
+    native_types_label = f"subagent bridge {bridge_id!r}.native_agent_types"
+    native_types_raw = exact_fields(
+        manifest.get("native_agent_types"), set(personas), native_types_label
+    )
+    if set(native_types_raw) != set(personas):
+        raise ToolCatalogError(
+            f"{native_types_label} must declare exactly the bridge persona roles"
+        )
+    native_agent_types: dict[str, str] = {}
+    for role, native_type in native_types_raw.items():
+        parsed = bounded_text(native_type, f"{native_types_label}.{role}", 32)
+        if parsed not in {"plan", "coder", "explore"}:
+            raise ToolCatalogError(
+                f"{native_types_label}.{role} must name a published native agent type"
+            )
+        native_agent_types[role] = parsed
+
     return SubagentBridge(
         id=declared_id,
         strategy=strategy[0],
@@ -541,6 +778,7 @@ def load_subagent_bridge(bridges_dir: Path, bridge_id: str) -> SubagentBridge:
             "response_format": response_format,
         },
         personas=personas,
+        native_agent_types=native_agent_types,
         requires_local_cli=True,
     )
 
@@ -1041,6 +1279,7 @@ def integration_candidates(
                         sandbox=bridge_local["sandbox"] if bridge_local is not None else None,
                         timeout_s=bridge_local["timeout_s"] if bridge_local is not None else None,
                         agent_type=agent_type,
+                        native_agent_type=bridge.native_agent_types[role],
                         bridge_id=bridge.id,
                         bridge_strategy=bridge.strategy,
                         session_scope=bridge.session_scope,

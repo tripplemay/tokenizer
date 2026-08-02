@@ -10,7 +10,10 @@ import {
   type HarnessDetailToolCapability,
   type HarnessModeEditorDraft
 } from "@/shared/harness-detail";
-import { toolCatalogLabelForInvocation } from "@/shared/harness-tool-catalog";
+import {
+  toolCatalogLabelForInvocation,
+  type HarnessVmBridgeProviderProof
+} from "@/shared/harness-tool-catalog";
 import {
   MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
   MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
@@ -18,6 +21,29 @@ import {
 
 const NOW = new Date("2026-07-27T12:00:00.000Z");
 const HEAD = "0123456789abcdef0123456789abcdef01234567";
+const PROVIDER_DIGEST = "a".repeat(64);
+
+function vmProviderProof(now: Date): HarnessVmBridgeProviderProof {
+  return {
+    id: "harness-vm-v1",
+    kind: "vm-v1",
+    contractSha256: PROVIDER_DIGEST,
+    attestation: {
+      version: "harness/external-bridge-provider-attestation/1",
+      providerId: "harness-vm-v1",
+      providerKind: "vm-v1",
+      contractSha256: PROVIDER_DIGEST,
+      phase: "catalog",
+      nonceSha256: "b".repeat(64),
+      issuedAt: new Date(now.getTime() - 1_000).toISOString(),
+      expiresAt: new Date(now.getTime() + 120_000).toISOString(),
+      imageSha256: "c".repeat(64),
+      runnerSha256: "d".repeat(64),
+      cliBundleSha256: "e".repeat(64),
+      brokerPolicySha256: "f".repeat(64)
+    }
+  };
+}
 
 const AGENTS: HarnessDetailAgent[] = [
   {
@@ -284,6 +310,47 @@ describe("Harness detail snapshot helpers", () => {
     expect(fakeParsed?.dispatch.toolCatalogUsable).toBe(false);
   });
 
+  it("admits only a fresh strict VM provider proof from the catalog", () => {
+    const snapshot: any = structuredClone(modeSnapshot());
+    const proof = vmProviderProof(new Date());
+    snapshot.dispatch.toolCatalog = [
+      ...TOOLS.filter((entry) => entry.invocation !== "subagent"),
+      ...["planner", "generator", "evaluator"].map((role) => ({
+        tool: "kimi",
+        label: "Kimi Code",
+        invocation: "subagent",
+        role,
+        agentCount: 1,
+        modelFamilies: ["kimi"],
+        capabilities: ["plan", "build", "verify"],
+        subagentProvider: proof
+      }))
+    ];
+
+    const parsed = parseHarnessDetailModes(snapshot);
+    expect(parsed?.dispatch.toolCatalogUsable).toBe(true);
+    expect(parsed?.dispatch.toolCatalog).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tool: "kimi", invocation: "subagent", role: "generator" })
+    ]));
+
+    const expired = structuredClone(snapshot);
+    expired.dispatch.toolCatalog.at(-1).subagentProvider = vmProviderProof(
+      new Date(Date.now() - 10 * 60 * 1_000)
+    );
+    // All three catalog entries need the same proof, so use the expired proof
+    // for the whole external route rather than trusting an integration card.
+    for (const entry of expired.dispatch.toolCatalog) {
+      if (entry.invocation === "subagent") entry.subagentProvider = expired.dispatch.toolCatalog.at(-1).subagentProvider;
+    }
+    expect(parseHarnessDetailModes(expired)?.dispatch.toolCatalog).not.toContainEqual(
+      expect.objectContaining({ invocation: "subagent" })
+    );
+
+    const forged = structuredClone(snapshot);
+    forged.dispatch.toolCatalog.find((entry: any) => entry.invocation === "subagent").subagentProvider.id = "forged-vm";
+    expect(parseHarnessDetailModes(forged)?.dispatch.toolCatalogUsable).toBe(false);
+  });
+
   it("does not invent assignments or transport for incomplete legacy snapshots", () => {
     const snapshot = structuredClone(modeSnapshot());
     Reflect.deleteProperty(snapshot.dispatch.assignments, "generator");
@@ -397,6 +464,11 @@ describe("Harness detail snapshot helpers", () => {
     expect(modeIssuanceBlocker({ ...ready, requiresToolBindings: true })).toBe("toolBindingAgentUpgradeRequired");
     expect(modeIssuanceBlocker({
       ...ready,
+      modes: null,
+      requiresToolBindings: true
+    })).toBe("toolBindingAgentUpgradeRequired");
+    expect(modeIssuanceBlocker({
+      ...ready,
       requiresToolBindings: true,
       agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
     })).toBeNull();
@@ -489,6 +561,31 @@ describe("Harness mode editor validation", () => {
       tool.role === "evaluator" ? { ...tool, modelFamilies: ["codex"] } : tool
     );
     expectCode(() => buildModeIntentRequest("p", draft({ profile: "heterogeneous" }), sameFamilyTools, NOW), "same_model_family");
+  });
+
+  it("rechecks the provider proof at client-side mode-intent validation time", () => {
+    const liveTools = TOOLS.map((tool) => tool.invocation === "subagent"
+      ? { ...tool, subagentProvider: vmProviderProof(NOW) }
+      : tool
+    );
+    const accepted = buildModeIntentRequest("p", draft({
+      profile: "heterogeneous",
+      plannerTool: "claude-code",
+      plannerInvocation: "subagent"
+    }), liveTools, NOW);
+    expect(accepted.desired.execution).toMatchObject({
+      role_bindings: { planner: { tool: "claude-code", invocation: "subagent" } }
+    });
+
+    const expiredTools = TOOLS.map((tool) => tool.invocation === "subagent"
+      ? { ...tool, subagentProvider: vmProviderProof(new Date(NOW.getTime() - 10 * 60 * 1_000)) }
+      : tool
+    );
+    expectCode(() => buildModeIntentRequest("p", draft({
+      profile: "heterogeneous",
+      plannerTool: "claude-code",
+      plannerInvocation: "subagent"
+    }), expiredTools, NOW), "unknown_tool");
   });
 
   it("enforces heterogeneous and slow transport constraints", () => {

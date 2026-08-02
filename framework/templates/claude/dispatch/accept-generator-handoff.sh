@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Accept one validated local-cli Generator handoff into the Coordinator's main
-# checkout. The external runner only returns an uncommitted sandbox diff; this
-# command makes the return path auditable and deliberately requires --apply
-# before it can modify the main checkout.
+# Accept one validated Generator handoff into the Coordinator's main checkout.
+# The external runner only returns an uncommitted sandbox diff; this command
+# makes the return path auditable and deliberately requires --apply before it
+# can modify the main checkout. A subagent return is eligible only when the
+# framework VM provider has attested the exact copied-out artifact.
 #
 # The Coordinator must run the spec-lock critic before invoking this command.
 # This command then verifies the exact envelope/handoff/run-meta tuple, checks
@@ -69,6 +70,8 @@ done
 [ -f "$L1_COMMANDS" ] || die "L1 commands document does not exist: $L1_COMMANDS"
 [ -f "$DISPATCH_DIR/validate-dispatch.sh" ] || die "validate-dispatch.sh is missing"
 [ -f "$DISPATCH_DIR/validate-generator-handoff.sh" ] || die "validate-generator-handoff.sh is missing"
+[ -f "$DISPATCH_DIR/validate-external-bridge-receipt.py" ] || \
+  die "validate-external-bridge-receipt.py is missing"
 
 COORDINATOR_ENV=(env -i "PATH=${PATH:-/usr/bin:/bin}" "LANG=${LANG:-C.UTF-8}" "LC_ALL=${LC_ALL:-C.UTF-8}" "HOME=${HOME:-/tmp}" GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0)
 PROJECT_ROOT="$("${COORDINATOR_ENV[@]}" git rev-parse --show-toplevel 2>/dev/null)" || die "must be invoked inside the Coordinator main checkout"
@@ -93,6 +96,7 @@ elif [ "$PROGRESS_EXPLICIT" = true ]; then
 fi
 
 ACTIVE_AGENT=""
+ACTIVE_ROLE="{}"
 if [ -f "$CANONICAL_PROGRESS" ]; then
   REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
     --project-root "$PROJECT_ROOT" --registry "$REGISTRY")" \
@@ -115,6 +119,32 @@ bash "$DISPATCH_DIR/validate-dispatch.sh" envelope "$ENVELOPE" >&2 || \
   die "Generator envelope failed validation"
 bash "$DISPATCH_DIR/validate-generator-handoff.sh" "$HANDOFF" --envelope "$ENVELOPE" >&2 || \
   die "Generator handoff failed validation"
+
+RETURN_TRANSPORT="$(python3 - "$RUN_META" <<'PY'
+import json
+import sys
+
+try:
+    value = json.load(open(sys.argv[1], encoding="utf-8")).get("transport")
+except (OSError, ValueError):
+    value = None
+print(value if isinstance(value, str) else "")
+PY
+)" || die "cannot read Generator return transport"
+case "$RETURN_TRANSPORT" in
+  local-cli)
+    ;;
+  subagent)
+    python3 "$DISPATCH_DIR/validate-external-bridge-receipt.py" \
+      --role generator --run-meta "$RUN_META" --handoff "$HANDOFF" \
+      --envelope "$ENVELOPE" --project-root "$PROJECT_ROOT" \
+      --active-role-json "$ACTIVE_ROLE" >&2 || \
+      die "provider-attested external Generator receipt validation failed"
+    ;;
+  *)
+    die "only local-cli or provider-attested subagent Generator handoffs have a returnable source diff"
+    ;;
+esac
 
 python3 - "$PROJECT_ROOT" "$HANDOFF" "$ENVELOPE" "$RUN_META" "$L1_COMMANDS" "$APPLY" "$ACTIVE_AGENT" <<'PY'
 import json
@@ -284,8 +314,9 @@ if meta.get("role") != "generator":
     fail("run metadata role must be generator")
 if active_agent and meta.get("agent_id") != active_agent:
     fail("run metadata agent_id does not match the re-verified active Generator role")
-if meta.get("transport") != "local-cli":
-    fail("only local-cli Generator handoffs have a returnable source diff")
+transport = meta.get("transport")
+if transport not in {"local-cli", "subagent"}:
+    fail("only local-cli or provider-attested subagent Generator handoffs have a returnable source diff")
 if meta.get("outcome") != "RETURNED" or meta.get("exit_code") != 0:
     fail("run metadata must record a successful RETURNED outcome")
 
@@ -343,7 +374,6 @@ try:
     handoff_path.relative_to(worktree)
 except ValueError:
     fail("handoff artifact resolves outside the sandbox worktree")
-
 if handoff.get("batch_id") != batch:
     fail("handoff batch_id does not match the envelope")
 handoff_features = handoff.get("features")

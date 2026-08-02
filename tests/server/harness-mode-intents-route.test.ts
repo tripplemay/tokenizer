@@ -253,7 +253,7 @@ describe("session mode intent route", () => {
     expect(mocks.signHarnessPayload).not.toHaveBeenCalled();
   });
 
-  it("gates v2 role bindings at feature v7 and signs the catalog's canonical tool ids", async () => {
+  it("gates v2 role bindings at feature v8 and signs the catalog's canonical tool ids", async () => {
     mocks.prisma.harnessProject.findFirst.mockResolvedValueOnce(project({
       device: { userId: "user-1", agentFeatureVersion: MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION - 1 }
     }));

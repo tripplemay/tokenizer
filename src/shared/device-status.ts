@@ -7,6 +7,7 @@
 
 export const DEVICE_ONLINE_MS = 20 * 60 * 1000;
 export const DEVICE_STALE_MS = 60 * 60 * 1000;
+export const HARNESS_REPORT_CLOCK_SKEW_MS = 5 * 60 * 1000;
 
 export type DeviceStatusKey = "online" | "stale" | "offline" | "neverSeen";
 
@@ -39,4 +40,23 @@ export function deviceStatusBadge(
 ): { key: DeviceStatusKey; color: string } {
   const key = deviceStatusKey(lastSeenAt, nowMs);
   return { key, color: DEVICE_STATUS_COLOR[key] };
+}
+
+/**
+ * A HarnessProject is an immutable device/repository identity, so a user can
+ * retain historical reports after a device is re-enrolled or a checkout moves.
+ * Keep the definition of an actionable report in one place: lists may present
+ * old snapshots as history, while signing paths must fail closed on them.
+ */
+export function isFreshHarnessProjectReport(
+  reportedAt: Date | string | null | undefined,
+  nowMs: number
+): boolean {
+  if (!Number.isFinite(nowMs) || !reportedAt) return false;
+  const reportedAtMs = reportedAt instanceof Date ? reportedAt.getTime() : new Date(reportedAt).getTime();
+  return (
+    Number.isFinite(reportedAtMs) &&
+    reportedAtMs <= nowMs + HARNESS_REPORT_CLOCK_SKEW_MS &&
+    nowMs - reportedAtMs < DEVICE_ONLINE_MS
+  );
 }

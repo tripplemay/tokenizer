@@ -26,8 +26,8 @@ async function renderBanner({
   const banner = await UpgradeBanner({
     outdatedCount,
     unknownCount,
-    latestRelease: "1.1.0",
-    highlights: ["report compatibility", "upgrade visibility"],
+    latestRelease: "1.2.0",
+    highlights: ["bridge schema compatibility", "upgrade visibility"],
     commands: [{ id: "posix", label: "macOS / Linux", command: "curl install" }]
   });
   return renderToStaticMarkup(banner);
@@ -43,9 +43,9 @@ describe("UpgradeBanner update-state rendering", () => {
   it("renders an upgrade target, manifest highlights, and install guidance for required upgrades", async () => {
     const html = await renderBanner({ outdatedCount: 1, unknownCount: 0 });
 
-    expect(html).toContain("upgradeBanner.message:1:1.1.0");
-    expect(html).toContain("upgradeBanner.latest::1.1.0");
-    expect(html).toContain("report compatibility");
+    expect(html).toContain("upgradeBanner.message:1:1.2.0");
+    expect(html).toContain("upgradeBanner.latest::1.2.0");
+    expect(html).toContain("bridge schema compatibility");
     expect(html).toContain("upgrade visibility");
     expect(html).toContain("curl install");
     expect(html).not.toContain("upgradeBanner.unknownOnly");
@@ -64,7 +64,7 @@ describe("UpgradeBanner update-state rendering", () => {
   it("keeps both upgrade and verification guidance visible for a mixed device set", async () => {
     const html = await renderBanner({ outdatedCount: 1, unknownCount: 2 });
 
-    expect(html).toContain("upgradeBanner.message:1:1.1.0");
+    expect(html).toContain("upgradeBanner.message:1:1.2.0");
     expect(html).toContain("upgradeBanner.unknown:2:");
     expect(html).toContain("curl install");
     expect(html).not.toContain("upgradeBanner.unknownOnly");

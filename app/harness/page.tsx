@@ -7,6 +7,7 @@ import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import { signingKeyReady } from "@/server/harness-sign";
 import { formatRelativeTime } from "@/shared/format";
+import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import { AutoRefresh } from "../_components/auto-refresh";
 import { GateActions } from "./gate-actions";
 import ModeBadges from "./mode-badges";
@@ -56,6 +57,8 @@ export default async function HarnessPage() {
   const pending = gates.filter((g) => !g.decisionAction);
   const signed = gates.filter((g) => g.decisionAction);
   const nowMs = Date.now();
+  const activeProjects = projects.filter((project) => isFreshHarnessProjectReport(project.reportedAt, nowMs));
+  const historicalProjects = projects.filter((project) => !isFreshHarnessProjectReport(project.reportedAt, nowMs));
   const harnessLabels: HarnessHealthLabels = {
     idle: t("syncHealth.status.idle"),
     success: t("syncHealth.status.success"),
@@ -163,9 +166,13 @@ export default async function HarnessPage() {
           <Card extra="!p-5">
             <p className="text-sm text-gray-600 dark:text-gray-300">{t("noProjects")}</p>
           </Card>
+        ) : activeProjects.length === 0 ? (
+          <Card extra="!p-5">
+            <p className="text-sm text-gray-600 dark:text-gray-300">{t("noActiveProjects")}</p>
+          </Card>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((p) => {
+            {activeProjects.map((p) => {
               const pct = p.totalCount > 0 ? Math.round((p.completedCount / p.totalCount) * 100) : 0;
               const idx = PHASES.indexOf(p.status ?? "");
               return (
@@ -194,6 +201,7 @@ export default async function HarnessPage() {
                         labels={harnessLabels}
                       />
                     </div>
+                    <p className="mt-1 truncate font-mono text-[11px] text-gray-400" title={p.repoKey}>{p.repoKey}</p>
 
                     <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
                       <span className="max-w-full break-all rounded-full bg-gray-100 px-2 py-0.5 font-mono text-gray-600 dark:bg-white/10 dark:text-gray-300">
@@ -251,6 +259,45 @@ export default async function HarnessPage() {
             })}
           </div>
         )}
+
+        {historicalProjects.length > 0 ? (
+          <details className="mt-4 border-y border-gray-200 py-3 dark:border-white/10">
+            <summary className="cursor-pointer text-sm font-medium text-gray-600 marker:text-brand-500 dark:text-gray-300">
+              {t("historicalProjects", { count: historicalProjects.length })}
+            </summary>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t("historicalProjectsHint")}</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {historicalProjects.map((p) => (
+                <Card key={p.id} extra="!p-4 border border-gray-200 dark:border-white/10">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Link
+                      href={`/harness/${encodeURIComponent(p.id)}`}
+                      aria-label={t("openProject", { name: p.name })}
+                      className="group inline-flex min-w-0 flex-1 items-center gap-1 font-medium text-gray-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-gray-200"
+                    >
+                      <span className="min-w-0 break-words">{p.name}</span>
+                      <MdArrowForward className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-gray-600" />
+                    </Link>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-white/10 dark:text-gray-400">
+                      {t("historicalSnapshot")}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    <Link href={`/devices/${encodeURIComponent(p.device.id)}`} className="hover:text-brand-500 hover:underline">
+                      {p.device.name}
+                    </Link>
+                    <span> · </span>
+                    <span>{p.reportedAt ? formatRelativeTime(p.reportedAt, tRelative, tz) : "—"}</span>
+                  </p>
+                  <p className="mt-1 break-all font-mono text-[11px] text-gray-400">{p.repoKey}</p>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    {p.batch ?? "—"} · {p.status ?? "—"}
+                  </p>
+                </Card>
+              ))}
+            </div>
+          </details>
+        ) : null}
       </section>
     </div>
   );

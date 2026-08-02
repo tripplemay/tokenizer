@@ -14,12 +14,13 @@ import {
 } from "@/shared/harness-mode-intent";
 import {
   hasWellFormedExternalSubagentBridgeObservation,
+  hasWellFormedVmBridgeProviderProof,
   toolCatalogModeDescriptors,
   v2SelectableToolCatalogEntries,
   type HarnessToolCatalogEntry,
   type HarnessToolIntegration
 } from "@/shared/harness-tool-catalog";
-import { DEVICE_ONLINE_MS } from "@/shared/device-status";
+import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import {
   MIN_MODE_INTENT_AGENT_FEATURE_VERSION,
   MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION
@@ -277,6 +278,9 @@ function displayIntegration(value: unknown): HarnessDetailIntegration | null {
     : stringList(integration.bridgeRoles, 3).filter((role): role is HarnessModeRole =>
       HARNESS_MODE_ROLES.includes(role as HarnessModeRole)
     );
+  const subagentProvider = hasWellFormedVmBridgeProviderProof(integration.subagentProvider)
+    ? integration.subagentProvider
+    : null;
   return {
     id,
     tool,
@@ -299,6 +303,7 @@ function displayIntegration(value: unknown): HarnessDetailIntegration | null {
     bridgeCommand,
     adapterBridgeCommand,
     bridgeRoles,
+    subagentProvider,
     a2aTargetCount: count(integration.a2aTargetCount) ?? -1,
     sandboxed: integration.sandboxed === true
   };
@@ -358,6 +363,10 @@ function strictIntegrationSnapshot(dispatch: UnknownRecord | null): HarnessDetai
       (parsed.localCli && !parsed.sandboxed) || (!parsed.localCli && parsed.sandboxed) ||
       ((parsed.a2aTargetCount > 0) !== parsed.invocations.includes("a2a"))
     ) return null;
+    if (
+      (integration.subagentProvider !== undefined && integration.subagentProvider !== null && !parsed.subagentProvider) ||
+      (parsed.subagentProvider && (!parsed.subagent || !parsed.invocations.includes("subagent")))
+    ) return null;
     const bridgeKeys = [
       "bridgeId", "bridgeKind", "sessionScope", "bridgeProtocol",
       "bridgeCommand", "adapterBridgeCommand", "bridgeRoles"
@@ -393,6 +402,7 @@ function strictToolCatalog(
     const modelFamilies = stringList(capability?.modelFamilies, 50);
     const capabilities = stringList(capability?.capabilities, 64);
     const agentCount = capability?.agentCount;
+    const subagentProvider = capability?.subagentProvider;
     if (
       !capability ||
       !tool ||
@@ -417,14 +427,28 @@ function strictToolCatalog(
     ) {
       return null;
     }
+    let verifiedSubagentProvider: HarnessToolCatalogEntry["subagentProvider"];
+    if (subagentProvider !== undefined) {
+      if (invocation !== "subagent" || !hasWellFormedVmBridgeProviderProof(subagentProvider)) return null;
+      verifiedSubagentProvider = subagentProvider;
+    }
     const key = `${role}\u0000${tool}\u0000${invocation}`;
     if (seen.has(key)) return null;
     seen.add(key);
-    catalog.push({ tool, label, invocation, role: role as HarnessModeRole, agentCount, modelFamilies, capabilities });
+    catalog.push({
+      tool,
+      label,
+      invocation,
+      role: role as HarnessModeRole,
+      agentCount,
+      modelFamilies,
+      capabilities,
+      ...(verifiedSubagentProvider ? { subagentProvider: verifiedSubagentProvider } : {})
+    });
   }
   // A device may report an old Coordinator-native or external `subagent`
-  // route for diagnostics. Without an independently attested strict provider,
-  // it must not reach the editor's selectable tool inventory.
+  // route for diagnostics. Only a current independently attested strict VM
+  // provider proof may reach the editor's selectable tool inventory.
   const selectableCatalog = v2SelectableToolCatalogEntries(catalog);
   // Planner can be the built-in Coordinator, so an incomplete catalog is
   // usable when it covers the explicitly selected Generator/Evaluator tools.
@@ -584,13 +608,7 @@ export function modeIssuanceBlocker(input: {
 }): HarnessModeIssuanceBlocker | null {
   if (!input.signingKeyReady) return "signingKeyUnavailable";
   const now = input.now instanceof Date ? input.now.getTime() : input.now;
-  const reportedAt = input.reportedAt ? new Date(input.reportedAt).getTime() : Number.NaN;
-  if (
-    !Number.isFinite(now) ||
-    !Number.isFinite(reportedAt) ||
-    reportedAt > now + 5 * 60 * 1000 ||
-    now - reportedAt >= DEVICE_ONLINE_MS
-  ) return "reportStale";
+  if (!isFreshHarnessProjectReport(input.reportedAt, now)) return "reportStale";
   if ((input.agentFeatureVersion ?? 0) < MIN_MODE_INTENT_AGENT_FEATURE_VERSION) return "agentUpgradeRequired";
   if (
     input.requiresToolBindings === true &&
@@ -704,7 +722,7 @@ export function buildModeIntentRequest(
       },
       {
         now,
-        tools: toolCatalogModeDescriptors(v2SelectableToolCatalogEntries(tools))
+        tools: toolCatalogModeDescriptors(v2SelectableToolCatalogEntries(tools, now))
       }
     );
     return { projectId: projectId.trim(), desired: payload.desired, intentExpiresAt };

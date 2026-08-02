@@ -463,6 +463,12 @@ type RelayedDecision = {
   decision: Record<string, unknown> & { gate_id?: string; sig?: string };
 };
 
+function exactRelayRepoForKey(repos: HarnessRepo[], repoKey: string): HarnessRepo | "ambiguous" | null {
+  const matches = repos.filter((repo) => repo.repoKey === repoKey);
+  if (matches.length === 1) return matches[0];
+  return matches.length > 1 ? "ambiguous" : null;
+}
+
 /**
  * 用仓库里的 console.pub 验签。
  *
@@ -509,18 +515,27 @@ export async function applyHarnessDecisions(
   const { decisions } = (await response.json()) as { decisions: RelayedDecision[] };
   if (!decisions?.length) return { applied: 0, skipped: [], issues: [] };
 
-  const byKey = new Map(discoverHarnessRepos(config).map((r) => [r.repoKey, r]));
+  const repos = discoverHarnessRepos(config);
   const skipped: string[] = [];
   const issues: HarnessSyncIssue[] = [];
   let applied = 0;
 
   for (const item of decisions) {
-    const repo = byKey.get(item.repoKey);
-    if (!repo) {
+    // repoKey is only a server response wrapper, not part of the signed gate
+    // payload. Never route a legacy alias to a current checkout by normalizing
+    // it here: an old and a current project can reuse a gate id.
+    const resolvedRepo = exactRelayRepoForKey(repos, item.repoKey);
+    if (resolvedRepo === "ambiguous") {
+      skipped.push(`${item.gate_id}: 本机存在多个相同 repoKey 的 harness 仓库，本轮拒绝落盘`);
+      appendIssue(issues, makeIssue("relay", null, "repo_identity_ambiguous", false));
+      continue;
+    }
+    if (!resolvedRepo) {
       skipped.push(`${item.gate_id}: 本机没有 repoKey=${item.repoKey} 的 harness 项目`);
       appendIssue(issues, makeIssue("relay", null, "repo_not_found", false));
       continue;
     }
+    const repo = resolvedRepo;
     if (!verifyDecision(repo.path, item.decision)) {
       // 不写。仓库缺 console.pub，或签名对不上——两种情况都不该让它落盘。
       skipped.push(`${item.gate_id}: 验签失败或仓库缺 .claude/console/console.pub`);
