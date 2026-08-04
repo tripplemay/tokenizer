@@ -5,7 +5,7 @@ type: project
 ---
 ## 当前批次
 
-- **BL-NATIVE-SUBAGENT-BRIDGES（fixing，1/5，fix_rounds=1）**：2026-08-04 reverify fan-out 完成（5 个 fresh-context evaluator + 对抗证伪复核）：F001/F002/F004 PASS，F003 PARTIAL，F005 FAIL，非 PASS 结论均 adversarial confirmed。
+- **BL-NATIVE-SUBAGENT-BRIDGES（reverifying，1/5，fix_rounds=2）**：第 2 轮修复 abf7a6e 连修 launch 链路五处缺陷；Generator 已用真实认证 Kimi 冒烟端到端成功（RETURNED/completed，nonce-bound child receipt）。聚焦复验 F003/F005 进行中，F001/F002/F004 上轮 PASS。
 - 剩余唯一阻断根因：vm-bridge-provider.py:1799-1818 launch 时以 `python3 -I` 重解析 target，tool-catalog.py 的 dispatch_common sibling 导入在 isolated mode 下必然 ModuleNotFoundError（-I 隐含 -E，PYTHONPATH 不可绕过；本机 python 3.9.6 无 -P）。catalog 侧（ff896dd HOME 修复）已确认有效：三角色发布 kimi subagent、provenance 完整。
 - 次要项：test-lifecycle.py 一条过时断言（期望旧拒绝文案；安全属性经独立取证仍成立）。回归缺口：test-vm-bridge-provider 全 mock，未覆盖生产 argv 真实 launch 重解析。
 - L2 已实际行使（真实 launch 尝试 + Codex local-cli health + 全量回归），不再 l2_pending。
