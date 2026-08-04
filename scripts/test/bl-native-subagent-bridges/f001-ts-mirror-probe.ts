@@ -21,8 +21,8 @@ const repo = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const catalog = readDispatchToolCatalog(repo);
 const integrations = readDispatchToolIntegrations(repo);
 
-const subagentEntries = (catalog.catalog ?? []).filter((entry) => entry.invocation === "subagent");
-const selectable = v2SelectableToolCatalogEntries(catalog.catalog ?? []).filter(
+const subagentEntries = (catalog.entries ?? []).filter((entry) => entry.invocation === "subagent");
+const selectable = v2SelectableToolCatalogEntries(catalog.entries ?? []).filter(
   (entry) => entry.invocation === "subagent"
 );
 
@@ -37,7 +37,7 @@ cpSync(
 const fallback = readDispatchToolCatalog(empty);
 
 const observation = {
-  catalog_error: catalog.error ?? null,
+  catalog_error: catalog.issue ?? null,
   subagent_routes: subagentEntries.map((entry) => ({
     tool: entry.tool,
     role: entry.role,
@@ -56,7 +56,7 @@ const observation = {
     bridge_roles: item.bridgeRoles ?? null,
     provider_id: item.subagentProvider?.id ?? null
   })),
-  no_registry_repo: { catalog: fallback.catalog, error: fallback.error ?? null }
+  no_registry_repo: { catalog: fallback.entries, error: fallback.issue ?? null }
 };
 
 console.log(JSON.stringify(observation, null, 2));
