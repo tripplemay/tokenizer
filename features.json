@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "声明式同会话 bridge 注册与能力目录",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "tool-integrations/1 的 integration 以受限 subagent bridge 对象声明能力；catalog 仅为已发布且 _verified 的 bridge 展开三角色 subagent 候选，target 带不可签名的 bridge provenance 与 execution_provenance_sha256；未来工具只要声明同一已支持 bridge 协议即可自动进入目录，未知、未验证、角色越权、命令不匹配或配置漂移均 fail-closed。"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "Kimi ACP 原生 Agent 子代理 bridge",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "runner 通过 ACP initialize/session/new/session/prompt 驱动 Harness 自有 Kimi 根会话；严格委派提示含单次 nonce，只有观察到 Agent 子代理 tool_call 的相同 nonce、plan/coder/explore 类型与完成事件才接受。不得解析或泄露用户 Kimi session wire 文件；ACP 或 child 证据不足必须 fail-closed。"
     },
@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "模式签发、设备目录与动态界面桥接语义",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "heterogeneous 模式允许已验证的外部 same-session bridge 与 local-cli 组合、仍拒绝 a2a；Generator/Evaluator 仍须不同 model family。Tokenizer Agent 的 TypeScript catalog mirror、服务端 intent 校验和既有动态角色 UI 会一致展示 Kimi external bridge 与 Codex local-cli，不新增按工具名硬编码；Coordinator-host-native 与 bridge 路径的文案可区分。"
     },
