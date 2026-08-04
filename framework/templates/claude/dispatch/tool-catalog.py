@@ -277,6 +277,7 @@ class StrictExternalBridgeProvider:
 APP_DISPATCH_RELATIVE = Path("framework/templates/claude/dispatch")
 APP_RUNTIME_FILES = (
     Path("tool-catalog.py"),
+    Path("dispatch_common.py"),
     Path("transports/vm-bridge-provider.py"),
     Path("transports/session-bridge.py"),
     Path("transports/session_bridge_kimi.py"),

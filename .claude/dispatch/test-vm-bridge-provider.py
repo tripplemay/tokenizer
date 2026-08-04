@@ -62,6 +62,71 @@ class VmBridgeProviderTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_target_resolution_interpreter_can_run_the_real_catalog(self) -> None:
+        """The launch re-resolution argv must execute tool-catalog.py itself.
+
+        Guards the escape found in reverify round 1: `python3 -I` severed the
+        catalog's dispatch_common sibling import, so every launch died with
+        "bridge target cannot be re-resolved" while all mock tests stayed
+        green. Run the production interpreter flags against the real catalog
+        and a minimal registry; import failures surface as a non-zero exit.
+        """
+        import json
+
+        registry = self.root / "registry.json"
+        adapters = self.root / "adapters"
+        adapters.mkdir()
+        write_file(
+            adapters / "probe-cli.json",
+            json.dumps({
+                "name": "probe-cli",
+                "model_family": "probe",
+                "argv": ["probe-cli"],
+                "envelope_delivery": "stdin",
+                "_verified": True,
+            }),
+        )
+        registry.write_text(
+            json.dumps({
+                "version": "tool-integrations/1",
+                "integrations": [{
+                    "id": "probe",
+                    "tool": "probe-cli",
+                    "model_family": "probe",
+                    "local_cli": {
+                        "adapter": "probe-cli",
+                        "sandbox": {"home_dir": str(self.root / "probe-home")},
+                    },
+                }],
+                "a2a_targets": [],
+            }),
+            encoding="utf-8",
+        )
+        resolved = subprocess.run(
+            [
+                *provider.TARGET_RESOLUTION_PYTHON,
+                str(HERE / "tool-catalog.py"),
+                "target",
+                "--registry",
+                str(registry),
+                "--adapters",
+                str(adapters),
+                "--target-id",
+                "local-cli--probe--generator",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=30,
+            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+            check=False,
+            text=True,
+        )
+        self.assertEqual(resolved.returncode, 0, resolved.stderr)
+        target = json.loads(resolved.stdout)
+        self.assertEqual(target.get("integration_id"), "probe")
+        self.assertRegex(target.get("execution_provenance_sha256", ""), r"^[0-9a-f]{64}$")
+
     def test_bundle_command_is_bound_to_the_hashed_bundle_manifest(self) -> None:
         bundle = self.root / "kimi.tar.gz"
         manifest = b'{"protocol_commands":{"acp-native-agent/v1":["kimi","acp"]},"version":"harness/vm-cli-bundle/1"}'

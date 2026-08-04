@@ -317,7 +317,16 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 2, result.stderr)
-        self.assertIn("target id is not registered", result.stderr)
+        # The refusal reason depends on host state this fixture cannot pin:
+        # without an attestable vm-v1 provider the subagent target never
+        # registers; with one, resolution succeeds and sandbox-profile's own
+        # transport gate refuses instead. Both refuse before any runtime or
+        # Seatbelt path is touched, which is the property under test.
+        self.assertTrue(
+            "target id is not registered" in result.stderr
+            or "external same-session bridge does not launch here" in result.stderr,
+            result.stderr,
+        )
         self.assertFalse(workroot.exists())
         self.assertFalse(state.exists())
 

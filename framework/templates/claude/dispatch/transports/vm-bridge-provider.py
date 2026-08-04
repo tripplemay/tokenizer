@@ -939,13 +939,20 @@ def _copy_archive_to_guest(
         "-n",
         "sh",
         "-ec",
-        f"umask 077; rm -rf {guest_root}; mkdir -p {guest_root}; tar -xzf - -C {guest_root}; "
+        # mkdir -p under umask 077 leaves any parent it creates 700-root, and
+        # the worker uid must traverse the full job path on a fresh VM.
+        f"umask 077; rm -rf {guest_root}; mkdir -p {guest_root}; "
+        f"chmod 711 /var/lib/harness-vm-v1 /var/lib/harness-vm-v1/jobs; "
+        f"tar -xzf - -C {guest_root}; "
         f"mkdir -p {guest_root}/cli {guest_root}/state; "
         f"tar -xzf {guest_root}/.harness-cli-bundle.tar.gz -C {guest_root}/cli; "
         f"rm -f {guest_root}/.harness-cli-bundle.tar.gz; test ! -e {guest_root}/source/.git; "
         f"{executable_checks} "
         f"chown -R root:root {guest_root}/cli {guest_root}/.harness-runner; "
-        f"chmod -R a-w {guest_root}/cli {guest_root}/.harness-runner; "
+        # a+rX before a-w: the root umask-077 extraction leaves parent
+        # directories 700, and read-only is not enough — the worker uid must
+        # also traverse into these root-owned trees.
+        f"chmod -R a+rX,a-w {guest_root}/cli {guest_root}/.harness-runner; "
         f"chmod 444 {guest_root}/.harness-envelope.json {guest_root}/.harness-target.json; "
         f"chown -R {WORKER_USER}:{WORKER_USER} {guest_root}/source {guest_root}/state; "
         f"chmod 700 {guest_root}/source {guest_root}/state; "
@@ -1711,11 +1718,17 @@ def _reconcile_returned_source(
 APP_BUNDLE_RELATIVE = Path("framework/templates/claude/dispatch")
 APP_RUNTIME_FILES = (
     Path("tool-catalog.py"),
+    Path("dispatch_common.py"),
     Path("transports/vm-bridge-provider.py"),
     Path("transports/session-bridge.py"),
     Path("transports/session_bridge_kimi.py"),
     Path("transports/vm-bridge-worker.py"),
 )
+# Interpreter for re-resolving a launch target through the app bundle catalog.
+# -E -s matches -I's environment/user-site isolation while keeping the script
+# directory importable: tool-catalog.py loads its dispatch_common sibling,
+# which full isolated mode severs from sys.path.
+TARGET_RESOLUTION_PYTHON = ("/usr/bin/python3", "-E", "-s")
 
 
 def _trusted_app_bundle_root() -> Path:
@@ -1798,8 +1811,7 @@ def _resolve_launch_target(
     try:
         resolved = subprocess.run(
             [
-                "/usr/bin/python3",
-                "-I",
+                *TARGET_RESOLUTION_PYTHON,
                 str(catalog),
                 "target",
                 "--registry",
@@ -1827,7 +1839,7 @@ def _resolve_launch_target(
         tempfile.mkdtemp(prefix="harness-vm-target-", dir=str(_provider_private_runs_root()))
     ) / "target.json"
     try:
-        temp.write_text(resolved.stdout, encoding="utf-8")
+        temp.write_bytes(resolved.stdout)
         return _load_launch_target(temp, expected_provenance)
     finally:
         try:

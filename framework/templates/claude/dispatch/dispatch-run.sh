@@ -318,12 +318,16 @@ except (KeyError, OSError):
     raise SystemExit(2)
 project_root = Path(sys.argv[1])
 root = home / ".tokenizer" / "app"
+# Paths are relative to the dispatch directory on BOTH sides of the mirror
+# check: the app bundle keeps them under framework/templates/claude/dispatch,
+# the project keeps them under .claude/dispatch.
 required = (
-    "framework/templates/claude/dispatch/tool-catalog.py",
-    "framework/templates/claude/dispatch/transports/vm-bridge-provider.py",
-    "framework/templates/claude/dispatch/transports/session-bridge.py",
-    "framework/templates/claude/dispatch/transports/session_bridge_kimi.py",
-    "framework/templates/claude/dispatch/transports/vm-bridge-worker.py",
+    "tool-catalog.py",
+    "dispatch_common.py",
+    "transports/vm-bridge-provider.py",
+    "transports/session-bridge.py",
+    "transports/session_bridge_kimi.py",
+    "transports/vm-bridge-worker.py",
 )
 current = root
 for segment in ("framework", "templates", "claude", "dispatch"):
@@ -391,7 +395,7 @@ for relative in required:
             or parent_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
         ):
             raise SystemExit(2)
-    candidate = root / relative
+    candidate = root / "framework/templates/claude/dispatch" / relative
     try:
         entry = candidate.lstat()
     except OSError:
