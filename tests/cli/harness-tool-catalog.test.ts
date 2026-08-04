@@ -509,6 +509,17 @@ describe("data-only dispatch tool catalog", () => {
     }],
     ["non-string native agent type", (bridge: Record<string, unknown>) => {
       bridge.native_agent_types = { ...KIMI_NATIVE_AGENT_TYPES, planner: 1 };
+    }],
+    ["unknown deliverable channel", (bridge: Record<string, unknown>) => {
+      bridge.deliverable_channels = { planner: "carrier-pigeon" };
+    }],
+    ["deliverable channel for an undeclared role", (bridge: Record<string, unknown>) => {
+      bridge.personas = { planner: "planner-proposal" };
+      bridge.native_agent_types = { planner: "plan" };
+      bridge.deliverable_channels = { evaluator: "file" };
+    }],
+    ["non-object deliverable channels", (bridge: Record<string, unknown>) => {
+      bridge.deliverable_channels = "terminal-message";
     }]
   ])("fails closed for %s", (_label, mutate) => {
     writeKimiAcpBridge();
@@ -521,6 +532,20 @@ describe("data-only dispatch tool catalog", () => {
     writeKimiExternalIntegration();
 
     expect(readDispatchToolCatalog(repo)).toEqual({ entries: [], issue: "dispatch tool catalog is unavailable" });
+  });
+
+  it("accepts a manifest declaring a terminal-message deliverable channel (FIX2 #1:A)", () => {
+    writeKimiAcpBridge();
+    const bridge = JSON.parse(readFileSync(
+      join(repo, ".claude/dispatch/transports/bridges/kimi-acp-native-agent.json"),
+      "utf8"
+    )) as Record<string, unknown>;
+    bridge.deliverable_channels = { planner: "terminal-message" };
+    write(".claude/dispatch/transports/bridges/kimi-acp-native-agent.json", bridge);
+    writeKimiExternalIntegration();
+
+    const catalog = readDispatchToolCatalog(repo);
+    expect(catalog.issue).toBeNull();
   });
 
   it("fails closed when an ACP bridge command differs from its verified adapter declaration", () => {

@@ -67,8 +67,11 @@ const ADAPTER_FIELDS = new Set([
   "env_allowlist_extra", "bridge_commands", "_verified"
 ]);
 const BRIDGE_FIELDS = new Set([
-  "_comment", "id", "_verified", "session_scope", "strategy", "protocol", "personas", "native_agent_types", "notes"
+  "_comment", "id", "_verified", "session_scope", "strategy", "protocol", "personas", "native_agent_types",
+  "deliverable_channels", "notes"
 ]);
+const BRIDGE_DELIVERABLE_CHANNEL_FIELDS = new Set(HARNESS_MODE_ROLES);
+const PUBLISHED_DELIVERABLE_CHANNELS = new Set<string>(["file", "terminal-message"]);
 const BRIDGE_PROTOCOL_FIELDS = new Set(["kind", "command", "request_delivery", "response_format"]);
 const BRIDGE_PERSONA_FIELDS = new Set(HARNESS_MODE_ROLES);
 const BRIDGE_NATIVE_AGENT_TYPE_FIELDS = new Set(HARNESS_MODE_ROLES);
@@ -627,6 +630,18 @@ function bridgeCatalogInfo(repoPath: string, bridgeId: string): VerifiedExternal
     const nativeAgentType = safeText(nativeAgentTypes[role], 32);
     if (!nativeAgentType || !PUBLISHED_NATIVE_AGENT_TYPES.has(nativeAgentType)) return null;
     parsedNativeAgentTypes[role] = nativeAgentType;
+  }
+
+  // Optional per-role deliverable handoff (FIX2 #1:A). Mirror the framework
+  // catalog's fail-closed shape rules; unknown roles or channels reject the
+  // manifest.
+  if (bridge.deliverable_channels !== undefined) {
+    const channels = record(bridge.deliverable_channels);
+    if (!channels || !onlyKnownKeys(channels, BRIDGE_DELIVERABLE_CHANNEL_FIELDS)) return null;
+    for (const [role, channel] of Object.entries(channels)) {
+      if (!roles.includes(role as HarnessModeRole)) return null;
+      if (typeof channel !== "string" || !PUBLISHED_DELIVERABLE_CHANNELS.has(channel)) return null;
+    }
   }
   return {
     id: bridgeId,
