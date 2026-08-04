@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "Kimi ACP 原生 Agent 子代理 bridge",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "runner 通过 ACP initialize/session/new/session/prompt 驱动 Harness 自有 Kimi 根会话；严格委派提示含单次 nonce，只有观察到 Agent 子代理 tool_call 的相同 nonce、plan/coder/explore 类型与完成事件才接受。不得解析或泄露用户 Kimi session wire 文件；ACP 或 child 证据不足必须 fail-closed。"
     },

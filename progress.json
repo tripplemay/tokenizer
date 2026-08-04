@@ -1,12 +1,12 @@
 {
-  "status": "fixing",
+  "status": "reverifying",
   "user_goal": "为 Codex 与 Kimi 建立并验证 Harness 自有的同会话子代理桥接；将子代理能力改为声明式、可探测的 bridge，使未来具备相同能力的 CLI 自动进入工具目录与角色调度规则。",
   "total_features": 5,
   "completed_features": 4,
-  "fix_rounds": 2,
+  "fix_rounds": 3,
   "current_sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "dashboard_url": null,
-  "last_updated": "2026-08-04T05:55:00Z",
+  "last_updated": "2026-08-04T06:28:15Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -47,7 +47,7 @@
     "planning": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-07-31】用户明确要求为 Codex 与 Kimi 建立并验证同会话子代理桥接，并让未来同类 CLI 自动进入规则体系。实测 Codex CLI 0.146.0 的 App Server 可创建持久 thread fork（同 sessionId、forkedFromId）；该路径必须准确标记为 session-fork，不得伪称 vendor spawn。Kimi Code 0.31.0 的 ACP 可创建 Harness 自有根会话，且原生 Agent/AgentSwarm 子代理会以 ACP tool_call nonce 回执证明。无新的已签发 mode intent，当前批采用默认快车道完成框架与控制台实现；正式发布仍受 verifying-to-done 人工签名闸门约束。",
     "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。",
     "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。",
-    "fixing": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 2 轮完成】launch 链路连修五处（abf7a6e，逐层揭出）：(1) 重解析 -I 改 -E -s + TARGET_RESOLUTION_PYTHON 常量 + 生产 argv 回归用例；(2) write_text(bytes) 改 write_bytes；(3) dispatch-run.sh 预检路径双重拼接必然 exit 2，required 清单改 dispatch 相对路径；(4) guest staging chmod a+rX 修 root umask-077 目录不可穿越；(5) staging 固定 /var/lib/harness-vm-v1{,/jobs} 为 711 防全新 VM 复发。dispatch_common.py 纳入 provider/tool-catalog/dispatch-run 三处 app-bundle 身份名单；test-lifecycle 断言收敛到安全属性。Generator 冒烟：真实已认证 Kimi launch 端到端成功（outcome=RETURNED, terminal_status=completed, duration 267s, nonce-bound child receipt, source_changes=[]，run-meta 见 ~/.tokenizer/harness/vm-v1/runs/f005-kimi-bridge-probe-20260804）。注意：此前一次 12.4 分钟后失败疑为 Kimi token TTL(~15min) 边缘或模型未及时委派，复验时建议 launch 前刚刷新 token。应用包 ~/.tokenizer/app 已同步至 abf7a6e 等效字节（调试补丁已还原，哈希已核对一致）。全量回归绿：framework 8 套 + vitest 905 + verify/lint。",
+    "fixing": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 3 轮完成】按 FIX2 裁决(#1:A #2:A #3 #4 同意)实现：(1) deliverable_channels 声明式按角色交付通道全链路（schema→manifest planner=terminal-message→tool-catalog Python/TS 镜像→target/provenance→worker→session-bridge 分通道 prompt→Kimi driver 最终消息物化：独占创建/0600/1MiB/空文本 fail-closed），提交 6b8900b + 4cf44df；(2) provider 归约允许受托 artifact 覆盖 baseline，变化计入 source_changes；(3) test-lifecycle 两条旧架构用例删除并留属性映射注释；(4) BL-REGISTRY-LAZY-FIELD-CLEANUP 入 backlog；spec 增补 D8/D9。Generator 冒烟：planner persona 真实 launch RETURNED/completed 68s，nonce receipt 完整，artifact 由 driver 物化且内容证明子代理真实读取 ref 源码，source_changes=[]。三 persona 至此均有真实 launch 实证。全量回归绿（framework 全套 + vitest 909 + verify/lint）。用户批准推送 4cf44df（TS 镜像，触发一次无迁移部署）；capability-9 仍单独持留。应用包已同步全部运行时与测试文件。",
     "reverifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 2 轮】聚焦复验完成：F005 PASS（2/2 真实 probe、回归 10/10 + 全量绿、证据脱敏 0 泄漏）；F003 由 evaluator 依 F005 OBS-1 交叉证据自行改判 PARTIAL——planner persona 合并 4/4 确定性失败，根因是 Kimi plan 原生子代理只读（无写工具、交付物=最终消息）与 bridge 协议强制落盘交付物的结构性冲突，需 FIX2 规格裁决（选项见 docs/specs/BL-NATIVE-SUBAGENT-BRIDGES-FIX2-planner-persona-adjudication.md）。evaluator/explore 3/3、generator/coder 1/1 真实 launch 成功。勘误：此前 session note 称应用包已全量同步不准确——dispatch-run.sh 当时未同步（不在字节核验名单、不从应用包执行），现已补同步。OBS-2 交付路径 baseline 冲突与 OBS-3 过时 skip 一并待裁决。状态回 fixing，F003 置回 pending。"
   },
   "features": [],
