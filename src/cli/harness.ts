@@ -6,6 +6,12 @@ import { writeFileAtomic } from "@/cli/atomic-file";
 import { canonicalJson } from "@/server/harness-sign";
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 import { normalizeWorkspacePath } from "@/shared/path";
+import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
+import {
+  HARNESS_RELAY_AGENT_FEATURE_VERSION_HEADER,
+  HARNESS_RELAY_AGENT_RELEASE_VERSION_HEADER
+} from "@/shared/harness-relay-identity";
 import { normalizeGitRemote } from "./git";
 import { readCredentials, readState, updateState, TokenizerConfig } from "./config";
 import { agentFetch } from "./fetch";
@@ -41,6 +47,15 @@ import {
  */
 
 const REQUEST_TIMEOUT_MS = 30_000;
+
+function harnessAgentHeaders(deviceToken: string, contentType = false): Record<string, string> {
+  return {
+    ...(contentType ? { "content-type": "application/json" } : {}),
+    authorization: `Bearer ${deviceToken}`,
+    [HARNESS_RELAY_AGENT_RELEASE_VERSION_HEADER]: CURRENT_AGENT_RELEASE_VERSION,
+    [HARNESS_RELAY_AGENT_FEATURE_VERSION_HEADER]: String(AGENT_FEATURE_VERSION)
+  };
+}
 
 class HarnessRequestError extends Error {
   constructor(
@@ -232,6 +247,13 @@ export function buildReport(repo: HarnessRepo) {
   return {
     repoKey: repo.repoKey,
     name: repo.name,
+    // A Harness report is a control-plane write. Identify the Agent that
+    // produced it so a stale daemon sharing this device token cannot replace
+    // a newer process's mode catalog or gate mirror.
+    agent: {
+      releaseVersion: CURRENT_AGENT_RELEASE_VERSION,
+      featureVersion: AGENT_FEATURE_VERSION
+    },
     state: {
       status: progress.status ?? null,
       batch: progress.current_sprint ?? null,
@@ -287,7 +309,7 @@ type ModeIntentAck =
 async function postModeIntentAck(config: TokenizerConfig, deviceToken: string, ack: ModeIntentAck): Promise<void> {
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/mode-intents/relay`, {
     method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${deviceToken}` },
+    headers: harnessAgentHeaders(deviceToken, true),
     body: JSON.stringify(ack),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
@@ -329,7 +351,7 @@ export async function reportHarnessState(
       }
       const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/report`, {
         method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${credentials.deviceToken}` },
+        headers: harnessAgentHeaders(credentials.deviceToken, true),
         body: JSON.stringify(body),
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
@@ -396,7 +418,7 @@ export async function applyHarnessModeIntents(
 ): Promise<{ stagedIntents: number; skippedModeIntents: string[]; issues: HarnessSyncIssue[] }> {
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/mode-intents/relay`, {
-    headers: { authorization: `Bearer ${credentials.deviceToken}` },
+    headers: harnessAgentHeaders(credentials.deviceToken),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) throw await requestError(response);
@@ -506,7 +528,7 @@ export async function applyHarnessDecisions(
 ): Promise<{ applied: number; skipped: string[]; issues: HarnessSyncIssue[] }> {
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/harness/decisions`, {
-    headers: { authorization: `Bearer ${credentials.deviceToken}` },
+    headers: harnessAgentHeaders(credentials.deviceToken),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
   if (!response.ok) {

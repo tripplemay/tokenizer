@@ -17,7 +17,13 @@ import {
   type ReportModeDefaultsSummary,
   type ReportModeIntentSummary
 } from "@/server/harness-mode-intent-api";
+import { compareAgentReleaseVersion, normalizeAgentReleaseVersion } from "@/shared/agent-release-version";
+import {
+  MAX_AGENT_FEATURE_VERSION,
+  MIN_HARNESS_REPORTER_IDENTITY_AGENT_FEATURE_VERSION
+} from "@/shared/agent-feature-version";
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
+import { retrySerializableTransaction } from "@/server/serializable-transaction";
 
 export const dynamic = "force-dynamic";
 
@@ -52,9 +58,15 @@ type ParsedGate = {
   raisedBy: string;
 };
 
+type ParsedAgentReporter = {
+  releaseVersion: string;
+  featureVersion: number;
+};
+
 type ParsedReport = {
   repoKey: string;
   name: string;
+  agent: ParsedAgentReporter | null;
   state: ParsedState;
   gate: ParsedGate | null;
   dispatchRuns: HarnessDispatchRunInput[];
@@ -71,7 +83,6 @@ const GATE_KINDS = new Set([
   "other"
 ]);
 const OPAQUE_LOCAL_REPO_KEY_PATTERN = /^local:sha256:[0-9a-fA-F]{64}$/;
-
 function reject(code: string, message: string): never {
   throw new HarnessApiInputError(code, message);
 }
@@ -366,10 +377,83 @@ function parseGate(value: unknown): ParsedGate | null {
   };
 }
 
+function parseAgentReporter(value: unknown): ParsedAgentReporter | null {
+  if (value === undefined || value === null) return null;
+  const reporter = exactRecord(value, "agent", ["releaseVersion", "featureVersion"]);
+  if (
+    !Object.prototype.hasOwnProperty.call(reporter, "releaseVersion") ||
+    !Object.prototype.hasOwnProperty.call(reporter, "featureVersion")
+  ) {
+    return reject("invalid_agent_reporter", "agent must include releaseVersion and featureVersion");
+  }
+  const rawReleaseVersion = stringValue(reporter.releaseVersion, "agent.releaseVersion", 64)!;
+  const releaseVersion = normalizeAgentReleaseVersion(rawReleaseVersion);
+  if (!releaseVersion) {
+    return reject("invalid_agent_reporter", "agent.releaseVersion must be a stable release version");
+  }
+  const featureVersion = reporter.featureVersion;
+  if (
+    typeof featureVersion !== "number" ||
+    !Number.isSafeInteger(featureVersion) ||
+    featureVersion < 0 ||
+    featureVersion > MAX_AGENT_FEATURE_VERSION
+  ) {
+    return reject("invalid_agent_reporter", "agent.featureVersion must be a nonnegative integer");
+  }
+  return { releaseVersion, featureVersion };
+}
+
+function reporterCanWriteHarness(
+  current: { agentReleaseVersion: string | null; agentFeatureVersion: number | null },
+  reporter: ParsedAgentReporter | null
+): boolean {
+  const currentFeatureVersion =
+    typeof current.agentFeatureVersion === "number" &&
+    Number.isSafeInteger(current.agentFeatureVersion) &&
+    current.agentFeatureVersion >= 0 &&
+    current.agentFeatureVersion <= MAX_AGENT_FEATURE_VERSION
+      ? current.agentFeatureVersion
+      : null;
+  // The legacy compatibility branch is exclusively for pre-identity clients.
+  // Once an Agent supplies identity, compare every known dimension even when
+  // the stored capability is below 9; otherwise an identified old process
+  // could still downgrade a pre-v9 Device row.
+  if (!reporter) {
+    if (current.agentFeatureVersion !== null && currentFeatureVersion === null) return false;
+    return (currentFeatureVersion ?? 0) < MIN_HARNESS_REPORTER_IDENTITY_AGENT_FEATURE_VERSION;
+  }
+
+  if (currentFeatureVersion !== null && reporter.featureVersion < currentFeatureVersion) return false;
+  const currentReleaseVersion = normalizeAgentReleaseVersion(current.agentReleaseVersion);
+  if (!currentReleaseVersion) return true;
+  const comparison = compareAgentReleaseVersion(reporter.releaseVersion, currentReleaseVersion);
+  return comparison !== null && comparison >= 0;
+}
+
+function reporterPromotesDevice(
+  current: { agentReleaseVersion: string | null; agentFeatureVersion: number | null },
+  reporter: ParsedAgentReporter | null
+): reporter is ParsedAgentReporter {
+  if (!reporter) return false;
+  const currentReleaseVersion = normalizeAgentReleaseVersion(current.agentReleaseVersion);
+  const releaseIsNewer =
+    !currentReleaseVersion || compareAgentReleaseVersion(reporter.releaseVersion, currentReleaseVersion) !== 0;
+  const currentFeatureVersion =
+    typeof current.agentFeatureVersion === "number" &&
+    Number.isSafeInteger(current.agentFeatureVersion) &&
+    current.agentFeatureVersion >= 0 &&
+    current.agentFeatureVersion <= MAX_AGENT_FEATURE_VERSION
+      ? current.agentFeatureVersion
+      : null;
+  const featureIsNewer = currentFeatureVersion === null || reporter.featureVersion !== currentFeatureVersion;
+  return releaseIsNewer || featureIsNewer;
+}
+
 function parseReport(value: unknown): ParsedReport {
   const body = exactRecord(value, "request", [
     "repoKey",
     "name",
+    "agent",
     "state",
     "gate",
     "dispatchRuns",
@@ -382,6 +466,7 @@ function parseReport(value: unknown): ParsedReport {
     // SSH, or case-only alias of the same remote.
     repoKey: canonicalRepoKey(stringValue(body.repoKey, "repoKey", 512)!),
     name: stringValue(body.name, "name", 200)!,
+    agent: parseAgentReporter(body.agent),
     state: parseState(body.state, body),
     gate: parseGate(body.gate),
     dispatchRuns: parseDispatchRuns(body.dispatchRuns)
@@ -407,8 +492,69 @@ export async function POST(request: NextRequest) {
 
   let result: { projectId: string };
   try {
-    result = await prisma.$transaction(
+    result = await retrySerializableTransaction(() =>
+      prisma.$transaction(
       async (tx) => {
+        // A report is liveness activity, so advancing lastSeenAt is accurate.
+        // More importantly, this locks the Device row before reading its
+        // accepted identity. A concurrent heartbeat either waits behind this
+        // report or causes a serializable retry, which closes the old-report /
+        // new-heartbeat snapshot window. Device must be locked before token:
+        // heartbeat and enrollment use this same order, avoiding a lock-order
+        // deadlock while force-enroll rotates credentials.
+        const lockedDevice = await tx.device.updateMany({
+          where: { id: token.deviceId, userId: token.userId },
+          data: { lastSeenAt: now }
+        });
+        if (lockedDevice.count !== 1) {
+          throw new HarnessApiInputError("device_token_revoked", "device is no longer active", 401);
+        }
+
+        // Authentication happens before the transaction. This conditional
+        // update rechecks that enrollment has not revoked the token and fences
+        // a concurrent credential rotation before any Harness write.
+        const activeToken = await tx.deviceToken.updateMany({
+          where: { id: token.id, deviceId: token.deviceId, userId: token.userId, revokedAt: null },
+          data: { lastUsedAt: now }
+        });
+        if (activeToken.count !== 1) {
+          throw new HarnessApiInputError("device_token_revoked", "device token is no longer active", 401);
+        }
+
+        // This must precede identity reconciliation and all Harness writes.
+        // A lingering pre-upgrade daemon may report liveness, but cannot
+        // replace a mode catalog, pending gate, intent ACK, or dispatch
+        // history from a newer accepted Agent.
+        const currentDevice = await tx.device.findUnique({
+          where: { id: token.deviceId },
+          select: { agentReleaseVersion: true, agentFeatureVersion: true }
+        });
+        if (!currentDevice) {
+          throw new HarnessApiInputError("device_token_revoked", "device is no longer active", 401);
+        }
+        if (!reporterCanWriteHarness(currentDevice, report.agent)) {
+          throw new HarnessApiInputError(
+            "stale_agent_report",
+            "agent reporter identity is older than the device's accepted Agent",
+            409
+          );
+        }
+
+        // `tokenizer harness` can run independently of the background
+        // heartbeat. Once a versioned report is accepted, persist that
+        // identity in the same serializable transaction before any control
+        // plane write. Otherwise a legacy identity-less report could still
+        // enter the capability-8 compatibility path immediately afterwards.
+        if (reporterPromotesDevice(currentDevice, report.agent)) {
+          await tx.device.updateMany({
+            where: { id: token.deviceId, userId: token.userId },
+            data: {
+              agentReleaseVersion: report.agent.releaseVersion,
+              agentFeatureVersion: report.agent.featureVersion
+            }
+          });
+        }
+
         await reconcileHarnessProjectIdentity(tx, {
           userId: token.userId,
           deviceId: token.deviceId,
@@ -571,6 +717,7 @@ export async function POST(request: NextRequest) {
         return { projectId: project.id };
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      )
     );
   } catch (error) {
     if (error instanceof HarnessApiInputError) return harnessInputErrorResponse(error);

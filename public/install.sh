@@ -40,8 +40,8 @@ Options:
   --sync-minutes <n>          Agent collect/sync interval (default: 15)
   --no-service                Skip installing the background service
   --force-enroll              Re-enroll even if credentials already exist
-                              (rotates deviceToken; leaves the old token orphan
-                              on the server until revoked)
+                              (rotates deviceToken and revokes the previous
+                              token for this device)
   --yes                       Use the detected device name without prompting
   -h, --help                  Show this help
 USAGE
@@ -52,6 +52,85 @@ USAGE
 done
 
 log() { printf '[tokenizer] %s\n' "$*"; }
+
+# The CLI wrapper and its Node child have different command lines. Match both
+# forms against this install's directories so an upgrade never kills an
+# unrelated command that merely happens to contain "agent".
+agent_command_matches() {
+  local command="$1"
+  [[ "$command" =~ (^|[[:space:]])agent([[:space:]]|$) ]] || return 1
+  [[ "$command" == *"$INSTALL_DIR/src/cli/index.ts"* ||
+     "$command" == *"$INSTALL_DIR/bin/tokenizer"* ||
+     "$command" == *"$BIN_DIR/tokenizer"* ]]
+}
+
+agent_pids() {
+  # BSD ps truncates command lines to the terminal width unless -ww is given.
+  # The Agent argument is after a long absolute install path on macOS.
+  ps -axww -o pid= -o command= 2>/dev/null | awk -v install_dir="$INSTALL_DIR" -v bin_dir="$BIN_DIR" '
+    {
+      command = $0
+      is_agent = command ~ /(^|[[:space:]])agent([[:space:]]|$)/
+      is_own_wrapper = index(command, install_dir "/bin/tokenizer") || index(command, bin_dir "/tokenizer")
+      is_own_child = index(command, install_dir "/src/cli/index.ts")
+      if (is_agent && (is_own_wrapper || is_own_child)) print $1
+    }
+  '
+}
+
+agent_pid_matches() {
+  local pid="$1"
+  [ "$pid" != "$$" ] || return 1
+  local command
+  command="$(ps -ww -p "$pid" -o command= 2>/dev/null || true)"
+  agent_command_matches "$command"
+}
+
+stop_existing_service() {
+  # Disable the service before stopping children. launchd/systemd may restart
+  # a just-killed old wrapper otherwise, recreating the version race while the
+  # checkout is being updated.
+  if [ -x "$BIN_DIR/tokenizer" ]; then
+    "$BIN_DIR/tokenizer" uninstall-service >/dev/null 2>&1 || true
+  fi
+}
+
+stop_existing_agents() {
+  local pids pid attempts
+  pids="$(agent_pids || true)"
+  [ -n "$pids" ] || return
+
+  for pid in $pids; do
+    if agent_pid_matches "$pid"; then
+      log "Stopping existing agent (pid $pid)"
+      kill -TERM "$pid" 2>/dev/null || true
+    fi
+  done
+
+  attempts=0
+  while [ "$attempts" -lt 10 ]; do
+    pids="$(agent_pids || true)"
+    [ -z "$pids" ] && return
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+
+  # A pre-signal-forwarding wrapper can die while leaving its child orphaned.
+  # Re-check every PID immediately before the bounded last-resort kill so PID
+  # reuse cannot target a process outside this install.
+  for pid in $pids; do
+    if agent_pid_matches "$pid"; then
+      log "Force-stopping unresponsive agent (pid $pid)"
+      kill -KILL "$pid" 2>/dev/null || true
+    fi
+  done
+  sleep 1
+  pids="$(agent_pids || true)"
+  if [ -n "$pids" ]; then
+    echo "Could not stop the existing Tokenizer agent: $pids" >&2
+    exit 1
+  fi
+}
 
 # Decide whether enrollment is needed BEFORE doing any installation work so we
 # fail fast if the caller asked for a fresh install without a token.
@@ -144,6 +223,11 @@ ensure_build_tools
 
 log "Installing Tokenizer client to $INSTALL_DIR"
 mkdir -p "$HOME/.tokenizer" "$BIN_DIR"
+# Stop the old service and both of its process layers before replacing the
+# checkout. `pkill -f "tokenizer agent"` only hit the wrapper, leaving the
+# real Node daemon alive and able to overwrite current diagnostics later.
+stop_existing_service
+stop_existing_agents
 if [ -d "$INSTALL_DIR/.git" ]; then
   git -C "$INSTALL_DIR" fetch --prune origin
   git -C "$INSTALL_DIR" checkout --force origin/main
@@ -177,19 +261,6 @@ else
   log "Re-using existing credentials at $CREDENTIALS_FILE."
 fi
 
-# Kill any existing tokenizer agent processes so the freshly-pulled code
-# actually takes effect. Without this, a long-running daemon started before
-# the `git pull` above keeps executing the previous code (its in-memory
-# modules are frozen at startup) — install would appear to succeed while the
-# dashboard quietly stayed on stale features.
-#
-# install-service's launchd/systemd backends restart the service themselves,
-# but the cron fallback and any manually-started `nohup tokenizer agent &`
-# daemons survive — kill them here.
-if command -v pkill >/dev/null 2>&1; then
-  pkill -f "tokenizer agent" 2>/dev/null || true
-fi
-
 mkdir -p "$HOME/.tokenizer/logs"
 
 if [ "$INSTALL_SERVICE" = "1" ]; then
@@ -199,7 +270,7 @@ if [ "$INSTALL_SERVICE" = "1" ]; then
   # service manager a beat to spawn the daemon, then start one ourselves
   # if nothing is running so heartbeat + quota refresh keep ticking.
   sleep 1
-  if ! pgrep -f "tokenizer agent" >/dev/null 2>&1; then
+  if [ -z "$(agent_pids || true)" ]; then
     log "Daemon not detected after install-service; starting via nohup..."
     nohup tokenizer agent --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES" >"$HOME/.tokenizer/logs/agent.log" 2>&1 &
     disown 2>/dev/null || true

@@ -24,7 +24,7 @@ describe("Agent release manifest contract", () => {
     expect(LATEST_AGENT_RELEASE).toEqual(latest);
     expect(CURRENT_AGENT_RELEASE_VERSION).toBe(latest?.version);
     expect(LATEST_AGENT_RELEASE).toMatchObject({
-      version: "1.2.0",
+      version: "1.2.1",
       agent_feature_version: AGENT_FEATURE_VERSION
     });
   });

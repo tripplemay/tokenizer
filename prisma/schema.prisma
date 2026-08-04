@@ -112,6 +112,8 @@ model Device {
   agentVersion        String?
   agentReleaseVersion String?
   agentFeatureVersion Int?
+  reporterTokenPrefix String?
+  reportedAt          DateTime?
   queueDepth          Int?
   lastError           String?
   lastErrorAt         DateTime?
@@ -129,6 +131,7 @@ model Device {
   @@index([userId])
   @@index([lastSeenAt])
   @@index([lastSyncAt])
+  @@index([reportedAt])
 }
 
 model EnrollmentToken {

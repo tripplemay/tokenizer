@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,9 +7,38 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // cwd MUST point at the installed app root so node can resolve the bundled
 // `tsx` loader. Without this, running `tokenizer …` from any unrelated cwd
 // (including cron's default $HOME) fails with ERR_MODULE_NOT_FOUND for tsx.
-const result = spawnSync("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
+const child = spawn("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
   stdio: "inherit",
   cwd: root
 });
 
-process.exit(result.status ?? 1);
+let childExited = false;
+
+// `spawnSync` made this wrapper a brittle process boundary: launchd could
+// terminate the wrapper while its Node child continued as an orphan. Keep the
+// wrapper alive until the child exits, and relay the lifecycle signals the
+// service manager sends to both processes.
+for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+  process.on(signal, () => {
+    if (childExited || child.killed) return;
+    try {
+      child.kill(signal);
+    } catch {
+      // The child can exit between the state check and kill(). Its close
+      // handler below remains the single place that completes this wrapper.
+    }
+  });
+}
+
+child.once("error", (error) => {
+  console.error(`Failed to start tokenizer: ${error.message}`);
+  process.exitCode = 1;
+});
+
+child.once("close", (code) => {
+  childExited = true;
+  // A child that terminates from a signal has no numeric exit code. Preserve a
+  // non-zero result without re-signalling this wrapper and risking another
+  // orphan during shutdown.
+  process.exitCode = code ?? 1;
+});

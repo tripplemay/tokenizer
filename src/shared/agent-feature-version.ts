@@ -42,8 +42,18 @@
 //       integration registry. Capability-7 agents reject that schema and
 //       report the catalog as unavailable, so they must upgrade before using
 //       tool-bound mode intents.
-export const AGENT_FEATURE_VERSION = 8;
-export const MIN_AGENT_FEATURE_VERSION = 8;
+//   9 — 2026-08-02: single-instance Agent lifecycle, signal forwarding, and
+//       monotonic reporter diagnostics and Harness control-plane writes.
+//       Older Agents can survive an upgrade as orphaned children and overwrite
+//       newer device state, so prompting is required for this correctness fix
+//       rather than cosmetic.
+export const AGENT_FEATURE_VERSION = 9;
+export const MIN_AGENT_FEATURE_VERSION = 9;
+
+// All Agent reporter parsers share this ceiling. It leaves ample room for
+// future capability growth while preventing malformed values from making
+// every normal reporter appear stale indefinitely.
+export const MAX_AGENT_FEATURE_VERSION = 1_000_000;
 
 // Signed Harness mode intent issuance was added at capability level 4. Keep
 // this separate from the global update threshold so the API and UI never drift.
@@ -53,6 +63,12 @@ export const MIN_MODE_INTENT_AGENT_FEATURE_VERSION = 4;
 // agent-id contract so previously issued v1 intents remain readable and
 // consumable during the rollout.
 export const MIN_TOOL_BINDING_MODE_INTENT_AGENT_FEATURE_VERSION = 8;
+
+// Harness reports and relays are control-plane writes once they carry mode
+// catalogs, pending gates, intent acknowledgements, or delivery markers.
+// Capability 9 adds a reporter identity so the server can reject a stale
+// daemon before it replaces that state.
+export const MIN_HARNESS_REPORTER_IDENTITY_AGENT_FEATURE_VERSION = 9;
 
 /** The capability level to show for a mode-intent compatibility blocker. */
 export function requiredModeIntentAgentFeatureVersion(blocker: string | null | undefined): number {

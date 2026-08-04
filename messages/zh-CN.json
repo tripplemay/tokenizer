@@ -249,8 +249,11 @@
     },
     "diagnostics": {
       "title": "客户端诊断",
+      "deviceId": "设备 ID",
       "agentVersion": "Agent 版本",
       "agentReleaseVersion": "Agent 发布版本",
+      "reporterTokenPrefix": "已接受上报 Token 前缀",
+      "reportedAt": "已接受上报时间",
       "queueDepth": "本地队列深度",
       "lastSyncStatus": "上次同步状态",
       "lastError": "最近错误",

@@ -249,8 +249,11 @@
     },
     "diagnostics": {
       "title": "Client diagnostics",
+      "deviceId": "Device ID",
       "agentVersion": "Agent version",
       "agentReleaseVersion": "Agent release",
+      "reporterTokenPrefix": "Accepted reporter token prefix",
+      "reportedAt": "Accepted report time",
       "queueDepth": "Local queue depth",
       "lastSyncStatus": "Last sync status",
       "lastError": "Last error",

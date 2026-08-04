@@ -7,6 +7,7 @@ import { readConfig, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
 import { runHarnessSync, type HarnessSyncResult } from "./harness";
+import { acquireAgentLock } from "./agent-lock";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -121,37 +122,25 @@ export async function runHeartbeat() {
 }
 
 export async function runAgent(options: { heartbeatSeconds: number; syncMinutes: number }) {
-  const config = readConfig();
+  const agentLock = acquireAgentLock();
   let syncing = false;
   let stopped = false;
-  updateState({ agent: { status: "running", pid: process.pid, startedAt: new Date().toISOString() } });
-  log(`agent started pid=${process.pid}`);
-
-  const sync = async () => {
-    if (syncing) return;
-    syncing = true;
-    try {
-      await runOnce();
-    } catch {
-      // Errors are already written to state/log; keep the agent alive.
-    } finally {
-      syncing = false;
-    }
-  };
-
-  const beat = async () => {
-    try {
-      await runHeartbeat();
-    } catch {
-      // Keep running after transient heartbeat failures.
-    }
-  };
+  let shutdownStarted = false;
 
   const shutdown = () => {
+    if (shutdownStarted) return;
+    shutdownStarted = true;
     stopped = true;
-    updateState({ agent: { status: "stopped", pid: process.pid, stoppedAt: new Date().toISOString() } });
-    log("agent stopped");
-    process.exit(0);
+    try {
+      updateState({ agent: { status: "stopped", pid: process.pid, stoppedAt: new Date().toISOString() } });
+      log("agent stopped");
+    } finally {
+      // process.exit bypasses async/finally cleanup, so release before using
+      // it. A hard kill still leaves a PID record that the next start safely
+      // recognizes as stale.
+      agentLock.release();
+      process.exit(0);
+    }
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
@@ -164,64 +153,96 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
   process.on("SIGBREAK", shutdown);
   process.on("SIGHUP", shutdown);
 
-  // Tick-based scheduler instead of setInterval. setInterval timers freeze
-  // while the host is asleep (laptop lid closed, macOS suspended) and on
-  // wake their next callback may not fire for another full interval. The
-  // 5-second tick polls the wall clock and beats/syncs whenever the
-  // appropriate interval has elapsed, so a wake-from-sleep is reconciled
-  // within ~5s instead of up to a full heartbeatSeconds.
-  const TICK_MS = 5000;
-  // 闸门周转的体感上限：人在网页上批准后，最多等这么久机器才会拿到。
-  // 比 sync 快得多（sync 以分钟计），又不搭在 heartbeat 上以免拖慢存活上报。
-  const HARNESS_MS = 60_000;
-  const QUOTA_ACTIVE_MS = 60_000;
-  const QUOTA_IDLE_MS = 300_000;
-  const ACTIVITY_WINDOW_MS = 60 * 60 * 1000;
-  let lastBeatAt = 0;
-  let lastSyncAt = 0;
-  let lastHarnessAt = 0;
-  let harnessInFlight = false;
+  try {
+    const config = readConfig();
+    updateState({ agent: { status: "running", pid: process.pid, startedAt: new Date().toISOString() } });
+    log(`agent started pid=${process.pid}`);
 
-  await beat();
-  lastBeatAt = Date.now();
-  await sync();
-  lastSyncAt = Date.now();
+    const sync = async () => {
+      if (syncing) return;
+      syncing = true;
+      try {
+        await runOnce();
+      } catch {
+        // Errors are already written to state/log; keep the agent alive.
+      } finally {
+        syncing = false;
+      }
+    };
 
-  const tick = () => {
-    if (stopped) return;
-    const now = Date.now();
-    if (now - lastBeatAt >= options.heartbeatSeconds * 1000) {
-      lastBeatAt = now;
-      void beat();
-    }
-    if (now - lastSyncAt >= options.syncMinutes * 60 * 1000) {
-      lastSyncAt = now;
-      void sync();
-    }
-    // 单飞：一次 harness 同步要遍历多个仓库并可能写盘 + commit，慢于 tick 时不叠加
-    if (!harnessInFlight && now - lastHarnessAt >= HARNESS_MS) {
-      lastHarnessAt = now;
-      harnessInFlight = true;
-      void runHarnessSync(config)
-        .then(logHarness)
-        .catch((err) => log(`harness sync failed: ${err instanceof Error ? err.message : String(err)}`))
-        .finally(() => {
-          harnessInFlight = false;
+    const beat = async () => {
+      try {
+        await runHeartbeat();
+      } catch {
+        // Keep running after transient heartbeat failures.
+      }
+    };
+
+    // Tick-based scheduler instead of setInterval. setInterval timers freeze
+    // while the host is asleep (laptop lid closed, macOS suspended) and on
+    // wake their next callback may not fire for another full interval. The
+    // 5-second tick polls the wall clock and beats/syncs whenever the
+    // appropriate interval has elapsed, so a wake-from-sleep is reconciled
+    // within ~5s instead of up to a full heartbeatSeconds.
+    const TICK_MS = 5000;
+    // 闸门周转的体感上限：人在网页上批准后，最多等这么久机器才会拿到。
+    // 比 sync 快得多（sync 以分钟计），又不搭在 heartbeat 上以免拖慢存活上报。
+    const HARNESS_MS = 60_000;
+    const QUOTA_ACTIVE_MS = 60_000;
+    const QUOTA_IDLE_MS = 300_000;
+    const ACTIVITY_WINDOW_MS = 60 * 60 * 1000;
+    let lastBeatAt = 0;
+    let lastSyncAt = 0;
+    let lastHarnessAt = 0;
+    let harnessInFlight = false;
+
+    await beat();
+    lastBeatAt = Date.now();
+    await sync();
+    lastSyncAt = Date.now();
+
+    const tick = () => {
+      if (stopped) return;
+      const now = Date.now();
+      if (now - lastBeatAt >= options.heartbeatSeconds * 1000) {
+        lastBeatAt = now;
+        void beat();
+      }
+      if (now - lastSyncAt >= options.syncMinutes * 60 * 1000) {
+        lastSyncAt = now;
+        void sync();
+      }
+      // 单飞：一次 harness 同步要遍历多个仓库并可能写盘 + commit，慢于 tick 时不叠加
+      if (!harnessInFlight && now - lastHarnessAt >= HARNESS_MS) {
+        lastHarnessAt = now;
+        harnessInFlight = true;
+        void runHarnessSync(config)
+          .then(logHarness)
+          .catch((err) => log(`harness sync failed: ${err instanceof Error ? err.message : String(err)}`))
+          .finally(() => {
+            harnessInFlight = false;
+          });
+      }
+      const state = readState();
+      const lastActivityAt = state.lastEventActivityAt ? new Date(state.lastEventActivityAt).getTime() : 0;
+      const isActive = lastActivityAt > 0 && (now - lastActivityAt) < ACTIVITY_WINDOW_MS;
+      const quotaThreshold = isActive ? QUOTA_ACTIVE_MS : QUOTA_IDLE_MS;
+      const lastQuotaAt = state.lastQuotaRefreshAt ? new Date(state.lastQuotaRefreshAt).getTime() : 0;
+      if (now - lastQuotaAt >= quotaThreshold) {
+        void runQuotaRefresh(config).catch((err) => {
+          log(`quota refresh failed: ${err instanceof Error ? err.message : String(err)}`);
         });
-    }
-    const state = readState();
-    const lastActivityAt = state.lastEventActivityAt ? new Date(state.lastEventActivityAt).getTime() : 0;
-    const isActive = lastActivityAt > 0 && (now - lastActivityAt) < ACTIVITY_WINDOW_MS;
-    const quotaThreshold = isActive ? QUOTA_ACTIVE_MS : QUOTA_IDLE_MS;
-    const lastQuotaAt = state.lastQuotaRefreshAt ? new Date(state.lastQuotaRefreshAt).getTime() : 0;
-    if (now - lastQuotaAt >= quotaThreshold) {
-      void runQuotaRefresh(config).catch((err) => {
-        log(`quota refresh failed: ${err instanceof Error ? err.message : String(err)}`);
-      });
-    }
+      }
+      setTimeout(tick, TICK_MS);
+    };
     setTimeout(tick, TICK_MS);
-  };
-  setTimeout(tick, TICK_MS);
 
-  while (!stopped) await new Promise((resolve) => setTimeout(resolve, 60_000));
+    while (!stopped) await new Promise((resolve) => setTimeout(resolve, 60_000));
+  } finally {
+    process.off("SIGINT", shutdown);
+    process.off("SIGTERM", shutdown);
+    process.off("SIGBREAK", shutdown);
+    process.off("SIGHUP", shutdown);
+    agentLock.release();
+  }
 }

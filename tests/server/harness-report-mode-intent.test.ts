@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => {
   const tx = {
+    device: { findUnique: vi.fn(), updateMany: vi.fn() },
+    deviceToken: { updateMany: vi.fn() },
     harnessProject: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn(), upsert: vi.fn() },
     harnessGate: { findMany: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn(), upsert: vi.fn() },
     harnessModeIntent: { updateMany: vi.fn() },
@@ -114,6 +116,7 @@ function report(overrides: Record<string, unknown> = {}) {
   return {
     repoKey: "github.com/acme/tokenizer",
     name: "tokenizer",
+    agent: { releaseVersion: "1.2.1", featureVersion: 9 },
     state: {
       status: "building",
       batch: "BL-TEST",
@@ -151,9 +154,12 @@ function request(body: unknown) {
 describe("harness report mode activation and dispatch summaries", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.authenticateDeviceToken.mockResolvedValue({ userId: "user-1", deviceId: "device-1" });
+    mocks.authenticateDeviceToken.mockResolvedValue({ id: "token-1", userId: "user-1", deviceId: "device-1" });
     mocks.prisma.project.findFirst.mockResolvedValue({ id: "usage-project-1" });
     mocks.prisma.harnessProject.findMany.mockResolvedValue([]);
+    mocks.tx.deviceToken.updateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.device.updateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.device.findUnique.mockResolvedValue({ agentReleaseVersion: null, agentFeatureVersion: null });
     mocks.tx.harnessProject.findMany.mockResolvedValue([]);
     mocks.tx.harnessProject.findUnique.mockResolvedValue(null);
     mocks.tx.harnessProject.update.mockResolvedValue({ id: "legacy-project" });
@@ -178,7 +184,7 @@ describe("harness report mode activation and dispatch summaries", () => {
       run({ errorSummary: "stdout=full raw output" })
     ]) {
       vi.clearAllMocks();
-      mocks.authenticateDeviceToken.mockResolvedValue({ userId: "user-1", deviceId: "device-1" });
+      mocks.authenticateDeviceToken.mockResolvedValue({ id: "token-1", userId: "user-1", deviceId: "device-1" });
       const response = await POST(request(report({ dispatchRuns: [invalidRun] })));
       expect(response.status).toBe(400);
       const body = await response.json();
@@ -187,6 +193,155 @@ describe("harness report mode activation and dispatch summaries", () => {
       expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
       expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
     }
+  });
+
+  it.each([
+    ["missing identity", undefined],
+    ["null identity", null],
+    ["older release", { releaseVersion: "1.2.0", featureVersion: 9 }],
+    ["older capability", { releaseVersion: "1.2.1", featureVersion: 8 }]
+  ])("rejects a %s before it can overwrite accepted Harness state", async (_label, agent) => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 9 });
+
+    const response = await POST(request(report({ agent })));
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "stale_agent_report" });
+    expect(mocks.tx.harnessProject.findMany).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.findUnique).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.update).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessGate.updateMany).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessGate.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessModeIntent.updateMany).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessDispatchRun.upsert).not.toHaveBeenCalled();
+  });
+
+  it("rechecks a token revoked after request authentication before any Harness write", async () => {
+    mocks.tx.deviceToken.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const response = await POST(request(report()));
+
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({ code: "device_token_revoked" });
+    expect(mocks.tx.device.updateMany).toHaveBeenCalledOnce();
+    expect(mocks.tx.device.findUnique).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessGate.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessModeIntent.updateMany).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessDispatchRun.upsert).not.toHaveBeenCalled();
+  });
+
+  it("accepts a matching capability 9 reporter", async () => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 9 });
+
+    const response = await POST(request(report()));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledOnce();
+    expect(mocks.tx.device.updateMany.mock.invocationCallOrder[0])
+      .toBeLessThan(mocks.tx.device.findUnique.mock.invocationCallOrder[0]);
+    expect(mocks.tx.device.updateMany.mock.invocationCallOrder[0])
+      .toBeLessThan(mocks.tx.deviceToken.updateMany.mock.invocationCallOrder[0]);
+  });
+
+  it("promotes an accepted versioned report before it writes Harness state", async () => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.0", agentFeatureVersion: 8 });
+
+    const response = await POST(request(report()));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.device.updateMany).toHaveBeenNthCalledWith(2, {
+      where: { id: "device-1", userId: "user-1" },
+      data: { agentReleaseVersion: "1.2.1", agentFeatureVersion: 9 }
+    });
+    expect(mocks.tx.device.updateMany.mock.invocationCallOrder[1])
+      .toBeLessThan(mocks.tx.harnessProject.upsert.mock.invocationCallOrder[0]);
+  });
+
+  it("rejects a legacy report after a versioned report has established capability 9", async () => {
+    mocks.tx.device.findUnique
+      .mockResolvedValueOnce({ agentReleaseVersion: "1.2.0", agentFeatureVersion: 8 })
+      .mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 9 });
+
+    expect((await POST(request(report()))).status).toBe(200);
+    const stale = await POST(request(report({ agent: undefined })));
+
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toMatchObject({ code: "stale_agent_report" });
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledOnce();
+  });
+
+  it("retries a serialization conflict at the device freshness fence", async () => {
+    mocks.prisma.$transaction.mockRejectedValueOnce(Object.assign(new Error("serialization conflict"), { code: "P2034" }));
+
+    const response = await POST(request(report()));
+
+    expect(response.status).toBe(200);
+    expect(mocks.prisma.$transaction).toHaveBeenCalledTimes(2);
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledOnce();
+  });
+
+  it("keeps identity-less legacy reports compatible until the device has capability 9", async () => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.0", agentFeatureVersion: 8 });
+
+    const response = await POST(request(report({ agent: undefined })));
+
+    expect(response.status).toBe(200);
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledOnce();
+  });
+
+  it("rejects an identified older reporter before capability 9", async () => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 8 });
+
+    const response = await POST(
+      request(report({ agent: { releaseVersion: "1.2.0", featureVersion: 8 } }))
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "stale_agent_report" });
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+  });
+
+  it("requires identity to repair an oversized stored capability", async () => {
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 1_000_001 });
+
+    const stale = await POST(request(report({ agent: undefined })));
+
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toMatchObject({ code: "stale_agent_report" });
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+
+    mocks.tx.device.findUnique.mockResolvedValueOnce({ agentReleaseVersion: "1.2.1", agentFeatureVersion: 1_000_001 });
+    const repaired = await POST(request(report()));
+
+    expect(repaired.status).toBe(200);
+    expect(mocks.tx.device.updateMany).toHaveBeenNthCalledWith(3, {
+      where: { id: "device-1", userId: "user-1" },
+      data: { agentReleaseVersion: "1.2.1", agentFeatureVersion: 9 }
+    });
+    expect(mocks.tx.harnessProject.upsert).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ["pre-release", { releaseVersion: "1.2.1-beta", featureVersion: 9 }, "invalid_agent_reporter"],
+    ["unknown field", { releaseVersion: "1.2.1", featureVersion: 9, extra: true }, "unknown_field"],
+    ["missing release", { featureVersion: 9 }, "invalid_agent_reporter"],
+    ["missing capability", { releaseVersion: "1.2.1" }, "invalid_agent_reporter"],
+    ["fractional capability", { releaseVersion: "1.2.1", featureVersion: 9.5 }, "invalid_agent_reporter"],
+    ["negative capability", { releaseVersion: "1.2.1", featureVersion: -1 }, "invalid_agent_reporter"],
+    ["oversized capability", { releaseVersion: "1.2.1", featureVersion: 1_000_001 }, "invalid_agent_reporter"]
+  ])("rejects a malformed %s reporter before Prisma reads or writes", async (_label, agent, code) => {
+    const response = await POST(request(report({ agent })));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code });
+    expect(mocks.prisma.project.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.$transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessProject.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessGate.upsert).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessModeIntent.updateMany).not.toHaveBeenCalled();
+    expect(mocks.tx.harnessDispatchRun.upsert).not.toHaveBeenCalled();
   });
 
   it("accepts a full report containing the live F001 title and phase gate", async () => {

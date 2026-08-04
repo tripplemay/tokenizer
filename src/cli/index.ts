@@ -70,7 +70,7 @@ program.command("heartbeat").description("Send one device heartbeat").action(asy
   console.log(`Heartbeat ok: ${result.deviceId} ${result.lastSeenAt}`);
 });
 
-program.command("agent").description("Run the tokenizer background agent in the foreground").option("--heartbeat-seconds <seconds>", "Heartbeat interval", "60").option("--sync-minutes <minutes>", "Collect/sync interval", "15").action(async (options: { heartbeatSeconds: string; syncMinutes: string }) => {
+program.command("agent").description("Run the tokenizer background agent in the foreground").allowExcessArguments(false).option("--heartbeat-seconds <seconds>", "Heartbeat interval", "60").option("--sync-minutes <minutes>", "Collect/sync interval", "15").action(async (options: { heartbeatSeconds: string; syncMinutes: string }) => {
   await runAgent({ heartbeatSeconds: Number(options.heartbeatSeconds), syncMinutes: Number(options.syncMinutes) });
 });
 

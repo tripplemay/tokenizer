@@ -33,6 +33,12 @@ import {
 import { canonicalJson } from "@/server/harness-sign";
 import { formatHarnessLogLines } from "@/cli/agent";
 import { sign as edSign, createPrivateKey, generateKeyPairSync } from "node:crypto";
+import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
+import {
+  HARNESS_RELAY_AGENT_FEATURE_VERSION_HEADER,
+  HARNESS_RELAY_AGENT_RELEASE_VERSION_HEADER
+} from "@/shared/harness-relay-identity";
 
 let root: string;
 let repo: string;
@@ -193,6 +199,10 @@ describe("discoverHarnessRepos", () => {
 describe("buildReport", () => {
   it("从 features.json 统计完成度，并带上待批闸门", () => {
     const body = buildReport(discoverHarnessRepos(config())[0])!;
+    expect(body.agent).toEqual({
+      releaseVersion: CURRENT_AGENT_RELEASE_VERSION,
+      featureVersion: AGENT_FEATURE_VERSION
+    });
     expect(body.state.completed).toBe(2);
     expect(body.state.total).toBe(3);
     expect(body.state.fixRounds).toBe(1);
@@ -225,6 +235,34 @@ describe("buildReport", () => {
 });
 
 describe("mode intent report ACK", () => {
+  it("sends the running Agent identity on every device-driven Harness relay request", async () => {
+    const mode = signedModeIntent();
+    fetchMock.mockImplementation(async (url: unknown, init?: { method?: string }) => {
+      const path = String(url);
+      if (path.includes("/api/harness/report")) {
+        return { ok: true, json: async () => ({ harnessProjectId: "project-1" }) };
+      }
+      if (path.includes("/api/harness/mode-intents/relay")) {
+        return init?.method === "POST"
+          ? { ok: true, status: 200 }
+          : { ok: true, text: async () => JSON.stringify({ intents: [mode] }) };
+      }
+      return { ok: true, json: async () => ({ decisions: [] }) };
+    });
+
+    const result = await runHarnessSync(config());
+
+    expect(result.reported).toBe(1);
+    expect(result.stagedIntents).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    for (const [, init] of fetchMock.mock.calls) {
+      expect((init as { headers?: Record<string, string> }).headers).toMatchObject({
+        [HARNESS_RELAY_AGENT_RELEASE_VERSION_HEADER]: CURRENT_AGENT_RELEASE_VERSION,
+        [HARNESS_RELAY_AGENT_FEATURE_VERSION_HEADER]: String(AGENT_FEATURE_VERSION)
+      });
+    }
+  });
+
   it("reports progress.mode_intent as applied and sends the identical applied ACK", async () => {
     writeFileSync(
       join(repo, "progress.json"),
