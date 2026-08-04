@@ -5,7 +5,7 @@ type: project
 ---
 ## 当前批次
 
-- **BL-NATIVE-SUBAGENT-BRIDGES（reverifying，4/5，fix_rounds=3）**：FIX2 已裁决（#1:A #2:A #3 #4 同意）并于第 3 轮实现（6b8900b+4cf44df）：deliverable_channels 声明式通道、artifact 覆盖点合法化、旧用例清理、backlog 登记。planner persona 真实 launch 冒烟成功（terminal-message 物化，68s）；三 persona 均有真实实证。用户批准 4cf44df 推送（无迁移部署）。聚焦终轮复验进行中。
+- **BL-NATIVE-SUBAGENT-BRIDGES（reverifying→待 done 闸门，5/5，fix_rounds=3）**：批次全 PASS。F003 终轮 PASS（3 次真实 planner launch，2 成功 + 1 非确定性 fail-closed 失败，重放即成功）；跨 feature 回归为零；Evaluator signoff 已签署（docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md）。pending_gate `BL-NATIVE-SUBAGENT-BRIDGES-verifying-done-r3` 已举起，等用户以 approve-gate.sh 批准。遗留非阻断观察：guest 失败语义白名单回传、D8/D9 覆盖语义对齐（待定是否入 backlog）。生产已随用户批准运行 4cf44df（2026-08-04 部署 success）。
 - 上轮全部阻断项已在 abf7a6e 处理：-I 重解析、write_text(bytes)、dispatch-run 预检路径双拼、guest 目录穿越权限×2；dispatch_common.py 已入三处 app-bundle 身份名单；test-lifecycle 断言已收敛到安全属性；已补生产 argv 回归用例。
 - L2 已实际行使（真实 launch 尝试 + Codex local-cli health + 全量回归），不再 l2_pending。
 - 复验证据：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F00{1..5}-2026-08-04.md`、`…-adversarial-review-2026-08-04.md`、`…-F005-probe-audit-2026-08-04.json`、`docs/test-reports/evidence/`。

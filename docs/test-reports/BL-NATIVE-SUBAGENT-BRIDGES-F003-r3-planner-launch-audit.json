@@ -1,0 +1,111 @@
+{
+  "report": "BL-NATIVE-SUBAGENT-BRIDGES reverify round 3 — F003 planner persona (terminal-message)",
+  "locked_ref": "ce249dc3c431e95a42603e6209158de1a1620f3f",
+  "generated_at": "2026-08-04T07:44:25Z",
+  "evaluator": "fresh-context evaluator (round 3)",
+  "redaction": "identifiers appear only as sha256 digests; no prompt, model text, wire, or credential material is stored",
+  "planner_launches": [
+    {
+      "task_id": "BL-NSB-F003-r3-planprobe",
+      "verdict": "FAILED",
+      "started_utc": "2026-08-04T06:36:44Z",
+      "ended_utc": "2026-08-04T06:41:58Z",
+      "duration_s": 314,
+      "provider_exit": 2,
+      "host_error": "VM restricted provider unit failed",
+      "note": "no artifact, no copyout, no source written; guest stderr not surfaced by design; guest unit exited 2 (journal-confirmed)"
+    },
+    {
+      "task_id": "BL-NSB-F003-r3-planprobe2",
+      "agent_id": "subagent--kimi--planner",
+      "role": "planner",
+      "adapter": "kimi",
+      "model_family": "kimi",
+      "transport": "subagent",
+      "ref": "ce249dc3c431e95a42603e6209158de1a1620f3f",
+      "outcome": "RETURNED",
+      "exit_code": 0,
+      "duration_s": 73,
+      "effective_timeout_s": 2400,
+      "termination_reason": "completed",
+      "source_changes": [],
+      "receipt": {
+        "bridge_id": "kimi-acp-native-agent",
+        "bridge_kind": "acp-native-agent/v1",
+        "bridge_strategy": "session-bridge-v1",
+        "session_scope": "same-session",
+        "subagent_type": "plan",
+        "terminal_status": "completed",
+        "nonce_sha256": "bf7b4c203c43fea0b251259c8c4e3b055d0b171d606f30d29013766ece752648",
+        "session_id_sha256": "491d061c2f869700c0a848222a27b3558c2d5d0b218c2aa74d637fc82e24b1c5",
+        "child_call_id_sha256": "7fd139577ae3845f52856a53ab20b5978e1abbdf1b5e6aaad3e1c6ec2b38c4c3",
+        "artifact_sha256": "5f7cb97efc5ca6ac63516b2aab32f783dd096ff38c2dd08493bb6927aaca254b",
+        "provider_launch_attestation_sha256": "185684dd23d50a8da0529148dee21f56d89b0ea7d93fa00167fc985a9aefc310"
+      },
+      "attestation": {
+        "phase": "launch",
+        "provider_id": "harness-vm-v1",
+        "provider_kind": "vm-v1",
+        "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+        "issued_at": "2026-08-04T07:08:11Z",
+        "expires_at": "2026-08-04T07:13:11Z",
+        "nonce_sha256": "bf7b4c203c43fea0b251259c8c4e3b055d0b171d606f30d29013766ece752648",
+        "target_provenance_sha256": "f8c09e746967f6e31d7497ba5895c9531fadc8c64d94cfef3b83513637566712"
+      },
+      "bindings_verified": {
+        "receipt_nonce_equals_attestation_nonce": true,
+        "artifact_sha256_matches_materialized_bytes": true,
+        "artifact_mode": "0o600",
+        "artifact_bytes": 373
+      },
+      "verdict": "PASSED",
+      "note": "prescriptive JSON contract"
+    },
+    {
+      "task_id": "BL-NSB-F003-r3-planprobe3",
+      "agent_id": "subagent--kimi--planner",
+      "role": "planner",
+      "adapter": "kimi",
+      "model_family": "kimi",
+      "transport": "subagent",
+      "ref": "ce249dc3c431e95a42603e6209158de1a1620f3f",
+      "outcome": "RETURNED",
+      "exit_code": 0,
+      "duration_s": 104,
+      "effective_timeout_s": 2400,
+      "termination_reason": "completed",
+      "source_changes": [],
+      "receipt": {
+        "bridge_id": "kimi-acp-native-agent",
+        "bridge_kind": "acp-native-agent/v1",
+        "bridge_strategy": "session-bridge-v1",
+        "session_scope": "same-session",
+        "subagent_type": "plan",
+        "terminal_status": "completed",
+        "nonce_sha256": "e98836bf8e2886d0e4c1eff18278c0f6e8a36ea4cccde22ddf15a789b4502431",
+        "session_id_sha256": "d8cfaf62c82669b7a14a9d4b724382b1bf8709b7d80366aca93c5cad049610f9",
+        "child_call_id_sha256": "e364f72772a8030bbac97a894c2e8700792d5b822c30e56491808f7840285480",
+        "artifact_sha256": "e1819c0ed5b06306f63fa412967b699ce19f976250700410cb044f2192a1c3d4",
+        "provider_launch_attestation_sha256": "835f92ffadfe4e7f11c13ff93dbd647004171834b335dee909055097df2ec17e"
+      },
+      "attestation": {
+        "phase": "launch",
+        "provider_id": "harness-vm-v1",
+        "provider_kind": "vm-v1",
+        "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+        "issued_at": "2026-08-04T07:29:18Z",
+        "expires_at": "2026-08-04T07:34:18Z",
+        "nonce_sha256": "e98836bf8e2886d0e4c1eff18278c0f6e8a36ea4cccde22ddf15a789b4502431",
+        "target_provenance_sha256": "f8c09e746967f6e31d7497ba5895c9531fadc8c64d94cfef3b83513637566712"
+      },
+      "bindings_verified": {
+        "receipt_nonce_equals_attestation_nonce": true,
+        "artifact_sha256_matches_materialized_bytes": true,
+        "artifact_mode": "0o600",
+        "artifact_bytes": 451
+      },
+      "verdict": "PASSED",
+      "note": "verbatim repeat of the probe-1 contract that had failed"
+    }
+  ]
+}
