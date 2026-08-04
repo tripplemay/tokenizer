@@ -522,13 +522,14 @@ while IFS= read -r -d '' item; do D_ENV_SET+=("$item"); done < <(profile_array e
   die "内部 profile transport 非法：$D_TRANSPORT"
 
 # A project manifest and a Seatbelt profile cannot create a strict external
-# same-session trust boundary.  This release has no framework-integrated VM
-# or ephemeral-principal provider with brokered credentials/network and
-# provider-owned lifecycle, so reject even a stale target before any worktree,
-# runtime state, or vendor process can be created.  A future provider must
-# replace this branch and re-attest during this fresh target resolution.
+# same-session trust boundary.  External bridges launch exclusively through
+# dispatch-run.sh's vm-v1 branch, which re-resolves the target and demands a
+# fresh launch attestation from the installed framework provider.  This entry
+# point stays fail-closed for subagent transports so a caller can never trade
+# the provider's brokered credentials/network and owned lifecycle for a
+# same-UID sandbox.
 if [ "$D_TRANSPORT" = "subagent" ]; then
-  die "external same-session bridge is unavailable: no strict VM/ephemeral-principal provider is integrated"
+  die "external same-session bridge does not launch here: dispatch-run.sh owns the strict vm-v1 provider route"
 fi
 
 # ── 2. 独立 worktree（锁定到 sha，detach，不设 upstream）────────────────────

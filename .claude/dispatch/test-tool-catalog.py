@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -122,6 +123,16 @@ class ToolCatalogTests(unittest.TestCase):
         self.bridges.mkdir()
         self.registry = self.root / "registry.json"
         self.bindings = self.root / "bindings.json"
+        # Subprocess fixtures run a copy of the CLI from the temp directory.
+        # The copy cannot prove byte identity with an installed app bundle, so
+        # provider discovery stays deterministically unavailable no matter what
+        # the host machine has installed; provider scenarios are exercised only
+        # through the in-process mock.
+        self.cli_dir = self.root / "cli"
+        self.cli_dir.mkdir()
+        self.cli = self.cli_dir / "tool-catalog.py"
+        shutil.copy2(TOOL_CATALOG, self.cli)
+        shutil.copy2(HERE / "dispatch_common.py", self.cli_dir / "dispatch_common.py")
 
     def tearDown(self):
         self.temp.cleanup()
@@ -157,7 +168,7 @@ class ToolCatalogTests(unittest.TestCase):
     def invoke(self, command: str, *, target_id: str | None = None):
         args = [
             sys.executable,
-            str(TOOL_CATALOG),
+            str(self.cli),
             command,
             "--registry",
             str(self.registry),
@@ -840,13 +851,18 @@ class ToolCatalogTests(unittest.TestCase):
             [],
         )
 
-        self.assertIsNone(TOOL_CATALOG_MODULE.external_same_session_bridge_provider())
-        candidates = TOOL_CATALOG_MODULE.candidates_from_registry(
-            self.registry, self.adapters, self.bridges
-        )
-        catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
-        with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not registered"):
-            TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+        # Simulate a machine with no installed app bundle: discovery itself
+        # must return None and the verified bridge must stay hidden.
+        with mock.patch.object(
+            TOOL_CATALOG_MODULE, "_installed_provider_path", return_value=None
+        ):
+            self.assertIsNone(TOOL_CATALOG_MODULE.external_same_session_bridge_provider())
+            candidates = TOOL_CATALOG_MODULE.candidates_from_registry(
+                self.registry, self.adapters, self.bridges
+            )
+            catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
+            with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not registered"):
+                TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
 
         for role in ("planner", "generator", "evaluator"):
             choices = {

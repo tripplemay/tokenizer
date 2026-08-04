@@ -592,7 +592,10 @@ def _run_vm(
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             timeout=timeout,
-            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+            # limactl aborts outright without HOME. Supply the passwd-derived
+            # home, never the ambient variable a dispatched CLI may have
+            # rewritten for its own sandbox.
+            env={"HOME": str(_home_directory()), "PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -608,7 +611,10 @@ def _validated_lima_status(configuration: ProviderConfiguration) -> dict[str, An
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             timeout=15,
-            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+            # limactl aborts outright without HOME. Supply the passwd-derived
+            # home, never the ambient variable a dispatched CLI may have
+            # rewritten for its own sandbox.
+            env={"HOME": str(_home_directory()), "PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
