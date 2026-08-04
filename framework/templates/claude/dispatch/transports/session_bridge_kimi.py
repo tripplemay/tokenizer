@@ -480,6 +480,57 @@ def _agent_tool_event(message: dict[str, Any], session_id: str) -> tuple[str | N
     return tool_name if isinstance(tool_name, str) else None, raw_input, call_id
 
 
+def _agent_message_text(message: dict[str, Any], session_id: str) -> str:
+    """Extract root assistant text from one session update, else empty string.
+
+    Used only for the terminal-message deliverable channel: read-only vendor
+    personas cannot write the commissioned artifact, so the driver
+    materializes the root session's relayed deliverable itself (FIX2 #1:A).
+    Kimi 0.31 streams these as ``agent_message_chunk`` content blocks.
+    """
+    if message.get("method") != "session/update":
+        return ""
+    params = _object(message.get("params"))
+    if params.get("sessionId") != session_id:
+        return ""
+    update = _object(params.get("update"))
+    kind = update.get("sessionUpdate") or update.get("type")
+    if kind not in {"agent_message_chunk", "agent_message"}:
+        return ""
+    content = update.get("content")
+    blocks = content if isinstance(content, list) else [content]
+    collected: list[str] = []
+    for block in blocks:
+        if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str):
+            collected.append(block["text"])
+    return "".join(collected)
+
+
+_DELIVERABLE_SINK_MAX_BYTES = 1024 * 1024
+
+
+def _materialize_terminal_message(sink: Path, updates: list[dict[str, Any]], session_id: str) -> None:
+    """Write the root session's relayed deliverable to the artifact path."""
+    text = "".join(_agent_message_text(update, session_id) for update in updates)
+    if not text.strip():
+        raise KimiBridgeError("Kimi bridge returned no terminal-message deliverable")
+    payload = text.encode("utf-8")
+    if len(payload) > _DELIVERABLE_SINK_MAX_BYTES:
+        raise KimiBridgeError("Kimi bridge terminal-message deliverable exceeds its size limit")
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        sink.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(str(sink), flags, 0o600)
+    except OSError as exc:
+        raise KimiBridgeError("Kimi bridge could not materialize the terminal-message deliverable") from exc
+    try:
+        os.write(descriptor, payload)
+    finally:
+        os.close(descriptor)
+
+
 def _agent_completion_event(message: dict[str, Any], session_id: str, call_id: str) -> bool:
     if message.get("method") != "session/update":
         return False
@@ -516,6 +567,7 @@ def run_acp_native_agent(
     worker_env: Mapping[str, str],
     worker_state_root: Path | None,
     provider_owns_cleanup: bool = False,
+    deliverable_sink: Path | None = None,
 ) -> dict[str, Any]:
     """Run one native Kimi Agent and prove it happened through ACP updates.
 
@@ -638,6 +690,8 @@ def run_acp_native_agent(
             raise KimiBridgeError("Kimi ACP native Agent type did not match the bridge persona")
         if not any(_agent_completion_event(update, session_id, child_call_id) for update in updates):
             raise KimiBridgeError("Kimi ACP native Agent did not reach completion")
+        if deliverable_sink is not None:
+            _materialize_terminal_message(deliverable_sink, updates, session_id)
         return {
             "bridge_kind": "acp-native-agent/v1",
             "session_id_sha256": _receipt_identifier(session_id),

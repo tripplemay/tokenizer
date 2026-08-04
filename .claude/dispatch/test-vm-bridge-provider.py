@@ -220,6 +220,45 @@ class VmBridgeProviderTests(unittest.TestCase):
         self.assertEqual(staging_source.read_text(encoding="utf-8"), "after\n")
         self.assertEqual(staging_source.stat().st_mode & 0o777, 0o700)
 
+    def test_commissioned_artifact_may_overwrite_its_baseline_path(self) -> None:
+        """FIX2 #2:A — the declared artifact path is a legal write point.
+
+        A read-only role updating an already-tracked verdict file must be
+        reconciled (and recorded) instead of failing after a full bridge run.
+        """
+        baseline = self.root / "baseline"
+        returned = self.root / "returned"
+        staging = self.root / "staging"
+        for directory in (baseline, returned, staging):
+            directory.mkdir()
+        artifact = "docs/test-reports/batch-verdict.json"
+        write_file(baseline / artifact, '{"round": 1}\n')
+        write_file(returned / artifact, '{"round": 2}\n')
+
+        staged, changed = provider._reconcile_returned_source(
+            returned_root=returned,
+            baseline_root=baseline,
+            staging=staging,
+            role="evaluator",
+            artifact=artifact,
+        )
+
+        self.assertEqual(changed, (artifact,))
+        self.assertEqual(staged.read_text(encoding="utf-8"), '{"round": 2}\n')
+
+        # An identical returned artifact is an overwrite without a change.
+        identical_staging = self.root / "staging-identical"
+        identical_staging.mkdir()
+        write_file(returned / artifact, '{"round": 1}\n')
+        _, unchanged = provider._reconcile_returned_source(
+            returned_root=returned,
+            baseline_root=baseline,
+            staging=identical_staging,
+            role="evaluator",
+            artifact=artifact,
+        )
+        self.assertEqual(unchanged, ())
+
     def test_generator_reconciliation_counts_executable_bit_change(self) -> None:
         baseline = self.root / "baseline"
         returned = self.root / "returned"

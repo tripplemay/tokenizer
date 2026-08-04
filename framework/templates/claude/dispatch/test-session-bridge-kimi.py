@@ -170,6 +170,7 @@ class KimiAcpBridgeTests(unittest.TestCase):
         worker_env: dict[str, str] | None = None,
         worker_state_root: Path | None = None,
         provider_owns_cleanup: bool = False,
+        deliverable_sink: Path | None = None,
     ) -> dict[str, Any]:
         result = bridge.run_acp_native_agent(
             ["fake-cli", "acp"],
@@ -182,10 +183,52 @@ class KimiAcpBridgeTests(unittest.TestCase):
             worker_env=self.worker_env if worker_env is None else worker_env,
             worker_state_root=self.worker_state_root if worker_state_root is None else worker_state_root,
             provider_owns_cleanup=provider_owns_cleanup,
+            deliverable_sink=deliverable_sink,
         )
         self.assertEqual(process.command, ["fake-cli", "acp"])
         self.assertEqual(process.cwd, str(HERE))
         return result
+
+    @staticmethod
+    def agent_chunk(text: str) -> dict[str, Any]:
+        return {
+            "jsonrpc": "2.0",
+            "method": "session/update",
+            "params": {
+                "sessionId": "session-1",
+                "update": {
+                    "sessionUpdate": "agent_message_chunk",
+                    "content": {"type": "text", "text": text},
+                },
+            },
+        }
+
+    def test_terminal_message_sink_materializes_root_reply(self) -> None:
+        messages = successful_messages()
+        messages.insert(-1, self.agent_chunk("The commissioned plan: "))
+        messages.insert(-1, self.agent_chunk("read A, then propose B."))
+        sink = Path(self.temp.name) / "worktree-artifact" / "plan.md"
+        process = ScriptedPopen(messages)
+        result = self.run_with(process, deliverable_sink=sink)
+
+        self.assertEqual(result["terminal_status"], "completed")
+        self.assertEqual(
+            sink.read_text(encoding="utf-8"),
+            "The commissioned plan: read A, then propose B.",
+        )
+        if bridge.os.name == "posix":
+            self.assertEqual(sink.stat().st_mode & 0o777, 0o600)
+        # Model text flows only to the sink; the receipt stays digest-only.
+        self.assertNotIn("commissioned plan", json.dumps(result))
+
+    def test_terminal_message_sink_requires_root_text(self) -> None:
+        sink = Path(self.temp.name) / "empty-artifact" / "plan.md"
+        process = ScriptedPopen(successful_messages())
+        with self.assertRaisesRegex(
+            bridge.KimiBridgeError, "no terminal-message deliverable"
+        ):
+            self.run_with(process, deliverable_sink=sink)
+        self.assertFalse(sink.exists())
 
     def test_proves_agent_call_and_terminal_update_without_peer_text(self) -> None:
         process = ScriptedPopen(successful_messages())

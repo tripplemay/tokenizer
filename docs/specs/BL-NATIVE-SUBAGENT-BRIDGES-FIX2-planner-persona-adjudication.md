@@ -3,7 +3,7 @@
 > **发起者：** main context（Coordinator/Planner）
 > **日期：** 2026-08-04
 > **触发：** 第 2 轮复验 F003=PARTIAL（planner persona 4/4 确定性失败）；F005 PASS 但留下两条需裁决的 observation。按 pre-implementation audit → 裁决 → 用户确认流程处理。
-> **状态：** 待用户裁决。
+> **状态：** 已裁决（2026-08-04，用户短格式 `#1:A #2:A #3:同意 #4:同意`）；实现以本文件与更新后的 batch spec 为准。
 
 ## 1. 背景
 
@@ -47,4 +47,11 @@ kimi integration 的 `sandbox.env_set.KIMI_CODE_HOME` 对 bridge 路径无效且
 
 ## 3. 用户裁决
 
-**短格式:** `#1:_ #2:_ #3:_ #4:_`(待填)
+**短格式:** `#1:A #2:A #3:同意 #4:同意`(2026-08-04)
+
+### 同步文档更新
+
+- batch spec 增补硬约束:bridge manifest 的 `deliverable_channels` 为声明式按角色交付通道;`terminal-message` 通道由 driver 物化子代理最终消息为受托 artifact,内容 sha256 照常绑定 receipt;受托 artifact 路径为合法覆盖点,覆盖计入 source_changes。
+- 决议点 3:test-lifecycle 两条旧架构用例删除,其守护属性映射到 driver/provider 层现有自动化用例(见代码内注释)。
+- 决议点 4:registry 惰性字段清理已入 backlog `BL-REGISTRY-LAZY-FIELD-CLEANUP`。
+

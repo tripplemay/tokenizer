@@ -93,9 +93,15 @@ BRIDGE_MANIFEST_FIELDS = {
     "protocol",
     "personas",
     "native_agent_types",
+    "deliverable_channels",
     "notes",
 }
 BRIDGE_PROTOCOL_FIELDS = {"kind", "command", "request_delivery", "response_format"}
+# How a bridged child hands its commissioned artifact back. "file" children
+# write it themselves; "terminal-message" personas (read-only vendor
+# profiles) have the driver materialize their final message at the artifact
+# path. Adjudicated in BL-NATIVE-SUBAGENT-BRIDGES FIX2 #1:A.
+BRIDGE_DELIVERABLE_CHANNELS = {"file", "terminal-message"}
 A2A_TARGET_FIELDS = {
     "id",
     "integration_id",
@@ -547,6 +553,7 @@ class Candidate:
     remote_runner_id: str | None = None
     agent_type: str | None = None
     native_agent_type: str | None = None
+    deliverable_channel: str | None = None
     bridge_id: str | None = None
     bridge_strategy: str | None = None
     session_scope: str | None = None
@@ -597,6 +604,8 @@ class Candidate:
             value["agent_type"] = self.agent_type
         if self.native_agent_type is not None:
             value["native_agent_type"] = self.native_agent_type
+        if self.deliverable_channel is not None:
+            value["deliverable_channel"] = self.deliverable_channel
         if self.bridge_id is not None:
             value["bridge_id"] = self.bridge_id
         if self.bridge_strategy is not None:
@@ -659,6 +668,7 @@ class SubagentBridge:
     protocol: dict[str, Any]
     personas: dict[str, str]
     native_agent_types: dict[str, str]
+    deliverable_channels: dict[str, str]
     requires_local_cli: bool
 
 
@@ -671,6 +681,7 @@ def subagent_bridge_semantics(bridge: SubagentBridge) -> dict[str, Any]:
         "protocol": bridge.protocol,
         "personas": bridge.personas,
         "native_agent_types": bridge.native_agent_types,
+        "deliverable_channels": bridge.deliverable_channels,
         "requires_local_cli": bridge.requires_local_cli,
     }
 
@@ -768,6 +779,22 @@ def load_subagent_bridge(bridges_dir: Path, bridge_id: str) -> SubagentBridge:
             )
         native_agent_types[role] = parsed
 
+    channels_label = f"subagent bridge {bridge_id!r}.deliverable_channels"
+    channels_raw = manifest.get("deliverable_channels")
+    deliverable_channels: dict[str, str] = {role: "file" for role in personas}
+    if channels_raw is not None:
+        if not isinstance(channels_raw, dict) or not set(channels_raw) <= set(personas):
+            raise ToolCatalogError(
+                f"{channels_label} may only declare the bridge persona roles"
+            )
+        for role, channel in channels_raw.items():
+            parsed = bounded_text(channel, f"{channels_label}.{role}", 32)
+            if parsed not in BRIDGE_DELIVERABLE_CHANNELS:
+                raise ToolCatalogError(
+                    f"{channels_label}.{role} must name a published deliverable channel"
+                )
+            deliverable_channels[role] = parsed
+
     return SubagentBridge(
         id=declared_id,
         strategy=strategy[0],
@@ -780,6 +807,7 @@ def load_subagent_bridge(bridges_dir: Path, bridge_id: str) -> SubagentBridge:
         },
         personas=personas,
         native_agent_types=native_agent_types,
+        deliverable_channels=deliverable_channels,
         requires_local_cli=True,
     )
 
@@ -1281,6 +1309,7 @@ def integration_candidates(
                         timeout_s=bridge_local["timeout_s"] if bridge_local is not None else None,
                         agent_type=agent_type,
                         native_agent_type=bridge.native_agent_types[role],
+                        deliverable_channel=bridge.deliverable_channels[role],
                         bridge_id=bridge.id,
                         bridge_strategy=bridge.strategy,
                         session_scope=bridge.session_scope,

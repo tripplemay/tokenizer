@@ -65,6 +65,21 @@ Provider 必须符合 `external-bridge-provider.schema.json`：worker 使用与 
 
 `heterogeneous` 表达“非 A2A 的异家族外部执行”，可组合 Codex `local-cli` 与 Kimi verified same-session bridge，但 Generator/Evaluator 仍必须使用不同 model family。`slow` 继续要求至少一个 A2A；A2A 不可担任 Generator。前端、服务端签发校验、console validator 和本机 Agent mirror 必须保持同一判断。
 
+### D8 - 按角色声明式交付通道（FIX2 #1:A，2026-08-04）
+
+bridge manifest 可选声明 `deliverable_channels`（按角色，值为 `file` 或 `terminal-message`，缺省 `file`）。
+`file`：子代理自行把交付物写到 `deliverable.artifact`。`terminal-message`：用于只读厂商 persona
+（如 Kimi `plan`，无写工具且厂商提示词规定交付物即最终消息）——driver 在验证 nonce 绑定的子代理完成
+证据后，把根会话转述的最终消息物化到 artifact 路径（独占创建、0600、大小上限、空内容 fail-closed），
+`artifact_sha256` 照常绑定进 receipt。通道字段进入 target 与 execution provenance；未知通道、越角色声明
+一律 fail-closed。Kimi manifest 据此声明 `{"planner": "terminal-message"}`。
+
+### D9 - 受托 artifact 路径是合法覆盖点（FIX2 #2:A，2026-08-04）
+
+provider 归约不再拒绝 baseline 中已存在的受托 artifact 路径：该路径是签发信封声明的写入点，
+覆盖被接受并在内容变化时计入 `source_changes`，哈希照常绑定。只读角色对 artifact 之外的任何
+源改动仍然 fail-closed。
+
 ## 4. Feature 与验收
 
 ### F001 - 声明式桥接注册与能力目录

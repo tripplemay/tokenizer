@@ -4,18 +4,32 @@
   "description": "A verified bridge manifest consumed by tool-catalog.py. Integrations reference it through subagent.bridge; the bridge, rather than a CLI tool id, selects the generic bridge runner protocol.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "_verified", "session_scope", "strategy", "protocol", "personas", "native_agent_types"],
+  "required": [
+    "id",
+    "_verified",
+    "session_scope",
+    "strategy",
+    "protocol",
+    "personas",
+    "native_agent_types"
+  ],
   "definitions": {
     "native_agent_type": {
       "type": "string",
       "minLength": 1,
       "maxLength": 32,
       "pattern": "^[^\\u0000-\\u001F\\u007F]+$",
-      "enum": ["plan", "coder", "explore"]
+      "enum": [
+        "plan",
+        "coder",
+        "explore"
+      ]
     }
   },
   "properties": {
-    "_comment": { "type": "string" },
+    "_comment": {
+      "type": "string"
+    },
     "id": {
       "type": "string",
       "minLength": 1,
@@ -38,7 +52,12 @@
     "protocol": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "command", "request_delivery", "response_format"],
+      "required": [
+        "kind",
+        "command",
+        "request_delivery",
+        "response_format"
+      ],
       "properties": {
         "kind": {
           "type": "string",
@@ -59,7 +78,11 @@
         },
         "request_delivery": {
           "type": "string",
-          "enum": ["stdin", "argv", "env"]
+          "enum": [
+            "stdin",
+            "argv",
+            "env"
+          ]
         },
         "response_format": {
           "const": "json"
@@ -71,9 +94,15 @@
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
-        "planner": { "const": "planner-proposal" },
-        "generator": { "const": "generator-restricted" },
-        "evaluator": { "const": "evaluator" }
+        "planner": {
+          "const": "planner-proposal"
+        },
+        "generator": {
+          "const": "generator-restricted"
+        },
+        "evaluator": {
+          "const": "evaluator"
+        }
       }
     },
     "native_agent_types": {
@@ -81,48 +110,150 @@
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
-        "planner": { "$ref": "#/definitions/native_agent_type" },
-        "generator": { "$ref": "#/definitions/native_agent_type" },
-        "evaluator": { "$ref": "#/definitions/native_agent_type" }
+        "planner": {
+          "$ref": "#/definitions/native_agent_type"
+        },
+        "generator": {
+          "$ref": "#/definitions/native_agent_type"
+        },
+        "evaluator": {
+          "$ref": "#/definitions/native_agent_type"
+        }
       }
     },
-    "notes": { "type": "string" }
+    "notes": {
+      "type": "string"
+    },
+    "deliverable_channels": {
+      "type": "object",
+      "description": "Optional per-role deliverable handoff. file (default): the child writes deliverable.artifact itself. terminal-message: the driver materializes the child final message at the artifact path — for read-only vendor personas (FIX2 #1:A).",
+      "additionalProperties": false,
+      "properties": {
+        "planner": {
+          "type": "string",
+          "enum": [
+            "file",
+            "terminal-message"
+          ]
+        },
+        "generator": {
+          "type": "string",
+          "enum": [
+            "file",
+            "terminal-message"
+          ]
+        },
+        "evaluator": {
+          "type": "string",
+          "enum": [
+            "file",
+            "terminal-message"
+          ]
+        }
+      }
+    }
   },
   "allOf": [
     {
       "if": {
-        "required": ["personas"],
-        "properties": { "personas": { "required": ["planner"] } }
+        "required": [
+          "personas"
+        ],
+        "properties": {
+          "personas": {
+            "required": [
+              "planner"
+            ]
+          }
+        }
       },
       "then": {
-        "properties": { "native_agent_types": { "required": ["planner"] } }
+        "properties": {
+          "native_agent_types": {
+            "required": [
+              "planner"
+            ]
+          }
+        }
       },
       "else": {
-        "properties": { "native_agent_types": { "not": { "required": ["planner"] } } }
+        "properties": {
+          "native_agent_types": {
+            "not": {
+              "required": [
+                "planner"
+              ]
+            }
+          }
+        }
       }
     },
     {
       "if": {
-        "required": ["personas"],
-        "properties": { "personas": { "required": ["generator"] } }
+        "required": [
+          "personas"
+        ],
+        "properties": {
+          "personas": {
+            "required": [
+              "generator"
+            ]
+          }
+        }
       },
       "then": {
-        "properties": { "native_agent_types": { "required": ["generator"] } }
+        "properties": {
+          "native_agent_types": {
+            "required": [
+              "generator"
+            ]
+          }
+        }
       },
       "else": {
-        "properties": { "native_agent_types": { "not": { "required": ["generator"] } } }
+        "properties": {
+          "native_agent_types": {
+            "not": {
+              "required": [
+                "generator"
+              ]
+            }
+          }
+        }
       }
     },
     {
       "if": {
-        "required": ["personas"],
-        "properties": { "personas": { "required": ["evaluator"] } }
+        "required": [
+          "personas"
+        ],
+        "properties": {
+          "personas": {
+            "required": [
+              "evaluator"
+            ]
+          }
+        }
       },
       "then": {
-        "properties": { "native_agent_types": { "required": ["evaluator"] } }
+        "properties": {
+          "native_agent_types": {
+            "required": [
+              "evaluator"
+            ]
+          }
+        }
       },
       "else": {
-        "properties": { "native_agent_types": { "not": { "required": ["evaluator"] } } }
+        "properties": {
+          "native_agent_types": {
+            "not": {
+              "required": [
+                "evaluator"
+              ]
+            }
+          }
+        }
       }
     }
   ]

@@ -59,6 +59,7 @@ def subagent_bridge(
     command: list[str] | None = None,
     personas: dict[str, str] | None = None,
     native_agent_types: dict[str, str] | None = None,
+    deliverable_channels: dict[str, str] | None = None,
 ) -> dict:
     selected_personas = personas or {
         "planner": "planner-proposal",
@@ -68,6 +69,18 @@ def subagent_bridge(
         role: {"planner": "plan", "generator": "coder", "evaluator": "explore"}[role]
         for role in selected_personas
     }
+    if deliverable_channels is not None:
+        value = subagent_bridge(
+            bridge_id,
+            verified=verified,
+            strategy=strategy,
+            protocol_kind=protocol_kind,
+            command=command,
+            personas=personas,
+            native_agent_types=native_agent_types,
+        )
+        value["deliverable_channels"] = deliverable_channels
+        return value
     return {
         "id": bridge_id,
         "_verified": verified,
@@ -833,6 +846,43 @@ class ToolCatalogTests(unittest.TestCase):
             planner["execution_provenance_sha256"],
             target["execution_provenance_sha256"],
         )
+
+    def test_deliverable_channels_default_override_and_fail_closed(self):
+        self.write_adapter("future-cli", "future")
+        self.write_bridge("future-session", deliverable_channels={"planner": "terminal-message"})
+        self.write_integrations(
+            [{
+                "id": "future",
+                "tool": "future-cli",
+                "model_family": "future",
+                "local_cli": {
+                    "adapter": "future-cli",
+                    "sandbox": {"home_dir": "/tmp/future-home"},
+                },
+                "subagent": {"bridge": "future-session"},
+            }],
+            [],
+        )
+
+        candidates = self.candidates_with_attested_strict_provider()
+        planner = TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+        self.assertEqual(planner["deliverable_channel"], "terminal-message")
+        evaluator = TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--evaluator")
+        self.assertEqual(evaluator["deliverable_channel"], "file")
+        # The channel changes the execution path, so it must change provenance.
+        self.assertNotEqual(
+            planner["execution_provenance_sha256"], evaluator["execution_provenance_sha256"]
+        )
+
+        for bad in (
+            {"planner": "carrier-pigeon"},
+            {"generator": "file"},
+            "terminal-message",
+        ):
+            with self.subTest(bad=bad):
+                self.write_bridge("future-session", deliverable_channels=bad)  # type: ignore[arg-type]
+                with self.assertRaises(TOOL_CATALOG_MODULE.ToolCatalogError):
+                    self.candidates_with_attested_strict_provider()
 
     def test_verified_external_bridge_is_hidden_without_a_strict_provider(self):
         self.write_adapter("future-cli", "future")

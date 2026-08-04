@@ -39,6 +39,7 @@ TARGET_FIELDS = {
     "timeout_s",
     "agent_type",
     "native_agent_type",
+    "deliverable_channel",
     "bridge_id",
     "bridge_strategy",
     "session_scope",
@@ -205,6 +206,8 @@ def target_from(path: Path, role: str) -> dict[str, Any]:
     for key in ("target_id", "bridge_id", "bridge_strategy", "agent_type", "native_agent_type"):
         if not isinstance(target.get(key), str) or SAFE_ID.fullmatch(target[key]) is None:
             raise WorkerError(f"target {key} is invalid")
+    if target.get("deliverable_channel") not in {"file", "terminal-message"}:
+        raise WorkerError("target deliverable_channel is invalid")
     if target.get("bridge_provider_id") != "harness-vm-v1" or target.get("bridge_provider_kind") != "vm-v1":
         raise WorkerError("target is not bound to vm-v1")
     for key in (
@@ -326,6 +329,7 @@ def run(args: argparse.Namespace) -> int:
         "--protocol-json", json.dumps(target["bridge_protocol"], separators=(",", ":")),
         "--persona", target["agent_type"],
         "--native-agent-type", target["native_agent_type"],
+        "--deliverable-channel", target["deliverable_channel"],
         "--envelope", str(args.envelope.resolve()),
         "--worktree", str(worktree),
         "--result", str(result),

@@ -6,7 +6,10 @@
   "strategy": "session-bridge-v1",
   "protocol": {
     "kind": "acp-native-agent/v1",
-    "command": ["kimi", "acp"],
+    "command": [
+      "kimi",
+      "acp"
+    ],
     "request_delivery": "stdin",
     "response_format": "json"
   },
@@ -19,6 +22,9 @@
     "planner": "plan",
     "generator": "coder",
     "evaluator": "explore"
+  },
+  "deliverable_channels": {
+    "planner": "terminal-message"
   },
   "notes": "This manifest is published only when a strict VM or ephemeral-principal provider attests both plan and launch. The provider brokers credentials and egress, stages the CLI, owns the worker lifecycle, and supplies a nonce-bound launch attestation. Generator source handoff remains separately gated by the provider copy-in/copy-out protocol."
 }

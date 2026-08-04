@@ -728,6 +728,8 @@ def _load_launch_target(path: Path, expected_provenance: str) -> dict[str, Any]:
     target = _load_json_no_duplicates(path, "bridge target")
     if target.get("invocation") != "subagent" or target.get("session_scope") != "same-session":
         raise ProviderError("bridge target is not an external same-session route")
+    if target.get("deliverable_channel") not in {"file", "terminal-message"}:
+        raise ProviderError("bridge target deliverable channel is invalid")
     if target.get("bridge_provider_id") != PROVIDER_ID or target.get("bridge_provider_kind") != PROVIDER_KIND:
         raise ProviderError("bridge target provider binding is invalid")
     if target.get("execution_provenance_sha256") != expected_provenance:
@@ -1683,8 +1685,12 @@ def _reconcile_returned_source(
     """Apply only the verified copy-out tree to a host-owned git checkout."""
     returned = _tree_regular_files(returned_root, "VM returned source")
     baseline = _tree_regular_files(baseline_root, "provider baseline source")
-    if artifact in baseline or artifact not in returned:
+    if artifact not in returned:
         raise ProviderError("VM returned artifact conflicts with the commissioned base")
+    # The commissioned artifact path is the envelope's declared write point, so
+    # a baseline file there is overwritten rather than refused; the overwrite
+    # is still recorded and hash-bound (FIX2 adjudication #2:A).
+    artifact_in_baseline = artifact in baseline
     changed: list[str] = []
     for relative in sorted(set(baseline) | set(returned)):
         if relative == artifact:
@@ -1710,9 +1716,11 @@ def _reconcile_returned_source(
                 overwrite=relative in baseline,
             )
     staged_artifact = _copy_regular_file_to_tree(
-        returned[artifact], staging, artifact, overwrite=False
+        returned[artifact], staging, artifact, overwrite=artifact_in_baseline
     )
-    return staged_artifact, tuple(changed)
+    if artifact_in_baseline and not _same_file_bytes(baseline[artifact], returned[artifact]):
+        changed.append(artifact)
+    return staged_artifact, tuple(sorted(changed))
 
 
 APP_BUNDLE_RELATIVE = Path("framework/templates/claude/dispatch")

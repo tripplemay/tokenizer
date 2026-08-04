@@ -27,5 +27,15 @@
     ],
     "confirmed_at": "2026-08-04T02:39:14Z",
     "priority": "high"
+  },
+  {
+    "id": "BL-REGISTRY-LAZY-FIELD-CLEANUP",
+    "title": "清理 registry 中对 bridge 路径无效的惰性 sandbox 字段",
+    "description": "kimi integration 的 sandbox.env_set.KIMI_CODE_HOME=~/.kimi-code 是 local-cli 时代遗留,vm-v1 bridge 路径全文不引用 env_set/sandbox,易被误读为 bridge 会触碰用户 Kimi 状态。剥离或注释该字段,并核对其他 integration 是否有同类惰性字段。来源:BL-NATIVE-SUBAGENT-BRIDGES reverify2-F003 §9.4,FIX2 决议点 4。",
+    "decisions": [
+      "用户 2026-08-04 裁决入 backlog,下批处理,本批不动 registry。"
+    ],
+    "confirmed_at": "2026-08-04T06:20:00Z",
+    "priority": "low"
   }
 ]
