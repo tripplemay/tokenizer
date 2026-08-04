@@ -5,14 +5,13 @@ type: project
 ---
 ## 当前批次
 
-- **BL-NATIVE-SUBAGENT-BRIDGES（reverifying→待 done 闸门，5/5，fix_rounds=3）**：批次全 PASS。F003 终轮 PASS（3 次真实 planner launch，2 成功 + 1 非确定性 fail-closed 失败，重放即成功）；跨 feature 回归为零；Evaluator signoff 已签署（docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md）。pending_gate `BL-NATIVE-SUBAGENT-BRIDGES-verifying-done-r3` 已举起，等用户以 approve-gate.sh 批准。遗留非阻断观察：guest 失败语义白名单回传、D8/D9 覆盖语义对齐（待定是否入 backlog）。生产已随用户批准运行 4cf44df（2026-08-04 部署 success）。
-- 上轮全部阻断项已在 abf7a6e 处理：-I 重解析、write_text(bytes)、dispatch-run 预检路径双拼、guest 目录穿越权限×2；dispatch_common.py 已入三处 app-bundle 身份名单；test-lifecycle 断言已收敛到安全属性；已补生产 argv 回归用例。
-- L2 已实际行使（真实 launch 尝试 + Codex local-cli health + 全量回归），不再 l2_pending。
-- 复验证据：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F00{1..5}-2026-08-04.md`、`…-adversarial-review-2026-08-04.md`、`…-F005-probe-audit-2026-08-04.json`、`docs/test-reports/evidence/`。
-- 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
+- **BL-NATIVE-SUBAGENT-BRIDGES：done（2026-08-04）**。5/5 全 PASS，3 轮修复；人工闸门经控制台验签批准。signoff：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md`。
+- 交付能力：vm-v1 strict provider（Lima VM + brokered 凭据/网络）驱动 Kimi 三 persona 同会话子代理 bridge；声明式 deliverable_channels（planner=terminal-message）；nonce-bound child receipt 全链证据；Codex 保持 local-cli。生产运行 4cf44df。
+- backlog 现有：BL-AGENT-CATALOG-RELEASE-RECOVERY（实现已在 c5fe6be，待作独立批次验收消费）、BL-AGENT-SINGLE-INSTANCE-LIFECYCLE（代码在 hold 分支）、BL-REGISTRY-LAZY-FIELD-CLEANUP。
+- 非阻断观察待裁量入 backlog：guest 失败类别白名单回传；terminal-message O_EXCL 与 D9 覆盖语义对齐。
 
 ## 已知边界
 
-- capability-9 工作在本地分支 `backlog/bl-agent-single-instance-lifecycle`（cadb65f）；evaluator 复现脚本（scripts/test/、tests/evaluator/）在本地分支 `evaluator-artifacts-hold`。**两者均未推送——push 会触发生产部署（capability-9 含 DB 迁移），时机由用户决定。**
-- 生产当前运行 c5fe6be（2026-08-02 push 自动部署，CI 记录 success）。
-- 当前没有 done 人工闸门，也没有 mode intent。
+- capability-9 在本地分支 `backlog/bl-agent-single-instance-lifecycle`（cadb65f，含 DB 迁移 + Agent 1.2.1）；evaluator 复现脚本在 `evaluator-artifacts-hold`（fbe92b3）。**推送即部署，窗口归用户。**
+- 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
+- Kimi access token TTL ≈ 15 分钟；bridge launch 前如过期需先以最小 kimi -p 调用刷新（fail-closed 设计）。

@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "done",
   "user_goal": "为 Codex 与 Kimi 建立并验证 Harness 自有的同会话子代理桥接；将子代理能力改为声明式、可探测的 bridge，使未来具备相同能力的 CLI 自动进入工具目录与角色调度规则。",
   "total_features": 5,
   "completed_features": 5,
   "fix_rounds": 3,
   "current_sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "dashboard_url": null,
-  "last_updated": "2026-08-04T07:59:14Z",
+  "last_updated": "2026-08-04T08:08:00Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -37,32 +37,9 @@
     "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。",
     "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。",
     "fixing": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 3 轮完成】按 FIX2 裁决(#1:A #2:A #3 #4 同意)实现：(1) deliverable_channels 声明式按角色交付通道全链路（schema→manifest planner=terminal-message→tool-catalog Python/TS 镜像→target/provenance→worker→session-bridge 分通道 prompt→Kimi driver 最终消息物化：独占创建/0600/1MiB/空文本 fail-closed），提交 6b8900b + 4cf44df；(2) provider 归约允许受托 artifact 覆盖 baseline，变化计入 source_changes；(3) test-lifecycle 两条旧架构用例删除并留属性映射注释；(4) BL-REGISTRY-LAZY-FIELD-CLEANUP 入 backlog；spec 增补 D8/D9。Generator 冒烟：planner persona 真实 launch RETURNED/completed 68s，nonce receipt 完整，artifact 由 driver 物化且内容证明子代理真实读取 ref 源码，source_changes=[]。三 persona 至此均有真实 launch 实证。全量回归绿（framework 全套 + vitest 909 + verify/lint）。用户批准推送 4cf44df（TS 镜像，触发一次无迁移部署）；capability-9 仍单独持留。应用包已同步全部运行时与测试文件。",
-    "reverifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 终轮】F003 第 3 轮 PASS：3 次真实 planner launch，2 成功（73s/104s，D8 terminal-message 物化 + receipt 哈希绑定），1 次非确定性失败且 fail-closed（同契约重放即成功）。跨 feature 回归：无。批次全 PASS，Evaluator 已出具 signoff 并同意举闸门。遗留非阻断观察两条（guest 失败语义白名单回传；D8/D9 覆盖语义对齐）待用户决定是否入 backlog。pending_gate 已举起（verifying-to-done），decision 归人类。"
+    "reverifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 终轮】F003 第 3 轮 PASS：3 次真实 planner launch，2 成功（73s/104s，D8 terminal-message 物化 + receipt 哈希绑定），1 次非确定性失败且 fail-closed（同契约重放即成功）。跨 feature 回归：无。批次全 PASS，Evaluator 已出具 signoff 并同意举闸门。遗留非阻断观察两条（guest 失败语义白名单回传；D8/D9 覆盖语义对齐）待用户决定是否入 backlog。pending_gate 已举起（verifying-to-done），decision 归人类。",
+    "done": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 完结】verifying-to-done 闸门经控制台批准（approve by tripplezhou@gmail.com，验签通过，经 device agent 中继通道落盘——即本批次交付的通道本身）。批次 5/5 全 PASS，3 轮修复，Evaluator signoff：docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md。生产运行 4cf44df。持留决定：capability-9 分支（backlog/bl-agent-single-instance-lifecycle，含 DB 迁移）、evaluator-artifacts-hold 分支（复现脚本），均等用户部署窗口。非阻断观察两条（guest 失败类别白名单回传；D8/D9 覆盖语义对齐）待用户决定是否入 backlog。"
   },
   "features": [],
-  "pending_gate": {
-    "id": "BL-NATIVE-SUBAGENT-BRIDGES-verifying-done-r3",
-    "kind": "phase_advance",
-    "raised_at": "2026-08-04T07:59:14Z",
-    "raised_by": "verify",
-    "batch": "BL-NATIVE-SUBAGENT-BRIDGES",
-    "from_status": "reverifying",
-    "to_status": "done",
-    "detail": "全 5 feature acceptance PASS + 全量 L1 绿 + L2 真实探针已行使 + Evaluator signoff 已写；等人类批准 verifying-to-done。",
-    "evidence": [
-      "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md",
-      "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify3-F003-2026-08-04.md",
-      "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-F003-r3-planner-launch-audit.json"
-    ],
-    "decision": {
-      "gate_id": "BL-NATIVE-SUBAGENT-BRIDGES-verifying-done-r3",
-      "action": "approve",
-      "by": "tripplezhou@gmail.com",
-      "at": "2026-08-04T08:04:55.900Z",
-      "scope": {
-        "once": true
-      },
-      "sig": "GrEZxzJ8jq2Km4RGmRREV4ci+GZBdsStFohtF4BF4S/pv1zFpDU2CEQrWS7k0vpFjgu/HPvGvHlS0s8HMLBFBg=="
-    }
-  }
+  "pending_gate": null
 }

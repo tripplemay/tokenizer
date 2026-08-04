@@ -159,3 +159,23 @@
      修两个缺陷：默认端口 8787 与本机 node 服务冲突改 41300；guard 里 heredoc 覆盖管道 stdin
      导致 HEAD 恒空、合法批准被误判为本地新增（只在合法路径暴露）→ 改临时文件传参。
      未实装：P3 日志上报（含凭据片段落盘的责任）、P4 云端调度（需 runner 反转为出站连接穿 NAT）。 -->
+
+## [2026-08-04] main/Coordinator — 来源：BL-NATIVE-SUBAGENT-BRIDGES 三轮修复复盘
+
+**类型：** 新规律
+
+**内容：** 角色/persona 维度的可用性结论不得由单一角色的成功外推——planner persona 曾在 evaluator/generator 全部实证成功的同时 4/4 确定性失败（厂商只读 profile 与协议落盘要求的结构性冲突）。每个已发布的角色都应有至少一次真实路径实证。
+
+**建议写入：** `framework/README.md` §经验教训 或 evaluator.md 验收规范
+
+**状态：** 待确认
+
+## [2026-08-04] main/Coordinator — 来源：BL-NATIVE-SUBAGENT-BRIDGES launch 链路五连缺陷
+
+**类型：** 新坑
+
+**内容：** 全 mock 的测试套件对"生产 argv 真实子进程"边界零覆盖时，会让整类缺陷（-I 隔离导入、路径双拼、目录权限）逃逸到验收——五个缺陷层层叠住，每修一个才暴露下一个。凡 spawn 子进程的信任边界，至少配一条 argv 等价的真实执行用例。
+
+**建议写入：** `framework/patterns/` 测试域 pattern
+
+**状态：** 待确认
