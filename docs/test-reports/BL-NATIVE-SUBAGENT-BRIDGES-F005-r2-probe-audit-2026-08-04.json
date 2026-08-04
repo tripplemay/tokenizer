@@ -1,0 +1,454 @@
+{
+  "schema": "harness/evaluator-probe-audit/1 (ad hoc, human-readable)",
+  "batch": "BL-NATIVE-SUBAGENT-BRIDGES",
+  "feature_id": "F005",
+  "phase": "reverifying",
+  "fix_rounds": 2,
+  "locked_ref": "7a84b0dff94649fb617761e4e371bf872dd073aa",
+  "executed_at_utc": "2026-08-04T05:07:51Z/2026-08-04T05:18:20Z",
+  "executor": "fresh-context evaluator (isolated) — Andy/evaluator-subagent",
+  "l2_authorization": {
+    "granted": true,
+    "granted_on": "2026-08-04",
+    "scope": "no-source-write real parent-child bridge probe against the locally authenticated Kimi via the strict vm-v1 provider; Codex limited to local-cli health check"
+  },
+  "redaction_policy": {
+    "contains_prompt_text": false,
+    "contains_acp_wire_data": false,
+    "contains_credentials_or_tokens": false,
+    "guest_job_identifiers": "redacted to <guest-job-id>",
+    "home_paths": "redacted to <home>",
+    "note": "Only sha256 digests, exit codes, timings and provider-emitted run-meta are recorded. Envelope contents are referenced by digest, not inlined."
+  },
+  "environment": {
+    "os_product_version": "26.5.2",
+    "system_python": "3.9.6",
+    "kimi_cli": "0.31.0",
+    "codex_cli": "codex-cli 0.146.0",
+    "app_bundle": "<home>/.tokenizer/app",
+    "app_bundle_matches_project_at_locked_ref": true
+  },
+  "provider_doctor": {
+    "available": true,
+    "provider_id": "harness-vm-v1",
+    "provider_kind": "vm-v1",
+    "catalog_attestation_ttl_s": 300,
+    "phase": "catalog"
+  },
+  "catalog": {
+    "kimi_subagent_candidates": [
+      "planner",
+      "generator",
+      "evaluator"
+    ],
+    "codex_subagent_candidates": [],
+    "target_execution_provenance_sha256": {
+      "subagent--kimi--planner": "cdc7ff9254fc3e09bb8e7401e41fa46ea404ebdea96de7ffc9050214ccd87b80",
+      "subagent--kimi--generator": "08dac2538f2604576eea75b23801db3ddf6c06c8f495beb750336a446a614d7c",
+      "subagent--kimi--evaluator": "b806e950653e0b0509029fcfa8969bc37fddb189bdccd768a441a708db9faf2a"
+    }
+  },
+  "envelopes": {
+    "probe_1_evaluator_explore": {
+      "sha256": "07495b68c4d7abae0fea1234a773fb7c392507185db5008591608ecc3bb3efb7",
+      "role": "evaluator",
+      "batch": "BL-NSB-PROBE-R2",
+      "l2_authorized": false
+    },
+    "probe_2_evaluator_explore_control": {
+      "sha256": "f46bce716b64a33d79961dded0120d776d0017f7b139e685556d083a0a0dac93",
+      "role": "evaluator",
+      "batch": "BL-NSB-PROBE-R2",
+      "l2_authorized": false
+    },
+    "probe_3_4_planner_plan": {
+      "sha256": "e9ef06ffee04d635dd5f270f8bcf78a8c24f4c3fbef981a3fb50b3e451fd73c3",
+      "role": "planner",
+      "batch": "BL-NSB-PROBE-R2",
+      "l2_authorized": false
+    },
+    "probe_5_planner_plan_minimal": {
+      "sha256": "8121e73edab0fdc455e30e40b5bc78784aeb4b8fc401e12a731f87c72fc55a05",
+      "role": "planner",
+      "batch": "BL-NSB-PROBE-R2",
+      "l2_authorized": false
+    }
+  },
+  "runs": {
+    "probe_1_evaluator_explore": {
+      "launch_start": "2026-08-04T05:07:51Z",
+      "launch_exit": "0",
+      "launch_end": "2026-08-04T05:09:21Z",
+      "provider_stderr": "",
+      "run_meta": {
+        "adapter": "kimi",
+        "agent_id": "subagent--kimi--evaluator",
+        "artifact": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-probe-20260804-667623e13de3d4fe9e4a9cfe/copyout/docs/test-reports/BL-NSB-PROBE-R2-verdict.json",
+        "batch": "BL-NSB-PROBE-R2",
+        "bridge": {
+          "artifact_sha256": "a91e57752220fdf14bb03617a3fe41fa6e4e77efa12b27c0186b9d048acd0917",
+          "bridge_id": "kimi-acp-native-agent",
+          "bridge_kind": "acp-native-agent/v1",
+          "bridge_strategy": "session-bridge-v1",
+          "child_call_id_sha256": "c34977f177af0f5f63725b0141a8c9683826c3768987b77e40b554c703b6dd36",
+          "nonce_sha256": "c2e3f4a18fecd956271c0bdd73ae4c2700377d6ee86076889ba347b744d4a9ca",
+          "provider_launch_attestation": {
+            "broker_policy_sha256": "c51e3a3263202df76c0341be59ddb9e556f6d0d6742414316c37b15d169d5be9",
+            "cli_bundle_sha256": "9143ce0b33069e169ffc94cfd75ec3d02598d1b0bdc1d455967fd95db1925014",
+            "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+            "expires_at": "2026-08-04T05:12:53Z",
+            "image_sha256": "ee462342e2f4827f9e6008bc17776ad14086c8b8971e4ac24e54bc2b92c139b8",
+            "issued_at": "2026-08-04T05:07:53Z",
+            "nonce_sha256": "c2e3f4a18fecd956271c0bdd73ae4c2700377d6ee86076889ba347b744d4a9ca",
+            "phase": "launch",
+            "provider_id": "harness-vm-v1",
+            "provider_kind": "vm-v1",
+            "runner_sha256": "9ca31126cc29dba192acc616ac527e8a96d3309f6cc10879fe35a9d0da4b4e44",
+            "target_provenance_sha256": "b806e950653e0b0509029fcfa8969bc37fddb189bdccd768a441a708db9faf2a",
+            "version": "harness/external-bridge-provider-attestation/1"
+          },
+          "provider_launch_attestation_sha256": "b53c525bec93710c3280a9cd49ce1fd68b17cbc74bd75cc46cb9c6597785ddcc",
+          "session_id_sha256": "9398453f6878b3f0e86b21d8856855b24eb84bc22b9a1fa71669fa03ddcaa81a",
+          "session_scope": "same-session",
+          "subagent_type": "explore",
+          "terminal_status": "completed"
+        },
+        "deliverable": {
+          "artifact": "docs/test-reports/BL-NSB-PROBE-R2-verdict.json",
+          "commit_to": null,
+          "schema": ".claude/autonomous/verdict-artifact.schema.json"
+        },
+        "descriptor_timeout_s": 2400,
+        "duration_s": 88,
+        "effective_timeout_s": 2400,
+        "envelope_path": "/private/tmp/f005r2/envelope-evaluator.json",
+        "exit_code": 0,
+        "log": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-probe-20260804-667623e13de3d4fe9e4a9cfe/provider.log",
+        "model_family": "kimi",
+        "outcome": "RETURNED",
+        "ref": "7a84b0dff94649fb617761e4e371bf872dd073aa",
+        "role": "evaluator",
+        "source_changes": [],
+        "task_id": "f005r2-kimi-eval-probe-20260804",
+        "termination_reason": "completed",
+        "transport": "subagent",
+        "worktree": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-probe-20260804-667623e13de3d4fe9e4a9cfe/copyout"
+      }
+    },
+    "probe_2_evaluator_explore_control": {
+      "launch_start": "2026-08-04T05:17:01Z",
+      "launch_exit": "0",
+      "launch_end": "2026-08-04T05:18:20Z",
+      "provider_stderr": "",
+      "run_meta": {
+        "adapter": "kimi",
+        "agent_id": "subagent--kimi--evaluator",
+        "artifact": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-control-20260804-2483e48f93e47d9bbfd92d78/copyout/docs/test-reports/BL-NSB-PROBE-R2-verdict.json",
+        "batch": "BL-NSB-PROBE-R2",
+        "bridge": {
+          "artifact_sha256": "d6134295ea09dcc1edfb59203a57701af191d4b71c2592e3d79dfe7f6901dfe4",
+          "bridge_id": "kimi-acp-native-agent",
+          "bridge_kind": "acp-native-agent/v1",
+          "bridge_strategy": "session-bridge-v1",
+          "child_call_id_sha256": "00ed44e369785fb3e3f053e7be75b7f5940082913e48e9a084bccf1674317d1e",
+          "nonce_sha256": "243acf6f66c4ca10a4f298b07cf75fe7e8fe7ff36030229e560f42904019ec05",
+          "provider_launch_attestation": {
+            "broker_policy_sha256": "c51e3a3263202df76c0341be59ddb9e556f6d0d6742414316c37b15d169d5be9",
+            "cli_bundle_sha256": "9143ce0b33069e169ffc94cfd75ec3d02598d1b0bdc1d455967fd95db1925014",
+            "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+            "expires_at": "2026-08-04T05:22:02Z",
+            "image_sha256": "ee462342e2f4827f9e6008bc17776ad14086c8b8971e4ac24e54bc2b92c139b8",
+            "issued_at": "2026-08-04T05:17:02Z",
+            "nonce_sha256": "243acf6f66c4ca10a4f298b07cf75fe7e8fe7ff36030229e560f42904019ec05",
+            "phase": "launch",
+            "provider_id": "harness-vm-v1",
+            "provider_kind": "vm-v1",
+            "runner_sha256": "9ca31126cc29dba192acc616ac527e8a96d3309f6cc10879fe35a9d0da4b4e44",
+            "target_provenance_sha256": "b806e950653e0b0509029fcfa8969bc37fddb189bdccd768a441a708db9faf2a",
+            "version": "harness/external-bridge-provider-attestation/1"
+          },
+          "provider_launch_attestation_sha256": "aca1e7151a9d08f6566ebaf430c5c5901be01a8323362de81289b5766ed4c9c2",
+          "session_id_sha256": "32c85b8186100c6ef0b92fe7d38a1b13da2952f74676b4e2247f007a3c890f88",
+          "session_scope": "same-session",
+          "subagent_type": "explore",
+          "terminal_status": "completed"
+        },
+        "deliverable": {
+          "artifact": "docs/test-reports/BL-NSB-PROBE-R2-verdict.json",
+          "commit_to": null,
+          "schema": ".claude/autonomous/verdict-artifact.schema.json"
+        },
+        "descriptor_timeout_s": 2400,
+        "duration_s": 77,
+        "effective_timeout_s": 2400,
+        "envelope_path": "/private/tmp/f005r2/envelope-evaluator-control.json",
+        "exit_code": 0,
+        "log": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-control-20260804-2483e48f93e47d9bbfd92d78/provider.log",
+        "model_family": "kimi",
+        "outcome": "RETURNED",
+        "ref": "7a84b0dff94649fb617761e4e371bf872dd073aa",
+        "role": "evaluator",
+        "source_changes": [],
+        "task_id": "f005r2-kimi-eval-control-20260804",
+        "termination_reason": "completed",
+        "transport": "subagent",
+        "worktree": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-control-20260804-2483e48f93e47d9bbfd92d78/copyout"
+      }
+    },
+    "probe_3_planner_plan": {
+      "launch_start": "2026-08-04T05:10:52Z",
+      "launch_exit": "2",
+      "launch_end": "2026-08-04T05:12:37Z",
+      "provider_stderr": "[vm-bridge-provider] VM restricted provider unit failed"
+    },
+    "probe_4_planner_plan_retry": {
+      "launch_start": "2026-08-04T05:13:31Z",
+      "launch_exit": "2",
+      "launch_end": "2026-08-04T05:14:55Z",
+      "provider_stderr": "[vm-bridge-provider] VM restricted provider unit failed"
+    },
+    "probe_5_planner_plan_minimal_contract": {
+      "launch_start": "2026-08-04T05:15:25Z",
+      "launch_exit": "2",
+      "launch_end": "2026-08-04T05:16:36Z",
+      "provider_stderr": "[vm-bridge-provider] VM restricted provider unit failed"
+    }
+  },
+  "child_artifact_probe_1": {
+    "path_in_provider_private_staging": "<home>/.tokenizer/harness/vm-v1/runs/f005r2-kimi-eval-probe-20260804-667623e13de3d4fe9e4a9cfe/copyout/docs/test-reports/BL-NSB-PROBE-R2-verdict.json",
+    "sha256": "a91e57752220fdf14bb03617a3fe41fa6e4e77efa12b27c0186b9d048acd0917",
+    "validates_against_declared_schema": true,
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "content": {
+      "batch_id": "BL-NSB-PROBE-R2",
+      "fix_round": 2,
+      "created_at": "2026-08-03T04:35:11Z",
+      "verdicts": [
+        {
+          "feature_id": "F005-BRIDGE-PROBE",
+          "result": "PASS",
+          "evidence": "Read package.json top-level fields: name=\"tokenizer\", version=\"0.1.0\"",
+          "steps_to_reproduce": "Read /var/lib/harness-vm-v1/jobs/<guest-job-id>/source/package.json and inspected the top-level \"name\" and \"version\" fields."
+        }
+      ]
+    },
+    "note": "Written by the Kimi native child agent inside the guest; copied out to provider-private staging only. It never entered the repository."
+  },
+  "copyin_isolation_check_probe_1": {
+    "archive_members": 926,
+    "regular_files": 725,
+    "source_files": 719,
+    "tracked_files_at_locked_ref": 719,
+    "source_files_not_tracked_at_ref": 0,
+    "tracked_files_absent_from_copyin": 0,
+    "non_source_control_files": [
+      ".harness-runner/session-bridge.py",
+      ".harness-runner/session_bridge_kimi.py",
+      ".harness-runner/vm-bridge-worker.py",
+      ".harness-envelope.json",
+      ".harness-target.json",
+      ".harness-cli-bundle.tar.gz"
+    ],
+    "credential_or_session_material_staged": false
+  },
+  "codex_local_cli_health": {
+    "cli_version": "codex-cli 0.146.0",
+    "catalog_subagent_candidates": 0,
+    "roles_resolved_as_local_cli": [
+      "planner",
+      "generator",
+      "evaluator"
+    ],
+    "adapter": "codex",
+    "model_family": "codex",
+    "timeout_s": 2400,
+    "bridge_keys_present_on_target": false,
+    "adapter_execution_contract_sha256_prefix": "e95fb9306e51",
+    "subagent_target_lookup": {
+      "target_id": "subagent--codex--evaluator",
+      "exit_code": 2,
+      "stderr": "[tool-catalog] error: target id is not registered: 'subagent--codex--evaluator'"
+    },
+    "child_bridge_probe_executed": false
+  },
+  "no_source_write_check": {
+    "head_before": "7a84b0dff94649fb617761e4e371bf872dd073aa",
+    "head_after": "7a84b0dff94649fb617761e4e371bf872dd073aa",
+    "tracked_file_changes": 0,
+    "untracked_paths_created_by_this_evaluator": [
+      "scripts/test/f005r2_artifact_baseline_collision.py",
+      "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify2-F005-2026-08-04.md",
+      "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-F005-r2-probe-audit-2026-08-04.json"
+    ],
+    "provider_state_dir": ".harness-dispatch/f005r2 (gitignored)",
+    "pushed_or_deployed": false,
+    "installed_agent_updated": false
+  },
+  "regression_matrix": {
+    "framework_focused_python": {
+      "test-tool-catalog": {
+        "exit": 0,
+        "tests": 37,
+        "result": "OK"
+      },
+      "test-session-bridge": {
+        "exit": 0,
+        "tests": 9,
+        "result": "OK"
+      },
+      "test-session-bridge-kimi": {
+        "exit": 0,
+        "tests": 18,
+        "result": "OK"
+      },
+      "test-session-bridge-codex": {
+        "exit": 0,
+        "tests": 9,
+        "result": "OK"
+      },
+      "test-vm-bridge-provider": {
+        "exit": 0,
+        "tests": 12,
+        "result": "OK",
+        "includes": "The launch re-resolution argv must execute tool-catalog.py itself."
+      },
+      "test-external-bridge-receipt": {
+        "exit": 0,
+        "tests": 8,
+        "result": "OK"
+      },
+      "test-generator-handoff": {
+        "exit": 0,
+        "tests": 12,
+        "result": "OK"
+      },
+      "test-accept-generator-handoff": {
+        "exit": 0,
+        "tests": 11,
+        "result": "OK"
+      },
+      "test-planner-proposal": {
+        "exit": 0,
+        "tests": 7,
+        "result": "OK"
+      },
+      "test-lifecycle": {
+        "exit": 0,
+        "tests": 53,
+        "result": "OK",
+        "skipped": 2,
+        "skip_reason": "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated"
+      }
+    },
+    "tokenizer": {
+      "npm run verify": {
+        "exit": 0,
+        "detail": "prisma generate + tsc --noEmit clean"
+      },
+      "npm run lint": {
+        "exit": 0,
+        "detail": "No ESLint warnings or errors"
+      },
+      "npm run test": {
+        "exit": 0,
+        "detail": "60 files, 905 passed / 4 skipped (909)"
+      },
+      "npm run build": {
+        "exit": 0,
+        "detail": "Next.js production build succeeded"
+      }
+    }
+  },
+  "observations": [
+    {
+      "id": "OBS-1",
+      "severity": "cross-feature blocker candidate (not an F005 acceptance item)",
+      "owner_features": [
+        "F003",
+        "F001"
+      ],
+      "title": "planner persona (native_agent_type=plan) launch fails 3/3 while evaluator persona (explore) succeeds 2/2 in the same window",
+      "evidence": {
+        "planner_runs": [
+          "probe_3_planner_plan",
+          "probe_4_planner_plan_retry",
+          "probe_5_planner_plan_minimal_contract"
+        ],
+        "planner_exit_codes": [
+          2,
+          2,
+          2
+        ],
+        "planner_provider_error": "VM restricted provider unit failed",
+        "planner_durations_s": [
+          105,
+          84,
+          71
+        ],
+        "evaluator_runs": [
+          "probe_1_evaluator_explore",
+          "probe_2_evaluator_explore_control"
+        ],
+        "evaluator_exit_codes": [
+          0,
+          0
+        ],
+        "controls": [
+          "probe_5 used a minimal contract (write {\"probe\": true} only), isolating task complexity from persona capability - still failed",
+          "probe_2 (evaluator) ran after all planner failures and succeeded, excluding host/credential/provider degradation",
+          "credential remaining TTL was >400s at each planner launch, excluding mid-run expiry"
+        ],
+        "root_cause_visibility": "not observable host-side by design: the provider deliberately suppresses guest stdout/stderr and writes no bridge-result on failure"
+      },
+      "impact": "The catalog publishes a planner kimi subagent candidate (F001) and the manifest binds it to native_agent_type=plan (F003), but that route did not complete a single run on this host. Generator (coder) persona was not probed here - it belongs to the F003 reverification."
+    },
+    {
+      "id": "OBS-2",
+      "severity": "minor / usability",
+      "owner_features": [
+        "F003",
+        "F005"
+      ],
+      "title": "evaluator deliverable path is jointly unsatisfiable when the batch verdict file already exists at the dispatched ref",
+      "evidence": {
+        "rule_a": "validate-dispatch.sh pins evaluator deliverable.artifact to exactly docs/test-reports/<batch>-verdict.json",
+        "rule_b": "vm-bridge-provider._reconcile_returned_source raises 'VM returned artifact conflicts with the commissioned base' when the artifact already exists in the baseline tree",
+        "fact": "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-verdict.json is tracked at 7a84b0dff94649fb617761e4e371bf872dd073aa",
+        "repro": "scripts/test/f005r2_artifact_baseline_collision.py (exit 0 = reproduced; control with a fresh artifact path is accepted)",
+        "consequence": "dispatching this batch's own evaluator through the bridge would consume the full run and only fail during copy-out reconciliation",
+        "workaround_used_here": "the probes used batch id BL-NSB-PROBE-R2 so the commissioned artifact path was new"
+      }
+    },
+    {
+      "id": "OBS-3",
+      "severity": "informational",
+      "owner_features": [
+        "F003"
+      ],
+      "title": "test-lifecycle keeps 2 skipped strict-bridge cases",
+      "evidence": {
+        "skipped": [
+          "A contained bridge cannot write the main checkout or retain raw ACP state.",
+          "The trusted timeout group must reap a contained ACP child tree."
+        ],
+        "skip_reason": "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated",
+        "note": "The vm-v1 provider now exists and executes; these two guards remain unexercised by the automated suite. Not a failure, but the containment properties they describe are only covered by the manual probe evidence in this file (source_changes=[] and the copy-in isolation check)."
+      }
+    }
+  ],
+  "verdict": {
+    "feature_id": "F005",
+    "result": "PASS",
+    "basis": [
+      "real parent-child bridge probe against the locally authenticated Kimi through the strict vm-v1 provider succeeded twice (outcome=RETURNED, terminal_status=completed, subagent_type=explore, nonce-bound and launch-attestation-bound child receipt, source_changes=[])",
+      "structured audit evidence saved without prompt text, ACP wire data or credentials",
+      "Codex limited to a local-cli health check; no child-bridge probe executed",
+      "framework focused suites 10/10 green (53-test test-lifecycle included) and full npm verify/lint/test/build green",
+      "no source writes: HEAD unchanged, 0 tracked-file changes, nothing pushed or deployed, installed Agent untouched"
+    ],
+    "out_of_scope_for_this_verdict": [
+      "F001-F004 verdicts (separate fresh-context evaluators)",
+      "raising the verifying-to-done gate (main context, and only if the batch is all-PASS)"
+    ]
+  }
+}

@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "fixing",
   "user_goal": "为 Codex 与 Kimi 建立并验证 Harness 自有的同会话子代理桥接；将子代理能力改为声明式、可探测的 bridge，使未来具备相同能力的 CLI 自动进入工具目录与角色调度规则。",
   "total_features": 5,
-  "completed_features": 1,
+  "completed_features": 4,
   "fix_rounds": 2,
   "current_sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "dashboard_url": null,
-  "last_updated": "2026-08-04T04:36:54Z",
+  "last_updated": "2026-08-04T05:55:00Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -21,27 +21,25 @@
   "role_assignments": null,
   "mode_intent": null,
   "evaluator_feedback": {
-    "summary": "Mechanical aggregation of fresh-context fan-out reverify (fix_rounds=1) plus adversarial falsification review. Raw evidence: docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F00{1,2,3,4,5}-2026-08-04.md, BL-NATIVE-SUBAGENT-BRIDGES-adversarial-review-2026-08-04.md, BL-NATIVE-SUBAGENT-BRIDGES-F005-probe-audit-2026-08-04.json, docs/test-reports/evidence/.",
-    "pass_count": 3,
+    "summary": "Mechanical aggregation of round-2 focused reverify (fix_rounds=2). Raw evidence: docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify2-F003-2026-08-04.md, BL-NATIVE-SUBAGENT-BRIDGES-reverify2-F005-2026-08-04.md, BL-NATIVE-SUBAGENT-BRIDGES-F005-r2-probe-audit-2026-08-04.json. F001/F002/F004 stand PASS from round 1.",
+    "pass_count": 4,
     "partial_count": 1,
-    "fail_count": 1,
+    "fail_count": 0,
     "issues": [
-      {
-        "feature_id": "F005",
-        "result": "FAIL",
-        "description": "L2 已授权并实际行使：Codex local-cli 健康检查 PASS；全量 test/verify/lint/build PASS（60 files / 905 passed / 4 skipped）；无源码写入。但核心验收未达成：external vm-v1 bridge 的 launch 路径确定性失败——vm-bridge-provider.py:1799-1818 以 /usr/bin/python3 -I 重解析 target，isolated mode 将脚本目录移出 sys.path，tool-catalog.py:34 的 `from dispatch_common import` 必然 ModuleNotFoundError，被 :1822-1823 映射为 'bridge target cannot be re-resolved'（4/4 次复现，失败瞬间 doctor available=true，凭据/漂移/路由因素已排除；-I 隐含 -E 故 PYTHONPATH 不可绕过；项目内副本被信任边界拒绝）。未取得任何 parent-child provenance。另 framework 聚焦回归 1 项确定性失败：test-lifecycle.py 断言旧拒绝文案（其守护的安全属性——fail-closed exit 2、不创建 workroot/state、不触达 Seatbelt——经独立取证仍成立，属过时断言而非安全回归）。",
-        "steps_to_reproduce": "见 docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F005-2026-08-04.md §7；对照实验与证伪尝试见 BL-NATIVE-SUBAGENT-BRIDGES-adversarial-review-2026-08-04.md §1。",
-        "l2_pending": false,
-        "adversarial_review": "confirmed"
-      },
       {
         "feature_id": "F003",
         "result": "PARTIAL",
-        "description": "协议层验收 A-H 逐条实测 PASS；上轮三个 FAIL 点均确认已解决：目录发布三角色 kimi subagent；receipt 含 nonce_sha256 + subagent_type 且 driver/run_bridge/provider 三层各自校验；KIMI_CODE_HOME 凭据复制逻辑已移除，worker env 由 provider 白名单构造且要求空目录。但生产启动路径存在与 F005 相同的确定性缺陷（-I 重解析 ModuleNotFoundError），F003 runner 从未真正在其规定的 provider-owned worker 中执行；上轮'无法形成可用的 F003 bridge'的用户可见症状尚未消除。",
-        "steps_to_reproduce": "见 docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F003-2026-08-04.md §5-§6。",
+        "description": "条款 A/B/C/D/E/G/H 七条达成：上轮唯一阻断（-I 重解析）彻底消除，evaluator/explore 与 generator/coder 两条 persona 均由 fresh-context evaluator 以真实端到端 launch 证实（RETURNED/completed/nonce-bound receipt/source_changes=[]），协议层 16 项探针与框架回归全绿，无回归。唯一阻断（条款 F 三 persona 受控可用）：planner persona（native_agent_type=plan）真实 launch 合并 4/4 确定性失败（F005 3 次 + F003 对照 1 次，含最小契约与逐字同文本对照组；环境/凭据/漂移因素全部排除）。根因为厂商侧结构性冲突：Kimi plan 原生子代理是只读 profile（无 Write/Edit/Bash，提示词明令交付物即最终消息、不得改文件），而 Harness bridge 协议强制每角色把交付物落盘（session-bridge.py 'bridge completed without the commissioned artifact'）。此冲突不可由纯代码修复消解，需规格裁决（见 FIX2 裁决请求）。",
+        "steps_to_reproduce": "见 docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify2-F003-2026-08-04.md §8；F005 交叉证据见 …-reverify2-F005-2026-08-04.md §7 OBS-1。",
         "l2_pending": false,
-        "adversarial_review": "confirmed"
+        "adversarial_review": "cross-validated"
       }
+    ],
+    "observations": [
+      "OBS-2（F005 §7）：validate-dispatch 锁定的 evaluator 交付路径与 provider baseline 冲突互斥——本批次自身的 evaluator 经 bridge 派发会在 copy-out 归约阶段必然失败；确定性复现 scripts/test/f005r2_artifact_baseline_collision.py。",
+      "OBS-3（F005 §7）：test-lifecycle 两条严格 bridge 用例仍以过时理由 skip，其守护属性目前仅有人工探针证据覆盖。",
+      "F003 §9.1：应用包 ~/.tokenizer/app 的 dispatch-run.sh 未随修复同步（分发链缺口，对本轮 launch 无影响）；建议同步并考虑纳入 mirror 必比清单。",
+      "F003 §9.4：registry 中 kimi integration 的 sandbox.env_set.KIMI_CODE_HOME 惰性字段对 bridge 路径无效，建议后续批次剥离。"
     ]
   },
   "generator_handoff": null,
@@ -50,7 +48,7 @@
     "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。",
     "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。",
     "fixing": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 2 轮完成】launch 链路连修五处（abf7a6e，逐层揭出）：(1) 重解析 -I 改 -E -s + TARGET_RESOLUTION_PYTHON 常量 + 生产 argv 回归用例；(2) write_text(bytes) 改 write_bytes；(3) dispatch-run.sh 预检路径双重拼接必然 exit 2，required 清单改 dispatch 相对路径；(4) guest staging chmod a+rX 修 root umask-077 目录不可穿越；(5) staging 固定 /var/lib/harness-vm-v1{,/jobs} 为 711 防全新 VM 复发。dispatch_common.py 纳入 provider/tool-catalog/dispatch-run 三处 app-bundle 身份名单；test-lifecycle 断言收敛到安全属性。Generator 冒烟：真实已认证 Kimi launch 端到端成功（outcome=RETURNED, terminal_status=completed, duration 267s, nonce-bound child receipt, source_changes=[]，run-meta 见 ~/.tokenizer/harness/vm-v1/runs/f005-kimi-bridge-probe-20260804）。注意：此前一次 12.4 分钟后失败疑为 Kimi token TTL(~15min) 边缘或模型未及时委派，复验时建议 launch 前刚刷新 token。应用包 ~/.tokenizer/app 已同步至 abf7a6e 等效字节（调试补丁已还原，哈希已核对一致）。全量回归绿：framework 8 套 + vitest 905 + verify/lint。",
-    "reverifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04】fan-out 复验完成（每 feature 一个 fresh-context evaluator + 对抗证伪复核）：F001/F002/F004 PASS，F003 PARTIAL，F005 FAIL。ff896dd 修复在 catalog 侧确认有效（三角色发布、provenance 完整）；剩余唯一阻断根因：vm-bridge-provider launch 时以 python3 -I 重解析 target，tool-catalog 的 dispatch_common sibling 导入在 isolated mode 下必然失败（-I 隐含 -E，PYTHONPATH 不可用；本机 python 3.9.6 无 -P 可替代）。次要项：test-lifecycle.py 一条过时断言（安全属性仍成立）。L2 已实际行使，不再 pending。状态回 fixing，F003/F005 置回 pending。复现脚本在 scripts/test/ 与 tests/evaluator/（非 ignore 路径，暂存 hold 分支 evaluator-artifacts-hold，推送并入下次部署决策）。"
+    "reverifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04 第 2 轮】聚焦复验完成：F005 PASS（2/2 真实 probe、回归 10/10 + 全量绿、证据脱敏 0 泄漏）；F003 由 evaluator 依 F005 OBS-1 交叉证据自行改判 PARTIAL——planner persona 合并 4/4 确定性失败，根因是 Kimi plan 原生子代理只读（无写工具、交付物=最终消息）与 bridge 协议强制落盘交付物的结构性冲突，需 FIX2 规格裁决（选项见 docs/specs/BL-NATIVE-SUBAGENT-BRIDGES-FIX2-planner-persona-adjudication.md）。evaluator/explore 3/3、generator/coder 1/1 真实 launch 成功。勘误：此前 session note 称应用包已全量同步不准确——dispatch-run.sh 当时未同步（不在字节核验名单、不从应用包执行），现已补同步。OBS-2 交付路径 baseline 冲突与 OBS-3 过时 skip 一并待裁决。状态回 fixing，F003 置回 pending。"
   },
   "features": [],
   "pending_gate": null
