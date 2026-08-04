@@ -1,0 +1,13 @@
+{
+  "app_root": "/Users/yixingzhou/.tokenizer/app",
+  "repo_path": "/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T//f001-mirror-8IpuWi/unverified",
+  "catalog_issue": "dispatch tool catalog is unavailable",
+  "total_entries": 0,
+  "subagent_routes": [],
+  "selectable_subagent_routes": [],
+  "integrations": [],
+  "no_registry_repo": {
+    "entries": [],
+    "issue": "dispatch tool catalog is unavailable"
+  }
+}

@@ -5,16 +5,15 @@ type: project
 ---
 ## 当前批次
 
-- **BL-NATIVE-SUBAGENT-BRIDGES（reverifying，1/5，fix_rounds=1）**：fixing 完成于 2026-08-04。根因是 vm-v1 provider 的 limactl 子进程缺 HOME（Go 直接 panic），所有已安装 runtime 被误判 not running；ff896dd 修复后目录三角色发布 kimi subagent，target 带 bridge provenance 与 execution_provenance_sha256。
-- 本机环境同步完成：provider.json 移除过时 image_location、bundle manifest 移除死键 kimi_identity（备份 *.bak-20260804）、~/.tokenizer/app 应用包已同步 provider 修复；`limactl` harness-vm-v1 VM Running，doctor available:true。
-- F003 receipt nonce_sha256 与凭据隔离（私有空 KIMI_CODE_HOME）、F004 TS 侧 proof-gated 可选性均已在 c5fe6be 落地；待 fresh-context 复验。
-- L1 全绿：vitest 63 files / 971 passed / 4 skipped，framework 聚焦套件全 OK（test-tool-catalog 已补宿主机 provider 隔离）。
-- 原始 fan-out 与复核证据：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-fanout-2026-08-01.json`；schema verdict：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-verdict.json`。
+- **BL-NATIVE-SUBAGENT-BRIDGES（fixing，1/5，fix_rounds=1）**：2026-08-04 reverify fan-out 完成（5 个 fresh-context evaluator + 对抗证伪复核）：F001/F002/F004 PASS，F003 PARTIAL，F005 FAIL，非 PASS 结论均 adversarial confirmed。
+- 剩余唯一阻断根因：vm-bridge-provider.py:1799-1818 launch 时以 `python3 -I` 重解析 target，tool-catalog.py 的 dispatch_common sibling 导入在 isolated mode 下必然 ModuleNotFoundError（-I 隐含 -E，PYTHONPATH 不可绕过；本机 python 3.9.6 无 -P）。catalog 侧（ff896dd HOME 修复）已确认有效：三角色发布 kimi subagent、provenance 完整。
+- 次要项：test-lifecycle.py 一条过时断言（期望旧拒绝文案；安全属性经独立取证仍成立）。回归缺口：test-vm-bridge-provider 全 mock，未覆盖生产 argv 真实 launch 重解析。
+- L2 已实际行使（真实 launch 尝试 + Codex local-cli health + 全量回归），不再 l2_pending。
+- 复验证据：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify-F00{1..5}-2026-08-04.md`、`…-adversarial-review-2026-08-04.md`、`…-F005-probe-audit-2026-08-04.json`、`docs/test-reports/evidence/`。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
 
 ## 已知边界
 
-- strict-provider 冲突已按 FIX1 裁决（`docs/specs/BL-NATIVE-SUBAGENT-BRIDGES-FIX1-strict-provider-adjudication.md`，#1-#4 全 A）：vm-v1 provider 严格路线，实现主体见 c5fe6be；无可 attest provider 时目录隐藏属预期 fail-closed。
-- 用户已于 2026-08-04 授权 F005 L2：Kimi 真实 parent-child probe（brokered auth、不暴露 host credential、不写源码）+ Codex 仅 local-cli health，证据脱敏结构化落盘。
-- 2026-08-02 遗留的 capability-9 工作已登记 backlog `BL-AGENT-SINGLE-INSTANCE-LIFECYCLE` 并本地提交，不并入本批；**该提交未推送——push main 触发生产部署 + DB 迁移，推送时机由用户决定**。
+- capability-9 工作在本地分支 `backlog/bl-agent-single-instance-lifecycle`（cadb65f）；evaluator 复现脚本（scripts/test/、tests/evaluator/）在本地分支 `evaluator-artifacts-hold`。**两者均未推送——push 会触发生产部署（capability-9 含 DB 迁移），时机由用户决定。**
+- 生产当前运行 c5fe6be（2026-08-02 push 自动部署，CI 记录 success）。
 - 当前没有 done 人工闸门，也没有 mode intent。

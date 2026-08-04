@@ -1,0 +1,182 @@
+{
+  "total": 29,
+  "passed": 29,
+  "failed": [],
+  "provider_attested_during_run": true,
+  "results": [
+    {
+      "case": "project-catalog-three-role-kimi-bridge",
+      "expectation": "kimi subagent published for planner/generator/evaluator; codex and legacy claude-code publish none",
+      "ok": true,
+      "detail": "kimi={'evaluator': 1, 'generator': 1, 'planner': 1} codex={} claude-code={}"
+    },
+    {
+      "case": "target-provenance-planner",
+      "expectation": "target carries bridge + provider provenance and execution_provenance_sha256",
+      "ok": true,
+      "detail": "missing=[] provider=vm-v1 epsha=cdc7ff9254fc3e09"
+    },
+    {
+      "case": "target-provenance-generator",
+      "expectation": "target carries bridge + provider provenance and execution_provenance_sha256",
+      "ok": true,
+      "detail": "missing=[] provider=vm-v1 epsha=08dac2538f260457"
+    },
+    {
+      "case": "target-provenance-evaluator",
+      "expectation": "target carries bridge + provider provenance and execution_provenance_sha256",
+      "ok": true,
+      "detail": "missing=[] provider=vm-v1 epsha=b806e950653e0b05"
+    },
+    {
+      "case": "target-provenance-distinct-per-role",
+      "expectation": "each role persona yields a distinct execution provenance digest",
+      "ok": true,
+      "detail": "{'planner': 'cdc7ff9254fc', 'generator': '08dac2538f26', 'evaluator': 'b806e950653e'}"
+    },
+    {
+      "case": "signed-binding-resolves-bridge",
+      "expectation": "a {tool,invocation} binding alone resolves the bridge target and returns execution provenance",
+      "ok": true,
+      "detail": "leaked_fields=[] payload_keys=['evaluator', 'generator', 'planner']"
+    },
+    {
+      "case": "signed-binding-cannot-name-bridge",
+      "expectation": "a signature carrying bridge provenance is rejected (provenance is runtime-only)",
+      "ok": true,
+      "detail": "[tool-catalog] error: binding 'generator' must contain exactly tool and invocation; missing=[], extra=['bridge']"
+    },
+    {
+      "case": "legacy-host-native-not-external-route",
+      "expectation": "legacy `subagent: true` stays Coordinator-internal and is not signable as an external bridge",
+      "ok": true,
+      "detail": "[tool-catalog] error: no eligible agent for binding(s): generator=claude-code+subagent"
+    },
+    {
+      "case": "future-cli-auto-enters-catalog",
+      "expectation": "a new CLI with its own verified manifest on the published protocol enters the catalog with no code change",
+      "ok": true,
+      "detail": "rc=0 futurecli={'evaluator': 1, 'generator': 1, 'planner': 1} err="
+    },
+    {
+      "case": "future-cli-target-provenance",
+      "expectation": "the future CLI target carries the same provider/bridge provenance contract",
+      "ok": true,
+      "detail": "rc=0 bridge=future-acp-native-agent provider=harness-vm-v1"
+    },
+    {
+      "case": "fail-closed/unknown-bridge-id",
+      "expectation": "an undeclared/missing manifest cannot publish a route",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'no-such-bridge' does not exist: /var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/tmpqscdjdx1/bridges-unknown-bridge-id/no-such-bridge.json"
+    },
+    {
+      "case": "fail-closed/manifest-not-verified",
+      "expectation": "_verified must be true",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent' is not verified; it cannot enter the catalog"
+    },
+    {
+      "case": "fail-closed/role-persona-overreach",
+      "expectation": "a persona may not claim another role's contract",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.personas.planner must be 'planner-proposal' under the framework role contract"
+    },
+    {
+      "case": "fail-closed/unknown-role-persona",
+      "expectation": "personas outside the three framework roles are rejected",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.personas contains unsupported fields: ['coordinator']"
+    },
+    {
+      "case": "fail-closed/persona-type-set-mismatch",
+      "expectation": "native_agent_types must cover exactly the persona roles",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.native_agent_types must declare exactly the bridge persona roles"
+    },
+    {
+      "case": "fail-closed/unpublished-native-agent-type",
+      "expectation": "only published native agent types are accepted",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.native_agent_types.generator must name a published native agent type"
+    },
+    {
+      "case": "fail-closed/bridge-command-mismatch",
+      "expectation": "manifest command must equal the verified adapter bridge command",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: 'future-acp-native-agent'.protocol.command must exactly match adapter 'futurecli'.bridge_commands['acp-native-agent/v1']"
+    },
+    {
+      "case": "fail-closed/bridge-command-foreign-executable",
+      "expectation": "the bridge command may not launch another CLI's executable",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: adapter 'futurecli'.bridge_commands['acp-native-agent/v1'][0] must match adapter 'futurecli'.argv[0]"
+    },
+    {
+      "case": "fail-closed/adapter-declares-no-bridge-command",
+      "expectation": "adapters must authorize the bridge launch command",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: adapter 'futurecli'.bridge_commands must declare the published bridge command"
+    },
+    {
+      "case": "fail-closed/unpublished-protocol-kind",
+      "expectation": "an unreleased protocol kind cannot enter the catalog",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.protocol.kind='mcp-child/v1' is not published by this framework"
+    },
+    {
+      "case": "fail-closed/manifest-id-drift",
+      "expectation": "manifest id must match its filename",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge filename 'future-acp-native-agent' disagrees with bridge.id='some-other-bridge'"
+    },
+    {
+      "case": "fail-closed/session-scope-drift",
+      "expectation": "session_scope must be same-session",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent'.session_scope must be 'same-session'"
+    },
+    {
+      "case": "fail-closed/unknown-manifest-field",
+      "expectation": "config drift adds no unknown manifest knobs",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: subagent bridge 'future-acp-native-agent' contains unsupported fields: ['allow_host_fs']"
+    },
+    {
+      "case": "fail-closed/bridge-without-local-cli",
+      "expectation": "an external bridge inherits a verified local-cli contract",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: integrations[3].subagent bridge 'future-acp-native-agent' requires local_cli for its verified sandbox, credentials, and timeout policy"
+    },
+    {
+      "case": "fail-closed/unverified-adapter",
+      "expectation": "an unverified adapter cannot back a bridge",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: adapter 'futurecli' is not verified; local-cli tools cannot enter the catalog"
+    },
+    {
+      "case": "fail-closed/bridge-id-path-traversal",
+      "expectation": "bridge ids cannot traverse the manifest directory",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: integrations[3].subagent.bridge must match '^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$'; it is used as a stable tool id"
+    },
+    {
+      "case": "fail-closed/subagent-declaration-extra-key",
+      "expectation": "the subagent declaration is a closed object",
+      "ok": true,
+      "detail": "rc=2 published={} err=[tool-catalog] error: integrations[3].subagent contains unsupported fields: ['trusted']"
+    },
+    {
+      "case": "missing-project-registry-no-example-fallback",
+      "expectation": "a missing project registry fails closed instead of reading the user example registry",
+      "ok": true,
+      "detail": "rc=2 err=[tool-catalog] error: agent registry does not exist: /var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/tmpqscdjdx1/no-registry-repo/.agents-registry.json"
+    },
+    {
+      "case": "execution-provenance-binds-semantics",
+      "expectation": "documentation edits keep the digest stable; a semantic manifest change moves it",
+      "ok": true,
+      "detail": "baseline=08dac2538f26 prose=08dac2538f26 drift=b1b04797186d"
+    }
+  ]
+}

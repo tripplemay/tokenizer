@@ -1,0 +1,74 @@
+{
+  "app_root": "/Users/yixingzhou/.tokenizer/app",
+  "repo_path": "/Users/yixingzhou/project/tokenizer",
+  "catalog_issue": null,
+  "total_entries": 18,
+  "subagent_routes": [
+    {
+      "tool": "kimi",
+      "role": "evaluator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:18:09Z"
+    },
+    {
+      "tool": "kimi",
+      "role": "generator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:18:09Z"
+    },
+    {
+      "tool": "kimi",
+      "role": "planner",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:18:09Z"
+    }
+  ],
+  "selectable_subagent_routes": [
+    "kimi/evaluator",
+    "kimi/generator",
+    "kimi/planner"
+  ],
+  "integrations": [
+    {
+      "tool": "claude-code",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "codex",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "kimi",
+      "subagent": true,
+      "bridge_id": "kimi-acp-native-agent",
+      "bridge_protocol": "acp-native-agent/v1",
+      "bridge_roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "provider_id": "harness-vm-v1"
+    }
+  ],
+  "no_registry_repo": {
+    "entries": [],
+    "issue": "dispatch tool catalog is unavailable"
+  }
+}

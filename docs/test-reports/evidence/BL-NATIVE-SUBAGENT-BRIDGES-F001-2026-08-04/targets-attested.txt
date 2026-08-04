@@ -1,0 +1,147 @@
+=== subagent--kimi--planner ===
+{
+    "adapter": "kimi",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "agent_type": "planner-proposal",
+    "bridge_id": "kimi-acp-native-agent",
+    "bridge_protocol": {
+        "command": [
+            "kimi",
+            "acp"
+        ],
+        "kind": "acp-native-agent/v1",
+        "request_delivery": "stdin",
+        "response_format": "json"
+    },
+    "bridge_provider_contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+    "bridge_provider_id": "harness-vm-v1",
+    "bridge_provider_kind": "vm-v1",
+    "bridge_strategy": "session-bridge-v1",
+    "capabilities": [
+        "build",
+        "e2e",
+        "fix",
+        "l1_local",
+        "plan",
+        "security_audit",
+        "verify"
+    ],
+    "execution_provenance_sha256": "cdc7ff9254fc3e09bb8e7401e41fa46ea404ebdea96de7ffc9050214ccd87b80",
+    "integration_id": "kimi",
+    "invocation": "subagent",
+    "model_family": "kimi",
+    "native_agent_type": "plan",
+    "priority": 100,
+    "roles": [
+        "planner"
+    ],
+    "sandbox": {
+        "env_allow": [],
+        "env_set": {
+            "KIMI_CODE_HOME": "~/.kimi-code"
+        },
+        "home_dir": "~/.harness-sandbox/kimi"
+    },
+    "session_scope": "same-session",
+    "target_id": "subagent--kimi--planner",
+    "timeout_s": 2400,
+    "tool": "kimi"
+}
+=== subagent--kimi--generator ===
+{
+    "adapter": "kimi",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "agent_type": "generator-restricted",
+    "bridge_id": "kimi-acp-native-agent",
+    "bridge_protocol": {
+        "command": [
+            "kimi",
+            "acp"
+        ],
+        "kind": "acp-native-agent/v1",
+        "request_delivery": "stdin",
+        "response_format": "json"
+    },
+    "bridge_provider_contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+    "bridge_provider_id": "harness-vm-v1",
+    "bridge_provider_kind": "vm-v1",
+    "bridge_strategy": "session-bridge-v1",
+    "capabilities": [
+        "build",
+        "e2e",
+        "fix",
+        "l1_local",
+        "plan",
+        "security_audit",
+        "verify"
+    ],
+    "execution_provenance_sha256": "08dac2538f2604576eea75b23801db3ddf6c06c8f495beb750336a446a614d7c",
+    "integration_id": "kimi",
+    "invocation": "subagent",
+    "model_family": "kimi",
+    "native_agent_type": "coder",
+    "priority": 100,
+    "roles": [
+        "generator"
+    ],
+    "sandbox": {
+        "env_allow": [],
+        "env_set": {
+            "KIMI_CODE_HOME": "~/.kimi-code"
+        },
+        "home_dir": "~/.harness-sandbox/kimi"
+    },
+    "session_scope": "same-session",
+    "target_id": "subagent--kimi--generator",
+    "timeout_s": 2400,
+    "tool": "kimi"
+}
+=== subagent--kimi--evaluator ===
+{
+    "adapter": "kimi",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "agent_type": "evaluator",
+    "bridge_id": "kimi-acp-native-agent",
+    "bridge_protocol": {
+        "command": [
+            "kimi",
+            "acp"
+        ],
+        "kind": "acp-native-agent/v1",
+        "request_delivery": "stdin",
+        "response_format": "json"
+    },
+    "bridge_provider_contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+    "bridge_provider_id": "harness-vm-v1",
+    "bridge_provider_kind": "vm-v1",
+    "bridge_strategy": "session-bridge-v1",
+    "capabilities": [
+        "build",
+        "e2e",
+        "fix",
+        "l1_local",
+        "plan",
+        "security_audit",
+        "verify"
+    ],
+    "execution_provenance_sha256": "b806e950653e0b0509029fcfa8969bc37fddb189bdccd768a441a708db9faf2a",
+    "integration_id": "kimi",
+    "invocation": "subagent",
+    "model_family": "kimi",
+    "native_agent_type": "explore",
+    "priority": 100,
+    "roles": [
+        "evaluator"
+    ],
+    "sandbox": {
+        "env_allow": [],
+        "env_set": {
+            "KIMI_CODE_HOME": "~/.kimi-code"
+        },
+        "home_dir": "~/.harness-sandbox/kimi"
+    },
+    "session_scope": "same-session",
+    "target_id": "subagent--kimi--evaluator",
+    "timeout_s": 2400,
+    "tool": "kimi"
+}

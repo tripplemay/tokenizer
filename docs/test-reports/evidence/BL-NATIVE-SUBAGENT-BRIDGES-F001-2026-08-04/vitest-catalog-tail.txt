@@ -1,0 +1,8 @@
+
+ ✓ tests/cli/harness-tool-catalog.test.ts (73 tests) 124ms
+
+ Test Files  1 passed (1)
+      Tests  73 passed (73)
+   Start at  23:14:04
+   Duration  665ms (transform 111ms, setup 0ms, collect 104ms, tests 124ms, environment 0ms, prepare 90ms)
+

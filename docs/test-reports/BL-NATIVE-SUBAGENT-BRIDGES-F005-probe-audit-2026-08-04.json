@@ -1,0 +1,161 @@
+{
+  "schema": "harness/f005-probe-audit/1",
+  "batch": "BL-NATIVE-SUBAGENT-BRIDGES",
+  "feature_id": "F005",
+  "locked_sha": "172ed42b5c4d910c7f194a6fab835c8ac74f19e7",
+  "generated_at_utc": "2026-08-04T03:14:18Z",
+  "evaluator": "fresh-context evaluator subagent",
+  "l2_authorization": {
+    "granted": true,
+    "granted_on": "2026-08-04",
+    "scope": "no-source-write real parent-child bridge probe against locally authenticated Kimi in strict provider; Codex local-cli health check only",
+    "redaction": "no prompt text, no ACP wire data, no credentials recorded"
+  },
+  "credential_handling": {
+    "kimi_token_refresh": "one minimal `kimi -p` invocation in neutral dir /tmp/f005-neutral",
+    "host_raw_credential_exposed_to_worker": false,
+    "user_kimi_wire_or_session_files_read_or_copied": false,
+    "note": "TTL ~15min observed; provider attestation TTL 5min"
+  },
+  "environment": {
+    "kimi_cli": "0.31.0",
+    "codex_cli": "codex-cli 0.146.0",
+    "limactl": "2.1.0",
+    "node": "v25.7.0",
+    "nvmrc": null,
+    "system_python_used_by_provider": "/usr/bin/python3 3.9.6"
+  },
+  "strict_provider_gate": {
+    "available": true,
+    "provider": {
+      "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+      "id": "harness-vm-v1",
+      "kind": "vm-v1"
+    },
+    "attestation_phase": "catalog",
+    "attestation_ttl_note": "issued_at/expires_at ~5 min window",
+    "precondition_finding": "provider returns available=false with reason 'Kimi OAuth credential expires too soon' until a fresh token exists; fail-closed as designed"
+  },
+  "catalog_publication": {
+    "kimi_subagent_roles_published": [
+      "planner",
+      "generator",
+      "evaluator"
+    ],
+    "target_carries_bridge_provenance": true,
+    "execution_provenance_sha256": "b806e950653e0b0509029fcfa8969bc37fddb189bdccd768a441a708db9faf2a",
+    "bridge_id": "kimi-acp-native-agent",
+    "bridge_protocol_kind": "acp-native-agent/v1",
+    "session_scope": "same-session",
+    "resolved_route": "external-vm-v1"
+  },
+  "parent_child_probe": {
+    "attempted": true,
+    "attempts": 2,
+    "invocation": "vm-bridge-provider.py launch (identical argv to dispatch-run.sh exec, trusted ~/.tokenizer/app bundle)",
+    "outcome": "FAILED",
+    "exit_code": 2,
+    "provider_error": "bridge target cannot be re-resolved",
+    "reached_kimi_acp": false,
+    "child_agent_observed": false,
+    "nonce_bound_child_receipt": null,
+    "qualified_parent_child_provenance_obtained": false,
+    "credential_confound_ruled_out": "attempt #2 ran with freshly refreshed token while doctor reported available=true"
+  },
+  "root_cause": {
+    "summary": "external vm-v1 bridge launch is structurally unreachable on this host",
+    "detail": "vm-bridge-provider.py launch re-resolves the target by running the app-bundle tool-catalog.py as `/usr/bin/python3 -I <bundle>/tool-catalog.py target ...` with env {PATH,LANG,LC_ALL} and no PYTHONPATH. Python isolated mode (-I) excludes the script's own directory from sys.path, so tool-catalog.py's module-level `from dispatch_common import ...` raises ModuleNotFoundError. Non-zero returncode is mapped to ProviderError('bridge target cannot be re-resolved').",
+    "code_sites": [
+      ".claude/dispatch/transports/vm-bridge-provider.py:1799-1823 (re-resolution subprocess + error mapping)",
+      ".claude/dispatch/tool-catalog.py:34 (module-level sibling import of dispatch_common)",
+      ".claude/dispatch/dispatch-run.sh:420-423 (production exec of the same launch argv)"
+    ],
+    "controlled_experiment": {
+      "with_-I": {
+        "runs": 3,
+        "exit_codes": [
+          1,
+          1,
+          1
+        ],
+        "stderr": "ModuleNotFoundError: No module named 'dispatch_common'"
+      },
+      "without_-I": {
+        "runs": 1,
+        "exit_code": 0,
+        "resolves_target": true,
+        "execution_provenance_sha256_prefix": "b806e950653e0b05"
+      },
+      "conclusion": "failure attributable solely to isolated-mode sys.path, not to credentials, drift, or registry state"
+    },
+    "drift_ruled_out": "app-bundle and project copies of tool-catalog.py and vm-bridge-provider.py are byte-identical (sha256 match)"
+  },
+  "codex_local_cli_health": {
+    "cli_responds": true,
+    "version": "codex-cli 0.146.0",
+    "subagent_candidates_in_catalog": 0,
+    "roles_resolving_as_local_cli": [
+      "planner",
+      "generator",
+      "evaluator"
+    ],
+    "bridge_keys_on_target": [],
+    "adapter_execution_contract_sha256_present": true,
+    "child_bridge_probe_executed": false,
+    "verdict": "PASS"
+  },
+  "regression_matrix": {
+    "npm_run_verify": {
+      "exit": 0,
+      "detail": "prisma generate + tsc --noEmit clean"
+    },
+    "npm_run_lint": {
+      "exit": 0,
+      "detail": "No ESLint warnings or errors"
+    },
+    "npm_run_test": {
+      "exit": 0,
+      "detail": "60 files, 905 passed | 4 skipped (909)"
+    },
+    "npm_run_build": {
+      "exit": 0,
+      "detail": "Next.js 15.5.18 production build succeeded"
+    },
+    "framework_focused_python": {
+      "passed": [
+        "test-tool-catalog",
+        "test-session-bridge",
+        "test-session-bridge-kimi",
+        "test-session-bridge-codex",
+        "test-vm-bridge-provider",
+        "test-external-bridge-receipt",
+        "test-generator-handoff",
+        "test-accept-generator-handoff",
+        "test-planner-proposal"
+      ],
+      "failed": [
+        "test-lifecycle"
+      ],
+      "failure_detail": {
+        "test": "DeadlineAndPreflightTests.test_sandbox_rejects_external_same_session_target_before_creating_runtime",
+        "assertion": "assertIn('target id is not registered', result.stderr) at test-lifecycle.py:320",
+        "actual_stderr": "[sandbox] does not launch here: dispatch-run.sh owns the strict vm-v1 provider route",
+        "deterministic": true,
+        "security_property_still_holds": true,
+        "security_evidence": "exit_code=2, workroot_created=false, state_created=false, seatbelt path not reached (3 independent repros); die() at sandbox-profile.sh:532 precedes mkdir at :536-537",
+        "classification": "stale assertion string left behind by the fixing round, not a security regression"
+      }
+    }
+  },
+  "no_source_write_verification": {
+    "head_before": "172ed42b5c4d910c7f194a6fab835c8ac74f19e7",
+    "head_after": "172ed42b5c4d910c7f194a6fab835c8ac74f19e7",
+    "tracked_files_modified": 0,
+    "probe_state_dirs": "outside repo (/tmp/f005-probe)",
+    "untracked_paths": [
+      "scripts/",
+      "tests/evaluator/"
+    ],
+    "untracked_note": "evaluator-owned test artifacts only (this evaluator plus concurrent fan-out siblings); no product code touched"
+  }
+}

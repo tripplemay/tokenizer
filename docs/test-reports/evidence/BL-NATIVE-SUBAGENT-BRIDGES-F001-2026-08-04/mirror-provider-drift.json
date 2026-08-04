@@ -1,0 +1,38 @@
+{
+  "app_root": "/Users/yixingzhou/.tokenizer/app",
+  "repo_path": "/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T//f001-mirror-8IpuWi/provider-drift",
+  "catalog_issue": null,
+  "total_entries": 15,
+  "subagent_routes": [],
+  "selectable_subagent_routes": [],
+  "integrations": [
+    {
+      "tool": "claude-code",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "codex",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "kimi",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    }
+  ],
+  "no_registry_repo": {
+    "entries": [],
+    "issue": "dispatch tool catalog is unavailable"
+  }
+}

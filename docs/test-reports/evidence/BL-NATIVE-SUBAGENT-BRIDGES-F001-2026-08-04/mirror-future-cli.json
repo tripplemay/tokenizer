@@ -1,0 +1,116 @@
+{
+  "app_root": "/Users/yixingzhou/.tokenizer/app",
+  "repo_path": "/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T//f001-mirror-8IpuWi/future-cli",
+  "catalog_issue": null,
+  "total_entries": 24,
+  "subagent_routes": [
+    {
+      "tool": "futurecli",
+      "role": "evaluator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    },
+    {
+      "tool": "kimi",
+      "role": "evaluator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    },
+    {
+      "tool": "futurecli",
+      "role": "generator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    },
+    {
+      "tool": "kimi",
+      "role": "generator",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    },
+    {
+      "tool": "futurecli",
+      "role": "planner",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    },
+    {
+      "tool": "kimi",
+      "role": "planner",
+      "provider_id": "harness-vm-v1",
+      "provider_kind": "vm-v1",
+      "attestation_version": "harness/external-bridge-provider-attestation/1",
+      "attestation_phase": "catalog",
+      "attestation_expires_at": "2026-08-04T03:20:32Z"
+    }
+  ],
+  "selectable_subagent_routes": [
+    "futurecli/evaluator",
+    "kimi/evaluator",
+    "futurecli/generator",
+    "kimi/generator",
+    "futurecli/planner",
+    "kimi/planner"
+  ],
+  "integrations": [
+    {
+      "tool": "claude-code",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "codex",
+      "subagent": false,
+      "bridge_id": null,
+      "bridge_protocol": null,
+      "bridge_roles": null,
+      "provider_id": null
+    },
+    {
+      "tool": "futurecli",
+      "subagent": true,
+      "bridge_id": "future-acp-native-agent",
+      "bridge_protocol": "acp-native-agent/v1",
+      "bridge_roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "provider_id": "harness-vm-v1"
+    },
+    {
+      "tool": "kimi",
+      "subagent": true,
+      "bridge_id": "kimi-acp-native-agent",
+      "bridge_protocol": "acp-native-agent/v1",
+      "bridge_roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "provider_id": "harness-vm-v1"
+    }
+  ],
+  "no_registry_repo": {
+    "entries": [],
+    "issue": "dispatch tool catalog is unavailable"
+  }
+}

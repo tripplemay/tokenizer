@@ -1,0 +1,6 @@
+test_verified_external_bridge_is_hidden_without_a_strict_provider (__main__.ToolCatalogTests) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 4.168s
+
+OK
