@@ -1,34 +1,5 @@
 [
   {
-    "id": "BL-AGENT-CATALOG-RELEASE-RECOVERY",
-    "title": "修复 Harness 工具目录兼容性与 Agent 升级判定",
-    "description": "修复旧 Tokenizer Agent 无法解析对象式 subagent bridge 后上报空工具目录、控制台未提示升级且禁止签发的问题。以 fail-closed 为前提恢复 local-cli/A2A 目录，不重新发布外部 same-session subagent。",
-    "decisions": [
-      "当前 BL-NATIVE-SUBAGENT-BRIDGES 仍在 verifying，先由 F005 的独立 Evaluator 记录 FAIL 并进入 fixing；仅在旧批 done 后才可消费本条作为独立新批。",
-      "发布 Agent 1.2.0，capability 8；目录、上报或签发契约变更必须同时提高最低 capability。",
-      "旧 parser 不回退兼容 subagent:true，避免重新暴露不可信 external subagent 路由。",
-      "控制台按报告新鲜度、升级要求、版本核验、兼容但空目录的顺序给出互斥且可操作的原因。",
-      "安装脚本负责更新 ~/.tokenizer/app 并重启 daemon；项目 harness sync 不能替代 Agent 升级。"
-    ],
-    "confirmed_at": "2026-08-01T15:29:19Z",
-    "priority": "high"
-  },
-  {
-    "id": "BL-AGENT-SINGLE-INSTANCE-LIFECYCLE",
-    "title": "Agent 单实例生命周期与上报者身份可观测性",
-    "description": "Agent 1.2.1 / capability 9：升级安装器与 launchd 生命周期，确保升级时旧 wrapper 与 Node 子进程一并退出（agent-lock 单实例 + 信号转发），避免孤儿旧进程并发上报覆盖设备状态；服务端引入 harness reporter identity 与 serializable transaction，拒绝过期 daemon 覆盖已接受的诊断与 Harness 控制面状态；设备页显示被接受上报的 Token 前缀与时间（prisma 迁移 20260802000000_add_device_reporter_observability）。实现已在工作树完成，随本条登记后以 feat(BL-AGENT-SINGLE-INSTANCE-LIFECYCLE) 提交；验收作为独立批次安排。",
-    "decisions": [
-      "实现先于登记完成（2026-08-02 会话遗留），经用户裁决补登记后提交，不并入 BL-NATIVE-SUBAGENT-BRIDGES 批次范围。",
-      "发布 Agent 1.2.1，capability 9；MIN_AGENT_FEATURE_VERSION 同步提高——旧 Agent 可能以孤儿进程覆盖新设备状态，属正确性修复，必须提示升级。",
-      "新增 MAX_AGENT_FEATURE_VERSION 上限，防止畸形 capability 值使正常 reporter 永久显示过期。",
-      "Harness report/relay 携带 mode 目录、pending gate、intent 确认或投递标记时视为控制面写入，capability 9 起要求 reporter identity。",
-      "提交不等于部署：push main 会触发生产部署与 DB 迁移，何时推送由用户单独决定。",
-      "本条消费为独立批次时由 fresh-context Evaluator 独立验收，与 BL-AGENT-CATALOG-RELEASE-RECOVERY（1.2.0/capability 8，实现见 c5fe6be）衔接核对发布账本。"
-    ],
-    "confirmed_at": "2026-08-04T02:39:14Z",
-    "priority": "high"
-  },
-  {
     "id": "BL-REGISTRY-LAZY-FIELD-CLEANUP",
     "title": "清理 registry 中对 bridge 路径无效的惰性 sandbox 字段",
     "description": "kimi integration 的 sandbox.env_set.KIMI_CODE_HOME=~/.kimi-code 是 local-cli 时代遗留,vm-v1 bridge 路径全文不引用 env_set/sandbox,易被误读为 bridge 会触碰用户 Kimi 状态。剥离或注释该字段,并核对其他 integration 是否有同类惰性字段。来源:BL-NATIVE-SUBAGENT-BRIDGES reverify2-F003 §9.4,FIX2 决议点 4。",
@@ -36,6 +7,26 @@
       "用户 2026-08-04 裁决入 backlog,下批处理,本批不动 registry。"
     ],
     "confirmed_at": "2026-08-04T06:20:00Z",
+    "priority": "low"
+  },
+  {
+    "id": "BL-BRIDGE-GUEST-FAILURE-TAXONOMY",
+    "title": "provider 以受限枚举回传 guest 侧 bridge 失败类别",
+    "description": "vm-v1 bridge 的 guest 失败当前只映射为通用 'VM restricted provider unit failed'，driver 抛出的具体错误类别（如 'returned no terminal-message deliverable'）按设计不外泄，导致偶发失败每次烧掉一次 wall-clock（最坏 2400s）且无法定位。改为 provider 以白名单枚举回传 driver 错误类别（只传类别，不传任何模型文本/guest 内容）。来源：BL-NATIVE-SUBAGENT-BRIDGES reverify3-F003 §9.1。",
+    "decisions": [
+      "用户 2026-08-04 裁决登记；白名单枚举、零模型文本是硬边界。"
+    ],
+    "confirmed_at": "2026-08-04T08:28:14Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT",
+    "title": "对齐 terminal-message 通道与 D9 受托路径覆盖语义",
+    "description": "terminal-message 通道以 O_EXCL 物化 artifact，受托路径已存在于 copy-in baseline 时会 fail-closed——D9『受托路径是合法覆盖点』目前仅对 file 通道可达。要么 driver 允许受托路径覆盖（与 D9 对齐），要么在 D8 规格写明该例外。来源：BL-NATIVE-SUBAGENT-BRIDGES reverify3-F003 §9.2。",
+    "decisions": [
+      "用户 2026-08-04 裁决登记。"
+    ],
+    "confirmed_at": "2026-08-04T08:28:14Z",
     "priority": "low"
   }
 ]

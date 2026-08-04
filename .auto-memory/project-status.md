@@ -5,10 +5,10 @@ type: project
 ---
 ## 当前批次
 
-- **BL-NATIVE-SUBAGENT-BRIDGES：done（2026-08-04）**。5/5 全 PASS，3 轮修复；人工闸门经控制台验签批准。signoff：`docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-signoff-2026-08-04.md`。
-- 交付能力：vm-v1 strict provider（Lima VM + brokered 凭据/网络）驱动 Kimi 三 persona 同会话子代理 bridge；声明式 deliverable_channels（planner=terminal-message）；nonce-bound child receipt 全链证据；Codex 保持 local-cli。生产运行 4cf44df。
-- backlog 现有：BL-AGENT-CATALOG-RELEASE-RECOVERY（实现已在 c5fe6be，待作独立批次验收消费）、BL-AGENT-SINGLE-INSTANCE-LIFECYCLE（代码在 hold 分支）、BL-REGISTRY-LAZY-FIELD-CLEANUP。
-- 非阻断观察待裁量入 backlog：guest 失败类别白名单回传；terminal-message O_EXCL 与 D9 覆盖语义对齐。
+- **BL-AGENT-RELEASE-ACCEPTANCE（verifying，0/3，evaluator-only）**：验收已在生产的 Agent 1.2.0/capability 8（c5fe6be）与 1.2.1/capability 9（bbb2c8b，a7bf556 部署+迁移）。F003 含本机真实升级链路。spec：docs/specs/BL-AGENT-RELEASE-ACCEPTANCE-spec.md。
+- 上一批次 BL-NATIVE-SUBAGENT-BRIDGES 已 done（5/5 全 PASS，signoff 落盘，闸门验签批准）。
+- backlog 现有：BL-REGISTRY-LAZY-FIELD-CLEANUP、BL-BRIDGE-GUEST-FAILURE-TAXONOMY、BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT。
+- proposed-learnings 两条待用户确认（persona 不外推；spawn 边界须真实 argv 用例）。
 
 ## 已知边界
 
