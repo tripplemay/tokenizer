@@ -1,0 +1,21 @@
+=== POST-UPGRADE EVIDENCE (UTC 2026-08-04T08:41:17Z) ===
+-- install dir HEAD --
+f3ee2c09ee14ccebde28d23597c0a2fba4db94fb
+-- product code identical to a7bf556? --
+   (empty above = identical)
+-- installed capability constants --
+export const AGENT_FEATURE_VERSION = 9;
+export const MIN_AGENT_FEATURE_VERSION = 9;
+export const MAX_AGENT_FEATURE_VERSION = 1_000_000;
+-- wrapper style (must be spawn, not spawnSync) --
+spawnSync: 1
+signal-forwarding: 1
+-- agent-lock module --
+present
+-- agent.lock --
+{"pid":65492,"token":"0ace84d5-545c-4b50-be94-85d529a4c595","startedAt":"2026-08-04T08:40:43.210Z"}
+-- PID tree --
+65451     1 node /Users/yixingzhou/.local/bin/tokenizer agent --heartbeat-seconds 60 --sync-minutes 15
+65492 65451 node --import tsx /Users/yixingzhou/.tokenizer/app/src/cli/index.ts agent --heartbeat-seconds 60 --sync-minutes 15
+-- launchd --
+65451	0	cc.tokenizer.agent

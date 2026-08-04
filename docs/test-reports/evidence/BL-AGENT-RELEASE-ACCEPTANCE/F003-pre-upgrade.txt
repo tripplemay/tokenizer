@@ -1,0 +1,17 @@
+=== PRE-UPGRADE EVIDENCE (UTC 2026-08-04T08:40:01Z) ===
+-- install dir HEAD --
+c5fe6bee741c90b0b374b0a441cbcdab1ffbe456
+-- installed wrapper style --
+spawnSync occurrences: 2
+-- agent-lock module present in install dir --
+no (capability 8)
+-- agent.lock file --
+(absent: capability 8 has no single-instance lock)
+-- PID tree --
+63704     1 Tue Aug  4 04:39:19 2026     node /Users/yixingzhou/.local/bin/tokenizer agent --heartbeat-seconds 60 --sync-minutes 15
+63708 63704 Tue Aug  4 04:39:19 2026     node --import tsx /Users/yixingzhou/.tokenizer/app/src/cli/index.ts agent --heartbeat-seconds 60 --sync-minutes 15
+-- launchd --
+(no launchd job registered)
+-- state.json agent + heartbeat --
+agent: {"status": "running", "pid": 63708, "startedAt": "2026-08-04T08:39:19.636Z"}
+lastHeartbeatAt: 2026-08-04T08:39:21.863Z status: success

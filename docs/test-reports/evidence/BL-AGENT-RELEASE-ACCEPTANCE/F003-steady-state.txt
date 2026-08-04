@@ -1,0 +1,14 @@
+=== STEADY-STATE CHECK (UTC 2026-08-04T08:47:12Z) ===
+-- PID tree --
+65451     1 node /Users/yixingzhou/.local/bin/tokenizer agent --heartbeat-seconds 60 --sync-minutes 15
+65492 65451 node --import tsx /Users/yixingzhou/.tokenizer/app/src/cli/index.ts agent --heartbeat-seconds 60 --sync-minutes 15
+-- launchd --
+65451	0	cc.tokenizer.agent
+-- lock --
+{"pid":65492,"token":"0ace84d5-545c-4b50-be94-85d529a4c595","startedAt":"2026-08-04T08:40:43.210Z"}
+-- state --
+agent: {"status": "running", "pid": 65492, "startedAt": "2026-08-04T08:40:43.212Z"}
+heartbeat: 2026-08-04T08:46:51.947Z success
+harness: success reported= 9 failed= 0
+-- production --
+{"ok":true,"timestamp":"2026-08-04T08:47:16.261Z","commit":"a7bf5561a7a2f1c6a1201d0a13fc0ecfb3e6726c"}

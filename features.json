@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "验收 Agent 1.2.0 / capability 8：目录兼容性恢复与升级判定（BL-AGENT-CATALOG-RELEASE-RECOVERY，实现 c5fe6be）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "对照 backlog 原决策逐条验收：旧 parser 不回退兼容 subagent:true（不重新暴露不可信 external subagent 路由）；local-cli/A2A 目录以 fail-closed 为前提恢复；capability 8 为工具绑定 mode intent 的最低门槛；控制台按报告新鲜度、升级要求、版本核验、兼容但空目录的顺序给出互斥且可操作的原因。以生产服务与代码实物为准，含聚焦测试运行。"
     },
@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "验收 Agent 1.2.1 / capability 9：单实例生命周期与上报者身份（BL-AGENT-SINGLE-INSTANCE-LIFECYCLE，实现 bbb2c8b）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "agent-lock 单实例（活 PID 拒绝第二实例、死 PID 回收、release 不误删后继锁）；wrapper 信号转发且等待 Node 子进程退出（升级不留孤儿旧进程并发上报）；服务端以 reporter identity 拒绝过期 daemon 覆盖已接受诊断与 Harness 控制面状态；设备页显示被接受上报的 Token 前缀与时间；MAX_AGENT_FEATURE_VERSION 上限防畸形值；生产已应用 device_reporter_observability 迁移。以代码实物、聚焦测试与生产实测为准。"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "本机 Agent 升级到 1.2.1 的真实链路验收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "在本机执行 install.sh 升级链路：升级后 ~/.tokenizer/app 为 a7bf556 等效内容、daemon 重启为单实例（旧 wrapper 与 Node 子进程均退出）、新 Agent 上报 capability 9 且服务端接受、设备页/控制台不再提示升级；升级过程与结果证据（脱敏）落盘 docs/test-reports/。若发现回归按事实记录，不修改产品代码。"
     }

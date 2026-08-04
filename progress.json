@@ -2,27 +2,53 @@
   "status": "verifying",
   "user_goal": "验收已部署的 Agent 1.2.0/1.2.1 两个发布（目录兼容性恢复、单实例生命周期与 reporter identity），含本机真实升级链路。",
   "total_features": 3,
-  "completed_features": 0,
+  "completed_features": 3,
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-RELEASE-ACCEPTANCE",
   "dashboard_url": null,
-  "last_updated": "2026-08-04T08:28:14Z",
+  "last_updated": "2026-08-04T09:04:01Z",
   "reference_docs": [
     "docs/specs/BL-AGENT-RELEASE-ACCEPTANCE-spec.md"
   ],
   "docs": {
     "spec": "docs/specs/BL-AGENT-RELEASE-ACCEPTANCE-spec.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-AGENT-RELEASE-ACCEPTANCE-signoff-2026-08-04.md",
     "framework_reviewed": true
   },
   "role_assignments": null,
   "mode_intent": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "summary": "First-round verify complete, all PASS. F001 (Agent 1.2.0/cap8 catalog recovery), F002 (Agent 1.2.1/cap9 single-instance + reporter identity), F003 (real local upgrade chain). L1: 65 files / 1005 passed / 4 skipped; production health commit a7bf556. Reports: docs/test-reports/BL-AGENT-RELEASE-ACCEPTANCE-verify-2026-08-04.md, signoff: …-signoff-2026-08-04.md.",
+    "pass_count": 3,
+    "partial_count": 0,
+    "fail_count": 0,
+    "issues": [],
+    "observations": [
+      "§5.1：设备页 reporter 字段验至代码级+数据级（生产列确被写入、渲染路径与双语文案核验），UI 肉眼观察未执行——.auto-memory/environment.md 仍是未填模板（无控制台凭证），evaluator 上下文无浏览器工具。风险评估低；用户如要求 UI 闭环可补验。",
+      "§5.2：主动放弃一项带控制面副作用的生产测试（relay GET 有投递标记 updateMany 副作用），改以代码审读+单调守卫探针覆盖，守住批次只读边界。"
+    ]
+  },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-AGENT-RELEASE-ACCEPTANCE 2026-08-04】Evaluator-only 批次：消费 backlog 两条（CATALOG-RELEASE-RECOVERY + SINGLE-INSTANCE-LIFECYCLE），实现均已在生产（c5fe6be / bbb2c8b，生产 a7bf556）。全 executor:evaluator → 跳过 building 直入 verifying。F003 含本机真实升级链路（install.sh → daemon 单实例重启 → capability 9 上报）。同轮登记两条新 backlog（BL-BRIDGE-GUEST-FAILURE-TAXONOMY / BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT）。快车道默认映射。"
+    "planning": "【BL-AGENT-RELEASE-ACCEPTANCE 2026-08-04】Evaluator-only 批次：消费 backlog 两条（CATALOG-RELEASE-RECOVERY + SINGLE-INSTANCE-LIFECYCLE），实现均已在生产（c5fe6be / bbb2c8b，生产 a7bf556）。全 executor:evaluator → 跳过 building 直入 verifying。F003 含本机真实升级链路（install.sh → daemon 单实例重启 → capability 9 上报）。同轮登记两条新 backlog（BL-BRIDGE-GUEST-FAILURE-TAXONOMY / BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT）。快车道默认映射。",
+    "verifying": "【BL-AGENT-RELEASE-ACCEPTANCE 2026-08-04】首轮全 PASS（fix_rounds=0）：两个发布的独立验收补齐，本机真实升级链路成功（旧 wrapper+Node 全退无孤儿、新单实例持锁、capability 9 被服务端接受、生产 /api/health commit=a7bf556）。遗留：environment.md 是未填模板（Planner 应补）；设备页 UI 肉眼观察未执行（低风险，可选补验）。signoff 已签署，pending_gate 已举起。evaluator 新增 tests/evaluator/bl-agent-release-acceptance.test.ts（非 ignore 路径，未推送，等下次部署窗口顺车）。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-AGENT-RELEASE-ACCEPTANCE-verifying-done-r0",
+    "kind": "phase_advance",
+    "raised_at": "2026-08-04T09:04:01Z",
+    "raised_by": "verify",
+    "batch": "BL-AGENT-RELEASE-ACCEPTANCE",
+    "from_status": "verifying",
+    "to_status": "done",
+    "detail": "首轮 3/3 acceptance PASS + L1 绿（1005 passed）+ 本机真实升级链路成功 + Evaluator signoff 已写；等人类批准 verifying-to-done。",
+    "evidence": [
+      "docs/test-reports/BL-AGENT-RELEASE-ACCEPTANCE-signoff-2026-08-04.md",
+      "docs/test-reports/BL-AGENT-RELEASE-ACCEPTANCE-verify-2026-08-04.md",
+      "docs/test-reports/evidence/BL-AGENT-RELEASE-ACCEPTANCE/"
+    ],
+    "decision": null
+  }
 }
