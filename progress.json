@@ -54,6 +54,15 @@
       "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-reverify3-F003-2026-08-04.md",
       "docs/test-reports/BL-NATIVE-SUBAGENT-BRIDGES-F003-r3-planner-launch-audit.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-NATIVE-SUBAGENT-BRIDGES-verifying-done-r3",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-08-04T08:04:55.900Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "GrEZxzJ8jq2Km4RGmRREV4ci+GZBdsStFohtF4BF4S/pv1zFpDU2CEQrWS7k0vpFjgu/HPvGvHlS0s8HMLBFBg=="
+    }
   }
 }
