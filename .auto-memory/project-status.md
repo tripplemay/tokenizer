@@ -14,5 +14,7 @@ type: project
 
 ## 已知边界
 
-- 修复阶段必须先解决“规格要求发布 external bridge”与“当前 strict-provider fail-closed 策略”的冲突，再重新获取 Kimi 的真实、脱敏 parent-child 审计证据；不得以隐藏 bridge 或实施阶段叙述作为替代。
-- 当前没有 done 人工闸门，也没有 mode intent；本轮未调用认证 Codex/Kimi 服务、未修改产品代码、未部署。
+- strict-provider 冲突已按 FIX1 裁决（`docs/specs/BL-NATIVE-SUBAGENT-BRIDGES-FIX1-strict-provider-adjudication.md`，#1-#4 全 A）：vm-v1 provider 严格路线，实现主体见 c5fe6be；无可 attest provider 时目录隐藏属预期 fail-closed。
+- 用户已于 2026-08-04 授权 F005 L2：Kimi 真实 parent-child probe（brokered auth、不暴露 host credential、不写源码）+ Codex 仅 local-cli health，证据脱敏结构化落盘。
+- 2026-08-02 遗留的 capability-9 工作已登记 backlog `BL-AGENT-SINGLE-INSTANCE-LIFECYCLE` 并本地提交，不并入本批；**该提交未推送——push main 触发生产部署 + DB 迁移，推送时机由用户决定**。
+- 当前没有 done 人工闸门，也没有 mode intent。

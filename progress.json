@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-NATIVE-SUBAGENT-BRIDGES",
   "dashboard_url": null,
-  "last_updated": "2026-08-01T17:09:54Z",
+  "last_updated": "2026-08-04T02:39:14Z",
   "reference_docs": [
     "framework/harness/dispatch-mode.md",
     "framework/harness/console-mode.md",
@@ -69,7 +69,8 @@
   "session_notes": {
     "planning": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-07-31】用户明确要求为 Codex 与 Kimi 建立并验证同会话子代理桥接，并让未来同类 CLI 自动进入规则体系。实测 Codex CLI 0.146.0 的 App Server 可创建持久 thread fork（同 sessionId、forkedFromId）；该路径必须准确标记为 session-fork，不得伪称 vendor spawn。Kimi Code 0.31.0 的 ACP 可创建 Harness 自有根会话，且原生 Agent/AgentSwarm 子代理会以 ACP tool_call nonce 回执证明。无新的已签发 mode intent，当前批采用默认快车道完成框架与控制台实现；正式发布仍受 verifying-to-done 人工签名闸门约束。",
     "building": "【BL-NATIVE-SUBAGENT-BRIDGES】实现完成：以声明式 bridge manifest 取代外部 integration.subagent 布尔值；签名仍只保存 tool+invocation，runtime target 额外固定 bridge provenance 与 execution_provenance_sha256。Kimi ACP 的 Agent nonce 回执已验证并发布；Codex App Server fork 未达严格 child-agent 证据标准，保留为 fail-closed probe，运行期只使用 local-cli。现进入 fresh-context 独立验收，未获人工闸门批准前不得提交、推送或部署。",
-    "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。"
+    "verifying": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-01】默认 host-native fresh-context fan-out 已完成：F001/F003/F004 FAIL、F002 PASS、F005 PARTIAL。所有 L1 回归通过，但当前 strict-provider fail-closed 实现隐藏 Kimi external bridge，与 F001/F003/F004 的可发布/可签发验收冲突；F005 的真实 Kimi L2 probe 未获授权且未执行。已机械落盘 evaluator 原始结论和证伪复核，状态转为 fixing；未创建 done 闸门、未调用外部认证 CLI、未部署。",
+    "fixing": "【BL-NATIVE-SUBAGENT-BRIDGES 2026-08-04】用户裁决两项：(1) 2026-08-02 会话遗留的未提交 capability-9 工作（Agent 1.2.1 单实例生命周期 + reporter identity）补登记为 backlog BL-AGENT-SINGLE-INSTANCE-LIFECYCLE 后提交，不并入本批；该代码提交仅在本地，push main 会触发生产部署与 DB 迁移，推送时机由用户另行决定。(2) 用户已授权 F005 L2：按 FIX1 裁决 canonical 口径执行——本机已认证 Kimi 的真实 parent-child bridge probe（brokered auth，不暴露 host credential，不写源码）+ Codex 仅 local-cli health；证据须脱敏结构化落盘。修复实现主体见 c5fe6be（vm-v1 provider 路线）；目录在无可 attest provider 时保持隐藏属预期 fail-closed。"
   },
   "features": [],
   "pending_gate": null
