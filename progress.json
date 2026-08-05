@@ -57,6 +57,15 @@
       "docs/test-reports/BL-TOKENIZER-ADOPT-V170-verify-2026-08-05.md",
       "docs/test-reports/BL-TOKENIZER-ADOPT-V170-F003-probe-audit-2026-08-05.json"
     ],
-    "decision": null
+    "decision": {
+      "gate_id": "BL-TOKENIZER-ADOPT-V170-verifying-done-r0",
+      "action": "approve",
+      "by": "tripplezhou@gmail.com",
+      "at": "2026-08-05T06:35:48.586Z",
+      "scope": {
+        "once": true
+      },
+      "sig": "refzqez9XEfg5pKgqSCYRSCfNd/yovIJqg64X6FZvm8OnOq2ws1OCYDPuexuVZ/OpKP7W63AqNQSeyTuJdLoAQ=="
+    }
   }
 }
