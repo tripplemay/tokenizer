@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "真机验收：迁移机器契约 + 真实 planner terminal-message launch + 全量回归 + 独立签收",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "fresh-context 独立验收 F001+F002；本机迁移 vm-v1 machine config 到 v1.7.0 契约（image_location+kimi_identity）后，对已认证 Kimi 执行真实 planner terminal-message bridge probe（brokered 凭据、无源码写入、脱敏），确认 RETURNED/completed + nonce receipt；framework 聚焦 + 全量 npm test/verify/lint/build。全 PASS 举 verifying-to-done 闸门。"
     }

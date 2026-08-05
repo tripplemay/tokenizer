@@ -1,0 +1,30 @@
+{
+  "batch": "BL-TOKENIZER-ADOPT-V170",
+  "feature": "F003",
+  "probe": "planner terminal-message real launch",
+  "locked_sha": "72b207995b4cc92598800b797b213ff3e5c887c5",
+  "provider_bytes_identical_to": "harness-template v1.7.0 (~/project/harness-template/templates/claude/dispatch/transports/vm-bridge-provider.py)",
+  "outcome": "RETURNED",
+  "terminal_status": "completed",
+  "duration_s": 90,
+  "subagent_type": "plan",
+  "session_scope": "same-session",
+  "source_changes": [],
+  "nonce_sha256": "7651ac2b2de62ee46bca07b82de25265171bc88756abbd3c9b7a538d3580fe60",
+  "child_call_id_sha256": "c724e9425c016ba9423ece1754bd708a7acd715fffffe1587c11b41d3f6638ee",
+  "session_id_sha256": "37df58a5f90ffdcfea104b85facad41ef8755a7880da7e442e72c2788b2b9f8a",
+  "artifact_sha256": "2ec86dbd2afd6014d18ea0f046a219fd136280171c21354cd5c1b3a2689174e4",
+  "deliverable_channel": "terminal-message",
+  "native_agent_type": "plan",
+  "provider_launch_attestation": {
+    "provider_id": "harness-vm-v1",
+    "provider_kind": "vm-v1",
+    "phase": "launch",
+    "contract_sha256": "5b1ccaaa69e4123d6de04fa7dba7660338885566ca69269662ee170ac0108142",
+    "image_sha256": "ee462342e2f4827f9e6008bc17776ad14086c8b8971e4ac24e54bc2b92c139b8",
+    "cli_bundle_sha256": "99cb1f77d52ea306f1aee849dd26061ec3b440fb13704514b1157c4ba573e30a",
+    "broker_policy_sha256": "c51e3a3263202df76c0341be59ddb9e556f6d0d6742414316c37b15d169d5be9",
+    "version": "harness/external-bridge-provider-attestation/1"
+  },
+  "note": "machine config 已迁移到 v1.7.0 契约(image_location+kimi_identity)执行本次 probe;执行后已还原 app bundle 与机器契约到部署基线(B)。凭据经 provider broker,无 host raw credential 暴露,无源码写入,证据不含 prompt/wire/凭据原文。"
+}
