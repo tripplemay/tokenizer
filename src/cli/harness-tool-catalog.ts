@@ -37,7 +37,11 @@ const A2A_BEARER_ENV_PREFIX = "REMOTE_A2A_";
 const MAX_REGISTRY_BYTES = 512 * 1024;
 const MAX_ADAPTER_BYTES = 128 * 1024;
 const MAX_BRIDGE_BYTES = 128 * 1024;
-const MAX_PROVIDER_BYTES = 128 * 1024;
+// The framework vm-v1 provider carries the full VM lifecycle, broker, and
+// integrity logic and is ~133 KB at framework v1.7.0. Keep generous headroom
+// so the byte-identity trust check does not silently reject a valid provider
+// as it grows.
+const MAX_PROVIDER_BYTES = 256 * 1024;
 const MAX_PROVIDER_ATTESTATION_BYTES = 64 * 1024;
 const VM_BRIDGE_PROVIDER_TEMPLATE_RELATIVE_PATH =
   "framework/templates/claude/dispatch/transports/vm-bridge-provider.py";

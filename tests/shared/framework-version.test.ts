@@ -21,10 +21,10 @@ const MANIFEST_RELEASE_VERSIONS = frameworkReleasesManifest.releases.map((releas
 const FRAMEWORK_VERSION_SOURCE = fileURLToPath(new URL("../../src/shared/framework-version.ts", import.meta.url));
 
 describe("清单与常量一致性", () => {
-  it("从 framework manifest 派生发布清单，manifest 最新版本是 1.6.2", () => {
+  it("从 framework manifest 派生发布清单，manifest 最新版本是 1.7.0", () => {
     expect(FRAMEWORK_RELEASES).toEqual(MANIFEST_RELEASE_VERSIONS);
-    expect(MANIFEST_RELEASE_VERSIONS.at(-1)).toBe("1.6.2");
-    expect(LATEST_FRAMEWORK_VERSION).toBe("1.6.2");
+    expect(MANIFEST_RELEASE_VERSIONS.at(-1)).toBe("1.7.0");
+    expect(LATEST_FRAMEWORK_VERSION).toBe("1.7.0");
   });
 
   it("不再维护手写的 FRAMEWORK_RELEASES 数组副本", () => {
@@ -92,14 +92,14 @@ describe("compareFrameworkVersion", () => {
 
 describe("frameworkStanding 四种状态", () => {
   it("latest：与最新版一致", () => {
-    expect(frameworkStanding("1.6.2")).toEqual({
-      kind: "latest", behind: null, latest: "1.6.2"
+    expect(frameworkStanding("1.7.0")).toEqual({
+      kind: "latest", behind: null, latest: "1.7.0"
     });
   });
 
-  it("behind：1.6.1 比 manifest 最新 1.6.2 落后一版", () => {
-    expect(frameworkStanding("1.6.1")).toEqual({
-      kind: "behind", behind: 1, latest: "1.6.2"
+  it("behind：1.6.4 比 manifest 最新 1.7.0 落后一版", () => {
+    expect(frameworkStanding("1.6.4")).toEqual({
+      kind: "behind", behind: 1, latest: "1.7.0"
     });
   });
 
@@ -115,7 +115,7 @@ describe("frameworkStanding 四种状态", () => {
 
   it("ahead：项目比服务端已知的最新还新时，不得谎报落后", () => {
     expect(frameworkStanding("9.9.9")).toEqual({
-      kind: "ahead", behind: null, latest: "1.6.2"
+      kind: "ahead", behind: null, latest: "1.7.0"
     });
   });
 

@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "更新与框架版本/桥接形状耦合的 3 个 vitest 测试到 v1.7.0",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "framework-version.test.ts（latest 1.6.2→1.7.0 + behind/ahead 用例）、mode-badges.test.ts、harness-tool-catalog.test.ts（external bridge 2 例对齐 v1.7.0 provider/manifest：planner=plan+terminal-message）更新到位；npx vitest run 全绿（此前 10 failed 归零）；断言语义正确；verify/lint/build 清白。"
     },
