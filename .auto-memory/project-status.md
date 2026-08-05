@@ -5,7 +5,7 @@ type: project
 ---
 ## 当前批次
 
-- **BL-AGENT-RELEASE-ACCEPTANCE（verifying，0/3，evaluator-only）**：验收已在生产的 Agent 1.2.0/capability 8（c5fe6be）与 1.2.1/capability 9（bbb2c8b，a7bf556 部署+迁移）。F003 含本机真实升级链路。spec：docs/specs/BL-AGENT-RELEASE-ACCEPTANCE-spec.md。
+- **BL-AGENT-RELEASE-ACCEPTANCE：done（2026-08-04）**。首轮 3/3 全 PASS；两个 Agent 发布的独立验收补齐；本机真实升级链路成功，现运行 1.2.1 单实例。signoff：docs/test-reports/BL-AGENT-RELEASE-ACCEPTANCE-signoff-2026-08-04.md。当前无进行中批次。
 - 上一批次 BL-NATIVE-SUBAGENT-BRIDGES 已 done（5/5 全 PASS，signoff 落盘，闸门验签批准）。
 - backlog 现有：BL-REGISTRY-LAZY-FIELD-CLEANUP、BL-BRIDGE-GUEST-FAILURE-TAXONOMY、BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT。
 - proposed-learnings 两条待用户确认（persona 不外推；spawn 边界须真实 argv 用例）。
