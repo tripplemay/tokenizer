@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "tokenizer 干净采纳框架 v1.7.0（真机验证的 bridge provider + deliverable_channels + 铁律13 + codex 硬化），并更新与旧版本硬耦合的 src 测试。",
   "total_features": 3,
-  "completed_features": 0,
+  "completed_features": 2,
   "fix_rounds": 0,
   "current_sprint": "BL-TOKENIZER-ADOPT-V170",
   "dashboard_url": null,
-  "last_updated": "2026-08-05T00:00:00Z",
+  "last_updated": "2026-08-05T01:00:00Z",
   "reference_docs": [
     "docs/specs/BL-TOKENIZER-ADOPT-V170-spec.md",
     "framework/harness/framework-versioning.md"
@@ -22,7 +22,8 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】harness-template v1.7.0 已发布并 push（e91fbbc + 10 tags）。tokenizer 停在框架 1.6.2，src 测试硬编码 1.6.2 + 旧 bridge 形状，直接升破坏 10 个测试。本批次：F001 采纳框架文件（含 A 血统 provider 的 6 个真机修复）、F002 更新耦合 src 测试、F003 真机验收（含机器契约迁移 image_location/kimi_identity）。normal 批次快车道。注意：framework-version.ts 构建时 import releases.json，升版改控制台显示 → push 触发部署。机器契约迁移是本机安装步骤，记报告不入 git。"
+    "planning": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】harness-template v1.7.0 已发布并 push（e91fbbc + 10 tags）。tokenizer 停在框架 1.6.2，src 测试硬编码 1.6.2 + 旧 bridge 形状，直接升破坏 10 个测试。本批次：F001 采纳框架文件（含 A 血统 provider 的 6 个真机修复）、F002 更新耦合 src 测试、F003 真机验收（含机器契约迁移 image_location/kimi_identity）。normal 批次快车道。注意：framework-version.ts 构建时 import releases.json，升版改控制台显示 → push 触发部署。机器契约迁移是本机安装步骤，记报告不入 git。",
+    "building": "【BL-TOKENIZER-ADOPT-V170】F001 采纳 v1.7.0 框架文件（dispatch 逐字节一致 + 6 修复标记 + 铁律13 + 账本，harness verify 222 ok/2 local）。F002 更新 3 个耦合 vitest（版本 1.6.2→1.7.0）+ 修 src 真 bug：MAX_PROVIDER_BYTES 128KB→256KB（A 血统 provider 133KB 超限致 subagent 静默隐藏，2 个 attestation 测试抓到）。vitest 1008/1009（1 个既有 flaky agent-lifecycle SIGTERM 时序，隔离通过），verify/lint/build 绿。注意：bridge 实际 launch 用 ~/.tokenizer/app（仍 B 版），tokenizer repo 的 v1.7.0 provider 要等部署+重装才进应用包；v1.7.0 provider 已在发布验证时真机 launch（RETURNED/completed，与 tokenizer 现字节一致）。"
   },
   "features": [],
   "pending_gate": null
