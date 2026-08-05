@@ -9,6 +9,7 @@ import io
 import json
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from typing import Any
@@ -170,6 +171,7 @@ class KimiAcpBridgeTests(unittest.TestCase):
         worker_env: dict[str, str] | None = None,
         worker_state_root: Path | None = None,
         provider_owns_cleanup: bool = False,
+        run_as_harnessvm: bool = False,
         deliverable_sink: Path | None = None,
     ) -> dict[str, Any]:
         result = bridge.run_acp_native_agent(
@@ -183,9 +185,11 @@ class KimiAcpBridgeTests(unittest.TestCase):
             worker_env=self.worker_env if worker_env is None else worker_env,
             worker_state_root=self.worker_state_root if worker_state_root is None else worker_state_root,
             provider_owns_cleanup=provider_owns_cleanup,
+            run_as_harnessvm=run_as_harnessvm,
             deliverable_sink=deliverable_sink,
         )
-        self.assertEqual(process.command, ["fake-cli", "acp"])
+        if not run_as_harnessvm:
+            self.assertEqual(process.command, ["fake-cli", "acp"])
         self.assertEqual(process.cwd, str(HERE))
         return result
 
@@ -257,6 +261,13 @@ class KimiAcpBridgeTests(unittest.TestCase):
         if bridge.os.name == "posix":
             self.assertIs(process.kwargs["start_new_session"], True)
 
+    def test_discards_vendor_stderr_before_the_acp_peer_is_created(self) -> None:
+        process = ScriptedPopen(successful_messages())
+        self.run_with(process)
+
+        assert process.kwargs is not None
+        self.assertIs(process.kwargs["stderr"], bridge.subprocess.DEVNULL)
+
     def test_accepts_each_manifest_declared_native_agent_type(self) -> None:
         for subagent_type in ("plan", "coder", "explore"):
             with self.subTest(subagent_type=subagent_type):
@@ -303,6 +314,51 @@ class KimiAcpBridgeTests(unittest.TestCase):
         self.assertNotIn("start_new_session", process.kwargs)
         self.assertEqual(group_calls, [])
         self.assertFalse(process.terminate_called)
+
+    def test_root_bridge_drops_the_vendor_to_harnessvm_and_closes_unrelated_fds(self) -> None:
+        process = ScriptedPopen(successful_messages())
+        private_home = Path(self.temp.name) / "strict-kimi-home"
+        private_home.mkdir()
+        identity = types.SimpleNamespace(pw_name="harnessvm", pw_uid=41001, pw_gid=41002)
+        environment = {
+            "HOME": str(self.worker_home),
+            "TMPDIR": str(self.worker_tmp),
+            "PATH": "/provider/staged/bin",
+            "KIMI_CODE_HOME": str(private_home),
+        }
+        with patch.object(bridge.os, "geteuid", return_value=0), patch.object(
+            bridge.pwd, "getpwnam", return_value=identity
+        ), patch.object(
+            bridge,
+            "_provider_worker_environment",
+            return_value=(environment, private_home),
+        ):
+            self.run_with(
+                process,
+                provider_owns_cleanup=True,
+                run_as_harnessvm=True,
+            )
+
+        assert process.kwargs is not None
+        self.assertEqual(process.command, [
+            "/usr/bin/setpriv",
+            "--reuid=41001",
+            "--regid=41002",
+            "--clear-groups",
+            "--inh-caps=-all",
+            "--ambient-caps=-all",
+            "--no-new-privs",
+            "--",
+            "fake-cli",
+            "acp",
+        ])
+        self.assertNotIn("user", process.kwargs)
+        self.assertNotIn("group", process.kwargs)
+        self.assertNotIn("extra_groups", process.kwargs)
+        self.assertEqual(process.kwargs["umask"], 0o077)
+        self.assertTrue(process.kwargs["close_fds"])
+        self.assertNotIn("pass_fds", process.kwargs)
+        self.assertNotIn("start_new_session", process.kwargs)
 
     @unittest.skipUnless(bridge.os.name == "posix", "requires POSIX process groups")
     def test_interrupt_reaps_only_the_dedicated_group_before_outer_timeout_can_kill_bridge(self) -> None:
@@ -502,6 +558,7 @@ class KimiAcpBridgeTests(unittest.TestCase):
                 **self.worker_env,
                 "KIMI_CODE_HOME": str(provider_home),
                 "KIMI_DISABLE_TELEMETRY": "1",
+                "KIMI_DISABLE_CRON": "1",
                 "KIMI_CODE_NO_AUTO_UPDATE": "1",
                 "KIMI_CODE_BACKGROUND_KEEP_ALIVE_ON_EXIT": "0",
                 "KIMI_MODEL_NAME": "provider-model",
@@ -562,6 +619,25 @@ class KimiAcpBridgeTests(unittest.TestCase):
         })
         process = ScriptedPopen(messages)
         with self.assertRaisesRegex(bridge.KimiBridgeError, "exactly one native Agent"):
+            self.run_with(process)
+        self.assertTrue(process.stdin.closed_by_driver)
+
+    def test_rejects_agent_swarm_before_a_receipt_can_be_proved(self) -> None:
+        messages = successful_messages()
+        messages.insert(5, {
+            "jsonrpc": "2.0",
+            "method": "session/update",
+            "params": {
+                "sessionId": "session-1",
+                "update": {
+                    "sessionUpdate": "tool_call",
+                    "status": "pending",
+                    "title": "AgentSwarm",
+                },
+            },
+        })
+        process = ScriptedPopen(messages)
+        with self.assertRaisesRegex(bridge.KimiBridgeError, "AgentSwarm"):
             self.run_with(process)
         self.assertTrue(process.stdin.closed_by_driver)
 

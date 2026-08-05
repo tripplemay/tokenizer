@@ -25,8 +25,8 @@
     "工作根": "🔴 Kimi **没有** -C/--cd 类工作根参数。靠 sandbox-profile.sh 把子进程 CWD 固定为 worktree 来约束——这也是该加固存在的直接原因",
     "权限": "🔴 prompt 模式**不接受任何权限旗标**：`--auto` 与 `--yolo` 都会被拒（`error: Cannot combine --prompt with --auto|--yolo`）。而 `-p` 单独运行时**已隐式自动批准工具使用**（实测：无旗标即创建文件、跑命令）。即 Kimi 非交互模式下**没有任何厂商侧权限层可配**"
   },
-  "_auth_note": "Kimi 数据目录由 KIMI_CODE_HOME 决定，回落 ~/.kimi-code（认证在其 credentials/ 与 oauth/ 下）。普通 local-cli 可由 descriptor 的 sandbox.env_set 指向该数据目录而不泄露真实 HOME。ACP same-session bridge 当前未发布；临时复制 credentials/oauth/config.toml/device_id 仅是协议测试辅助，不能作为 hostile-process 凭据隔离。",
-  "_security_note": "🔴 与 Codex 的关键差异：Codex 有 `-s workspace-write` 这一**厂商自带的沙箱级别**作为第二道防线，且显式传参可覆盖用户 config 的削弱。Kimi 的 prompt 模式既隐式全批准、又拒绝一切权限旗标，**厂商侧零约束**。普通 Kimi local-cli 只具有 env 白名单 / 独立 worktree / 禁 push / 封顶与 CWD 的合作型 guardrail，不是 hostile 同 UID 进程隔离。Kimi ACP same-session bridge 必须等待独立 VM 或 ephemeral-principal provider，并由 provider broker 凭据、网络与生命周期；`sandbox-exec` 不能满足该门槛。派 Kimi 时 sandbox.home_dir 尤其不可省。",
+  "_auth_note": "Kimi 数据目录由 KIMI_CODE_HOME 决定，回落 ~/.kimi-code（认证在其 credentials/ 与 oauth/ 下）。普通 local-cli 可由 descriptor 的 sandbox.env_set 指向该数据目录而不泄露真实 HOME。已发布的 ACP same-session route 只能由 framework-owned vm-v1 provider 调用，凭据仅留在宿主 broker 内存；临时复制 credentials/oauth/config.toml/device_id 仅是协议测试辅助，不能作为 hostile-process 凭据隔离。",
+  "_security_note": "🔴 与 Codex 的关键差异：Codex 有 `-s workspace-write` 这一**厂商自带的沙箱级别**作为第二道防线，且显式传参可覆盖用户 config 的削弱。Kimi 的 prompt 模式既隐式全批准、又拒绝一切权限旗标，**厂商侧零约束**。普通 Kimi local-cli 只具有 env 白名单 / 独立 worktree / 禁 push / 封顶与 CWD 的合作型 guardrail，不是 hostile 同 UID 进程隔离。Kimi ACP same-session bridge 只可走已发布的独立 vm-v1 provider，由 provider broker 凭据、网络与生命周期；`sandbox-exec` 不能满足该门槛。派 Kimi 时 sandbox.home_dir 尤其不可省。",
   "_not_used": {
     "-y/--yolo 与 --auto": "prompt 模式下均被拒（Cannot combine）；且 -p 本身已隐式全批准，无从收紧",
     "--add-dir": "追加可写工作目录 —— 与「只在 worktree 内活动」冲突，不用",

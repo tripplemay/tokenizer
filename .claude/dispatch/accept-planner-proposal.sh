@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Accept a proposal returned by the isolated Planner subagent.
 #
-# The Coordinator owns starting the subagent. This script only accepts its
-# returned JSON after the same envelope/schema/receipt checks used by external
-# Planner dispatch, then writes the audit artifact and a synthetic subagent
-# run-meta record. It never materializes specs, features, or progress.
+# The Coordinator owns starting the host-native subagent. This script accepts
+# only that returned JSON, then writes the audit artifact and a synthetic
+# host-native run-meta record. External Planner bridges must return their
+# provider-attested run-meta through dispatch-planner-proposal.sh instead.
 
 set -euo pipefail
 
@@ -163,6 +163,14 @@ if descriptor.get("agent_type") != "planner-proposal":
     raise SystemExit(2)
 if "planner" not in (descriptor.get("roles") or []):
     print("[planner-accept] ⛔ descriptor 没有 planner role", file=sys.stderr)
+    raise SystemExit(2)
+bridge_id = descriptor.get("bridge_id")
+if bridge_id not in (None, "host-native"):
+    print(
+        "[planner-accept] ⛔ external bridge Planner 必须通过 dispatch-planner-proposal.sh "
+        "返回 provider-attested run-meta；不能由本地 proposal 文件伪造",
+        file=sys.stderr,
+    )
     raise SystemExit(2)
 
 task_id = envelope.get("task_id")

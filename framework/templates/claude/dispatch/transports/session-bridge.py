@@ -14,16 +14,55 @@ record owned by the Harness, which sandbox-profile.sh embeds in run-meta.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
+import importlib.util
 import json
 import os
 import re
+import stat
 import sys
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from session_bridge_kimi import KimiBridgeError, run_acp_native_agent
+
+def _load_kimi_driver() -> tuple[type[RuntimeError], Any]:
+    """Load the staged sibling without restoring a mutable import path.
+
+    The VM worker deliberately invokes this runner with ``python -I``.  In
+    isolated mode Python excludes the script directory from ``sys.path``, so a
+    normal sibling import would either fail or tempt a future caller to add a
+    project-controlled search path.  The provider stages this exact regular
+    file alongside the runner; load it by that fixed path instead.
+    """
+    path = Path(__file__).with_name("session_bridge_kimi.py")
+    try:
+        entry = path.lstat()
+    except OSError as exc:
+        raise RuntimeError("Kimi bridge driver is unavailable") from exc
+    if stat.S_ISLNK(entry.st_mode) or not stat.S_ISREG(entry.st_mode):
+        raise RuntimeError("Kimi bridge driver must be a regular sibling file")
+    spec = importlib.util.spec_from_file_location("_harness_session_bridge_kimi", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("Kimi bridge driver cannot be loaded")
+    module = importlib.util.module_from_spec(spec)
+    # Dataclass and exception metadata resolve through sys.modules while the
+    # trusted sibling executes.  This does not modify module search paths.
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop(spec.name, None)
+        raise
+    error = getattr(module, "KimiBridgeError", None)
+    run = getattr(module, "run_acp_native_agent", None)
+    if not isinstance(error, type) or not issubclass(error, RuntimeError) or not callable(run):
+        raise RuntimeError("Kimi bridge driver has an invalid interface")
+    return error, run
+
+
+KimiBridgeError, run_acp_native_agent = _load_kimi_driver()
 
 
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
@@ -44,6 +83,7 @@ ACP_NATIVE_AGENT_PROTOCOL = "acp-native-agent/v1"
 PUBLISHED_PROTOCOL_KINDS = {ACP_NATIVE_AGENT_PROTOCOL}
 PROVIDER_LAUNCH_NONCE_ENV = "HARNESS_PROVIDER_LAUNCH_NONCE"
 PROVIDER_LAUNCH_ATTESTATION_ENV = "HARNESS_PROVIDER_LAUNCH_ATTESTATION_SHA256"
+MAX_RESULT_BYTES = 4 * 1024
 VENDOR_WORKER_ENV_KEYS = frozenset({
     "HOME",
     "TMPDIR",
@@ -52,6 +92,7 @@ VENDOR_WORKER_ENV_KEYS = frozenset({
     "LC_ALL",
     "KIMI_CODE_HOME",
     "KIMI_DISABLE_TELEMETRY",
+    "KIMI_DISABLE_CRON",
     "KIMI_CODE_NO_AUTO_UPDATE",
     "KIMI_CODE_BACKGROUND_KEEP_ALIVE_ON_EXIT",
     "KIMI_MODEL_NAME",
@@ -222,6 +263,65 @@ def _write_result(path: Path, value: dict[str, Any]) -> None:
         raise SessionBridgeError("bridge result already exists") from exc
 
 
+def _result_payload(value: dict[str, Any]) -> bytes:
+    try:
+        payload = json.dumps(
+            value, ensure_ascii=True, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8") + b"\n"
+    except (TypeError, ValueError) as exc:
+        raise SessionBridgeError("bridge result cannot be serialized") from exc
+    if not payload or len(payload) > MAX_RESULT_BYTES:
+        raise SessionBridgeError("bridge result exceeds the size limit")
+    return payload
+
+
+def _secure_result_fd(descriptor: int) -> None:
+    """Validate and make the root supervisor result capability non-inheritable."""
+    if type(descriptor) is not int or descriptor < 3:
+        raise SessionBridgeError("bridge result descriptor is invalid")
+    try:
+        entry = os.fstat(descriptor)
+    except OSError as exc:
+        raise SessionBridgeError("bridge result descriptor is unavailable") from exc
+    if not stat.S_ISFIFO(entry.st_mode):
+        raise SessionBridgeError("bridge result descriptor must be a pipe")
+    try:
+        flags = fcntl.fcntl(descriptor, fcntl.F_GETFD)
+        fcntl.fcntl(descriptor, fcntl.F_SETFD, flags | fcntl.FD_CLOEXEC)
+    except OSError as exc:
+        raise SessionBridgeError("bridge result descriptor cannot be secured") from exc
+
+
+def _write_result_fd(descriptor: int, value: dict[str, Any]) -> None:
+    """Write one bounded receipt to the root supervisor's private pipe.
+
+    The descriptor is a capability created by ``vm-bridge-worker``. It must be
+    a FIFO, not a caller-selected regular file. ``main`` secures it before a
+    vendor CLI can start; revalidate it here to catch a descriptor replacement
+    between launch and receipt writeback. The Kimi driver also starts its child
+    with ``close_fds=True`` and no ``pass_fds``.
+    """
+    _secure_result_fd(descriptor)
+    payload = _result_payload(value)
+    offset = 0
+    try:
+        while offset < len(payload):
+            try:
+                written = os.write(descriptor, payload[offset:])
+            except InterruptedError:
+                continue
+            except (BlockingIOError, BrokenPipeError) as exc:
+                raise SessionBridgeError("bridge result pipe is unavailable") from exc
+            if written <= 0:
+                raise SessionBridgeError("bridge result pipe is unavailable")
+            offset += written
+    finally:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
+
+
 def _provider_worker_environment_from_process() -> dict[str, str]:
     """Read only framework-defined worker values from the provider launch env.
 
@@ -275,6 +375,7 @@ def run_bridge(
     timeout_s: int,
     worker_env: Mapping[str, str] | None = None,
     worker_state_root: Path | None = None,
+    run_vendor_as_harnessvm: bool = False,
     deliverable_channel: str = "file",
 ) -> dict[str, Any]:
     _safe_id(bridge_id, "bridge id")
@@ -312,6 +413,7 @@ def run_bridge(
                 worker_env=vendor_worker_env,
                 worker_state_root=worker_state_root,
                 provider_owns_cleanup=True,
+                run_as_harnessvm=run_vendor_as_harnessvm,
                 deliverable_sink=deliverable_sink,
             )
         except KimiBridgeError as exc:
@@ -369,10 +471,17 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("--deliverable-channel", default="file")
     run.add_argument("--envelope", required=True, type=Path)
     run.add_argument("--worktree", required=True, type=Path)
-    run.add_argument("--result", required=True, type=Path)
+    result = run.add_mutually_exclusive_group(required=True)
+    result.add_argument("--result", type=Path)
+    result.add_argument("--result-fd", type=int)
     run.add_argument("--timeout-s", required=True, type=int)
     run.add_argument("--worker-state-root", required=True, type=Path)
     return root
+
+
+def _require_root_result_supervisor() -> None:
+    if os.name != "posix" or os.geteuid() != 0:
+        raise SessionBridgeError("bridge result pipe requires a root supervisor")
 
 
 def main() -> int:
@@ -382,6 +491,14 @@ def main() -> int:
             raise SessionBridgeError("unknown bridge command")
         if isinstance(args.timeout_s, bool) or not 1 <= args.timeout_s <= 86400:
             raise SessionBridgeError("bridge timeout is invalid")
+        result_fd_mode = args.result_fd is not None
+        if result_fd_mode:
+            _require_root_result_supervisor()
+            assert args.result_fd is not None
+            # This capability must be verified before ``run_bridge`` can start
+            # a vendor process. Revalidation during output closes the TOCTOU
+            # window around receipt writeback.
+            _secure_result_fd(args.result_fd)
         protocol = _load_protocol(args.protocol_json)
         persona = _bounded_text(args.persona, "bridge persona", 128)
         envelope = _read_envelope(args.envelope)
@@ -396,9 +513,15 @@ def main() -> int:
             timeout_s=args.timeout_s,
             worker_env=_provider_worker_environment_from_process(),
             worker_state_root=args.worker_state_root,
+            run_vendor_as_harnessvm=result_fd_mode,
             deliverable_channel=args.deliverable_channel,
         )
-        _write_result(args.result, result)
+        if result_fd_mode:
+            assert args.result_fd is not None
+            _write_result_fd(args.result_fd, result)
+        else:
+            assert args.result is not None
+            _write_result(args.result, result)
         return 0
     except SessionBridgeError as exc:
         # Never include a peer response, prompt, CLI stderr, or session wire

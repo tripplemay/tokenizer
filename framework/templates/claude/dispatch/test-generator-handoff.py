@@ -150,7 +150,7 @@ class GeneratorHandoffValidatorTest(unittest.TestCase):
         )
         self.assertEqual(receipts[0]["worktree_path"], str(self.root))
 
-    def test_completed_subagent_receipt_requires_signed_validation_context(self) -> None:
+    def test_host_native_subagent_receipt_preserves_legacy_compatibility(self) -> None:
         write_json(self.artifact, valid_handoff())
         meta = self.root / "run-meta-subagent.json"
         write_json(
@@ -177,10 +177,71 @@ class GeneratorHandoffValidatorTest(unittest.TestCase):
             text=True,
             capture_output=True,
         )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "COMPLETED")
+
+        # A raw `bridge` record is an external-route claim. It cannot use the
+        # host-native compatibility path without a matching signed target.
+        returned = json.loads(meta.read_text(encoding="utf-8"))
+        returned["bridge"] = {}
+        write_json(meta, returned)
+        result = subprocess.run(
+            ["bash", str(DISPATCH_VALIDATOR), "receipt", str(meta)],
+            text=True,
+            capture_output=True,
+        )
         self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
         receipt = json.loads(result.stdout)
         self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
-        self.assertIn("signed validation context", receipt["reason"])
+        self.assertIn("active target", receipt["reason"])
+
+    def test_external_generator_target_rejects_run_meta_role_drift(self) -> None:
+        write_json(self.artifact, valid_handoff())
+        meta = self.root / "run-meta-external-role-drift.json"
+        write_json(
+            meta,
+            {
+                "task_id": TASK_ID,
+                "agent_id": "fixture-generator",
+                "model_family": "fixture",
+                "batch": BATCH_ID,
+                "ref": "a" * 40,
+                "role": "unknown",
+                "deliverable": generator_envelope()["deliverable"],
+                "artifact": str(self.artifact),
+                "envelope_path": str(self.envelope),
+                "worktree": str(self.root),
+                "outcome": "RETURNED",
+                "exit_code": 0,
+                "duration_s": 1,
+                "transport": "subagent",
+            },
+        )
+        active_role = {"agent_id": "fixture-generator", "invocation": "subagent"}
+        active_target = {
+            "target_id": "fixture-generator",
+            "invocation": "subagent",
+            "bridge_id": "fixture-acp",
+            "bridge_strategy": "session-bridge-v1",
+            "bridge_protocol": {"kind": "acp-native-agent/v1"},
+            "session_scope": "same-session",
+        }
+        result = subprocess.run(
+            [
+                "bash", str(DISPATCH_VALIDATOR), "receipt", str(meta),
+                "--expected-envelope", str(self.envelope),
+                "--active-role-json", json.dumps(active_role),
+                "--active-target-json", json.dumps(active_target),
+                "--project-root", str(self.root),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
+        self.assertIn("role does not match", receipt["reason"])
 
 
 class ManualGeneratorDispatchTest(unittest.TestCase):
@@ -431,6 +492,10 @@ class ManualGeneratorDispatchTest(unittest.TestCase):
         self.assertEqual(context["spec"], "docs/specs/fixture.md")
         self.assertEqual(context["feature_ids"], ["F001"])
         self.assertEqual(context["agent_type"], "generator-restricted")
+        self.assertEqual(context["active_target"]["target_id"], "fixture-external")
+        self.assertEqual(
+            context["active_target"]["bridge_strategy"], "session-bridge-v1"
+        )
 
     def test_explicit_feature_selects_only_that_pending_generator_feature(self) -> None:
         self.write_build_state({"generator": "fixture-generator"})

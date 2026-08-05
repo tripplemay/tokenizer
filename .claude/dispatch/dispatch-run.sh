@@ -318,12 +318,10 @@ except (KeyError, OSError):
     raise SystemExit(2)
 project_root = Path(sys.argv[1])
 root = home / ".tokenizer" / "app"
-# Paths are relative to the dispatch directory on BOTH sides of the mirror
-# check: the app bundle keeps them under framework/templates/claude/dispatch,
-# the project keeps them under .claude/dispatch.
 required = (
     "tool-catalog.py",
     "dispatch_common.py",
+    "validate-active-return-route.py",
     "transports/vm-bridge-provider.py",
     "transports/session-bridge.py",
     "transports/session_bridge_kimi.py",
@@ -380,9 +378,10 @@ def identical(left, right):
         return False
     return left_hash == digest.digest()
 
+app_dispatch = root / "framework" / "templates" / "claude" / "dispatch"
 project_dispatch = project_root / ".claude" / "dispatch"
 for relative in required:
-    parent = root / "framework/templates/claude/dispatch"
+    parent = app_dispatch
     for segment in Path(relative).parts[:-1]:
         parent = parent / segment
         try:
@@ -395,7 +394,7 @@ for relative in required:
             or parent_entry.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
         ):
             raise SystemExit(2)
-    candidate = root / "framework/templates/claude/dispatch" / relative
+    candidate = app_dispatch / relative
     try:
         entry = candidate.lstat()
     except OSError:
@@ -406,7 +405,7 @@ for relative in required:
         raise SystemExit(2)
     if not identical(project_dispatch / relative, candidate):
         raise SystemExit(2)
-print(root / "framework/templates/claude/dispatch/transports/vm-bridge-provider.py")
+print(app_dispatch / "transports/vm-bridge-provider.py")
 PY
 )"; then
       die "未找到受信任的 Tokenizer app VM provider bundle；更新安装 Agent 后重试"

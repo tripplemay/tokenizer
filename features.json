@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "采纳 v1.7.0 框架文件（dispatch runtime+tests、releases.json、VERSION、docs、账本）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness-template@v1.7.0 受管框架文件同步进 tokenizer（.claude/dispatch/** 与 framework 镜像逐字节一致，保留本地 agents-registry.example.json）；framework/harness/framework-releases.json 末项=1.7.0；framework/VERSION=1.7.0；铁律13 文档层增量；harness.json/lock 记 v1.7.0。provider 含 6 处真机修复标记；framework dispatch python 套件全绿。"
     },

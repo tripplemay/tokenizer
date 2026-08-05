@@ -25,12 +25,15 @@ silently return a token-shaped raw vendor ID.
 
 ## Publication gate
 
-This release publishes **no external same-session route**. `sandbox-exec` can
-reduce writes but cannot revoke a same-UID child's inherited bootstrap/Mach
-capabilities or constrain its arbitrary HTTPS egress, so it is defense in
-depth rather than a strict provider. Kimi and Codex therefore remain
-`local-cli` choices in the public catalog; a stale external target is rejected
-before a worktree, runtime directory, or vendor process is created.
+`sandbox-exec` can reduce writes but cannot revoke a same-UID child's inherited
+bootstrap/Mach capabilities or constrain its arbitrary HTTPS egress, so it is
+defense in depth rather than a strict provider. The framework now includes the
+strict `vm-v1` provider implementation, but a Kimi external route remains
+absent from a host's public catalog until its installed app and managed project
+mirror's required dispatch runtime files agree byte-for-byte and that host produces a fresh provider
+attestation. Until then Kimi and Codex remain `local-cli` choices, and a stale
+or unproven external target is rejected before a worktree, runtime directory,
+or vendor process is created.
 
 An external bridge may be published only by a framework-integrated provider
 that freshly attests at both planning and launch. The required contract is in
@@ -42,9 +45,13 @@ Provider identity, kind, and canonical contract SHA-256 become part of the
 execution provenance. A project registry, PATH entry, adapter command,
 environment variable, or device report can never declare that provider.
 
-The Kimi ACP driver and its private-state handling are retained for focused
-protocol tests only. Copying a raw credential subset to a temporary directory
-is not a strict credential boundary, and no release route may rely on it.
+The Kimi ACP driver is invoked only by the strict provider. Its root
+supervisor owns a private receipt pipe, drops the vendor CLI to the dedicated
+VM worker identity, reaps the verified bridge process group, and writes the
+normalized receipt in a root-only directory; the enclosing systemd job cgroup
+owns final containment and reaping of the complete job tree. Copying a raw credential subset to a temporary
+directory is not a strict credential boundary, and no release route may rely
+on it.
 
 Every execution and authorization entrypoint pins the registry to the invoking
 project’s regular, non-symlinked `.agents-registry.json` before it resolves a
@@ -84,10 +91,11 @@ from running an unrelated program with another CLI's scoped credentials.
   terminal update, and root `stopReason=end_turn`.
 
 Kimi's native `plan` Agent is read-only and cannot write the mandatory
-schema-checked `planner-proposal` artifact. A future attested Kimi route would
-map that Harness persona to native `coder`; this does not change the Planner
-contract. `kimi-acp-native-agent` is a protocol-validated dormant manifest,
-not a published route. The framework does not publish a Codex bridge on the
+schema-checked `planner-proposal` artifact. Therefore the verified Kimi
+manifest maps Planner to native `coder`, Generator to `coder`, and Evaluator
+to `explore`; this does not change the Harness role contracts. The manifest
+alone is not a public route: it still needs the strict provider's fresh plan
+and launch proofs. The framework does not publish a Codex bridge on the
 strength of `thread/fork`: a fork has a distinct session tree and is not a
 same-session subagent.
 
@@ -108,9 +116,11 @@ the protocol.
 
 The protocol names are capability-oriented. Once a strict provider is released
 and independently attested, a newly supported CLI that conforms to an already
-published wire contract needs only its protocol-validated bridge manifest,
-matching verified adapter `bridge_commands`, and verified `local_cli` policy to
-join the personas it declares. This is the automatic onboarding path; it never
-needs a per-tool catalog branch. A new wire contract, credential flow, or
-provider kind requires a framework driver, protocol tests, negative isolation
-tests, and a real isolated lifecycle probe before publication.
+published wire contract needs a matching protocol-validated bridge manifest,
+verified adapter `bridge_commands`, verified `local_cli` policy, and an exact
+`{tool, protocol}` route in the provider's fresh catalog attestation. This is
+the automatic onboarding path; it never needs a per-tool catalog branch, but a
+protocol-compatible CLI is deliberately hidden until its provider bundle and
+credential driver prove they can execute it. A new wire contract, credential
+flow, or provider kind requires a framework driver, protocol tests, negative
+isolation tests, and a real isolated lifecycle probe before publication.

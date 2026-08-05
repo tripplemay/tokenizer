@@ -119,9 +119,11 @@
 每次 `git push origin main` 之后，**必须**跟踪 CI 运行状态。推荐后台方式（不阻塞后续工作）：
 
 ```bash
-# 后台跟踪最新 run，完成时收到通知；期间可继续下一个功能的实现
-gh run watch $(gh run list --limit 1 --branch main --json databaseId -q '.[0].databaseId')
-# 或快速查看：gh run list --limit 3 --branch main
+# 后台跟踪最新 CI run（v1.0.9：必须 --workflow 过滤——不过滤会抓到同 SHA 的其他
+# workflow（如 Build&Push），其 exit 0 会掩盖 CI 红灯；watch 结束后必须显式核 conclusion，
+# `gh run watch --exit-status` 的退出码不可尽信）
+RUN=$(gh run list --workflow CI --branch main --limit 1 --json databaseId -q '.[0].databaseId')
+gh run watch $RUN ; gh run view $RUN --json conclusion -q .conclusion
 ```
 
 **判断规则：**
@@ -181,6 +183,8 @@ gh run watch $(gh run list --limit 1 --branch main --json databaseId -q '.[0].da
 - Generator 已完成哪些工具 / 脚本
 - Evaluator 需要执行哪些 executor:evaluator 功能
 - 已知的注意事项（脚本用法、环境变量、预期产出物路径）
+
+**交付叙述纪律（铁律 13）：** `generator_handoff` 与 commit 正文中每一句「已修 / 已验证 / 已移除 / 全绿」，落笔前必须有对应的一条命令输出作依据（`git show --stat` / `grep` / 实跑）；拿不出就如实写「未核」。
 
 ## 完成标准
 - **building 模式：** 所有 `executor:generator` 的功能 status 均为 "completed"（`executor:evaluator` 功能保持 pending，由 Evaluator 处理）→ 将 progress.json status 改为 "verifying"

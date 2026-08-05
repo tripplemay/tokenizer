@@ -4,25 +4,33 @@
   "model_family": "codex",
   "envelope_delivery": "stdin",
   "argv": [
-    "codex", "exec", "--json", "--ephemeral",
-    "-C", "{{worktree}}",
-    "-s", "workspace-write",
+    "codex",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "-C",
+    "{{worktree}}",
+    "-s",
+    "workspace-write",
     "-"
   ],
   "artifact_relpath": "docs/test-reports/{{batch}}-verdict.json",
-  "env_allowlist_extra": ["CODEX_HOME"],
+  "env_allowlist_extra": [
+    "CODEX_HOME"
+  ],
   "_flags_rationale": {
     "exec": "非交互子命令；PROMPT 省略或写 `-` 时从 stdin 读取指令 —— 与 envelope_delivery=stdin 对接",
     "--json": "事件以 JSONL 打到 stdout，落进沙箱 run-*.log，供失败取证",
     "--ephemeral": "不把会话文件写进 CODEX_HOME，避免污染用户的会话库；每次派活彼此独立",
     "-C {{worktree}}": "工作根锁定到沙箱 worktree，配合 -s 限制写入范围",
     "-s workspace-write": "⚠️ 显式传参会覆盖 ~/.codex/config.toml —— 这是真实硬化：用户 config 若设了 danger-full-access，不显式传就会静默削弱沙箱。evaluator 也用 workspace-write 而非 read-only，因为它必须写 tests/ 与 docs/test-reports/；「不改产品代码」在本形态下由 worktree 一次性 + 禁 push + 只收割产物文件三重保证，src/ 的改动到不了主仓",
-    "-": "显式声明从 stdin 读 prompt，避免 argv 与 stdin 双源歧义"
+    "-": "显式声明从 stdin 读 prompt，避免 argv 与 stdin 双源歧义",
+    "--ignore-user-config": "2026-08-05 M5 首派实测启用:用户 ~/.codex/config.toml 以 ~ 路径引用自定义指令 profile(codex_ctf_unrestricted_profile.md),沙箱 HOME 替换后 ~ 展开落空 → codex 启动即死(exit 1/1s)。且派发任务本不应继承个人 config 的自定义指令/模型档。auth 不受影响(仍走 CODEX_HOME/auth.json)。"
   },
   "_auth_note": "Codex 认证在 $CODEX_HOME/auth.json（默认 ~/.codex）。env -i 白名单下 HOME 被替换，故必须让它找到认证：推荐在 descriptor 写 sandbox.env_set = {\"CODEX_HOME\": \"~/.codex\"} —— 只投喂认证目录，不泄露整个真实 HOME（dispatch-mode.md §5.1 R1 的正确缓解）。若你用环境变量式认证，CODEX_HOME 白名单继承亦可。",
   "_not_used": {
     "--dangerously-bypass-approvals-and-sandbox": "禁用。绕过审批与沙箱，与机件 #7 的设计意图直接冲突",
-    "--ignore-user-config": "可选加固（不加载 config.toml，auth 仍走 CODEX_HOME）。默认不启用以免破坏用户的模型选择；对沙箱被 config 削弱的担心已由显式 -s 解决",
     "--output-schema / -o": "Codex 可原生约束「最终回复」的形状，但本框架的交付契约是**产物文件**而非消息（A2A Artifact/Message 分离）。启用会制造第二个真相源，故不用"
   },
   "_argv_placeholders": {

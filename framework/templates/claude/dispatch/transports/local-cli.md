@@ -151,10 +151,11 @@ Coordinator 先完成 spec-lock critic，再为当前项目给出严格的 `harn
 `transport=subagent` 有两条严格分开的路径：历史 `dispatch/1` descriptor 的 host-native 路径由
 Coordinator 按 descriptor 的 `agent_type` 启动；`tool-integrations/1` 的旧 `subagent: true` 只保留为
 Coordinator 兼容信息，不生成可签发的 CLI candidate。`subagent: {"bridge":"..."}` 是协议声明，不是
-授权。当前 release 没有 VM/ephemeral-principal strict provider，故所有外部 same-session bridge 均不可选；
-Kimi、Codex 继续可用 `local-cli`。未来 provider 必须满足
+授权。当前 release 已发布 `vm-v1` strict provider；Kimi ACP external route 只能由该 provider 在 installed
+app 与项目镜像的受管 dispatch runtime 关键文件逐字节一致、当前主机给出新鲜 attestation 后公开并 launch。`sandbox-profile.sh` 的直跑
+`subagent` 入口仍会拒绝，Codex 继续仅可用 `local-cli`。未来 provider 仍必须满足
 [`external-bridge-provider.md`](external-bridge-provider.md) 的独立 principal、copy-in/copy-out、brokered
-credential/egress 与 provider-owned lifecycle 契约，才可重新公开相应 bridge。没有 assignment 的 fast 路径保持旧本机流程。`transport=a2a`
+credential/egress 与 provider-owned lifecycle 契约，才可公开相应 bridge。没有 assignment 的 fast 路径保持旧本机流程。`transport=a2a`
 的 Generator source-handoff protocol 尚未实现，手动入口明确 fail closed，不能退化到本机或 local-cli。
 
 ## 7. 新增一家 CLI 的核对清单

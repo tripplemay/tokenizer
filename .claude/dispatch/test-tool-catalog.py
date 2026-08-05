@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -69,19 +68,7 @@ def subagent_bridge(
         role: {"planner": "plan", "generator": "coder", "evaluator": "explore"}[role]
         for role in selected_personas
     }
-    if deliverable_channels is not None:
-        value = subagent_bridge(
-            bridge_id,
-            verified=verified,
-            strategy=strategy,
-            protocol_kind=protocol_kind,
-            command=command,
-            personas=personas,
-            native_agent_types=native_agent_types,
-        )
-        value["deliverable_channels"] = deliverable_channels
-        return value
-    return {
+    manifest = {
         "id": bridge_id,
         "_verified": verified,
         "session_scope": "same-session",
@@ -95,6 +82,9 @@ def subagent_bridge(
         "personas": selected_personas,
         "native_agent_types": selected_native_types,
     }
+    if deliverable_channels is not None:
+        manifest["deliverable_channels"] = deliverable_channels
+    return manifest
 
 
 def local_agent(
@@ -136,16 +126,6 @@ class ToolCatalogTests(unittest.TestCase):
         self.bridges.mkdir()
         self.registry = self.root / "registry.json"
         self.bindings = self.root / "bindings.json"
-        # Subprocess fixtures run a copy of the CLI from the temp directory.
-        # The copy cannot prove byte identity with an installed app bundle, so
-        # provider discovery stays deterministically unavailable no matter what
-        # the host machine has installed; provider scenarios are exercised only
-        # through the in-process mock.
-        self.cli_dir = self.root / "cli"
-        self.cli_dir.mkdir()
-        self.cli = self.cli_dir / "tool-catalog.py"
-        shutil.copy2(TOOL_CATALOG, self.cli)
-        shutil.copy2(HERE / "dispatch_common.py", self.cli_dir / "dispatch_common.py")
 
     def tearDown(self):
         self.temp.cleanup()
@@ -181,7 +161,7 @@ class ToolCatalogTests(unittest.TestCase):
     def invoke(self, command: str, *, target_id: str | None = None):
         args = [
             sys.executable,
-            str(self.cli),
+            str(TOOL_CATALOG),
             command,
             "--registry",
             str(self.registry),
@@ -198,22 +178,30 @@ class ToolCatalogTests(unittest.TestCase):
             args.extend(["--target-id", target_id])
         return subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    def attested_strict_provider(self):
+    def attested_strict_provider(self, *, tool: str = "future-cli"):
         """A test-only stand-in for a future framework-owned VM provider."""
+        route = TOOL_CATALOG_MODULE.AttestedExternalBridgeRoute(
+            tool=tool,
+            protocol_kind="acp-native-agent/v1",
+            command=(tool, "acp"),
+            request_delivery="stdin",
+            response_format="json",
+        )
         return TOOL_CATALOG_MODULE.StrictExternalBridgeProvider(
             id="fixture-vm-provider",
             kind="vm-v1",
             contract_sha256="a" * 64,
+            supported_routes=(route,),
         )
 
-    def candidates_with_attested_strict_provider(self):
+    def candidates_with_attested_strict_provider(self, *, tool: str = "future-cli"):
         # The CLI subprocess must stay fail-closed in this release.  Patch the
         # in-process framework hook only to prove that any future provider can
         # admit a protocol-compatible new CLI declaratively.
         with mock.patch.object(
             TOOL_CATALOG_MODULE,
             "external_same_session_bridge_provider",
-            return_value=self.attested_strict_provider(),
+            return_value=self.attested_strict_provider(tool=tool),
         ):
             return TOOL_CATALOG_MODULE.candidates_from_registry(
                 self.registry, self.adapters, self.bridges
@@ -822,7 +810,7 @@ class ToolCatalogTests(unittest.TestCase):
             "home_dir": "/tmp/future-home",
             "env_allow": ["FUTURE_TOKEN"],
         })
-        self.assertEqual(target["timeout_s"], 900)
+        self.assertEqual(target["timeout_s"], TOOL_CATALOG_MODULE.VM_V1_MAX_TASK_SECONDS)
         self.assertEqual(target["bridge_id"], "future-session")
         self.assertEqual(target["bridge_strategy"], "managed-session")
         self.assertEqual(target["session_scope"], "same-session")
@@ -846,6 +834,19 @@ class ToolCatalogTests(unittest.TestCase):
             planner["execution_provenance_sha256"],
             target["execution_provenance_sha256"],
         )
+
+        # A protocol-compatible manifest is not enough. The installed provider
+        # must attest the exact CLI command it can execute.
+        kimi_only = self.candidates_with_attested_strict_provider(tool="kimi")
+        kimi_only_catalog = TOOL_CATALOG_MODULE.build_catalog(kimi_only)
+        for role in ("planner", "evaluator"):
+            self.assertNotIn(
+                ("future-cli", "subagent"),
+                {
+                    (entry["tool"], entry["invocation"])
+                    for entry in kimi_only_catalog["roles"][role]
+                },
+            )
 
     def test_deliverable_channels_default_override_and_fail_closed(self):
         self.write_adapter("future-cli", "future")
@@ -901,18 +902,13 @@ class ToolCatalogTests(unittest.TestCase):
             [],
         )
 
-        # Simulate a machine with no installed app bundle: discovery itself
-        # must return None and the verified bridge must stay hidden.
-        with mock.patch.object(
-            TOOL_CATALOG_MODULE, "_installed_provider_path", return_value=None
-        ):
-            self.assertIsNone(TOOL_CATALOG_MODULE.external_same_session_bridge_provider())
-            candidates = TOOL_CATALOG_MODULE.candidates_from_registry(
-                self.registry, self.adapters, self.bridges
-            )
-            catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
-            with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not registered"):
-                TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
+        self.assertIsNone(TOOL_CATALOG_MODULE.external_same_session_bridge_provider())
+        candidates = TOOL_CATALOG_MODULE.candidates_from_registry(
+            self.registry, self.adapters, self.bridges
+        )
+        catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
+        with self.assertRaisesRegex(TOOL_CATALOG_MODULE.ToolCatalogError, "not registered"):
+            TOOL_CATALOG_MODULE.resolve_target(candidates, "subagent--future--planner")
 
         for role in ("planner", "generator", "evaluator"):
             choices = {
@@ -952,6 +948,12 @@ class ToolCatalogTests(unittest.TestCase):
                     id="fixture-seatbelt-provider", kind="seatbelt-v1", contract_sha256="a" * 64
                 ),
                 "provider kind",
+            ),
+            (
+                TOOL_CATALOG_MODULE.StrictExternalBridgeProvider(
+                    id="fixture-vm-provider", kind="vm-v1", contract_sha256="a" * 64
+                ),
+                "supported routes",
             ),
         )
         for invalid, expected in cases:
@@ -1204,7 +1206,7 @@ class ToolCatalogTests(unittest.TestCase):
         hidden = self.invoke("target", target_id="subagent--kimi--planner")
         self.assertEqual(hidden.returncode, 2)
 
-        candidates = self.candidates_with_attested_strict_provider()
+        candidates = self.candidates_with_attested_strict_provider(tool="kimi")
         attested_catalog = TOOL_CATALOG_MODULE.build_catalog(candidates)
         for role in ("planner", "generator", "evaluator"):
             choices = {
@@ -1219,6 +1221,7 @@ class ToolCatalogTests(unittest.TestCase):
         self.assertEqual(kimi_target["bridge_protocol"]["kind"], "acp-native-agent/v1")
         self.assertEqual(kimi_target["bridge_provider_id"], "fixture-vm-provider")
         self.assertEqual(kimi_target["native_agent_type"], "plan")
+        self.assertEqual(kimi_target["deliverable_channel"], "terminal-message")
         self.assertRegex(kimi_target["adapter_execution_contract_sha256"], r"^[0-9a-f]{64}$")
         self.assertRegex(kimi_target["execution_provenance_sha256"], r"^[0-9a-f]{64}$")
 

@@ -317,22 +317,15 @@ class DeadlineAndPreflightTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 2, result.stderr)
-        # The refusal reason depends on host state this fixture cannot pin:
-        # without an attestable vm-v1 provider the subagent target never
-        # registers; with one, resolution succeeds and sandbox-profile's own
-        # transport gate refuses instead. Both refuse before any runtime or
-        # Seatbelt path is touched, which is the property under test.
-        self.assertTrue(
-            "target id is not registered" in result.stderr
-            or "external same-session bridge does not launch here" in result.stderr,
-            result.stderr,
-        )
+        self.assertIn("target id is not registered", result.stderr)
         self.assertFalse(workroot.exists())
         self.assertFalse(state.exists())
 
     def test_execution_entries_pin_registry_to_project_root_before_creating_paths(self):
         registry, envelope, adapters = self._sandbox_inputs(self.repo)
-        outside = self.root / "outside-registry.json"
+        outside_dir = self.root / "outside"
+        outside_dir.mkdir()
+        outside = outside_dir / ".agents-registry.json"
         outside.write_text(registry.read_text(encoding="utf-8"), encoding="utf-8")
 
         def run_entry(entry, requested_registry, suffix):
@@ -369,6 +362,85 @@ class DeadlineAndPreflightTests(unittest.TestCase):
         for entry in ("sandbox", "dispatch"):
             with self.subTest(entry=entry, case="symlink"):
                 run_entry(entry, registry, "symlink")
+
+    def test_post_tool_hook_pins_registry_to_project_root_and_rejects_links(self):
+        """The immediate configuration hook must match runtime registry pinning."""
+        registry = self.repo / ".agents-registry.json"
+        registry.write_text(
+            json.dumps(
+                {
+                    "version": "dispatch/1",
+                    "agents": [
+                        {
+                            "id": "fixture-planner",
+                            "roles": ["planner"],
+                            "transport": "subagent",
+                            "agent_type": "planner-proposal",
+                            "model_family": "fixture",
+                            "constraints": {"write_src": False, "push": False},
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        progress = self.repo / "progress.json"
+        progress.write_text("{}\n", encoding="utf-8")
+
+        def hook(path):
+            return subprocess.run(
+                ["bash", str(VALIDATOR), "hook"],
+                cwd=self.repo,
+                input=json.dumps({"tool_input": {"file_path": str(path)}}),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+        self.assertEqual(hook(registry).returncode, 0)
+        self.assertEqual(hook(progress).returncode, 0)
+
+        progress.write_text(
+            json.dumps({"role_assignments": {"generator": "fixture-planner"}}),
+            encoding="utf-8",
+        )
+        incompatible_assignment = hook(registry)
+        self.assertEqual(incompatible_assignment.returncode, 2)
+        self.assertIn("不含 generator", incompatible_assignment.stdout)
+
+        progress.write_text(
+            json.dumps({"mode_intent": {"signed_intent": {}, "resolution": {}}}),
+            encoding="utf-8",
+        )
+        malformed_checkpoint = hook(registry)
+        self.assertEqual(malformed_checkpoint.returncode, 2)
+        self.assertIn("v2 mode_intent checkpoint", malformed_checkpoint.stderr)
+
+        progress.write_text("{}\n", encoding="utf-8")
+
+        outside_dir = self.root / "hook-outside"
+        outside_dir.mkdir()
+        outside = outside_dir / ".agents-registry.json"
+        outside.write_text(registry.read_text(encoding="utf-8"), encoding="utf-8")
+        outside_result = hook(outside)
+        self.assertEqual(outside_result.returncode, 2)
+        self.assertIn("project-root", outside_result.stderr)
+
+        registry.unlink()
+        registry.symlink_to(outside)
+        for path in (registry, progress):
+            with self.subTest(path=path.name, link="valid"):
+                result = hook(path)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("symbolic link", result.stderr)
+
+        registry.unlink()
+        registry.symlink_to(self.root / "missing-registry.json")
+        for path in (registry, progress):
+            with self.subTest(path=path.name, link="dangling"):
+                result = hook(path)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("symbolic link", result.stderr)
 
     def test_direct_sandbox_enforces_expected_provenance_before_creating_paths(self):
         registry, envelope, adapters = self._sandbox_inputs(self.repo)
@@ -847,18 +919,231 @@ class DeadlineAndPreflightTests(unittest.TestCase):
         self.assertEqual(meta["termination_reason"], "external_signal")
         assert_pids_gone(self, pids)
 
-    # Two bridge tests that drove sandbox-profile.sh's former subagent path
-    # were removed with that path: bridges now launch only through
-    # dispatch-run.sh's vm-v1 provider branch, and this entry point stays
-    # fail-closed by design (covered above by
-    # test_sandbox_rejects_external_same_session_target_before_creating_runtime).
-    # Their guarded properties live at the owning layers now:
-    #  - contained ACP child-tree reaping -> test-session-bridge-kimi.py
-    #    (dedicated process-group termination and interrupt-reap cases);
-    #  - no checkout writes / no raw ACP state / receipt-only persistence ->
-    #    test-session-bridge-kimi.py empty-provider-state and credential
-    #    rejection cases plus test-vm-bridge-provider.py read-only
-    #    reconciliation rejection.
+    @unittest.skip(
+        "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated"
+    )
+    def test_subagent_bridge_term_reaps_the_outer_acp_process_group(self):
+        """The trusted timeout group must reap a contained ACP child tree."""
+        registry, envelope, _unused_adapters = self._sandbox_inputs(self.repo)
+        fake_bin = self.root / "fake-kimi-bin"
+        fake_bin.mkdir()
+        workroot = self.root / "kimi-cancel-work"
+        pids_filename = "kimi-acp-pids.json"
+        # The contained fake vendor may publish test PIDs only in its current
+        # task worktree, never in the shared coordinator workroot.
+        fake_kimi = fake_bin / "kimi"
+        write_executable(
+            fake_kimi,
+            "#!/usr/bin/env python3\n"
+            "import json, os, signal, subprocess, sys, time\n"
+            "if sys.argv[1:] != ['acp']:\n"
+            " raise SystemExit(64)\n"
+            "child = subprocess.Popen([sys.executable, '-c', "
+            "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+            "\\nwhile True: time.sleep(1)'])\n"
+            f"open({pids_filename!r}, 'w').write(json.dumps([os.getpid(), child.pid]))\n"
+            "request = json.loads(sys.stdin.readline())\n"
+            "print(json.dumps({'jsonrpc':'2.0','id':request['id'],"
+            "'result':{'protocolVersion':1}}), flush=True)\n"
+            "while True: time.sleep(1)\n",
+        )
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "kimi",
+                "tool": "kimi",
+                "model_family": "kimi",
+                "local_cli": {
+                    "adapter": "kimi",
+                    "sandbox": {"home_dir": str(self.root / "safe-home"), "env_allow": []},
+                    "timeout_s": 60,
+                },
+                "subagent": {"bridge": "kimi-acp-native-agent"},
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        state = self.root / "kimi-cancel-state"
+        proc = subprocess.Popen([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "subagent--kimi--evaluator",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env={
+            **os.environ,
+            "PATH": str(fake_bin) + os.pathsep + os.environ.get("PATH", ""),
+        })
+        pids: list[int] = []
+        try:
+            pids_path = wait_until(
+                lambda: next(workroot.glob(f"*/{pids_filename}"), None)
+            )
+            self.assertIsNotNone(pids_path)
+            assert pids_path is not None
+            pids = json.loads(pids_path.read_text())
+            proc.send_signal(signal.SIGTERM)
+            stdout, stderr = proc.communicate(timeout=7)
+            self.assertEqual(proc.returncode, 143, stderr)
+            meta = json.loads(stdout)
+            self.assertEqual(meta["outcome"], "CANCELED")
+            self.assertEqual(meta["termination_reason"], "external_signal")
+            assert_pids_gone(self, pids)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=2)
+            # Keep a failing regression self-cleaning while never addressing
+            # anything except PIDs created by this exact fixture.
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+
+    @unittest.skip(
+        "strict external same-session execution is unavailable until a VM/ephemeral-principal provider is integrated"
+    )
+    def test_subagent_bridge_persists_only_a_child_receipt_and_blocks_checkout_writes(self):
+        """A contained bridge cannot write the main checkout or retain raw ACP state."""
+        registry, envelope, _unused_adapters = self._sandbox_inputs(self.repo)
+        fake_bin = self.root / "private-kimi-bin"
+        fake_bin.mkdir()
+        source_kimi_home = self.root / "source-kimi-home"
+        (source_kimi_home / "credentials").mkdir(parents=True)
+        (source_kimi_home / "credentials" / "token.json").write_text('{"token":"fixture"}', encoding="utf-8")
+        (source_kimi_home / "sessions").mkdir()
+        fake_kimi = fake_bin / "kimi"
+        raw_child_call_id = "vendor child call id"
+        escape_marker = self.repo / "seatbelt-escape-marker.txt"
+        workroot = self.root / "private-kimi-work"
+        sibling_marker = workroot / "seatbelt-sibling-marker.txt"
+        write_executable(
+            fake_kimi,
+            "#!/usr/bin/env python3\n"
+            "import json, os, pathlib, re, subprocess, sys\n"
+            f"RAW_ID = {raw_child_call_id!r}\n"
+            "for line in sys.stdin:\n"
+            " request = json.loads(line); method = request.get('method'); ident = request['id']\n"
+            " if method == 'initialize':\n"
+            "  result = {'protocolVersion': 1}\n"
+            " elif method == 'session/new':\n"
+            "  result = {'sessionId': 'session-fixture'}\n"
+            " elif method == 'session/set_config_option':\n"
+            "  result = {}\n"
+            " elif method == 'session/prompt':\n"
+            "  prompt = request['params']['prompt'][0]['text']\n"
+            "  nonce = re.search(r'harness-child:([0-9a-f]{32})', prompt).group(1)\n"
+            "  state = pathlib.Path(os.environ['KIMI_CODE_HOME'])\n"
+            "  (state / 'raw-acp-id.log').write_text(RAW_ID, encoding='utf-8')\n"
+            f"  escape_marker = pathlib.Path({str(escape_marker)!r})\n"
+            "  try:\n"
+            "   escape_marker.write_text('must be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            f"  sibling_marker = pathlib.Path({str(sibling_marker)!r})\n"
+            "  try:\n"
+            "   sibling_marker.write_text('must be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  try:\n"
+            f"   subprocess.run(['git', '-C', {str(self.repo)!r}, 'config', 'harness.seatbelt_escape', 'must-be-denied'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  escape_link = pathlib.Path.cwd() / 'bridge-escape-link'\n"
+            "  try:\n"
+            "   escape_link.unlink(missing_ok=True)\n"
+            "   escape_link.symlink_to(escape_marker)\n"
+            "   escape_link.write_text('must also be denied', encoding='utf-8')\n"
+            "  except OSError:\n"
+            "   pass\n"
+            "  finally:\n"
+            "   escape_link.unlink(missing_ok=True)\n"
+            "  artifact = pathlib.Path(os.environ['HARNESS_ARTIFACT'])\n"
+            "  artifact.parent.mkdir(parents=True, exist_ok=True); artifact.write_text('{\\\"ok\\\":true}\\n', encoding='utf-8')\n"
+            "  updates = [\n"
+            "   {'sessionUpdate':'tool_call','toolCallId':RAW_ID,'status':'pending','title':'Agent'},\n"
+            "   {'sessionUpdate':'tool_call_update','toolCallId':RAW_ID,'status':'in_progress','rawInput':{'description':'harness-child:' + nonce,'subagent_type':'coder'}},\n"
+            "   {'sessionUpdate':'tool_call_update','toolCallId':RAW_ID,'status':'completed'}]\n"
+            "  for update in updates: print(json.dumps({'jsonrpc':'2.0','method':'session/update','params':{'sessionId':'session-fixture','update':update}}), flush=True)\n"
+            "  result = {'stopReason': 'end_turn'}\n"
+            " else: raise SystemExit(64)\n"
+            " print(json.dumps({'jsonrpc':'2.0','id':ident,'result':result}), flush=True)\n"
+            " if method == 'session/prompt': break\n",
+        )
+        registry.write_text(json.dumps({
+            "version": "tool-integrations/1",
+            "integrations": [{
+                "id": "kimi",
+                "tool": "kimi",
+                "model_family": "kimi",
+                "local_cli": {
+                    "adapter": "kimi",
+                    "sandbox": {
+                        "home_dir": str(self.root / "safe-home"),
+                        "env_set": {"KIMI_CODE_HOME": str(source_kimi_home)},
+                        "env_allow": [],
+                    },
+                    "timeout_s": 60,
+                },
+                "subagent": {"bridge": "kimi-acp-native-agent"},
+            }],
+            "a2a_targets": [],
+        }), encoding="utf-8")
+        state = self.root / "private-kimi-state"
+        main_status_before = subprocess.check_output(
+            ["git", "-C", str(self.repo), "status", "--porcelain=v1"], text=True
+        )
+        main_head_before = subprocess.check_output(
+            ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "subagent--kimi--evaluator",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env={
+            **os.environ,
+            "PATH": str(fake_bin) + os.pathsep + os.environ.get("PATH", ""),
+        })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        meta = json.loads(result.stdout)
+        expected_token = hashlib.sha256(raw_child_call_id.encode("utf-8")).hexdigest()
+        self.assertEqual(meta["outcome"], "RETURNED")
+        self.assertEqual(meta["bridge"]["child_call_id"], expected_token)
+        run_meta = (state / "run-meta-lifecycle-fixture.json").read_text(encoding="utf-8")
+        log = Path(meta["log"]).read_text(encoding="utf-8")
+        self.assertNotIn(raw_child_call_id, run_meta)
+        self.assertNotIn(raw_child_call_id, log)
+        self.assertFalse((state / "bridge-lifecycle-fixture.json").exists())
+        self.assertFalse((source_kimi_home / "raw-acp-id.log").exists())
+        self.assertEqual(list(state.glob("bridge-state-*")), [])
+        self.assertEqual(list(workroot.glob(".bridge-runtime-lifecycle-fixture.*")), [])
+        self.assertFalse(escape_marker.exists())
+        self.assertFalse(sibling_marker.exists())
+        self.assertNotEqual(
+            subprocess.run(
+                ["git", "-C", str(self.repo), "config", "--local", "--get", "harness.seatbelt_escape"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            ).returncode,
+            0,
+        )
+        self.assertEqual(
+            subprocess.check_output(
+                ["git", "-C", str(self.repo), "status", "--porcelain=v1"], text=True
+            ),
+            main_status_before,
+        )
+        self.assertEqual(
+            subprocess.check_output(
+                ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+            ).strip(),
+            main_head_before,
+        )
 
 
 class ProcessTimeoutTests(unittest.TestCase):

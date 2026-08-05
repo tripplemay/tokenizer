@@ -3,14 +3,20 @@
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import hashlib
 import importlib.util
+import io
 import json
 import os
+import stat
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 
@@ -58,6 +64,18 @@ class SessionBridgeRunnerTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_isolated_interpreter_loads_the_staged_sibling_driver(self) -> None:
+        """The VM executes this exact entrypoint using Python isolated mode."""
+        result = subprocess.run(
+            [sys.executable, "-I", str(MODULE_PATH), "--help"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def protocol(self) -> dict[str, object]:
         return {
             "kind": "acp-native-agent/v1",
@@ -90,9 +108,16 @@ class SessionBridgeRunnerTests(unittest.TestCase):
         native_agent_type: str = "plan",
         proof: dict[str, str] | None = None,
         worker_env: dict[str, str] | None = None,
+        run_vendor_as_harnessvm: bool = False,
+        acp_side_effect: object | None = None,
     ) -> dict[str, object]:
         returned = self.proof(native_agent_type) if proof is None else proof
-        with patch.object(runner, "run_acp_native_agent", return_value=returned):
+        with patch.object(
+            runner,
+            "run_acp_native_agent",
+            side_effect=acp_side_effect,
+            return_value=None if acp_side_effect is not None else returned,
+        ):
             return runner.run_bridge(
                 bridge_id="future-acp-bridge",
                 strategy="session-bridge-v1",
@@ -104,6 +129,7 @@ class SessionBridgeRunnerTests(unittest.TestCase):
                 timeout_s=60,
                 worker_env=self.worker_env if worker_env is None else worker_env,
                 worker_state_root=self.worker_state_root,
+                run_vendor_as_harnessvm=run_vendor_as_harnessvm,
             )
 
     def test_manifest_provided_native_types_drive_all_roles_without_tool_branch(self) -> None:
@@ -241,6 +267,123 @@ class SessionBridgeRunnerTests(unittest.TestCase):
 
         with self.assertRaisesRegex(runner.SessionBridgeError, "multiple links"):
             self.invoke_bridge()
+
+    def test_result_fd_writes_a_bounded_json_record_and_closes_its_capability(self) -> None:
+        read_fd, write_fd = os.pipe()
+        try:
+            runner._write_result_fd(write_fd, {"status": "completed"})
+            payload = os.read(read_fd, runner.MAX_RESULT_BYTES + 1)
+        finally:
+            os.close(read_fd)
+
+        self.assertEqual(json.loads(payload), {"status": "completed"})
+        with self.assertRaises(OSError):
+            os.fstat(write_fd)
+
+    def test_result_fd_rejects_a_regular_file_capability(self) -> None:
+        destination = Path(self.temp.name) / "not-a-pipe.json"
+        descriptor = os.open(destination, os.O_CREAT | os.O_WRONLY, 0o600)
+        try:
+            with self.assertRaisesRegex(runner.SessionBridgeError, "must be a pipe"):
+                runner._write_result_fd(descriptor, {"status": "completed"})
+        finally:
+            os.close(descriptor)
+
+    def test_result_fd_is_secured_before_bridge_launch(self) -> None:
+        read_fd, write_fd = os.pipe()
+        try:
+            flags = fcntl.fcntl(write_fd, fcntl.F_GETFD)
+            fcntl.fcntl(write_fd, fcntl.F_SETFD, flags & ~fcntl.FD_CLOEXEC)
+            args = SimpleNamespace(
+                command="run",
+                timeout_s=60,
+                result_fd=write_fd,
+                result=None,
+                protocol_json=json.dumps(self.protocol()),
+                persona="planner-proposal",
+                envelope=Path(self.temp.name) / "envelope.json",
+                bridge_id="future-acp-bridge",
+                strategy="session-bridge-v1",
+                native_agent_type="plan",
+                deliverable_channel="file",
+                worktree=self.worktree,
+                worker_state_root=self.worker_state_root,
+            )
+
+            def fake_run_bridge(**_kwargs: object) -> dict[str, str]:
+                self.assertTrue(stat.S_ISFIFO(os.fstat(write_fd).st_mode))
+                self.assertTrue(fcntl.fcntl(write_fd, fcntl.F_GETFD) & fcntl.FD_CLOEXEC)
+                return {"status": "completed"}
+
+            with (
+                patch.object(runner, "parser") as parser,
+                patch.object(runner, "_require_root_result_supervisor") as require_root,
+                patch.object(runner, "_load_protocol", return_value=self.protocol()),
+                patch.object(runner, "_read_envelope", return_value=self.envelope()),
+                patch.object(runner, "_provider_worker_environment_from_process", return_value=self.worker_env),
+                patch.object(runner, "run_bridge", side_effect=fake_run_bridge),
+            ):
+                parser.return_value.parse_args.return_value = args
+                self.assertEqual(runner.main(), 0)
+                require_root.assert_called_once_with()
+
+            self.assertEqual(json.loads(os.read(read_fd, runner.MAX_RESULT_BYTES + 1)), {"status": "completed"})
+        finally:
+            try:
+                os.close(write_fd)
+            except OSError:
+                pass
+            os.close(read_fd)
+
+    def test_regular_result_fd_is_rejected_before_bridge_launch(self) -> None:
+        destination = Path(self.temp.name) / "not-a-pipe-before-launch.json"
+        descriptor = os.open(destination, os.O_CREAT | os.O_WRONLY, 0o600)
+        args = SimpleNamespace(
+            command="run",
+            timeout_s=60,
+            result_fd=descriptor,
+            result=None,
+            protocol_json=json.dumps(self.protocol()),
+            persona="planner-proposal",
+            envelope=Path(self.temp.name) / "envelope.json",
+            bridge_id="future-acp-bridge",
+            strategy="session-bridge-v1",
+            native_agent_type="plan",
+            deliverable_channel="file",
+            worktree=self.worktree,
+            worker_state_root=self.worker_state_root,
+        )
+        try:
+            with (
+                contextlib.redirect_stderr(io.StringIO()),
+                patch.object(runner, "parser") as parser,
+                patch.object(runner, "_require_root_result_supervisor"),
+                patch.object(runner, "run_bridge") as run_bridge,
+            ):
+                parser.return_value.parse_args.return_value = args
+                self.assertEqual(runner.main(), 2)
+                run_bridge.assert_not_called()
+        finally:
+            os.close(descriptor)
+
+    def test_strict_provider_route_marks_the_vendor_for_harnessvm_execution(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def fake_acp(**kwargs: object) -> dict[str, str]:
+            calls.append(kwargs)
+            return self.proof()
+
+        self.invoke_bridge(
+            run_vendor_as_harnessvm=True,
+            acp_side_effect=fake_acp,
+        )
+
+        self.assertTrue(calls[0]["run_as_harnessvm"])
+
+    def test_result_pipe_mode_requires_a_root_supervisor(self) -> None:
+        with patch.object(runner.os, "geteuid", return_value=501):
+            with self.assertRaisesRegex(runner.SessionBridgeError, "root supervisor"):
+                runner._require_root_result_supervisor()
 
 
 if __name__ == "__main__":

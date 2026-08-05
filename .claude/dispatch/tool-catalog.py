@@ -56,6 +56,11 @@ PUBLISHED_BRIDGE_PROTOCOL_KINDS = frozenset({"acp-native-agent/v1"})
 STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS = frozenset({"vm-v1", "ephemeral-uid-v1"})
 EXTERNAL_BRIDGE_PROVIDER_ATTESTATION_VERSION = "harness/external-bridge-provider-attestation/1"
 EXTERNAL_BRIDGE_PROVIDER_MAX_TTL_SECONDS = 300
+# A vm-v1 launch proof remains valid for at most five minutes and the broker
+# lease must be revoked before that proof can become stale. Keep every
+# registry-derived external target below that window while leaving the same
+# integration's ordinary local-cli timeout unchanged.
+VM_V1_MAX_TASK_SECONDS = 180
 EXECUTION_PROVENANCE_FIELD = "execution_provenance_sha256"
 EXECUTION_PROVENANCE_DOMAIN = "harness/execution-provenance/v1"
 ADAPTER_CONTRACT_DOMAIN = "harness/adapter-execution-contract/v1"
@@ -102,6 +107,7 @@ BRIDGE_PROTOCOL_FIELDS = {"kind", "command", "request_delivery", "response_forma
 # profiles) have the driver materialize their final message at the artifact
 # path. Adjudicated in BL-NATIVE-SUBAGENT-BRIDGES FIX2 #1:A.
 BRIDGE_DELIVERABLE_CHANNELS = {"file", "terminal-message"}
+EXTERNAL_PROVIDER_ROUTE_FIELDS = {"tool", "protocol"}
 A2A_TARGET_FIELDS = {
     "id",
     "integration_id",
@@ -253,6 +259,21 @@ def timeout_s(value: Any, label: str) -> int:
         raise ToolCatalogError(f"{label}: {exc}") from exc
 
 
+def external_bridge_timeout(value: int | None, provider: "StrictExternalBridgeProvider") -> int | None:
+    """Return the provider-owned hard cap for an external bridge target.
+
+    The local CLI descriptor remains the source of its own timeout.  A
+    provider route is a different isolation/lifecycle contract, so it must
+    never inherit a duration that outlives the provider's nonce attestation.
+    ``vm-v1`` is the only published external provider in this release.
+    """
+    if value is None:
+        return None
+    if provider.kind == "vm-v1":
+        return min(value, VM_V1_MAX_TASK_SECONDS)
+    return value
+
+
 def endpoint(value: Any, label: str) -> str:
     return bounded_text(value, label, 2_048)
 
@@ -263,6 +284,26 @@ def default_adapters_dir() -> Path:
 
 def default_bridges_dir() -> Path:
     return Path(__file__).resolve().parent / "transports" / "bridges"
+
+
+@dataclass(frozen=True)
+class AttestedExternalBridgeRoute:
+    """One executable tool/protocol pair measured by a strict provider."""
+
+    tool: str
+    protocol_kind: str
+    command: tuple[str, ...]
+    request_delivery: str
+    response_format: str
+
+    def matches(self, tool: str, protocol: dict[str, Any]) -> bool:
+        return (
+            self.tool == tool
+            and self.protocol_kind == protocol.get("kind")
+            and self.command == tuple(protocol.get("command", ()))
+            and self.request_delivery == protocol.get("request_delivery")
+            and self.response_format == protocol.get("response_format")
+        )
 
 
 @dataclass(frozen=True)
@@ -278,17 +319,66 @@ class StrictExternalBridgeProvider:
     id: str
     kind: str
     contract_sha256: str
+    supported_routes: tuple[AttestedExternalBridgeRoute, ...] = ()
+
+    def supports(self, tool: str, protocol: dict[str, Any]) -> bool:
+        return any(route.matches(tool, protocol) for route in self.supported_routes)
 
 
 APP_DISPATCH_RELATIVE = Path("framework/templates/claude/dispatch")
 APP_RUNTIME_FILES = (
     Path("tool-catalog.py"),
-    Path("dispatch_common.py"),
+    Path("validate-active-return-route.py"),
     Path("transports/vm-bridge-provider.py"),
     Path("transports/session-bridge.py"),
     Path("transports/session_bridge_kimi.py"),
     Path("transports/vm-bridge-worker.py"),
 )
+
+
+def attested_external_bridge_routes(value: Any) -> tuple[AttestedExternalBridgeRoute, ...]:
+    """Validate bundle-bound provider routes before exposing them in a catalog."""
+    if not isinstance(value, list) or not value or len(value) > 64:
+        raise ToolCatalogError("external bridge provider supported_routes must be a non-empty array")
+    routes: list[AttestedExternalBridgeRoute] = []
+    seen: set[tuple[str, str, tuple[str, ...], str, str]] = set()
+    for index, raw in enumerate(value):
+        label = f"external bridge provider supported_routes[{index}]"
+        route = exact_fields(raw, EXTERNAL_PROVIDER_ROUTE_FIELDS, label)
+        tool = tool_id(route.get("tool"), f"{label}.tool")
+        protocol = exact_fields(route.get("protocol"), BRIDGE_PROTOCOL_FIELDS, f"{label}.protocol")
+        kind = bridge_protocol_kind(protocol.get("kind"), f"{label}.protocol.kind")
+        if kind not in PUBLISHED_BRIDGE_PROTOCOL_KINDS:
+            raise ToolCatalogError(f"{label}.protocol.kind is not published")
+        command = bridge_command(protocol.get("command"), f"{label}.protocol.command")
+        request_delivery = protocol.get("request_delivery")
+        if request_delivery not in ENVELOPE_DELIVERIES:
+            raise ToolCatalogError(f"{label}.protocol.request_delivery is invalid")
+        response_format = protocol.get("response_format")
+        if response_format not in BRIDGE_RESPONSE_FORMATS:
+            raise ToolCatalogError(f"{label}.protocol.response_format is invalid")
+        if command[0] != tool:
+            raise ToolCatalogError(f"{label}.tool must match its executable command")
+        key = (tool, kind, command, request_delivery, response_format)
+        if key in seen:
+            raise ToolCatalogError(f"{label} is duplicated")
+        seen.add(key)
+        routes.append(
+            AttestedExternalBridgeRoute(
+                tool=tool,
+                protocol_kind=kind,
+                command=command,
+                request_delivery=request_delivery,
+                response_format=response_format,
+            )
+        )
+    return tuple(sorted(routes, key=lambda route: (
+        route.tool,
+        route.protocol_kind,
+        route.command,
+        route.request_delivery,
+        route.response_format,
+    )))
 
 
 def _secure_app_runtime(root: Path) -> bool:
@@ -456,6 +546,7 @@ def external_same_session_bridge_provider() -> StrictExternalBridgeProvider | No
         "runner_sha256",
         "cli_bundle_sha256",
         "broker_policy_sha256",
+        "supported_routes",
     }:
         return None
     try:
@@ -492,12 +583,14 @@ def external_same_session_bridge_provider() -> StrictExternalBridgeProvider | No
             return None
         if (expires - issued).total_seconds() > EXTERNAL_BRIDGE_PROVIDER_MAX_TTL_SECONDS:
             return None
-    except (TypeError, ValueError, OverflowError):
+        supported_routes = attested_external_bridge_routes(attestation.get("supported_routes"))
+    except (TypeError, ValueError, OverflowError, ToolCatalogError):
         return None
     return StrictExternalBridgeProvider(
         id=provider_id,
         kind=provider_kind,
         contract_sha256=contract_sha256,
+        supported_routes=supported_routes,
     )
 
 
@@ -520,10 +613,40 @@ def resolved_external_same_session_bridge_provider() -> StrictExternalBridgeProv
             "external same-session bridge provider kind must be one of "
             f"{sorted(STRICT_EXTERNAL_BRIDGE_PROVIDER_KINDS)!r}"
         )
+    routes = provider.supported_routes
+    if not isinstance(routes, tuple) or not routes:
+        raise ToolCatalogError("external same-session bridge provider has no supported routes")
+    for route in routes:
+        if not isinstance(route, AttestedExternalBridgeRoute):
+            raise ToolCatalogError("external same-session bridge provider route is invalid")
+        protocol = {
+            "kind": route.protocol_kind,
+            "command": list(route.command),
+            "request_delivery": route.request_delivery,
+            "response_format": route.response_format,
+        }
+        if (
+            tool_id(route.tool, "external same-session bridge provider route tool") != route.tool
+            or bridge_protocol_kind(
+                route.protocol_kind, "external same-session bridge provider route protocol kind"
+            )
+            != route.protocol_kind
+            or route.protocol_kind not in PUBLISHED_BRIDGE_PROTOCOL_KINDS
+        ):
+            raise ToolCatalogError("external same-session bridge provider route is invalid")
+        try:
+            parsed_routes = attested_external_bridge_routes(
+                [{"tool": route.tool, "protocol": protocol}]
+            )
+        except ToolCatalogError as exc:
+            raise ToolCatalogError("external same-session bridge provider route is invalid") from exc
+        if parsed_routes != (route,):
+            raise ToolCatalogError("external same-session bridge provider route is invalid")
     return StrictExternalBridgeProvider(
         id=tool_id(provider.id, "external same-session bridge provider id"),
         kind=kind,
         contract_sha256=provider.contract_sha256,
+        supported_routes=routes,
     )
 
 
@@ -1291,6 +1414,8 @@ def integration_candidates(
         for integration in pending_external_bridges:
             bridge = integration.subagent
             assert bridge is not None
+            if not provider.supports(integration.tool, bridge.protocol):
+                continue
             bridge_local = integration.local_cli if bridge.requires_local_cli else None
             for role, agent_type in bridge.personas.items():
                 candidates.append(
@@ -1306,7 +1431,10 @@ def integration_candidates(
                         label=integration.label,
                         adapter=bridge_local["adapter"] if bridge_local is not None else None,
                         sandbox=bridge_local["sandbox"] if bridge_local is not None else None,
-                        timeout_s=bridge_local["timeout_s"] if bridge_local is not None else None,
+                        timeout_s=external_bridge_timeout(
+                            bridge_local["timeout_s"] if bridge_local is not None else None,
+                            provider,
+                        ),
                         agent_type=agent_type,
                         native_agent_type=bridge.native_agent_types[role],
                         deliverable_channel=bridge.deliverable_channels[role],

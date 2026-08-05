@@ -81,6 +81,7 @@ REGISTRY="$(python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
 # mutable progress assignment or a caller trying another registered agent.
 CANONICAL_PROGRESS="$PROJECT_ROOT/progress.json"
 ACTIVE_PROGRESS=""
+ACTIVE_ROLE="{}"
 if [ -f "$CANONICAL_PROGRESS" ]; then
   if [ "$PROGRESS_EXPLICIT" = true ]; then
     PROVIDED_PROGRESS="$(python3 - "$PROGRESS" <<'PY'
@@ -120,7 +121,7 @@ if [ -n "$ACTIVE_PROGRESS" ]; then
   ACTIVE_ARGS=(--role planner --expected-agent "$AGENT" --progress "$ACTIVE_PROGRESS" --registry "$REGISTRY")
   ACTIVE_ARGS+=(--adapters "$ADAPTERS")
   [ -z "$PUB" ] || ACTIVE_ARGS+=(--pub "$PUB")
-  bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}" >/dev/null \
+  ACTIVE_ROLE="$(bash "$DISPATCH_DIR/resolve-active-mode-role.sh" "${ACTIVE_ARGS[@]}")" \
     || die "active Planner mode role 复验失败"
 fi
 
@@ -181,6 +182,8 @@ PY
 )" || die "无法解析 subagent Planner bridge 路径"
     [ "$SUBAGENT_ROUTE" = "external-bridge" ] || \
       die "host-native Planner 必须由 Coordinator 启动隔离 planner-proposal 路径并校验 proposal；不得回落为 Coordinator 直接规划"
+    [ "$ACTIVE_ROLE" != "{}" ] || \
+      die "external Planner 必须由已验签 active mode role 签发"
     ;;
   *) die "Planner transport 非法或未声明：$TRANSPORT" ;;
 esac
@@ -241,7 +244,16 @@ set -e
 [ -f "$RUN_META" ] || die "dispatch 未写入 run-meta：$RUN_META"
 
 set +e
-RECEIPT_JSON="$(bash "$DISPATCH_DIR/validate-dispatch.sh" receipt "$RUN_META")"
+RECEIPT_ARGS=(receipt "$RUN_META")
+if [ "${SUBAGENT_ROUTE:-}" = "external-bridge" ]; then
+  RECEIPT_ARGS+=(
+    --expected-envelope "$ENVELOPE"
+    --active-role-json "$ACTIVE_ROLE"
+    --active-target-json "$TARGET_JSON"
+    --project-root "$PROJECT_ROOT"
+  )
+fi
+RECEIPT_JSON="$(bash "$DISPATCH_DIR/validate-dispatch.sh" "${RECEIPT_ARGS[@]}")"
 RECEIPT_RC=$?
 set -e
 

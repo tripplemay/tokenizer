@@ -16,17 +16,23 @@ from __future__ import annotations
 
 import argparse
 import copy
+import contextlib
 import datetime as dt
+import errno
+import fcntl
 import hashlib
 import hmac
 import http.client
 import http.server
+import ipaddress
 import io
 import json
 import os
 import pwd
 import re
+import select
 import secrets
+import socket
 import stat
 import subprocess
 import sys
@@ -37,7 +43,7 @@ import time
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator, Mapping
 
 
 CONFIG_VERSION = "harness/vm-v1-provider-config/1"
@@ -47,13 +53,62 @@ PROVIDER_ID = "harness-vm-v1"
 PROVIDER_KIND = "vm-v1"
 LIMA_RUNTIME_KIND = "lima-vz-plain-v1"
 WORKER_USER = "harnessvm"
-MAX_TTL_SECONDS = 300
+MAX_EXTERNAL_TIMEOUT_SECONDS = 180
+CATALOG_ATTESTATION_TTL_SECONDS = 300
+LAUNCH_LOCK_WAIT_SECONDS = 30
+MAX_SOURCE_ARCHIVE_BYTES = 128 * 1024 * 1024
+MAX_SOURCE_ARCHIVE_ENTRIES = 10_000
+MAX_SOURCE_UNPACKED_BYTES = 128 * 1024 * 1024
+MAX_COPYIN_ARCHIVE_BYTES = 400 * 1024 * 1024
+MAX_ENVELOPE_BYTES = 1 * 1024 * 1024
+MAX_TARGET_BYTES = 1 * 1024 * 1024
+# The verified Linux ARM64 Kimi executable is roughly 144 MiB. Keep a
+# generous but finite compressed-bundle ceiling, and stream copy-in so this
+# allowance never becomes a monolithic host-memory allocation.
+MAX_CLI_BUNDLE_BYTES = 256 * 1024 * 1024
+MAX_RUNNER_BYTES = 2 * 1024 * 1024
 MAX_COPYOUT_FILES = 10_000
 MAX_COPYOUT_BYTES = 64 * 1024 * 1024
+MAX_BROKER_REQUEST_BYTES = 16 * 1024 * 1024
+MAX_BROKER_RESPONSE_BYTES = 32 * 1024 * 1024
+MAX_BROKER_REQUESTS = 256
+MAX_BROKER_CONCURRENT_CONNECTIONS = 8
+BROKER_CLIENT_TIMEOUT_SECONDS = 10
+BROKER_UPSTREAM_TIMEOUT_SECONDS = 30
+# A broker remains alive through the longest vendor turn, bounded copy-out,
+# one in-flight upstream request, and a shutdown margin. Refuse a token that
+# cannot cover that complete capability lifetime before opening the lease.
+GUEST_COPYOUT_TIMEOUT_SECONDS = 120
+LAUNCH_ATTESTATION_COMPLETION_MARGIN_SECONDS = 60
+LAUNCH_ATTESTATION_TTL_SECONDS = (
+    MAX_EXTERNAL_TIMEOUT_SECONDS
+    + GUEST_COPYOUT_TIMEOUT_SECONDS
+    + BROKER_UPSTREAM_TIMEOUT_SECONDS
+    + LAUNCH_ATTESTATION_COMPLETION_MARGIN_SECONDS
+)
+BROKER_CREDENTIAL_EXPIRY_MARGIN_SECONDS = 60
+MIN_BROKER_CREDENTIAL_LIFETIME_SECONDS = (
+    MAX_EXTERNAL_TIMEOUT_SECONDS
+    + GUEST_COPYOUT_TIMEOUT_SECONDS
+    + BROKER_UPSTREAM_TIMEOUT_SECONDS
+    + BROKER_CREDENTIAL_EXPIRY_MARGIN_SECONDS
+)
+MAX_BROKER_JSON_DEPTH = 32
+MAX_BROKER_JSON_OBJECT_ENTRIES = 256
+MAX_BROKER_JSON_ARRAY_ITEMS = 1_024
+MAX_BROKER_JSON_STRING_BYTES = 4 * 1024 * 1024
+MAX_BROKER_MESSAGES = 512
+MAX_BROKER_TOOLS = 64
+LIMA_GUEST_GATEWAY = "192.168.5.2"
+BROKER_LISTEN_HOST = "127.0.0.1"
+KIMI_CODE_OAUTH_UPSTREAM = "https://api.kimi.com/coding/v1"
+KIMI_CHAT_COMPLETIONS_PATH = "/chat/completions"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 SAFE_ARTIFACT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,511}$")
 SAFE_GUEST_ROOT = re.compile(r"^/var/lib/harness-vm-v1/jobs/[0-9a-f]{32}$")
+KIMI_VERSION = re.compile(r"^[0-9]+(?:\.[0-9]+){2}(?:[-+][A-Za-z0-9.-]+)?$")
+RUNNER_NAMES = ("session-bridge.py", "session_bridge_kimi.py", "vm-bridge-worker.py")
 
 CONTRACT_FIELDS = {
     "contract_version",
@@ -81,6 +136,7 @@ RUNTIME_FIELDS = {
     "profile_config_sha256",
     "image",
     "image_sha256",
+    "image_location",
     "cli_bundle",
     "cli_bundle_sha256",
 }
@@ -133,6 +189,22 @@ def _home_directory() -> Path:
     return candidate
 
 
+def _lima_environment() -> dict[str, str]:
+    """Return the minimal fixed host environment required by Lima itself.
+
+    Lima derives its profile location from ``HOME`` even when every runtime
+    path is already content-addressed in the provider configuration.  Do not
+    inherit a caller HOME: use only the effective account's passwd-derived
+    home alongside the fixed command locale and search path.
+    """
+    return {
+        "HOME": str(_home_directory()),
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+    }
+
+
 def provider_config_path() -> Path:
     """Return the one framework-defined provider configuration path.
 
@@ -181,6 +253,150 @@ def _secure_regular_file(path: Path, label: str, *, require_private: bool = Fals
         raise ProviderError(f"{label} must not be group/world accessible")
 
 
+def _snapshot_regular_file(
+    source: Path,
+    destination: Path,
+    label: str,
+    *,
+    expected_sha256: str | None = None,
+    maximum_bytes: int | None = None,
+) -> str:
+    """Copy one checked file into provider-private storage through stable fds.
+
+    The returned digest names the exact bytes later staged into the guest. The
+    source can change after this function returns without changing a launch.
+    """
+    _secure_regular_file(source, label)
+    _secure_directory(destination.parent, "provider input snapshot parent")
+    if maximum_bytes is not None and (
+        not isinstance(maximum_bytes, int) or maximum_bytes < 1
+    ):
+        raise ProviderError(f"{label} snapshot limit is invalid")
+    try:
+        initial = source.lstat()
+        if maximum_bytes is not None and initial.st_size > maximum_bytes:
+            raise ProviderError(f"{label} exceeds its snapshot size limit")
+        source_fd = os.open(source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    except OSError as exc:
+        raise ProviderError(f"{label} cannot be snapshotted") from exc
+
+    destination_fd: int | None = None
+    succeeded = False
+    try:
+        opened = os.fstat(source_fd)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_dev != initial.st_dev
+            or opened.st_ino != initial.st_ino
+        ):
+            raise ProviderError(f"{label} changed while it was being snapshotted")
+        destination_fd = os.open(
+            destination,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
+        os.fchmod(destination_fd, 0o600)
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            block = os.read(source_fd, 1024 * 1024)
+            if not block:
+                break
+            total += len(block)
+            if maximum_bytes is not None and total > maximum_bytes:
+                raise ProviderError(f"{label} exceeds its snapshot size limit")
+            digest.update(block)
+            view = memoryview(block)
+            while view:
+                written = os.write(destination_fd, view)
+                if written <= 0:
+                    raise OSError("snapshot write made no progress")
+                view = view[written:]
+        os.fsync(destination_fd)
+        observed = digest.hexdigest()
+        if expected_sha256 is not None and not hmac.compare_digest(observed, expected_sha256):
+            raise ProviderError(f"{label} digest drifted before its launch snapshot")
+        succeeded = True
+        return observed
+    except OSError as exc:
+        raise ProviderError(f"{label} cannot be snapshotted") from exc
+    finally:
+        try:
+            os.close(source_fd)
+        finally:
+            if destination_fd is not None:
+                os.close(destination_fd)
+            if not succeeded:
+                try:
+                    destination.unlink(missing_ok=True)
+                except OSError:
+                    pass
+
+
+def _read_regular_file_capped(path: Path, label: str, maximum_bytes: int) -> bytes:
+    """Read a stable private file only after enforcing a hard byte ceiling."""
+    if not isinstance(maximum_bytes, int) or maximum_bytes < 1:
+        raise ProviderError(f"{label} size limit is invalid")
+    _secure_regular_file(path, label)
+    try:
+        initial = path.lstat()
+        if initial.st_size > maximum_bytes:
+            raise ProviderError(f"{label} exceeds its size limit")
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    except OSError as exc:
+        raise ProviderError(f"{label} is unreadable") from exc
+    try:
+        opened = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_dev != initial.st_dev
+            or opened.st_ino != initial.st_ino
+            or opened.st_size > maximum_bytes
+        ):
+            raise ProviderError(f"{label} changed while it was being read")
+        chunks: list[bytes] = []
+        total = 0
+        while True:
+            block = os.read(descriptor, 1024 * 1024)
+            if not block:
+                break
+            total += len(block)
+            if total > maximum_bytes:
+                raise ProviderError(f"{label} exceeds its size limit")
+            chunks.append(block)
+        return b"".join(chunks)
+    except OSError as exc:
+        raise ProviderError(f"{label} is unreadable") from exc
+    finally:
+        os.close(descriptor)
+
+
+def _absolute_path(value: Any, label: str) -> Path:
+    """Normalize a caller path lexically without resolving any symlink."""
+    try:
+        raw = os.fspath(value)
+    except TypeError as exc:
+        raise ProviderError(f"{label} path is invalid") from exc
+    if not isinstance(raw, str) or not raw:
+        raise ProviderError(f"{label} path is invalid")
+    return Path(os.path.abspath(raw))
+
+
+def _absolute_non_symlink_input(value: Any, label: str) -> Path:
+    """Return an existing input path after refusing every symlink hop."""
+    path = _absolute_path(value, label)
+    current = Path(path.anchor)
+    for part in path.parts[1:]:
+        current = current / part
+        try:
+            entry = current.lstat()
+        except OSError as exc:
+            raise ProviderError(f"{label} is unavailable") from exc
+        if stat.S_ISLNK(entry.st_mode):
+            raise ProviderError(f"{label} must not traverse a symlink")
+    return path
+
+
 def _absolute_hashed_file(value: Any, digest: Any, label: str) -> tuple[Path, str]:
     if not isinstance(value, str):
         raise ProviderError(f"{label} path is invalid")
@@ -194,6 +410,22 @@ def _absolute_hashed_file(value: Any, digest: Any, label: str) -> tuple[Path, st
     if not hmac.compare_digest(observed, digest):
         raise ProviderError(f"{label} digest drifted")
     return path, observed
+
+
+def _image_location(value: Any) -> str:
+    """Validate the immutable source URL that Lima must report for the VM image."""
+    if not isinstance(value, str) or not value or len(value) > 2_048:
+        raise ProviderError("provider VM image location is invalid")
+    parsed = urllib.parse.urlsplit(value)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.fragment
+    ):
+        raise ProviderError("provider VM image location must be an HTTPS URL")
+    return value
 
 
 def _exact_object(value: Any, fields: set[str], label: str) -> dict[str, Any]:
@@ -234,6 +466,7 @@ class ProviderConfiguration:
     profile_config: Path
     image: Path
     image_sha256: str
+    image_location: str
     cli_bundle: Path
     cli_bundle_sha256: str
     broker_policy: Path
@@ -245,6 +478,45 @@ class BrokerPolicy:
     guest_broker_host: str
     upstream_base_url: str
     credential_source: dict[str, str]
+
+
+@dataclass(frozen=True)
+class KimiClientIdentity:
+    """Immutable client identity published by the hashed Kimi CLI bundle."""
+
+    user_agent: str
+    x_msh_platform: str
+    x_msh_version: str
+
+
+@dataclass(frozen=True)
+class CliBundleManifest:
+    protocol_commands: dict[str, tuple[str, ...]]
+    kimi_identity: KimiClientIdentity
+
+
+@dataclass(frozen=True)
+class LaunchInputSnapshots:
+    """Provider-private copies of every mutable input staged to a guest."""
+
+    envelope: Path
+    envelope_sha256: str
+    target: Path
+    cli_bundle: Path
+    cli_bundle_sha256: str
+    runners: Mapping[str, Path]
+    runner_sha256: str
+
+
+def _require_fixed_kimi_broker_policy(policy: BrokerPolicy) -> None:
+    """Defend the broker boundary even when called outside config loading."""
+    if (
+        not isinstance(policy, BrokerPolicy)
+        or policy.guest_broker_host != LIMA_GUEST_GATEWAY
+        or policy.upstream_base_url != KIMI_CODE_OAUTH_UPSTREAM
+        or policy.credential_source != {"kind": "kimi-code-oauth-file-v1"}
+    ):
+        raise ProviderError("provider broker policy is not the fixed Kimi OAuth route")
 
 
 def load_provider_configuration() -> ProviderConfiguration:
@@ -272,6 +544,7 @@ def load_provider_configuration() -> ProviderConfiguration:
     image, image_sha256 = _absolute_hashed_file(
         runtime.get("image"), runtime.get("image_sha256"), "provider VM image"
     )
+    image_location = _image_location(runtime.get("image_location"))
     cli_bundle, cli_bundle_sha256 = _absolute_hashed_file(
         runtime.get("cli_bundle"), runtime.get("cli_bundle_sha256"), "provider CLI bundle"
     )
@@ -287,6 +560,7 @@ def load_provider_configuration() -> ProviderConfiguration:
         profile_config=profile_config,
         image=image,
         image_sha256=image_sha256,
+        image_location=image_location,
         cli_bundle=cli_bundle,
         cli_bundle_sha256=cli_bundle_sha256,
         broker_policy=broker_policy,
@@ -306,15 +580,13 @@ def _broker_policy(configuration: ProviderConfiguration) -> BrokerPolicy:
     if not isinstance(guest_host, str):
         raise ProviderError("provider broker guest host is invalid")
     try:
-        # The guest is allowed to address only a literal provider-controlled
-        # gateway, never a DNS name that can be rebound by a child.
-        import ipaddress
-
+        # The guest is allowed to address only the immutable plain-Lima
+        # usernet gateway, never a DNS name that a child can rebind.
         address = ipaddress.ip_address(guest_host)
     except ValueError as exc:
         raise ProviderError("provider broker guest host must be an IP address") from exc
-    if not address.is_private:
-        raise ProviderError("provider broker guest host must be private")
+    if not address.is_private or guest_host != LIMA_GUEST_GATEWAY:
+        raise ProviderError("provider broker guest host is not the plain-Lima gateway")
     upstream = policy.get("upstream_base_url")
     if not isinstance(upstream, str) or len(upstream) > 512:
         raise ProviderError("provider broker upstream is invalid")
@@ -329,29 +601,14 @@ def _broker_policy(configuration: ProviderConfiguration) -> BrokerPolicy:
     ):
         raise ProviderError("provider broker upstream must be an HTTPS origin/path")
     source = policy.get("credential_source")
-    if not isinstance(source, dict):
-        raise ProviderError("provider broker credential source is invalid")
-    kind = source.get("kind")
-    if kind == "kimi-code-oauth-file-v1":
-        if set(source) != {"kind"}:
-            raise ProviderError("Kimi OAuth credential source has an invalid shape")
-        credential_source = {"kind": kind}
-    elif kind == "macos-keychain-generic-password-v1":
-        if set(source) != {"kind", "service", "account"}:
-            raise ProviderError("Keychain credential source has an invalid shape")
-        service = source.get("service")
-        account = source.get("account")
-        if not isinstance(service, str) or not service or len(service) > 128:
-            raise ProviderError("Keychain credential service is invalid")
-        if not isinstance(account, str) or not account or len(account) > 128:
-            raise ProviderError("Keychain credential account is invalid")
-        credential_source = {"kind": kind, "service": service, "account": account}
-    else:
-        raise ProviderError("provider broker credential source is not published")
+    if source != {"kind": "kimi-code-oauth-file-v1"}:
+        raise ProviderError("provider broker credential source is not the fixed Kimi OAuth source")
+    if upstream.rstrip("/") != KIMI_CODE_OAUTH_UPSTREAM:
+        raise ProviderError("Kimi OAuth broker upstream is not the fixed Kimi Code endpoint")
     return BrokerPolicy(
         guest_broker_host=guest_host,
-        upstream_base_url=upstream.rstrip("/"),
-        credential_source=credential_source,
+        upstream_base_url=KIMI_CODE_OAUTH_UPSTREAM,
+        credential_source={"kind": "kimi-code-oauth-file-v1"},
     )
 
 
@@ -363,58 +620,31 @@ def _read_broker_credential(policy: BrokerPolicy) -> str:
     It is read by the trusted host provider only and never copied, logged, or
     encoded into an attestation/receipt.
     """
-    kind = policy.credential_source["kind"]
-    if kind == "kimi-code-oauth-file-v1":
-        source = _home_directory() / ".kimi-code" / "credentials" / "kimi-code.json"
-        _secure_regular_file(source, "Kimi OAuth credential", require_private=True)
-        value = _load_json_no_duplicates(source, "Kimi OAuth credential")
-        token = value.get("access_token")
-        expires_at = value.get("expires_at")
-        if not isinstance(token, str) or not token or len(token) > 16_384:
-            raise ProviderError("Kimi OAuth credential has no usable access token")
-        if not isinstance(expires_at, (int, float)) or isinstance(expires_at, bool):
-            raise ProviderError("Kimi OAuth credential has no expiry")
-        # Kimi stores Unix milliseconds in current releases. Accept seconds
-        # too so an older credential file fails only when genuinely expired.
-        expiry_seconds = float(expires_at) / (1000 if float(expires_at) > 10_000_000_000 else 1)
-        if expiry_seconds <= _utc_now().timestamp() + 60:
-            raise ProviderError("Kimi OAuth credential expires too soon")
-        return token
-    if kind == "macos-keychain-generic-password-v1":
-        command = [
-            "/usr/bin/security",
-            "find-generic-password",
-            "-s",
-            policy.credential_source["service"],
-            "-a",
-            policy.credential_source["account"],
-            "-w",
-        ]
-        try:
-            result = subprocess.run(
-                command,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True,
-                timeout=5,
-                env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
-                check=False,
-            )
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            raise ProviderError("Keychain credential is unavailable") from exc
-        token = result.stdout.rstrip("\r\n") if result.returncode == 0 else ""
-        if not token or len(token) > 16_384 or "\x00" in token:
-            raise ProviderError("Keychain credential is unavailable")
-        return token
-    raise ProviderError("provider broker credential source is not published")
+    _require_fixed_kimi_broker_policy(policy)
+    source = _home_directory() / ".kimi-code" / "credentials" / "kimi-code.json"
+    _secure_regular_file(source, "Kimi OAuth credential", require_private=True)
+    value = _load_json_no_duplicates(source, "Kimi OAuth credential")
+    token = value.get("access_token")
+    expires_at = value.get("expires_at")
+    if not isinstance(token, str) or not token or len(token) > 16_384:
+        raise ProviderError("Kimi OAuth credential has no usable access token")
+    if not isinstance(expires_at, (int, float)) or isinstance(expires_at, bool):
+        raise ProviderError("Kimi OAuth credential has no expiry")
+    # Kimi releases have used both Unix-second and Unix-millisecond expiry
+    # values. Accept either representation, but reserve enough remaining life
+    # for the complete bounded broker capability rather than only its startup.
+    expiry_seconds = float(expires_at) / (1000 if float(expires_at) > 10_000_000_000 else 1)
+    if expiry_seconds <= _utc_now().timestamp() + MIN_BROKER_CREDENTIAL_LIFETIME_SECONDS:
+        raise ProviderError("Kimi OAuth credential lacks a full broker lease lifetime")
+    return token
 
 
 class _BrokerServer(http.server.ThreadingHTTPServer):
     # The process owns this server and joins it before discarding the raw
     # credential. No request logs are emitted because request targets may carry
     # task-derived data.
-    daemon_threads = True
+    daemon_threads = False
+    block_on_close = True
     allow_reuse_address = False
 
     def __init__(
@@ -423,11 +653,229 @@ class _BrokerServer(http.server.ThreadingHTTPServer):
         policy: BrokerPolicy,
         lease: str,
         credential: str,
+        identity: KimiClientIdentity,
     ) -> None:
+        _require_fixed_kimi_broker_policy(policy)
+        if not isinstance(credential, str) or not credential:
+            raise ProviderError("broker credential is unavailable")
         self.policy = policy
-        self.lease = lease
-        self.credential = credential
+        self.lease: str | None = lease
+        self.credential: str | None = credential
+        self.identity = identity
+        self._request_count = 0
+        self._state_lock = threading.Lock()
+        self._accepting = True
+        self._connection_slots = threading.BoundedSemaphore(MAX_BROKER_CONCURRENT_CONNECTIONS)
+        self._active_sockets: set[socket.socket] = set()
+        self._active_upstreams: set[http.client.HTTPSConnection] = set()
         super().__init__(address, _BrokerHandler)
+
+    def get_request(self) -> tuple[socket.socket, tuple[str, int]]:
+        request, address = super().get_request()
+        request.settimeout(BROKER_CLIENT_TIMEOUT_SECONDS)
+        return request, address
+
+    @staticmethod
+    def _close_request_socket(request: socket.socket, *, saturated: bool) -> None:
+        try:
+            request.settimeout(1)
+            if saturated:
+                request.sendall(
+                    b"HTTP/1.1 429 Too Many Requests\r\n"
+                    b"Connection: close\r\nContent-Length: 0\r\n\r\n"
+                )
+        except OSError:
+            pass
+        finally:
+            try:
+                request.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            try:
+                request.close()
+            except OSError:
+                pass
+
+    def process_request(self, request: socket.socket, client_address: tuple[str, int]) -> None:
+        # Reserve capacity before a handler thread can block on incomplete
+        # headers or bodies. Saturated peers receive no credential-bearing work.
+        if not self._connection_slots.acquire(blocking=False):
+            self._close_request_socket(request, saturated=True)
+            return
+        registered = False
+        try:
+            with self._state_lock:
+                if self._accepting:
+                    self._active_sockets.add(request)
+                    registered = True
+            if not registered:
+                self._close_request_socket(request, saturated=False)
+                self._connection_slots.release()
+                return
+            super().process_request(request, client_address)
+        except BaseException:
+            if registered:
+                with self._state_lock:
+                    self._active_sockets.discard(request)
+            self._connection_slots.release()
+            raise
+
+    def process_request_thread(self, request: socket.socket, client_address: tuple[str, int]) -> None:
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            with self._state_lock:
+                self._active_sockets.discard(request)
+            self._connection_slots.release()
+
+    def reserve_request(self) -> bool:
+        """Consume one broker request from this short-lived lease budget."""
+        with self._state_lock:
+            if not self._accepting or self._request_count >= MAX_BROKER_REQUESTS:
+                return False
+            self._request_count += 1
+            return True
+
+    def authorize_lease(self, authorization: str) -> bool:
+        with self._state_lock:
+            return bool(
+                self._accepting
+                and self.lease is not None
+                and hmac.compare_digest(authorization, f"Bearer {self.lease}")
+            )
+
+    def credential_for_request(self) -> str | None:
+        with self._state_lock:
+            if not self._accepting or self.credential is None:
+                return None
+            return self.credential
+
+    def register_upstream(self, connection: http.client.HTTPSConnection) -> bool:
+        with self._state_lock:
+            if not self._accepting:
+                return False
+            self._active_upstreams.add(connection)
+            return True
+
+    def unregister_upstream(self, connection: http.client.HTTPSConnection) -> None:
+        with self._state_lock:
+            self._active_upstreams.discard(connection)
+
+    def revoke(self) -> None:
+        """Stop accepting and close all in-flight credential-bearing channels."""
+        with self._state_lock:
+            self._accepting = False
+            self.lease = None
+            self.credential = None
+            sockets = tuple(self._active_sockets)
+            upstreams = tuple(self._active_upstreams)
+        for connection in upstreams:
+            try:
+                connection.close()
+            except OSError:
+                pass
+        for request in sockets:
+            self._close_request_socket(request, saturated=False)
+
+
+def _is_loopback_peer(address: str) -> bool:
+    try:
+        return ipaddress.ip_address(address).is_loopback
+    except ValueError:
+        return False
+
+
+def _reject_json_constant(_value: str) -> None:
+    raise ValueError("JSON constants are not accepted")
+
+
+def _bounded_json(value: Any, depth: int = 0) -> bool:
+    """Bound an already-decoded request before it reaches the Kimi endpoint."""
+    if depth > MAX_BROKER_JSON_DEPTH:
+        return False
+    if value is None or isinstance(value, bool):
+        return True
+    if isinstance(value, int):
+        return -(2**53) < value < 2**53
+    if isinstance(value, float):
+        return value == value and value not in {float("inf"), float("-inf")}
+    if isinstance(value, str):
+        return len(value.encode("utf-8")) <= MAX_BROKER_JSON_STRING_BYTES
+    if isinstance(value, list):
+        return len(value) <= MAX_BROKER_JSON_ARRAY_ITEMS and all(
+            _bounded_json(item, depth + 1) for item in value
+        )
+    if isinstance(value, dict):
+        return len(value) <= MAX_BROKER_JSON_OBJECT_ENTRIES and all(
+            isinstance(key, str)
+            and len(key) <= 256
+            and _bounded_json(item, depth + 1)
+            for key, item in value.items()
+        )
+    return False
+
+
+def _validated_kimi_chat_request(body: bytes) -> None:
+    """Accept only the version-pinned Kimi Chat Completions wire contract."""
+    try:
+        value = json.loads(
+            body.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_pairs,
+            parse_constant=_reject_json_constant,
+        )
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise ProviderError("broker request JSON is invalid") from exc
+    fields = {
+        "max_completion_tokens",
+        "messages",
+        "model",
+        "prompt_cache_key",
+        "stream",
+        "stream_options",
+        "thinking",
+        "tools",
+    }
+    if not isinstance(value, dict) or set(value) != fields or not _bounded_json(value):
+        raise ProviderError("broker request JSON shape is invalid")
+    if value.get("model") != "kimi-for-coding" or value.get("stream") is not True:
+        raise ProviderError("broker request model contract is invalid")
+    completion_tokens = value.get("max_completion_tokens")
+    if (
+        not isinstance(completion_tokens, int)
+        or isinstance(completion_tokens, bool)
+        or not 1 <= completion_tokens <= 262_144
+    ):
+        raise ProviderError("broker request completion budget is invalid")
+    messages = value.get("messages")
+    if (
+        not isinstance(messages, list)
+        or not messages
+        or len(messages) > MAX_BROKER_MESSAGES
+        or any(not isinstance(message, dict) for message in messages)
+    ):
+        raise ProviderError("broker request messages are invalid")
+    tools = value.get("tools")
+    if (
+        not isinstance(tools, list)
+        or len(tools) > MAX_BROKER_TOOLS
+        or any(not isinstance(tool, dict) for tool in tools)
+    ):
+        raise ProviderError("broker request tools are invalid")
+    prompt_cache_key = value.get("prompt_cache_key")
+    if not isinstance(prompt_cache_key, str) or not prompt_cache_key or len(prompt_cache_key) > 512:
+        raise ProviderError("broker request cache key is invalid")
+    stream_options = value.get("stream_options")
+    if stream_options != {"include_usage": True}:
+        raise ProviderError("broker request stream contract is invalid")
+    thinking = value.get("thinking")
+    if not isinstance(thinking, dict) or set(thinking) - {"type", "keep", "effort"}:
+        raise ProviderError("broker request thinking contract is invalid")
+    if thinking.get("type") not in {"enabled", "disabled"}:
+        raise ProviderError("broker request thinking contract is invalid")
+    for key in ("keep", "effort"):
+        item = thinking.get(key)
+        if item is not None and (not isinstance(item, str) or len(item) > 32):
+            raise ProviderError("broker request thinking contract is invalid")
 
 
 class _BrokerHandler(http.server.BaseHTTPRequestHandler):
@@ -443,69 +891,107 @@ class _BrokerHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802 - HTTP server API spelling
-        self._proxy()
+        self._reject(405)
 
     def do_POST(self) -> None:  # noqa: N802 - HTTP server API spelling
         self._proxy()
 
     def _proxy(self) -> None:
-        if self.command not in {"GET", "POST"}:
+        if self.command != "POST":
             self._reject(405)
             return
-        authorization = self.headers.get("Authorization", "")
-        if not hmac.compare_digest(authorization, f"Bearer {self.server.lease}"):
+        if not _is_loopback_peer(self.client_address[0]):
             self._reject(403)
             return
+        if self.path != KIMI_CHAT_COMPLETIONS_PATH:
+            self._reject(404)
+            return
+        authorization_values = self.headers.get_all("Authorization") or []
+        if len(authorization_values) != 1:
+            self._reject(403)
+            return
+        authorization = authorization_values[0]
+        if not self.server.authorize_lease(authorization):
+            self._reject(403)
+            return
+        content_types = self.headers.get_all("Content-Type") or []
+        if content_types != ["application/json"]:
+            self._reject(415)
+            return
+        if self.headers.get_all("Transfer-Encoding") or self.headers.get_all("Content-Encoding"):
+            self._reject(400)
+            return
+        lengths = self.headers.get_all("Content-Length") or []
+        if len(lengths) != 1 or re.fullmatch(r"(?:0|[1-9][0-9]{0,7})", lengths[0]) is None:
+            self._reject(400)
+            return
         try:
-            length = int(self.headers.get("Content-Length", "0"))
+            length = int(lengths[0])
         except ValueError:
             self._reject(400)
             return
-        if length < 0 or length > 32 * 1024 * 1024:
+        if length <= 0 or length > MAX_BROKER_REQUEST_BYTES:
             self._reject(413)
             return
+        # Spend the capability before reading an attacker-controlled body so a
+        # guest process cannot use malformed requests for unbounded host work.
+        if not self.server.reserve_request():
+            self._reject(429)
+            return
         try:
-            body = self.rfile.read(length) if length else b""
+            body = self.rfile.read(length)
         except OSError:
             self._reject(400)
             return
-        upstream = urllib.parse.urlsplit(self.server.policy.upstream_base_url)
-        request_path = urllib.parse.urlsplit(self.path)
-        if request_path.scheme or request_path.netloc or not request_path.path.startswith("/"):
+        if len(body) != length:
             self._reject(400)
             return
-        upstream_path = (upstream.path.rstrip("/") + request_path.path) or "/"
-        if request_path.query:
-            upstream_path += "?" + request_path.query
+        try:
+            _validated_kimi_chat_request(body)
+        except ProviderError:
+            self._reject(400)
+            return
+        credential = self.server.credential_for_request()
+        if credential is None:
+            self._reject(503)
+            return
+        upstream = urllib.parse.urlsplit(self.server.policy.upstream_base_url)
+        upstream_path = upstream.path.rstrip("/") + KIMI_CHAT_COMPLETIONS_PATH
         headers: dict[str, str] = {
             "Host": upstream.netloc,
-            "Authorization": f"Bearer {self.server.credential}",
-            "Accept": self.headers.get("Accept", "application/json"),
-            "Content-Type": self.headers.get("Content-Type", "application/json"),
-            "User-Agent": self.headers.get("User-Agent", "harness-vm-v1"),
+            "Authorization": f"Bearer {credential}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": self.server.identity.user_agent,
+            "X-Msh-Platform": self.server.identity.x_msh_platform,
+            "X-Msh-Version": self.server.identity.x_msh_version,
             "Content-Length": str(len(body)),
         }
-        if self.headers.get("Accept-Encoding"):
-            headers["Accept-Encoding"] = self.headers["Accept-Encoding"]
+        connection: http.client.HTTPSConnection | None = None
         try:
             connection = http.client.HTTPSConnection(
                 upstream.hostname,
                 upstream.port or 443,
-                timeout=60,
+                timeout=BROKER_UPSTREAM_TIMEOUT_SECONDS,
             )
+            if not self.server.register_upstream(connection):
+                raise ProviderError("broker lease is no longer available")
             connection.request(self.command, upstream_path, body=body, headers=headers)
             response = connection.getresponse()
-            response_body = response.read(32 * 1024 * 1024 + 1)
-            if len(response_body) > 32 * 1024 * 1024:
+            response_body = response.read(MAX_BROKER_RESPONSE_BYTES + 1)
+            if len(response_body) > MAX_BROKER_RESPONSE_BYTES:
                 raise ProviderError("broker upstream response exceeds its limit")
         except (OSError, http.client.HTTPException, ProviderError):
             self._reject(502)
             return
         finally:
             try:
-                connection.close()
-            except (UnboundLocalError, OSError):
+                if connection is not None:
+                    self.server.unregister_upstream(connection)
+                    connection.close()
+            except OSError:
                 pass
+            credential = None
         self.send_response(response.status)
         for key, value in response.getheaders():
             lowered = key.lower()
@@ -519,6 +1005,7 @@ class _BrokerHandler(http.server.BaseHTTPRequestHandler):
                 "trailer",
                 "transfer-encoding",
                 "upgrade",
+                "set-cookie",
             }:
                 continue
             self.send_header(key, value)
@@ -533,8 +1020,9 @@ class _BrokerHandler(http.server.BaseHTTPRequestHandler):
 class BrokerLease:
     """Own one loopback-to-guest broker lifetime and short-lived capability."""
 
-    def __init__(self, policy: BrokerPolicy) -> None:
+    def __init__(self, policy: BrokerPolicy, identity: KimiClientIdentity) -> None:
         self.policy = policy
+        self.identity = identity
         self._credential: str | None = None
         self._server: _BrokerServer | None = None
         self._thread: threading.Thread | None = None
@@ -544,10 +1032,12 @@ class BrokerLease:
     def __enter__(self) -> "BrokerLease":
         self._credential = _read_broker_credential(self.policy)
         self.lease = secrets.token_urlsafe(48)
-        # Lima's usernet gateway is not loopback from the guest. The per-run
-        # lease is the application-layer capability; the VM firewall is added
-        # before the worker starts and permits only this gateway+port route.
-        self._server = _BrokerServer(("0.0.0.0", 0), self.policy, self.lease, self._credential)
+        # Lima translates its plain-usernet gateway to host loopback. Binding
+        # only there keeps the short-lived broker off every LAN interface;
+        # guest egress still targets the fixed gateway below.
+        self._server = _BrokerServer(
+            (BROKER_LISTEN_HOST, 0), self.policy, self.lease, self._credential, self.identity
+        )
         self.port = int(self._server.server_address[1])
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
         self._thread.start()
@@ -560,14 +1050,19 @@ class BrokerLease:
         return f"http://{self.policy.guest_broker_host}:{self.port}"
 
     def __exit__(self, _exc_type: Any, _exc: Any, _traceback: Any) -> None:
-        if self._server is not None:
-            self._server.shutdown()
-            self._server.server_close()
-        if self._thread is not None:
-            self._thread.join(timeout=2)
-        self._credential = None
-        self.lease = None
-        self.port = None
+        try:
+            if self._server is not None:
+                self._server.revoke()
+                self._server.shutdown()
+                self._server.server_close()
+            if self._thread is not None:
+                self._thread.join(timeout=BROKER_CLIENT_TIMEOUT_SECONDS + 2)
+        finally:
+            self._credential = None
+            self.lease = None
+            self.port = None
+            self._server = None
+            self._thread = None
 
 
 def _run_vm(
@@ -575,9 +1070,12 @@ def _run_vm(
     command: list[str],
     *,
     input_bytes: bytes | None = None,
+    input_path: Path | None = None,
     timeout: int = 90,
 ) -> subprocess.CompletedProcess[bytes]:
     """Run one fixed plain-Lima guest command without caller environment."""
+    if input_bytes is not None and input_path is not None:
+        raise ProviderError("VM provider input source is ambiguous")
     argv = [
         str(configuration.executable),
         "shell",
@@ -585,21 +1083,72 @@ def _run_vm(
         configuration.profile,
         *command,
     ]
+    options: dict[str, Any] = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.DEVNULL,
+        "timeout": timeout,
+        "env": _lima_environment(),
+        "check": False,
+    }
+    descriptor: int | None = None
     try:
-        return subprocess.run(
-            argv,
-            input=input_bytes,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            timeout=timeout,
-            # limactl aborts outright without HOME. Supply the passwd-derived
-            # home, never the ambient variable a dispatched CLI may have
-            # rewritten for its own sandbox.
-            env={"HOME": str(_home_directory()), "PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
-            check=False,
-        )
+        if input_path is None:
+            return subprocess.run(argv, input=input_bytes, **options)
+        _secure_regular_file(input_path, "VM provider input", require_private=True)
+        initial = input_path.lstat()
+        descriptor = os.open(input_path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        opened = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_dev != initial.st_dev
+            or opened.st_ino != initial.st_ino
+            or opened.st_size != initial.st_size
+        ):
+            raise ProviderError("VM provider input changed before streaming")
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            result = subprocess.run(argv, stdin=stream, **options)
+        final = os.fstat(descriptor)
+        if (
+            final.st_dev != opened.st_dev
+            or final.st_ino != opened.st_ino
+            or final.st_size != opened.st_size
+        ):
+            raise ProviderError("VM provider input changed during streaming")
+        return result
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ProviderError("VM provider command is unavailable") from exc
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def _validate_live_image_binding(
+    runtime: dict[str, Any], configuration: ProviderConfiguration
+) -> None:
+    """Bind the configured local image hash to Lima's selected guest image.
+
+    Lima reports all candidate images in profile order. The first candidate for
+    the running architecture is the one the instance selected, so accepting a
+    later matching entry would let an unpinned earlier fallback make the
+    attestation lie about the boot image.
+    """
+    images = runtime.get("images")
+    if not isinstance(images, list):
+        raise ProviderError("VM provider image configuration is malformed")
+    selected: dict[str, Any] | None = None
+    for item in images:
+        if not isinstance(item, dict):
+            raise ProviderError("VM provider image configuration is malformed")
+        if item.get("arch") == "aarch64":
+            selected = item
+            break
+    if selected is None:
+        raise ProviderError("VM provider has no aarch64 image binding")
+    if (
+        selected.get("location") != configuration.image_location
+        or selected.get("digest") != f"sha256:{configuration.image_sha256}"
+    ):
+        raise ProviderError("VM provider live image does not match its configured image")
 
 
 def _validated_lima_status(configuration: ProviderConfiguration) -> dict[str, Any]:
@@ -611,10 +1160,7 @@ def _validated_lima_status(configuration: ProviderConfiguration) -> dict[str, An
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             timeout=15,
-            # limactl aborts outright without HOME. Supply the passwd-derived
-            # home, never the ambient variable a dispatched CLI may have
-            # rewritten for its own sandbox.
-            env={"HOME": str(_home_directory()), "PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
+            env=_lima_environment(),
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -658,6 +1204,7 @@ def _validated_lima_status(configuration: ProviderConfiguration) -> dict[str, An
         or containerd.get("user") is not False
     ):
         raise ProviderError("VM provider runtime no-host-input contract drifted")
+    _validate_live_image_binding(runtime, configuration)
     return observed
 
 
@@ -674,6 +1221,7 @@ def _assert_vm_ready(configuration: ProviderConfiguration) -> None:
             f"id {WORKER_USER} >/dev/null; "
             f"! sudo -n -u {WORKER_USER} -- sudo -n true; "
             "command -v systemd-run >/dev/null; command -v systemctl >/dev/null; "
+            "test -x /usr/bin/setpriv; test ! -L /usr/bin/setpriv; "
             "awk 'BEGIN { bad=0 } { pairs=split($0, pair, \" - \" ); "
             "if (pairs != 2) { bad=1; next } "
             "split(pair[2], fields, \" \" ); typ=fields[1]; point=$5; "
@@ -712,6 +1260,26 @@ def _set_guest_egress_policy(
     result = _run_vm(configuration, ["sh", "-ec", script], timeout=30)
     if result.returncode != 0:
         raise ProviderError("VM provider could not install broker-only egress policy")
+
+
+def _reset_guest_egress_baseline(configuration: ProviderConfiguration) -> None:
+    """Install the provider-defined default-deny state for the shared VM.
+
+    A guest-produced ``iptables-save`` payload must never be replayed by the
+    host provider. Every launch begins and ends at this fixed baseline.
+    """
+    script = " ".join(
+        (
+            "set -eu;",
+            "sudo -n iptables -w -F OUTPUT;",
+            "sudo -n iptables -w -P OUTPUT DROP;",
+            "sudo -n iptables -w -A OUTPUT -o lo -j ACCEPT;",
+            "sudo -n iptables -w -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT;",
+        )
+    )
+    result = _run_vm(configuration, ["sh", "-ec", script], timeout=30)
+    if result.returncode != 0:
+        raise ProviderError("VM provider could not reset its firewall baseline")
 
 
 def _safe_artifact_relative(envelope: dict[str, Any]) -> str:
@@ -763,13 +1331,13 @@ def _load_launch_target(path: Path, expected_provenance: str) -> dict[str, Any]:
     return target
 
 
-def _bundle_protocol_commands(bundle: Path) -> dict[str, tuple[str, ...]]:
-    """Read the signed command table embedded in the staged CLI bundle.
+def _bundle_manifest(bundle: Path) -> CliBundleManifest:
+    """Read the signed command table and Kimi identity from the staged bundle.
 
     Project manifests can describe a compatible bridge, but they cannot select
-    an executable.  The command is bound to the hashed provider bundle so a
-    future CLI joins declaratively only after its released bundle adds the
-    matching published protocol entry.
+    an executable or an upstream client identity. Both are bound to the hashed
+    provider bundle so a future CLI joins only after a released bundle adds its
+    matching command and identity declaration.
     """
     _secure_regular_file(bundle, "provider CLI bundle")
     found: bytes | None = None
@@ -808,7 +1376,11 @@ def _bundle_protocol_commands(bundle: Path) -> dict[str, tuple[str, ...]]:
         value = json.loads(found.decode("utf-8"), object_pairs_hook=lambda pairs: _reject_duplicate_pairs(pairs))
     except (UnicodeDecodeError, ValueError) as exc:
         raise ProviderError("provider CLI bundle manifest is invalid") from exc
-    if not isinstance(value, dict) or set(value) != {"version", "protocol_commands"}:
+    if not isinstance(value, dict) or set(value) != {
+        "version",
+        "protocol_commands",
+        "kimi_identity",
+    }:
         raise ProviderError("provider CLI bundle manifest has an invalid shape")
     if value.get("version") != CLI_BUNDLE_MANIFEST_VERSION:
         raise ProviderError("provider CLI bundle manifest version is invalid")
@@ -839,7 +1411,68 @@ def _bundle_protocol_commands(bundle: Path) -> dict[str, tuple[str, ...]]:
         executable = entries.get(f"bin/{command[0]}")
         if executable is None or not executable.isfile() or not executable.mode & 0o111:
             raise ProviderError("provider CLI bundle lacks a command executable")
-    return result
+    if result != {"acp-native-agent/v1": ("kimi", "acp")}:
+        raise ProviderError("provider CLI bundle does not declare the fixed Kimi ACP command")
+    raw_identity = value.get("kimi_identity")
+    if not isinstance(raw_identity, dict) or set(raw_identity) != {
+        "user_agent",
+        "x_msh_platform",
+        "x_msh_version",
+    }:
+        raise ProviderError("provider CLI bundle Kimi identity is invalid")
+    user_agent = raw_identity.get("user_agent")
+    platform = raw_identity.get("x_msh_platform")
+    version = raw_identity.get("x_msh_version")
+    if (
+        not isinstance(user_agent, str)
+        or not isinstance(platform, str)
+        or not isinstance(version, str)
+        or any(
+            not value
+            or len(value) > 128
+            or any(ord(character) < 0x20 or ord(character) > 0x7E for character in value)
+            for value in (user_agent, platform, version)
+        )
+        or platform != "kimi_code_cli"
+        or KIMI_VERSION.fullmatch(version) is None
+        or user_agent != f"kimi-code-cli/{version}"
+    ):
+        raise ProviderError("provider CLI bundle Kimi identity is invalid")
+    return CliBundleManifest(
+        protocol_commands=result,
+        kimi_identity=KimiClientIdentity(
+            user_agent=user_agent,
+            x_msh_platform=platform,
+            x_msh_version=version,
+        ),
+    )
+
+
+def _bundle_protocol_commands(bundle: Path) -> dict[str, tuple[str, ...]]:
+    return _bundle_manifest(bundle).protocol_commands
+
+
+def _bundle_kimi_identity(bundle: Path) -> KimiClientIdentity:
+    return _bundle_manifest(bundle).kimi_identity
+
+
+def _catalog_supported_routes(bundle: Path) -> list[dict[str, Any]]:
+    """Publish only routes executable by this bundle and its Kimi broker."""
+    commands = _bundle_protocol_commands(bundle)
+    command = commands.get("acp-native-agent/v1")
+    if command != ("kimi", "acp"):
+        raise ProviderError("provider CLI bundle does not expose a supported Kimi ACP route")
+    return [
+        {
+            "tool": "kimi",
+            "protocol": {
+                "kind": "acp-native-agent/v1",
+                "command": list(command),
+                "request_delivery": "stdin",
+                "response_format": "json",
+            },
+        }
+    ]
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -852,17 +1485,150 @@ def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def _validate_target_bundle_command(
-    configuration: ProviderConfiguration, target: dict[str, Any]
+    configuration: ProviderConfiguration,
+    target: dict[str, Any],
+    *,
+    cli_bundle: Path | None = None,
 ) -> tuple[str, ...]:
     protocol = target.get("bridge_protocol")
     if not isinstance(protocol, dict):
         raise ProviderError("bridge target protocol is invalid")
-    commands = _bundle_protocol_commands(configuration.cli_bundle)
+    commands = _bundle_protocol_commands(cli_bundle or configuration.cli_bundle)
     expected = commands.get(protocol.get("kind"))
     command = protocol.get("command")
     if expected is None or not isinstance(command, list) or tuple(command) != expected:
         raise ProviderError("bridge target command is not bound to the provider CLI bundle")
     return expected
+
+
+def _excluded_worker_source_path(path: str) -> bool:
+    """Keep host-control and CLI state out of every worker-visible tree."""
+    parts = tuple(path.split("/"))
+    return any(
+        part.casefold() in {"agents.md", ".agents", ".kimi-code"}
+        for part in parts
+    )
+
+
+def _stream_commissioned_git_archive(
+    project_root: Path,
+    ref: str,
+    output: Any,
+    *,
+    label: str,
+) -> None:
+    """Stream a bounded immutable Git tar without materializing it in memory."""
+    try:
+        process = subprocess.Popen(
+            ["git", "-C", str(project_root), "archive", "--format=tar", ref],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            env={
+                "PATH": "/usr/bin:/bin",
+                "LANG": "C.UTF-8",
+                "LC_ALL": "C.UTF-8",
+                "GIT_CONFIG_NOSYSTEM": "1",
+                "GIT_CONFIG_GLOBAL": os.devnull,
+            },
+        )
+    except OSError as exc:
+        raise ProviderError(f"{label} is unavailable") from exc
+
+    stream = process.stdout
+    if stream is None:
+        try:
+            process.kill()
+            process.wait(timeout=1)
+        except OSError:
+            pass
+        raise ProviderError(f"{label} is unavailable")
+    deadline = time.monotonic() + 60
+    total = 0
+    try:
+        descriptor = stream.fileno()
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(process.args, 60)
+            readable, _unused_writable, _unused_errors = select.select(
+                [descriptor], [], [], min(1.0, remaining)
+            )
+            if not readable:
+                continue
+            block = os.read(
+                descriptor,
+                min(1024 * 1024, MAX_SOURCE_ARCHIVE_BYTES - total + 1),
+            )
+            if not block:
+                break
+            total += len(block)
+            if total > MAX_SOURCE_ARCHIVE_BYTES:
+                raise ProviderError(f"{label} exceeds its byte limit")
+            if output.write(block) != len(block):
+                raise OSError("source archive write made no progress")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(process.args, 60)
+        if process.wait(timeout=remaining) != 0 or total == 0:
+            raise ProviderError(f"{label} is unavailable")
+    except ProviderError:
+        raise
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ProviderError(f"{label} is unavailable") from exc
+    finally:
+        try:
+            stream.close()
+        except OSError:
+            pass
+        if process.poll() is None:
+            try:
+                process.kill()
+            except OSError:
+                pass
+            try:
+                process.wait(timeout=1)
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+
+
+@contextlib.contextmanager
+def _commissioned_source_archive(
+    project_root: Path,
+    ref: str,
+    temporary_parent: Path,
+    *,
+    label: str,
+) -> Iterator[Any]:
+    """Yield one bounded, private raw Git tar stream positioned at byte zero."""
+    _secure_directory(temporary_parent, "provider source archive parent")
+    try:
+        with tempfile.TemporaryFile(mode="w+b", dir=str(temporary_parent)) as source_stream:
+            _stream_commissioned_git_archive(project_root, ref, source_stream, label=label)
+            source_stream.seek(0)
+            yield source_stream
+    except OSError as exc:
+        raise ProviderError(f"{label} is unavailable") from exc
+
+
+def _bounded_source_archive_members(
+    archive: tarfile.TarFile,
+    *,
+    label: str,
+) -> Iterator[tarfile.TarInfo]:
+    entries = 0
+    total = 0
+    for member in archive:
+        entries += 1
+        if entries > MAX_SOURCE_ARCHIVE_ENTRIES:
+            raise ProviderError(f"{label} exceeds its entry limit")
+        if member.isfile():
+            if member.size < 0 or member.size > MAX_SOURCE_UNPACKED_BYTES:
+                raise ProviderError(f"{label} contains an oversized entry")
+            total += member.size
+            if total > MAX_SOURCE_UNPACKED_BYTES:
+                raise ProviderError(f"{label} exceeds its unpacked byte limit")
+        yield member
 
 
 def _create_copyin_archive(
@@ -872,51 +1638,59 @@ def _create_copyin_archive(
     envelope: Path,
     target: Path,
     cli_bundle: Path,
+    runners: Mapping[str, Path],
     destination: Path,
 ) -> None:
-    """Create a source-only VM input archive without a checkout or `.git`."""
+    """Create a source-only VM input archive from immutable input snapshots."""
+    _secure_directory(destination.parent, "provider copy-in archive parent")
     try:
-        archived = subprocess.run(
-            ["git", "-C", str(project_root), "archive", "--format=tar", ref],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            timeout=60,
-            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull},
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ProviderError("cannot snapshot the commissioned source") from exc
-    if archived.returncode != 0 or not archived.stdout:
-        raise ProviderError("cannot snapshot the commissioned source")
-    try:
-        with tarfile.open(fileobj=io.BytesIO(archived.stdout), mode="r:") as source, tarfile.open(
-            destination, mode="w:gz", format=tarfile.PAX_FORMAT
-        ) as output:
-            for member in source.getmembers():
-                if (
-                    member.name == ".git"
-                    or member.name.startswith(".git/")
-                    or member.name.startswith("/")
-                    or any(piece in {"", ".", ".."} for piece in member.name.split("/"))
-                    or member.issym()
-                    or member.islnk()
-                    or not (member.isfile() or member.isdir())
+        with _commissioned_source_archive(
+            project_root,
+            ref,
+            destination.parent,
+            label="commissioned source snapshot",
+        ) as source_stream:
+            with tarfile.open(fileobj=source_stream, mode="r:") as source, tarfile.open(
+                destination, mode="w:gz", format=tarfile.PAX_FORMAT
+            ) as output:
+                for member in _bounded_source_archive_members(
+                    source, label="commissioned source snapshot"
                 ):
-                    raise ProviderError("source snapshot contains an unsafe entry")
-                source_file = source.extractfile(member) if member.isfile() else None
-                copied = copy.copy(member)
-                copied.name = f"source/{member.name}"
-                output.addfile(copied, source_file)
-            output.add(str(envelope), arcname=".harness-envelope.json", recursive=False)
-            output.add(str(target), arcname=".harness-target.json", recursive=False)
-            _secure_regular_file(cli_bundle, "provider CLI bundle")
-            output.add(str(cli_bundle), arcname=".harness-cli-bundle.tar.gz", recursive=False)
-            transports = Path(__file__).resolve().parent
-            for name in ("session-bridge.py", "session_bridge_kimi.py", "vm-bridge-worker.py"):
-                runner = transports / name
-                _secure_regular_file(runner, f"framework VM runner {name}")
-                output.add(str(runner), arcname=f".harness-runner/{name}", recursive=False)
+                    if (
+                        member.name == ".git"
+                        or member.name.startswith(".git/")
+                        or member.name.startswith("/")
+                        or any(piece in {"", ".", ".."} for piece in member.name.split("/"))
+                        or member.issym()
+                        or member.islnk()
+                        or not (member.isfile() or member.isdir())
+                    ):
+                        raise ProviderError("source snapshot contains an unsafe entry")
+                    if _excluded_worker_source_path(member.name):
+                        continue
+                    source_file = source.extractfile(member) if member.isfile() else None
+                    copied = copy.copy(member)
+                    copied.name = f"source/{member.name}"
+                    output.addfile(copied, source_file)
+                _secure_regular_file(envelope, "provider envelope snapshot", require_private=True)
+                _secure_regular_file(target, "provider target snapshot", require_private=True)
+                _secure_regular_file(cli_bundle, "provider CLI bundle snapshot", require_private=True)
+                output.add(str(envelope), arcname=".harness-envelope.json", recursive=False)
+                output.add(str(target), arcname=".harness-target.json", recursive=False)
+                output.add(str(cli_bundle), arcname=".harness-cli-bundle.tar.gz", recursive=False)
+                if set(runners) != set(RUNNER_NAMES):
+                    raise ProviderError("provider runner snapshot set is invalid")
+                for name in RUNNER_NAMES:
+                    runner = runners[name]
+                    if not isinstance(runner, Path):
+                        raise ProviderError("provider runner snapshot set is invalid")
+                    _secure_regular_file(runner, f"framework VM runner snapshot {name}", require_private=True)
+                    output.add(str(runner), arcname=f".harness-runner/{name}", recursive=False)
+        # tarfile.open honours the process umask, so a standard 022 leaves the
+        # archive group/world readable and _copy_archive_to_guest's private
+        # check rejects it. The archive already lives in a 0700 run root; make
+        # the file itself private so the check passes on any umask.
+        os.chmod(destination, 0o600)
     except (OSError, tarfile.TarError) as exc:
         raise ProviderError("cannot create VM copy-in archive") from exc
 
@@ -927,10 +1701,13 @@ def _copy_archive_to_guest(
     guest_root: str,
     cli_executables: tuple[str, ...],
 ) -> None:
+    _secure_regular_file(archive, "VM copy-in archive", require_private=True)
     try:
-        payload = archive.read_bytes()
+        archive_size = archive.lstat().st_size
     except OSError as exc:
-        raise ProviderError("VM copy-in archive is unreadable") from exc
+        raise ProviderError("VM copy-in archive is unavailable") from exc
+    if archive_size > MAX_COPYIN_ARCHIVE_BYTES:
+        raise ProviderError("VM copy-in archive exceeds its size limit")
     if not cli_executables or any(SAFE_ID.fullmatch(name) is None for name in cli_executables):
         raise ProviderError("provider CLI executable set is invalid")
     executable_checks = " ".join(
@@ -945,23 +1722,30 @@ def _copy_archive_to_guest(
         # the worker uid must traverse the full job path on a fresh VM.
         f"umask 077; rm -rf {guest_root}; mkdir -p {guest_root}; "
         f"chmod 711 /var/lib/harness-vm-v1 /var/lib/harness-vm-v1/jobs; "
-        f"tar -xzf - -C {guest_root}; "
-        f"mkdir -p {guest_root}/cli {guest_root}/state; "
+        # --no-same-owner: root extraction otherwise restores the archive's
+        # creator uid (the unprivileged provider account), but the worker
+        # requires the staged target/envelope to be root-owned. source/ and
+        # state/ are chowned to the worker uid explicitly below.
+        f"tar --no-same-owner -xzf - -C {guest_root}; "
+        f"mkdir -p {guest_root}/cli {guest_root}/state {guest_root}/receipt; "
         f"tar -xzf {guest_root}/.harness-cli-bundle.tar.gz -C {guest_root}/cli; "
         f"rm -f {guest_root}/.harness-cli-bundle.tar.gz; test ! -e {guest_root}/source/.git; "
         f"{executable_checks} "
-        f"chown -R root:root {guest_root}/cli {guest_root}/.harness-runner; "
-        # a+rX before a-w: the root umask-077 extraction leaves parent
-        # directories 700, and read-only is not enough — the worker uid must
-        # also traverse into these root-owned trees.
+        f"chown -R root:root {guest_root}/cli {guest_root}/.harness-runner {guest_root}/receipt; "
+        # a+rX before a-w: the root umask-077 extraction leaves these trees
+        # unreadable to the worker uid, and read-only alone is not enough.
         f"chmod -R a+rX,a-w {guest_root}/cli {guest_root}/.harness-runner; "
         f"chmod 444 {guest_root}/.harness-envelope.json {guest_root}/.harness-target.json; "
         f"chown -R {WORKER_USER}:{WORKER_USER} {guest_root}/source {guest_root}/state; "
-        f"chmod 700 {guest_root}/source {guest_root}/state; "
+        # The worker requires every commissioned-artifact parent directory to be
+        # private (0700). git-archived source dirs come in at 0755, so strip
+        # group/world across the whole source tree, not just its top level.
+        f"chmod 700 {guest_root}/state {guest_root}/receipt; "
+        f"chmod -R go-rwx {guest_root}/source; "
         f"chmod 711 {guest_root}",
     ]
     # `guest_root` is provider-generated hex only; it is never task input.
-    result = _run_vm(configuration, command, input_bytes=payload, timeout=120)
+    result = _run_vm(configuration, command, input_path=archive, timeout=120)
     if result.returncode != 0:
         raise ProviderError("VM copy-in failed")
 
@@ -980,6 +1764,7 @@ def _guest_restricted_unit(
     environment: dict[str, str],
     program: list[str],
     network_host: str | None,
+    root_supervisor: bool,
 ) -> subprocess.CompletedProcess[bytes]:
     """Run an owned runner in a fresh, fully reaped worker cgroup.
 
@@ -992,6 +1777,8 @@ def _guest_restricted_unit(
         raise ProviderError("provider guest unit is invalid")
     if not isinstance(timeout, int) or timeout < 1 or timeout > 90_000:
         raise ProviderError("provider guest timeout is invalid")
+    if type(root_supervisor) is not bool:
+        raise ProviderError("provider guest capability profile is invalid")
     if not program or any(not isinstance(item, str) or not item or "\x00" in item for item in program):
         raise ProviderError("provider guest program is invalid")
     for key, value in environment.items():
@@ -1007,9 +1794,14 @@ def _guest_restricted_unit(
         "--collect",
         "--pipe",
         f"--unit={unit}",
-        f"--uid={WORKER_USER}",
+        "--uid=root",
         "--property=KillMode=control-group",
         "--property=TimeoutStopSec=5s",
+        f"--property=RuntimeMaxSec={min(timeout, MAX_EXTERNAL_TIMEOUT_SECONDS)}s",
+        "--property=MemoryMax=1G",
+        "--property=TasksMax=128",
+        "--property=CPUQuota=200%",
+        "--property=LimitNOFILE=4096",
         "--property=NoNewPrivileges=yes",
         "--property=PrivateTmp=yes",
         "--property=PrivateDevices=yes",
@@ -1018,14 +1810,37 @@ def _guest_restricted_unit(
         "--property=ProtectKernelTunables=yes",
         "--property=ProtectKernelModules=yes",
         "--property=ProtectControlGroups=yes",
-        "--property=CapabilityBoundingSet=",
-        "--property=RestrictSUIDSGID=yes",
         "--property=RestrictNamespaces=yes",
         "--property=LockPersonality=yes",
         "--property=UMask=0077",
         "--property=RemoveIPC=yes",
-        f"--property=ReadWritePaths={guest_root}/source {guest_root}/state",
+        f"--property=ReadWritePaths={guest_root}/source {guest_root}/state {guest_root}/receipt",
     ]
+    if root_supervisor:
+        # The root bridge supervises a harnessvm-owned worktree: it must
+        # traverse and bind the commissioned artifact, prepare harnessvm's
+        # state subdirectories, drop exactly one vendor child to harnessvm,
+        # and reap that mixed-UID process group. Do not grant any broader
+        # ambient capability set or let this profile reach general guest state.
+        command.append(
+            "--property=CapabilityBoundingSet="
+            "CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_KILL CAP_SETGID CAP_SETUID"
+        )
+        # PrivateDevices drops CAP_SETUID from the effective set on this
+        # systemd version even though it remains in the bounding set. Carry
+        # only the uid/gid drop capabilities ambiently into the root Python
+        # supervisor; the vendor child is then explicitly made harnessvm.
+        command.append("--property=AmbientCapabilities=CAP_SETUID CAP_SETGID")
+    else:
+        # Copy-out only traverses and reads the harnessvm-owned source tree;
+        # CAP_DAC_READ_SEARCH is narrower than the supervisor's write-capable
+        # override and RestrictSUIDSGID keeps it from changing identities.
+        command.extend(
+            (
+                "--property=CapabilityBoundingSet=CAP_DAC_READ_SEARCH",
+                "--property=RestrictSUIDSGID=yes",
+            )
+        )
     if network_host is None:
         command.extend(("--property=IPAddressDeny=any", "--property=RestrictAddressFamilies=AF_UNIX"))
     else:
@@ -1058,6 +1873,7 @@ def _run_guest_worker(
 ) -> None:
     if broker.lease is None:
         raise ProviderError("broker lease is unavailable")
+    _validated_external_timeout(timeout_s)
     environment = {
         "PATH": f"{guest_root}/cli/bin:/usr/bin:/bin",
         "LANG": "C.UTF-8",
@@ -1076,6 +1892,7 @@ def _run_guest_worker(
         network_host=broker.policy.guest_broker_host,
         program=[
             "/usr/bin/python3",
+            "-I",
             f"{guest_root}/.harness-runner/vm-bridge-worker.py",
             "run",
             "--target",
@@ -1086,11 +1903,12 @@ def _run_guest_worker(
             f"{guest_root}/source",
             "--worker-state-root",
             f"{guest_root}/state",
-            "--result",
-            f"{guest_root}/state/bridge-result.json",
+            "--receipt",
+            f"{guest_root}/receipt/bridge-result.json",
             "--timeout-s",
             str(timeout_s),
         ],
+        root_supervisor=True,
     )
 
 
@@ -1106,20 +1924,22 @@ def _guest_copyout(
         configuration,
         guest_root=guest_root,
         unit=copyout_unit,
-        timeout=120,
+        timeout=GUEST_COPYOUT_TIMEOUT_SECONDS,
         environment={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
         network_host=None,
         program=[
             "/usr/bin/python3",
+            "-I",
             f"{guest_root}/.harness-runner/vm-bridge-worker.py",
             "copyout",
             "--worktree",
             f"{guest_root}/source",
-            "--worker-state-root",
-            f"{guest_root}/state",
+            "--receipt",
+            f"{guest_root}/receipt/bridge-result.json",
             "--artifact",
             artifact,
         ],
+        root_supervisor=False,
     )
     if not result.stdout:
         raise ProviderError("VM bridge copy-out failed")
@@ -1131,27 +1951,45 @@ def _cleanup_guest_job(
     guest_root: str,
     *units: str,
 ) -> None:
-    # All path/unit values are provider-generated fixed grammar. Cleanup is
-    # best effort after systemd has been asked to kill the full cgroup, never a
-    # PID read from a worker-controlled file.
+    # All path/unit values are provider-generated fixed grammar. A successful
+    # launch must prove its cgroups are inactive and guest root is gone; a
+    # best-effort cleanup would leave a credential-capable VM job behind.
     _validate_guest_root(guest_root)
     if not units or any(SAFE_ID.fullmatch(unit) is None for unit in units):
-        return
-    stop_units = " ".join(
-        f"sudo -n systemctl kill --kill-whom=all {unit} >/dev/null 2>&1 || true; "
-        f"sudo -n systemctl reset-failed {unit} >/dev/null 2>&1 || true;"
-        for unit in units
-    )
+        raise ProviderError("provider guest cleanup units are invalid")
+
+    def cleanup_unit(unit: str) -> str:
+        show = f"sudo -n systemctl show --property=ActiveState --value {unit}"
+        return " ".join(
+            (
+                f"if {show} >/dev/null 2>&1; then",
+                f"state=$({show});",
+                "if [ \"$state\" != inactive ] && [ \"$state\" != failed ]; then",
+                f"sudo -n systemctl kill --kill-whom=all {unit} || ! {show} >/dev/null 2>&1;",
+                "for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do",
+                f"if ! {show} >/dev/null 2>&1; then break; fi;",
+                f"state=$({show});",
+                "if [ \"$state\" = inactive ] || [ \"$state\" = failed ]; then break; fi;",
+                "if [ \"$attempt\" = 20 ]; then exit 1; fi;",
+                "sleep 0.25;",
+                "done;",
+                "fi;",
+                f"sudo -n systemctl reset-failed {unit} || ! {show} >/dev/null 2>&1;",
+                "fi;",
+                f"if {show} >/dev/null 2>&1; then state=$({show}); [ \"$state\" = inactive ]; fi;",
+            )
+        )
+
+    stop_units = " ".join(cleanup_unit(unit) for unit in units)
     command = [
         "sh",
         "-ec",
         f"{stop_units} "
-        f"sudo -n rm -rf {guest_root}",
+        f"sudo -n rm -rf {guest_root}; test ! -e {guest_root}",
     ]
-    try:
-        _run_vm(configuration, command, timeout=30)
-    except ProviderError:
-        return
+    result = _run_vm(configuration, command, timeout=30)
+    if result.returncode != 0:
+        raise ProviderError("VM provider could not prove guest job cleanup")
 
 
 def _safe_relative_parts(value: str, label: str) -> tuple[str, ...]:
@@ -1279,7 +2117,7 @@ def _extract_copyout(payload: bytes, destination: Path) -> dict[str, Path]:
                     or member.mode & 0o777 not in {0o600, 0o700}
                 ):
                     raise ProviderError("VM copy-out contains an unsafe entry")
-                if member.name != "state/bridge-result.json" and not member.name.startswith("source/"):
+                if member.name != "receipt/bridge-result.json" and not member.name.startswith("source/"):
                     raise ProviderError("VM copy-out contains an uncommissioned entry")
                 if member.name in extracted:
                     raise ProviderError("VM copy-out contains a duplicate entry")
@@ -1301,7 +2139,7 @@ def _extract_copyout(payload: bytes, destination: Path) -> dict[str, Path]:
                 extracted[member.name] = target
     except (OSError, tarfile.TarError) as exc:
         raise ProviderError("VM copy-out is unreadable") from exc
-    if "state/bridge-result.json" not in extracted:
+    if "receipt/bridge-result.json" not in extracted:
         raise ProviderError("VM copy-out lacks its bridge receipt")
     return extracted
 
@@ -1442,6 +2280,59 @@ def _provider_private_runs_root() -> Path:
     return current
 
 
+@contextlib.contextmanager
+def _exclusive_provider_launch_lock(runs_root: Path) -> Iterator[None]:
+    """Serialize use of the one VM and its process-global firewall policy."""
+    _secure_directory(runs_root, "provider runtime directory")
+    lock_path = runs_root / ".launch.lock"
+    descriptor: int | None = None
+    acquired = False
+    try:
+        descriptor = os.open(
+            lock_path,
+            os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
+        opened = os.fstat(descriptor)
+        try:
+            named = lock_path.lstat()
+        except OSError as exc:
+            raise ProviderError("provider launch lock is unavailable") from exc
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_nlink != 1
+            or opened.st_uid != os.geteuid()
+            or opened.st_mode & (stat.S_IRWXG | stat.S_IRWXO)
+            or named.st_dev != opened.st_dev
+            or named.st_ino != opened.st_ino
+        ):
+            raise ProviderError("provider launch lock is not private")
+        deadline = time.monotonic() + LAUNCH_LOCK_WAIT_SECONDS
+        while True:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquired = True
+                break
+            except OSError as exc:
+                if exc.errno not in {errno.EACCES, errno.EAGAIN}:
+                    raise ProviderError("provider launch lock is unavailable") from exc
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise ProviderError("provider launch is already in progress")
+                time.sleep(min(0.1, remaining))
+        yield
+    except OSError as exc:
+        raise ProviderError("provider launch lock is unavailable") from exc
+    finally:
+        if descriptor is not None:
+            if acquired:
+                try:
+                    fcntl.flock(descriptor, fcntl.LOCK_UN)
+                except OSError:
+                    pass
+            os.close(descriptor)
+
+
 def _validated_caller_state_root(path: Path, project_root: Path) -> Path:
     """Permit a project state pointer directory, never provider staging."""
     if not path.is_absolute():
@@ -1533,6 +2424,8 @@ def _reject_control_return_path(path: str) -> None:
     )
     if path in exact or path.startswith(prefixes):
         raise ProviderError("VM generator patch modifies a control-plane path")
+    if _excluded_worker_source_path(path):
+        raise ProviderError("VM generator patch modifies a protected source path")
     name = Path(path).name
     if name == ".env" or name.startswith(".env.") or name.endswith(
         (".key", ".pem", ".p12", ".pfx", ".crt")
@@ -1623,47 +2516,43 @@ def _create_baseline_source(project_root: Path, ref: str, destination: Path) -> 
     except OSError as exc:
         raise ProviderError("provider baseline directory cannot be created") from exc
     _secure_directory(destination, "provider baseline directory")
-    try:
-        archived = subprocess.run(
-            ["git", "-C", str(project_root), "archive", "--format=tar", ref],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            timeout=60,
-            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull},
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ProviderError("provider baseline snapshot is unavailable") from exc
-    if archived.returncode != 0 or not archived.stdout:
-        raise ProviderError("provider baseline snapshot is unavailable")
     total = [0]
     seen: set[str] = set()
     try:
-        with tarfile.open(fileobj=io.BytesIO(archived.stdout), mode="r:") as archive:
-            for member in archive.getmembers():
-                if member.name in seen:
-                    raise ProviderError("provider baseline snapshot has duplicate paths")
-                seen.add(member.name)
-                if member.name.startswith("/") or any(part in {"", ".", ".."} for part in member.name.split("/")):
-                    raise ProviderError("provider baseline snapshot has an unsafe path")
-                if member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
-                    raise ProviderError("provider baseline snapshot contains an unsupported entry")
-                if member.isdir():
-                    _safe_parent(destination, _safe_relative_parts(member.name, "provider baseline path"), create=True)
-                    continue
-                target = _safe_leaf(destination, member.name, create_parent=True)
-                source = archive.extractfile(member)
-                if source is None:
-                    raise ProviderError("provider baseline snapshot entry is unreadable")
-                with source:
-                    _write_stream_exclusive(
-                        target,
-                        source,
-                        maximum=MAX_COPYOUT_BYTES,
-                        total=total,
-                        mode=member.mode,
-                    )
+        with _commissioned_source_archive(
+            project_root,
+            ref,
+            destination.parent,
+            label="provider baseline snapshot",
+        ) as source_stream:
+            with tarfile.open(fileobj=source_stream, mode="r:") as archive:
+                for member in _bounded_source_archive_members(
+                    archive, label="provider baseline snapshot"
+                ):
+                    if member.name in seen:
+                        raise ProviderError("provider baseline snapshot has duplicate paths")
+                    seen.add(member.name)
+                    if member.name.startswith("/") or any(part in {"", ".", ".."} for part in member.name.split("/")):
+                        raise ProviderError("provider baseline snapshot has an unsafe path")
+                    if member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
+                        raise ProviderError("provider baseline snapshot contains an unsupported entry")
+                    if _excluded_worker_source_path(member.name):
+                        continue
+                    if member.isdir():
+                        _safe_parent(destination, _safe_relative_parts(member.name, "provider baseline path"), create=True)
+                        continue
+                    target = _safe_leaf(destination, member.name, create_parent=True)
+                    source = archive.extractfile(member)
+                    if source is None:
+                        raise ProviderError("provider baseline snapshot entry is unreadable")
+                    with source:
+                        _write_stream_exclusive(
+                            target,
+                            source,
+                            maximum=MAX_COPYOUT_BYTES,
+                            total=total,
+                            mode=member.mode,
+                        )
     except (OSError, tarfile.TarError) as exc:
         raise ProviderError("provider baseline snapshot is unreadable") from exc
 
@@ -1727,6 +2616,7 @@ APP_BUNDLE_RELATIVE = Path("framework/templates/claude/dispatch")
 APP_RUNTIME_FILES = (
     Path("tool-catalog.py"),
     Path("dispatch_common.py"),
+    Path("validate-active-return-route.py"),
     Path("transports/vm-bridge-provider.py"),
     Path("transports/session-bridge.py"),
     Path("transports/session_bridge_kimi.py"),
@@ -1809,11 +2699,10 @@ def _resolve_launch_target(
     if SAFE_ID.fullmatch(target_id) is None:
         raise ProviderError("bridge target id is invalid")
     project_registry = project_root / ".agents-registry.json"
-    try:
-        if registry.resolve() != project_registry.resolve() or registry.is_symlink():
-            raise ProviderError("bridge registry is not the project registry")
-    except OSError as exc:
-        raise ProviderError("bridge registry is unavailable") from exc
+    if registry != project_registry:
+        raise ProviderError("bridge registry is not the project registry")
+    _secure_regular_file(registry, "bridge registry")
+    _secure_directory(adapters, "bridge adapters")
     app_root = _trusted_app_bundle_root()
     catalog = app_root / APP_BUNDLE_RELATIVE / "tool-catalog.py"
     try:
@@ -1839,7 +2728,7 @@ def _resolve_launch_target(
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ProviderError("bridge target cannot be re-resolved") from exc
-    if resolved.returncode != 0:
+    if resolved.returncode != 0 or len(resolved.stdout) > MAX_TARGET_BYTES:
         raise ProviderError("bridge target cannot be re-resolved")
     # Avoid writing target JSON to a worker-visible host path. The VM input
     # archive is the only copy and is staged after this fresh resolution.
@@ -1885,15 +2774,156 @@ def _write_json_exclusive(path: Path, value: dict[str, Any]) -> None:
             os.close(descriptor)
 
 
+def _runner_sha256_from_digests(digests: Mapping[str, str]) -> str:
+    if set(digests) != set(RUNNER_NAMES):
+        raise ProviderError("provider runner digest set is invalid")
+    measured: dict[str, str] = {}
+    for name in RUNNER_NAMES:
+        value = digests[name]
+        if not isinstance(value, str) or SHA256.fullmatch(value) is None:
+            raise ProviderError("provider runner digest is invalid")
+        measured[name] = value
+    return _canonical_sha256("harness/vm-bridge-runner/v1", measured)
+
+
+def _runner_sha256_from_paths(runners: Mapping[str, Path]) -> str:
+    if set(runners) != set(RUNNER_NAMES):
+        raise ProviderError("provider runner set is invalid")
+    digests: dict[str, str] = {}
+    for name in RUNNER_NAMES:
+        runner = runners[name]
+        if not isinstance(runner, Path):
+            raise ProviderError("provider runner set is invalid")
+        _secure_regular_file(runner, f"framework VM runner {name}")
+        digests[name] = _sha256_file(runner)
+    return _runner_sha256_from_digests(digests)
+
+
+def _snapshot_launch_envelope(run_root: Path, source: Path) -> tuple[Path, Path, str]:
+    """Copy the user-facing envelope before any launch semantics consume it."""
+    input_root = run_root / "inputs"
+    try:
+        input_root.mkdir(mode=0o700)
+    except OSError as exc:
+        raise ProviderError("provider input snapshot directory cannot be created") from exc
+    _secure_directory(input_root, "provider input snapshot directory")
+    envelope = input_root / "envelope.json"
+    return input_root, envelope, _snapshot_regular_file(
+        source,
+        envelope,
+        "bridge envelope",
+        maximum_bytes=MAX_ENVELOPE_BYTES,
+    )
+
+
+def _snapshot_launch_inputs(
+    configuration: ProviderConfiguration,
+    *,
+    input_root: Path,
+    envelope: Path,
+    envelope_sha256: str,
+    target: dict[str, Any],
+) -> LaunchInputSnapshots:
+    """Freeze the target, bundle, and runner set that will enter the VM."""
+    _secure_directory(input_root, "provider input snapshot directory")
+    _secure_regular_file(envelope, "provider envelope snapshot", require_private=True)
+    if SHA256.fullmatch(envelope_sha256) is None:
+        raise ProviderError("provider envelope snapshot digest is invalid")
+    target_snapshot = input_root / "target.json"
+    _write_json_exclusive(target_snapshot, target)
+    try:
+        target_size = target_snapshot.stat().st_size
+    except OSError as exc:
+        raise ProviderError("provider target snapshot is unavailable") from exc
+    if target_size > MAX_TARGET_BYTES:
+        raise ProviderError("provider target snapshot exceeds its size limit")
+    cli_bundle = input_root / "cli-bundle.tar.gz"
+    cli_bundle_sha256 = _snapshot_regular_file(
+        configuration.cli_bundle,
+        cli_bundle,
+        "provider CLI bundle",
+        expected_sha256=configuration.cli_bundle_sha256,
+        maximum_bytes=MAX_CLI_BUNDLE_BYTES,
+    )
+    runner_root = input_root / "runners"
+    try:
+        runner_root.mkdir(mode=0o700)
+    except OSError as exc:
+        raise ProviderError("provider runner snapshot directory cannot be created") from exc
+    _secure_directory(runner_root, "provider runner snapshot directory")
+    source_root = Path(__file__).absolute().parent
+    runners: dict[str, Path] = {}
+    runner_digests: dict[str, str] = {}
+    for name in RUNNER_NAMES:
+        snapshot = runner_root / name
+        runners[name] = snapshot
+        runner_digests[name] = _snapshot_regular_file(
+            source_root / name,
+            snapshot,
+            f"framework VM runner {name}",
+            maximum_bytes=MAX_RUNNER_BYTES,
+        )
+    return LaunchInputSnapshots(
+        envelope=envelope,
+        envelope_sha256=envelope_sha256,
+        target=target_snapshot,
+        cli_bundle=cli_bundle,
+        cli_bundle_sha256=cli_bundle_sha256,
+        runners=runners,
+        runner_sha256=_runner_sha256_from_digests(runner_digests),
+    )
+
+
+def _validated_external_timeout(value: Any) -> int:
+    if (
+        not isinstance(value, int)
+        or isinstance(value, bool)
+        or not 1 <= value <= MAX_EXTERNAL_TIMEOUT_SECONDS
+    ):
+        raise ProviderError("bridge target timeout is invalid")
+    return value
+
+
 def launch(args: argparse.Namespace) -> dict[str, Any]:
     """Run one provider-owned VM bridge and return a sanitized run-meta record."""
-    project_root = args.project_root.resolve()
-    envelope_path = args.envelope.resolve()
-    registry = args.registry.resolve()
-    adapters = args.adapters.resolve()
-    if not project_root.is_dir() or not envelope_path.is_file() or envelope_path.is_symlink():
-        raise ProviderError("bridge launch inputs are unavailable")
-    envelope = _load_json_no_duplicates(envelope_path, "bridge envelope")
+    project_root = _absolute_non_symlink_input(args.project_root, "bridge project root")
+    envelope_path = _absolute_non_symlink_input(args.envelope, "bridge envelope")
+    registry = _absolute_non_symlink_input(args.registry, "bridge registry")
+    adapters = _absolute_non_symlink_input(args.adapters, "bridge adapters")
+    _secure_directory(project_root, "bridge project root")
+    _secure_regular_file(envelope_path, "bridge envelope")
+    try:
+        envelope_size = envelope_path.stat().st_size
+    except OSError as exc:
+        raise ProviderError("bridge envelope is unavailable") from exc
+    if envelope_size > MAX_ENVELOPE_BYTES:
+        raise ProviderError("bridge envelope exceeds its size limit")
+    _secure_regular_file(registry, "bridge registry")
+    _secure_directory(adapters, "bridge adapters")
+
+    # This first read contributes only the run-directory name. Every launch
+    # decision below is made from the immutable provider-private copy.
+    preliminary = _load_json_no_duplicates(envelope_path, "bridge envelope")
+    preliminary_task_id = preliminary.get("task_id")
+    if not isinstance(preliminary_task_id, str) or SAFE_ID.fullmatch(preliminary_task_id) is None:
+        raise ProviderError("bridge envelope task id is invalid")
+
+    configuration = load_provider_configuration()
+    policy = _broker_policy(configuration)
+    state_root = _validated_caller_state_root(
+        _absolute_path(args.state, "provider state"), project_root
+    )
+    runs_root = _provider_private_runs_root()
+    run_root = runs_root / f"{preliminary_task_id}-{secrets.token_hex(12)}"
+    try:
+        run_root.mkdir(mode=0o700)
+    except OSError as exc:
+        raise ProviderError("provider private run root cannot be created") from exc
+    _secure_directory(run_root, "provider private run root")
+    input_root, envelope_snapshot, envelope_sha256 = _snapshot_launch_envelope(
+        run_root, envelope_path
+    )
+    envelope = _load_json_no_duplicates(envelope_snapshot, "bridge envelope")
     role = envelope.get("role")
     task_id = envelope.get("task_id")
     batch = envelope.get("batch")
@@ -1902,14 +2932,21 @@ def launch(args: argparse.Namespace) -> dict[str, Any]:
         raise ProviderError("bridge envelope role is invalid")
     if not isinstance(task_id, str) or SAFE_ID.fullmatch(task_id) is None:
         raise ProviderError("bridge envelope task id is invalid")
+    if task_id != preliminary_task_id:
+        raise ProviderError("bridge envelope changed before its launch snapshot")
     if not isinstance(batch, str) or SAFE_ID.fullmatch(batch) is None:
         raise ProviderError("bridge envelope batch is invalid")
-    if not isinstance(repo, dict) or not isinstance(repo.get("ref"), str) or SHA256.fullmatch(repo["ref"]) is None and not re.fullmatch(r"[0-9a-f]{40}", repo["ref"]):
+    if (
+        not isinstance(repo, dict)
+        or not isinstance(repo.get("ref"), str)
+        or (
+            SHA256.fullmatch(repo["ref"]) is None
+            and re.fullmatch(r"[0-9a-f]{40}", repo["ref"]) is None
+        )
+    ):
         raise ProviderError("bridge envelope ref is invalid")
     ref = repo["ref"]
     artifact = _safe_artifact_relative(envelope)
-    configuration = load_provider_configuration()
-    policy = _broker_policy(configuration)
     target = _resolve_launch_target(
         project_root=project_root,
         registry=registry,
@@ -1919,125 +2956,154 @@ def launch(args: argparse.Namespace) -> dict[str, Any]:
     )
     if target.get("bridge_provider_contract_sha256") != configuration.contract_sha256:
         raise ProviderError("bridge target provider contract drifted")
-    bridge_command = _validate_target_bundle_command(configuration, target)
+    snapshots = _snapshot_launch_inputs(
+        configuration,
+        input_root=input_root,
+        envelope=envelope_snapshot,
+        envelope_sha256=envelope_sha256,
+        target=target,
+    )
+    target = _load_launch_target(snapshots.target, args.expected_provenance)
+    if target.get("bridge_provider_contract_sha256") != configuration.contract_sha256:
+        raise ProviderError("bridge target provider contract drifted")
+    bridge_command = _validate_target_bundle_command(
+        configuration, target, cli_bundle=snapshots.cli_bundle
+    )
+    kimi_identity = _bundle_kimi_identity(snapshots.cli_bundle)
     if role not in target.get("roles", []):
         raise ProviderError("bridge target does not allow the envelope role")
-    timeout_s = target.get("timeout_s")
-    if not isinstance(timeout_s, int) or isinstance(timeout_s, bool) or not 1 <= timeout_s <= 86_400:
-        raise ProviderError("bridge target timeout is invalid")
-    _assert_vm_ready(configuration)
-    launch_proof, launch_nonce = launch_attestation(configuration, args.expected_provenance)
-    launch_proof_sha256 = _canonical_sha256(ATTESTATION_VERSION, launch_proof)
-    state_root = _validated_caller_state_root(args.state, project_root)
-    runs_root = _provider_private_runs_root()
-    run_root = runs_root / f"{task_id}-{secrets.token_hex(12)}"
-    run_root.mkdir(parents=True, mode=0o700)
-    _secure_directory(run_root, "provider private run root")
+    timeout_s = _validated_external_timeout(target.get("timeout_s"))
+
     staging = run_root / "copyout"
     copyout = run_root / "pipe"
     baseline = run_root / "baseline"
     archive = run_root / "copyin.tar.gz"
-    copyout.mkdir(mode=0o700)
+    try:
+        copyout.mkdir(mode=0o700)
+    except OSError as exc:
+        raise ProviderError("provider copy-out directory cannot be created") from exc
+    _secure_directory(copyout, "provider copy-out directory")
     guest_token = secrets.token_hex(16)
     guest_root = f"/var/lib/harness-vm-v1/jobs/{guest_token}"
     unit = f"harness-vm-v1-{guest_token}"
     started = time.monotonic()
-    try:
-        target_file = run_root / "target.json"
-        _write_json_exclusive(target_file, target)
-        _create_copyin_archive(
-            project_root=project_root,
-            ref=ref,
-            envelope=envelope_path,
-            target=target_file,
-            cli_bundle=configuration.cli_bundle,
-            destination=archive,
-        )
-        _create_baseline_source(project_root, ref, baseline)
-        _copy_archive_to_guest(configuration, archive, guest_root, (bridge_command[0],))
-        with BrokerLease(policy) as broker:
-            if broker.port is None:
-                raise ProviderError("broker did not allocate a port")
-            _set_guest_egress_policy(configuration, policy, broker.port)
-            _run_guest_worker(
+    guest_job_touched = False
+    firewall_reset_required = False
+    with _exclusive_provider_launch_lock(runs_root):
+        _assert_vm_ready(configuration)
+        try:
+            _create_copyin_archive(
+                project_root=project_root,
+                ref=ref,
+                envelope=snapshots.envelope,
+                target=snapshots.target,
+                cli_bundle=snapshots.cli_bundle,
+                runners=snapshots.runners,
+                destination=archive,
+            )
+            _create_baseline_source(project_root, ref, baseline)
+            guest_job_touched = True
+            _copy_archive_to_guest(configuration, archive, guest_root, (bridge_command[0],))
+            # Bind the exact snapshots only after input preparation. Its TTL
+            # then covers the bounded worker, copy-out, broker request, and
+            # return-validation window rather than elapsed staging time.
+            launch_proof, launch_nonce = launch_attestation(
                 configuration,
-                guest_root=guest_root,
-                unit=unit,
-                timeout_s=timeout_s,
+                args.expected_provenance,
+                envelope_sha256=snapshots.envelope_sha256,
+                runner_sha256=snapshots.runner_sha256,
+                cli_bundle_sha256=snapshots.cli_bundle_sha256,
+            )
+            launch_proof_sha256 = _canonical_sha256(ATTESTATION_VERSION, launch_proof)
+            with BrokerLease(policy, kimi_identity) as broker:
+                if broker.port is None:
+                    raise ProviderError("broker did not allocate a port")
+                firewall_reset_required = True
+                _reset_guest_egress_baseline(configuration)
+                _set_guest_egress_policy(configuration, policy, broker.port)
+                _run_guest_worker(
+                    configuration,
+                    guest_root=guest_root,
+                    unit=unit,
+                    timeout_s=timeout_s,
+                    launch_nonce=launch_nonce,
+                    launch_attestation_sha256=launch_proof_sha256,
+                    broker=broker,
+                )
+                payload = _guest_copyout(
+                    configuration, guest_root=guest_root, artifact=artifact, unit=unit
+                )
+            extracted = _extract_copyout(payload, copyout)
+            artifact_key = f"source/{artifact}"
+            returned_artifact = extracted.get(artifact_key)
+            if returned_artifact is None:
+                raise ProviderError("VM copy-out lacks the commissioned artifact")
+            artifact_sha256 = _sha256_path(returned_artifact)
+            receipt = _validate_bridge_receipt(
+                extracted["receipt/bridge-result.json"],
+                target=target,
                 launch_nonce=launch_nonce,
                 launch_attestation_sha256=launch_proof_sha256,
-                broker=broker,
+                artifact_sha256=artifact_sha256,
             )
-            payload = _guest_copyout(
-                configuration, guest_root=guest_root, artifact=artifact, unit=unit
+            _create_copyout_staging(project_root, ref, staging)
+            staged_artifact, source_changes = _reconcile_returned_source(
+                returned_root=copyout / "source",
+                baseline_root=baseline,
+                staging=staging,
+                role=role,
+                artifact=artifact,
             )
-        extracted = _extract_copyout(payload, copyout)
-        artifact_key = f"source/{artifact}"
-        returned_artifact = extracted.get(artifact_key)
-        if returned_artifact is None:
-            raise ProviderError("VM copy-out lacks the commissioned artifact")
-        artifact_sha256 = _sha256_path(returned_artifact)
-        receipt = _validate_bridge_receipt(
-            extracted["state/bridge-result.json"],
-            target=target,
-            launch_nonce=launch_nonce,
-            launch_attestation_sha256=launch_proof_sha256,
-            artifact_sha256=artifact_sha256,
-        )
-        _create_copyout_staging(project_root, ref, staging)
-        staged_artifact, source_changes = _reconcile_returned_source(
-            returned_root=copyout / "source",
-            baseline_root=baseline,
-            staging=staging,
-            role=role,
-            artifact=artifact,
-        )
-        if returned_artifact != copyout / f"source/{artifact}":
-            raise ProviderError("VM returned artifact path is inconsistent")
-        if _sha256_path(staged_artifact) != artifact_sha256:
-            raise ProviderError("provider artifact copy-out drifted")
-        duration = max(0, int(time.monotonic() - started))
-        generic_log = run_root / "provider.log"
-        generic_log.write_text("vm-v1 supervisor completed\n", encoding="ascii")
-        meta = {
-            "task_id": task_id,
-            "agent_id": args.agent,
-            "adapter": target.get("adapter"),
-            "model_family": target.get("model_family"),
-            "role": role,
-            "deliverable": envelope.get("deliverable"),
-            "batch": batch,
-            "ref": ref,
-            "worktree": str(staging),
-            "artifact": str(staged_artifact),
-            "log": str(generic_log),
-            "envelope_path": str(envelope_path),
-            "outcome": "RETURNED",
-            "exit_code": 0,
-            "duration_s": duration,
-            "effective_timeout_s": timeout_s,
-            "descriptor_timeout_s": timeout_s,
-            "termination_reason": "completed",
-            "transport": "subagent",
-            "bridge": {**receipt, "provider_launch_attestation": launch_proof},
-            "source_changes": list(source_changes),
-        }
-        _write_json_exclusive(state_root / f"run-meta-{task_id}.json", meta)
-        return meta
-    finally:
-        _cleanup_guest_job(configuration, guest_root, unit, f"{unit}-copyout")
+            if returned_artifact != copyout / f"source/{artifact}":
+                raise ProviderError("VM returned artifact path is inconsistent")
+            if _sha256_path(staged_artifact) != artifact_sha256:
+                raise ProviderError("provider artifact copy-out drifted")
+            duration = max(0, int(time.monotonic() - started))
+            generic_log = run_root / "provider.log"
+            generic_log.write_text("vm-v1 supervisor completed\n", encoding="ascii")
+            meta = {
+                "task_id": task_id,
+                "agent_id": args.agent,
+                "adapter": target.get("adapter"),
+                "model_family": target.get("model_family"),
+                "role": role,
+                "deliverable": envelope.get("deliverable"),
+                "batch": batch,
+                "ref": ref,
+                "worktree": str(staging),
+                "artifact": str(staged_artifact),
+                "log": str(generic_log),
+                # Consumers intentionally compare this original caller path
+                # with the envelope they are validating; the attestation binds
+                # its raw bytes to the private snapshot staged above.
+                "envelope_path": str(envelope_path),
+                "outcome": "RETURNED",
+                "exit_code": 0,
+                "duration_s": duration,
+                "effective_timeout_s": timeout_s,
+                "descriptor_timeout_s": timeout_s,
+                "termination_reason": "completed",
+                "transport": "subagent",
+                "bridge": {**receipt, "provider_launch_attestation": launch_proof},
+                "source_changes": list(source_changes),
+            }
+            _write_json_exclusive(state_root / f"run-meta-{task_id}.json", meta)
+            return meta
+        finally:
+            try:
+                if guest_job_touched:
+                    _cleanup_guest_job(configuration, guest_root, unit, f"{unit}-copyout")
+            finally:
+                # Cleanup proof failures must still restore the VM's default
+                # deny egress baseline before the launch error is surfaced.
+                if firewall_reset_required:
+                    _reset_guest_egress_baseline(configuration)
 
 
 def _runner_sha256() -> str:
     """Measure the exact framework runner set that will be staged to a VM."""
-    root = Path(__file__).resolve().parent
-    names = ("session-bridge.py", "session_bridge_kimi.py", "vm-bridge-worker.py")
-    measured: dict[str, str] = {}
-    for name in names:
-        path = root / name
-        _secure_regular_file(path, f"framework VM runner {name}")
-        measured[name] = _sha256_file(path)
-    return _canonical_sha256("harness/vm-bridge-runner/v1", measured)
+    root = Path(__file__).absolute().parent
+    return _runner_sha256_from_paths({name: root / name for name in RUNNER_NAMES})
 
 
 def _attestation(
@@ -2046,14 +3112,38 @@ def _attestation(
     phase: str,
     target_provenance: str | None = None,
     nonce: bytes | None = None,
+    envelope_sha256: str | None = None,
+    runner_sha256: str | None = None,
+    cli_bundle_sha256: str | None = None,
+    supported_routes: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     if phase not in {"catalog", "launch"}:
         raise ProviderError("attestation phase is invalid")
     if phase == "launch":
         if not isinstance(target_provenance, str) or SHA256.fullmatch(target_provenance) is None:
             raise ProviderError("launch target provenance is invalid")
-    elif target_provenance is not None:
-        raise ProviderError("catalog attestation must not bind a target")
+        for value, label in (
+            (envelope_sha256, "launch envelope snapshot"),
+            (runner_sha256, "launch runner snapshot"),
+            (cli_bundle_sha256, "launch CLI bundle snapshot"),
+        ):
+            if not isinstance(value, str) or SHA256.fullmatch(value) is None:
+                raise ProviderError(f"{label} digest is invalid")
+    elif any(
+        value is not None
+        for value in (target_provenance, envelope_sha256, runner_sha256, cli_bundle_sha256)
+    ):
+        raise ProviderError("catalog attestation must not bind launch inputs")
+    if phase == "catalog":
+        if not isinstance(supported_routes, list) or not supported_routes:
+            raise ProviderError("catalog attestation lacks provider-supported routes")
+    elif supported_routes is not None:
+        raise ProviderError("launch attestation must not publish provider-supported routes")
+    ttl_seconds = (
+        LAUNCH_ATTESTATION_TTL_SECONDS
+        if phase == "launch"
+        else CATALOG_ATTESTATION_TTL_SECONDS
+    )
     issued = _utc_now()
     nonce = nonce or os.urandom(32)
     value: dict[str, Any] = {
@@ -2064,14 +3154,24 @@ def _attestation(
         "phase": phase,
         "nonce_sha256": hashlib.sha256(nonce).hexdigest(),
         "issued_at": _utc_text(issued),
-        "expires_at": _utc_text(issued + dt.timedelta(seconds=MAX_TTL_SECONDS)),
+        "expires_at": _utc_text(issued + dt.timedelta(seconds=ttl_seconds)),
         "image_sha256": configuration.image_sha256,
-        "runner_sha256": _runner_sha256(),
-        "cli_bundle_sha256": configuration.cli_bundle_sha256,
+        "runner_sha256": runner_sha256 if phase == "launch" else _runner_sha256(),
+        "cli_bundle_sha256": (
+            cli_bundle_sha256 if phase == "launch" else configuration.cli_bundle_sha256
+        ),
         "broker_policy_sha256": configuration.broker_policy_sha256,
     }
-    if target_provenance is not None:
+    if phase == "launch":
+        assert target_provenance is not None
+        assert envelope_sha256 is not None
         value["target_provenance_sha256"] = target_provenance
+        # The digest is SHA-256 of the exact raw UTF-8 envelope bytes copied
+        # into the provider-private snapshot, not a canonicalized JSON form.
+        value["envelope_sha256"] = envelope_sha256
+    else:
+        assert supported_routes is not None
+        value["supported_routes"] = supported_routes
     return value
 
 
@@ -2082,9 +3182,11 @@ def catalog_attestation() -> dict[str, Any]:
     # before making a signable catalog observation. The token stays in this
     # stack frame and is never placed in the returned object.
     _read_broker_credential(_broker_policy(configuration))
-    _bundle_protocol_commands(configuration.cli_bundle)
+    supported_routes = _catalog_supported_routes(configuration.cli_bundle)
     _assert_vm_ready(configuration)
-    attestation = _attestation(configuration, phase="catalog")
+    attestation = _attestation(
+        configuration, phase="catalog", supported_routes=supported_routes
+    )
     return {
         "available": True,
         "provider": {
@@ -2097,7 +3199,12 @@ def catalog_attestation() -> dict[str, Any]:
 
 
 def launch_attestation(
-    configuration: ProviderConfiguration, target_provenance: str
+    configuration: ProviderConfiguration,
+    target_provenance: str,
+    *,
+    envelope_sha256: str,
+    runner_sha256: str,
+    cli_bundle_sha256: str,
 ) -> tuple[dict[str, Any], str]:
     """Create a one-shot attestation and retain its raw nonce only in memory."""
     nonce = secrets.token_hex(16)
@@ -2107,6 +3214,9 @@ def launch_attestation(
             phase="launch",
             target_provenance=target_provenance,
             nonce=nonce.encode("ascii"),
+            envelope_sha256=envelope_sha256,
+            runner_sha256=runner_sha256,
+            cli_bundle_sha256=cli_bundle_sha256,
         ),
         nonce,
     )

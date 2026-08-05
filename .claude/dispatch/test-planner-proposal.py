@@ -5,7 +5,10 @@ from __future__ import annotations
 
 import copy
 import json
+import os
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -21,6 +24,7 @@ PLANNER_ACCEPT = HERE / "accept-planner-proposal.sh"
 TASK_ID = "plan-fixture-001"
 BATCH_ID = "BL-PLAN-FIXTURE"
 SOURCE_REF = "a" * 40
+UNSET = object()
 
 
 def valid_proposal() -> dict[str, object]:
@@ -109,28 +113,48 @@ class PlannerProposalDispatchTest(unittest.TestCase):
             text=True,
         )
 
-    def validate_receipt(self, proposal: dict[str, object]) -> subprocess.CompletedProcess[str]:
+    def validate_receipt(
+        self,
+        proposal: dict[str, object],
+        *,
+        transport: str | None = None,
+        bridge: object = UNSET,
+        active_role: dict[str, object] | None = None,
+        active_target: dict[str, object] | None = None,
+        metadata_role: str = "planner",
+    ) -> subprocess.CompletedProcess[str]:
         self.write_artifact(proposal)
-        self.meta.write_text(
-            json.dumps(
-                {
-                    "task_id": TASK_ID,
-                    "agent_id": "planner-fixture",
-                    "model_family": "fixture",
-                    "batch": BATCH_ID,
-                    "ref": SOURCE_REF,
-                    "role": "planner",
-                    "deliverable": planner_envelope()["deliverable"],
-                    "artifact": str(self.artifact),
-                    "outcome": "RETURNED",
-                    "exit_code": 0,
-                    "duration_s": 1,
-                }
-            ),
-            encoding="utf-8",
-        )
+        meta: dict[str, object] = {
+            "task_id": TASK_ID,
+            "agent_id": "planner-fixture",
+            "model_family": "fixture",
+            "batch": BATCH_ID,
+            "ref": SOURCE_REF,
+            "role": metadata_role,
+            "deliverable": planner_envelope()["deliverable"],
+            "artifact": str(self.artifact),
+            "outcome": "RETURNED",
+            "exit_code": 0,
+            "duration_s": 1,
+        }
+        if transport is not None:
+            meta["transport"] = transport
+        if bridge is not UNSET:
+            meta["bridge"] = bridge
+        self.meta.write_text(json.dumps(meta), encoding="utf-8")
+        arguments = ["bash", str(DISPATCH_VALIDATOR), "receipt", str(self.meta)]
+        if active_role is not None:
+            arguments.extend(["--active-role-json", json.dumps(active_role)])
+        if active_target is not None:
+            arguments.extend(["--active-target-json", json.dumps(active_target)])
+        if active_role is not None or active_target is not None:
+            self.envelope.write_text(json.dumps(planner_envelope()), encoding="utf-8")
+            arguments.extend([
+                "--expected-envelope", str(self.envelope),
+                "--project-root", str(self.root),
+            ])
         return subprocess.run(
-            ["bash", str(DISPATCH_VALIDATOR), "receipt", str(self.meta)],
+            arguments,
             capture_output=True,
             text=True,
         )
@@ -162,6 +186,56 @@ class PlannerProposalDispatchTest(unittest.TestCase):
         result = self.validate_receipt(proposal)
         self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)["state"], "INPUT_REQUIRED")
+
+    def test_planner_subagent_bridge_cannot_be_forged_without_a_signed_target(self) -> None:
+        result = self.validate_receipt(valid_proposal(), transport="subagent", bridge={})
+        self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
+        self.assertIn("active target", receipt["reason"])
+
+    def test_external_planner_target_rejects_a_forged_local_cli_return(self) -> None:
+        active_role = {"agent_id": "planner-fixture", "invocation": "subagent"}
+        active_target = {
+            "target_id": "planner-fixture",
+            "invocation": "subagent",
+            "bridge_id": "fixture-acp",
+            "bridge_strategy": "session-bridge-v1",
+            "bridge_protocol": {"kind": "acp-native-agent/v1"},
+            "session_scope": "same-session",
+        }
+        result = self.validate_receipt(
+            valid_proposal(),
+            transport="local-cli",
+            active_role=active_role,
+            active_target=active_target,
+        )
+        self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
+        self.assertIn("transport does not match", receipt["reason"])
+
+    def test_external_planner_target_rejects_run_meta_role_drift(self) -> None:
+        active_role = {"agent_id": "planner-fixture", "invocation": "subagent"}
+        active_target = {
+            "target_id": "planner-fixture",
+            "invocation": "subagent",
+            "bridge_id": "fixture-acp",
+            "bridge_strategy": "session-bridge-v1",
+            "bridge_protocol": {"kind": "acp-native-agent/v1"},
+            "session_scope": "same-session",
+        }
+        result = self.validate_receipt(
+            valid_proposal(),
+            transport="subagent",
+            active_role=active_role,
+            active_target=active_target,
+            metadata_role="unknown",
+        )
+        self.assertEqual(result.returncode, 4, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
+        self.assertIn("role does not match", receipt["reason"])
 
     def test_local_cli_planner_preserves_proposal_contract_in_run_meta(self) -> None:
         repo = self.root / "project"
@@ -459,6 +533,116 @@ class PlannerProposalDispatchTest(unittest.TestCase):
         )
         self.assertEqual(json.loads(canonical_progress.read_text(encoding="utf-8")), {"status": "planning"})
         self.assertFalse((repo / "features.json").exists())
+
+    def test_accept_entrypoint_rejects_an_external_planner_target(self) -> None:
+        repo = self.root / "external-planner-accept-project"
+        state = repo / ".harness-dispatch"
+        fake_dispatch = self.root / "fake-dispatch"
+        repo.mkdir()
+        fake_dispatch.mkdir()
+        subprocess.run(["git", "-C", str(repo), "init", "-q"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.email", "fixture@example.invalid"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.name", "fixture"], check=True
+        )
+        (repo / "README.md").write_text("fixture\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo), "add", "README.md"], check=True)
+        subprocess.run(["git", "-C", str(repo), "commit", "-qm", "fixture"], check=True)
+        ref = subprocess.check_output(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+
+        registry = repo / ".agents-registry.json"
+        registry.write_text(
+            json.dumps(
+                {
+                    "version": "dispatch/1",
+                    "agents": [
+                        {
+                            "id": "fixture-subagent-planner",
+                            "roles": ["planner"],
+                            "transport": "subagent",
+                            "agent_type": "planner-proposal",
+                            "model_family": "fixture",
+                            "constraints": {"l2": False, "write_src": False, "push": False},
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        envelope = planner_envelope()
+        envelope["repo"] = {"url": str(repo), "ref": ref}
+        envelope_path = repo / "prepared-envelope.json"
+        envelope_path.write_text(json.dumps(envelope), encoding="utf-8")
+        proposal = valid_proposal()
+        proposal["source_ref"] = ref
+        proposal_path = repo / "returned-proposal.json"
+        proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+
+        # The accept entrypoint must reject an externally resolved bridge before
+        # it can synthesize a host-native run-meta from a raw proposal file.
+        external_target = {
+            "target_id": "fixture-subagent-planner",
+            "roles": ["planner"],
+            "invocation": "subagent",
+            "agent_type": "planner-proposal",
+            "model_family": "fixture",
+            "bridge_id": "fixture-acp",
+        }
+        for name in (
+            "dispatch_common.py",
+            "resolve-mode-adapters.sh",
+            "validate-dispatch.sh",
+            "validate-planner-proposal.sh",
+            "validate-external-bridge-receipt.py",
+        ):
+            (fake_dispatch / name).symlink_to(HERE / name)
+        (fake_dispatch / "transports").symlink_to(HERE / "transports", target_is_directory=True)
+        fake_accept = fake_dispatch / "accept-planner-proposal.sh"
+        shutil.copyfile(PLANNER_ACCEPT, fake_accept)
+        fake_accept.chmod(0o755)
+        fake_catalog = fake_dispatch / "tool-catalog.py"
+        fake_catalog.write_text(
+            f"#!{sys.executable}\n"
+            "import os\n"
+            "import sys\n"
+            "if len(sys.argv) > 1 and sys.argv[1] == 'target':\n"
+            "    print(os.environ['FIXTURE_EXTERNAL_TARGET'])\n"
+            "    raise SystemExit(0)\n"
+            f"os.execv({sys.executable!r}, [{sys.executable!r}, {str(HERE / 'tool-catalog.py')!r}, *sys.argv[1:]])\n",
+            encoding="utf-8",
+        )
+        fake_catalog.chmod(0o755)
+        environment = os.environ.copy()
+        environment["FIXTURE_EXTERNAL_TARGET"] = json.dumps(external_target)
+        result = subprocess.run(
+            [
+                "bash",
+                str(fake_accept),
+                "--agent",
+                "fixture-subagent-planner",
+                "--envelope",
+                str(envelope_path),
+                "--proposal-file",
+                str(proposal_path),
+                "--registry",
+                str(registry),
+                "--state",
+                str(state),
+            ],
+            cwd=repo,
+            env=environment,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("external bridge Planner", result.stderr)
+        self.assertFalse((repo / "docs" / "test-reports" / f"planner-proposal-{TASK_ID}.json").exists())
+        self.assertFalse((state / f"run-meta-{TASK_ID}.json").exists())
 
     def test_planner_entrypoints_pin_the_project_registry_before_creating_state(self) -> None:
         repo = self.root / "registry-pinning-project"

@@ -389,6 +389,7 @@ git status --short docs/test-reports/ docs/test-cases/ .auto-memory/
 10. 任何 spec-driven 工作必须有 `features.json` feature 号归属。无归属的代码修改 = 越界（commit message 的 `feat(<batch>-F<num>):` 标签必须能对应 features.json 实际条目，否则 Evaluator 拒绝签收）。详见 `pre-impl-adjudication.md` §4.6 §4.7 anti-patterns
 11. 状态机 JSON 文件（`progress.json` / `features.json` / `backlog.json`）写入后必须校验合法性。**首选机制化**：项目 `.claude/settings.json` 配 PostToolUse hook 在写入当下自动校验（模板见 `framework/templates/claude/`）；`.git/hooks/pre-commit` 加校验作兜底（模板见 `framework/templates/pre-commit-hook.sh`）。两层都没装时，手动跑 `python3 -c "import json; json.load(open('<file>'))"`。来源：MVP commit b44b79d（progress.json 缺一个 `}` 进入 main 持续 N 小时未发现）
 12. 主上下文编排 Evaluator subagent 时，不得在 subagent prompt 中夹带对实现质量的定性描述（"这些代码已充分测试"类），不得基于 subagent 结论之外的理由改写 PASS/FAIL 判定
+13. 交付叙述必须有机械依据（v1.6.5）：commit 正文、`generator_handoff`、验收报告中每一句「已修 / 已验证 / 已移除 / 全绿」类陈述，落笔前必须有对应的一条命令输出作依据（`git show --stat` / `git log -L` / `grep` / 实跑测试）；拿不出依据就如实写「未核」。来源：M4.7-FRONTDESK 连续三轮共 4 例交付叙述被复验逐条证伪（含「上轮只改了 X 与 Y」而该提交无 X、「摘掉某行全量无一条会红」而实测 1 条翻红）
 
 ## 机制化守门（v1.0 新增）
 

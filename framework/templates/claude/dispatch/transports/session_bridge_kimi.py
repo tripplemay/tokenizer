@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import pwd
 import queue
 import re
 import shutil
@@ -34,6 +35,8 @@ _MAX_RAW_CHILD_CALL_ID_CHARS = 512
 # JSON values are never lineage identifiers, even if they happen to be strings.
 _LINEAGE_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _LAUNCH_NONCE = re.compile(r"^[0-9a-f]{32}$")
+_WORKER_USER = "harnessvm"
+_SETPRIV = "/usr/bin/setpriv"
 
 # The provider constructs this complete worker environment.  The ACP process
 # never inherits ``os.environ`` and cannot receive a host credential, loader,
@@ -46,6 +49,7 @@ _WORKER_ENV_ALLOWLIST = frozenset({
     "LC_ALL",
     "KIMI_CODE_HOME",
     "KIMI_DISABLE_TELEMETRY",
+    "KIMI_DISABLE_CRON",
     "KIMI_CODE_NO_AUTO_UPDATE",
     "KIMI_CODE_BACKGROUND_KEEP_ALIVE_ON_EXIT",
     "KIMI_MODEL_NAME",
@@ -68,8 +72,84 @@ class KimiBridgeError(RuntimeError):
     """The ACP peer did not prove a native child-agent execution."""
 
 
+@dataclass(frozen=True)
+class _WorkerIdentity:
+    uid: int
+    gid: int
+
+
+def _harnessvm_identity() -> _WorkerIdentity:
+    """Return the one unprivileged identity allowed to execute vendor code."""
+    if os.name != "posix" or os.geteuid() != 0:
+        raise KimiBridgeError("Kimi provider bridge must run as root before dropping privileges")
+    try:
+        entry = pwd.getpwnam(_WORKER_USER)
+    except KeyError as exc:
+        raise KimiBridgeError("Kimi provider worker identity is unavailable") from exc
+    if entry.pw_name != _WORKER_USER or entry.pw_uid <= 0 or entry.pw_gid <= 0:
+        raise KimiBridgeError("Kimi provider worker identity is invalid")
+    return _WorkerIdentity(uid=entry.pw_uid, gid=entry.pw_gid)
+
+
+def _harnessvm_command(command: list[str], identity: _WorkerIdentity | None) -> list[str]:
+    """Wrap a vendor command in the guest's fixed privilege-drop utility.
+
+    Python's ``Popen(user=...)`` is not portable across all hardened guest
+    ELF launch paths. The pinned Ubuntu guest provides ``/usr/bin/setpriv``;
+    invoke it by absolute path so it performs the identity transition before
+    the vendor binary starts. The outer systemd profile already owns the
+    complete cgroup and grants only the two transition capabilities to this
+    root bridge.
+    """
+    if identity is None:
+        return list(command)
+    return [
+        _SETPRIV,
+        f"--reuid={identity.uid}",
+        f"--regid={identity.gid}",
+        "--clear-groups",
+        "--inh-caps=-all",
+        "--ambient-caps=-all",
+        "--no-new-privs",
+        "--",
+        *command,
+    ]
+
+
+def _inside(root: Path, candidate: Path) -> bool:
+    try:
+        return os.path.commonpath((str(root), str(candidate))) == str(root)
+    except ValueError:
+        return False
+
+
+def _private_worker_directory(
+    path: Path, root: Path, identity: _WorkerIdentity, label: str
+) -> Path:
+    if not path.is_absolute():
+        raise KimiBridgeError(f"{label} must be absolute")
+    try:
+        entry = path.lstat()
+    except OSError as exc:
+        raise KimiBridgeError(f"{label} is unavailable") from exc
+    if (
+        stat.S_ISLNK(entry.st_mode)
+        or not stat.S_ISDIR(entry.st_mode)
+        or entry.st_uid != identity.uid
+        or entry.st_gid != identity.gid
+        or stat.S_IMODE(entry.st_mode) & 0o077
+    ):
+        raise KimiBridgeError(f"{label} ownership or mode is invalid")
+    resolved = path.resolve()
+    if resolved == root or not _inside(root, resolved):
+        raise KimiBridgeError(f"{label} escapes the worker state root")
+    return resolved
+
+
 def _provider_worker_environment(
-    worker_env: Mapping[str, str], worker_state_root: Path | None
+    worker_env: Mapping[str, str],
+    worker_state_root: Path | None,
+    identity: _WorkerIdentity | None = None,
 ) -> tuple[dict[str, str], Path]:
     """Build an empty per-launch Kimi state home from provider-owned inputs.
 
@@ -96,26 +176,38 @@ def _provider_worker_environment(
         if stat.S_ISLNK(root_stat.st_mode) or not stat.S_ISDIR(root_stat.st_mode):
             raise KimiBridgeError("Kimi provider worker state root is invalid")
         root = worker_state_root.resolve()
+        if identity is not None:
+            if (
+                root_stat.st_uid != identity.uid
+                or root_stat.st_gid != identity.gid
+                or stat.S_IMODE(root_stat.st_mode) & 0o077
+            ):
+                raise KimiBridgeError("Kimi provider worker state root ownership or mode is invalid")
+            for key in ("HOME", "TMPDIR"):
+                _private_worker_directory(Path(environment[key]), root, identity, f"Kimi provider {key}")
         requested_home = environment.get("KIMI_CODE_HOME")
         if requested_home is None:
+            if identity is not None:
+                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be pre-created")
             private_home = Path(tempfile.mkdtemp(prefix="kimi-code-", dir=root))
         else:
             candidate = Path(requested_home)
-            if not candidate.is_absolute():
-                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be absolute")
             try:
                 candidate_stat = candidate.lstat()
             except OSError as exc:
                 raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be a pre-created directory") from exc
             if stat.S_ISLNK(candidate_stat.st_mode) or not stat.S_ISDIR(candidate_stat.st_mode):
                 raise KimiBridgeError("Kimi provider KIMI_CODE_HOME is invalid")
-            private_home = candidate.resolve()
-            try:
-                is_child_of_root = os.path.commonpath((str(root), str(private_home))) == str(root)
-            except ValueError:
-                is_child_of_root = False
-            if private_home == root or not is_child_of_root:
-                raise KimiBridgeError("Kimi provider KIMI_CODE_HOME escapes the worker state root")
+            if identity is not None:
+                private_home = _private_worker_directory(
+                    candidate, root, identity, "Kimi provider KIMI_CODE_HOME"
+                )
+            else:
+                if not candidate.is_absolute():
+                    raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be absolute")
+                private_home = candidate.resolve()
+                if private_home == root or not _inside(root, private_home):
+                    raise KimiBridgeError("Kimi provider KIMI_CODE_HOME escapes the worker state root")
             if any(private_home.iterdir()):
                 raise KimiBridgeError("Kimi provider KIMI_CODE_HOME must be empty at launch")
         os.chmod(private_home, 0o700)
@@ -313,11 +405,10 @@ class _RpcPeer:
     next_id: int = 1
 
     def __post_init__(self) -> None:
-        if self.process.stdout is None or self.process.stderr is None:
+        if self.process.stdout is None:
             raise KimiBridgeError("ACP stdio is unavailable")
         self._events: queue.Queue[object] = queue.Queue()
         threading.Thread(target=self._read_stdout, daemon=True).start()
-        threading.Thread(target=self._drain_stderr, daemon=True).start()
 
     def _read_stdout(self) -> None:
         assert self.process.stdout is not None
@@ -342,11 +433,6 @@ class _RpcPeer:
                 self._events.put(raw)
         finally:
             self._events.put(None)
-
-    def _drain_stderr(self) -> None:
-        assert self.process.stderr is not None
-        for _raw in self.process.stderr:
-            pass
 
     def _receive(self) -> dict[str, Any]:
         remaining = self.deadline - time.monotonic()
@@ -522,11 +608,18 @@ def _materialize_terminal_message(sink: Path, updates: list[dict[str, Any]], ses
         flags |= os.O_NOFOLLOW
     try:
         sink.parent.mkdir(parents=True, exist_ok=True)
+        # The commissioned artifact must be owned by the worktree principal
+        # (the vendor uid), not by whichever uid runs the driver. Under the
+        # root-supervisor model the driver is root while the worktree belongs
+        # to the dropped vendor account, so mirror the parent's ownership.
+        parent_stat = os.stat(sink.parent)
         descriptor = os.open(str(sink), flags, 0o600)
     except OSError as exc:
         raise KimiBridgeError("Kimi bridge could not materialize the terminal-message deliverable") from exc
     try:
         os.write(descriptor, payload)
+        if os.geteuid() == 0 and (parent_stat.st_uid != 0 or parent_stat.st_gid != 0):
+            os.fchown(descriptor, parent_stat.st_uid, parent_stat.st_gid)
     finally:
         os.close(descriptor)
 
@@ -567,6 +660,7 @@ def run_acp_native_agent(
     worker_env: Mapping[str, str],
     worker_state_root: Path | None,
     provider_owns_cleanup: bool = False,
+    run_as_harnessvm: bool = False,
     deliverable_sink: Path | None = None,
 ) -> dict[str, Any]:
     """Run one native Kimi Agent and prove it happened through ACP updates.
@@ -581,6 +675,8 @@ def run_acp_native_agent(
         raise KimiBridgeError("Kimi native subagent type is invalid")
     if not isinstance(nonce, str) or _LAUNCH_NONCE.fullmatch(nonce) is None:
         raise KimiBridgeError("Kimi bridge nonce is invalid")
+    if type(run_as_harnessvm) is not bool:
+        raise KimiBridgeError("Kimi provider privilege mode is invalid")
 
     interrupt_cleanup = _install_interrupt_cleanup()
     process: subprocess.Popen[str] | None = None
@@ -590,9 +686,11 @@ def run_acp_native_agent(
         # A cancellation which arrived while handlers were being installed
         # must prevent a later Popen from starting an unnecessary CLI session.
         interrupt_cleanup.raise_if_interrupted()
+        identity = _harnessvm_identity() if run_as_harnessvm else None
         environment, private_kimi_home = _provider_worker_environment(
             worker_env,
             worker_state_root,
+            identity,
         )
         interrupt_cleanup.raise_if_interrupted()
         try:
@@ -600,14 +698,26 @@ def run_acp_native_agent(
                 "cwd": cwd,
                 "stdin": subprocess.PIPE,
                 "stdout": subprocess.PIPE,
-                "stderr": subprocess.PIPE,
+                # ACP's wire protocol is stdout-only. Vendor stderr is neither
+                # a protocol channel nor an allowed diagnostic sink, and line
+                # iteration can allocate an unbounded string before yielding.
+                "stderr": subprocess.DEVNULL,
                 "text": True,
                 "bufsize": 1,
                 "env": environment,
+                # A root session bridge may hold the supervisor result pipe.
+                # Never allow the vendor process to inherit it or any other
+                # incidental descriptor from the trusted parent.
+                "close_fds": True,
             }
+            if identity is not None:
+                # ``setpriv`` applies the uid/gid transition inside the
+                # pinned guest before the vendor ELF runs. Keep the bridge
+                # process root-owned until that exact wrapper executes.
+                popen_options["umask"] = 0o077
             if os.name == "posix" and not provider_owns_cleanup:
                 popen_options["start_new_session"] = True
-            process = popen(command, **popen_options)
+            process = popen(_harnessvm_command(command, identity), **popen_options)
         except OSError as exc:
             raise KimiBridgeError("Kimi ACP command could not start") from exc
 
@@ -674,6 +784,11 @@ def run_acp_native_agent(
         raw_inputs: dict[str, dict[str, Any]] = {}
         for update in updates:
             tool_name, raw_input, call_id = _agent_tool_event(update, session_id)
+            # A swarm fans out unbounded child work outside the one-child
+            # receipt contract. Do not turn an observed swarm event into a
+            # generic tool update: fail the bridge before it can be accepted.
+            if tool_name == "AgentSwarm":
+                raise KimiBridgeError("Kimi ACP native AgentSwarm is not permitted")
             if call_id is None:
                 continue
             if tool_name == "Agent":

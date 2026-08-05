@@ -25,10 +25,17 @@ type: feedback
 - 测试代码由 Generator 提供脚本/调用，但执行权归 Evaluator（测试域所有者）
 - 这是 acceptance 的一部分，Evaluator 验收时会检查
 
+## 交付叙述纪律（铁律 13 — M4.7 沉淀）
+
+- `generator_handoff` / commit 正文里每句「已修 / 已验证 / 已移除 / 全绿」，落笔前必须有对应命令输出作依据（`git show --stat` / `grep` / 实跑）；拿不出就如实写「未核」
+- 反面：M4.7 连续三轮 4 例交付叙述被复验证伪（「只改了 X 与 Y」而提交无 X；「摘掉某行全量无一条会红」实测 1 条翻红）
+
 ## CI 守门（铁律）
 
 - 每次 `git push origin main` 后必须检查 CI（可后台 `gh run watch`，期间可继续工作）
+- **watch 必须 `--workflow CI` 过滤 + 结束后显式核 conclusion**（v1.0.9：不过滤会抓到同 SHA 其他 workflow 的 exit 0 掩盖红灯——M1-C 曾因此漏看两个 feature 的 Build failure）
 - CI 红色 → 立即停止新功能，先修复 CI；通过后才继续下一个功能
+- **探针/测试漂移扫描（v1.0.5 — GO-LIVE 沉淀）：** redirect 落地同批必须 grep 重指所有引用旧路由的探针与测试——`tests/visual/*.spec.ts` 的 route/selector、`docker-compose*.yml` / `.github/workflows/deploy*.yml` 的 healthcheck 路由、任何 `curl <旧路由>` 探针。此类失效**延迟暴露**（自身 CI 可侥幸绿，后续无关 push / 首次部署才红），不得留给后续批次撞见
 
 ## IA refactor redirect scope 评估（v1.0 — BL-064 沉淀）
 

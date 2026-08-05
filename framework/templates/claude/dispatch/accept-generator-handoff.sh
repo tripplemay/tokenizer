@@ -72,6 +72,8 @@ done
 [ -f "$DISPATCH_DIR/validate-generator-handoff.sh" ] || die "validate-generator-handoff.sh is missing"
 [ -f "$DISPATCH_DIR/validate-external-bridge-receipt.py" ] || \
   die "validate-external-bridge-receipt.py is missing"
+[ -f "$DISPATCH_DIR/validate-active-return-route.py" ] || \
+  die "validate-active-return-route.py is missing"
 
 COORDINATOR_ENV=(env -i "PATH=${PATH:-/usr/bin:/bin}" "LANG=${LANG:-C.UTF-8}" "LC_ALL=${LC_ALL:-C.UTF-8}" "HOME=${HOME:-/tmp}" GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0)
 PROJECT_ROOT="$("${COORDINATOR_ENV[@]}" git rev-parse --show-toplevel 2>/dev/null)" || die "must be invoked inside the Coordinator main checkout"
@@ -131,22 +133,47 @@ except (OSError, ValueError):
 print(value if isinstance(value, str) else "")
 PY
 )" || die "cannot read Generator return transport"
-case "$RETURN_TRANSPORT" in
-  local-cli)
+ACTIVE_TARGET_JSON="{}"
+ACTIVE_RETURN_ROUTE="legacy"
+if [ -n "$ACTIVE_AGENT" ]; then
+    TARGET_ADAPTERS="$ADAPTERS"
+    if [ -z "$TARGET_ADAPTERS" ]; then
+      [ -x "$DISPATCH_DIR/resolve-mode-adapters.sh" ] || \
+        die "resolve-mode-adapters.sh is missing"
+      TARGET_ADAPTERS="$(bash "$DISPATCH_DIR/resolve-mode-adapters.sh" \
+        --progress "$PROGRESS" --default "$DISPATCH_DIR/transports/adapters")" \
+        || die "cannot restore the active mode adapter directory"
+    fi
+    TARGET_ARGS=(python3 "$DISPATCH_DIR/tool-catalog.py" target --registry "$REGISTRY" --target-id "$ACTIVE_AGENT")
+    TARGET_ARGS+=(--adapters "$TARGET_ADAPTERS")
+    ACTIVE_TARGET_JSON="$("${TARGET_ARGS[@]}")" || \
+      die "cannot re-resolve the active Generator target"
+    ACTIVE_RETURN_ROUTE_JSON="$(python3 "$DISPATCH_DIR/validate-active-return-route.py" \
+      --run-meta "$RUN_META" --active-role-json "$ACTIVE_ROLE" \
+      --active-target-json "$ACTIVE_TARGET_JSON")" || \
+      die "run metadata transport does not match the re-verified active Generator target"
+    ACTIVE_RETURN_ROUTE="$(printf '%s' "$ACTIVE_RETURN_ROUTE_JSON" | python3 -c \
+      "import json,sys; print(json.load(sys.stdin).get('route') or '')")"
+fi
+case "$ACTIVE_RETURN_ROUTE:$RETURN_TRANSPORT" in
+  legacy:local-cli|local-cli:local-cli)
     ;;
-  subagent)
+  external-bridge-subagent:subagent)
     python3 "$DISPATCH_DIR/validate-external-bridge-receipt.py" \
       --role generator --run-meta "$RUN_META" --handoff "$HANDOFF" \
       --envelope "$ENVELOPE" --project-root "$PROJECT_ROOT" \
-      --active-role-json "$ACTIVE_ROLE" >&2 || \
+      --active-role-json "$ACTIVE_ROLE" --active-target-json "$ACTIVE_TARGET_JSON" >&2 || \
       die "provider-attested external Generator receipt validation failed"
     ;;
+  legacy:subagent)
+    die "provider-attested subagent Generator requires a re-verified active mode role"
+    ;;
   *)
-    die "only local-cli or provider-attested subagent Generator handoffs have a returnable source diff"
+    die "Generator return transport differs from its re-verified active route"
     ;;
 esac
 
-python3 - "$PROJECT_ROOT" "$HANDOFF" "$ENVELOPE" "$RUN_META" "$L1_COMMANDS" "$APPLY" "$ACTIVE_AGENT" <<'PY'
+python3 - "$PROJECT_ROOT" "$HANDOFF" "$ENVELOPE" "$RUN_META" "$L1_COMMANDS" "$APPLY" "$ACTIVE_AGENT" "$ACTIVE_RETURN_ROUTE" <<'PY'
 import json
 import os
 import re
@@ -165,6 +192,7 @@ meta_path = Path(sys.argv[4]).resolve()
 l1_path = Path(sys.argv[5]).resolve()
 apply = sys.argv[6] == "true"
 active_agent = sys.argv[7]
+active_return_route = sys.argv[8]
 
 
 def fail(message: str) -> None:
@@ -317,6 +345,17 @@ if active_agent and meta.get("agent_id") != active_agent:
 transport = meta.get("transport")
 if transport not in {"local-cli", "subagent"}:
     fail("only local-cli or provider-attested subagent Generator handoffs have a returnable source diff")
+expected_transport = {
+    "legacy": None,
+    "local-cli": "local-cli",
+    "external-bridge-subagent": "subagent",
+    "host-native-subagent": "subagent",
+    "a2a": "a2a",
+}.get(active_return_route)
+if active_return_route not in {"legacy", "local-cli", "external-bridge-subagent", "host-native-subagent", "a2a"}:
+    fail("re-verified active Generator return route is invalid")
+if expected_transport is not None and transport != expected_transport:
+    fail("run metadata transport does not match the re-verified active Generator route")
 if meta.get("outcome") != "RETURNED" or meta.get("exit_code") != 0:
     fail("run metadata must record a successful RETURNED outcome")
 

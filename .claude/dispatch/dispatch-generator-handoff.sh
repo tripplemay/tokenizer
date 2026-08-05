@@ -355,6 +355,11 @@ context = {
 }
 if agent_type is not None:
     context["agent_type"] = agent_type
+if route == "external-bridge-subagent":
+    # Keep the full catalog target for receipt verification. Its provenance is
+    # independently compared with the signed active role after the Provider
+    # returns; it is not a new selection input.
+    context["active_target"] = descriptor
 json.dump(context, open(output_path, "w", encoding="utf-8"), ensure_ascii=True, sort_keys=True)
 PY
 then
@@ -395,6 +400,15 @@ import sys
 print(json.load(open(sys.argv[1], encoding="utf-8"))["agent_id"])
 PY
 )"
+ACTIVE_TARGET_JSON="$(python3 - "$CONTEXT" <<'PY'
+import json
+import sys
+
+context = json.load(open(sys.argv[1], encoding="utf-8"))
+target = context.get("active_target", {})
+print(json.dumps(target, ensure_ascii=True, sort_keys=True, separators=(",", ":")))
+PY
+)" || die "cannot recover the active Generator target"
 BATCH="$(python3 - "$CONTEXT" <<'PY'
 import json
 import sys
@@ -475,7 +489,7 @@ fi
 set +e
 RECEIPT_JSON="$(bash "$DISPATCH_DIR/validate-dispatch.sh" receipt "$RUN_META" \
   --expected-envelope "$ENVELOPE" --active-role-json "$ACTIVE_ROLE" \
-  --project-root "$PROJECT_ROOT")"
+  --active-target-json "$ACTIVE_TARGET_JSON" --project-root "$PROJECT_ROOT")"
 RECEIPT_RC=$?
 set -e
 
@@ -535,7 +549,7 @@ case "$ROUTE:$RETURN_TRANSPORT" in
     if ! python3 "$DISPATCH_DIR/validate-external-bridge-receipt.py" \
       --role generator --run-meta "$RUN_META" --handoff "$HANDOFF_PATH" \
       --envelope "$ENVELOPE" --project-root "$PROJECT_ROOT" \
-      --active-role-json "$ACTIVE_ROLE" >&2; then
+      --active-role-json "$ACTIVE_ROLE" --active-target-json "$ACTIVE_TARGET_JSON" >&2; then
       printf '%s\n' '{"state":"ARTIFACT_INVALID","reason":"provider-attested external Generator receipt validation failed"}'
       exit 4
     fi

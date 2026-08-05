@@ -6,8 +6,8 @@
 #   validate-dispatch.sh envelope    <envelope.json>                L2 信封（字段白名单 = 铁律 12 强制）
 #   validate-dispatch.sh assignments [progress.json] [registry] [--adapters <dir>]
 #                                                              ⚠️ 独立性互斥：generator/evaluator 的 model_family 必须不同
-#   validate-dispatch.sh receipt     <run-meta.json> [--expected-envelope <f> --active-role-json <json> --project-root <dir>]
-#                                                              L3 回执推断（external Generator subagent 必须带已验签上下文）
+#   validate-dispatch.sh receipt     <run-meta.json> [--expected-envelope <f> --active-role-json <json> --active-target-json <json> --project-root <dir>]
+#                                                              L3 回执推断（external subagent 必须带已验签 role/target 上下文）
 #   validate-dispatch.sh hook                                       PostToolUse：stdin 取 file_path，命中即校验
 #
 # 退出码：0 通过 / 2 校验失败（fail-closed）
@@ -20,6 +20,7 @@ MODE="${1:-all}"
 DISPATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE_ADAPTERS="$DISPATCH_DIR/resolve-mode-adapters.sh"
 EXTERNAL_RECEIPT_VALIDATOR="$DISPATCH_DIR/validate-external-bridge-receipt.py"
+ACTIVE_RETURN_ROUTE_VALIDATOR="$DISPATCH_DIR/validate-active-return-route.py"
 
 resolve_active_adapters() {
   local progress_path="$1"
@@ -55,9 +56,41 @@ import json,sys
 try: print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))
 except Exception: pass
 ")
+  # Registry contents choose transports and executable metadata.  A hook event
+  # must not make an arbitrary same-named file (or a symlink) an authority that
+  # the execution entries would reject later.  Keep this early configuration
+  # guard on the exact same project-root pinning primitive as dispatch-run.
+  PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    echo "[dispatch] ⛔ PostToolUse dispatch hook 必须在 git 项目内运行" >&2
+    exit 2
+  }
+  pin_hook_registry() {
+    python3 "$DISPATCH_DIR/dispatch_common.py" project-registry \
+      --project-root "$PROJECT_ROOT" --registry "$1"
+  }
+  validate_hook_state() {
+    local registry="$1"
+    "$0" registry "$registry" --progress "$PROJECT_ROOT/progress.json" || return 2
+    "$0" assignments "$PROJECT_ROOT/progress.json" "$registry" || return 2
+    "$DISPATCH_DIR/validate-resolved-mode-bindings.sh" \
+      --progress "$PROJECT_ROOT/progress.json" --registry "$registry" >/dev/null || return 2
+  }
   case "$(basename "$FP" 2>/dev/null)" in
-    .agents-registry.json) exec "$0" registry "$FP" ;;
-    progress.json)         [ -f .agents-registry.json ] && exec "$0" assignments "$FP" || exit 0 ;;
+    .agents-registry.json)
+      REGISTRY="$(pin_hook_registry "$FP")" || exit 2
+      validate_hook_state "$REGISTRY" || exit 2
+      exit 0
+      ;;
+    progress.json)
+      CANDIDATE="$PROJECT_ROOT/.agents-registry.json"
+      # Include dangling links so a broken attempted registry is rejected
+      # rather than silently treated as an absent configuration.
+      if [ -e "$CANDIDATE" ] || [ -L "$CANDIDATE" ]; then
+        REGISTRY="$(pin_hook_registry "$CANDIDATE")" || exit 2
+        validate_hook_state "$REGISTRY" || exit 2
+      fi
+      exit 0
+      ;;
     *) exit 0 ;;
   esac
 fi
@@ -519,10 +552,11 @@ PY
 
 receipt)
   shift
-  META="${1:?用法: validate-dispatch.sh receipt <run-meta.json> [--expected-envelope <f> --active-role-json <json> --project-root <dir>]}"
+  META="${1:?用法: validate-dispatch.sh receipt <run-meta.json> [--expected-envelope <f> --active-role-json <json> --active-target-json <json> --project-root <dir>]}"
   shift
   EXPECTED_ENVELOPE=""
   ACTIVE_ROLE_JSON=""
+  ACTIVE_TARGET_JSON=""
   PROJECT_ROOT=""
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -534,6 +568,11 @@ receipt)
       --active-role-json)
         [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ receipt --active-role-json 缺值" >&2; exit 2; }
         ACTIVE_ROLE_JSON="$2"
+        shift 2
+        ;;
+      --active-target-json)
+        [ "$#" -ge 2 ] || { echo "[dispatch] ⛔ receipt --active-target-json 缺值" >&2; exit 2; }
+        ACTIVE_TARGET_JSON="$2"
         shift 2
         ;;
       --project-root)
@@ -679,10 +718,62 @@ PY
 )"
     STATE="ARTIFACT_INVALID"
   }
+  # A caller that supplies the commissioned envelope must not let untrusted
+  # run-meta select the role-specific validation path. This is mandatory for
+  # every active external route: otherwise a forged role could skip both its
+  # artifact contract and the provider-owned receipt check.
+  EXPECTED_ROLE=""
+  if [ -n "$EXPECTED_ENVELOPE" ]; then
+    if ! EXPECTED_ROLE="$(python3 - "$EXPECTED_ENVELOPE" <<'PY'
+import json
+import sys
+
+try:
+    envelope = json.load(open(sys.argv[1], encoding="utf-8"))
+except (OSError, ValueError):
+    raise SystemExit(2)
+role = envelope.get("role") if isinstance(envelope, dict) else None
+if role not in {"planner", "generator", "evaluator"}:
+    raise SystemExit(2)
+print(role)
+PY
+)"; then
+      invalidate_receipt "expected envelope has no valid dispatch role"
+    fi
+  fi
+  EFFECTIVE_ROLE="$ROLE"
+  if [ -n "$EXPECTED_ROLE" ]; then
+    if [ "$ROLE" != "$EXPECTED_ROLE" ]; then
+      invalidate_receipt "run metadata role does not match the commissioned envelope role"
+    else
+      EFFECTIVE_ROLE="$EXPECTED_ROLE"
+    fi
+  fi
+  ACTIVE_RETURN_ROUTE="legacy"
+  if { [ -n "$ACTIVE_ROLE_JSON" ] && [ "$ACTIVE_ROLE_JSON" != "{}" ]; } || \
+     { [ -n "$ACTIVE_TARGET_JSON" ] && [ "$ACTIVE_TARGET_JSON" != "{}" ]; }; then
+    if [ ! -f "$ACTIVE_RETURN_ROUTE_VALIDATOR" ]; then
+      invalidate_receipt "active return route validator is unavailable"
+    elif ! ACTIVE_RETURN_ROUTE_JSON="$(python3 "$ACTIVE_RETURN_ROUTE_VALIDATOR" \
+      --run-meta "$META" --active-role-json "$ACTIVE_ROLE_JSON" \
+      --active-target-json "$ACTIVE_TARGET_JSON")"; then
+      invalidate_receipt "run metadata transport does not match the re-verified active target"
+    else
+      ACTIVE_RETURN_ROUTE="$(printf '%s' "$ACTIVE_RETURN_ROUTE_JSON" | python3 -c \
+        "import json,sys; print(json.load(sys.stdin).get('route') or '')")"
+      case "$ACTIVE_RETURN_ROUTE" in
+        local-cli|a2a|host-native-subagent|external-bridge-subagent) ;;
+        *) invalidate_receipt "active return route validator returned an invalid route" ;;
+      esac
+    fi
+  fi
+  if [ "$ACTIVE_RETURN_ROUTE" = "external-bridge-subagent" ] && [ -z "$EXPECTED_ROLE" ]; then
+    invalidate_receipt "external bridge receipt lacks a commissioned envelope role"
+  fi
   # Planner artifacts have a different semantic schema from verdicts. Validate
   # both a completed proposal and a request-for-input before returning the
   # receipt state to the Coordinator.
-  if [ "$ROLE" = "planner" ] && { [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "INPUT_REQUIRED" ]; }; then
+  if [ "$EFFECTIVE_ROLE" = "planner" ] && { [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "INPUT_REQUIRED" ]; }; then
     if [ "$SCHEMA" != ".claude/dispatch/planner-proposal.schema.json" ]; then
       echo "[dispatch] ⛔ Planner deliverable schema 非法" >&2
       invalidate_receipt "planner deliverable schema is not allowed"
@@ -693,7 +784,7 @@ PY
   # Generator handoffs must be bound to the exact commissioned envelope, not
   # merely to an artifact filename. envelope_path is emitted by every trusted
   # transport run-meta writer before this receipt is evaluated.
-  if [ "$ROLE" = "generator" ] && {
+  if [ "$EFFECTIVE_ROLE" = "generator" ] && {
     [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "AUTH_REQUIRED" ] || [ "$STATE" = "INPUT_REQUIRED" ];
   }; then
     if [ "$SCHEMA" != ".claude/dispatch/generator-handoff.schema.json" ]; then
@@ -706,25 +797,44 @@ PY
       invalidate_receipt "generator handoff failed schema and envelope validation"
     fi
   fi
-  # Generic receipt inference must never turn a hand-written `transport=subagent`
-  # record into a gate-facing completed Generator result.  The provider receipt
-  # is meaningful only when it is bound to this exact envelope and the
-  # re-verified signed Generator route.
-  if [ "$ROLE" = "generator" ] && [ "$TRANSPORT" = "subagent" ] && [ "$STATE" = "COMPLETED" ]; then
-    if [ -z "$EXPECTED_ENVELOPE" ] || [ -z "$ACTIVE_ROLE_JSON" ] || [ -z "$PROJECT_ROOT" ]; then
-      echo "[dispatch] ⛔ external Generator receipt 缺少 envelope、active role 或 project root 上下文" >&2
-      invalidate_receipt "external Generator receipt lacks signed validation context"
+  # The signed active target, never the untrusted return metadata, decides
+  # whether provider receipt validation is mandatory. Legacy host-native
+  # subagents remain supported only when they do not claim a provider bridge.
+  if [ "$ACTIVE_RETURN_ROUTE" = "external-bridge-subagent" ] && {
+    [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "AUTH_REQUIRED" ] || [ "$STATE" = "INPUT_REQUIRED" ];
+  } && { [ "$EFFECTIVE_ROLE" = "planner" ] || [ "$EFFECTIVE_ROLE" = "generator" ] || [ "$EFFECTIVE_ROLE" = "evaluator" ]; }; then
+    if [ -z "$EXPECTED_ENVELOPE" ] || [ -z "$ACTIVE_ROLE_JSON" ] || [ -z "$ACTIVE_TARGET_JSON" ] || [ -z "$PROJECT_ROOT" ]; then
+      echo "[dispatch] ⛔ external $EFFECTIVE_ROLE receipt 缺少 envelope、active role、active target 或 project root 上下文" >&2
+      invalidate_receipt "external $EFFECTIVE_ROLE receipt lacks signed validation context"
     elif [ ! -f "$EXTERNAL_RECEIPT_VALIDATOR" ]; then
       echo "[dispatch] ⛔ external bridge receipt validator 不存在" >&2
-      invalidate_receipt "external Generator receipt validator is unavailable"
+      invalidate_receipt "external $EFFECTIVE_ROLE receipt validator is unavailable"
     elif ! python3 "$EXTERNAL_RECEIPT_VALIDATOR" \
-      --role generator --run-meta "$META" --handoff "$ART" \
+      --role "$EFFECTIVE_ROLE" --run-meta "$META" --artifact "$ART" \
       --envelope "$EXPECTED_ENVELOPE" --project-root "$PROJECT_ROOT" \
-      --active-role-json "$ACTIVE_ROLE_JSON" >&2; then
-      invalidate_receipt "provider-attested external Generator receipt validation failed"
+      --active-role-json "$ACTIVE_ROLE_JSON" --active-target-json "$ACTIVE_TARGET_JSON" >&2; then
+      invalidate_receipt "provider-attested external $ROLE receipt validation failed"
+    fi
+  elif [ "$TRANSPORT" = "subagent" ] && {
+    [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "AUTH_REQUIRED" ] || [ "$STATE" = "INPUT_REQUIRED" ];
+  } && { [ "$EFFECTIVE_ROLE" = "planner" ] || [ "$EFFECTIVE_ROLE" = "generator" ] || [ "$EFFECTIVE_ROLE" = "evaluator" ]; }; then
+    if python3 - "$META" <<'PY'
+import json
+import sys
+
+try:
+    meta = json.load(open(sys.argv[1], encoding="utf-8"))
+except (OSError, ValueError):
+    raise SystemExit(2)
+raise SystemExit(0 if meta.get("bridge") is None else 1)
+PY
+    then
+      :
+    else
+      invalidate_receipt "subagent provider bridge receipt lacks an external active target"
     fi
   fi
-  if [ "$ROLE" = "evaluator" ] && [ "$STATE" = "COMPLETED" ]; then
+  if [ "$EFFECTIVE_ROLE" = "evaluator" ] && [ "$STATE" = "COMPLETED" ]; then
     VVA="$DISPATCH_DIR/../autonomous/validate-verdict-artifact.sh"
     EXPECTED_EVALUATOR_ARTIFACT="docs/test-reports/${BATCH}-verdict.json"
     if [ "$DELIVERABLE_ARTIFACT" != "$EXPECTED_EVALUATOR_ARTIFACT" ]; then
