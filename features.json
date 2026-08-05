@@ -1,29 +1,29 @@
 {
-  "sprint": "BL-AGENT-RELEASE-ACCEPTANCE",
+  "sprint": "BL-TOKENIZER-ADOPT-V170",
   "features": [
     {
       "id": "F001",
-      "title": "验收 Agent 1.2.0 / capability 8：目录兼容性恢复与升级判定（BL-AGENT-CATALOG-RELEASE-RECOVERY，实现 c5fe6be）",
+      "title": "采纳 v1.7.0 框架文件（dispatch runtime+tests、releases.json、VERSION、docs、账本）",
       "priority": "high",
-      "status": "completed",
-      "executor": "evaluator",
-      "acceptance": "对照 backlog 原决策逐条验收：旧 parser 不回退兼容 subagent:true（不重新暴露不可信 external subagent 路由）；local-cli/A2A 目录以 fail-closed 为前提恢复；capability 8 为工具绑定 mode intent 的最低门槛；控制台按报告新鲜度、升级要求、版本核验、兼容但空目录的顺序给出互斥且可操作的原因。以生产服务与代码实物为准，含聚焦测试运行。"
+      "status": "pending",
+      "executor": "generator",
+      "acceptance": "harness-template@v1.7.0 受管框架文件同步进 tokenizer（.claude/dispatch/** 与 framework 镜像逐字节一致，保留本地 agents-registry.example.json）；framework/harness/framework-releases.json 末项=1.7.0；framework/VERSION=1.7.0；铁律13 文档层增量；harness.json/lock 记 v1.7.0。provider 含 6 处真机修复标记；framework dispatch python 套件全绿。"
     },
     {
       "id": "F002",
-      "title": "验收 Agent 1.2.1 / capability 9：单实例生命周期与上报者身份（BL-AGENT-SINGLE-INSTANCE-LIFECYCLE，实现 bbb2c8b）",
+      "title": "更新与框架版本/桥接形状耦合的 3 个 vitest 测试到 v1.7.0",
       "priority": "high",
-      "status": "completed",
-      "executor": "evaluator",
-      "acceptance": "agent-lock 单实例（活 PID 拒绝第二实例、死 PID 回收、release 不误删后继锁）；wrapper 信号转发且等待 Node 子进程退出（升级不留孤儿旧进程并发上报）；服务端以 reporter identity 拒绝过期 daemon 覆盖已接受诊断与 Harness 控制面状态；设备页显示被接受上报的 Token 前缀与时间；MAX_AGENT_FEATURE_VERSION 上限防畸形值；生产已应用 device_reporter_observability 迁移。以代码实物、聚焦测试与生产实测为准。"
+      "status": "pending",
+      "executor": "generator",
+      "acceptance": "framework-version.test.ts（latest 1.6.2→1.7.0 + behind/ahead 用例）、mode-badges.test.ts、harness-tool-catalog.test.ts（external bridge 2 例对齐 v1.7.0 provider/manifest：planner=plan+terminal-message）更新到位；npx vitest run 全绿（此前 10 failed 归零）；断言语义正确；verify/lint/build 清白。"
     },
     {
       "id": "F003",
-      "title": "本机 Agent 升级到 1.2.1 的真实链路验收",
+      "title": "真机验收：迁移机器契约 + 真实 planner terminal-message launch + 全量回归 + 独立签收",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "在本机执行 install.sh 升级链路：升级后 ~/.tokenizer/app 为 a7bf556 等效内容、daemon 重启为单实例（旧 wrapper 与 Node 子进程均退出）、新 Agent 上报 capability 9 且服务端接受、设备页/控制台不再提示升级；升级过程与结果证据（脱敏）落盘 docs/test-reports/。若发现回归按事实记录，不修改产品代码。"
+      "acceptance": "fresh-context 独立验收 F001+F002；本机迁移 vm-v1 machine config 到 v1.7.0 契约（image_location+kimi_identity）后，对已认证 Kimi 执行真实 planner terminal-message bridge probe（brokered 凭据、无源码写入、脱敏），确认 RETURNED/completed + nonce receipt；framework 聚焦 + 全量 npm test/verify/lint/build。全 PASS 举 verifying-to-done 闸门。"
     }
   ]
 }
