@@ -65,7 +65,14 @@ FROM (
     AND ue."sessionId" ~ '^[A-Za-z0-9._-]+$'
     AND jsonb_typeof(snapshot.total) = 'object'
     AND snapshot.total ? 'total_tokens'
-    AND pg_temp.codex_counter(snapshot.total, 'total_tokens') > 0
+    AND (
+      pg_temp.codex_counter(snapshot.total, 'input_tokens') > 0 OR
+      pg_temp.codex_counter(snapshot.total, 'cached_input_tokens') > 0 OR
+      pg_temp.codex_counter(snapshot.total, 'cache_write_input_tokens') > 0 OR
+      pg_temp.codex_counter(snapshot.total, 'output_tokens') > 0 OR
+      pg_temp.codex_counter(snapshot.total, 'reasoning_output_tokens') > 0 OR
+      pg_temp.codex_counter(snapshot.total, 'total_tokens') > 0
+    )
 ) AS ranked;
 
 DELETE FROM "UsageEvent" ue
