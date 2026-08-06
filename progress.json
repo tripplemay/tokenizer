@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "修复 Codex token_count 累计快照被跨时间戳/跨 rollout 重复计入的问题，并幂等纠正历史数据。",
   "total_features": 3,
   "completed_features": 2,
   "fix_rounds": 0,
   "current_sprint": "BL-CODEX-USAGE-DEDUP",
   "dashboard_url": null,
-  "last_updated": "2026-08-06T06:58:00Z",
+  "last_updated": "2026-08-06T07:02:00Z",
   "reference_docs": [
     "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
     "docs/test-reports/CODEX-USAGE-OVERCOUNT-AUDIT-2026-08-06.md"
