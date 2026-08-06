@@ -1,6 +1,15 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
+import { UsageEventInput } from "@/shared/usage";
+import {
+  CodexUsageCounters,
+  codexCanonicalSourceEventId,
+  hasCodexUsage,
+  maxCodexUsage,
+  normalizeCodexUsage,
+  positiveCodexDelta,
+  readCodexTotalUsage
+} from "@/shared/codex-usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
 import { recordFile, shouldSkipFile } from "@/cli/cursor";
 import { ParserConfig, ParserResult } from "./types";
@@ -21,7 +30,9 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
   const events: UsageEventInput[] = [];
   if (!existsSync(dir)) return { events, warnings: [`Codex sessions directory not found: ${dir}`] };
 
-  for (const file of walk(dir)) {
+  const highWater = new Map<string, CodexUsageCounters>();
+
+  for (const file of walk(dir).sort()) {
     if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
     let sessionId: string | null = null;
     let workspacePath: string | null = null;
@@ -55,36 +66,38 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
         }
         if (row.type !== "event_msg" || row.payload?.type !== "token_count" || !row.payload?.info?.last_token_usage) return;
 
-        const usage = row.payload.info.last_token_usage;
-        // Codex follows the OpenAI convention: input_tokens already includes the
-        // cached_input_tokens subset. We store inputTokens as-is, matching the
-        // new project-wide convention where inputTokens means "total input the
-        // model saw" with cached as a separate subset. Codex does not expose a
-        // cache_write counter, so cacheWriteTokens stays 0.
-        const inputTokens = normalizeTokenCount(usage.input_tokens);
-        const cachedInputTokens = normalizeTokenCount(usage.cached_input_tokens);
-        const outputTokens = normalizeTokenCount(usage.output_tokens);
-        const reasoningOutputTokens = normalizeTokenCount(usage.reasoning_output_tokens);
-        const totalTokens = normalizeTokenCount(usage.total_tokens) || inputTokens + outputTokens;
-        if (totalTokens === 0) return;
+        const lastUsage = normalizeCodexUsage(row.payload.info.last_token_usage);
+        const totalUsage = readCodexTotalUsage(row);
+        let usage = lastUsage;
+        if (totalUsage && sessionId) {
+          const previous = highWater.get(sessionId);
+          usage = previous ? positiveCodexDelta(totalUsage, previous) : lastUsage;
+          highWater.set(sessionId, previous ? maxCodexUsage(previous, totalUsage) : totalUsage);
+        }
+        const totalTokens = usage.totalTokens || usage.inputTokens + usage.outputTokens;
+        if (!hasCodexUsage({ ...usage, totalTokens })) return;
 
         const occurredAt = row.timestamp ?? fallbackTime;
-        const fingerprint = `${occurredAt}:${model ?? ""}:${inputTokens}:${outputTokens}:${cachedInputTokens}:${reasoningOutputTokens}`;
-        if (seenFingerprints.has(fingerprint)) return;
-        seenFingerprints.add(fingerprint);
+        const legacySourceEventId = `codex:${file}:${index + 1}:${occurredAt}`;
+        const sourceEventId = codexCanonicalSourceEventId(sessionId, row, legacySourceEventId);
+        if (!totalUsage) {
+          const fingerprint = `${occurredAt}:${model ?? ""}:${usage.inputTokens}:${usage.outputTokens}:${usage.cachedInputTokens}:${usage.cacheWriteTokens}:${usage.reasoningOutputTokens}:${totalTokens}`;
+          if (seenFingerprints.has(fingerprint)) return;
+          seenFingerprints.add(fingerprint);
+        }
 
         events.push({
           source: "codex",
-          sourceEventId: `codex:${file}:${index + 1}:${row.timestamp ?? fallbackTime}`,
+          sourceEventId,
           projectName: inferProjectName(workspacePath),
           sessionId,
           workspacePath,
           model,
-          inputTokens,
-          outputTokens,
-          cachedInputTokens,
-          cacheWriteTokens: 0,
-          reasoningOutputTokens,
+          inputTokens: usage.inputTokens,
+          outputTokens: usage.outputTokens,
+          cachedInputTokens: usage.cachedInputTokens,
+          cacheWriteTokens: usage.cacheWriteTokens,
+          reasoningOutputTokens: usage.reasoningOutputTokens,
           totalTokens,
           occurredAt: row.timestamp ?? fallbackTime,
           rawJson: row

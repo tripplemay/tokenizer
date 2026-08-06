@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "Canonical Codex 累计快照身份与 parser high-water 增量去重",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "共享 helper 从 sessionId + total_token_usage 六字段生成稳定 v2 id；parser 跨文件按 session high-water 计算正向累计 delta，跳过累计不增长/replay/rate-limit 重发，首快照不导入未知 baseline，支持 cache_write_input_tokens；覆盖同文件改 timestamp、跨文件 replay、resume 新尾部、baseline、cursor/fallback 回归。"
     },
