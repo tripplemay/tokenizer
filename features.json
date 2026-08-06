@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "服务端兼容旧 Agent canonicalization 与历史 Codex 重复数据幂等迁移",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "server ingest 对旧 legacy sourceEventId 应用同一 canonical helper；PostgreSQL migration 按 device + canonical snapshot 合并历史重复、保留最早行并更新 canonical id，非 Codex/无有效累计行不动；临时 PostgreSQL 实测 canonical parity、唯一约束和二次执行幂等。"
     },
@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "独立验收 parser、旧 Agent 防线、迁移与真实日志脱敏复算",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "evaluator",
       "acceptance": "非 Codex fresh-context Evaluator 逐条复验 F001/F002；真实本机日志仅读 metadata/token 数字验证数量级纠偏；聚焦测试、全量 npm test/verify/lint/build 全绿；输出 verdict/signoff，不读写 prompt 或生产数据库。"
     }

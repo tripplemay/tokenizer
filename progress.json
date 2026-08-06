@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "done",
   "user_goal": "修复 Codex token_count 累计快照被跨时间戳/跨 rollout 重复计入的问题，并幂等纠正历史数据。",
   "total_features": 3,
-  "completed_features": 2,
+  "completed_features": 3,
   "fix_rounds": 1,
   "current_sprint": "BL-CODEX-USAGE-DEDUP",
   "dashboard_url": null,
-  "last_updated": "2026-08-06T07:38:00Z",
+  "last_updated": "2026-08-06T10:20:00Z",
   "reference_docs": [
     "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
     "docs/test-reports/CODEX-USAGE-OVERCOUNT-AUDIT-2026-08-06.md"
@@ -14,15 +14,21 @@
   "docs": {
     "spec": "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-CODEX-USAGE-DEDUP-signoff-2026-08-06.md",
     "framework_reviewed": true
   },
   "role_assignments": null,
   "mode_intent": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "summary": "Kimi fresh-context final reverification: F001, F002, and F003 all PASS.",
+    "pass_count": 3,
+    "partial_count": 0,
+    "fail_count": 0,
+    "issues": []
+  },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-CODEX-USAGE-DEDUP 2026-08-06】用户确认开始修复。审查实测最近 14 天当前 parser 约 51.91B vs 按 session+cumulative snapshot 去重约 3.07B（16.9x）；根因是 last_token_usage 盲信 + file/line sourceEventId + 文件内 timestamp 指纹。批次串行实现共享 canonical helper、parser high-water、server 旧 Agent 防线和历史幂等迁移；Kimi fresh-context 验收。纯 bug 不 bump feature version；不 push/deploy/访问生产。\n【F001 completed】新增 src/shared/codex-usage.ts；parser 按 session high-water 取累计正向 delta，canonical ID 覆盖跨时间戳/跨 rollout replay，保留无累计字段 fallback；codex parser tests 11/11 通过。\n【F002 fix round 1 completed】migration 有效性谓词已与 helper 对齐（六字段任一非零即纳入），临时 PostgreSQL已验证 total_tokens=0/input_tokens>0 的 canonicalize、去重和二次幂等。首次 Kimi 复验完成全量 1013 tests、verify/lint/build 和 migration DELETE 3/UPDATE 4、二次 0/0 后在写 artifact 前命中 1800s deadline；按规则仅重派一次聚焦复验。"
+    "planning": "【BL-CODEX-USAGE-DEDUP 2026-08-06】用户确认开始修复。审查实测最近 14 天当前 parser 约 51.91B vs 按 session+cumulative snapshot 去重约 3.07B（16.9x）；根因是 last_token_usage 盲信 + file/line sourceEventId + 文件内 timestamp 指纹。批次串行实现共享 canonical helper、parser high-water、server 旧 Agent 防线和历史幂等迁移；Kimi fresh-context 验收。纯 bug 不 bump feature version；不 push/deploy/访问生产。\n【F001 completed】新增 src/shared/codex-usage.ts；parser 按 session high-water 取累计正向 delta，canonical ID 覆盖跨时间戳/跨 rollout replay，保留无累计字段 fallback；codex parser tests 11/11 通过。\n【F002 fix round 1 completed】migration 有效性谓词已与 helper 对齐（六字段任一非零即纳入），临时 PostgreSQL 已验证 total_tokens=0/input_tokens>0 的 canonicalize、去重和二次幂等。\n【F003 completed】Kimi final reverify verdict F001/F002/F003 全 PASS；当前树 1013 tests、verify/lint/build 全绿，聚焦 19/19，最终 migration fixture 首轮 DELETE 2/UPDATE 4、二次 0/0，真实日志旧逻辑/v2 约 9.26x。未 push/deploy/访问生产。"
   },
   "features": [],
   "pending_gate": null

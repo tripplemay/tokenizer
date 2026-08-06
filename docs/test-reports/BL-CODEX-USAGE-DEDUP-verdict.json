@@ -1,0 +1,26 @@
+{
+  "batch_id": "BL-CODEX-USAGE-DEDUP",
+  "fix_round": 1,
+  "created_at": "2026-08-06T10:09:30Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "独立 diff 复核：ce2eb8f..HEAD（6e9bae4+9e75acf+421697c）仅触碰 migration.sql 有效性谓词、round0 verdict 落盘与 progress/features 状态簿记，src/shared/codex-usage.ts、src/parsers/codex.ts 及全部 F001 测试零改动（git diff --stat 5 文件，无 src/ 无 tests/）。因此已提交的不可变 round0 verdict（docs/test-reports/BL-CODEX-USAGE-DEDUP-round0-verdict.json，schema-valid）作为 F001 证据成立：helper 规范化六计数、canonical id codex:v2:<session>:<input>:<cached>:<cacheWrite>:<output>:<reasoning>:<total>、非法 session/缺快照/六字段全零回退 legacy、per-field high-water 单调、跨文件共享。本轮在锁定 ref 421697c 上独立重跑 npx vitest run tests/parsers/codex.test.ts：11/11 绿（与 round0 一致）。",
+      "steps_to_reproduce": "git diff ce2eb8f..HEAD --stat  # 无 src/ tests/ 改动; npx vitest run tests/parsers/codex.test.ts  # 11/11 pass"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "Fix 复核：migration.sql 唯一改动是把有效性谓词从 pg_temp.codex_counter(total,'total_tokens')>0 放宽为六字段任一>0，与 TS helper hasCodexUsage（src/shared/codex-usage.ts:37-46）逐字段对齐，正是 round0 soft-watch 建议；readCodexTotalUsage 的其余门槛（total_token_usage 为 object、必须含 total_tokens 键、session 合法正则）SQL 与 TS 仍逐一对应。独立临时 PostgreSQL fixture（throwaway docker pgvector/pgvector:pg16，scripts/test/bl-codex-usage-dedup/reverify-migration-fixture.sh，与任何开发/生产库零接触，跑仓库真实 migration.sql 原文）：12 行合成数据首轮 DELETE 2 / UPDATE 4，二次执行 DELETE 0 / UPDATE 0。合同要求的全部形态实测通过——(1) total_tokens=0 且 input_tokens=100 的行被 canonicalize 为 codex:v2:sess-z:100:0:0:0:0:0，与 npx tsx 跑仓库 TS helper 输出逐字节一致（含归一化 parity：cached 12.9→12、output -5→0 → codex:v2:sess-f:0:12:0:0:0:0）；(2) 同 device 两条此类 legacy 行保留 occurredAt 最早者（r2 createdAt 更早仍被删，证明按 occurredAt 而非 createdAt）；(3) dev-B 同 session+快照行独立保留并同样改写；(4) 已 canonical 的重复行 r4 被删且 (deviceId,source,sourceEventId) 唯一索引下无冲突（DELETE 先于 UPDATE）；(5) 六类对照行（全零、非法 session、缺 session、缺 total_token_usage、有 total_token_usage 但缺 total_tokens 键、非 Codex 源）迁移前后 id/session/occurredAt/rawJson::text 逐字节不变。服务端防线重跑 tests/server/ingest-upsert.test.ts 8/8 绿（旧 file:line id canonicalize、缺 session/缺累计 fallback 保留）。npm run verify（prisma generate + tsc --noEmit）exit 0。round0 的 ingest 防线证据（唯一生产入口、同 batch 塌缩、device 隔离、非 Codex 不改写）随未改动代码继续成立。",
+      "steps_to_reproduce": "npx vitest run tests/server/ingest-upsert.test.ts  # 8/8 pass; npm run verify  # exit 0; bash scripts/test/bl-codex-usage-dedup/reverify-migration-fixture.sh  # 自动起 throwaway 容器、播种 12 行、跑真实 migration 两遍：run1 DELETE 2/UPDATE 4、run2 DELETE 0/UPDATE 0、全表终态 diff、对照行字节 diff、SQL/TS canonical id 字节 diff 全 PASS 后自动销毁"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "本轮为 fresh-context Kimi（非 Codex 模型家族）终验：独立检查 ce2eb8f..HEAD 全量 diff（仅谓词放宽 + 簿记，无产品代码其他改动）、重跑聚焦测试 19/19（parser 11 + server ingest 8）、npm run verify exit 0，并自建紧凑隔离 PostgreSQL fixture 对真实 migration 完成合同列举的全部证明（见 F002 evidence，含二次幂等 DELETE 0/UPDATE 0）。未改动的广量证据按合同引用已提交不可变 round0 verdict：npm test 67 文件 1024 passed/4 skipped（skip 为既有 Windows 套件）、lint 0/0、build exit 0、真实日志脱敏复算消除 9.26x 膨胀（仅 metadata/数字，不读 prompt/message/tool 内容）——相关代码自 ce2eb8f 起零改动，结论继续有效。透明性说明：round0 自加的 tests/evaluator/bl-codex-usage-dedup-f003.test.ts 与 migration-fixture.sh 未随 verdict 回流进锁定树，本轮无法原样重跑，故以仓库内已提交的 generator 测试 + 本轮自建 fixture 独立覆盖同一验收矩阵。本轮未访问生产数据库、未读取/落盘任何 prompt/message/tool 内容、未修改产品代码（新增仅 scripts/test/bl-codex-usage-dedup/ 测试产物）。",
+      "steps_to_reproduce": "git diff ce2eb8f..HEAD  # 全量复核; npx vitest run tests/parsers/codex.test.ts tests/server/ingest-upsert.test.ts  # 19/19; npm run verify  # exit 0; bash scripts/test/bl-codex-usage-dedup/reverify-migration-fixture.sh  # 全断言 PASS；广量 build/lint/真实日志复算见 docs/test-reports/BL-CODEX-USAGE-DEDUP-round0-verdict.json"
+    }
+  ]
+}
