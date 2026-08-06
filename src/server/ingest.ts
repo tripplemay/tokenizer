@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-version";
+import { codexCanonicalSourceEventId } from "@/shared/codex-usage";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { pathSegments } from "@/shared/path";
 import { prisma } from "./db";
@@ -212,11 +213,16 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
 type IngestRow = ReturnType<typeof toRow>;
 
 function toRow(event: UsageEventInput, userId: string, deviceId: string, projectId: string | null) {
+  const legacySourceEventId = stripNullBytesFromString(event.sourceEventId);
+  const sourceEventId =
+    event.source === "codex"
+      ? stripNullBytesFromString(codexCanonicalSourceEventId(event.sessionId, event.rawJson, legacySourceEventId))
+      : legacySourceEventId;
   return {
     userId,
     deviceId,
     source: event.source,
-    sourceEventId: stripNullBytesFromString(event.sourceEventId),
+    sourceEventId,
     projectId,
     sessionId: sanitizeNullableString(event.sessionId ?? null),
     workspacePath: sanitizeNullableString(event.workspacePath ?? null),

@@ -95,6 +95,63 @@ describe("ingestUsageEvents conflict correction", () => {
     expect(rows[1].fallbackToModel).toBe("claude-opus-4-8");
   });
 
+  it("canonicalizes Codex rows from legacy agents before createMany", async () => {
+    prismaMock.usageEvent.createMany.mockResolvedValue({ count: 1 });
+    const rawJson = {
+      type: "event_msg",
+      payload: {
+        type: "token_count",
+        info: {
+          total_token_usage: {
+            input_tokens: 100,
+            cached_input_tokens: 30,
+            cache_write_input_tokens: 7,
+            output_tokens: 20,
+            reasoning_output_tokens: 5,
+            total_tokens: 120
+          },
+          last_token_usage: {
+            input_tokens: 100,
+            cached_input_tokens: 30,
+            cache_write_input_tokens: 7,
+            output_tokens: 20,
+            reasoning_output_tokens: 5,
+            total_tokens: 120
+          }
+        }
+      }
+    };
+
+    await ingestUsageEvents(
+      [
+        event({
+          source: "codex",
+          sourceEventId: "codex:/legacy/path.jsonl:42:2026-01-01T00:00:02.000Z",
+          sessionId: "sess-1",
+          rawJson
+        })
+      ],
+      { id: "dev-1", name: "Test Device" },
+      "tok-1",
+      "user-1"
+    );
+
+    const rows = prismaMock.usageEvent.createMany.mock.calls[0][0].data;
+    expect(rows[0].sourceEventId).toBe("codex:v2:sess-1:100:30:7:20:5:120");
+  });
+
+  it("keeps a legacy Codex ID when session or cumulative usage is unavailable", async () => {
+    prismaMock.usageEvent.createMany.mockResolvedValue({ count: 1 });
+    await ingestUsageEvents(
+      [event({ source: "codex", sourceEventId: "codex:legacy", sessionId: null, rawJson: { type: "event_msg" } })],
+      { id: "dev-1", name: "Test Device" },
+      "tok-1",
+      "user-1"
+    );
+    const rows = prismaMock.usageEvent.createMany.mock.calls[0][0].data;
+    expect(rows[0].sourceEventId).toBe("codex:legacy");
+  });
+
   it("does not touch existing rows when every event inserted", async () => {
     prismaMock.usageEvent.createMany.mockResolvedValue({ count: 1 });
 

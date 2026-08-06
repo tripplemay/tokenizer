@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "服务端兼容旧 Agent canonicalization 与历史 Codex 重复数据幂等迁移",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "server ingest 对旧 legacy sourceEventId 应用同一 canonical helper；PostgreSQL migration 按 device + canonical snapshot 合并历史重复、保留最早行并更新 canonical id，非 Codex/无有效累计行不动；临时 PostgreSQL 实测 canonical parity、唯一约束和二次执行幂等。"
     },
