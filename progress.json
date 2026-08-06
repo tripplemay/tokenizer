@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "done",
   "user_goal": "tokenizer 干净采纳框架 v1.7.0（真机验证的 bridge provider + deliverable_channels + 铁律13 + codex 硬化），并更新与旧版本硬耦合的 src 测试。",
   "total_features": 3,
   "completed_features": 3,
   "fix_rounds": 0,
   "current_sprint": "BL-TOKENIZER-ADOPT-V170",
   "dashboard_url": null,
-  "last_updated": "2026-08-05T06:30:00Z",
+  "last_updated": "2026-08-06T00:00:00Z",
   "reference_docs": [
     "docs/specs/BL-TOKENIZER-ADOPT-V170-spec.md",
     "framework/harness/framework-versioning.md"
@@ -40,32 +40,9 @@
   "session_notes": {
     "planning": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】harness-template v1.7.0 已发布并 push（e91fbbc + 10 tags）。tokenizer 停在框架 1.6.2，src 测试硬编码 1.6.2 + 旧 bridge 形状，直接升破坏 10 个测试。本批次：F001 采纳框架文件（含 A 血统 provider 的 6 个真机修复）、F002 更新耦合 src 测试、F003 真机验收（含机器契约迁移 image_location/kimi_identity）。normal 批次快车道。注意：framework-version.ts 构建时 import releases.json，升版改控制台显示 → push 触发部署。机器契约迁移是本机安装步骤，记报告不入 git。",
     "building": "【BL-TOKENIZER-ADOPT-V170】F001 采纳 v1.7.0 框架文件（dispatch 逐字节一致 + 6 修复标记 + 铁律13 + 账本，harness verify 222 ok/2 local）。F002 更新 3 个耦合 vitest（版本 1.6.2→1.7.0）+ 修 src 真 bug：MAX_PROVIDER_BYTES 128KB→256KB（A 血统 provider 133KB 超限致 subagent 静默隐藏，2 个 attestation 测试抓到）。vitest 1008/1009（1 个既有 flaky agent-lifecycle SIGTERM 时序，隔离通过），verify/lint/build 绿。注意：bridge 实际 launch 用 ~/.tokenizer/app（仍 B 版），tokenizer repo 的 v1.7.0 provider 要等部署+重装才进应用包；v1.7.0 provider 已在发布验证时真机 launch（RETURNED/completed，与 tokenizer 现字节一致）。",
-    "verifying": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】首轮全 PASS。F003 首判 PARTIAL（缺本机真机证据），补证后 evaluator 独立取证复核改判 PASS（真实 planner terminal-message launch RETURNED/completed 90s，字节一致核过，证据脱敏落盘 docs/test-reports/…F003-probe-audit）。evaluator 纠正 2 处记账（fchown 位置、9-not-10 failed）+ 写 ceiling 回归守卫。三条 rollout 闸门（部署+Agent 重装、机器契约迁移、迁移前 fail-closed）随闸门呈用户。机器/应用包/harness-template 均已还原部署基线。"
+    "verifying": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】首轮全 PASS。F003 首判 PARTIAL（缺本机真机证据），补证后 evaluator 独立取证复核改判 PASS（真实 planner terminal-message launch RETURNED/completed 90s，字节一致核过，证据脱敏落盘 docs/test-reports/…F003-probe-audit）。evaluator 纠正 2 处记账（fchown 位置、9-not-10 failed）+ 写 ceiling 回归守卫。三条 rollout 闸门（部署+Agent 重装、机器契约迁移、迁移前 fail-closed）随闸门呈用户。机器/应用包/harness-template 均已还原部署基线。",
+    "done": "【BL-TOKENIZER-ADOPT-V170 完结 2026-08-06】verifying-to-done 闸门经控制台验签批准并消费。3/3 全 PASS，tokenizer 采纳框架 v1.7.0（真机验证的 A 血统 provider + deliverable_channels + 铁律13 + codex 硬化 + MAX_PROVIDER_BYTES 修复）。signoff: docs/test-reports/BL-TOKENIZER-ADOPT-V170-signoff-2026-08-05.md。**三条 rollout 闸门待用户执行才真正生效**：(1) 部署 v1.7.0 + Agent 应用包重装（bridge launch 用 ~/.tokenizer/app，非项目 dispatch）；F002 已因 src 改动触发过一次服务器部署（控制台 framework 版本显示已更新，但未更新应用包 provider）。(2) 本机机器契约迁移（provider.json 补 image_location、bundle 补 kimi_identity）。(3) 前两步完成前本机 bridge fail-closed。机器/应用包/harness-template 均已还原部署基线。"
   },
   "features": [],
-  "pending_gate": {
-    "id": "BL-TOKENIZER-ADOPT-V170-verifying-done-r0",
-    "kind": "phase_advance",
-    "raised_at": "2026-08-05T06:30:00Z",
-    "raised_by": "verify",
-    "batch": "BL-TOKENIZER-ADOPT-V170",
-    "from_status": "verifying",
-    "to_status": "done",
-    "detail": "3/3 acceptance PASS（F003 补真机证据后独立复核 PASS）+ L1 全绿 + signoff 已写；rollout 闸门 3 条见 evaluator_feedback.rollout_gates。等人类批准 verifying-to-done。",
-    "evidence": [
-      "docs/test-reports/BL-TOKENIZER-ADOPT-V170-signoff-2026-08-05.md",
-      "docs/test-reports/BL-TOKENIZER-ADOPT-V170-verify-2026-08-05.md",
-      "docs/test-reports/BL-TOKENIZER-ADOPT-V170-F003-probe-audit-2026-08-05.json"
-    ],
-    "decision": {
-      "gate_id": "BL-TOKENIZER-ADOPT-V170-verifying-done-r0",
-      "action": "approve",
-      "by": "tripplezhou@gmail.com",
-      "at": "2026-08-05T06:35:48.586Z",
-      "scope": {
-        "once": true
-      },
-      "sig": "refzqez9XEfg5pKgqSCYRSCfNd/yovIJqg64X6FZvm8OnOq2ws1OCYDPuexuVZ/OpKP7W63AqNQSeyTuJdLoAQ=="
-    }
-  }
+  "pending_gate": null
 }
