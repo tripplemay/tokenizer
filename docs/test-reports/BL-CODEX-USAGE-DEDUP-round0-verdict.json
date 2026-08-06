@@ -1,0 +1,26 @@
+{
+  "batch_id": "BL-CODEX-USAGE-DEDUP",
+  "fix_round": 0,
+  "created_at": "2026-08-06T07:21:46Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "代码基线 ce2eb8f（git status 干净）。共享 helper src/shared/codex-usage.ts 规范化全部六个计数（含 cache_write_input_tokens，不再硬编码 0），canonical id 形如 codex:v2:<session>:<input>:<cached>:<cacheWrite>:<output>:<reasoning>:<total>；session 不合法（^[A-Za-z0-9._-]+$ 拒绝）或累计快照缺失/六字段全零时回退 legacy id。src/parsers/codex.ts 按 walk(dir).sort() 稳定序扫描，Map 级 high-water 跨文件共享：首个快照以 last_token_usage 为增量并用累计值立 high-water；后续取逐字段正向 delta；不增长/replay/rate-limit 重发不产生事件；high-water 逐字段单调（maxCodexUsage）；canonical id 用当前累计快照而非 delta。Generator 测试 tests/parsers/codex.test.ts 11/11 绿（含同文件改 timestamp 塌缩、跨文件 replay、cache_write delta、canonical id 与 file/line/timestamp 无关、cursor 重扫 id 稳定）。Evaluator 自写合成矩阵 tests/evaluator/bl-codex-usage-dedup-f003.test.ts 11/11 绿，补齐 Generator 未覆盖项：首快照带 baseline（total=1000/last=100 → 只计 100，全程合计 200 不吞 baseline）；spec 验收用例（2 文件 5 行 replay → 3 个事件，合计 250 = 最终累计 250）；counter regression 不产生事件且 per-field high-water 不退（input +10 / output 回归 → delta 0）；缺 total_token_usage → legacy file:line id + 文件内指纹去重保持；全零快照回退 legacy；非法 session id 回退 legacy；cursor 只见 replay 文件时产生的 canonical id 与全量扫描完全一致（服务端可命中既有行）；同文件 resume 新尾部只计新增 delta。",
+      "steps_to_reproduce": "git checkout ce2eb8f && npm ci && npx prisma generate && npx vitest run tests/parsers/codex.test.ts tests/evaluator/bl-codex-usage-dedup-f003.test.ts  # 22/22 pass（11 generator + 11 evaluator）"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "服务端防线：src/server/ingest.ts:216-220 toRow 对 source==='codex' 一律经同一 codexCanonicalSourceEventId 重写 sourceEventId（唯一生产入口 app/api/usage/events/batch/route.ts:22，全仓仅此一处 createMany，无绕过路径）。Generator 测试 8/8 绿（旧 file:line id → codex:v2:sess-1:100:30:7:20:5:120；缺 session/缺累计保留 legacy）；Evaluator 补测 3 条绿：同 batch 两个不同 legacy id 塌缩为同一 canonical id（createMany count=1, duplicates=1）、行携带上传 deviceId、非 Codex 源即使 rawJson 仿 Codex payload 也不改写。Migration 实测（throwaway docker pgvector/pgvector:pg16 容器，与开发/生产库零接触，fixture 脚本 scripts/test/bl-codex-usage-dedup/migration-fixture.sh）：12 行合成数据首轮 DELETE 4 / UPDATE 3，二次执行 DELETE 0 / UPDATE 0；按 (deviceId, canonicalId) 分组保留 occurredAt 最早行（r12 00:00:01 胜出，createdAt 更晚的 r1 被删——最早事件时间保留成立）；已 canonical 的晚行 r5 与 legacy 重复同组时被删且无唯一约束冲突（DELETE 先于 UPDATE）；dev-B 相同 session+快照行独立保留并同样改写为 canonical（(deviceId,source,sourceEventId) 唯一索引全程成立）；SQL 生成 id 与 npx tsx 跑仓库 TS helper 输出逐字节一致（codex:v2:sess-a:100:0:0:20:0:120 / :150:0:0:25:0:175）；非 Codex、缺 session、非法 session、缺累计 JSON、全零累计 5 类行字节不变。Soft-watch（不阻断，实测定界）：migration 有效性谓词要求 total_tokens>0，严于 TS helper/spec 的「六字段全零视为无效」——total_tokens=0 但其他字段非零的历史行不会被迁移改写而 Agent/服务端会 canonicalize，理论上有每快照一行的一次性重复风险；对本机 450,956 条真实 token_count 行探针计数为 0，该形态在本机数据中不存在；另 SQL 对 ≥2^63 计数钳位而 TS 截断，仅影响 absurd 量级。建议下一批次把 SQL 谓词放宽为六字段任一 >0 以与 helper 严格对齐。",
+      "steps_to_reproduce": "npx vitest run tests/server/ingest-upsert.test.ts tests/evaluator/bl-codex-usage-dedup-f003.test.ts  # ingest 相关全绿; bash scripts/test/bl-codex-usage-dedup/migration-fixture.sh  # 自动起 throwaway 容器、播种、跑 migration 两遍、12 条断言全 PASS 后自动销毁"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "Fresh-context Kimi（非 Codex 模型家族）独立验收，全部结论来自实跑产物。合成 rollout 矩阵七项全覆盖（见 F001 evidence）。真实日志脱敏复算（scripts/test/bl-codex-usage-dedup/recompute-real-logs.ts + lib/codex-log-scan.ts，仅提取 session_meta.id / turn_context.session_id / timestamp / 六个数值计数，不读取不落盘任何 prompt、message、tool arguments/output；沙箱 HOME 被重映射，显式只读访问真实 home）：最近 14 天窗口 old-logic 复算 184 文件 / 382,500 行 / 51,925,090,961 tokens，与审查基线（184 / 382,385 / 51,912,384,441）偏差 <0.03%（活着的会话在审查后仍在增长），方法学对齐成立；同一批真实日志跑修复后 parser（全时间 387 文件）：50,562 事件 / 6,746,109,302 tokens vs old-logic 62,473,728,807，膨胀倍数 9.26x 被消除；14 天窗口按 v2 语义内联复算 2,250,716,957 tokens，与审查去重口径 3,065,047,785 同数量级（差异源于 high-water 严格单调 vs 审查按唯一快照逐条计增量，v2 更保守且方向正确）；50,562 事件 100% 走 canonical id、0 legacy fallback、0 parse warning。L1 全绿：npm test 67 文件 1024 passed / 4 skipped（skip 为既有 tests/cli/service-windows.test.ts 仅 Windows 套件，与本批无关）；npm run verify（prisma generate + tsc --noEmit）exit 0；npm run lint 0 errors 0 warnings；npm run build exit 0。未访问生产数据库、未 push、未修改任何产品代码（新增仅 tests/evaluator/ 与 scripts/test/bl-codex-usage-dedup/ 测试产物）。",
+      "steps_to_reproduce": "npm test && npm run verify && npm run lint && npm run build  # 全绿; npx tsx scripts/test/bl-codex-usage-dedup/recompute-real-logs.ts  # 输出上述聚合 JSON（仅数字）"
+    }
+  ]
+}

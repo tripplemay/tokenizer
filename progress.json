@@ -22,7 +22,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-CODEX-USAGE-DEDUP 2026-08-06】用户确认开始修复。审查实测最近 14 天当前 parser 约 51.91B vs 按 session+cumulative snapshot 去重约 3.07B（16.9x）；根因是 last_token_usage 盲信 + file/line sourceEventId + 文件内 timestamp 指纹。批次串行实现共享 canonical helper、parser high-water、server 旧 Agent 防线和历史幂等迁移；Kimi fresh-context 验收。纯 bug 不 bump feature version；不 push/deploy/访问生产。\n【F001 completed】新增 src/shared/codex-usage.ts；parser 按 session high-water 取累计正向 delta，canonical ID 覆盖跨时间戳/跨 rollout replay，保留无累计字段 fallback；codex parser tests 11/11 通过。\n【F002 fix round 1 completed】migration 有效性谓词已与 helper 对齐（六字段任一非零即纳入），临时 PostgreSQL 已验证 total_tokens=0/input_tokens>0 的 canonicalize、去重和二次幂等；进入 Kimi reverifying。"
+    "planning": "【BL-CODEX-USAGE-DEDUP 2026-08-06】用户确认开始修复。审查实测最近 14 天当前 parser 约 51.91B vs 按 session+cumulative snapshot 去重约 3.07B（16.9x）；根因是 last_token_usage 盲信 + file/line sourceEventId + 文件内 timestamp 指纹。批次串行实现共享 canonical helper、parser high-water、server 旧 Agent 防线和历史幂等迁移；Kimi fresh-context 验收。纯 bug 不 bump feature version；不 push/deploy/访问生产。\n【F001 completed】新增 src/shared/codex-usage.ts；parser 按 session high-water 取累计正向 delta，canonical ID 覆盖跨时间戳/跨 rollout replay，保留无累计字段 fallback；codex parser tests 11/11 通过。\n【F002 fix round 1 completed】migration 有效性谓词已与 helper 对齐（六字段任一非零即纳入），临时 PostgreSQL已验证 total_tokens=0/input_tokens>0 的 canonicalize、去重和二次幂等。首次 Kimi 复验完成全量 1013 tests、verify/lint/build 和 migration DELETE 3/UPDATE 4、二次 0/0 后在写 artifact 前命中 1800s deadline；按规则仅重派一次聚焦复验。"
   },
   "features": [],
   "pending_gate": null
