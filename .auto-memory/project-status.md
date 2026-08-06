@@ -5,7 +5,7 @@ type: project
 ---
 ## 当前批次
 
-- **BL-TOKENIZER-ADOPT-V170：done（2026-08-06）**。tokenizer 采纳框架 v1.7.0（3/3 全 PASS，闸门验签批准）。含真机验证的 A 血统 vm-v1 provider（6 个 launch 修复）、deliverable_channels、铁律13、codex 硬化、MAX_PROVIDER_BYTES 128→256KB 修复。当前无进行中批次。
+- **BL-TOKENIZER-ADOPT-V170：done（2026-08-06）+ rollout 已执行**。tokenizer 采纳框架 v1.7.0（3/3 全 PASS，闸门验签批准）。三条 rollout 已落地：本机 Agent 应用包 ~/.tokenizer/app 已 checkout 到 v1.7.0（2fb4b15，daemon 重启 pid 正常）；机器契约已迁移（provider.json 补 image_location、bundle 补 kimi_identity）；最终真机 planner launch 在正式应用包上 RETURNED/completed（89s）。本机 bridge 现用 v1.7.0 provider、可用。当前无进行中批次。
 - 上游 harness-template v1.7.0 已发布并 push（github.com/tripplemay/harness-template，e91fbbc + 全部 tag）。newkolmatrix 的 .claude/dispatch 已升 v1.7.0（local-cli Kimi 可见，42 文件待用户在该仓提交）。
 - backlog：BL-REGISTRY-LAZY-FIELD-CLEANUP、BL-BRIDGE-GUEST-FAILURE-TAXONOMY、BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT。
 - proposed-learnings 待用户确认（persona 不外推；spawn 边界须真实 argv 用例）。
