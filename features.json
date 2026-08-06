@@ -1,29 +1,29 @@
 {
-  "sprint": "BL-TOKENIZER-ADOPT-V170",
+  "sprint": "BL-CODEX-USAGE-DEDUP",
   "features": [
     {
       "id": "F001",
-      "title": "采纳 v1.7.0 框架文件（dispatch runtime+tests、releases.json、VERSION、docs、账本）",
+      "title": "Canonical Codex 累计快照身份与 parser high-water 增量去重",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "harness-template@v1.7.0 受管框架文件同步进 tokenizer（.claude/dispatch/** 与 framework 镜像逐字节一致，保留本地 agents-registry.example.json）；framework/harness/framework-releases.json 末项=1.7.0；framework/VERSION=1.7.0；铁律13 文档层增量；harness.json/lock 记 v1.7.0。provider 含 6 处真机修复标记；framework dispatch python 套件全绿。"
+      "acceptance": "共享 helper 从 sessionId + total_token_usage 六字段生成稳定 v2 id；parser 跨文件按 session high-water 计算正向累计 delta，跳过累计不增长/replay/rate-limit 重发，首快照不导入未知 baseline，支持 cache_write_input_tokens；覆盖同文件改 timestamp、跨文件 replay、resume 新尾部、baseline、cursor/fallback 回归。"
     },
     {
       "id": "F002",
-      "title": "更新与框架版本/桥接形状耦合的 3 个 vitest 测试到 v1.7.0",
+      "title": "服务端兼容旧 Agent canonicalization 与历史 Codex 重复数据幂等迁移",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "framework-version.test.ts（latest 1.6.2→1.7.0 + behind/ahead 用例）、mode-badges.test.ts、harness-tool-catalog.test.ts（external bridge 2 例对齐 v1.7.0 provider/manifest：planner=plan+terminal-message）更新到位；npx vitest run 全绿（此前 10 failed 归零）；断言语义正确；verify/lint/build 清白。"
+      "acceptance": "server ingest 对旧 legacy sourceEventId 应用同一 canonical helper；PostgreSQL migration 按 device + canonical snapshot 合并历史重复、保留最早行并更新 canonical id，非 Codex/无有效累计行不动；临时 PostgreSQL 实测 canonical parity、唯一约束和二次执行幂等。"
     },
     {
       "id": "F003",
-      "title": "真机验收：迁移机器契约 + 真实 planner terminal-message launch + 全量回归 + 独立签收",
+      "title": "独立验收 parser、旧 Agent 防线、迁移与真实日志脱敏复算",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "evaluator",
-      "acceptance": "fresh-context 独立验收 F001+F002；本机迁移 vm-v1 machine config 到 v1.7.0 契约（image_location+kimi_identity）后，对已认证 Kimi 执行真实 planner terminal-message bridge probe（brokered 凭据、无源码写入、脱敏），确认 RETURNED/completed + nonce receipt；framework 聚焦 + 全量 npm test/verify/lint/build。全 PASS 举 verifying-to-done 闸门。"
+      "acceptance": "非 Codex fresh-context Evaluator 逐条复验 F001/F002；真实本机日志仅读 metadata/token 数字验证数量级纠偏；聚焦测试、全量 npm test/verify/lint/build 全绿；输出 verdict/signoff，不读写 prompt 或生产数据库。"
     }
   ]
 }

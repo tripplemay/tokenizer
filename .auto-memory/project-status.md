@@ -5,7 +5,8 @@ type: project
 ---
 ## 当前批次
 
-- **BL-TOKENIZER-ADOPT-V170：done（2026-08-06）+ rollout 已执行**。tokenizer 采纳框架 v1.7.0（3/3 全 PASS，闸门验签批准）。三条 rollout 已落地：本机 Agent 应用包 ~/.tokenizer/app 已 checkout 到 v1.7.0（2fb4b15，daemon 重启 pid 正常）；机器契约已迁移（provider.json 补 image_location、bundle 补 kimi_identity）；最终真机 planner launch 在正式应用包上 RETURNED/completed（89s）。本机 bridge 现用 v1.7.0 provider、可用。当前无进行中批次。
+- **BL-CODEX-USAGE-DEDUP：building（2026-08-06）**。用户确认修复 Codex 用量严重重复计数。审查实测最近 14 天当前 parser 约 51.91B vs session+cumulative snapshot 去重约 3.07B（16.9x）；本批实现 parser high-water/canonical id、server 旧 Agent 防线和历史数据幂等迁移，Kimi fresh-context 验收。仅本地提交，不 push/deploy/访问生产。
+- **BL-TOKENIZER-ADOPT-V170：done + rollout 已执行**。tokenizer 已采纳框架 v1.7.0，本机 Agent 应用包与机器契约已迁移，正式应用包 planner launch RETURNED/completed；bridge 可用。
 - 上游 harness-template v1.7.0 已发布并 push（github.com/tripplemay/harness-template，e91fbbc + 全部 tag）。newkolmatrix 的 .claude/dispatch 已升 v1.7.0（local-cli Kimi 可见，42 文件待用户在该仓提交）。
 - backlog：BL-REGISTRY-LAZY-FIELD-CLEANUP、BL-BRIDGE-GUEST-FAILURE-TAXONOMY、BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT。
 - proposed-learnings 待用户确认（persona 不外推；spawn 边界须真实 argv 用例）。

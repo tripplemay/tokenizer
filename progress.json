@@ -1,47 +1,28 @@
 {
-  "status": "done",
-  "user_goal": "tokenizer 干净采纳框架 v1.7.0（真机验证的 bridge provider + deliverable_channels + 铁律13 + codex 硬化），并更新与旧版本硬耦合的 src 测试。",
+  "status": "building",
+  "user_goal": "修复 Codex token_count 累计快照被跨时间戳/跨 rollout 重复计入的问题，并幂等纠正历史数据。",
   "total_features": 3,
-  "completed_features": 3,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-TOKENIZER-ADOPT-V170",
+  "current_sprint": "BL-CODEX-USAGE-DEDUP",
   "dashboard_url": null,
-  "last_updated": "2026-08-06T00:00:00Z",
+  "last_updated": "2026-08-06T06:30:00Z",
   "reference_docs": [
-    "docs/specs/BL-TOKENIZER-ADOPT-V170-spec.md",
-    "framework/harness/framework-versioning.md"
+    "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
+    "docs/test-reports/CODEX-USAGE-OVERCOUNT-AUDIT-2026-08-06.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-TOKENIZER-ADOPT-V170-spec.md",
+    "spec": "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
     "test_cases": null,
-    "signoff": "docs/test-reports/BL-TOKENIZER-ADOPT-V170-signoff-2026-08-05.md",
+    "signoff": null,
     "framework_reviewed": true
   },
   "role_assignments": null,
   "mode_intent": null,
-  "evaluator_feedback": {
-    "summary": "First-round verify all PASS (F003 re-verified PARTIAL→PASS after on-machine real-launch evidence). F001 v1.7.0 framework adoption byte-identical; F002 coupled tests updated + MAX_PROVIDER_BYTES 128→256KB real bug fix (evaluator-reproduced); F003 real planner terminal-message launch RETURNED/completed, independently re-verified. Reports: docs/test-reports/BL-TOKENIZER-ADOPT-V170-{verify,signoff}-2026-08-05.md, F003 probe audit JSON.",
-    "pass_count": 3,
-    "partial_count": 0,
-    "fail_count": 0,
-    "issues": [],
-    "observations": [
-      "S3（评估纠正）：acceptance 把 fchown 修复挂在 vm-bridge-provider.py 名下属定位有误，实际在 session_bridge_kimi.py:622（terminal-message artifact 落盘）。已更正，不影响判定。",
-      "记账：building note 称此前『10 failed』，evaluator 实测为 9 failed（铁律13 如实记录）。",
-      "evaluator 新增 tests/cli/harness-vm-provider-ceiling.test.ts 回归守卫（从源码读 MAX_PROVIDER_BYTES 断言 4 个 runtime 文件小于上限，变异验证过），随批入库作 F002 回归。"
-    ],
-    "rollout_gates": [
-      "部署 + Agent 重装：tokenizer 部署 v1.7.0 后需重装/升级本机 Agent 应用包，才能把 v1.7.0 provider 送进 ~/.tokenizer/app；在此之前本机 bridge 仍跑 B 版 provider。注意 src/shared/framework-version.ts 构建期 import releases.json，push main 触发生产部署并改控制台 framework-standing 显示。",
-      "本机机器契约迁移：~/.tokenizer/harness/vm-v1/provider.json 需补 runtime.image_location（https URL），CLI bundle 内 harness-vm-bundle.json 需补 kimi_identity{user_agent,x_msh_platform,x_msh_version}；当前均缺失，不迁移则 v1.7.0 provider fail-closed。属本机安装步骤，不入 git。",
-      "上述两步完成前，本机常态下 bridge launch 仍 fail-closed（probe 后机器已还原到部署基线 B）。"
-    ]
-  },
+  "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】harness-template v1.7.0 已发布并 push（e91fbbc + 10 tags）。tokenizer 停在框架 1.6.2，src 测试硬编码 1.6.2 + 旧 bridge 形状，直接升破坏 10 个测试。本批次：F001 采纳框架文件（含 A 血统 provider 的 6 个真机修复）、F002 更新耦合 src 测试、F003 真机验收（含机器契约迁移 image_location/kimi_identity）。normal 批次快车道。注意：framework-version.ts 构建时 import releases.json，升版改控制台显示 → push 触发部署。机器契约迁移是本机安装步骤，记报告不入 git。",
-    "building": "【BL-TOKENIZER-ADOPT-V170】F001 采纳 v1.7.0 框架文件（dispatch 逐字节一致 + 6 修复标记 + 铁律13 + 账本，harness verify 222 ok/2 local）。F002 更新 3 个耦合 vitest（版本 1.6.2→1.7.0）+ 修 src 真 bug：MAX_PROVIDER_BYTES 128KB→256KB（A 血统 provider 133KB 超限致 subagent 静默隐藏，2 个 attestation 测试抓到）。vitest 1008/1009（1 个既有 flaky agent-lifecycle SIGTERM 时序，隔离通过），verify/lint/build 绿。注意：bridge 实际 launch 用 ~/.tokenizer/app（仍 B 版），tokenizer repo 的 v1.7.0 provider 要等部署+重装才进应用包；v1.7.0 provider 已在发布验证时真机 launch（RETURNED/completed，与 tokenizer 现字节一致）。",
-    "verifying": "【BL-TOKENIZER-ADOPT-V170 2026-08-05】首轮全 PASS。F003 首判 PARTIAL（缺本机真机证据），补证后 evaluator 独立取证复核改判 PASS（真实 planner terminal-message launch RETURNED/completed 90s，字节一致核过，证据脱敏落盘 docs/test-reports/…F003-probe-audit）。evaluator 纠正 2 处记账（fchown 位置、9-not-10 failed）+ 写 ceiling 回归守卫。三条 rollout 闸门（部署+Agent 重装、机器契约迁移、迁移前 fail-closed）随闸门呈用户。机器/应用包/harness-template 均已还原部署基线。",
-    "done": "【BL-TOKENIZER-ADOPT-V170 完结 2026-08-06】verifying-to-done 闸门经控制台验签批准并消费。3/3 全 PASS，tokenizer 采纳框架 v1.7.0（真机验证的 A 血统 provider + deliverable_channels + 铁律13 + codex 硬化 + MAX_PROVIDER_BYTES 修复）。signoff: docs/test-reports/BL-TOKENIZER-ADOPT-V170-signoff-2026-08-05.md。**三条 rollout 闸门待用户执行才真正生效**：(1) 部署 v1.7.0 + Agent 应用包重装（bridge launch 用 ~/.tokenizer/app，非项目 dispatch）；F002 已因 src 改动触发过一次服务器部署（控制台 framework 版本显示已更新，但未更新应用包 provider）。(2) 本机机器契约迁移（provider.json 补 image_location、bundle 补 kimi_identity）。(3) 前两步完成前本机 bridge fail-closed。机器/应用包/harness-template 均已还原部署基线。"
+    "planning": "【BL-CODEX-USAGE-DEDUP 2026-08-06】用户确认开始修复。审查实测最近 14 天当前 parser 约 51.91B vs 按 session+cumulative snapshot 去重约 3.07B（16.9x）；根因是 last_token_usage 盲信 + file/line sourceEventId + 文件内 timestamp 指纹。批次串行实现共享 canonical helper、parser high-water、server 旧 Agent 防线和历史幂等迁移；Kimi fresh-context 验收。纯 bug 不 bump feature version；不 push/deploy/访问生产。"
   },
   "features": [],
   "pending_gate": null
