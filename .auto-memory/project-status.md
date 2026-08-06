@@ -5,7 +5,7 @@ type: project
 ---
 ## 当前批次
 
-- **BL-CODEX-USAGE-DEDUP：verifying（2026-08-06）**。用户确认修复 Codex 用量严重重复计数。审查实测最近 14 天当前 parser 约 51.91B vs session+cumulative snapshot 去重约 3.07B（16.9x）；已实现 parser high-water/canonical id、server 旧 Agent 防线和历史数据幂等迁移，正在由 Kimi fresh-context 验收。仅本地提交，不 push/deploy/访问生产。
+- **BL-CODEX-USAGE-DEDUP：reverifying（2026-08-06）**。用户确认修复 Codex 用量严重重复计数。审查实测最近 14 天当前 parser 约 51.91B vs session+cumulative snapshot 去重约 3.07B（16.9x）；migration 有效性谓词已与 helper 对齐，正在由 Kimi fresh-context 复验。仅本地提交，不 push/deploy/访问生产。
 - **BL-TOKENIZER-ADOPT-V170：done + rollout 已执行**。tokenizer 已采纳框架 v1.7.0，本机 Agent 应用包与机器契约已迁移，正式应用包 planner launch RETURNED/completed；bridge 可用。
 - 上游 harness-template v1.7.0 已发布并 push（github.com/tripplemay/harness-template，e91fbbc + 全部 tag）。newkolmatrix 的 .claude/dispatch 已升 v1.7.0（local-cli Kimi 可见，42 文件待用户在该仓提交）。
 - backlog：BL-REGISTRY-LAZY-FIELD-CLEANUP、BL-BRIDGE-GUEST-FAILURE-TAXONOMY、BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT。
