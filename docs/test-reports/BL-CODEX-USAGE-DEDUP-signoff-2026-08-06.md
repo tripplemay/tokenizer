@@ -35,8 +35,8 @@
 
 - 无 UI、定价模型或 dashboard 计算改动。
 - 未 bump Agent feature version，符合纯 bug 修复策略。
-- 未访问或修改生产数据库；migration 仅在 throwaway PostgreSQL 中验证。
-- 未 push、未部署。部署时 migration 才会清理现有历史重复；本机 Agent 重新安装后 parser 修复才会生效。
+- 独立验收期间未访问或修改生产数据库；migration 先在 throwaway PostgreSQL 中验证。
+- 验收通过后经用户明确授权 push/deploy；本机 Agent 重新安装后 parser 修复才会生效。
 
 ## Soft-watch
 
@@ -48,4 +48,9 @@
 
 ## Ops
 
-本批次无生产或 staging 数据库 ops。
+2026-08-06 已部署提交 `826ef2529a52a752489cb4ab16e4104bdc4d80a9`：
+
+- GitHub Actions run `31093273152` 的 Linux Verify 与 Deploy job 成功；
+- 生产成功应用 `20260806000000_canonicalize_codex_usage_events`；
+- 容器重建后的内部 health check 通过；公网 `https://token.vpanel.cc/api/health` 返回 HTTP 200 和同一 commit；
+- workflow 总结论因既有 Windows `install-agent-lifecycle` 测试失败而为 failure，不影响本次 Linux 服务部署。
