@@ -240,6 +240,13 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 重派上限 1 次，仍不过 → `evaluator_cannot_verify` / `generator_cannot_deliver` 硬停 + 通知，
 **绝不静默无限重跑**（沿用 autonomous-mode.md §9）。
 
+> **那一次重派同时是诊断手段。** 只看首派容易把确定性故障判成「瞬断，等等再来」。
+> 但定性时要小心：**两次的错因表述不同 ≠ 真因不同。**
+> 实测过一例：首派 `tls handshake eof`、重派 `401 invalid_api_key`，看起来是两个错因，
+> 实则两次请求打的都是同一个（错误的）端点，差别只在于那一刻它是否恰好可达 ——
+> 同一个真因换了张脸。**下结论前先核两次日志里的目标 URL / 目标主机是否相同。**
+
+
 ### 3.5 L4 — 谁按阶段推进键
 
 **Coordinator / 编排者，永远。** transport 只运输，不推进。完全沿用 `orchestration-patterns.md` §8
@@ -333,6 +340,24 @@ Claude 读 `CLAUDE.md`，Codex 读 `AGENTS.md`，Gemini 读 `GEMINI.md`。给每
 2. 产出**必须过 `deliverable.schema`**；不合规就机械拒收，重跑上限 1 次，仍不过则硬停
 
 这是框架自己那句信条的跨厂商版本：**装进工具链的规则才是强制。**
+
+#### 5.2.1 「隔离个人 config」与「保住认证」是两件事
+
+隔离外部 CLI 的个人配置是上面这个信任模型的直接推论 —— 但**隔离配置的开关往往会顺手切断认证**，
+而这两件事必须分别解决：
+
+| 目标 | 手段 | 它**不**负责的 |
+|---|---|---|
+| 不继承个人 config 的行为面（全权限沙箱、审批策略、自定义指令 profile、MCP servers） | codex 的 `--ignore-user-config` | 认证。该 flag 的 CLI help 原文即 `Do not load $CODEX_HOME/config.toml; auth still uses CODEX_HOME` —— 忽略 config 却照读 auth |
+| 保住连通性 | 用 `-c` 在 argv 里声明式注入 provider（端点随 descriptor 走、进 provenance 哈希、可审计） | 隔离。`-c` 不阻止任何东西被继承 |
+
+用户若把认证挂在自定义 provider（中转 / 自建网关 / Azure）上，只开前者 = 拿着 A 家的 key 敲 B 家的门，
+**确定性 401，重派无效**。`sandbox-profile.sh` 已把这个组合升级为派活前的 fail-closed 前置，
+并在报错里直接给出可复制的 `-c` 修法；接入步骤见 `transports/local-cli.md` §8。
+
+> **一般化的教训：** 给外部 CLI 加隔离旗标时，先分清它切掉的是**行为面**还是**连通面**。
+> 只要一个旗标同时切掉两者，就必须为连通面单独补一条声明式通路 —— 否则隔离做成了断线，
+> 而断线的账单要到派活跑完才结（本框架实测：两次派活 + 一次批次锁死）。
 
 ## 6. 外部 generator 的四道锁与回流
 

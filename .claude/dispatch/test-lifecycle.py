@@ -212,6 +212,125 @@ class DeadlineAndPreflightTests(unittest.TestCase):
         envelope.write_text(json.dumps(self.envelope(repo_url, 60)), encoding="utf-8")
         return registry, envelope, adapters
 
+    def _codex_sandbox_inputs(self, argv_extra, config_toml):
+        """codex 适配器 + 一份受控的 $CODEX_HOME/config.toml。
+
+        CODEX_HOME 必须由测试显式提供：否则前置会去读开发机真实的 ~/.codex/config.toml，
+        测试结果就取决于跑测试的人装了什么 —— 那是最难查的一类不稳定。
+        """
+        adapters = self.root / "codex-adapters"
+        adapters.mkdir(exist_ok=True)
+        fake = self.root / "fake-codex.sh"
+        write_executable(fake, "#!/usr/bin/env bash\nexit 0\n")
+        (adapters / "codex.json").write_text(json.dumps({
+            "name": "codex",
+            "model_family": "codex",
+            "argv": ["bash", str(fake), "--ignore-user-config"] + list(argv_extra),
+            "envelope_delivery": "stdin",
+            "_verified": True,
+            "artifact_relpath": "artifact.json",
+        }), encoding="utf-8")
+        safe_home = self.root / "codex-safe-home"
+        safe_home.mkdir(exist_ok=True)
+        codex_home = self.root / "codex-home"
+        codex_home.mkdir(exist_ok=True)
+        (codex_home / "config.toml").write_text(config_toml, encoding="utf-8")
+        registry = self.repo / ".agents-registry.json"
+        registry.write_text(json.dumps({
+            "version": "dispatch/1",
+            "agents": [{
+                "id": "codex-agent",
+                "roles": ["evaluator"],
+                "transport": "local-cli",
+                "adapter": "codex",
+                "model_family": "codex",
+                "constraints": {"l2": False, "write_src": False, "push": False},
+                "sandbox": {"home_dir": str(safe_home), "env_allow": []},
+                "timeout_s": 90,
+            }],
+        }), encoding="utf-8")
+        envelope = self.repo / "envelope.json"
+        envelope.write_text(json.dumps(self.envelope(self.repo, 60)), encoding="utf-8")
+        return registry, envelope, adapters, codex_home
+
+    def _run_codex_sandbox(self, argv_extra, config_toml, tag):
+        registry, envelope, adapters, codex_home = self._codex_sandbox_inputs(
+            argv_extra, config_toml
+        )
+        workroot = self.root / f"work-{tag}"
+        state = self.root / f"state-{tag}"
+        env = dict(os.environ)
+        env["CODEX_HOME"] = str(codex_home)
+        result = subprocess.run([
+            "bash", str(DISPATCH / "sandbox-profile.sh"),
+            "--agent", "codex-agent",
+            "--envelope", str(envelope),
+            "--registry", str(registry),
+            "--adapters", str(adapters),
+            "--workroot", str(workroot),
+            "--state", str(state),
+        ], cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
+        return result, workroot, state
+
+    # 前置拦截那条消息独有的话；--ignore-user-config 一词在非阻断的模型提醒里也出现，
+    # 拿它做断言会把两条消息混为一谈（本测试第一版就踩了这个）。
+    BLOCK_MARK = "已在派活前拦下"
+
+    # 自定义 provider × --ignore-user-config：派活前拦下，别让它烧完额度再 401。
+    # 真因见 harness/dispatch-mode.md §5.2.1 与 transports/local-cli.md §8。
+    CUSTOM_PROVIDER_CONFIG = (
+        'model_provider = "Relay"\n'
+        'model = "some-model"\n'
+        "\n"
+        "[model_providers.Relay]\n"
+        'name = "Relay"\n'
+        'base_url = "https://relay.example.invalid/v1"\n'
+        'wire_api = "responses"\n'
+    )
+
+    def test_sandbox_rejects_codex_custom_provider_without_c_override(self):
+        result, workroot, state = self._run_codex_sandbox(
+            [], self.CUSTOM_PROVIDER_CONFIG, "codex-blocked"
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(self.BLOCK_MARK, result.stderr)
+        self.assertIn("Relay", result.stderr)
+        # 报错必须把用户自己的 base_url 填进修法里，否则「可复制」是空话
+        self.assertIn("https://relay.example.invalid/v1", result.stderr)
+        self.assertIn("model_providers.Relay=", result.stderr)
+        # fail-closed：拦下就不该留下任何半成品
+        self.assertFalse(workroot.exists())
+        self.assertFalse(state.exists())
+
+    def test_sandbox_allows_codex_custom_provider_with_c_override(self):
+        override = (
+            'model_providers.Relay={name="Relay",'
+            'base_url="https://relay.example.invalid/v1",wire_api="responses"}'
+        )
+        result, _, _ = self._run_codex_sandbox(
+            ["-c", override, "-c", "model=some-model"],
+            self.CUSTOM_PROVIDER_CONFIG,
+            "codex-allowed",
+        )
+        self.assertNotIn(self.BLOCK_MARK, result.stderr)
+
+    def test_sandbox_allows_codex_when_config_uses_builtin_provider(self):
+        result, _, _ = self._run_codex_sandbox(
+            [], 'model_provider = "openai"\nmodel = "some-model"\n', "codex-builtin"
+        )
+        self.assertNotIn(self.BLOCK_MARK, result.stderr)
+
+    def test_sandbox_warns_when_codex_model_is_not_pinned(self):
+        override = (
+            'model_providers.Relay={name="Relay",'
+            'base_url="https://relay.example.invalid/v1",wire_api="responses"}'
+        )
+        result, _, _ = self._run_codex_sandbox(
+            ["-c", override], self.CUSTOM_PROVIDER_CONFIG, "codex-unpinned"
+        )
+        # 不阻断，但必须出现在 stderr —— 静默换模型是比失败更坏的结果
+        self.assertIn("默认模型", result.stderr)
+
     def test_repo_mismatch_and_non_git_leave_no_partial_sandbox(self):
         other = self.root / "other"
         other.mkdir()

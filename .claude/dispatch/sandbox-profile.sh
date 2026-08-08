@@ -308,6 +308,77 @@ try:
 except DispatchContractError as e:
     fail(str(e))
 
+# ── codex：自定义 provider × --ignore-user-config 前置（fail-closed）───────
+# 该 flag 的语义是 CLI help 原文写死的：
+#     Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`
+# 忽略 config、却照读 auth.json。用户若把认证挂在**自定义 provider**（中转 / 自建网关 /
+# Azure）上，忽略 config 就等于拿着 A 家的 key 去敲 B 家的门 —— 确定性 401，重派无效。
+# 不拦的代价是实测过的（newkolmatrix M5.1-TENANT-INJECTION）：两派两停（159s + 47s）、
+# 烧光 dispatch-mode.md §3.4 的重派额度、批次锁死在 verifying 且流转图上无边可走，
+# 最后靠人类闸门破例重划批次才解开。这里花 0.1s 换成一条带修法的前置错误。
+# 只在「明确两个信号都命中」时拦，读不到 / 解析不出一律放行 —— 前置检查本身不得成为
+# 新的失败源。不用 tomllib：它要 python 3.11+，而本机件的最低面是系统自带 python3。
+def _codex_ignore_user_config_preflight():
+    if adapter_tool != "codex" or "--ignore-user-config" not in argv:
+        return
+    if any(tok.startswith("model_providers.") for tok in argv):
+        return                                    # 已用 -c 显式注入 provider，认证补回来了
+    env_set = (d.get("sandbox") or {}).get("env_set") or {}
+    codex_home = env_set.get("CODEX_HOME") or os.environ.get("CODEX_HOME") or "~/.codex"
+    cfg_path = os.path.join(os.path.expanduser(codex_home), "config.toml")
+    try:
+        with open(cfg_path, encoding="utf-8") as fh:
+            cfg_text = fh.read()
+    except OSError:
+        return                                    # 无个人 config → 无自定义 provider
+    picked = re.search(r"^[ \t]*model_provider[ \t]*=[ \t]*[\"']([^\"'\n]+)[\"']",
+                       cfg_text, re.M)
+    if not picked:
+        return                                    # 用内置 provider，忽略 config 不动认证
+    provider = picked.group(1)
+    quoted = re.escape(provider)
+    header = re.search(
+        rf"^[ \t]*\[model_providers\.(?:{quoted}|\"{quoted}\")\][ \t]*$", cfg_text, re.M
+    )
+    if not header:
+        return                                    # 该 provider 不是 config 自定义的
+    section = cfg_text[header.end():]
+    nxt = re.search(r"^[ \t]*\[", section, re.M)
+    base = re.search(r"^[ \t]*base_url[ \t]*=[ \t]*[\"']([^\"'\n]+)[\"']",
+                     section[: nxt.start()] if nxt else section, re.M)
+    base_url = base.group(1) if base else "<你的 base_url>"
+    fail(
+        f"codex 适配器带 --ignore-user-config，而 {cfg_path} 把 model_provider 指向"
+        f"自定义 provider [{provider}]。\n"
+        "  该 flag 丢弃这段 provider 定义、却仍读同目录的 auth.json —— 端点与凭据必然错配，"
+        "派出去是确定性 401 invalid_api_key，重派多少次都一样。已在派活前拦下。\n"
+        "  修法 A（推荐，保住配置隔离）：在本项目 adapters/codex.json 的 argv 里补 -c 注入 ——\n"
+        f'      "-c", "model_provider={provider}",\n'
+        f'      "-c", "model_providers.{provider}={{name=\\"{provider}\\",'
+        f'base_url=\\"{base_url}\\",wire_api=\\"responses\\",requires_openai_auth=true}}",\n'
+        '      "-c", "model=<你的模型>",   ← 必须钉：不钉则静默回落 CLI 默认模型\n'
+        "  修法 B：删掉 argv 里的 --ignore-user-config —— 但它原本挡的是个人 config 的\n"
+        "      danger-full-access / approval_policy=never / 自定义指令 profile / MCP servers\n"
+        "      被派发任务继承，删之前先确认你的个人 config 交给外部 agent 也安全。\n"
+        "  详见 transports/local-cli.md §8「自定义 provider 用户的接入」。"
+    )
+
+
+_codex_ignore_user_config_preflight()
+
+# 非阻断提醒：config 被忽略后 model 会静默回落到 CLI 默认值 —— 等于在无人知情的情况下
+# 换掉了这个角色实际使用的模型。不硬拦（默认模型也能跑），但必须让它出现在 stderr。
+if (
+    adapter_tool == "codex"
+    and "--ignore-user-config" in argv
+    and not any(tok.startswith("model=") for tok in argv)
+):
+    print(
+        f"[sandbox] ⚠️ 适配器 {adapter_name!r} 带 --ignore-user-config 但未用 -c model= 钉住模型，"
+        "实际跑的是 codex CLI 的默认模型，而非你个人 config 里选的那个。",
+        file=sys.stderr,
+    )
+
 # The catalog read this adapter while resolving target. Re-read the exact
 # execution contract and compare its domain-separated digest before emitting a
 # profile, so a file swap between catalog resolution and launch cannot alter

@@ -214,3 +214,69 @@ credential/egress 与 provider-owned lifecycle 契约，才可公开相应 bridg
 未在本机实测核对的适配器**不写进模板**——一个 `_verified: false` 的机件被误用，
 比没有这个机件更危险。Gemini 适配器因本机未安装 gemini CLI 而暂缺；
 去偏轮换池当前为 `claude` × `codex` × `kimi` 三个 family。
+
+## 8. 自定义 provider 用户的接入（codex）
+
+**适用判断：** 你的 `~/.codex/config.toml` 里有 `model_provider = "X"` 且同文件定义了
+`[model_providers.X]`（中转 / 自建网关 / Azure / 任何非官方端点）。若你用的是内置 provider，
+本节整节与你无关。
+
+### 8.1 为什么模板默认的 argv 会让你派活必失败
+
+模板 argv 带 `--ignore-user-config`，它的语义是 CLI help 原文写死的：
+
+```
+--ignore-user-config   Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`
+```
+
+**忽略 config、却照读 `auth.json`。** 于是 provider 定义（你的 `base_url`）被丢弃、codex 直连
+`api.openai.com`，而带过去的仍是你那把只在中转有效的 key —— 必然 `401 invalid_api_key`。
+**这是确定性的，重派多少次都一样**，且失败得很贵：实测烧掉一次 2400s 封顶的派活额度、
+一次重派额度，批次卡死在 `verifying`（状态机流转图上没有从 verifying 退出的边），
+最后靠人类闸门破例重划批次才解开。
+
+`sandbox-profile.sh` 现在会在派活**之前**拦下这个组合并打印下面的修法，不会再让你烧额度。
+
+### 8.2 修法 A（推荐）：`-c` 声明式注入 provider
+
+在**你的项目**的 `.claude/dispatch/transports/adapters/codex.json` 里给 argv 补：
+
+```json
+"-c", "model_provider=<你的 provider 名>",
+"-c", "model_providers.<名>={name=\"<名>\",base_url=\"<你的 base_url>\",wire_api=\"responses\",requires_openai_auth=true}",
+"-c", "model=<你的模型>",
+"-c", "model_reasoning_effort=<你的档位>",
+```
+
+`-c` 是命令行层的覆盖，在 `--ignore-user-config` 下**照样生效**（实测见 §8.4）。
+这样「配置隔离」与「保住认证」同时成立，不再二选一。
+
+**`-c model=` 必须钉。** config 被忽略后 `model` 会静默回落到 codex CLI 的默认值 ——
+等于在无人知情的情况下换掉了这个角色实际使用的模型。派活跑得通，但跑的不是你以为的那个。
+
+### 8.3 为什么不是别的修法
+
+| 修法 | 为什么不行 |
+|---|---|
+| 摘掉 `--ignore-user-config` | 你的个人 config 会被派发任务整份继承 —— `sandbox_mode = "danger-full-access"`、`approval_policy = "never"`、自定义指令 profile、MCP servers、notify。与「契约随信封走、不依赖对方读机内任何文件」的信任模型（`dispatch-mode.md` §5.2）正面冲突。且若 config 里有 `~` 路径引用（如 `model_instructions_file`），沙箱替换 HOME 后展开落空，codex 启动即死 |
+| 沙箱专用最小 `CODEX_HOME`（只留 provider 段）+ 保留 flag | **自相矛盾。** 该 flag 忽略的正是 `$CODEX_HOME/config.toml`，换了 home 之后那份最小 config 同样会被忽略 |
+| 把 key 换成官方 key | 不是所有人都有；且这要求人类操作凭据，不该是派活机件的前提 |
+
+### 8.4 实测记录（codex-cli 0.146.1 · 2026-08-07 · 通过）
+
+| # | 做法 | 结果 |
+|---|---|---|
+| ① | `-c` 注入 `base_url=https://probe-does-not-exist.invalid/v1` | 报错 URL 即该假域名 ⇒ **`-c` 在该 flag 下确实覆盖 provider**。零成本，不产生真实调用 —— 想自查时用这条 |
+| ② | 沙箱同款环境（`env -i` + 换 HOME + 仅投喂 `CODEX_HOME`）+ 真实 `base_url` | `turn.completed` ⇒ 认证与配置隔离同时成立 |
+| ③ | 追加 `-c model=… -c model_reasoning_effort=…` | `turn.completed` ⇒ 模型可钉 |
+| ④ | 反证：摘掉 `--ignore-user-config` | 精确复现 `~` 展开崩溃 ⇒ 该 flag 不能摘 |
+
+**未覆盖：** 完整信封派发链路（envelope → worktree → verdict 产物 → 回执）未随本次重跑，
+沿用 §7.1 的 0.145.0 演练结论。
+
+### 8.5 另一个副作用：`trust_level` 也一并丢了
+
+`--ignore-user-config` 同时丢掉 config 里的 `[projects."/path"] trust_level = "trusted"`，
+所以工作根**必须是 git 仓库**，否则 codex 报
+`Not inside a trusted directory and --skip-git-repo-check was not specified`。
+派发 worktree 天然满足，但若你把 `-C` 指到非仓库路径就会撞上。

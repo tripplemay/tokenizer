@@ -1,5 +1,5 @@
 {
-  "_comment": "dispatch-mode.md local-cli 适配器 —— Codex CLI。已按 codex-cli 0.146.1 实测核对。⚠️ 本文件是**本机定制**（provider 段指向本机中转），已偏离 framework 模板；harness.sh verify 会把它列在 modified 桶里，这是预期状态，sync 会保留。升级 CLI 后需重跑核对。",
+  "_comment": "dispatch-mode.md local-cli 适配器 —— Codex CLI。已按 codex-cli 0.145.0 实测核对（local-cli.md §7 六条清单），--ignore-user-config 一节按 0.146.1 复核（§8.4）。升级 CLI 后需重跑核对。⚠️ 自定义 provider 用户必须按 local-cli.md §8 给 argv 补 -c 注入，否则派活确定性 401。 【本机】本文件已按 §8 补 -c 注入（provider 段指向本机中转），属本地定制；harness.sh verify 会把它列在 modified 桶，sync 会保留。",
   "name": "codex",
   "model_family": "codex",
   "envelope_delivery": "stdin",
@@ -34,7 +34,7 @@
     "-C {{worktree}}": "工作根锁定到沙箱 worktree，配合 -s 限制写入范围",
     "-s workspace-write": "⚠️ 显式传参会覆盖 ~/.codex/config.toml —— 这是真实硬化：用户 config 若设了 danger-full-access，不显式传就会静默削弱沙箱。evaluator 也用 workspace-write 而非 read-only，因为它必须写 tests/ 与 docs/test-reports/；「不改产品代码」在本形态下由 worktree 一次性 + 禁 push + 只收割产物文件三重保证，src/ 的改动到不了主仓",
     "-": "显式声明从 stdin 读 prompt，避免 argv 与 stdin 双源歧义",
-    "--ignore-user-config": "2026-08-05 M5 首派实测启用:用户 ~/.codex/config.toml 以 ~ 路径引用自定义指令 profile(codex_ctf_unrestricted_profile.md),沙箱 HOME 替换后 ~ 展开落空 → codex 启动即死。2026-08-07 复核仍成立:摘掉该 flag 在沙箱同款环境下精确复现原崩溃(`Error: failed to read model instructions file /Users/yixingzhou/.harness-sandbox/codex/.codex/codex_ctf_unrestricted_profile.md`)。故该 flag **必须保留**。CLI help 原文:`Do not load $CODEX_HOME/config.toml; auth still uses CODEX_HOME` —— 忽略的只是 config,auth.json 照读,连通性靠下面的 -c 覆盖补回。⚠️ 副作用:它同时丢掉 config 里的 [projects.*] trust_level,故目标目录必须是 git 仓库,否则报 `Not inside a trusted directory`(派发 worktree 天然满足)。",
+    "--ignore-user-config": "2026-08-05 M5 真机启用：用户 ~/.codex/config.toml 以 ~ 路径引用自定义指令 profile，沙箱 HOME 替换后 ~ 展开落空 → codex 启动即死。且派发任务本不应继承个人 config 的自定义指令 / 模型档 / MCP servers / danger-full-access。\n⚠️ **它切掉的是配置，不是认证 —— 也不为认证负责。** CLI help 原文：`Do not load $CODEX_HOME/config.toml; auth still uses CODEX_HOME`。若你的认证挂在**自定义 provider**（中转 / 自建网关 / Azure）上，这段被忽略的 provider 定义正是连通性所在 → codex 会拿你的 key 直连 api.openai.com → 确定性 401，重派无效。接入步骤见 transports/local-cli.md §8；sandbox-profile.sh 已把该组合升级为派活前的fail-closed 前置，会直接给出可复制的 -c 修法。**内置 provider 用户不受影响，无需改动。**\n⚠️ 副作用二：它同时丢掉 config 里的 [projects.*] trust_level，故工作根必须是 git 仓库（派发 worktree 天然满足）。\n⚠️ 副作用三：model 会静默回落到 CLI 默认值。需要钉住模型时用 -c model=<id>。",
     "-c model_provider / -c model_providers.OpenAI": "2026-08-07 M5.1 事故修复。--ignore-user-config 丢掉用户 config 的 [model_providers.OpenAI] 段(base_url 指向本机中转),codex 转而直连 api.openai.com,而 auth.json 里的中转 key 必被拒 → 401 invalid_api_key,确定性,重派无效(实证:M5.1-TENANT-INJECTION verify 两派两停,见 docs/test-reports/M5.1-verify-blocked-report.md)。用 -c 在命令行声明式注入 provider,使「config 隔离」与「保住认证」同时成立,不再二选一。选 -c 而非最小 CODEX_HOME:后者与 --ignore-user-config 自相矛盾(那份最小 config.toml 同样会被忽略)。provider 定义写在 descriptor 里 → 进 git、进 provenance 哈希、可审计;凭据仍只在 auth.json,不入库。",
     "-c model / -c model_reasoning_effort": "必须显式钉住。config 被忽略后 model 会静默回落到 CLI 默认值 —— 等于在无人知情的情况下把 evaluator 换成了另一个模型,独立性铁则第 5 条的 model_family 校验也会失去实际意义。值取自用户 config 原值。"
   },

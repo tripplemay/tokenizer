@@ -5,6 +5,107 @@
 
 ---
 
+## v1.7.1 — 2026-08-07（codex 自定义 provider：把确定性断认证前移成 fail-closed 前置）
+
+**来源：** newkolmatrix `M5.1-TENANT-INJECTION` verifying 两派两停的事后复核（tokenizer 侧独立会话取证）。
+
+- **真因：** v1.7.0 把 `--ignore-user-config` 采纳为模板默认，解了「`~` 路径展开落空致 codex 秒退」，
+  却重建了它本要绕开的认证两难，且这次是**确定性**的。该 flag 的 CLI help 原文是
+  `Do not load $CODEX_HOME/config.toml; auth still uses CODEX_HOME` —— **忽略 config、照读 auth**。
+  用户若把认证挂在自定义 provider（中转 / 自建网关 / Azure）上，被忽略的那段 provider 定义正是连通性所在，
+  codex 转而拿这把 key 直连 `api.openai.com` → `401 invalid_api_key`，重派无效。
+  实测代价：两次派活（159s + 47s）+ 烧光 §3.4 重派额度 + 批次锁死在 `verifying`（流转图上无边可退），
+  最终靠人类闸门破例重划批次才解开。
+- **修法不是回滚该 flag**（摘掉即精确复现原崩溃，已反证），而是**分开解决两件事**：
+  隔离配置继续由 flag 负责，连通性由 argv 里的 `-c` 声明式注入 provider 补回。
+  端点随 descriptor 走 → 进 git、进 `adapter_execution_contract_sha256`、可审计；凭据仍只在 `auth.json`。
+- **`sandbox-profile.sh` 新增派活前 fail-closed 前置：** adapter 是 codex、argv 带 `--ignore-user-config`、
+  且未用 `-c` 注入 provider，而 `$CODEX_HOME/config.toml` 的 `model_provider` 指向自定义 provider
+  → **拒派**，并打印**自动填好该用户真实 `base_url` 的可复制修法**。
+  两处信号都命中才拦；读不到 / 解析不出一律放行 —— 前置检查本身不得成为新的失败源。
+  不用 `tomllib`（要 python 3.11+，而机件的最低面是系统自带 python3，本机实测为 3.9.6），
+  只做两处窄正则匹配。另加一条非阻断 stderr 提醒：带该 flag 却未 `-c model=` 时，
+  实际跑的是 CLI 默认模型而非个人 config 里选的那个。
+- **模板 argv 不变**（`-c` 的值是每机器的，不进共享模板）；只在 `_flags_rationale` / `_comment` 写清陷阱与指引 ——
+  纯文档字段，实测执行契约摘要 `82083c6e…` 改前改后一致，不触发任何下游 resolver 漂移。
+- **文档：** `transports/local-cli.md` 新增 §8「自定义 provider 用户的接入」（含零成本自查探针：
+  注入一个不存在的 `base_url`，看报错 URL 是否即该假域名）；`dispatch-mode.md` 新增 §5.2.1
+  「隔离个人 config 与保住认证是两件事」并一般化为**给外部 CLI 加隔离旗标前先分清它切的是行为面还是连通面**；
+  §3.4 补「两次错因**表述**不同 ≠ 真因不同 —— 定性前先核两次日志的目标 URL 是否相同」
+  （本例首派 `tls handshake eof`、重派 `401`，实为同一真因换脸）。
+
+---
+
+## v1.7.0 — 2026-08-05（三向分叉收敛：真机验证的 bridge 修复 + 声明式交付通道 + 铁律 13 + codex 硬化）
+
+**来源：** tokenizer `BL-NATIVE-SUBAGENT-BRIDGES`（三轮真机验证）+ newkolmatrix 本地 v1.6.5（铁律 13）+ newkolmatrix M5 codex 真机修复。三个下游各自持有对方没有的东西，本版一次性回流收敛。
+
+- **bridge launch 真机修复（tokenizer 三轮验证）：** target 重解析改 `-E -s`（`-I` 切断 `dispatch_common` sibling 导入，launch 必挂）；`write_bytes` 修 bytes 写入；guest staging 补 `chmod 711` 父目录链与 `a+rX,a-w`（root umask-077 目录 worker uid 无法穿越）。`dispatch_common.py` 纳入 app-bundle 身份名单（并集保留 `validate-active-return-route.py`）。
+- **声明式按角色交付通道 deliverable_channels（FIX2 #1:A）：** manifest 可声明 `file`（默认）/ `terminal-message`；只读厂商 persona（Kimi `plan`）由 driver 把根会话最终消息物化为受托 artifact（独占创建 / 0600 / 1MiB / 空文本 fail-closed），`artifact_sha256` 照常绑定 receipt。Kimi manifest 的 planner 由退让映射 `coder` 改回 `plan` + `terminal-message`。
+- **受托 artifact 覆盖点合法化（FIX2 #2:A）：** provider 归约允许受托路径覆盖 baseline，变化计入 `source_changes`。
+- **铁律 13（newkolmatrix v1.6.5）：** 交付叙述必须有机械依据；同步 generator.md §8 与 role-context/generator.md，并纳入 CI watch `--workflow` 过滤 + 探针漂移扫描两条经验。
+- **codex `--ignore-user-config` 采纳为默认（M5 真机）：** 沙箱替换 HOME 后用户 `~/.codex` 的 `~` 展开落空致 codex 秒退；派活本不应继承个人 config。此前 A 侧标为"可选、默认不启用"，本版据真机证据改默认。
+
+---
+
+## v1.6.4 — 2026-08-03（PostToolUse dispatch 配置 pinning）
+
+**来源：** `newkolmatrix` 接入 v1.6.3 的独立验收。
+
+- PostToolUse dispatch hook 现在和实际 dispatch 一样，将 registry 固定为当前 Git 项目根的普通
+  `.agents-registry.json`；项目外同名文件、有效符号链接和悬空符号链接一律 fail-closed。
+- 写 registry 或 `progress.json` 时，hook 依次复验 registry、角色分配与已消费 v2 signed
+  checkpoint，避免一个单独合法但已与当前 assignment / execution provenance 漂移的目录延迟到
+  实际派活时才被发现。
+- 增加 hook 回归：覆盖项目根路径、外部同名路径、有效/悬空符号链接、legacy assignment 不兼容和
+  malformed v2 checkpoint；执行入口既有的 project-root registry pinning 覆盖也改为同名外部路径。
+
+---
+
+## v1.6.3 — 2026-08-02（strict vm-v1 Kimi bridge provider 与回执闭环）
+
+**来源：** tokenizer `BL-NATIVE-SUBAGENT-BRIDGES` 修复批次。
+
+- 引入 Framework-owned `vm-v1` provider：它固定校验 plain Lima VZ profile、无 host mount / proxy /
+  port forward / container runtime，按 content-addressed runner、CLI bundle、broker policy 与 VM image 启动
+  独立 worker principal。项目 registry、PATH、设备报告和项目内镜像均不能选择或替换 provider。
+- external same-session bridge 只在 installed app 与项目镜像中的受管 dispatch runtime 关键文件逐字节一致、provider 对当前主机做出
+  新鲜 nonce-bound attestation 时出现在 catalog；launch 再次校验相同 contract/provenance。Kimi ACP
+  bridge 将 Planner 映射为 `coder`、Generator 映射为 `coder`、Evaluator 映射为 `explore`；
+  future CLI 只要提供受验证 manifest、已发布 protocol，并在 provider 的新鲜 catalog attestation 中获得精确
+  `{tool, protocol}` route，便可按同一规则加入。当前 `vm-v1` 只发布它实际可运行的 Kimi ACP；协议兼容但没有
+  provider bundle/credential driver 的 CLI 不会形成可签发 candidate。
+- catalog attestation 固定为 300 秒的短时发现证明；launch proof 在私有 copy-in 完成后签发，并使用覆盖最长
+  worker turn、copy-out、broker request 与回执整理余量的 390 秒受限生命周期，避免合法的最长执行在返回时因证明
+  过期被拒绝。
+- root systemd supervisor 通过私有 pipe 接收 Kimi bridge receipt，并在 root-only receipt 目录落盘；它将
+  vendor CLI 精确降权为 `harnessvm`，回收已验证的 bridge 进程组，并由 systemd job cgroup 完成整棵 job
+  的生命周期收束。worker 使用 copy-in/copy-out、brokered
+  credential/network 与受限 supervisor pipe；不挂载 Coordinator 文件、HOME、Kimi state 或原始凭据。Generator 回传只接受普通文件、受控 artifact 与
+  allowlisted source delta，拒绝控制面、链接、非规范权限和 Git 属性/CI/hook 路径变更。
+- 新增 source-only 的受控 Kimi L2 Generator 探测：只能由显式的外部人工确认和 `/usr/bin/python3 -I`
+  启动，固定合成输入；它在同一受保护 source-root fd 下固定 provider、bridge 与三个 runner，再将它们以
+  私有、哈希校验的 stage 传给 VM。探测不读取项目状态、registry 或批准闸门，也不发布 catalog route。其
+  evidence 同时绑定 provider source、runner、bridge、CLI bundle、目标与合成 envelope 的摘要。在打开
+  broker 前，它先以同一 root systemd profile 运行无网络的 `setpriv` 预检，证明 vendor child 的 UID/GID、
+  supplementary groups、Inh/Perm/Eff/Amb capabilities 与 `NoNewPrivs` 均符合固定降权契约。
+- Lima host command 只接收 passwd 派生的固定 `HOME`、PATH 与 locale，既满足 Lima 的 profile lookup，又不继承
+  Coordinator 或 caller 环境。
+- broker 只在 Kimi OAuth access token 的剩余时长足以覆盖最长 vendor turn、copy-out、上游请求与回收余量时
+  才建立 lease，避免短时令牌在受控运行中途失效；刷新仍限定在可信宿主的供应商登录链路内，refresh token
+  不会进入 VM、回执、日志或子进程环境。
+- 针对 hardened guest 中 Python `Popen(user=...)` 无法稳定执行 Kimi ELF 的实际行为，Kimi bridge 改为固定
+  非符号链接 `/usr/bin/setpriv` 在 guest 内完成身份切换；它清空 supplementary groups、Inh/Amb capabilities
+  并设置 `NoNewPrivs`，而 systemd cgroup 继续承担完整 job tree 的回收。
+- 新增 provider-attested Generator receipt consumer：复验 active subagent route、provider run layout、
+  attestation contract/nonce/artifact digest 及签发时效；过期、未来签发、漂移或缺失的证明不能把 handoff
+  推进为 `COMPLETED`。现有 local-cli 和 Codex local-cli 不被升级为 external bridge。
+- 回传验收以重新解析的 active role/target 为准，不能由 `run-meta.transport` 自行降级：external
+  `subagent` 必须走 provider receipt 校验，伪造的 `local-cli` 或不匹配的 agent/transport 一律拒绝。该校验器
+  与 provider runtime 一并纳入 installed app / project mirror 契约。
+
+---
+
 ## v1.6.2 — 2026-07-31（严格同会话桥接 fail-closed 与执行语义防漂移）
 
 **来源：** tokenizer `BL-NATIVE-SUBAGENT-BRIDGES` dispatch 演练。
