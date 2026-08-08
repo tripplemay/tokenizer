@@ -257,7 +257,7 @@
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
-      "sha256": "bd16494575f32f21ccd3771e2d6b46e434307e84f40dfb371f689c3f41872de6",
+      "sha256": "dd748b6e525d98e5e31a8722ea1530c39bb91fbf65610c2fb17c9f194c304239",
       "upstream": "dd748b6e525d98e5e31a8722ea1530c39bb91fbf65610c2fb17c9f194c304239"
     },
     "framework/harness/evaluator.md": {

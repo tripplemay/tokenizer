@@ -22,7 +22,7 @@
 
 | `transport` | 含义 | 形态 |
 |---|---|---|
-| `subagent` | Coordinator-native 同会话 child；外部 CLI bridge 当前未发布 | 快车道（默认） |
+| `subagent` | Coordinator-native 同会话 child；外部 CLI 仅经 strict `vm-v1` provider | 快车道（默认；外部 route 按 attestation 动态公开） |
 | `local-cli` | 独立进程 + 独立 sandbox checkout + 异厂商模型 | **本地异构（本模式主体）** |
 | `a2a` | 自建 runner（长驻 HTTP 服务） | **真异步 / taskId 重订阅 / SSE 推送 / 跨机器**；Planner / Evaluator 已实装，Generator 因无源码回流协议被拒（见 `transports/a2a.md`） |
 
@@ -110,22 +110,27 @@ role × transport 约束和同一套 preflight。
 `tool-integrations/1` 的 integration 可用 `"subagent": { "bridge": "<bridge-id>" }`
 声明已知 wire protocol；它不是外部执行授权。manifest schema 是
 `subagent-bridge.schema.json`，其中 `_verified: true` 只表示框架已验证 protocol driver，不能代表
-宿主隔离或凭据安全。当前 release 没有满足
-`transports/external-bridge-provider.md` 契约的 VM/ephemeral-principal provider，故 public catalog、
-签发与 dispatch 一律不公开外部 `subagent` candidate：Kimi 与 Codex 均只可选 `local-cli`。
+宿主隔离或凭据安全。当前 release 已发布满足
+`transports/external-bridge-provider.md` 契约的 `vm-v1` provider：仅在 installed app 与项目镜像的受管 dispatch runtime
+关键文件逐字节一致、
+provider 对当前主机做出新鲜 catalog attestation 后，public catalog 才可公开 Kimi ACP external `subagent`
+candidate；launch 会再次绑定相同 contract/provenance。Codex 仍没有可发布的同会话 driver，继续只可选 `local-cli`。
 `sandbox-exec`、`env -i`、专用 HOME、worktree 和临时 Kimi state 均只能作为纵深防护，不能撤销同 UID
 子进程的宿主能力或充当 credential/network/lifecycle 边界。
 
-未来 provider 必须在 `/plan` 和实际 launch 分别进行 framework-owned、nonce-bound attestation，并把
-provider id、kind 和 canonical contract SHA-256 纳入 target 的 `execution_provenance_sha256`。provider
-必须负责独立 principal、copy-in/copy-out 工作区、staged CLI digest、brokered credentials/egress、完整 job
-reap 与 supervisor result pipe。届时新的 CLI 若使用已发布的 wire protocol（当前 ACP）、匹配 verified
-adapter `bridge_commands` 和 protocol-validated manifest，就会按 manifest personas 自动进入角色选择；新
-wire protocol、凭据流或 provider kind 仍需 framework driver、负向隔离测试和真实 probe。
+`vm-v1` 在 `/plan` 和实际 launch 分别进行 framework-owned、nonce-bound attestation，并把 provider id、
+kind 和 canonical contract SHA-256 纳入 target 的 `execution_provenance_sha256`。provider 负责独立 principal、
+copy-in/copy-out 工作区、staged CLI digest、brokered credentials/egress、完整 job reap 与 supervisor result
+pipe。catalog attestation 还必须声明精确 `{tool, protocol}` route；因此当前 `vm-v1` 只公开其 Kimi ACP
+bundle/credential driver 实际能启动的 Kimi route。未来 CLI 需同时使用已发布的 wire protocol（当前 ACP）、
+匹配 verified adapter `bridge_commands` 与 protocol-validated manifest，并由 provider 发布匹配 route，才会按
+manifest personas 自动进入角色选择；新 wire protocol、凭据流、provider bundle 或 provider kind 仍需 framework
+driver、负向隔离测试和真实 probe。
 
-Kimi 的原生 `plan` Agent 不能写 Planner proposal，因此未来 Kimi ACP route 只能把
-`planner-proposal` 映射为 native `coder`，并仍受 proposal artifact contract 约束；Generator 仍缺外部
-source-handoff。Codex `thread/fork` 会新建 session tree，不能冒充同会话；App Server driver 继续是
+Kimi 的原生 `plan` Agent 不能写 Planner proposal，因此已发布的 Kimi ACP route 只能把
+`planner-proposal` 映射为 native `coder`，并仍受 proposal artifact contract 约束；其 Generator 由 provider
+copy-in/copy-out 回流受控 source delta，只有 A2A Generator 仍缺 source-handoff。Codex `thread/fork` 会新建
+session tree，不能冒充同会话；App Server driver 继续是
 未发布的 fail-closed probe。历史 `"subagent": true` 和 `dispatch/1` 的 `transport=subagent` 都是
 Coordinator-native 兼容信息：后者内部标记为 `bridge_id=host-native`，但 public catalog 与 v2
 `{tool, invocation}` resolver 均不公开或选择它。
@@ -247,6 +252,7 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 > 同一个真因换了张脸。**下结论前先核两次日志里的目标 URL / 目标主机是否相同。**
 
 
+
 ### 3.5 L4 — 谁按阶段推进键
 
 **Coordinator / 编排者，永远。** transport 只运输，不推进。完全沿用 `orchestration-patterns.md` §8
@@ -320,8 +326,9 @@ A2A 的 `INPUT_REQUIRED` / `AUTH_REQUIRED` 依赖「服务端挂起等你」，�
 **残余风险（诚实列明）：**
 
 - **R1 — 同 UID 宿主凭据/会话能力仍可能被外部 CLI 读取。** `home_dir`、`env -i` 与 `env_set`
-  只减少普通环境继承，不能撤销文件、Mach/launchd 或网络能力。严格 external bridge 因此未发布；
-  `local-cli` 仅在合作型工具信任模型下使用。
+  只减少普通环境继承，不能撤销文件、Mach/launchd 或网络能力。因此 strict external bridge 绝不走宿主
+  `local-cli` 或 `sandbox-profile.sh` 直跑路径；已发布 Kimi route 仅走独立 `vm-v1` provider，`local-cli`
+  仍仅在合作型工具信任模型下使用。
 - **R2 — 该 CLI 自身推理凭据的花费不受 harness 管控。** 它拿到的仅此一项（拿不到项目的生产与部署凭据），
   但这笔钱的上限在厂商账户侧，`autonomy-policy.json` 的 budget 管不到。**未解决，设计上接受。**
 - **R3 — 出网未限制。** macOS 上做进程级网络隔离成本过高，当前依赖「无凭据」而非「无网络」。**未解决。**
