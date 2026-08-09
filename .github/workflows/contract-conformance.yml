@@ -1,0 +1,47 @@
+name: Contract Conformance
+
+# BL-REPO-MECH F002：双仓契约一致性守门。
+# checkout harness-template @ harness.json 钉住的框架 commit，对其 contract-fixtures
+# 跑双向契约测试（tests/contract/）。独立于 Deploy VPS——契约测试挂掉不阻塞与
+# 契约无关的部署；deploy 关键路径仍只 needs verify。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/server/harness-sign.ts
+      - src/server/harness-mode-intent-api.ts
+      - src/cli/harness.ts
+      - src/cli/harness-mode-intents.ts
+      - app/api/harness/**
+      - .claude/console/**
+      - harness.json
+      - tests/contract/**
+      - .github/workflows/contract-conformance.yml
+  workflow_dispatch: {}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Checkout harness-template at the pinned framework commit
+        run: |
+          set -euo pipefail
+          FRAMEWORK_COMMIT="$(jq -r .framework.commit harness.json)"
+          FRAMEWORK_URL="$(jq -r .framework.source_url harness.json)"
+          # harness.json 记录的是短 sha：必须完整 clone 后 checkout，
+          # actions/checkout 的 ref 不接受短 sha。
+          git clone --quiet "$FRAMEWORK_URL" harness-template
+          git -C harness-template checkout --quiet "$FRAMEWORK_COMMIT"
+          echo "framework pinned at $(git -C harness-template rev-parse HEAD)"
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Run bidirectional contract tests against the pinned fixtures
+        env:
+          CONTRACT_FIXTURES_DIR: ${{ github.workspace }}/harness-template/contract-fixtures
+        run: npx vitest run tests/contract/
