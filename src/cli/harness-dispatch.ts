@@ -161,7 +161,7 @@ function readRegistry(repoPath: string): Map<string, RegistryAgent> {
     }
   }
   // tool-integrations/1 格式：按 tool-catalog 同款规则派生 local-cli 三角色目标。
-  // 注册表 2026-08-05 迁到该格式后，旧实现返回空表使 dispatch 镜像静默断链
+  // 注册表迁到该格式（5bd8c52，2026-07-31）后，旧实现返回空表使 dispatch 镜像静默断链
   //（BL-DISPATCH-USAGE-CAPTURE F004 实测撞出）；本函数只做镜像身份匹配，
   // 权威校验仍在机器侧 dispatch 机件与服务端白名单。
   if (Array.isArray(registry.integrations) && registry.integrations.length <= 50) {

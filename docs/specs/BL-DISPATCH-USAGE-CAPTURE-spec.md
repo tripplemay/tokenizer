@@ -65,3 +65,11 @@ UsageEvent（source=codex 等无法自采集的 CLI），自带 **batch/feature/
   Claude/其他 CLI 的 dispatch 提取（本批只做 codex/kimi 两个在用 adapter）· 成本页联动（BL-COST-BATCH-V1）。
 - 风险：①提取规则与 CLI 输出格式耦合——规则进 adapter 声明而非硬编码，CLI 升级破坏时 usage=null 旁路降级；
   ②kimi 双重计费——attribution_only 白名单 + F003 负向测试 + F004 实证三道防线；③本机 agent 旧版——F004 前必须重装（顺带清掉 DEDUP 遗留）。
+
+## 5. fix_round=1 裁决注记（2026-08-10）
+
+- F004 复验证伪交付报告一处陈述（本机 codex adapter 定制自 e59c822 起已钉 `-c model=gpt-5.6-sol`）。
+  决策 3 的「adapter argv 声明」兜底档在 F001 实现中未落地（提取器只读日志）——**裁决：顺延至
+  BL-DISPATCH-MODEL-PIN**（连同已物化 create-only 事件的 model 一次性补写；两件事同域，一并处理更完整）。
+  本批 model=null 语义如实（unpriced），主链路（数值/幂等/防双重计费）复验无返工。
+- 注册表迁移时间修正：tool-integrations/1 迁移为 5bd8c52（2026-07-31），非 08-05。

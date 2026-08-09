@@ -161,12 +161,12 @@
   },
   {
     "id": "BL-DISPATCH-MODEL-PIN",
-    "title": "派发模型钉死：adapter 定制加 -c model= 使派发用量事件可定价",
-    "description": "现状：codex 派发日志无 model 行且 adapter argv 未钉模型（v1.7.1 标记过 --ignore-user-config 下跑 CLI 默认模型），派发用量事件 model=null 如实 unpriced。改进：本机 adapter 定制（codex.json argv 加 -c model=<明确型号>，进执行契约 hash 可审计）+ extract-run-usage 的 adapter-argv 兜底取模型 → 事件可定价，同时消掉默认模型不确定性。涉及本机 registry 定制与框架提取器小改。来源：BL-DISPATCH-USAGE-CAPTURE F004 用户确认时的观察。",
+    "title": "派发用量事件 model 归因补全：提取器 argv 兜底档 + 已物化事件补写",
+    "description": "前提修正（F004 复验 fix_round=1）：本机 codex.json 定制自 e59c822（2026-08-07）起 argv 已含 -c model=gpt-5.6-sol，派发模型可知。剩余工作：①extract-run-usage.py 实现 spec 决策 3 的 adapter argv 声明兜底档（日志无 model 行时取 argv 的 -c model=，钩子侧需把 adapter 文件路径递给提取器）；②已物化的 4 条 dispatch UsageEvent（model=null，物化为 create-only）需一次性补写 model 使其可定价。来源：BL-DISPATCH-USAGE-CAPTURE F004 复验裁定。",
     "decisions": [
-      "2026-08-10 用户目视确认时发现登记。"
+      "2026-08-10 F004 PARTIAL 复验修正前提后重立（原条目建立在『argv 未钉模型』的被证伪陈述上）。"
     ],
-    "confirmed_at": "2026-08-09T18:05:58Z",
+    "confirmed_at": "2026-08-09T18:19:10Z",
     "priority": "low"
   }
 ]

@@ -183,7 +183,7 @@ describe("dispatch run summary collection", () => {
   });
 
   it("derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival)", () => {
-    // 注册表 2026-08-05 迁到 tool-integrations/1 后，仅认 agents[] 的旧实现返回空表，
+    // 注册表迁到 tool-integrations/1（5bd8c52，2026-07-31）后，仅认 agents[] 的旧实现返回空表，
     // dispatch 镜像静默断链（BL-DISPATCH-USAGE-CAPTURE F004 实测撞出）——本用例钉死双格式解析。
     write(".agents-registry.json", JSON.stringify({
       version: "tool-integrations/1",

@@ -34,10 +34,12 @@ kimi 零新增事件（详情页 Activity 的 dispatch 表 tokens 列对 kimi �
 ## 终局确认（2026-08-09T18:05:58Z）
 
 - **用户目视确认：/events 出现 4 条 source=codex 派发事件，数值与上表一致。**
-- 「模型显示未知」为如实呈现：codex 运行日志无 model 行、adapter argv 未钉 `-c model=`（v1.7.1 已标记
-  该情形跑 CLI 默认模型）——模型身份在本机产物中不可知，事件如实 unpriced。改进已登记 backlog
-  （BL-DISPATCH-MODEL-PIN：adapter 定制钉模型 → 事件可定价 + 消掉默认模型不确定性）。
+- 「模型显示未知」原因（fix_round=1 修正，原表述被 F004 复验证伪）：codex 运行日志无 model 行**属实**，
+  但本机 codex.json 定制自 e59c822（2026-08-07）起 argv 已含 `-c model=gpt-5.6-sol`（早于四次派发）——
+  模型身份在本机产物中**可知**。事件 model=null 的真实原因：`extract-run-usage.py` 未实现 spec 决策 3
+  的「adapter argv 声明」兜底档（只读日志）。该缺口连同已物化 4 事件的 model 补写（物化 create-only）
+  已按修正后前提登记 backlog BL-DISPATCH-MODEL-PIN。
 - 排查中挖出并修复两层链路断点（均有回归用例钉死）：
   1. dispatch 扫描的批次白名单在批次切换后丢弃全部历史 run——用量随批次结束即丢失；
-  2. readRegistry 只认 dispatch/1 旧格式——注册表 2026-08-05 迁 tool-integrations/1 后
+  2. readRegistry 只认 dispatch/1 旧格式——注册表迁 tool-integrations/1（5bd8c52，2026-07-31） 后
      **dispatch 镜像静默断链至今**（Activity 显示的均为迁移前旧行），本批顺带修复恢复。
