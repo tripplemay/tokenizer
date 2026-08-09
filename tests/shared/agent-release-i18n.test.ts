@@ -30,12 +30,15 @@ describe("Agent release update copy", () => {
 
   it("uses the release manifest as the source of the newest feature description", () => {
     const latest = agentReleasesManifest.releases.at(-1);
-    expect(latest).toMatchObject({ version: "1.2.1", agent_feature_version: 9 });
-    expect(latest?.highlights["zh-CN"]).toEqual([
+    // 去税：不钉最新版本号；1.2.1 的内容断言移到下方作为历史锚点
+    expect(latest?.agent_feature_version).toBeGreaterThanOrEqual(9);
+    const anchor121 = agentReleasesManifest.releases.find((release) => release.version === "1.2.1");
+    expect(anchor121).toMatchObject({ agent_feature_version: 9 });
+    expect(anchor121?.highlights["zh-CN"]).toEqual([
       "升级安装器与后台 Agent 生命周期，确保升级时旧 wrapper 与 Node 子进程一并退出，避免旧版本并发上报覆盖设备状态。",
       "服务端拒绝过期 Agent 覆盖已接受诊断或 Harness 控制面状态，并在设备页显示被接受上报的 Token 前缀和时间。"
     ]);
-    expect(latest?.highlights.en).toEqual([
+    expect(anchor121?.highlights.en).toEqual([
       "Hardens installer and background Agent lifecycle so upgrades stop both the old wrapper and Node child before they can report concurrently.",
       "Prevents stale Agents from overwriting accepted diagnostics or Harness control-plane state, and shows the accepted reporter token prefix and time on the device page."
     ]);

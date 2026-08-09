@@ -15,6 +15,7 @@ vi.mock("@/server/db", () => ({
   prisma: { device: { findMany: mocks.findMany } }
 }));
 
+import agentReleasesManifest from "../../src/shared/agent-releases.json";
 import { deviceAgentUpdateStatus, getAgentUpdateSummary, isDeviceOutdated } from "@/server/agent-version";
 
 describe("isDeviceOutdated", () => {
@@ -91,12 +92,14 @@ describe("strict Agent release update state", () => {
       .toMatchObject({ kind: "upgrade-required", reported: "0.9.9", latest: CURRENT_AGENT_RELEASE_VERSION });
   });
 
-  it("requires the installed 1.2.0 / capability-8 Agent to upgrade to 1.2.1", () => {
-    expect(deviceAgentUpdateStatus({ featureVersion: 8, releaseVersion: "1.2.0" })).toEqual({
+  it("requires an installed stale-release / capability-8 Agent to upgrade to the manifest tail", () => {
+    const versions = agentReleasesManifest.releases.map((release) => release.version);
+    const latest = versions.at(-1)!;
+    const previous = versions.at(-2)!;
+    expect(deviceAgentUpdateStatus({ featureVersion: 8, releaseVersion: previous })).toMatchObject({
       kind: "upgrade-required",
-      reported: "1.2.0",
-      behind: 1,
-      latest: "1.2.1"
+      reported: previous,
+      latest
     });
   });
 

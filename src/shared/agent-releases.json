@@ -58,6 +58,21 @@
           "Prevents stale Agents from overwriting accepted diagnostics or Harness control-plane state, and shows the accepted reporter token prefix and time on the device page."
         ]
       }
+    },
+    {
+      "version": "1.3.0",
+      "released_on": "2026-08-10",
+      "agent_feature_version": 9,
+      "highlights": {
+        "zh-CN": [
+          "派发用量上行：dispatch run-meta 的 usage 摘要（框架 v1.9.0 提取器产出）随 harness 上报进入控制台——Codex 等沙箱内 CLI 的 token 花费不再丢失，且自带批次/feature/角色归因。",
+          "attribution_only 模式（如 Kimi）只上行归因列，绝不重复计费。"
+        ],
+        "en": [
+          "Dispatch usage uplink: run-meta usage summaries (extracted by framework v1.9.0) now travel with harness reports, so sandboxed CLI spend (e.g. Codex) is no longer lost and carries batch/feature/role attribution.",
+          "attribution_only adapters (e.g. Kimi) uplink attribution columns only and are never double-billed."
+        ]
+      }
     }
   ]
 }

@@ -23,10 +23,11 @@ describe("Agent release manifest contract", () => {
     expect(AGENT_RELEASE_VERSIONS).toEqual(agentReleasesManifest.releases.map((release) => release.version));
     expect(LATEST_AGENT_RELEASE).toEqual(latest);
     expect(CURRENT_AGENT_RELEASE_VERSION).toBe(latest?.version);
+    // 去税：最新版本从账本末项派生（BL-REPO-MECH F003 同款模式），发版只增账本不改测试
     expect(LATEST_AGENT_RELEASE).toMatchObject({
-      version: "1.2.1",
       agent_feature_version: AGENT_FEATURE_VERSION
     });
+    expect(LATEST_AGENT_RELEASE.version).toBe(agentReleasesManifest.releases.at(-1)?.version);
   });
 
   it("keeps stable, strictly increasing release entries with localized highlights", () => {

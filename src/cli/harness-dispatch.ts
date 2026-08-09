@@ -53,7 +53,78 @@ export type DispatchRunSummary = {
   artifactPath: string | null;
   artifactSha256: string | null;
   errorSummary: string | null;
+  /** BL-DISPATCH-USAGE-CAPTURE：extract-run-usage.py 写入 run-meta 的用量摘要（原样透传，服务端二次校验） */
+  usage: DispatchUsageSummary | null;
+  usageCapture: string | null;
 };
+
+type DispatchUsageSummary = {
+  model: string | null;
+  input_tokens: number;
+  cached_input_tokens: number;
+  cache_write_tokens: number;
+  output_tokens: number;
+  reasoning_tokens: number;
+  turns: number;
+  extracted_from: "run-log";
+};
+
+const USAGE_CAPTURE_MODES = new Set(["materialize", "attribution_only"]);
+const MAX_USAGE_TOKENS = 2_000_000_000;
+
+function boundedUsageInt(value: unknown, min: number, max: number): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= min && value <= max
+    ? value
+    : null;
+}
+
+/** run-meta 是本机机件产物但仍按敌意输入解析：任一字段越界即整块弃用（usage 是旁路不是闸门）。 */
+function safeUsage(value: unknown): DispatchUsageSummary | null {
+  const raw = record(value);
+  if (!raw) return null;
+  const allowed = new Set([
+    "model",
+    "input_tokens",
+    "cached_input_tokens",
+    "cache_write_tokens",
+    "output_tokens",
+    "reasoning_tokens",
+    "turns",
+    "extracted_from"
+  ]);
+  if (Object.keys(raw).some((key) => !allowed.has(key))) return null;
+  if (raw.extracted_from !== "run-log") return null;
+  const model =
+    raw.model === undefined || raw.model === null
+      ? null
+      : typeof raw.model === "string" && raw.model.length > 0 && raw.model.length <= 128
+        ? raw.model
+        : null;
+  if (model === null && raw.model !== undefined && raw.model !== null) return null;
+  const input = boundedUsageInt(raw.input_tokens, 0, MAX_USAGE_TOKENS);
+  const cached = boundedUsageInt(raw.cached_input_tokens, 0, MAX_USAGE_TOKENS);
+  const cacheWrite = boundedUsageInt(raw.cache_write_tokens, 0, MAX_USAGE_TOKENS);
+  const output = boundedUsageInt(raw.output_tokens, 0, MAX_USAGE_TOKENS);
+  const reasoning = boundedUsageInt(raw.reasoning_tokens, 0, MAX_USAGE_TOKENS);
+  const turns = boundedUsageInt(raw.turns, 1, 10_000);
+  if (input === null || cached === null || cacheWrite === null || output === null || reasoning === null || turns === null) {
+    return null;
+  }
+  return {
+    model,
+    input_tokens: input,
+    cached_input_tokens: cached,
+    cache_write_tokens: cacheWrite,
+    output_tokens: output,
+    reasoning_tokens: reasoning,
+    turns,
+    extracted_from: "run-log"
+  };
+}
+
+function safeUsageCapture(value: unknown): string | null {
+  return typeof value === "string" && USAGE_CAPTURE_MODES.has(value) ? value : null;
+}
 
 function record(value: unknown): UnknownRecord | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -341,7 +412,9 @@ function summarizeRun(
     verdict: outcome === "RETURNED" ? facts.verdict ?? "COMPLETED" : null,
     artifactPath: artifact.reportPath,
     artifactSha256: artifact.sha256,
-    errorSummary: stableError(outcome, artifact.reportPath)
+    errorSummary: stableError(outcome, artifact.reportPath),
+    usage: safeUsage(run.usage),
+    usageCapture: safeUsageCapture(run.usage_capture)
   };
 }
 
