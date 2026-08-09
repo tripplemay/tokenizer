@@ -37,7 +37,7 @@
       "id": "F005",
       "title": "dispatch 产物补显（artifactPath/Sha256）",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "detail select 补两列（既有排除断言反转并在 commit 说明机械依据）；Activity 产物列 path+sha 截断 title 全量、皆空显 —；decisionSig/payload/signature 排除断言保留；verify 绿。"
     }

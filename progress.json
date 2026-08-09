@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "闸门全局触达：全站待批徽章 + 邮件通知（fail-open）+ evidence/dashboardUrl/dispatch 产物三处存而不显补显；零协议改动。",
   "total_features": 5,
-  "completed_features": 4,
+  "completed_features": 5,
   "fix_rounds": 0,
   "current_sprint": "BL-GATE-INBOX",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T18:49:31Z",
+  "last_updated": "2026-08-09T18:50:34Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -21,7 +21,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-GATE-INBOX planning→building，2026-08-10】快车道默认（staged intent 77af0221 已随 REPO-MECH 消费，按 once 语义拒绝重放——done 收尾清 mode_intent 导致守卫失锚的发现已补进 proposed-learnings 既有条目）。5 features 全 generator 串行 F001→F005；F002 注意与 transition/archive 共存于 report route；整批一次 push。"
+    "planning": "【BL-GATE-INBOX building 完成 5/5 → verifying，2026-08-10】F001 徽章+count API · F002 邮件通知（claim/fail-open，与 transition/archive 在 report route 共存良好）· F003 evidence 先行版三点接入 · F004 dashboardUrl 双读防线 · F005 产物补显（排除断言带据反转）。verify/lint/test(1090)/build 四绿。待推送（用户授权）后 fan-out 5 隔离 evaluator 验收；F002 生产实测（真实邮件）属 push 后项。"
   },
   "features": [],
   "pending_gate": null
