@@ -1,5 +1,123 @@
 [
   {
+    "id": "BL-REPO-MECH",
+    "title": "双仓机械化：解冻部署 + contract-fixtures + 契约 CI + paths-ignore 修正 + keep-separate ADR",
+    "description": "🔴 含紧急项：main 当前 7 个测试红（framework-version/mode-badges 硬编码 1.7.0 vs manifest 1.7.1），任何产品 push 被 verify 拦、部署管道冻结——F003 版本测试去税（改从 manifest 动态生成期望值）打头阵。另含：上游 harness-template 新增 contract-fixtures/（schema 快照+金标签名载荷+canonicalJson 向量，发 v1.8.0）；tokenizer 新增 contract-conformance CI（checkout 模板仓@harness.json.framework.commit 双向契约测试，取代 harness-console-demo）；deploy-vps.yml paths-ignore 扩 docs/** + CLAUDE.md「*.md 已豁免」误述修正（生效后 docs/analysis 战略材料入库）；keep-separate 裁决写成 docs/adr/0001。详细方案：docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md。执行序：近期 #1。",
+    "decisions": [
+      "用户 2026-08-08 确认 keep-separate 裁决与三阶段路线图；2026-08-09 要求输出落地计划并物化。",
+      "改 .github/workflows/** 触发一次生产部署，与 F002-F005 合成单次 push；该 push 必含 F003。"
+    ],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-TRANSITION-LOG",
+    "title": "状态流转事件表 + 批次归档表 + 详情页 timeline tab（纯服务端，agent 零改）",
+    "description": "HarnessTransition 表（report 事务内 diff 新旧 status/batch 追加，含 fromStatus/toStatus/toBatch/fixRounds/observedAfter/observedAt 精度区间）+ 详情页第 4 个 timeline tab + 60s 轮询精度口径三处落地。建议吸收 BL-PERF-ANALYTICS 的 F001：HarnessBatchArchive 归档表（入 done upsert / 批次切换 superseded 保底）——同文件同事务同测试模式，归档晚上线一天=一天批次历史永久丢失。是 BL-COST-BATCH-V1 的硬前置；契约冻结注意：COST 侧需要的 batch/occurredAt 映射到本表 toBatch/observedAt。详细方案：batch-plans/BL-TRANSITION-LOG.md + BL-PERF-ANALYTICS.md F001 节。执行序：近期 #2。",
+    "decisions": [
+      "用户 2026-08-09 确认三阶段路线图。",
+      "与 BL-GATE-INBOX 同改 report/route.ts，串行执行，本批先行。"
+    ],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-GATE-INBOX",
+    "title": "闸门全局触达：全站待批徽章 + 邮件通知 + evidence 先行版 + 三处存而不显补显",
+    "description": "规划核实：收件箱聚合本体已在 /harness 列表页（page.tsx:49-57），真实缺口是全局触达。交付：navbar 常驻待批徽章 + pending-count API；闸门 raised/re-raised 邮件通知（复用 Resend 基建，HarnessGate 加 notifiedAt claim 列，fail-open 不卡上报通道）；evidence 路径分类徽标+复制（内容上传剥离到 BL-GATE-EVIDENCE-UPLOAD）；dashboardUrl 与 dispatch artifactPath/Sha256 补显。零协议改动。详细方案：batch-plans/BL-GATE-INBOX.md。执行序：近期 #3。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-AGENT-LATENCY",
+    "title": "agent 时延与健壮性：cron 双条目 + 轮询退避 + enroll 自愈 + /events 分页",
+    "description": "闸门延迟从 cron fallback 的 15min 压到 ≤2min（crontab 拆双条目，harness --json 每 2 分钟）；daemon 轮询错误驱动指数退避+抖动（60s→封顶 600s，成功即复位）；enroll 切 agentFetch；/events occurredAt+id 复合游标分页。零协议改动；agent release ≈1.3.0（账本条目押最后 commit）。详细方案：batch-plans/BL-AGENT-LATENCY.md。执行序：近期 #4。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-COST-BATCH-V1",
+    "title": "成本×批次/阶段归因 v1（时间窗 join）——战略核心差异点首次兑现",
+    "description": "新 src/server/harness-cost.ts 聚合层（buildPhaseIntervals 纯函数 + 逐区间 groupBy，完全复用 summaries.ts billable/estimateCost 口径）；/harness/[id] overview 批次成本卡片 + /projects/[id] 联动卡片；F004 归因精度实测审计（executor:evaluator，误差方向恒为只多不少并如实标注）。硬依赖 BL-TRANSITION-LOG；零采集端改动零协议改动；v2 精确归因（agent report 带 batch id）留远期。详细方案：batch-plans/BL-COST-BATCH-V1.md。执行序：近期 #5（排在 LATENCY 后使审计有真实 transitions 数据）。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-BUDGET",
+    "title": "预算与告警：user/project/model 三级月度 cap + 75%/90% banner",
+    "description": "Budget 表（scopeKey 非空默认串防 NULL 唯一索引失效；用户时区自然月经 wallClockToUtc 推导，存储查询全 UTC）；聚合层复用 costForWhere 同源口径，未定价模型计 0 并附 unpricedTokens 提示；CRUD API + /budgets 管理页 + 全站 banner + overview 成本卡变色。只告警不熔断（观测面不是网关，产品边界入 spec）。零协议改动。详细方案：batch-plans/BL-BUDGET.md。执行序：近期 #6。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图；阈值固定 75/90 不做自定义。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "high"
+  },
+  {
+    "id": "BL-DEVICE-DECOUPLE",
+    "title": "Device 表 harness 三列拆 HarnessDeviceSync（两域最强耦合点解耦）",
+    "description": "lastHarnessSyncAt/harnessSyncStatus/harnessDiagnostics 拆新表（deviceId 主键 1:1），migration 单事务：CREATE + INSERT...SELECT 平移 + DROP COLUMN ×3；heartbeat 写入点与全部读取点切换（已 grep 全量核对）；getDeviceSummary 输出形状冻结（三键名不变）。⚠️ 破坏性删列：F001-F003 必须一次 push；F004 evaluator 迁移演练报告。必须先于 BL-LIVE-SESSION。详细方案：batch-plans/BL-DEVICE-DECOUPLE.md。执行序：中期 #7。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-AGENT-SUPPLY-CHAIN",
+    "title": "agent 供应链加固：agent/v* 锁版发布 + SHA 校验 + --purge 卸载 + 轮换 SOP + Windows CI 修复",
+    "description": "发布账本加 commit 锚点 + GET /api/agent/releases + 两步发布法（tag 指向发布 commit、锚点回填 commit，防自引用）；install.sh/ps1 锁版 + rev-parse 校验 + manifest 不可达回退 WARN；uninstall --purge 全清（Windows EBUSY 容忍）；凭据轮换先文档化不 API 化（API 化剥离到 BL-CRED-ROTATE-API）；顺带修 Windows install-agent-lifecycle CI 既有失败（skipIf win32）。排在所有 bump fv 的批次之前。详细方案：batch-plans/BL-AGENT-SUPPLY-CHAIN.md。执行序：中期 #8。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-QUOTA-PROVIDERS",
+    "title": "订阅配额 provider 扩展：Claude + Kimi（两段式：PROBE 调研 → 按结论裁剪实现）",
+    "description": "先跑 BL-QUOTA-PROVIDERS-PROBE（Evaluator-only 批次）：Claude 凭据矩阵（macOS Keychain 非交互可读性是 go/no-go 单点，本机实测 ~/.claude 无明文凭据，预设 Claude 更可能 no-go）与 Kimi 端点探测（本机实测 ~/.kimi-code/credentials OAuth 凭据在场）各出 go/no-go + 窗口映射表；主批次按结论实现 provider（探测+优雅缺席+fail-quiet，永不写厂商凭据、不用 refresh_token）+ SubscriptionCard 多 provider 泛化。零 schema 零协议改动。详细方案：batch-plans/BL-QUOTA-PROVIDERS.md。执行序：中期 #9。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图；允许调研后砍掉不可行 provider。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-LIVE-SESSION",
+    "title": "P3 兑现 v1：结构化会话事件上报（opt-in 默认关）+ live tab",
+    "description": "v1 做 harness 结构化事件不做日志 tail（复用 RAW_CHANNEL/CREDENTIAL pattern 既有拒收防线；raw tail 的 §6 隐私义务清单写进 spec 留 v2）：agent 每 tick diff 派生白名单事件（feature/gate/HEAD/halt/batch，status_change 读 HarnessTransition 不重复存）→ POST /api/harness/session-events（环形 200 条/项目 + 14 天保留）→ live tab + LIVE 徽章三态区分。fv 9→10、MIN 保持 9（opt-in 不强推）；F005 隐私防注入审计（executor:evaluator）。依赖 BL-DEVICE-DECOUPLE 先行。详细方案：batch-plans/BL-LIVE-SESSION.md。执行序：中期 #10。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-STEERING-V1",
+    "title": "签名任务指令通道（pause/cancel/note）——第三种签名下行，跨仓批次",
+    "description": "框架先落契约（steering.schema.json + validate-steering.sh + console-mode.md §3.5 + 红线修订，框架 ≈v1.9.0）→ tokenizer 实现 HarnessSteeringDirective 表 + 签发/relay API + agent 中继（仿 mode intent 全套：敌意解析/验签/文件锁/ACK 状态机）。机器侧槽位=独立根文件 steering.json（不进 progress.json 热文件也不进 harness.json 账本）；语义红线：建议槽位非控制通道——交互模式阶段边界呈报人类、自主模式作 halt 条件，永不直接改 status/features。fv→11 且 MIN 同步（不升级则签发的 pause 永远无人拉取）；F005 跨仓独立验收含双向契约实测。详细方案：batch-plans/BL-STEERING-V1.md。执行序：中期 #11。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-PERF-ANALYTICS",
+    "title": "agent 性能分析：/harness/analytics 成本×质量页 + 详情页历史 tab",
+    "description": "归档表 F001 已建议前移进 BL-TRANSITION-LOG，本批做聚合与呈现：一次通过率（archivedReason=done 且 fixRounds=0；evaluator-only 批次单独打标防虚增；superseded 不入分母）、返工轮数分布、每 feature 成本（注入 BL-COST-BATCH-V1 的 getBatchCost，缺席则列隐藏）；KPI 行 + 按项目分组批次历史表。可裁剪 F005：evaluator_feedback 有界摘要入 report（additive-optional，不 bump fv，服务端回滚风险已定价）；F006 口径独立审计。详细方案：batch-plans/BL-PERF-ANALYTICS.md。执行序：中期 #12。",
+    "decisions": ["用户 2026-08-09 确认三阶段路线图。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-GATE-EVIDENCE-UPLOAD",
+    "title": "闸门 evidence 内容上传与内联查看（协议批次）",
+    "description": "从 BL-GATE-INBOX 剥离：evidence 内容在机器上，需独立上传端点（report 上限 256KB 塞不下 512KB 级取证文件）+ AGENT_FEATURE_VERSION bump + docs/ 白名单与体积上限（对齐通道 A console/server.py 先例 ≤512KB）。待 GATE-INBOX 先行版验证触达价值后再排期。",
+    "decisions": ["2026-08-09 规划裁剪产物，来源 batch-plans/BL-GATE-INBOX.md Out 节。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "low"
+  },
+  {
+    "id": "BL-CRED-ROTATE-API",
+    "title": "设备凭据轮换 API 化（需独立威胁建模）",
+    "description": "从 BL-AGENT-SUPPLY-CHAIN 剥离：静态 deviceToken 自轮换端点会把「token 被盗」升级为「设备被锁死」，需要 grace window / 审计 / 二因子式设计。前置：SUPPLY-CHAIN 的手动 SOP 落地并验证 re-enroll 吊销语义。",
+    "decisions": ["2026-08-09 规划裁剪产物，来源 batch-plans/BL-AGENT-SUPPLY-CHAIN.md 风险节 6。"],
+    "confirmed_at": "2026-08-09T04:21:08Z",
+    "priority": "low"
+  },
+  {
     "id": "BL-REGISTRY-LAZY-FIELD-CLEANUP",
     "title": "清理 registry 中对 bridge 路径无效的惰性 sandbox 字段",
     "description": "kimi integration 的 sandbox.env_set.KIMI_CODE_HOME=~/.kimi-code 是 local-cli 时代遗留,vm-v1 bridge 路径全文不引用 env_set/sandbox,易被误读为 bridge 会触碰用户 Kimi 状态。剥离或注释该字段,并核对其他 integration 是否有同类惰性字段。来源:BL-NATIVE-SUBAGENT-BRIDGES reverify2-F003 §9.4,FIX2 决议点 4。",
