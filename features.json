@@ -5,7 +5,7 @@
       "id": "F003",
       "title": "版本耦合测试去税（含修当前 7 红，解冻部署管道）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "framework-version.test.ts 与 mode-badges.test.ts 的最新版本期望值改从 framework/harness/framework-releases.json 镜像动态派生（历史锚点字面量保留）；两文件测试全绿（基线 7 failed | 14 passed）；npm run test 全量绿；grep 无当前最新版本硬编码；manifest fixture 注入假版本后测试仍绿（去税机械证明）。"
     },
