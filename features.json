@@ -21,7 +21,7 @@
       "id": "F003",
       "title": "evidence 查看先行版（路径分类+复制）",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness-evidence.ts 分类纯函数边界单测（docs/ 前缀/空串/超长）；列表页与详情页三处 gate 渲染点均引用 EvidenceList（grep 断言裸列表清零）；空数组不渲染；en/zh 键集一致；verify 绿。"
     },
