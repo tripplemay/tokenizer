@@ -1,16 +1,5 @@
 [
   {
-    "id": "BL-TRANSITION-LOG",
-    "title": "状态流转事件表 + 批次归档表 + 详情页 timeline tab（纯服务端，agent 零改）",
-    "description": "HarnessTransition 表（report 事务内 diff 新旧 status/batch 追加，含 fromStatus/toStatus/toBatch/fixRounds/observedAfter/observedAt 精度区间）+ 详情页第 4 个 timeline tab + 60s 轮询精度口径三处落地。建议吸收 BL-PERF-ANALYTICS 的 F001：HarnessBatchArchive 归档表（入 done upsert / 批次切换 superseded 保底）——同文件同事务同测试模式，归档晚上线一天=一天批次历史永久丢失。是 BL-COST-BATCH-V1 的硬前置；契约冻结注意：COST 侧需要的 batch/occurredAt 映射到本表 toBatch/observedAt。详细方案：batch-plans/BL-TRANSITION-LOG.md + BL-PERF-ANALYTICS.md F001 节。执行序：近期 #2。",
-    "decisions": [
-      "用户 2026-08-09 确认三阶段路线图。",
-      "与 BL-GATE-INBOX 同改 report/route.ts，串行执行，本批先行。"
-    ],
-    "confirmed_at": "2026-08-09T04:21:08Z",
-    "priority": "high"
-  },
-  {
     "id": "BL-GATE-INBOX",
     "title": "闸门全局触达：全站待批徽章 + 邮件通知 + evidence 先行版 + 三处存而不显补显",
     "description": "规划核实：收件箱聚合本体已在 /harness 列表页（page.tsx:49-57），真实缺口是全局触达。交付：navbar 常驻待批徽章 + pending-count API；闸门 raised/re-raised 邮件通知（复用 Resend 基建，HarnessGate 加 notifiedAt claim 列，fail-open 不卡上报通道）；evidence 路径分类徽标+复制（内容上传剥离到 BL-GATE-EVIDENCE-UPLOAD）；dashboardUrl 与 dispatch artifactPath/Sha256 补显。零协议改动。详细方案：batch-plans/BL-GATE-INBOX.md。执行序：近期 #3。",
