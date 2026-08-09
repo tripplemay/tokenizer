@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "paths-ignore 扩 docs/** + CLAUDE.md 豁免表述修正",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
       "acceptance": "deploy-vps.yml paths-ignore 的三条 docs 子目录替换为 docs/**（YAML 合法，pull_request 与 workflow_dispatch 行为不变）；CLAUDE.md 豁免描述与 workflow 逐条一致、不再含 *.md 全称量表述；合入后以提交 docs/analysis/2026-08-08-repo-strategy/ 全目录为载荷实测 docs-only push 不触发 Deploy VPS run（该验证在人类批准 push 后由 Evaluator 核对 Actions run 列表）。"
     },

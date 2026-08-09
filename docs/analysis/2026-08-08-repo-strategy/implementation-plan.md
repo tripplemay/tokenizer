@@ -20,7 +20,7 @@
 
 | # | 批次 | 规模 | 一句话 | 关键依赖/理由 |
 |---|---|---|---|---|
-| 1 | **BL-REPO-MECH** | M | 解冻部署（F003 先行）+ 上游 contract-fixtures（框架 v1.8.0）+ contract-conformance CI + paths-ignore 扩 `docs/**` + CLAUDE.md 修正 + keep-separate ADR | 解除冻结是一切的前置；契约 CI 保护后续所有触碰跨仓契约的批次；F004 生效后 docs/analysis 全目录可入库 |
+| 1 ✅ | **BL-REPO-MECH**（2026-08-09 执行，verdict 见 docs/test-reports/BL-REPO-MECH-verdict.json） | M | 解冻部署（F003 先行）+ 上游 contract-fixtures（框架 v1.8.0）+ contract-conformance CI + paths-ignore 扩 `docs/**` + CLAUDE.md 修正 + keep-separate ADR | 解除冻结是一切的前置；契约 CI 保护后续所有触碰跨仓契约的批次；F004 生效后 docs/analysis 全目录可入库 |
 | 2 | **BL-TRANSITION-LOG** | S+ | HarnessTransition 流转事件表 + 详情页 timeline tab（纯服务端，agent 零改） | 是成本归因的前置数据；**建议吸收 BL-PERF-ANALYTICS 的 F001（HarnessBatchArchive 归档表 + done/superseded 触发）**——同文件同事务同测试模式，且归档晚上线一天就是一天批次历史永久丢失 |
 | 3 | **BL-GATE-INBOX** | M | 全站待批徽章 + 闸门邮件通知（Resend 已有基建）+ evidence 先行版 + dashboardUrl/artifactPath 补显 | 规划核实：收件箱聚合本体已在 /harness 列表页，缺的是全局触达；与 #2 同改 report/route.ts → 串行 |
 | 4 | **BL-AGENT-LATENCY** | M | cron 双条目（闸门延迟 15min→≤2min）+ 轮询退避抖动 + enroll 自愈 fetch + /events 分页；agent release 1.3.0 | 独立；账本条目押最后一个 commit，使升级提示晚于代码就绪 |
