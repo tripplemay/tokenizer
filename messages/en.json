@@ -792,7 +792,8 @@
         "outcome": "Outcome / verdict",
         "duration": "Duration",
         "failure": "Failure summary",
-        "tokens": "Tokens in / out"
+        "tokens": "Tokens in / out",
+        "artifact": "Artifact"
       },
       "usageAttributionOnly": "attribution only"
     },

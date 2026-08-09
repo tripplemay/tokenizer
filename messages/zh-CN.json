@@ -792,7 +792,8 @@
         "outcome": "结果 / 判定",
         "duration": "耗时",
         "failure": "失败摘要",
-        "tokens": "Token 入 / 出"
+        "tokens": "Token 入 / 出",
+        "artifact": "产物"
       },
       "usageAttributionOnly": "仅归因"
     },

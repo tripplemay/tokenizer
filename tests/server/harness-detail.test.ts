@@ -20,7 +20,10 @@ describe("owned Harness project detail query", () => {
     expect(query.select.gates.select).not.toHaveProperty("decisionSig");
     expect(query.select.modeIntents.select).not.toHaveProperty("signature");
     expect(query.select.modeIntents.select).not.toHaveProperty("payload");
-    expect(query.select.dispatchRuns.select).not.toHaveProperty("artifactPath");
-    expect(query.select.dispatchRuns.select).not.toHaveProperty("artifactSha256");
+    // BL-GATE-INBOX F005 反转：两字段入库前已过服务端校验（repo-relative ≤512 无
+    // 穿越 + SHA256 格式，见 harness-mode-intent-api 的 repoRelativeArtifactPath），
+    // 非 raw 通道，准许进入详情展示白名单
+    expect(query.select.dispatchRuns.select).toHaveProperty("artifactPath");
+    expect(query.select.dispatchRuns.select).toHaveProperty("artifactSha256");
   });
 });

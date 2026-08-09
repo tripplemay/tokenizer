@@ -118,6 +118,8 @@ export function ownedHarnessProjectDetailQuery(id: string, userId: string) {
           exitCode: true,
           verdict: true,
           errorSummary: true,
+          artifactPath: true,
+          artifactSha256: true,
           usageInputTokens: true,
           usageOutputTokens: true,
           usageCapture: true

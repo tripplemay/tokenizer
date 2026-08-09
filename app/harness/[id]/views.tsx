@@ -653,6 +653,7 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
                   <th className="w-36 px-3 py-3">{t("col.outcome")}</th>
                   <th className="w-28 px-3 py-3">{t("col.duration")}</th>
                   <th className="w-32 px-3 py-3">{t("col.tokens")}</th>
+                  <th className="w-44 px-3 py-3">{t("col.artifact")}</th>
                   <th className="w-40 px-3 py-3">{t("col.failure")}</th>
                 </tr>
               </thead>
@@ -672,6 +673,14 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
                         : "—"}
                       {run.usageCapture === "attribution_only" ? (
                         <span className="mt-1 block text-gray-400">{t("usageAttributionOnly")}</span>
+                      ) : null}
+                    </td>
+                    <td className="px-3 py-3 font-mono">
+                      {run.artifactPath ? <span className="break-all">{run.artifactPath}</span> : "—"}
+                      {run.artifactSha256 ? (
+                        <span className="mt-1 block text-gray-400" title={run.artifactSha256}>
+                          {run.artifactSha256.slice(0, 12)}…
+                        </span>
                       ) : null}
                     </td>
                     <td className="break-words px-3 py-3 font-mono text-red-600 dark:text-red-300">
