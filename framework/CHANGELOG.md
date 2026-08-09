@@ -5,6 +5,26 @@
 
 ---
 
+## v1.7.2 — 2026-08-09（generator 派发回执：local-cli 路由补齐 active_target，消除 v2 checkpoint 假阴性）
+
+**来源：** tokenizer `BL-REPO-MECH` 首次派发（v2 heterogeneous checkpoint，generator=codex local-cli）。
+沙箱 799s 正常 RETURNED、handoff 完好，回执却被判 `ARTIFACT_INVALID`。
+
+- **真因：** `dispatch-generator-handoff.sh` 只在 `external-bridge-subagent` 路由把 catalog target
+  持久化进 `context["active_target"]`；local-cli 路由下 receipt 一侧收到**非空 active role + 空 target**，
+  `validate-active-return-route.py` 按防降级设计正确拒绝「role 与 target 只来一个」，上层再把该异常
+  笼统映射为「transport 不匹配」。既有 local-cli 全封装用例跑在 legacy（无 v2 checkpoint）下两侧皆空，
+  走 legacy 分支通过 —— 「v2 checkpoint + local-cli」组合无覆盖，回归 CI 不可见。
+  对照 `accept-generator-handoff.sh` 无此洞（它自行 `tool-catalog.py target` 重解析并成对传参）。
+- **修法：** ①context 对**每条派发路由**无条件携带 `active_target`（catalog target 本就含
+  `target_id`/`invocation`，与 accept 侧对齐）；②receipt 提取处对 legacy local-cli（无 active role）
+  把 target 归还为空 —— 保持历史 legacy 语义（两侧皆不传），不产生 validator 必拒的 target-only 对。
+  bridge 路由行为不变。
+- **回归钉子：** `test-generator-handoff.py` 新增两枚 —— local-cli 路由 context 必含
+  `active_target.target_id`；receipt 对「v2 local-cli 成对 role+target」判 `COMPLETED`（15/15 全绿）。
+
+---
+
 ## v1.7.1 — 2026-08-07（codex 自定义 provider：把确定性断认证前移成 fail-closed 前置）
 
 **来源：** newkolmatrix `M5.1-TENANT-INJECTION` verifying 两派两停的事后复核（tokenizer 侧独立会话取证）。

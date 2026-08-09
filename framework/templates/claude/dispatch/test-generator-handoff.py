@@ -243,6 +243,48 @@ class GeneratorHandoffValidatorTest(unittest.TestCase):
         self.assertEqual(receipt["state"], "ARTIFACT_INVALID")
         self.assertIn("role does not match", receipt["reason"])
 
+    def test_local_cli_receipt_accepts_the_re_verified_active_pair(self) -> None:
+        # Regression (v1.7.2): a v2 checkpoint local-cli dispatch passes its
+        # re-verified role together with the commissioned catalog target; the
+        # receipt must validate the pair strictly instead of refusing it.
+        write_json(self.artifact, valid_handoff())
+        meta = self.root / "run-meta-local-cli-active.json"
+        write_json(
+            meta,
+            {
+                "task_id": TASK_ID,
+                "agent_id": "fixture-generator",
+                "model_family": "fixture",
+                "batch": BATCH_ID,
+                "ref": "a" * 40,
+                "role": "generator",
+                "deliverable": generator_envelope()["deliverable"],
+                "artifact": str(self.artifact),
+                "envelope_path": str(self.envelope),
+                "worktree": str(self.root),
+                "outcome": "RETURNED",
+                "exit_code": 0,
+                "duration_s": 1,
+                "transport": "local-cli",
+            },
+        )
+        active_role = {"agent_id": "fixture-generator", "invocation": "local-cli"}
+        active_target = {"target_id": "fixture-generator", "invocation": "local-cli"}
+        result = subprocess.run(
+            [
+                "bash", str(DISPATCH_VALIDATOR), "receipt", str(meta),
+                "--expected-envelope", str(self.envelope),
+                "--active-role-json", json.dumps(active_role),
+                "--active-target-json", json.dumps(active_target),
+                "--project-root", str(self.root),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["state"], "COMPLETED")
+
 
 class ManualGeneratorDispatchTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -496,6 +538,25 @@ class ManualGeneratorDispatchTest(unittest.TestCase):
         self.assertEqual(
             context["active_target"]["bridge_strategy"], "session-bridge-v1"
         )
+
+    def test_local_cli_route_keeps_active_target_for_receipt_validation(self) -> None:
+        # Regression (v1.7.2): the local-cli route dropped active_target from
+        # the dispatch context, so a v2 checkpoint receipt saw an active role
+        # without its paired target and was invalidated as a false negative.
+        self.write_build_state({"generator": "fixture-generator"})
+        self.write_local_cli_registry()
+        context = self.resolve_generator_context(
+            {
+                "target_id": "fixture-generator",
+                "roles": ["generator"],
+                "invocation": "local-cli",
+                "adapter": "fixture",
+                "sandbox": {},
+            }
+        )
+        self.assertEqual(context["route"], "local-cli")
+        self.assertEqual(context["active_target"]["target_id"], "fixture-generator")
+        self.assertEqual(context["active_target"]["invocation"], "local-cli")
 
     def test_explicit_feature_selects_only_that_pending_generator_feature(self) -> None:
         self.write_build_state({"generator": "fixture-generator"})

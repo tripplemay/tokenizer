@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.7.1",
-    "commit": "78756ab"
+    "version": "1.7.2",
+    "commit": "e4ba297"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "2f83abe377178e0cf481b2c2d6fff81e091a8020e5b84aab2ace2a90ac310bdf",
-      "upstream": "2f83abe377178e0cf481b2c2d6fff81e091a8020e5b84aab2ace2a90ac310bdf"
+      "sha256": "44d9d70213ca5f1b6ed603913ac1d18d486e105f709fc6c4a4b10bd05d0912f9",
+      "upstream": "44d9d70213ca5f1b6ed603913ac1d18d486e105f709fc6c4a4b10bd05d0912f9"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "249182a01164b81a5f7af87e5c5cdbd3344a80a7a66dfca624cecfb1501b2420",
-      "upstream": "249182a01164b81a5f7af87e5c5cdbd3344a80a7a66dfca624cecfb1501b2420"
+      "sha256": "e6b7255e251fae180891178dc54e93117e0e522c67cd10145600f71c36216ee9",
+      "upstream": "e6b7255e251fae180891178dc54e93117e0e522c67cd10145600f71c36216ee9"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -712,8 +712,8 @@
     },
     "framework/harness/framework-releases.json": {
       "src": "harness/framework-releases.json",
-      "sha256": "714bca14dca07d4a72d695c01922e41182cb15e2b9f35dae3d9d1f070ca271ce",
-      "upstream": "714bca14dca07d4a72d695c01922e41182cb15e2b9f35dae3d9d1f070ca271ce"
+      "sha256": "81c67c48d9f759fd7c4be03bbebb979bea194ade1c572fd559450f72dc833f6b",
+      "upstream": "81c67c48d9f759fd7c4be03bbebb979bea194ade1c572fd559450f72dc833f6b"
     },
     ".claude/agents/planner-proposal.md": {
       "src": "templates/claude/agents/planner-proposal.md",
@@ -747,8 +747,8 @@
     },
     ".claude/dispatch/dispatch-generator-handoff.sh": {
       "src": "templates/claude/dispatch/dispatch-generator-handoff.sh",
-      "sha256": "21c2e3a844a52f9b2998958b874054746cb6e1920e012a4d7e464dff52197816",
-      "upstream": "21c2e3a844a52f9b2998958b874054746cb6e1920e012a4d7e464dff52197816"
+      "sha256": "5feba3b7b36e34f01b3d4745777a10e9df31b671e70deaf8ba5ed3d3dcecffc9",
+      "upstream": "5feba3b7b36e34f01b3d4745777a10e9df31b671e70deaf8ba5ed3d3dcecffc9"
     },
     ".claude/dispatch/dispatch-planner-proposal.sh": {
       "src": "templates/claude/dispatch/dispatch-planner-proposal.sh",
@@ -777,8 +777,8 @@
     },
     ".claude/dispatch/test-generator-handoff.py": {
       "src": "templates/claude/dispatch/test-generator-handoff.py",
-      "sha256": "30602f29a0df9c70039825187a56566276aede7c00ea68c6da75ab0927071eb6",
-      "upstream": "30602f29a0df9c70039825187a56566276aede7c00ea68c6da75ab0927071eb6"
+      "sha256": "7bb838b4f7ae2a6e47fd34fa84509b075fc485487fe53aad5bebd83cf3523e75",
+      "upstream": "7bb838b4f7ae2a6e47fd34fa84509b075fc485487fe53aad5bebd83cf3523e75"
     },
     ".claude/dispatch/test-planner-proposal.py": {
       "src": "templates/claude/dispatch/test-planner-proposal.py",
@@ -842,8 +842,8 @@
     },
     "framework/templates/claude/dispatch/dispatch-generator-handoff.sh": {
       "src": "templates/claude/dispatch/dispatch-generator-handoff.sh",
-      "sha256": "21c2e3a844a52f9b2998958b874054746cb6e1920e012a4d7e464dff52197816",
-      "upstream": "21c2e3a844a52f9b2998958b874054746cb6e1920e012a4d7e464dff52197816"
+      "sha256": "5feba3b7b36e34f01b3d4745777a10e9df31b671e70deaf8ba5ed3d3dcecffc9",
+      "upstream": "5feba3b7b36e34f01b3d4745777a10e9df31b671e70deaf8ba5ed3d3dcecffc9"
     },
     "framework/templates/claude/dispatch/dispatch-planner-proposal.sh": {
       "src": "templates/claude/dispatch/dispatch-planner-proposal.sh",
@@ -872,8 +872,8 @@
     },
     "framework/templates/claude/dispatch/test-generator-handoff.py": {
       "src": "templates/claude/dispatch/test-generator-handoff.py",
-      "sha256": "30602f29a0df9c70039825187a56566276aede7c00ea68c6da75ab0927071eb6",
-      "upstream": "30602f29a0df9c70039825187a56566276aede7c00ea68c6da75ab0927071eb6"
+      "sha256": "7bb838b4f7ae2a6e47fd34fa84509b075fc485487fe53aad5bebd83cf3523e75",
+      "upstream": "7bb838b4f7ae2a6e47fd34fa84509b075fc485487fe53aad5bebd83cf3523e75"
     },
     "framework/templates/claude/dispatch/test-planner-proposal.py": {
       "src": "templates/claude/dispatch/test-planner-proposal.py",

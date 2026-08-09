@@ -355,11 +355,12 @@ context = {
 }
 if agent_type is not None:
     context["agent_type"] = agent_type
-if route == "external-bridge-subagent":
-    # Keep the full catalog target for receipt verification. Its provenance is
-    # independently compared with the signed active role after the Provider
-    # returns; it is not a new selection input.
-    context["active_target"] = descriptor
+# Keep the full catalog target for receipt verification on every dispatched
+# route. validate-dispatch receipt refuses an active role without its paired
+# target, so a v2 checkpoint dispatch (local-cli included) must return the
+# target it was commissioned with. It is independently compared with the
+# signed active role after the run returns; it is not a new selection input.
+context["active_target"] = descriptor
 json.dump(context, open(output_path, "w", encoding="utf-8"), ensure_ascii=True, sort_keys=True)
 PY
 then
@@ -409,6 +410,12 @@ target = context.get("active_target", {})
 print(json.dumps(target, ensure_ascii=True, sort_keys=True, separators=(",", ":")))
 PY
 )" || die "cannot recover the active Generator target"
+if [ -z "$ACTIVE_AGENT" ] && [ "$ROUTE" = "local-cli" ]; then
+  # Legacy/fast local-cli dispatches carry no re-verified active role; keep the
+  # receipt's historical legacy semantics (neither side supplied) instead of a
+  # target-only pair the route validator rightly refuses.
+  ACTIVE_TARGET_JSON="{}"
+fi
 BATCH="$(python3 - "$CONTEXT" <<'PY'
 import json
 import sys
