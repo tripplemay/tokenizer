@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, describe, expect, it, vi } from "vitest";
+import frameworkReleasesManifest from "../../framework/harness/framework-releases.json";
 
 vi.mock("next-intl/server", () => ({
   getTranslations: async () => (key: string, values?: Record<string, unknown>) => {
@@ -15,6 +16,10 @@ import ModeBadges from "../../app/harness/mode-badges";
 vi.stubGlobal("React", React);
 afterAll(() => vi.unstubAllGlobals());
 
+const MANIFEST_RELEASE_VERSIONS = frameworkReleasesManifest.releases.map((release) => release.version);
+const LATEST_MANIFEST_VERSION = MANIFEST_RELEASE_VERSIONS.at(-1);
+const PREVIOUS_MANIFEST_VERSION = MANIFEST_RELEASE_VERSIONS.at(-2);
+
 async function renderModeBadges(version: string): Promise<string> {
   const node = await ModeBadges({
     modes: {
@@ -26,19 +31,19 @@ async function renderModeBadges(version: string): Promise<string> {
 }
 
 describe("ModeBadges framework release rendering", () => {
-  it("renders the synced v1.7.0 project as latest without stale guidance", async () => {
-    const html = await renderModeBadges("1.7.0");
+  it(`renders the synced v${LATEST_MANIFEST_VERSION} project as latest without stale guidance`, async () => {
+    const html = await renderModeBadges(LATEST_MANIFEST_VERSION);
 
-    expect(html).toContain("v1.7.0");
+    expect(html).toContain(`v${LATEST_MANIFEST_VERSION}`);
     expect(html).not.toContain("behindN:");
     expect(html).not.toContain("ahead:");
     expect(html).not.toContain("syncHint");
   });
 
-  it("renders v1.6.4 as one release behind with sync guidance", async () => {
-    const html = await renderModeBadges("1.6.4");
+  it(`renders v${PREVIOUS_MANIFEST_VERSION} as one release behind with sync guidance`, async () => {
+    const html = await renderModeBadges(PREVIOUS_MANIFEST_VERSION);
 
-    expect(html).toContain("v1.6.4");
+    expect(html).toContain(`v${PREVIOUS_MANIFEST_VERSION}`);
     expect(html).toContain("behindN:1");
     expect(html).toContain("syncHint");
     expect(html).not.toContain("ahead:");
@@ -48,7 +53,7 @@ describe("ModeBadges framework release rendering", () => {
     const html = await renderModeBadges("9.9.9");
 
     expect(html).toContain("v9.9.9");
-    expect(html).toContain("ahead:1.7.0");
+    expect(html).toContain(`ahead:${LATEST_MANIFEST_VERSION}`);
     expect(html).not.toContain("behindN:");
     expect(html).not.toContain("syncHint");
   });

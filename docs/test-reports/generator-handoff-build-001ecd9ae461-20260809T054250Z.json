@@ -1,0 +1,21 @@
+{
+  "batch_id": "BL-REPO-MECH",
+  "created_at": "2026-08-09T05:53:16Z",
+  "features": [
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "tests/shared/framework-version.test.ts",
+        "tests/shared/mode-badges.test.ts"
+      ],
+      "notes": "Latest and previous release expectations now derive from the final two entries in framework/harness/framework-releases.json. Historical semantic anchors such as 1.0.3 remain literal. No production or manifest files are changed."
+    }
+  ],
+  "l1_ran": {
+    "lint": "PASS (exit 0): npm run lint; no warnings or errors.",
+    "typecheck": "PASS (exit 0): npm run typecheck.",
+    "test": "PARTIAL: targeted tests PASS (21/21) against manifest latest 1.7.2; temporary manifest injection of 1.7.3 also PASS (21/21) and was reverted. Full npm run test -- --no-cache produced 1009 passed, 4 skipped, and 4 failures in unrelated CLI lifecycle tests caused by sandbox EPERM Unix-socket/process-visibility restrictions."
+  },
+  "waiting": null
+}
