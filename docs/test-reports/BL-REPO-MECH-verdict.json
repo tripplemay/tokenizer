@@ -1,7 +1,7 @@
 {
   "batch_id": "BL-REPO-MECH",
-  "fix_round": 0,
-  "created_at": "2026-08-09T07:32:53Z",
+  "fix_round": 1,
+  "created_at": "2026-08-09T07:40:47Z",
   "waiting": null,
   "verdicts": [
     {
@@ -24,9 +24,9 @@
     },
     {
       "feature_id": "F004",
-      "result": "PARTIAL",
-      "evidence": "本地可验子项全过：①de0065e 对 deploy-vps.yml 的 diff 仅为三条 docs 子目录（docs/specs/**、docs/test-cases/**、docs/test-reports/**）替换为 docs/**（加前提注释），YAML 经 Actions 实跑解析合法；④pull_request(branches main) 与 workflow_dispatch 块零改动，paths-ignore 仍只挂 push。②CLAUDE.md:64-69 豁免清单与 workflow paths-ignore 逐条比对 17/17 一致（.auto-memory/** .claude/** framework/** docs/** progress.json features.json backlog.json .agents-registry.json harness.json harness.lock + 7 个根目录角色 md），且明示「没有 *.md 全局豁免」。③【PARTIAL 原因】指定的 docs-only push 实测未以独立 push 执行：payload docs/analysis/2026-08-08-repo-strategy/ 随混合批次 push（001ecd9→e5f6572，07:10:02Z，含 tests/contract/** 与 .github/workflows/** 非豁免路径）出库，Deploy VPS run 31300526619 正确触发（Verify Linux success、Deploy success）；今日三次纯豁免路径 push（04:26/04:35/05:42）均无 Deploy run，但均早于 F004 规则变更（旧三条 docs 子目录豁免），新 docs/** 规则从未被 docs-only push 实际行使。Actions 数据经未认证 GitHub API 实查（run/jobs/events 列表），非 unverifiable-locally——是实验本身未发生。另报：run 31300526619 的 Verify (Windows) 在 Run unit tests 步 failure，与批次前 run 31093273152（08-06）失败签名完全相同（Linux Verify+Deploy 均绿），判为存量 Windows 问题而非本批次回归；job 日志未认证访问 403（gh 未登录），无法列具体失败用例。本地 macOS 全量无任何 CLI lifecycle/socket 失败（1013 全绿），TMPDIR=/tmp 重跑条款未触发。",
-      "steps_to_reproduce": "git show de0065e -- .github/workflows/deploy-vps.yml; sed -n '9,32p' .github/workflows/deploy-vps.yml 对照 CLAUDE.md:64-69; curl -s 'https://api.github.com/repos/tripplemay/tokenizer/events?per_page=50'（PushEvent before/head 与豁免清单比对）; curl -s https://api.github.com/repos/tripplemay/tokenizer/actions/runs/31300526619/jobs（三 job 结论）; curl -s https://api.github.com/repos/tripplemay/tokenizer/actions/runs/31093273152/jobs（存量对比）。补做③：人类把任一 docs/** 独占改动单独 push，核对 Deploy VPS run 列表不出现新 run。"
+      "result": "PASS",
+      "evidence": "fix_round=1 针对 round 0 唯一缺口③（docs-only push 未实测）复核，全部子项现成立。③【本轮新证，未认证 GitHub API 实查】(a) push 事件存在：events API 见 2026-08-09T07:36:16Z PushEvent before=e5f6572885b5→head=f31e21bf435d；compare API（e5f6572...f31e21b）status=ahead、1 commit、触及 4 文件：docs/analysis/2026-08-08-repo-strategy/implementation-plan.md（modified）、docs/test-reports/BL-REPO-MECH-verdict.json（added）、features.json（modified）、progress.json（modified）——前两个命中 docs/**，后两个为 paths-ignore 显式单列项，4/4 全在豁免清单内。(b) workflows API 列出 Deploy VPS（id 277525598，path .github/workflows/deploy-vps.yml，state active）；其 runs 端点最新一条为 run 31300526619（head_sha=e5f6572，2026-08-09T07:10:04Z，即 round 0 混合推送正确触发的那次），无任何 head_sha 新于 e5f6572 的 run——f31e21b（07:36:16Z）与后续 30e098b（07:37:37Z）两次纯豁免路径 push 均零新增 Deploy run。(c) 本地 reverify ref（HEAD=30e098b0df81）实查 .github/workflows/deploy-vps.yml:15 仍含 '- \"docs/**\"' 豁免行；git diff e5f6572..HEAD 仅触 docs/**、progress.json、features.json（features.json 净零变化），workflow 与 CLAUDE.md 自 round 0 验收态零改动。①②④沿用 round 0 结论：de0065e 的 YAML diff 合法且经 Actions 实跑解析；CLAUDE.md:64-69 与 paths-ignore 17/17 逐条一致、无 *.md 全局豁免；pull_request(branches main)/workflow_dispatch 块零改动、paths-ignore 仍只挂 push。存量观察沿用 round 0：run 31300526619 的 Verify (Windows) failure 与批次前 run 31093273152（08-06）失败签名相同，判存量问题非本批次回归。",
+      "steps_to_reproduce": "curl -s 'https://api.github.com/repos/tripplemay/tokenizer/events?per_page=100'（找 07:36:16Z PushEvent before=e5f6572→head=f31e21b）; curl -s 'https://api.github.com/repos/tripplemay/tokenizer/compare/e5f6572885b581ac731fae8dd4dd98eec3ec51c6...f31e21b'（4 files 全在豁免清单）; curl -s 'https://api.github.com/repos/tripplemay/tokenizer/actions/workflows'（含 Deploy VPS id 277525598）; curl -s 'https://api.github.com/repos/tripplemay/tokenizer/actions/workflows/277525598/runs?per_page=30'（最新 run head_sha=e5f6572，无更新者）; 本地：git rev-parse HEAD（=30e098b…）&& sed -n '9,28p' .github/workflows/deploy-vps.yml（:15 为 docs/**）&& git diff --stat e5f6572..HEAD（不触 .github/ 与 CLAUDE.md）"
     },
     {
       "feature_id": "F005",

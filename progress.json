@@ -6,7 +6,7 @@
   "fix_rounds": 1,
   "current_sprint": "BL-REPO-MECH",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T07:37:31Z",
+  "last_updated": "2026-08-09T07:48:06Z",
   "reference_docs": [
     "docs/specs/BL-REPO-MECH-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md",
@@ -15,7 +15,7 @@
   "docs": {
     "spec": "docs/specs/BL-REPO-MECH-spec.md",
     "test_cases": "docs/test-reports/BL-REPO-MECH-verdict.json",
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-REPO-MECH-signoff-2026-08-09.md",
     "framework_reviewed": false
   },
   "role_assignments": {
@@ -76,18 +76,30 @@
     }
   },
   "evaluator_feedback": {
-    "summary": "Kimi fresh-context verify @e5f6572: F001/F002/F003/F005 PASS, F004 PARTIAL.",
-    "pass_count": 4,
-    "partial_count": 1,
+    "summary": "Kimi fresh-context reverify (fix_round=1) @30e098b: F001-F005 all PASS. F004③ docs-only push 以 GitHub API 实证（compare 4/4 文件全豁免、Deploy runs 零新增）。",
+    "pass_count": 5,
+    "partial_count": 0,
     "fail_count": 0,
-    "issues": [
-      "F004③ docs-only push 实测未执行：docs/analysis 载荷随混合批次 push 出库（含非豁免路径，Deploy 正确触发），新 docs/** 豁免规则从未被 docs-only push 实际行使。补做：任一 docs/** 独占改动单独 push，核对 Deploy VPS run 列表不出现新 run。"
-    ]
+    "issues": []
   },
   "generator_handoff": null,
   "session_notes": {
     "planning": "【BL-REPO-MECH building 完成 5/5 → verifying，2026-08-09】全部 feature 落盘：F003=5fa2bc7（解冻部署，21/21）· F001=上游 4ac7a6f v1.8.0 contract-fixtures（另有 e4ba297 v1.7.2 派发回执修复）· F002=e3e8eb8 契约测试（绿路径 6/6 + skip 6/6 实证）+ 356e6fd CI 接线/附录 + 6d1378a sync v1.8.0 · F004=de0065e paths-ignore docs/** + CLAUDE.md 修正 + 战略材料入库 · F005=6e247b2 ADR（critic 16/16 链接实核）。三次 Codex 派发均 critic PASS + accept 全链路（READY_TO_APPLY→APPLIED）。【执行形态记账（铁律 6）】F001 与控制面文件（workflow/CLAUDE.md）由主会话执行——用户 AskUserQuestion 书面授权 + accept forbidden_return_path 结构性约束；全部过 spec-lock critic。【验收注意】Evaluator 须验：契约测试双路径、harness.sh verify 对账、ADR 忠实性、7 红→绿；push 后项：contract-conformance workflow_dispatch 实跑、F004 docs-only push 不触发 Deploy 实测。【待人类】tokenizer 单次 push main（触发一次 CI+部署，运行时零行为变化）；模板仓 push + tags v1.7.1/v1.7.2/v1.8.0；proposed-learnings 新增 3 条待确认。踩坑解法已记 proposed-learnings（TMPDIR=/tmp、依赖克隆、跨仓派发缺口）。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": {
+    "id": "BL-REPO-MECH-reverifying-done-w1",
+    "kind": "phase_advance",
+    "raised_at": "2026-08-09T07:48:06Z",
+    "raised_by": "verify",
+    "batch": "BL-REPO-MECH",
+    "from_status": "reverifying",
+    "to_status": "done",
+    "detail": "复验全 5 features PASS（fix_round=1）+ Linux CI/Deploy/Contract Conformance 三绿 + signoff 已落盘，等人类批准跨 Class B 闸门。批准不含任何 push/tag/release/部署授权（均已完成）。",
+    "evidence": [
+      "docs/test-reports/BL-REPO-MECH-verdict.json",
+      "docs/test-reports/BL-REPO-MECH-signoff-2026-08-09.md"
+    ],
+    "decision": null
+  }
 }
