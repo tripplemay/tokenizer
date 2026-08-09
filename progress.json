@@ -1,12 +1,12 @@
 {
-  "status": "fixing",
+  "status": "reverifying",
   "user_goal": "根治派发沙箱与用量采集的冲突：run 日志机械提取 usage 进 run-meta，经 dispatchRuns 通道上行，服务端幂等物化为带 batch/feature/role 归因的 UsageEvent；回填 BL-REPO-MECH 丢失的 Codex 用量。",
   "total_features": 4,
   "completed_features": 4,
   "fix_rounds": 1,
   "current_sprint": "BL-DISPATCH-USAGE-CAPTURE",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T18:18:31Z",
+  "last_updated": "2026-08-09T18:19:23Z",
   "reference_docs": [
     "docs/specs/BL-DISPATCH-USAGE-CAPTURE-spec.md"
   ],
