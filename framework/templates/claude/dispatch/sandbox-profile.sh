@@ -963,12 +963,23 @@ PY
   fi
 fi
 
+# 派发用量提取（BL-DISPATCH-USAGE-CAPTURE）：旁路不是闸门——提取失败 usage=null，
+# 派发结果零影响。失败/超时的 run 同样提取（烧掉的 token 也是真实花费）。
+USAGE_BUNDLE="null"
+USAGE_EXTRACTOR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/extract-run-usage.py"
+if [ -f "$USAGE_EXTRACTOR" ] && [ -f "$LOG" ] && [ -n "${D_ADAPTER:-}" ]; then
+  USAGE_BUNDLE="$(python3 "$USAGE_EXTRACTOR" --log "$LOG" --adapter "$D_ADAPTER" 2>/dev/null)" || USAGE_BUNDLE="null"
+  [ -n "$USAGE_BUNDLE" ] || USAGE_BUNDLE="null"
+fi
+
 META="$STATE_ROOT/run-meta-${E_TASK_ID}.json"
 python3 - "$META" "$E_TASK_ID" "$E_TARGET_ID" "$D_ADAPTER" "$D_FAMILY" "$E_ROLE" "$E_DELIVERABLE" \
                   "$E_BATCH" "$WT" "$ARTIFACT_ABS" "$LOG" "$OUTCOME" "$EXIT" "$DURATION" "$REF" \
-                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" "$D_TRANSPORT" "$BRIDGE_META_JSON" <<'PY'
+                  "$D_TIMEOUT" "$D_TIMEOUT_CAP" "$TERMINATION_REASON" "$ENVELOPE_ABS" "$D_TRANSPORT" "$BRIDGE_META_JSON" \
+                  "$USAGE_BUNDLE" <<'PY'
 import json, sys
 p, task, agent, adapter, family, role, deliverable_json, batch, wt, art, log, outcome, code, dur, ref, effective, cap, reason, envelope_path, transport, bridge_json = sys.argv[1:22]
+usage_bundle = sys.argv[22] if len(sys.argv) > 22 else "null"
 try:
     deliverable = json.loads(deliverable_json)
 except (TypeError, ValueError):
@@ -986,6 +997,14 @@ meta = {"task_id": task, "agent_id": agent, "adapter": adapter, "model_family": 
         "termination_reason": reason, "transport": transport}
 if isinstance(bridge, dict):
     meta["bridge"] = bridge
+try:
+    _usage_bundle = json.loads(usage_bundle)
+except (TypeError, ValueError):
+    _usage_bundle = None
+if isinstance(_usage_bundle, dict):
+    meta["usage"] = _usage_bundle.get("usage")
+    if isinstance(_usage_bundle.get("usage_capture"), str):
+        meta["usage_capture"] = _usage_bundle["usage_capture"]
 json.dump(meta, open(p, "w"), ensure_ascii=False, indent=2)
 print(json.dumps(meta, ensure_ascii=False))
 PY

@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "框架侧 run-meta usage 契约 + 提取机件（harness-template v1.9.0）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "extract-run-usage.py 对本机真实 BL-REPO-MECH run 日志实跑：codex 三次求和与日志手算一致（±0）、kimi 提取成功且 adapter 声明 attribution_only；提取失败 usage=null 派发零影响（负向）；dispatch-run.sh RETURNED 收尾自动提取；adapters usage_capture 声明 + 消费面白名单放行；release-contract 与既有 dispatch 测试全绿；发布三件套 v1.9.0。"
     },

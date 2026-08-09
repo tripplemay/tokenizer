@@ -5,6 +5,27 @@
 
 ---
 
+## v1.9.0 — 2026-08-10（派发用量捕获：run 日志机械提取 usage 进 run-meta）
+
+**来源：** tokenizer `BL-DISPATCH-USAGE-CAPTURE` F001 —— 用户发现 dispatch 模式下外部 CLI 用量
+在控制台缺失。诊断：codex adapter 的 `--ephemeral`（防污染用户会话库的刻意设计）使会话不落任何
+可采集路径，**捕获的 run 日志是用量的唯一存留处**；kimi 的 wire 落真实 HOME 已被正常采集。
+
+- **新增 `extract-run-usage.py`**：按 adapter 规则从 run 日志机械提取 bounded usage 摘要
+  （codex：`turn.completed` 跨 turn 求和 + model 探测，实测四次真实派发逐字一致；kimi：日志内
+  无 usage，恒 null）。`usage_capture` 模式（materialize / attribution_only）与提取规则同居
+  单一权威——防止 adapter 文件双写漂移；kimi=attribution_only 防双重计费（wire 已被
+  kimicode 采集器收集）。
+- **`sandbox-profile.sh` 收尾钩子**：run-meta 增可选 `usage` / `usage_capture`。旁路不是闸门：
+  提取失败 usage=null 派发零影响；FAILED/TIMEOUT 同样提取（烧掉的 token 也是真实花费）。
+  执行契约摘要不含新字段，零 pinning 扰动。
+- **7 用例回归**（多 turn 求和/污染载荷拒猜/未知 adapter/缺日志/原子合并）。
+- 已知既有失败（非本版引入，pristine v1.8.1 复现）：`test-lifecycle.py` 的
+  `test_sandbox_rejects_external_same_session_target_before_creating_runtime` 断言文案
+  与 v1.6.x bridge 硬化后的实际拒收信息漂移，另行修复。
+
+---
+
 ## v1.8.1 — 2026-08-09（accept 回流：短临时根防 sun_path 超限 + 依赖铺设用法钉子 + 跨仓派发缺口登记）
 
 **来源：** tokenizer `BL-REPO-MECH` 全程实战回流（用户 2026-08-09 确认三条提案全部采纳）。

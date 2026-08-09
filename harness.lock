@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.8.1",
-    "commit": "4cffd36"
+    "version": "1.9.0",
+    "commit": "5894681"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -97,8 +97,8 @@
     },
     ".claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "8acaecf25c8b13fbcec58c7708f15cd76671d3b8a42713516dc4c15553f46eb2",
-      "upstream": "8acaecf25c8b13fbcec58c7708f15cd76671d3b8a42713516dc4c15553f46eb2"
+      "sha256": "de1c66f36cb79737c095c8a8db67fe9a91331ba2264919e4707e5bcd5e9a4047",
+      "upstream": "de1c66f36cb79737c095c8a8db67fe9a91331ba2264919e4707e5bcd5e9a4047"
     },
     ".claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "6731cfad8648985ef33cc0a7f8cedb242f78f6429a5999a1da7e113609e4783a",
-      "upstream": "6731cfad8648985ef33cc0a7f8cedb242f78f6429a5999a1da7e113609e4783a"
+      "sha256": "f3d0e4197c0b4b9ce5c172a63af3de9d6036b0080a3674405f8fc9a64e90e05d",
+      "upstream": "f3d0e4197c0b4b9ce5c172a63af3de9d6036b0080a3674405f8fc9a64e90e05d"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "25cec9739d3218e48acc5d8c3d4333e1d624121c5b7ab3bcddc71d0fa0134b83",
-      "upstream": "25cec9739d3218e48acc5d8c3d4333e1d624121c5b7ab3bcddc71d0fa0134b83"
+      "sha256": "30f4611383aa30a15753789f40effde81332f2f8714e6d3b2940bf0fc4592377",
+      "upstream": "30f4611383aa30a15753789f40effde81332f2f8714e6d3b2940bf0fc4592377"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -487,8 +487,8 @@
     },
     "framework/templates/claude/dispatch/sandbox-profile.sh": {
       "src": "templates/claude/dispatch/sandbox-profile.sh",
-      "sha256": "8acaecf25c8b13fbcec58c7708f15cd76671d3b8a42713516dc4c15553f46eb2",
-      "upstream": "8acaecf25c8b13fbcec58c7708f15cd76671d3b8a42713516dc4c15553f46eb2"
+      "sha256": "de1c66f36cb79737c095c8a8db67fe9a91331ba2264919e4707e5bcd5e9a4047",
+      "upstream": "de1c66f36cb79737c095c8a8db67fe9a91331ba2264919e4707e5bcd5e9a4047"
     },
     "framework/templates/claude/dispatch/transports/a2a-client.py": {
       "src": "templates/claude/dispatch/transports/a2a-client.py",
@@ -712,8 +712,8 @@
     },
     "framework/harness/framework-releases.json": {
       "src": "harness/framework-releases.json",
-      "sha256": "dad423e68fb92c2932e7987dfc33d796e9eafb7431a5b4d7258c4b53ae734b18",
-      "upstream": "dad423e68fb92c2932e7987dfc33d796e9eafb7431a5b4d7258c4b53ae734b18"
+      "sha256": "039175804c8686006372ceb8edf79cebfcc48bf3548b7aa604b56baea92d1d3a",
+      "upstream": "039175804c8686006372ceb8edf79cebfcc48bf3548b7aa604b56baea92d1d3a"
     },
     ".claude/agents/planner-proposal.md": {
       "src": "templates/claude/agents/planner-proposal.md",
@@ -1124,6 +1124,26 @@
       "src": "templates/claude/dispatch/validate-external-bridge-receipt.py",
       "sha256": "32753320b3a84254c83eb845d4b61b91698c9c1f328fde0fde6e5bf188dd3401",
       "upstream": "32753320b3a84254c83eb845d4b61b91698c9c1f328fde0fde6e5bf188dd3401"
+    },
+    ".claude/dispatch/extract-run-usage.py": {
+      "src": "templates/claude/dispatch/extract-run-usage.py",
+      "sha256": "5f5de0348693fd2a283de04aa1adc5f64ce73ac0e939874c03fc2a0029117437",
+      "upstream": "5f5de0348693fd2a283de04aa1adc5f64ce73ac0e939874c03fc2a0029117437"
+    },
+    ".claude/dispatch/test-extract-run-usage.py": {
+      "src": "templates/claude/dispatch/test-extract-run-usage.py",
+      "sha256": "daec1fa5754143a6035cedcce4553a6ee24eae4c12768d30d7213d7a207abe83",
+      "upstream": "daec1fa5754143a6035cedcce4553a6ee24eae4c12768d30d7213d7a207abe83"
+    },
+    "framework/templates/claude/dispatch/extract-run-usage.py": {
+      "src": "templates/claude/dispatch/extract-run-usage.py",
+      "sha256": "5f5de0348693fd2a283de04aa1adc5f64ce73ac0e939874c03fc2a0029117437",
+      "upstream": "5f5de0348693fd2a283de04aa1adc5f64ce73ac0e939874c03fc2a0029117437"
+    },
+    "framework/templates/claude/dispatch/test-extract-run-usage.py": {
+      "src": "templates/claude/dispatch/test-extract-run-usage.py",
+      "sha256": "daec1fa5754143a6035cedcce4553a6ee24eae4c12768d30d7213d7a207abe83",
+      "upstream": "daec1fa5754143a6035cedcce4553a6ee24eae4c12768d30d7213d7a207abe83"
     }
   },
   "seeded": {
