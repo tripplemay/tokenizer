@@ -444,6 +444,8 @@ model HarnessGate {
   relayedAt      DateTime?
   /// 机器侧消费并清空 pending_gate 的时间
   consumedAt     DateTime?
+  /// 邮件通知 claim 标记（BL-GATE-INBOX F002）：null=待通知；发送失败复位重试；re-raise 复位再通知
+  notifiedAt     DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

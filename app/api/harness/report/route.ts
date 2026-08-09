@@ -24,6 +24,7 @@ import {
 } from "@/shared/agent-feature-version";
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 import { retrySerializableTransaction } from "@/server/serializable-transaction";
+import { notifyPendingGate } from "@/server/harness-gate-notify";
 
 export const dynamic = "force-dynamic";
 
@@ -737,7 +738,9 @@ export async function POST(request: NextRequest) {
                 decisionOnce: true,
                 decisionSig: null,
                 relayedAt: null,
-                consumedAt: null
+                consumedAt: null,
+                // re-raise 重新开门 → 复位通知 claim 再通知（BL-GATE-INBOX F002）
+                notifiedAt: null
               }
             });
           } else {
@@ -889,6 +892,17 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof HarnessApiInputError) return harnessInputErrorResponse(error);
     throw error;
+  }
+
+  // 通知在事务外（BL-GATE-INBOX F002）：notifyPendingGate 内部 fail-open 永不 throw，
+  // claim 列保证并发上报恰一次；此 await 只在真的要发信时增加毫秒级延迟
+  if (report.gate) {
+    await notifyPendingGate({
+      userId: token.userId,
+      harnessProjectId: result.projectId,
+      gateId: report.gate.id,
+      requestOrigin: new URL(request.url).origin
+    });
   }
 
   return Response.json({
