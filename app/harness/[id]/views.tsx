@@ -26,6 +26,7 @@ import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-
 import { formatDateTimeSeconds, formatRelativeTime, formatTokens } from "@/shared/format";
 import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import { buildTransitionTimeline } from "@/shared/harness-transitions";
+import { EvidenceList } from "../evidence-list";
 import {
   isConfigurableModeRole,
   modeDrilldownHref,
@@ -70,12 +71,18 @@ function SectionTitle({ children, icon: Icon }: { children: React.ReactNode; ico
   );
 }
 
+async function evidenceLabelsFor(): Promise<{ repoDoc: string; path: string; copy: string; copied: string }> {
+  const t = await getTranslations("harness.evidence");
+  return { repoDoc: t("repoDoc"), path: t("path"), copy: t("copy"), copied: t("copied") };
+}
+
 export async function OverviewView({ project, timezone }: { project: OwnedHarnessProjectDetail; timezone: string }) {
   const [t, statusT, allT] = await Promise.all([
     getTranslations("harness.detail"),
     getTranslations("harness.status"),
     getTranslations()
   ]);
+  const evidenceLabels = await evidenceLabelsFor();
   const features = parseHarnessDetailFeatures(project.features);
   const completion = project.totalCount > 0
     ? Math.round((project.completedCount / project.totalCount) * 100)
@@ -200,6 +207,7 @@ export async function OverviewView({ project, timezone }: { project: OwnedHarnes
                   {pendingGate.kind} · {pendingGate.fromStatus ?? "—"} → {pendingGate.toStatus ?? "—"}
                 </span>
                 <span className="mt-1 block break-words text-xs">{pendingGate.detail}</span>
+                <EvidenceList evidence={pendingGate.evidence} labels={evidenceLabels} />
               </span>
             ) : t("overview.noPendingGate")}
           </Fact>
@@ -539,6 +547,7 @@ function frameworkHealth(modes: HarnessDetailModes | null, t: Translator): strin
 }
 
 export async function ActivityView({ project, timezone }: { project: OwnedHarnessProjectDetail; timezone: string }) {
+  const evidenceLabels = await evidenceLabelsFor();
   const [t, statusT] = await Promise.all([
     getTranslations("harness.activity"),
     getTranslations("harness.status")
@@ -609,6 +618,7 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
                   {gate.decisionBy ? ` · ${gate.decisionBy}` : ""}
                 </p>
                 {gate.decisionNote ? <p className="mt-1 break-words text-xs text-gray-500 dark:text-gray-400">{gate.decisionNote}</p> : null}
+                <EvidenceList evidence={gate.evidence} labels={evidenceLabels} />
               </article>
             ))}
           </div>

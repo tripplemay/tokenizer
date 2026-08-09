@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { EvidenceList } from "./evidence-list";
 import { MdGavel, MdAccountTree, MdArrowForward, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { prisma } from "@/server/db";
@@ -27,6 +28,13 @@ const PHASES = ["new", "planning", "building", "verifying", "fixing", "reverifyi
 export default async function HarnessPage() {
   const session = await requireSession();
   const t = await getTranslations("harness");
+  const evidenceT = await getTranslations("harness.evidence");
+  const evidenceLabels = {
+    repoDoc: evidenceT("repoDoc"),
+    path: evidenceT("path"),
+    copy: evidenceT("copy"),
+    copied: evidenceT("copied")
+  };
   const tRelative = await getTranslations();
   const userId = session.user.id;
   const tz = await getUserTimezone(userId);
@@ -121,13 +129,7 @@ export default async function HarnessPage() {
                 <p className="mt-2 text-sm text-gray-700 dark:text-gray-200">{g.detail}</p>
                 <p className="mt-1 font-mono text-xs text-gray-400">{g.gateId}</p>
 
-                {Array.isArray(g.evidence) && g.evidence.length > 0 ? (
-                  <ul className="mt-2 list-inside list-disc font-mono text-xs text-gray-500 dark:text-gray-400">
-                    {g.evidence.filter((item): item is string => typeof item === "string").map((e) => (
-                      <li key={e}>{e}</li>
-                    ))}
-                  </ul>
-                ) : null}
+                <EvidenceList evidence={g.evidence} labels={evidenceLabels} />
 
                 {g.decisionAction ? (
                   <p className="mt-3 text-sm">

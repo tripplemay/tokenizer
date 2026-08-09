@@ -846,6 +846,12 @@
       "compressedHint": "Not an adjacent state-machine edge: intermediate phases were crossed within one polling interval and are lost.",
       "inProgress": "in progress",
       "inProgressFor": "in progress for {value}"
+    },
+    "evidence": {
+      "repoDoc": "repo doc",
+      "path": "path",
+      "copy": "Copy path",
+      "copied": "Copied"
     }
   }
 }

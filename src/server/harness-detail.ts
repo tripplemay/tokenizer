@@ -47,6 +47,7 @@ export function ownedHarnessProjectDetailQuery(id: string, userId: string) {
           fromStatus: true,
           toStatus: true,
           detail: true,
+          evidence: true,
           raisedAt: true,
           raisedBy: true,
           decisionAction: true,

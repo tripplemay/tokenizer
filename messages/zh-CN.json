@@ -846,6 +846,12 @@
       "compressedHint": "非状态机相邻边：一个轮询间隔内穿越了中间阶段，中间态已丢失。",
       "inProgress": "进行中",
       "inProgressFor": "进行中 {value}"
+    },
+    "evidence": {
+      "repoDoc": "仓库取证",
+      "path": "路径",
+      "copy": "复制路径",
+      "copied": "已复制"
     }
   }
 }
