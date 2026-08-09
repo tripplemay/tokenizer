@@ -450,6 +450,7 @@ v1.1 起这里写的是「tag 归属校验：外部 CLI 自己打 tag，不合�
 | a2a 真实跨机器演练 | ⬜ 未做 | 全部在 loopback 完成；网络路径与 Bearer 鉴权已验证，未在两台物理机之间跑过 |
 | a2a 协议完整性 | ⬜ 刻意不做 | 只做 JSON-RPC 绑定；无 gRPC/REST、无扩展协商、无签名 Card、无 OAuth/mTLS、无 push webhook |
 | 端到端**自主**演练（`/autodrive` 全循环带外部派活） | ⬜ 未做 | 单步派活已验证；多轮唤醒 + 闸门 + 回流的整链需接真实项目 |
+| 跨仓派发（repo.url 指向本机其他 git 仓） | ⬜ 未做 | 信封 `repo.url` 当前硬编码 `"."` 且 dispatch-run 前置校验强制其等于调用所在仓——框架仓 feature 等跨仓混合批次无法走固定封装（实例：tokenizer BL-REPO-MECH F001，经用户书面授权由 Coordinator 直接实现 + spec-lock critic 稽核 + 异厂商 Evaluator 跨仓锁 SHA 验收作补偿控制）。若跨仓批次常态化，应让信封/回执/沙箱语义随目标仓走 |
 
 ## 10. 建造顺序（机制化先于自动化）
 

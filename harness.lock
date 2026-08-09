@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.8.0",
-    "commit": "4ac7a6f"
+    "version": "1.8.1",
+    "commit": "4cffd36"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "d8978e4db1dc7bc73ad808254b5356d794df983aecf142a7a10a82d2d07b3ec2",
-      "upstream": "d8978e4db1dc7bc73ad808254b5356d794df983aecf142a7a10a82d2d07b3ec2"
+      "sha256": "6731cfad8648985ef33cc0a7f8cedb242f78f6429a5999a1da7e113609e4783a",
+      "upstream": "6731cfad8648985ef33cc0a7f8cedb242f78f6429a5999a1da7e113609e4783a"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "3eb1ef94b5890ca727158b106142685c8733b0ace5bcb4cf3f0ac14f9f0643f4",
-      "upstream": "3eb1ef94b5890ca727158b106142685c8733b0ace5bcb4cf3f0ac14f9f0643f4"
+      "sha256": "25cec9739d3218e48acc5d8c3d4333e1d624121c5b7ab3bcddc71d0fa0134b83",
+      "upstream": "25cec9739d3218e48acc5d8c3d4333e1d624121c5b7ab3bcddc71d0fa0134b83"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -257,8 +257,8 @@
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
-      "sha256": "dd748b6e525d98e5e31a8722ea1530c39bb91fbf65610c2fb17c9f194c304239",
-      "upstream": "dd748b6e525d98e5e31a8722ea1530c39bb91fbf65610c2fb17c9f194c304239"
+      "sha256": "b406f1bf10296ab403e9c6b0b16db316b2978ce2c5da5a6ef4a279cdf4557659",
+      "upstream": "b406f1bf10296ab403e9c6b0b16db316b2978ce2c5da5a6ef4a279cdf4557659"
     },
     "framework/harness/evaluator.md": {
       "src": "harness/evaluator.md",
@@ -712,8 +712,8 @@
     },
     "framework/harness/framework-releases.json": {
       "src": "harness/framework-releases.json",
-      "sha256": "f5bb45a8ff986a66d7d135ffa555b638d426e5d5aa920f7e6c4bd6fe7b40a85f",
-      "upstream": "f5bb45a8ff986a66d7d135ffa555b638d426e5d5aa920f7e6c4bd6fe7b40a85f"
+      "sha256": "dad423e68fb92c2932e7987dfc33d796e9eafb7431a5b4d7258c4b53ae734b18",
+      "upstream": "dad423e68fb92c2932e7987dfc33d796e9eafb7431a5b4d7258c4b53ae734b18"
     },
     ".claude/agents/planner-proposal.md": {
       "src": "templates/claude/agents/planner-proposal.md",
@@ -737,8 +737,8 @@
     },
     ".claude/dispatch/accept-generator-handoff.sh": {
       "src": "templates/claude/dispatch/accept-generator-handoff.sh",
-      "sha256": "63332a83757597e08188083c9b2b316297c3cfab97a551ef00cd42845c6d6649",
-      "upstream": "63332a83757597e08188083c9b2b316297c3cfab97a551ef00cd42845c6d6649"
+      "sha256": "01d18a99c41654c249c0568c42a6bc48ede6c99d7e62525a9ecd4833f19125c8",
+      "upstream": "01d18a99c41654c249c0568c42a6bc48ede6c99d7e62525a9ecd4833f19125c8"
     },
     ".claude/dispatch/accept-planner-proposal.sh": {
       "src": "templates/claude/dispatch/accept-planner-proposal.sh",
@@ -832,8 +832,8 @@
     },
     "framework/templates/claude/dispatch/accept-generator-handoff.sh": {
       "src": "templates/claude/dispatch/accept-generator-handoff.sh",
-      "sha256": "63332a83757597e08188083c9b2b316297c3cfab97a551ef00cd42845c6d6649",
-      "upstream": "63332a83757597e08188083c9b2b316297c3cfab97a551ef00cd42845c6d6649"
+      "sha256": "01d18a99c41654c249c0568c42a6bc48ede6c99d7e62525a9ecd4833f19125c8",
+      "upstream": "01d18a99c41654c249c0568c42a6bc48ede6c99d7e62525a9ecd4833f19125c8"
     },
     "framework/templates/claude/dispatch/accept-planner-proposal.sh": {
       "src": "templates/claude/dispatch/accept-planner-proposal.sh",

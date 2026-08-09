@@ -43,6 +43,12 @@ Without --apply the command performs every return check and emits
 READY_TO_APPLY without changing the main checkout. --apply applies the exact
 sandbox diff, preserves the validated handoff JSON under docs/test-reports/, and
 creates feat(<batch>-<feature>): accept external generator handoff.
+
+L1 runs inside the sandbox worktree, so the project's installed dependencies
+must be present there first — generators commonly strip node_modules before
+handing off. Provision them from the main checkout, e.g.:
+  rm -rf <worktree>/node_modules && cp -R <main>/node_modules <worktree>/node_modules
+(the rm matters: copying onto an existing directory nests it instead).
 EOF
 }
 
@@ -528,7 +534,12 @@ def sandbox_diff(temp_dir: Path) -> tuple[Path, list[str]]:
     return patch, changed
 
 
-with tempfile.TemporaryDirectory(prefix="harness-generator-accept-") as temp_raw:
+# Keep the validation root short: l1-home/l1-tmp live under this directory and
+# project L1 suites may create Unix domain sockets beneath TMPDIR — macOS caps
+# sun_path at 104 bytes, so inheriting a deep default TMPDIR (/var/folders/…)
+# breaks socket-using tests deterministically (observed: tokenizer CLI suite).
+_short_base = "/tmp" if os.path.isdir("/tmp") else None
+with tempfile.TemporaryDirectory(prefix="hga-", dir=_short_base) as temp_raw:
     temp_dir = Path(temp_raw)
     patch, changed = sandbox_diff(temp_dir)
 

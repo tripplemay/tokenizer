@@ -5,6 +5,20 @@
 
 ---
 
+## v1.8.1 — 2026-08-09（accept 回流：短临时根防 sun_path 超限 + 依赖铺设用法钉子 + 跨仓派发缺口登记）
+
+**来源：** tokenizer `BL-REPO-MECH` 全程实战回流（用户 2026-08-09 确认三条提案全部采纳）。
+
+- **`accept-generator-handoff.sh`：验证临时根改短路径**（`/tmp` 下 `hga-*`）——l1-home/l1-tmp
+  嵌在调用方 TMPDIR（macOS 默认 `/var/folders/…` 已 49 字符）之下时，项目 L1 套件在 TMPDIR
+  下建的 Unix socket 会突破 `sun_path` 104 字节上限，确定性翻红（119 字符 TMPDIR 复现 / 短路径全绿）。
+- **用法文档补依赖铺设钉子**：generator 交付前常清理 node_modules，而 L1 在沙箱 worktree 内实跑——
+  须先从主仓铺依赖，且目标目录已存在时必须先 rm（否则 cp 嵌套成 node_modules/node_modules）。
+- **`dispatch-mode.md` §9 登记跨仓派发缺口**：信封 `repo.url` 硬编码 `"."`，框架仓 feature 无法走
+  固定封装；补偿控制先例（用户书面授权 + spec-lock critic + 异厂商跨仓验收）与常态化方向已记录。
+
+---
+
 ## v1.8.0 — 2026-08-09（contract-fixtures：跨仓契约金标进入发布契约）
 
 **来源：** tokenizer `BL-REPO-MECH` F001 —— keep-separate 裁决（2026-08-08 三视角评审一致）的
