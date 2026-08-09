@@ -1,0 +1,22 @@
+{
+  "batch_id": "BL-REPO-MECH",
+  "created_at": "2026-08-09T06:42:25Z",
+  "features": [
+    {
+      "feature_id": "F002",
+      "commits": [],
+      "files_touched": [
+        "tests/contract/canonical-json.contract.test.ts",
+        "tests/contract/fixture-ingest.contract.test.ts",
+        "tests/contract/sign-verify.contract.test.ts"
+      ],
+      "notes": "Adds the three specified consumer-side contract suites. Canonical JSON vectors compare UTF-8 bytes; tokenizer decisions with a Chinese note and recursively sorted scope are replayed through the framework schema/signature validator with a one-byte tamper negative; all pending-gate and mode-intent goldens are checked against strict shape, tokenizer parsing, and Ed25519 verification. The immutable baseline already contains the v1.8.0 sync and contract-conformance workflow. `bash .claude/harness.sh verify --from /Users/yixingzhou/project/harness-template` reported v1.8.0 at 4ac7a6f, 223 files aligned, and the expected preserved codex.json customization."
+    }
+  ],
+  "l1_ran": {
+    "lint": "PASS (exit 0): targeted ESLint over tests/contract/*.ts using the same-SHA tokenizer dependency tree.",
+    "typecheck": "PASS (exit 0): tsc --noEmit over tests/contract/**/*.ts and their transitive project imports using a temporary config; the config was removed.",
+    "test": "PASS (exit 0): CONTRACT_FIXTURES_DIR=/Users/yixingzhou/project/harness-template/contract-fixtures vitest run tests/contract/ => 3 files, 6 tests passed. PASS (exit 0): with CONTRACT_FIXTURES_DIR unset => 3 files and all 6 tests explicitly skipped. PARTIAL full-suite probe: 1009 passed, 10 skipped, 4 failed in CLI lifecycle/command tests because this dispatched checkout has no local node_modules/tsx and cannot expose the process fixture; Coordinator must rerun npm run test after return."
+  },
+  "waiting": null
+}
