@@ -8,6 +8,7 @@ import { FiAlignJustify } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import { MdSettings, MdLogout, MdPriceCheck } from "react-icons/md";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { PendingGatesBadge } from "../../../app/_components/pending-gates-badge";
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -77,6 +78,8 @@ const Navbar = (props: {
         >
           <FiAlignJustify className="h-5 w-5" />
         </button>
+
+        <PendingGatesBadge />
 
         <LocaleSwitcher />
 
