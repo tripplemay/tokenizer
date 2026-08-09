@@ -13,7 +13,7 @@
       "id": "F001",
       "title": "上游 contract-fixtures + 框架 v1.8.0 发版（跨仓：harness-template）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "contract-fixtures/（清单 + canonicalJson 向量含中文/嵌套 scope/空对象用例 + pending-gate 与 mode-intent 的 valid/invalid 金标签名载荷 + TEST-ONLY 密钥对）+ validate-contract-fixtures.py 退出 0 且 schema 快照与 templates/claude/console/*.schema.json sha256 一致；金标签名 openssl 全验过、invalid 全被拒；VERSION 1.8.0 + CHANGELOG + framework-releases.json 三向一致过 release-contract 校验；本地补打 v1.7.1 tag（push/tag 由人类执行，不在 generator 权限内）。"
     },
