@@ -584,7 +584,7 @@ export async function POST(request: NextRequest) {
         const projectKey = { deviceId: token.deviceId, repoKey: report.repoKey };
         const existingProject = await tx.harnessProject.findUnique({
           where: { deviceId_repoKey: projectKey },
-          select: { id: true, userId: true }
+          select: { id: true, userId: true, status: true, batch: true, reportedAt: true }
         });
         if (existingProject && existingProject.userId !== token.userId) {
           throw new HarnessApiInputError("project_ownership_conflict", "harness project ownership conflict", 403);
@@ -597,6 +597,33 @@ export async function POST(request: NextRequest) {
         });
         if (project.userId !== token.userId || (existingProject !== null && project.id !== existingProject.id)) {
           throw new HarnessApiInputError("project_ownership_conflict", "harness project ownership conflict", 403);
+        }
+
+        // 流转事件差分（BL-TRANSITION-LOG F001）：镜像观测日志，权威真相仍是 progress.json 的
+        // git 历史。新 status 为 null（progress.json 不可读的降级镜像）不算流转；同状态重复上报
+        // 零写入，serializable 重试整体回滚不产生重复行。
+        if (state.status !== null) {
+          const initialObservation = existingProject === null || existingProject.status === null;
+          const changed =
+            !initialObservation &&
+            (existingProject.status !== state.status || existingProject.batch !== state.batch);
+          if (initialObservation || changed) {
+            await tx.harnessTransition.create({
+              data: {
+                userId: token.userId,
+                harnessProjectId: project.id,
+                fromStatus: initialObservation ? null : existingProject.status,
+                toStatus: state.status,
+                fromBatch: existingProject?.batch ?? null,
+                toBatch: state.batch,
+                batchBoundary: !initialObservation && existingProject.batch !== state.batch,
+                fixRounds: state.fixRounds,
+                headSha: state.headSha,
+                observedAfter: existingProject?.reportedAt ?? null,
+                observedAt: now
+              }
+            });
+          }
         }
 
         const gate = report.gate;

@@ -7,7 +7,8 @@ const mocks = vi.hoisted(() => {
     harnessProject: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn(), upsert: vi.fn() },
     harnessGate: { findMany: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn(), upsert: vi.fn() },
     harnessModeIntent: { updateMany: vi.fn() },
-    harnessDispatchRun: { upsert: vi.fn() }
+    harnessDispatchRun: { upsert: vi.fn() },
+    harnessTransition: { create: vi.fn() }
   };
   return {
     authenticateDeviceToken: vi.fn(),

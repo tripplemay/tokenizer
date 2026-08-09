@@ -36,6 +36,7 @@ model User {
   harnessGates        HarnessGate[]
   harnessModeIntents  HarnessModeIntent[]
   harnessDispatchRuns HarnessDispatchRun[]
+  harnessTransitions  HarnessTransition[]
 }
 
 model Account {
@@ -339,10 +340,43 @@ model HarnessProject {
   gates        HarnessGate[]
   modeIntents  HarnessModeIntent[]
   dispatchRuns HarnessDispatchRun[]
+  transitions  HarnessTransition[]
 
   @@unique([deviceId, repoKey])
   @@index([userId])
   @@index([reportedAt])
+}
+
+/// 状态流转事件表：report 入库事务内 diff 新旧 status/batch 追加（BL-TRANSITION-LOG）。
+/// 这是镜像差分观测日志——上报是 60s 轮询，agent 在线时流转时刻误差 ≤ 一个轮询周期，
+/// 轮询间隔内穿越多阶段会被压缩成一条非相邻边；权威真相仍是各仓 progress.json 的 git 历史。
+/// 契约冻结（BL-COST-BATCH-V1 消费面）：批次维度 = toBatch，时间维度 = observedAt。
+model HarnessTransition {
+  id               String  @id @default(cuid())
+  userId           String
+  harnessProjectId String
+  /// null = 该 project 的首次观测行（部署后第一次 report，或镜像从 status null 降级态恢复）
+  fromStatus       String?
+  toStatus         String
+  fromBatch        String?
+  toBatch          String?
+  /// fromBatch != toBatch：跨批次边界，耗时统计不得跨此行聚合
+  batchBoundary    Boolean @default(false)
+  /// 观测时刻的 fixRounds 快照——区分同批次内第几轮 fixing⟷reverifying 循环
+  fixRounds        Int     @default(0)
+  headSha          String?
+  /// 上一次成功上报的 reportedAt（区间下界，exclusive）；null = 首次观测
+  observedAfter    DateTime?
+  /// 本次上报服务端接收时刻（区间上界，inclusive）；真实流转发生在 (observedAfter, observedAt]
+  observedAt       DateTime
+  createdAt        DateTime @default(now())
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  harnessProject HarnessProject @relation(fields: [harnessProjectId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([harnessProjectId, observedAt])
+  @@index([toBatch])
 }
 
 model HarnessGate {
