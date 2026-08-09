@@ -5,15 +5,16 @@ type: project
 ---
 ## 当前批次
 
-- 无进行中批次（BL-CODEX-USAGE-DEDUP done + 已部署，2026-08-06）。**status=done，等待消费 backlog 启动 BL-REPO-MECH。**
-- **战略裁决（2026-08-08/09，用户确认）：双仓 keep-separate**（三视角裁判一致 0.85/0.80/0.72），tokenizer 沿「agent 编程项目管理系统」路线升级。完整依据 `docs/analysis/2026-08-08-repo-strategy/`（本地未提交，BL-REPO-MECH F004 后入库）；落地计划 `implementation-plan.md` + 12 份批次方案 `batch-plans/`；backlog.json 已物化 14 条新批次（近期 6 high + 中期 6 medium + 派生 2 low）。
-- **下一批次执行形态已签名钉住**：mode intent 77af0221（08-09 签发，08-16 过期）= heterogeneous，generator=codex/local-cli，evaluator=kimi/local-cli，Planner=Coordinator，自主关闭。
+- **BL-REPO-MECH：done（2026-08-09）**。落地计划近期 #1 完成：部署管道解冻（7 红→21/21 绿，CI Linux Verify/Deploy/Contract Conformance 三绿）· 版本测试去税（manifest 派生，v1.8.0 sync 与假版本注入两次实战验证）· 上游 v1.8.0 contract-fixtures + tokenizer 双向契约测试与跨仓 CI · paths-ignore 扩 `docs/**`（docs-only push 实测零触发）· keep-separate ADR（`docs/adr/0001`）。复验 Kimi fix_round=1 全 PASS，闸门经控制台签名批准消费。顺带产出框架 v1.7.2（generator 派发回执 local-cli 假阴性修复，本批首派撞出）。
+- **异构执行首次全程跑通**：v2 signed intent（Codex generator ×3 派发 + Kimi evaluator ×2 轮）+ spec-lock critic ×3 + accept 全链路。踩坑解法与机制缺口已记 `framework/proposed-learnings.md`（3 条待确认）。
+- **战略基线（用户 2026-08-08 确认）**：双仓 keep-separate + 升级「agent 编程项目管理系统」三阶段落地计划——`docs/analysis/2026-08-08-repo-strategy/`（已入库）；backlog 排队近期 5 批 + 中期 6 批。**下一批次：BL-TRANSITION-LOG**（含吸收 PERF-ANALYTICS 归档表建议）。
 
 ## 已知边界
 
-- 🔴 **部署管道当前冻结**：main 有 7 个测试红（framework-version/mode-badges 硬编码 1.7.0 vs manifest 1.7.1，v1.7.1 升级走 paths-ignore 未跑 CI）——任何产品 push 被 verify 拦。修复 = BL-REPO-MECH F003（打头阵）。
-- **paths-ignore 与 CLAUDE.md 不一致**：实际不含 `*.md` 全局豁免，docs/specs|test-cases|test-reports 之外的 docs push 会触发生产部署（BL-REPO-MECH F004 修）。
-- Windows CI `install-agent-lifecycle` 既有失败使 workflow 总结论恒 failure（BL-AGENT-SUPPLY-CHAIN F006 修）。
+- Windows CI `install-agent-lifecycle` 既有失败使 workflow 总结论恒 failure（Linux Verify/Deploy 不受影响）——已排入 BL-AGENT-SUPPLY-CHAIN F006。
+- harness-console-demo 删除待用户执行（Contract Conformance CI 已取代其演练职能）。
+- mode intent 77af0221 已随 BL-REPO-MECH 消费；下批次执行形态待控制台新签 intent 或本机手工选择。
+- accept-generator-handoff 本机操作要点：`TMPDIR=/tmp` 调用（长路径破 sun_path 104）+ 沙箱先铺 node_modules（目标已存在须先 rm 再 `cp -cR`）——根治提案在 proposed-learnings。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
-- Kimi access token TTL ≈ 15 分钟；bridge launch 前如过期需先以最小 kimi -p 调用刷新（fail-closed 设计）。
+- Kimi access token TTL ≈ 15 分钟；派发前以最小 `kimi -p` 调用刷新（fail-closed 设计）。
 - 本机 Agent parser 修复待重新安装 Agent（BL-CODEX-USAGE-DEDUP 遗留）。

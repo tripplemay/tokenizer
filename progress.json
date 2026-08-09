@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "done",
   "user_goal": "落地 keep-separate 裁决的双仓机械化：解冻部署管道（7 红测试）、建立 contract-fixtures + 跨仓契约 CI、paths-ignore 修正与 CLAUDE.md 对齐、keep-separate ADR 固化。",
   "total_features": 5,
   "completed_features": 5,
   "fix_rounds": 1,
   "current_sprint": "BL-REPO-MECH",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T07:48:06Z",
+  "last_updated": "2026-08-09T09:39:38Z",
   "reference_docs": [
     "docs/specs/BL-REPO-MECH-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md",
@@ -18,11 +18,7 @@
     "signoff": "docs/test-reports/BL-REPO-MECH-signoff-2026-08-09.md",
     "framework_reviewed": false
   },
-  "role_assignments": {
-    "planner": null,
-    "generator": "local-cli--codex--generator",
-    "evaluator": "local-cli--kimi--evaluator"
-  },
+  "role_assignments": null,
   "mode_intent": {
     "intent_id": "77af0221-4137-4bf4-a2c7-fb30369eca6f",
     "applied_batch": "BL-REPO-MECH",
@@ -84,31 +80,8 @@
   },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-REPO-MECH building 完成 5/5 → verifying，2026-08-09】全部 feature 落盘：F003=5fa2bc7（解冻部署，21/21）· F001=上游 4ac7a6f v1.8.0 contract-fixtures（另有 e4ba297 v1.7.2 派发回执修复）· F002=e3e8eb8 契约测试（绿路径 6/6 + skip 6/6 实证）+ 356e6fd CI 接线/附录 + 6d1378a sync v1.8.0 · F004=de0065e paths-ignore docs/** + CLAUDE.md 修正 + 战略材料入库 · F005=6e247b2 ADR（critic 16/16 链接实核）。三次 Codex 派发均 critic PASS + accept 全链路（READY_TO_APPLY→APPLIED）。【执行形态记账（铁律 6）】F001 与控制面文件（workflow/CLAUDE.md）由主会话执行——用户 AskUserQuestion 书面授权 + accept forbidden_return_path 结构性约束；全部过 spec-lock critic。【验收注意】Evaluator 须验：契约测试双路径、harness.sh verify 对账、ADR 忠实性、7 红→绿；push 后项：contract-conformance workflow_dispatch 实跑、F004 docs-only push 不触发 Deploy 实测。【待人类】tokenizer 单次 push main（触发一次 CI+部署，运行时零行为变化）；模板仓 push + tags v1.7.1/v1.7.2/v1.8.0；proposed-learnings 新增 3 条待确认。踩坑解法已记 proposed-learnings（TMPDIR=/tmp、依赖克隆、跨仓派发缺口）。"
+    "planning": "【BL-REPO-MECH done，2026-08-09】5/5 features 复验全 PASS（Kimi fix_round=1），Class B 闸门经控制台签名批准（tripplezhou@gmail.com 09:38Z，guard 验签通过）后消费收 done。交付：部署解冻（7红→绿+CI 实证）、版本测试去税（两次实战验证）、上游 v1.8.0 contract-fixtures + Contract Conformance CI 首跑绿、paths-ignore docs/** 实测生效、keep-separate ADR（docs/adr/0001）。顺带产出框架 v1.7.2（派发回执假阴性修复）。两仓已推送，tags v1.7.1/1.7.2/1.8.0 已上。harness-console-demo 删除待用户（契约 CI 已取代其职能）。proposed-learnings 3 条新增待确认（TMPDIR 长路径/accept 依赖铺设/跨仓派发缺口）+2 条历史待确认。下一批次按落地计划为 BL-TRANSITION-LOG（backlog near-term #2，含吸收 PERF-ANALYTICS F001 归档表的建议）。mode intent 77af0221 已随本批消费；下批次执行形态待新 intent 或本机手工选择。"
   },
   "features": [],
-  "pending_gate": {
-    "id": "BL-REPO-MECH-reverifying-done-w1",
-    "kind": "phase_advance",
-    "raised_at": "2026-08-09T07:48:06Z",
-    "raised_by": "verify",
-    "batch": "BL-REPO-MECH",
-    "from_status": "reverifying",
-    "to_status": "done",
-    "detail": "复验全 5 features PASS（fix_round=1）+ Linux CI/Deploy/Contract Conformance 三绿 + signoff 已落盘，等人类批准跨 Class B 闸门。批准不含任何 push/tag/release/部署授权（均已完成）。",
-    "evidence": [
-      "docs/test-reports/BL-REPO-MECH-verdict.json",
-      "docs/test-reports/BL-REPO-MECH-signoff-2026-08-09.md"
-    ],
-    "decision": {
-      "gate_id": "BL-REPO-MECH-reverifying-done-w1",
-      "action": "approve",
-      "by": "tripplezhou@gmail.com",
-      "at": "2026-08-09T09:38:31.836Z",
-      "scope": {
-        "once": true
-      },
-      "sig": "rKyEpJQwZVCpAdd2yV671uzRzIvjRBcimx8Te+pWtwaNTRfdxVgzuJ+e+BEND8RGzvrsRb/UmNjeyFNiFKsDDQ=="
-    }
-  }
+  "pending_gate": null
 }
