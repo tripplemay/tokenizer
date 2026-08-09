@@ -7,6 +7,37 @@
     "installed_from": "/Users/yixingzhou/project/harness-template"
   },
   "project": {
-    "name": "tokenizer"
+    "name": "tokenizer",
+    "mode_defaults": {
+      "intent": {
+        "desired": {
+          "autonomy": {
+            "enabled": false
+          },
+          "execution": {
+            "profile": "heterogeneous",
+            "role_bindings": {
+              "planner": null,
+              "evaluator": {
+                "tool": "kimi",
+                "invocation": "local-cli"
+              },
+              "generator": {
+                "tool": "codex",
+                "invocation": "local-cli"
+              }
+            }
+          }
+        },
+        "repo_key": "github.com/tripplemay/tokenizer",
+        "intent_id": "77af0221-4137-4bf4-a2c7-fb30369eca6f",
+        "issued_at": "2026-08-09T03:51:46.031Z",
+        "issued_by": "tripplezhou@gmail.com",
+        "expected_head_sha": "afa029722a50c634e366626f2ae01101141d3774",
+        "intent_expires_at": "2026-08-16T03:51:00.000Z",
+        "sig": "7b73Shooo4wKaqs3gJlsLsKfdgreQiT4dDs90dkgHBRLbIXqhF3JmNIwCftqpMu5NvEwuuKxmzUKLB4Pe+OsDQ=="
+      },
+      "staged_at": "2026-08-09T03:51:50.626Z"
+    }
   }
 }
