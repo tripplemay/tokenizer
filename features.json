@@ -21,7 +21,7 @@
       "id": "F002",
       "title": "agent 侧：dispatch 扫描携带 usage 上行 + release 1.3.0",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "run-meta 可选 usage 块经 bounded 白名单进 dispatch 摘要（超界/负数/未知字段剔除或整块 null，测试覆盖）；无 usage 的历史 run-meta 行为与现状一致（回归）；agent-releases.json 追加 1.3.0 双语条目；AGENT_FEATURE_VERSION 保持 9/9；全量测试绿。"
     },
