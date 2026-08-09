@@ -209,9 +209,6 @@ export function buildReport(repo: HarnessRepo) {
   const featuresFile = readJson<FeaturesJson>(join(repo.path, "features.json"));
   const features = featuresFile?.features ?? progress.features ?? [];
   const completed = features.filter((f) => (f as { status?: string }).status === "completed").length;
-  const batches = new Set(
-    [progress.current_sprint, featuresFile?.sprint].filter((value): value is string => typeof value === "string" && value.length > 0)
-  );
   const knownFeatures = new Set(
     features.map((feature) => (feature as { id?: unknown }).id).filter((id): id is string => typeof id === "string")
   );
@@ -279,7 +276,7 @@ export function buildReport(repo: HarnessRepo) {
     },
     // 只上报还没有决策的闸门；已决策的以服务端记录为准，避免本机旧副本覆盖
     gate: reportGate,
-    dispatchRuns: scanHarnessDispatchRuns(repo.path, batches, knownFeatures)
+    dispatchRuns: scanHarnessDispatchRuns(repo.path, knownFeatures)
   };
 }
 

@@ -81,7 +81,7 @@ describe("dispatch run summary collection", () => {
     const path = write(".harness-dispatch/run-meta-task-1.json", JSON.stringify(meta("task-1")));
     const finished = new Date("2026-07-27T12:00:12.000Z");
     utimesSync(path, finished, finished);
-    const [run] = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
 
     expect(run).toMatchObject({
       runId: "task-1",
@@ -116,7 +116,7 @@ describe("dispatch run summary collection", () => {
       exit_code: 7,
       error: "Bearer secret and raw stderr"
     })));
-    const [run] = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
     expect(run).toMatchObject({
       role: "evaluator",
       modelFamily: "kimi",
@@ -141,7 +141,7 @@ describe("dispatch run summary collection", () => {
       termination_reason: "remote operator message and private diagnostics"
     })));
 
-    const [run] = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
     expect(run).toMatchObject({
       role: "evaluator",
       transport: "a2a",
@@ -153,25 +153,27 @@ describe("dispatch run summary collection", () => {
     expect(JSON.stringify(run)).not.toContain("remote operator");
   });
 
-  it("accepts only associated batches and refs that name commits in this repository", () => {
-    write(".harness-dispatch/run-meta-wrong-batch.json", JSON.stringify(meta("wrong-batch", { batch: "BL-OTHER" })));
+  it("keeps runs of other batches (usage must survive batch switch) but rejects foreign refs", () => {
+    write(".harness-dispatch/run-meta-other-batch.json", JSON.stringify(meta("other-batch", { batch: "BL-OTHER" })));
     write(".harness-dispatch/run-meta-wrong-ref.json", JSON.stringify(meta("wrong-ref", { ref: "f".repeat(40) })));
     write(".harness-dispatch/run-meta-short-ref.json", JSON.stringify(meta("short-ref", { ref: head.slice(0, 12) })));
-    expect(scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]))).toEqual([]);
+    const runs = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(runs.map((run) => run.taskId)).toEqual(["other-batch"]);
+    expect(runs[0].batch).toBe("BL-OTHER");
   });
 
   it("rejects symlinked run-meta and never hashes a symlinked artifact", () => {
     const outsideMeta = write("outside-meta.json", JSON.stringify(meta("symlinked-run")));
     mkdirSync(join(repo, ".harness-dispatch"), { recursive: true });
     symlinkSync(outsideMeta, join(repo, ".harness-dispatch", "run-meta-symlinked-run.json"));
-    expect(scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]))).toEqual([]);
+    expect(scanHarnessDispatchRuns(repo, new Set(["F004"]))).toEqual([]);
 
     symlinkSync(join(repo, "artifact.json"), join(repo, "artifact-link.json"));
     write(
       ".harness-dispatch/run-meta-safe.json",
       JSON.stringify(meta("safe", { feature: "F004", artifact: "artifact-link.json" }))
     );
-    const [run] = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
     expect(run).toMatchObject({
       taskId: "safe",
       artifactPath: "artifact-link.json",
@@ -190,7 +192,7 @@ describe("dispatch run summary collection", () => {
       utimesSync(path, time, time);
     }
     write(".harness-dispatch/run-meta-oversized.json", "x".repeat(64 * 1024 + 1));
-    const runs = scanHarnessDispatchRuns(repo, new Set(["BL-TEST"]), new Set(["F004"]));
+    const runs = scanHarnessDispatchRuns(repo, new Set(["F004"]));
     expect(runs).toHaveLength(50);
     expect(runs[0].taskId).toBe("task-54");
     expect(runs.at(-1)?.taskId).toBe("task-05");

@@ -355,8 +355,7 @@ function summarizeRun(
   repoPath: string,
   raw: unknown,
   fileMtimeMs: number,
-  batches: ReadonlySet<string>,
-  knownFeatures: ReadonlySet<string>,
+    knownFeatures: ReadonlySet<string>,
   registry: ReadonlyMap<string, RegistryAgent>
 ): DispatchRunSummary | null {
   const run = record(raw);
@@ -366,7 +365,10 @@ function summarizeRun(
   const batch = safeId(run.batch);
   const agentId = safeId(run.agent_id);
   const lockedSha = typeof run.ref === "string" && FULL_SHA_PATTERN.test(run.ref) ? run.ref.toLowerCase() : null;
-  if (!taskId || !runId || !batch || !batches.has(batch) || !agentId || !lockedSha || !commitExists(repoPath, lockedSha)) {
+  // batch 只是归因标签：不做已知批次白名单——否则批次切换后历史 run（及其 usage）
+  // 会整体消失（BL-DISPATCH-USAGE-CAPTURE F004 实测撞上）。防注入由 safe-id、
+  // lockedSha 存在性与 registry 身份等其余检查承担。
+  if (!taskId || !runId || !batch || !agentId || !lockedSha || !commitExists(repoPath, lockedSha)) {
     return null;
   }
   const agent = registry.get(agentId);
@@ -421,7 +423,6 @@ function summarizeRun(
 /** Scan only project-root durable run-meta files and return at most the newest 50 safe summaries. */
 export function scanHarnessDispatchRuns(
   repoPath: string,
-  batches: ReadonlySet<string>,
   knownFeatures: ReadonlySet<string>
 ): DispatchRunSummary[] {
   const stateDir = join(repoPath, ".harness-dispatch");
@@ -457,7 +458,7 @@ export function scanHarnessDispatchRuns(
     } catch {
       continue;
     }
-    const summary = summarizeRun(repoPath, decoded, candidate.mtimeMs, batches, knownFeatures, registry);
+    const summary = summarizeRun(repoPath, decoded, candidate.mtimeMs, knownFeatures, registry);
     if (!summary || seen.has(summary.runId)) continue;
     seen.add(summary.runId);
     summaries.push(summary);
