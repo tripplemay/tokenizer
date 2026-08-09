@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "根治派发沙箱与用量采集的冲突：run 日志机械提取 usage 进 run-meta，经 dispatchRuns 通道上行，服务端幂等物化为带 batch/feature/role 归因的 UsageEvent；回填 BL-REPO-MECH 丢失的 Codex 用量。",
   "total_features": 4,
-  "completed_features": 3,
+  "completed_features": 4,
   "fix_rounds": 0,
   "current_sprint": "BL-DISPATCH-USAGE-CAPTURE",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T17:32:44Z",
+  "last_updated": "2026-08-09T18:05:58Z",
   "reference_docs": [
     "docs/specs/BL-DISPATCH-USAGE-CAPTURE-spec.md"
   ],
@@ -20,7 +20,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-DISPATCH-USAGE-CAPTURE planning→building，2026-08-10】用户发现派发用量缺失并裁决直接立批。诊断结论入 spec 开头：codex 沙箱写限制致日志仅存 run-*.log；kimi 已正常采集只是被 /events 淹没。关键设计：adapter 声明 usage_capture（codex=materialize / kimi=attribution_only 防双重计费）；additive-optional 走 dispatchRuns 通道（服务端先部署后 agent 重装，fv 不 bump，release→1.3.0）；幂等键 dispatch:<taskId>；历史 5 run 回填。执行序 F001(框架,主会话先例)→F003(服务端)→F002(agent)→F004(回填实证)。GATE-INBOX 顺延为近期 #4。"
+    "planning": "【BL-DISPATCH-USAGE-CAPTURE building 完成 4/4 → verifying，2026-08-10】F001=框架 v1.9.0 提取器（4 codex 实测逐字一致）F003=服务端物化（10 用例）F002=agent 上行 + release 1.3.0 + 三处 release 版本税消除 F004=回填实证（用户目视确认 4 条 codex 事件；合计 input 9.54M）。排查修复两层断点：批次白名单丢历史 run；readRegistry 不认 tool-integrations/1（镜像 8-05 起静默断链）。模型未知=如实（codex 无 model 行+argv 未钉），改进入 backlog BL-DISPATCH-MODEL-PIN。"
   },
   "features": [],
   "pending_gate": null

@@ -30,3 +30,14 @@ codex 四项数值与 run 日志 `turn.completed` 逐字一致（提取器实跑
 
 /events 应出现 4 条 source=codex 的派发事件（input 如上表；model 为空——codex 日志无 model 行，如实 unpriced）；
 kimi 零新增事件（详情页 Activity 的 dispatch 表 tokens 列对 kimi 行显示「仅归因」）。
+
+## 终局确认（2026-08-09T18:05:58Z）
+
+- **用户目视确认：/events 出现 4 条 source=codex 派发事件，数值与上表一致。**
+- 「模型显示未知」为如实呈现：codex 运行日志无 model 行、adapter argv 未钉 `-c model=`（v1.7.1 已标记
+  该情形跑 CLI 默认模型）——模型身份在本机产物中不可知，事件如实 unpriced。改进已登记 backlog
+  （BL-DISPATCH-MODEL-PIN：adapter 定制钉模型 → 事件可定价 + 消掉默认模型不确定性）。
+- 排查中挖出并修复两层链路断点（均有回归用例钉死）：
+  1. dispatch 扫描的批次白名单在批次切换后丢弃全部历史 run——用量随批次结束即丢失；
+  2. readRegistry 只认 dispatch/1 旧格式——注册表 2026-08-05 迁 tool-integrations/1 后
+     **dispatch 镜像静默断链至今**（Activity 显示的均为迁移前旧行），本批顺带修复恢复。

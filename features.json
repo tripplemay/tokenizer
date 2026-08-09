@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "历史回填与端到端实证",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "本机 5 次 BL-REPO-MECH run 补写 usage 后经 agent 上报：服务端出现 3 条 source=codex 派发用量事件且 token 数与日志一致；kimi 零新增 UsageEvent 仅归因列有值；二次上报零重复；过程落 docs/test-reports/BL-DISPATCH-USAGE-CAPTURE-backfill-2026-08-10.md。前置：F003 已部署 + 本机 agent 重装 1.3.0。"
     }

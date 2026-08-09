@@ -158,5 +158,15 @@
     ],
     "confirmed_at": "2026-08-09T16:58:30Z",
     "priority": "low"
+  },
+  {
+    "id": "BL-DISPATCH-MODEL-PIN",
+    "title": "派发模型钉死：adapter 定制加 -c model= 使派发用量事件可定价",
+    "description": "现状：codex 派发日志无 model 行且 adapter argv 未钉模型（v1.7.1 标记过 --ignore-user-config 下跑 CLI 默认模型），派发用量事件 model=null 如实 unpriced。改进：本机 adapter 定制（codex.json argv 加 -c model=<明确型号>，进执行契约 hash 可审计）+ extract-run-usage 的 adapter-argv 兜底取模型 → 事件可定价，同时消掉默认模型不确定性。涉及本机 registry 定制与框架提取器小改。来源：BL-DISPATCH-USAGE-CAPTURE F004 用户确认时的观察。",
+    "decisions": [
+      "2026-08-10 用户目视确认时发现登记。"
+    ],
+    "confirmed_at": "2026-08-09T18:05:58Z",
+    "priority": "low"
   }
 ]
