@@ -29,7 +29,7 @@
       "id": "F003",
       "title": "详情页 timeline tab + i18n",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness-detail 增 transitions 子查询（userId 过滤、take 100、白名单 select，测试断言）；/harness/[id]?view=timeline 渲染分组时间线+耗时+精度徽章+空占位（UI 断言归 Evaluator）；时间走 formatDateTimeSeconds 用户时区、存储全 UTC；en/zh-CN 键集一致；npm run lint/verify 过。"
     }
