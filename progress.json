@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "为控制台补上状态流转历史与批次归档两张事实表（成本归因与性能分析的数据地基）+ 详情页 timeline tab；纯服务端+UI，agent 零改。",
   "total_features": 4,
-  "completed_features": 1,
+  "completed_features": 2,
   "fix_rounds": 0,
   "current_sprint": "BL-TRANSITION-LOG",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T14:17:51Z",
+  "last_updated": "2026-08-09T14:20:08Z",
   "reference_docs": [
     "docs/specs/BL-TRANSITION-LOG-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-TRANSITION-LOG.md",

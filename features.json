@@ -13,7 +13,7 @@
       "id": "F004",
       "title": "HarnessBatchArchive 批次归档表 + done/superseded 触发（吸收自 BL-PERF-ANALYTICS）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "@@unique([harnessProjectId,batch]) upsert 吸收尾部上报；doneAt/firstPass 仅 create 写入；批次切换 superseded 保底快照；tests/server/harness-batch-archive.test.ts 全绿（建档/幂等刷新/superseded/跨用户隔离）。"
     },
