@@ -548,7 +548,8 @@
       "tabs": {
         "overview": "概览",
         "modes": "模式与 CLI",
-        "activity": "活动"
+        "activity": "活动",
+        "timeline": "时间线"
       },
       "notReported": "尚未上报",
       "notLinked": "未关联",
@@ -830,6 +831,19 @@
         "missing": "缺失",
         "unknown": "未知"
       }
+    },
+    "timeline": {
+      "precisionNote": "基于 60 秒轮询观测：耗时为近似值；agent 离线期间误差无上界，一个轮询间隔内穿越的阶段会被压缩。权威真相仍是 progress.json 的 git 历史。",
+      "empty": "尚无流转记录。agent 上报状态变化后此处开始积累。",
+      "unknownBatch": "（未知批次）",
+      "total": "可计量合计 {value}",
+      "round": "第 {value} 轮",
+      "lowPrecision": "不精确",
+      "lowPrecisionHint": "观测区间超过 10 分钟，真实流转时刻在区间内某处。",
+      "compressed": "有压缩",
+      "compressedHint": "非状态机相邻边：一个轮询间隔内穿越了中间阶段，中间态已丢失。",
+      "inProgress": "进行中",
+      "inProgressFor": "进行中 {value}"
     }
   }
 }

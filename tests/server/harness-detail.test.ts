@@ -8,6 +8,7 @@ describe("owned Harness project detail query", () => {
     expect(query.select.gates.where).toEqual({ userId: "user-1" });
     expect(query.select.modeIntents.where).toEqual({ userId: "user-1" });
     expect(query.select.dispatchRuns.where).toEqual({ userId: "user-1" });
+    expect(query.select.transitions.where).toEqual({ userId: "user-1" });
   });
 
   it("bounds all timelines and omits raw or sensitive fields from the selected result", () => {
@@ -15,6 +16,7 @@ describe("owned Harness project detail query", () => {
     expect(query.select.gates.take).toBe(50);
     expect(query.select.modeIntents.take).toBe(50);
     expect(query.select.dispatchRuns.take).toBe(50);
+    expect(query.select.transitions.take).toBe(100);
     expect(query.select.gates.select).not.toHaveProperty("decisionSig");
     expect(query.select.modeIntents.select).not.toHaveProperty("signature");
     expect(query.select.modeIntents.select).not.toHaveProperty("payload");

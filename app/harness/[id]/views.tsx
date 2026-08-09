@@ -25,6 +25,7 @@ import {
 import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-intent";
 import { formatDateTimeSeconds, formatRelativeTime } from "@/shared/format";
 import { isFreshHarnessProjectReport } from "@/shared/device-status";
+import { buildTransitionTimeline } from "@/shared/harness-transitions";
 import {
   isConfigurableModeRole,
   modeDrilldownHref,
@@ -664,4 +665,101 @@ function durationLabel(durationMs: number, t: Translator): string {
 
 function Empty({ text }: { text: string }) {
   return <p className="border-y border-gray-200 py-4 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">{text}</p>;
+}
+
+// ---- Timeline（BL-TRANSITION-LOG F003）--------------------------------------
+
+function timelineDuration(durationMs: number): string {
+  const totalMinutes = Math.round(durationMs / 60_000);
+  if (totalMinutes < 1) return "<1m";
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+}
+
+export async function TimelineView({ project, timezone }: { project: OwnedHarnessProjectDetail; timezone: string }) {
+  const [t, statusT] = await Promise.all([
+    getTranslations("harness.timeline"),
+    getTranslations("harness.status")
+  ]);
+  const groups = buildTransitionTimeline(project.transitions, {
+    now: new Date(),
+    reportIsFresh: isFreshHarnessProjectReport(project.reportedAt, Date.now())
+  });
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-gray-500 dark:text-gray-400">{t("precisionNote")}</p>
+      {groups.length === 0 ? <Empty text={t("empty")} /> : null}
+      {groups.map((group, groupIndex) => (
+        <Card key={`${group.batch ?? "unknown"}-${groupIndex}`} extra="p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="font-mono text-sm font-semibold text-navy-700 dark:text-white">
+              {group.batch ?? t("unknownBatch")}
+            </h3>
+            {group.totalMs !== null ? (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {t("total", { value: timelineDuration(group.totalMs) })}
+              </span>
+            ) : null}
+          </div>
+          <ol className="mt-3 space-y-0">
+            {group.segments.map((segment, index) => (
+              <li key={`${segment.phase}-${index}`} className="relative flex gap-3 pb-4 last:pb-0">
+                <div className="flex flex-col items-center">
+                  <span
+                    className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${
+                      segment.end === null ? "bg-brand-500" : "bg-gray-300 dark:bg-white/20"
+                    }`}
+                  />
+                  {index < group.segments.length - 1 ? (
+                    <span className="mt-1 w-px flex-1 bg-gray-200 dark:bg-white/10" />
+                  ) : null}
+                </div>
+                <div className="min-w-0 flex-1 pb-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold text-navy-700 dark:text-white">
+                      {phaseLabel(statusT, segment.phase)}
+                    </span>
+                    {segment.fixRounds > 0 && (segment.phase === "fixing" || segment.phase === "reverifying") ? (
+                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+                        {t("round", { value: segment.fixRounds })}
+                      </span>
+                    ) : null}
+                    {segment.lowPrecision ? (
+                      <span
+                        title={t("lowPrecisionHint")}
+                        className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400"
+                      >
+                        {t("lowPrecision")}
+                      </span>
+                    ) : null}
+                    {segment.nonAdjacent ? (
+                      <span
+                        title={t("compressedHint")}
+                        className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400"
+                      >
+                        {t("compressed")}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">
+                    {formatDateTimeSeconds(segment.start, timezone)}
+                    {" · "}
+                    {segment.end === null
+                      ? segment.durationMs !== null
+                        ? t("inProgressFor", { value: timelineDuration(segment.durationMs) })
+                        : t("inProgress")
+                      : segment.durationMs !== null
+                        ? `${segment.initialObservation ? "≥" : ""}${timelineDuration(segment.durationMs)}`
+                        : "—"}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Card>
+      ))}
+    </div>
+  );
 }

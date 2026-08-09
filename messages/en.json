@@ -548,7 +548,8 @@
       "tabs": {
         "overview": "Overview",
         "modes": "Modes & CLI",
-        "activity": "Activity"
+        "activity": "Activity",
+        "timeline": "Timeline"
       },
       "notReported": "Not reported",
       "notLinked": "Not linked",
@@ -830,6 +831,19 @@
         "missing": "Missing",
         "unknown": "Unknown"
       }
+    },
+    "timeline": {
+      "precisionNote": "Observed from 60s agent polling: timings are approximate; gaps while the agent was offline are unbounded, and phases crossed within one poll are compressed. progress.json git history stays authoritative.",
+      "empty": "No transitions observed yet. Rows appear as the agent reports state changes.",
+      "unknownBatch": "(unknown batch)",
+      "total": "measured total {value}",
+      "round": "round {value}",
+      "lowPrecision": "imprecise",
+      "lowPrecisionHint": "Observation gap exceeded 10 minutes; the real transition moment is somewhere inside it.",
+      "compressed": "compressed",
+      "compressedHint": "Not an adjacent state-machine edge: intermediate phases were crossed within one polling interval and are lost.",
+      "inProgress": "in progress",
+      "inProgressFor": "in progress for {value}"
     }
   }
 }

@@ -78,6 +78,23 @@ export function ownedHarnessProjectDetailQuery(id: string, userId: string) {
           failureDetail: true
         }
       },
+      transitions: {
+        where: { userId },
+        orderBy: { observedAt: "desc" as const },
+        take: 100,
+        select: {
+          id: true,
+          fromStatus: true,
+          toStatus: true,
+          fromBatch: true,
+          toBatch: true,
+          batchBoundary: true,
+          fixRounds: true,
+          headSha: true,
+          observedAfter: true,
+          observedAt: true
+        }
+      },
       dispatchRuns: {
         where: { userId },
         orderBy: { startedAt: "desc" as const },

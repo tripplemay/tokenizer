@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { MdArrowBack, MdHistory, MdSettingsSuggest, MdSpaceDashboard } from "react-icons/md";
+import { MdArrowBack, MdHistory, MdSettingsSuggest, MdSpaceDashboard, MdTimeline } from "react-icons/md";
 import { prisma } from "@/server/db";
 import { requireSession } from "@/server/auth-session";
 import { ownedHarnessProjectDetailQuery } from "@/server/harness-detail";
@@ -9,11 +9,11 @@ import { signingKeyReady } from "@/server/harness-sign";
 import { getUserTimezone } from "@/server/timezone";
 import { AutoRefresh } from "../../_components/auto-refresh";
 import { modeDrilldownTarget } from "./mode-drilldown";
-import { ActivityView, ModesAndAgentsView, OverviewView } from "./views";
+import { ActivityView, ModesAndAgentsView, OverviewView, TimelineView } from "./views";
 
 export const dynamic = "force-dynamic";
 
-const VIEWS = ["overview", "modes", "activity"] as const;
+const VIEWS = ["overview", "timeline", "modes", "activity"] as const;
 type DetailView = (typeof VIEWS)[number];
 
 function selectedView(value: string | string[] | undefined): DetailView {
@@ -41,6 +41,7 @@ export default async function HarnessProjectDetailPage({
   const selectedFocus = modeDrilldownTarget(query.focus);
   const icons = {
     overview: MdSpaceDashboard,
+    timeline: MdTimeline,
     modes: MdSettingsSuggest,
     activity: MdHistory
   };
@@ -91,6 +92,7 @@ export default async function HarnessProjectDetailPage({
       </nav>
 
       {view === "overview" ? <OverviewView project={project} timezone={timezone} /> : null}
+      {view === "timeline" ? <TimelineView project={project} timezone={timezone} /> : null}
       {view === "modes" ? (
         <ModesAndAgentsView
           project={project}
