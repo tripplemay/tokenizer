@@ -218,3 +218,93 @@ describe("dispatch run summary collection", () => {
     expect(runs.every((run) => run.errorSummary === "process_failed")).toBe(true);
   });
 });
+
+// BL-DISPATCH-USAGE-CAPTURE F002 验收测试（evaluator 补写）：run-meta 可选 usage 块的
+// 敌意解析——白名单/bounded/整块弃用语义；usage 是旁路不是闸门（无效 usage 不得吞掉 run）。
+describe("run-meta usage uplink (F002)", () => {
+  function usageBlock(overrides: Record<string, unknown> = {}) {
+    return {
+      model: null,
+      input_tokens: 2_150_425,
+      cached_input_tokens: 2_008_832,
+      cache_write_tokens: 0,
+      output_tokens: 19_667,
+      reasoning_tokens: 7_702,
+      turns: 1,
+      extracted_from: "run-log",
+      ...overrides
+    };
+  }
+
+  it("carries a valid usage block and capture mode intact into the summary", () => {
+    write(
+      ".harness-dispatch/run-meta-with-usage.json",
+      JSON.stringify(meta("with-usage", { usage: usageBlock({ model: "gpt-5-codex" }), usage_capture: "materialize" }))
+    );
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(run.usage).toEqual({
+      model: "gpt-5-codex",
+      input_tokens: 2_150_425,
+      cached_input_tokens: 2_008_832,
+      cache_write_tokens: 0,
+      output_tokens: 19_667,
+      reasoning_tokens: 7_702,
+      turns: 1,
+      extracted_from: "run-log"
+    });
+    expect(run.usageCapture).toBe("materialize");
+  });
+
+  it("keeps legacy run-meta without usage summarized with explicit nulls (regression)", () => {
+    write(".harness-dispatch/run-meta-legacy.json", JSON.stringify(meta("legacy")));
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(run.taskId).toBe("legacy");
+    expect(run.usage).toBeNull();
+    expect(run.usageCapture).toBeNull();
+  });
+
+  it.each([
+    ["unknown field", usageBlock({ price_usd: 1 })],
+    ["negative tokens", usageBlock({ input_tokens: -1 })],
+    ["token count above the 2e9 bound", usageBlock({ input_tokens: 2_000_000_001 })],
+    ["non-integer tokens", usageBlock({ output_tokens: 1.5 })],
+    ["zero turns", usageBlock({ turns: 0 })],
+    ["turns above the 10000 bound", usageBlock({ turns: 10_001 })],
+    ["foreign extraction source", usageBlock({ extracted_from: "guess" })],
+    ["missing extraction source", usageBlock({ extracted_from: undefined })],
+    ["non-string model", usageBlock({ model: 42 })],
+    ["oversized model name", usageBlock({ model: "x".repeat(129) })],
+    ["array instead of object", [usageBlock()]],
+    ["string instead of object", "9538301 tokens"]
+  ])("drops the whole usage block on %s but keeps the run (bypass, not a gate)", (_label, usage) => {
+    write(
+      ".harness-dispatch/run-meta-hostile.json",
+      JSON.stringify(meta("hostile", { usage, usage_capture: "materialize" }))
+    );
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(run.taskId).toBe("hostile");
+    expect(run.usage).toBeNull();
+    expect(run.usageCapture).toBe("materialize");
+  });
+
+  it("nulls an unknown capture mode while keeping a valid usage block", () => {
+    write(
+      ".harness-dispatch/run-meta-bad-capture.json",
+      JSON.stringify(meta("bad-capture", { usage: usageBlock(), usage_capture: "billing" }))
+    );
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(run.usage).toMatchObject({ input_tokens: 2_150_425 });
+    expect(run.usageCapture).toBeNull();
+  });
+
+  it("accepts attribution_only with a null usage block (kimi shape)", () => {
+    write(
+      ".harness-dispatch/run-meta-kimi-shape.json",
+      JSON.stringify(meta("kimi-shape", { agent_id: "reviewer-kimi-a2a", usage: null, usage_capture: "attribution_only" }))
+    );
+    const [run] = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(run.usage).toBeNull();
+    expect(run.usageCapture).toBe("attribution_only");
+  });
+});
+
