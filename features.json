@@ -29,7 +29,7 @@
       "id": "F004",
       "title": "dashboardUrl 补显",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "详情 overview 外链 Fact + 列表卡片外链，经 safeHttpUrl（javascript: 拒，测试补 case）；空值 notReported 不渲染 <a>；grep -rn dashboardUrl app/ 命中 >0。"
     },
