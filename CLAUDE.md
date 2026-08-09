@@ -61,9 +61,12 @@ npx vitest run tests/cli/harness.test.ts   # 单文件
 
 ## 本项目特有的硬约束
 
-- **push `main` = 部署生产**（`.github/workflows/deploy-vps.yml`）。harness 的状态类改动
-  （`progress.json` / `features.json` / `.auto-memory/**` / `framework/**` / `.claude/**` /
-  `harness.json` / `harness.lock` / `*.md`）已列入 `paths-ignore`，不会触发部署；**其余任何改动都会**。
+- **push `main` = 部署生产**（`.github/workflows/deploy-vps.yml`）。`paths-ignore` 豁免清单与该
+  workflow 逐条一致：`.auto-memory/**` / `.claude/**` / `framework/**` / `docs/**` /
+  `progress.json` / `features.json` / `backlog.json` / `.agents-registry.json` / `harness.json` /
+  `harness.lock` / 根目录角色文件（`harness-rules.md` `planner.md` `generator.md` `evaluator.md`
+  `orchestration-patterns.md` `CLAUDE.md` `AGENTS.md`）。**没有 `*.md` 全局豁免**——豁免清单外的
+  任何改动（含根目录其他 md、`.github/**`、`tests/**`）push 即部署。
 - **时间戳全链路 UTC**：客户端 `occurredAt` 必须是 UTC ISO 8601；服务端、容器、Postgres 会话都跑 UTC。
 - **agent 能力版本**：`src/shared/agent-feature-version.ts` 的两个常量同步 bump 才会提示用户升级；
   纯 bug 修复不动它。

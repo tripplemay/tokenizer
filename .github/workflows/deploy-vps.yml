@@ -10,9 +10,9 @@ on:
       - ".auto-memory/**"
       - ".claude/**"
       - "framework/**"
-      - "docs/specs/**"
-      - "docs/test-cases/**"
-      - "docs/test-reports/**"
+      # docs/ 全目录豁免的成立前提：运行时代码不读取 docs/（已 grep 核实 src/ app/ 零命中，
+      # 引用见 docs/adr/0001）。若未来有运行时资产进 docs/，必须先收窄本行。
+      - "docs/**"
       - "progress.json"
       - "features.json"
       - "backlog.json"
