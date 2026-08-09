@@ -37,6 +37,7 @@ model User {
   harnessModeIntents  HarnessModeIntent[]
   harnessDispatchRuns HarnessDispatchRun[]
   harnessTransitions  HarnessTransition[]
+  harnessBatchArchives HarnessBatchArchive[]
 }
 
 model Account {
@@ -341,6 +342,7 @@ model HarnessProject {
   modeIntents  HarnessModeIntent[]
   dispatchRuns HarnessDispatchRun[]
   transitions  HarnessTransition[]
+  batchArchives HarnessBatchArchive[]
 
   @@unique([deviceId, repoKey])
   @@index([userId])
@@ -377,6 +379,40 @@ model HarnessTransition {
   @@index([userId])
   @@index([harnessProjectId, observedAt])
   @@index([toBatch])
+}
+
+/// 批次归档表：HarnessProject 是覆盖式镜像，本表把每个批次的终态快照入史（BL-TRANSITION-LOG F004，
+/// 吸收自 BL-PERF-ANALYTICS）。入 done 时 upsert（尾部上报刷新白名单字段，doneAt/firstPass 只在
+/// create 写入）；批次切换且旧批未 done 时以旧行值落 superseded 保底（中断批次入史，不入通过率分母）。
+model HarnessBatchArchive {
+  id               String    @id @default(cuid())
+  userId           String
+  harnessProjectId String
+  /// 冗余存储便于展示层免 join；与 HarnessProject.repoKey 同口径
+  repoKey          String
+  batch            String
+  status           String
+  fixRounds        Int       @default(0)
+  completedCount   Int       @default(0)
+  totalCount       Int       @default(0)
+  headSha          String?
+  signoff          String?
+  dashboardUrl     String?
+  features         Json?
+  /// 一次通过 = 入 done 时 fixRounds === 0；superseded 行恒 false
+  firstPass        Boolean   @default(false)
+  archivedReason   String
+  doneAt           DateTime?
+  reportedAt       DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  harnessProject HarnessProject @relation(fields: [harnessProjectId], references: [id], onDelete: Cascade)
+
+  @@unique([harnessProjectId, batch])
+  @@index([userId])
+  @@index([doneAt])
 }
 
 model HarnessGate {

@@ -584,7 +584,21 @@ export async function POST(request: NextRequest) {
         const projectKey = { deviceId: token.deviceId, repoKey: report.repoKey };
         const existingProject = await tx.harnessProject.findUnique({
           where: { deviceId_repoKey: projectKey },
-          select: { id: true, userId: true, status: true, batch: true, reportedAt: true }
+          select: {
+            id: true,
+            userId: true,
+            status: true,
+            batch: true,
+            reportedAt: true,
+            // superseded 归档需要旧行的完整快照值（BL-TRANSITION-LOG F004）
+            fixRounds: true,
+            completedCount: true,
+            totalCount: true,
+            headSha: true,
+            signoff: true,
+            dashboardUrl: true,
+            features: true
+          }
         });
         if (existingProject && existingProject.userId !== token.userId) {
           throw new HarnessApiInputError("project_ownership_conflict", "harness project ownership conflict", 403);
@@ -624,6 +638,72 @@ export async function POST(request: NextRequest) {
               }
             });
           }
+        }
+
+        // 批次归档（BL-TRANSITION-LOG F004）：HarnessProject 是覆盖式镜像，这里把批次终态入史。
+        // 顺序敏感：先落 superseded（旧批次被顶掉的保底快照），再落新状态的 done 归档。
+        if (
+          existingProject !== null &&
+          typeof existingProject.batch === "string" &&
+          existingProject.batch !== "" &&
+          existingProject.status !== null &&
+          existingProject.status !== "done" &&
+          state.batch !== existingProject.batch
+        ) {
+          await tx.harnessBatchArchive.upsert({
+            where: { harnessProjectId_batch: { harnessProjectId: project.id, batch: existingProject.batch } },
+            create: {
+              userId: token.userId,
+              harnessProjectId: project.id,
+              repoKey: report.repoKey,
+              batch: existingProject.batch,
+              status: existingProject.status,
+              fixRounds: existingProject.fixRounds,
+              completedCount: existingProject.completedCount,
+              totalCount: existingProject.totalCount,
+              headSha: existingProject.headSha,
+              signoff: existingProject.signoff,
+              dashboardUrl: existingProject.dashboardUrl,
+              features:
+                existingProject.features === null
+                  ? Prisma.JsonNull
+                  : (existingProject.features as Prisma.InputJsonValue),
+              firstPass: false,
+              archivedReason: "superseded",
+              doneAt: null,
+              reportedAt: existingProject.reportedAt ?? now
+            },
+            // 该批次已有归档行（如已正常 done）时不得被 superseded 覆盖
+            update: {}
+          });
+        }
+        if (state.status === "done" && typeof state.batch === "string" && state.batch !== "") {
+          const archiveRefresh = {
+            status: "done",
+            fixRounds: state.fixRounds,
+            completedCount: state.completed,
+            totalCount: state.total,
+            headSha: state.headSha,
+            signoff: state.signoff,
+            dashboardUrl: state.dashboardUrl,
+            features: state.features as Prisma.InputJsonValue,
+            reportedAt: now
+          };
+          await tx.harnessBatchArchive.upsert({
+            where: { harnessProjectId_batch: { harnessProjectId: project.id, batch: state.batch } },
+            create: {
+              userId: token.userId,
+              harnessProjectId: project.id,
+              repoKey: report.repoKey,
+              batch: state.batch,
+              ...archiveRefresh,
+              // 仅 create 写入：尾部上报可刷新白名单字段，但不得改写建档判定
+              firstPass: state.fixRounds === 0,
+              archivedReason: "done",
+              doneAt: now
+            },
+            update: archiveRefresh
+          });
         }
 
         const gate = report.gate;
