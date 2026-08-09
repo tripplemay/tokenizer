@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "闸门全局触达：全站待批徽章 + 邮件通知（fail-open）+ evidence/dashboardUrl/dispatch 产物三处存而不显补显；零协议改动。",
   "total_features": 5,
-  "completed_features": 0,
+  "completed_features": 1,
   "fix_rounds": 0,
   "current_sprint": "BL-GATE-INBOX",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T18:41:32Z",
+  "last_updated": "2026-08-09T18:43:24Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"

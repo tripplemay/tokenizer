@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "全站待批徽章 + pending-count API",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "GET /api/harness/gates/pending-count 未登录 401、计数条件（userId+consumedAt null+decisionAction null）与响应形状单测；徽章组件 n>0 红底 Link、n=0/fetch 失败不渲染三分支单测；30s 轮询常量导出断言；npm run verify/lint 绿。"
     },
