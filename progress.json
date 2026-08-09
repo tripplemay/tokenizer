@@ -1,31 +1,81 @@
 {
-  "status": "done",
-  "user_goal": "修复 Codex token_count 累计快照被跨时间戳/跨 rollout 重复计入的问题，并幂等纠正历史数据。",
-  "total_features": 3,
-  "completed_features": 3,
-  "fix_rounds": 1,
-  "current_sprint": "BL-CODEX-USAGE-DEDUP",
+  "status": "building",
+  "user_goal": "落地 keep-separate 裁决的双仓机械化：解冻部署管道（7 红测试）、建立 contract-fixtures + 跨仓契约 CI、paths-ignore 修正与 CLAUDE.md 对齐、keep-separate ADR 固化。",
+  "total_features": 5,
+  "completed_features": 0,
+  "fix_rounds": 0,
+  "current_sprint": "BL-REPO-MECH",
   "dashboard_url": null,
-  "last_updated": "2026-08-06T11:03:36Z",
+  "last_updated": "2026-08-09T04:34:44Z",
   "reference_docs": [
-    "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
-    "docs/test-reports/CODEX-USAGE-OVERCOUNT-AUDIT-2026-08-06.md"
+    "docs/specs/BL-REPO-MECH-spec.md",
+    "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md",
+    "docs/analysis/2026-08-08-repo-strategy/implementation-plan.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-CODEX-USAGE-DEDUP-spec.md",
+    "spec": "docs/specs/BL-REPO-MECH-spec.md",
     "test_cases": null,
-    "signoff": "docs/test-reports/BL-CODEX-USAGE-DEDUP-signoff-2026-08-06.md",
-    "framework_reviewed": true
+    "signoff": null,
+    "framework_reviewed": false
   },
-  "role_assignments": null,
-  "mode_intent": null,
-  "evaluator_feedback": {
-    "summary": "Kimi fresh-context final reverification: F001, F002, and F003 all PASS.",
-    "pass_count": 3,
-    "partial_count": 0,
-    "fail_count": 0,
-    "issues": []
+  "role_assignments": {
+    "planner": null,
+    "generator": "local-cli--codex--generator",
+    "evaluator": "local-cli--kimi--evaluator"
   },
+  "mode_intent": {
+    "intent_id": "77af0221-4137-4bf4-a2c7-fb30369eca6f",
+    "applied_batch": "BL-REPO-MECH",
+    "applied_at": "2026-08-09T04:31:00Z",
+    "signed_intent": {
+      "desired": {
+        "autonomy": {
+          "enabled": false
+        },
+        "execution": {
+          "profile": "heterogeneous",
+          "role_bindings": {
+            "evaluator": {
+              "invocation": "local-cli",
+              "tool": "kimi"
+            },
+            "generator": {
+              "invocation": "local-cli",
+              "tool": "codex"
+            },
+            "planner": null
+          }
+        }
+      },
+      "expected_head_sha": "afa029722a50c634e366626f2ae01101141d3774",
+      "intent_expires_at": "2026-08-16T03:51:00.000Z",
+      "intent_id": "77af0221-4137-4bf4-a2c7-fb30369eca6f",
+      "issued_at": "2026-08-09T03:51:46.031Z",
+      "issued_by": "tripplezhou@gmail.com",
+      "repo_key": "github.com/tripplemay/tokenizer",
+      "sig": "7b73Shooo4wKaqs3gJlsLsKfdgreQiT4dDs90dkgHBRLbIXqhF3JmNIwCftqpMu5NvEwuuKxmzUKLB4Pe+OsDQ=="
+    },
+    "resolution": {
+      "evaluator": {
+        "agent_id": "local-cli--kimi--evaluator",
+        "execution_provenance_sha256": "bf87fcda2da33def23c799ddf0d0c9a9626ef8ca7889a95fbe4d19313a1fb410",
+        "invocation": "local-cli",
+        "model_family": "kimi",
+        "priority": 100,
+        "tool": "kimi"
+      },
+      "generator": {
+        "agent_id": "local-cli--codex--generator",
+        "execution_provenance_sha256": "92e2e2aa49efd87a7c52b31e858ecfc0a17de35f212a00dc44ffc4c4b32b0d14",
+        "invocation": "local-cli",
+        "model_family": "codex",
+        "priority": 100,
+        "tool": "codex"
+      },
+      "planner": null
+    }
+  },
+  "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
     "planning": "【2026-08-09 战略规划会话】用户确认 keep-separate 裁决 + 三阶段路线图，已产出落地计划并物化：backlog.json 14 条新批次（执行序在 docs/analysis/2026-08-08-repo-strategy/implementation-plan.md，逐批 features/acceptance 在 batch-plans/*.md，12 份均实地核对过代码路径）。🔴 接手必读：①main 当前 7 测试红（framework-version/mode-badges 硬编码 1.7.0），部署管道冻结，BL-REPO-MECH F003 打头阵；②harness.json 有 active mode intent（heterogeneous：generator=codex，evaluator=kimi，08-16 过期），下次 /plan 消费；③docs/analysis 全目录刻意未提交（paths-ignore 不含 docs/analysis，push 会触发部署），随 BL-REPO-MECH F004 一并入库；④并行起草的版本号是占位：框架 v1.8.0=contract-fixtures、v1.9.0≈steering，agent release/fv 按账本末项顺延，fv 全程仅 LIVE-SESSION(→10,MIN9) 与 STEERING(→11,MIN11) 两次 bump；⑤HarnessTransition 契约冻结时注意 COST 侧 batch/occurredAt ↔ 本表 toBatch/observedAt 映射。"

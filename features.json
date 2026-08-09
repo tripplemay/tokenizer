@@ -1,29 +1,45 @@
 {
-  "sprint": "BL-CODEX-USAGE-DEDUP",
+  "sprint": "BL-REPO-MECH",
   "features": [
     {
-      "id": "F001",
-      "title": "Canonical Codex 累计快照身份与 parser high-water 增量去重",
+      "id": "F003",
+      "title": "版本耦合测试去税（含修当前 7 红，解冻部署管道）",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "共享 helper 从 sessionId + total_token_usage 六字段生成稳定 v2 id；parser 跨文件按 session high-water 计算正向累计 delta，跳过累计不增长/replay/rate-limit 重发，首快照不导入未知 baseline，支持 cache_write_input_tokens；覆盖同文件改 timestamp、跨文件 replay、resume 新尾部、baseline、cursor/fallback 回归。"
+      "acceptance": "framework-version.test.ts 与 mode-badges.test.ts 的最新版本期望值改从 framework/harness/framework-releases.json 镜像动态派生（历史锚点字面量保留）；两文件测试全绿（基线 7 failed | 14 passed）；npm run test 全量绿；grep 无当前最新版本硬编码；manifest fixture 注入假版本后测试仍绿（去税机械证明）。"
+    },
+    {
+      "id": "F001",
+      "title": "上游 contract-fixtures + 框架 v1.8.0 发版（跨仓：harness-template）",
+      "priority": "high",
+      "status": "pending",
+      "executor": "generator",
+      "acceptance": "contract-fixtures/（清单 + canonicalJson 向量含中文/嵌套 scope/空对象用例 + pending-gate 与 mode-intent 的 valid/invalid 金标签名载荷 + TEST-ONLY 密钥对）+ validate-contract-fixtures.py 退出 0 且 schema 快照与 templates/claude/console/*.schema.json sha256 一致；金标签名 openssl 全验过、invalid 全被拒；VERSION 1.8.0 + CHANGELOG + framework-releases.json 三向一致过 release-contract 校验；本地补打 v1.7.1 tag（push/tag 由人类执行，不在 generator 权限内）。"
     },
     {
       "id": "F002",
-      "title": "服务端兼容旧 Agent canonicalization 与历史 Codex 重复数据幂等迁移",
+      "title": "tokenizer 契约一致性 CI + 框架同步 v1.8.0",
       "priority": "high",
-      "status": "completed",
+      "status": "pending",
       "executor": "generator",
-      "acceptance": "server ingest 对旧 legacy sourceEventId 应用同一 canonical helper；PostgreSQL migration 按 device + canonical snapshot 合并历史重复、保留最早行并更新 canonical id，非 Codex/无有效累计行不动；临时 PostgreSQL 实测 canonical parity、唯一约束和二次执行幂等。"
+      "acceptance": "harness.sh sync 至 v1.8.0（codex.json 定制走 resolve 保留，verify 对账全 ok）；tests/contract/ 三件（canonical-json 逐字节向量、Node 签发→框架验签器 E2E、框架 fixture 灌服务端解析器 valid 全收 invalid 全拒）在 CONTRACT_FIXTURES_DIR 就位时全绿、缺席时显式 skip 且 npm run test 全量不受影响；.github/workflows/contract-conformance.yml（独立 workflow，clone 后 checkout harness.json 钉住的 commit，含 workflow_dispatch）YAML 合法；双向用例含中文 note + 嵌套 scope。"
     },
     {
-      "id": "F003",
-      "title": "独立验收 parser、旧 Agent 防线、迁移与真实日志脱敏复算",
+      "id": "F004",
+      "title": "paths-ignore 扩 docs/** + CLAUDE.md 豁免表述修正",
       "priority": "high",
-      "status": "completed",
-      "executor": "evaluator",
-      "acceptance": "非 Codex fresh-context Evaluator 逐条复验 F001/F002；真实本机日志仅读 metadata/token 数字验证数量级纠偏；聚焦测试、全量 npm test/verify/lint/build 全绿；输出 verdict/signoff，不读写 prompt 或生产数据库。"
+      "status": "pending",
+      "executor": "generator",
+      "acceptance": "deploy-vps.yml paths-ignore 的三条 docs 子目录替换为 docs/**（YAML 合法，pull_request 与 workflow_dispatch 行为不变）；CLAUDE.md 豁免描述与 workflow 逐条一致、不再含 *.md 全称量表述；合入后以提交 docs/analysis/2026-08-08-repo-strategy/ 全目录为载荷实测 docs-only push 不触发 Deploy VPS run（该验证在人类批准 push 后由 Evaluator 核对 Actions run 列表）。"
+    },
+    {
+      "id": "F005",
+      "title": "keep-separate 正式 ADR",
+      "priority": "medium",
+      "status": "pending",
+      "executor": "generator",
+      "acceptance": "docs/adr/0001-keep-separate-repos.md 含 Status(Accepted)/Date/Context/Decision/Consequences 标准段落 + 三视角评审得分 + 六条论据逐条带仓库证据引用（如 harness.sh:92-93、console-mode.md:291-296）+ 三件机械化替代方案与 hybrid 出口条款；链接 docs/analysis/2026-08-08-repo-strategy/ 与本批次 spec；与 F004 同一次 push。"
     }
   ]
 }
