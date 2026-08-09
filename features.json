@@ -13,7 +13,7 @@
       "id": "F003",
       "title": "服务端：HarnessDispatchRun 用量列 + 幂等物化 UsageEvent + Activity tokens 列",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "纯 additive migration；report 白名单扩收 bounded usage；materialize 且 usage 非空 → 同事务幂等物化（sourceEventId=dispatch:<taskId>，rawJson 带 batch/feature/role/taskId，occurredAt=finishedAt UTC，重复上报仅一行）；attribution_only 零物化（kimi 防双重计费负向测试）；旧载荷回归零变化；verify/test 全绿。"
     },
