@@ -1029,6 +1029,14 @@ export type HarnessDispatchRunInput = {
   artifactPath: string | null;
   artifactSha256: string | null;
   errorSummary: string | null;
+  usageModel: string | null;
+  usageInputTokens: number | null;
+  usageCachedInputTokens: number | null;
+  usageCacheWriteTokens: number | null;
+  usageOutputTokens: number | null;
+  usageReasoningTokens: number | null;
+  usageTurns: number | null;
+  usageCapture: string | null;
 };
 
 const DISPATCH_REQUIRED_FIELDS = [
@@ -1051,8 +1059,89 @@ const DISPATCH_OPTIONAL_FIELDS = [
   "verdict",
   "artifactPath",
   "artifactSha256",
-  "errorSummary"
+  "errorSummary",
+  "usage",
+  "usageCapture"
 ] as const;
+
+// BL-DISPATCH-USAGE-CAPTURE：run-meta 可选 usage 块（extract-run-usage.py 产出）。
+// token 上界对齐 UsageEvent 的 Int4 列；extracted_from 钉死来源。
+const DISPATCH_USAGE_CAPTURES = new Set(["materialize", "attribution_only"]);
+const DISPATCH_USAGE_REQUIRED = [
+  "input_tokens",
+  "cached_input_tokens",
+  "cache_write_tokens",
+  "output_tokens",
+  "reasoning_tokens",
+  "turns",
+  "extracted_from"
+] as const;
+const DISPATCH_USAGE_OPTIONAL = ["model"] as const;
+const MAX_DISPATCH_USAGE_TOKENS = 2_000_000_000;
+
+type DispatchUsageColumns = {
+  usageModel: string | null;
+  usageInputTokens: number | null;
+  usageCachedInputTokens: number | null;
+  usageCacheWriteTokens: number | null;
+  usageOutputTokens: number | null;
+  usageReasoningTokens: number | null;
+  usageTurns: number | null;
+  usageCapture: string | null;
+};
+
+function parseDispatchUsage(rawUsage: unknown, rawCapture: unknown): DispatchUsageColumns {
+  const empty: DispatchUsageColumns = {
+    usageModel: null,
+    usageInputTokens: null,
+    usageCachedInputTokens: null,
+    usageCacheWriteTokens: null,
+    usageOutputTokens: null,
+    usageReasoningTokens: null,
+    usageTurns: null,
+    usageCapture: null
+  };
+  let usageCapture: string | null = null;
+  if (rawCapture !== undefined && rawCapture !== null) {
+    usageCapture = boundedString(rawCapture, "usageCapture", 32);
+    if (!DISPATCH_USAGE_CAPTURES.has(usageCapture)) {
+      return reject("invalid_usage_capture", "usageCapture must be materialize or attribution_only");
+    }
+  }
+  if (rawUsage === undefined || rawUsage === null) return { ...empty, usageCapture };
+  const usage = exactRecord(rawUsage, "dispatch usage", DISPATCH_USAGE_REQUIRED, DISPATCH_USAGE_OPTIONAL);
+  if (boundedString(usage.extracted_from, "usage.extracted_from", 32) !== "run-log") {
+    return reject("invalid_usage_source", "usage.extracted_from must be run-log");
+  }
+  return {
+    usageModel:
+      usage.model === undefined || usage.model === null
+        ? null
+        : boundedString(usage.model, "usage.model", 128),
+    usageInputTokens: safeInteger(usage.input_tokens, "usage.input_tokens", 0, MAX_DISPATCH_USAGE_TOKENS),
+    usageCachedInputTokens: safeInteger(
+      usage.cached_input_tokens,
+      "usage.cached_input_tokens",
+      0,
+      MAX_DISPATCH_USAGE_TOKENS
+    ),
+    usageCacheWriteTokens: safeInteger(
+      usage.cache_write_tokens,
+      "usage.cache_write_tokens",
+      0,
+      MAX_DISPATCH_USAGE_TOKENS
+    ),
+    usageOutputTokens: safeInteger(usage.output_tokens, "usage.output_tokens", 0, MAX_DISPATCH_USAGE_TOKENS),
+    usageReasoningTokens: safeInteger(
+      usage.reasoning_tokens,
+      "usage.reasoning_tokens",
+      0,
+      MAX_DISPATCH_USAGE_TOKENS
+    ),
+    usageTurns: safeInteger(usage.turns, "usage.turns", 1, 10_000),
+    usageCapture
+  };
+}
 
 function repoRelativeArtifactPath(value: unknown): string | null {
   const path = optionalBoundedString(value, "artifactPath", 512);
@@ -1120,7 +1209,8 @@ export function parseDispatchRuns(value: unknown): HarnessDispatchRunInput[] {
       verdict: safePersistedSummary(run.verdict, "verdict", 64),
       artifactPath: repoRelativeArtifactPath(run.artifactPath),
       artifactSha256: artifactSha256?.toLowerCase() ?? null,
-      errorSummary: safeErrorSummary(run.errorSummary)
+      errorSummary: safeErrorSummary(run.errorSummary),
+      ...parseDispatchUsage(run.usage, run.usageCapture)
     };
   });
 }

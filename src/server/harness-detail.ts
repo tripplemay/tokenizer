@@ -116,7 +116,10 @@ export function ownedHarnessProjectDetailQuery(id: string, userId: string) {
           outcome: true,
           exitCode: true,
           verdict: true,
-          errorSummary: true
+          errorSummary: true,
+          usageInputTokens: true,
+          usageOutputTokens: true,
+          usageCapture: true
         }
       }
     }

@@ -513,6 +513,17 @@ model HarnessDispatchRun {
   artifactPath     String?
   artifactSha256   String?
   errorSummary     String?
+  /// 派发用量（BL-DISPATCH-USAGE-CAPTURE）：extract-run-usage.py 从 run 日志提取的摘要。
+  /// usageCapture=materialize 时服务端幂等物化为 UsageEvent（sourceEventId=dispatch:<taskId>）；
+  /// attribution_only（如 kimi，wire 已被采集器收集）只留归因列，物化即双重计费。
+  usageModel            String?
+  usageInputTokens      Int?
+  usageCachedInputTokens Int?
+  usageCacheWriteTokens Int?
+  usageOutputTokens     Int?
+  usageReasoningTokens  Int?
+  usageTurns            Int?
+  usageCapture          String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

@@ -23,7 +23,7 @@ import {
   type HarnessDetailModes
 } from "@/shared/harness-detail";
 import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-intent";
-import { formatDateTimeSeconds, formatRelativeTime } from "@/shared/format";
+import { formatDateTimeSeconds, formatRelativeTime, formatTokens } from "@/shared/format";
 import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import { buildTransitionTimeline } from "@/shared/harness-transitions";
 import {
@@ -629,6 +629,7 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
                   <th className="w-36 px-3 py-3">{t("col.execution")}</th>
                   <th className="w-36 px-3 py-3">{t("col.outcome")}</th>
                   <th className="w-28 px-3 py-3">{t("col.duration")}</th>
+                  <th className="w-32 px-3 py-3">{t("col.tokens")}</th>
                   <th className="w-40 px-3 py-3">{t("col.failure")}</th>
                 </tr>
               </thead>
@@ -642,6 +643,14 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
                     <td className="break-all px-3 py-3 font-mono">{run.transport}<span className="mt-1 block text-gray-400">{run.lockedSha}</span></td>
                     <td className="break-all px-3 py-3">{run.outcome}{run.verdict ? <span className="mt-1 block font-mono text-gray-400">{run.verdict}</span> : null}</td>
                     <td className="px-3 py-3 font-mono">{durationLabel(run.durationMs, t)}</td>
+                    <td className="px-3 py-3 font-mono" title={run.usageCapture ?? undefined}>
+                      {run.usageInputTokens !== null && run.usageOutputTokens !== null
+                        ? `${formatTokens(run.usageInputTokens)} / ${formatTokens(run.usageOutputTokens)}`
+                        : "—"}
+                      {run.usageCapture === "attribution_only" ? (
+                        <span className="mt-1 block text-gray-400">{t("usageAttributionOnly")}</span>
+                      ) : null}
+                    </td>
                     <td className="break-words px-3 py-3 font-mono text-red-600 dark:text-red-300">
                       {run.exitCode !== null ? `${t("exitCode")}: ${run.exitCode}` : "—"}
                       {run.errorSummary ? <span className="mt-1 block">{run.errorSummary}</span> : null}

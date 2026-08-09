@@ -790,8 +790,10 @@
         "execution": "Transport / locked SHA",
         "outcome": "Outcome / verdict",
         "duration": "Duration",
-        "failure": "Failure summary"
-      }
+        "failure": "Failure summary",
+        "tokens": "Tokens in / out"
+      },
+      "usageAttributionOnly": "attribution only"
     },
     "status": {
       "phase": {

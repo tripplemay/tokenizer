@@ -72,6 +72,9 @@ type ParsedReport = {
   dispatchRuns: HarnessDispatchRunInput[];
 };
 
+// modelFamily → UsageEvent.source 映射（仅这些 family 的派发用量可物化）
+const DISPATCH_USAGE_SOURCES: Record<string, string> = { codex: "codex", kimi: "kimicode" };
+
 const GATE_KINDS = new Set([
   "phase_advance",
   "l2_auth",
@@ -807,7 +810,15 @@ export async function POST(request: NextRequest) {
             verdict: run.verdict,
             artifactPath: run.artifactPath,
             artifactSha256: run.artifactSha256,
-            errorSummary: run.errorSummary
+            errorSummary: run.errorSummary,
+            usageModel: run.usageModel,
+            usageInputTokens: run.usageInputTokens,
+            usageCachedInputTokens: run.usageCachedInputTokens,
+            usageCacheWriteTokens: run.usageCacheWriteTokens,
+            usageOutputTokens: run.usageOutputTokens,
+            usageReasoningTokens: run.usageReasoningTokens,
+            usageTurns: run.usageTurns,
+            usageCapture: run.usageCapture
           };
           await tx.harnessDispatchRun.upsert({
             where: { harnessProjectId_runId: { harnessProjectId: project.id, runId: run.runId } },
@@ -819,6 +830,55 @@ export async function POST(request: NextRequest) {
             },
             update: runData
           });
+
+          // 派发用量物化（BL-DISPATCH-USAGE-CAPTURE F003）：仅 materialize 模式且带 usage
+          // 时把摘要变成 UsageEvent；attribution_only（如 kimi——wire 已被采集器正常收集）
+          // 绝不物化，防双重计费。幂等键 = (deviceId, source, dispatch:<taskId>)。
+          const dispatchUsageSource = DISPATCH_USAGE_SOURCES[run.modelFamily];
+          if (
+            run.usageCapture === "materialize" &&
+            run.usageInputTokens !== null &&
+            run.usageOutputTokens !== null &&
+            dispatchUsageSource !== undefined
+          ) {
+            await tx.usageEvent.upsert({
+              where: {
+                deviceId_source_sourceEventId: {
+                  deviceId: token.deviceId,
+                  source: dispatchUsageSource,
+                  sourceEventId: `dispatch:${run.taskId}`
+                }
+              },
+              update: {},
+              create: {
+                userId: token.userId,
+                deviceId: token.deviceId,
+                source: dispatchUsageSource,
+                sourceEventId: `dispatch:${run.taskId}`,
+                projectId: linked?.id ?? null,
+                repoKey: report.repoKey,
+                model: run.usageModel,
+                inputTokens: run.usageInputTokens,
+                cachedInputTokens: run.usageCachedInputTokens ?? 0,
+                cacheWriteTokens: run.usageCacheWriteTokens ?? 0,
+                outputTokens: run.usageOutputTokens,
+                reasoningOutputTokens: run.usageReasoningTokens ?? 0,
+                totalTokens: run.usageInputTokens + run.usageOutputTokens,
+                occurredAt: run.finishedAt,
+                rawJson: {
+                  dispatch: {
+                    batch: run.batch,
+                    feature: run.feature,
+                    role: run.role,
+                    taskId: run.taskId,
+                    agentId: run.agentId,
+                    turns: run.usageTurns,
+                    extractedFrom: "run-log"
+                  }
+                }
+              }
+            });
+          }
         }
 
         return { projectId: project.id };
