@@ -21,7 +21,7 @@
       "id": "F002",
       "title": "tokenizer 契约一致性 CI + 框架同步 v1.8.0",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "harness.sh sync 至 v1.8.0（codex.json 定制走 resolve 保留，verify 对账全 ok）；tests/contract/ 三件（canonical-json 逐字节向量、Node 签发→框架验签器 E2E、框架 fixture 灌服务端解析器 valid 全收 invalid 全拒）在 CONTRACT_FIXTURES_DIR 就位时全绿、缺席时显式 skip 且 npm run test 全量不受影响；.github/workflows/contract-conformance.yml（独立 workflow，clone 后 checkout harness.json 钉住的 commit，含 workflow_dispatch）YAML 合法；双向用例含中文 note + 嵌套 scope。"
     },
