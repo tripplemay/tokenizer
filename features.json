@@ -13,7 +13,7 @@
       "id": "F002",
       "title": "闸门邮件通知（Resend，claim 防重发，fail-open）",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "HarnessGate.notifiedAt 纯 additive migration；claim 式 updateMany 并发只发一封；AUTH_RESEND_KEY 未配/email 空静默跳过且 report 200；发送失败复位 null 重试；re-raise 清 notifiedAt 再通知；邮件渲染纯函数快照含 UTC 时间与控制台链接；零新依赖。"
     },
