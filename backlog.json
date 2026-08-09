@@ -1,15 +1,5 @@
 [
   {
-    "id": "BL-GATE-INBOX",
-    "title": "闸门全局触达：全站待批徽章 + 邮件通知 + evidence 先行版 + 三处存而不显补显",
-    "description": "规划核实：收件箱聚合本体已在 /harness 列表页（page.tsx:49-57），真实缺口是全局触达。交付：navbar 常驻待批徽章 + pending-count API；闸门 raised/re-raised 邮件通知（复用 Resend 基建，HarnessGate 加 notifiedAt claim 列，fail-open 不卡上报通道）；evidence 路径分类徽标+复制（内容上传剥离到 BL-GATE-EVIDENCE-UPLOAD）；dashboardUrl 与 dispatch artifactPath/Sha256 补显。零协议改动。详细方案：batch-plans/BL-GATE-INBOX.md。执行序：近期 #3。",
-    "decisions": [
-      "用户 2026-08-09 确认三阶段路线图。"
-    ],
-    "confirmed_at": "2026-08-09T04:21:08Z",
-    "priority": "high"
-  },
-  {
     "id": "BL-AGENT-LATENCY",
     "title": "agent 时延与健壮性：cron 双条目 + 轮询退避 + enroll 自愈 + /events 分页",
     "description": "闸门延迟从 cron fallback 的 15min 压到 ≤2min（crontab 拆双条目，harness --json 每 2 分钟）；daemon 轮询错误驱动指数退避+抖动（60s→封顶 600s，成功即复位）；enroll 切 agentFetch；/events occurredAt+id 复合游标分页。零协议改动；agent release ≈1.3.0（账本条目押最后 commit）。详细方案：batch-plans/BL-AGENT-LATENCY.md。执行序：近期 #4。",
