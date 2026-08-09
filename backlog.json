@@ -148,5 +148,15 @@
     ],
     "confirmed_at": "2026-08-04T08:28:14Z",
     "priority": "low"
+  },
+  {
+    "id": "BL-MIGRATION-LOCK-DRIFT",
+    "title": "补建 prisma/migrations/migration_lock.toml + 收敛 legacy migration↔schema 漂移",
+    "description": "BL-TRANSITION-LOG 验收发现的批次前遗留：仓库历史从无 migration_lock.toml（--from-migrations 类命令需手工补）；legacy 表存在 migration↔schema 漂移（多张表 FK 重建对 + User.updatedAt 默认值差异），已在批次前基线（82e57a2 去掉新 migration）完整复现确证非新批引入。生产 migrate deploy 路径不受影响，属卫生债。来源：docs/test-reports/BL-TRANSITION-LOG-verdict.json F001 notes。",
+    "decisions": [
+      "2026-08-09 fan-out 验收发现登记，待用户排期。"
+    ],
+    "confirmed_at": "2026-08-09T16:58:30Z",
+    "priority": "low"
   }
 ]

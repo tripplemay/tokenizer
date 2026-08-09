@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "done",
   "user_goal": "为控制台补上状态流转历史与批次归档两张事实表（成本归因与性能分析的数据地基）+ 详情页 timeline tab；纯服务端+UI，agent 零改。",
   "total_features": 4,
   "completed_features": 4,
   "fix_rounds": 0,
   "current_sprint": "BL-TRANSITION-LOG",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T14:25:09Z",
+  "last_updated": "2026-08-09T16:58:30Z",
   "reference_docs": [
     "docs/specs/BL-TRANSITION-LOG-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-TRANSITION-LOG.md",
@@ -14,15 +14,21 @@
   ],
   "docs": {
     "spec": "docs/specs/BL-TRANSITION-LOG-spec.md",
-    "test_cases": null,
-    "signoff": null,
+    "test_cases": "docs/test-reports/BL-TRANSITION-LOG-verdict.json",
+    "signoff": "docs/test-reports/BL-TRANSITION-LOG-signoff-2026-08-09.md",
     "framework_reviewed": false
   },
   "role_assignments": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "summary": "fan-out 4 隔离 evaluator @a48f0f9：F001/F004/F002/F003 全 PASS（fix_round=0）。",
+    "pass_count": 4,
+    "partial_count": 0,
+    "fail_count": 0,
+    "issues": []
+  },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-TRANSITION-LOG building 完成 4/4 → verifying，2026-08-09】F001=87fdb46 transition 表+report 差分 · F004 归档表 done/superseded · F002 纯函数（7 用例）· F003=e508c11 timeline tab（verify/lint/build 三绿，全量 1030）。两张新表 migration 纯 additive。待推送（用户授权）后 /verify：快车道 2a，4 features → fan-out 4 隔离 evaluator subagent。"
+    "planning": "【BL-TRANSITION-LOG done，2026-08-09】4/4 全 PASS 一次通过（fan-out 4 隔离 evaluator，含影子库 migration 重放/scratch 库 migrate deploy 实跑/8 边界探针/真实组件渲染测试等独立取证）。生产已运行 a48f0f9。移交：migration_lock 遗留入 backlog；superseded doneAt 冻结语义记 PERF-ANALYTICS 消费口径。落地计划近期 #2 完成，下一批次 = BL-GATE-INBOX（近期 #3）。"
   },
   "features": [],
   "pending_gate": null

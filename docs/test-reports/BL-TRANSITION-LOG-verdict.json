@@ -1,0 +1,49 @@
+{
+  "batch_id": "BL-TRANSITION-LOG",
+  "fix_round": 0,
+  "created_at": "2026-08-09T16:58:30Z",
+  "waiting": null,
+  "assembly": "fan-out：4 个隔离 evaluator subagent（fresh context）各验一个 feature，本文件为编排者机械拼装的原样结论，未改写任何判定",
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evaluator": "evaluator-subagent (fan-out)",
+      "evidence_summary": "schema/migration 逐项对照 spec；一次性 postgres:16 容器全链 migration 影子重放新表零漂移（legacy 漂移经批次前基线复现确证为遗留）；差分五规则逐条核对（Serializable 事务内、now 事务外定值防重试漂移）；目标 6/6 + mode-intent 69/69 + 全量 1030 绿；git diff 证契约零变化（既有测试仅 2 行 mock 注册）；reconcile re-key 推演不断链",
+      "notes": [
+        "批次前遗留：prisma/migrations 缺 migration_lock.toml + legacy 表 migration↔schema 漂移（建议入 backlog）"
+      ]
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evaluator": "evaluator-subagent (fan-out)",
+      "evidence_summary": "unique+upsert/doneAt+firstPass 仅 create/superseded update:{} 防覆盖/先 superseded 后 done 顺序逐条核对；实跑 migrate deploy 到本机 scratch Postgres + pg_indexes 实证 4 索引；4/4 + 同 commit 触碰面 79/79 + 全量 1030 绿；re-key 推演唯一键不受影响",
+      "notes": [
+        "soft-watch：降级镜像（status/batch null）下先落 superseded 的行恢复入 done 后 archivedReason 永留 superseded、doneAt 永 null——与 spec 字面一致；下游统计 done 批次应按 archivedReason='done' 或 doneAt IS NOT NULL 过滤（记入 BL-PERF-ANALYTICS 消费口径）",
+        "soft-watch：测试 2 的 update 白名单 signoff 字段为联合覆盖而非直接断言"
+      ]
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evaluator": "evaluator-subagent (fan-out)",
+      "evidence_summary": "零 import 纯度 grep 断言；既有 7/7 绿；独立构造 8 个测试外边界探针全过（乱序等价、负观测区间、同毫秒、fresh 钳 0、阈值严格大于、同名批次边界切组、全非法时间戳、null 批次稳定）；npm run verify 过",
+      "notes": [
+        "非阻断：初始观测段在有后继行时给下界值并排除出 totalMs——与 spec 两条款并读自洽",
+        "非阻断：harness-transitions.ts:21 durationMs 注释措辞略偏，建议后续顺手校正"
+      ]
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evaluator": "evaluator-subagent (fan-out)",
+      "evidence_summary": "transitions 子查询 userId/take100/白名单（对照 schema 无敏感字段）+ 测试断言；tab 接线四点实读核对；en/zh 键集脚本比对完全一致（11 键一一对应无死键）；lint/verify/build 三绿；超出 build 下限的补强：新增真实组件 renderToStaticMarkup 冒烟测试 4 用例（分组/合计排除初始段/徽章/时区贯通），全量升至 1034 绿",
+      "notes": [
+        "边界：无 DATABASE_URL/L2，浏览器实机走查未执行，以静态标记渲染测试覆盖 UI 断言",
+        "观察：UI 精度口径说明为 spec §3 四要素凝缩版非逐字原文，若需严格字面留 done 阶段裁决",
+        "新增测试产物 tests/evaluator/bl-transition-log-f003-timeline-view.test.ts 由汇总环节统一 commit"
+      ]
+    }
+  ]
+}
