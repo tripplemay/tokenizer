@@ -191,4 +191,4 @@
 
 **建议写入：** `framework/harness/dispatch-mode.md`（1/3）· `templates/claude/dispatch/accept-generator-handoff.sh` 用法注释（1/2）· `framework/harness/dispatch-mode.md` 机制缺口清单（3）
 
-**状态：** 待确认
+**状态：** ✅ 已采纳（用户 2026-08-09 确认，三条全部回流上游 v1.8.1）
