@@ -5,7 +5,7 @@
       "id": "F001",
       "title": "HarnessTransition 流转事件表 + report 差分写入",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "新表 schema+migration 纯 additive；report serializable 事务内差分写入（初始观测行/状态变化/仅 batch 变化 batchBoundary/同状态零写入/status null 跳过）；tests/server/harness-report-transitions.test.ts 全绿；report 请求响应契约零变化；npm run verify 过。契约冻结：COST 侧 batch↔toBatch、occurredAt↔observedAt，@@index([toBatch]) 就位。"
     },
