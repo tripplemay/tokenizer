@@ -21,7 +21,7 @@
       "id": "F002",
       "title": "时间线口径纯函数 buildTransitionTimeline",
       "priority": "high",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "src/shared/harness-transitions.ts 纯函数（不 import prisma/next/react，grep 断言）；batch 分组/相邻 observedAt 耗时/进行中阶段仅 fresh 计时/lowPrecision 10 分钟阈值/batchBoundary 切断/初始行不计耗时/压缩边容忍；tests/shared/harness-transitions.test.ts 全绿。"
     },
