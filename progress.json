@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "done",
   "user_goal": "闸门全局触达：全站待批徽章 + 邮件通知（fail-open）+ evidence/dashboardUrl/dispatch 产物三处存而不显补显；零协议改动。",
   "total_features": 5,
   "completed_features": 5,
   "fix_rounds": 0,
   "current_sprint": "BL-GATE-INBOX",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T18:50:34Z",
+  "last_updated": "2026-08-09T19:07:46Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -18,10 +18,23 @@
     "framework_reviewed": false
   },
   "role_assignments": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "batch": "BL-GATE-INBOX",
+    "verdict": "ALL_PASS",
+    "results": {
+      "F001": "PASS",
+      "F002": "PASS",
+      "F003": "PASS",
+      "F004": "PASS",
+      "F005": "PASS"
+    },
+    "fix_rounds": 0,
+    "report": "docs/test-reports/BL-GATE-INBOX-signoff.md",
+    "note": "5 个隔离 evaluator subagent fan-out 分片结论原样收录于报告；4 条 soft-watch + 2 条 L2 未尽项（生产自然验证）见报告末节"
+  },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-GATE-INBOX building 完成 5/5 → verifying，2026-08-10】F001 徽章+count API · F002 邮件通知（claim/fail-open，与 transition/archive 在 report route 共存良好）· F003 evidence 先行版三点接入 · F004 dashboardUrl 双读防线 · F005 产物补显（排除断言带据反转）。verify/lint/test(1090)/build 四绿。待推送（用户授权）后 fan-out 5 隔离 evaluator 验收；F002 生产实测（真实邮件）属 push 后项。"
+    "planning": "【BL-GATE-INBOX done，2026-08-09】5/5 全 PASS 零返工（fix_rounds=0），signoff 见 docs/test-reports/BL-GATE-INBOX-signoff.md。生产已在 ac69897（部署绿）。evaluator 补了 2 个 test-only commit（2526b6a/5426b50，F003 渲染冒烟 8 用例 + F002 fail-open 探针 4 用例，全量 1102）。L2 自然验证项：下一次真实闸门举起时用户应收到 Resend 邮件 + 导航栏红底徽章。soft-watch 已录 backlog 备注（notify fetch AbortSignal.timeout）。下一批次候选：BL-AGENT-LATENCY（近期 #5）。"
   },
   "features": [],
   "pending_gate": null

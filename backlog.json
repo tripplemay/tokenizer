@@ -158,5 +158,15 @@
     ],
     "confirmed_at": "2026-08-09T18:19:10Z",
     "priority": "low"
+  },
+  {
+    "id": "BL-NOTIFY-FETCH-TIMEOUT",
+    "title": "闸门邮件 notify fetch 加 AbortSignal.timeout 兜底",
+    "description": "BL-GATE-INBOX F002 evaluator soft-watch：notifyPendingGate 的 Resend fetch 无超时，连接挂起时 undici 默认 headersTimeout 会拖慢该次 report 响应（fail-open 语义不受影响，report 幂等可重试）。加 AbortSignal.timeout(5-10s) 一行即闭合；可并入任一顺路批次。",
+    "decisions": [
+      "来源：docs/test-reports/BL-GATE-INBOX-signoff.md soft-watch #2"
+    ],
+    "confirmed_at": "2026-08-09T19:07:54Z",
+    "priority": "low"
   }
 ]
