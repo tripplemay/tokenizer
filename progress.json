@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "落地 keep-separate 裁决的双仓机械化：解冻部署管道（7 红测试）、建立 contract-fixtures + 跨仓契约 CI、paths-ignore 修正与 CLAUDE.md 对齐、keep-separate ADR 固化。",
   "total_features": 5,
-  "completed_features": 4,
+  "completed_features": 5,
   "fix_rounds": 0,
   "current_sprint": "BL-REPO-MECH",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T06:52:36Z",
+  "last_updated": "2026-08-09T07:08:36Z",
   "reference_docs": [
     "docs/specs/BL-REPO-MECH-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md",
@@ -78,7 +78,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-REPO-MECH building 中，2/5】F003 落盘 5fa2bc7（21/21 绿，部署解冻）。F001 上游完成：harness-template 4ac7a6f = v1.8.0 contract-fixtures（含 v1.7.2 派发回执修复 e4ba297——首派撞出的 local-cli active_target 回归，upstream-first 已修）。【铁律 6 记账】用户 2026-08-09 书面授权（AskUserQuestion）：F001 由主会话作为框架仓维护直接实现（派发信封 repo.url 硬编码'.'无法跨仓），补偿控制：上游 diff 过 spec-lock critic + /verify Kimi 跨仓锁 SHA 独立验收。执行切分既定事实：.github/ 与 .claude/ 是 accept forbidden_return_path——F002 的 workflow 文件与 F004 由 Coordinator 执行（同一授权逻辑），tests/contract/ 与 docs/adr/ 走 Codex 派发。踩坑记录：accept 需 TMPDIR=/tmp（l1-tmp 长路径破 macOS sun_path 104 上限）+ .git/info/exclude 补 .DS_Store/settings.local.json（净化环境无全局 gitignore）。交接：上游 push + tag v1.7.1/v1.7.2/v1.8.0 待用户；tokenizer 单次 push 待批次末用户授权。"
+    "planning": "【BL-REPO-MECH building 完成 5/5 → verifying，2026-08-09】全部 feature 落盘：F003=5fa2bc7（解冻部署，21/21）· F001=上游 4ac7a6f v1.8.0 contract-fixtures（另有 e4ba297 v1.7.2 派发回执修复）· F002=e3e8eb8 契约测试（绿路径 6/6 + skip 6/6 实证）+ 356e6fd CI 接线/附录 + 6d1378a sync v1.8.0 · F004=de0065e paths-ignore docs/** + CLAUDE.md 修正 + 战略材料入库 · F005=6e247b2 ADR（critic 16/16 链接实核）。三次 Codex 派发均 critic PASS + accept 全链路（READY_TO_APPLY→APPLIED）。【执行形态记账（铁律 6）】F001 与控制面文件（workflow/CLAUDE.md）由主会话执行——用户 AskUserQuestion 书面授权 + accept forbidden_return_path 结构性约束；全部过 spec-lock critic。【验收注意】Evaluator 须验：契约测试双路径、harness.sh verify 对账、ADR 忠实性、7 红→绿；push 后项：contract-conformance workflow_dispatch 实跑、F004 docs-only push 不触发 Deploy 实测。【待人类】tokenizer 单次 push main（触发一次 CI+部署，运行时零行为变化）；模板仓 push + tags v1.7.1/v1.7.2/v1.8.0；proposed-learnings 新增 3 条待确认。踩坑解法已记 proposed-learnings（TMPDIR=/tmp、依赖克隆、跨仓派发缺口）。"
   },
   "features": [],
   "pending_gate": null

@@ -37,7 +37,7 @@
       "id": "F005",
       "title": "keep-separate 正式 ADR",
       "priority": "medium",
-      "status": "pending",
+      "status": "completed",
       "executor": "generator",
       "acceptance": "docs/adr/0001-keep-separate-repos.md 含 Status(Accepted)/Date/Context/Decision/Consequences 标准段落 + 三视角评审得分 + 六条论据逐条带仓库证据引用（如 harness.sh:92-93、console-mode.md:291-296）+ 三件机械化替代方案与 hybrid 出口条款；链接 docs/analysis/2026-08-08-repo-strategy/ 与本批次 spec；与 F004 同一次 push。"
     }

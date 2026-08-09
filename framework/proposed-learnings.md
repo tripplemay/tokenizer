@@ -179,3 +179,16 @@
 **建议写入：** `framework/patterns/` 测试域 pattern
 
 **状态：** 待确认
+
+## [2026-08-09] Coordinator/tokenizer — 来源：BL-REPO-MECH 首次全程 v2 checkpoint + local-cli generator 派发
+
+**类型：** 新坑 ×3（机件回归已另行修复的不重复列）
+
+**内容：**
+1. **accept L1 的 TMPDIR 长路径破 macOS Unix socket 上限**：`accept-generator-handoff.sh` 的 `l1-tmp` 嵌在调用方 TMPDIR（macOS 默认 `/var/folders/...` 已 49 字符）之下，项目测试若在 TMPDIR 下建 socket 会突破 `sun_path` 104 字节上限——确定性复现（119 字符 TMPDIR → 测试必红；短 TMPDIR → 绿）。临时解法：`TMPDIR=/tmp` 调用 accept。建议框架侧把 L1 临时根改为短路径（如 `/tmp` 下 mkdtemp）或文档钉住此要求。
+2. **accept L1 需要沙箱 node_modules 但 generator 交付前会清理依赖**：手工解法是从主仓 APFS 克隆（`cp -cR`，注意目标已存在时会嵌套成 node_modules/node_modules——先 rm 再拷）。建议框架侧在 accept 文档写明依赖铺设步骤，或 L1 前置探测 `.bin` 缺失时给出确切指引。
+3. **派发信封 repo.url 硬编码 "."，跨仓 feature（框架仓工作）无法走固定封装**：BL-REPO-MECH F001 经用户书面授权由主会话直接实现（补偿控制：spec-lock critic 只读稽核 + 异厂商 Evaluator 跨仓锁 SHA 验收）。若跨仓混合批次成为常态，建议 dispatch 支持 repo.url 指向本机其他 git 仓（信封/回执/沙箱语义随仓走）。
+
+**建议写入：** `framework/harness/dispatch-mode.md`（1/3）· `templates/claude/dispatch/accept-generator-handoff.sh` 用法注释（1/2）· `framework/harness/dispatch-mode.md` 机制缺口清单（3）
+
+**状态：** 待确认
