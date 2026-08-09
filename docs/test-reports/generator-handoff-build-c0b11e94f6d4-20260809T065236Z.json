@@ -1,0 +1,20 @@
+{
+  "batch_id": "BL-REPO-MECH",
+  "created_at": "2026-08-09T06:58:17Z",
+  "features": [
+    {
+      "feature_id": "F005",
+      "commits": [],
+      "files_touched": [
+        "docs/adr/0001-keep-separate-repos.md"
+      ],
+      "notes": "Adds the accepted keep-separate ADR with explicit Status, Date, Context, Decision, and Consequences sections; the three review lenses and 0.85/0.80/0.72 confidence scores; six evidence-linked decision drivers; three mechanical controls; and the constrained contract-artifact hybrid exit. The ADR links the full repository strategy analysis and BL-REPO-MECH spec. A documentation check counted all required sections, drivers, and controls, found every local link target, and found no trailing whitespace."
+    }
+  ],
+  "l1_ran": {
+    "lint": "NOT RUN: documentation-only source change; no lintable application code changed.",
+    "typecheck": "NOT RUN: documentation-only source change; no TypeScript changed.",
+    "test": "PASS (exit 0): shell acceptance check found 5 standard sections, 6 evidenced decision drivers, 3 mechanical controls, all three review scores, the hybrid clause, and both required record links. PASS (exit 0): all local Markdown link targets exist. PASS (exit 0): no trailing whitespace."
+  },
+  "waiting": null
+}
