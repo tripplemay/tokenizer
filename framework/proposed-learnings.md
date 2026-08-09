@@ -192,3 +192,13 @@
 **建议写入：** `framework/harness/dispatch-mode.md`（1/3）· `templates/claude/dispatch/accept-generator-handoff.sh` 用法注释（1/2）· `framework/harness/dispatch-mode.md` 机制缺口清单（3）
 
 **状态：** ✅ 已采纳（用户 2026-08-09 确认，三条全部回流上游 v1.8.1）
+
+## [2026-08-09] Coordinator/tokenizer — 来源：BL-TRANSITION-LOG 启动时角色解析硬停
+
+**类型：** 新坑（v2 done 收尾语义缺口）
+
+**内容：** planner.md「done 阶段清除 role_assignments」是 v1 时代规则；v2 已消费 checkpoint（`progress.mode_intent.signed_intent`+`resolution`）若同时保留，会形成"三角色不齐"的毒化状态——下一批次任何 resolve-active-mode-role 调用硬停（实测：清 assignments 留 mode_intent → 复验失败）。修法：done 收尾要么两者同清（audit 由 git 历史承担，本次采用），要么两者同留到下次 /plan 消费新 intent 时原子替换。建议 planner.md done 收尾条款与 consume/resolver 文档明确 v2 语义。
+
+**建议写入：** `harness/planner.md` done 收尾节 + `framework-versioning.md`/`console-mode.md` §3.4 消费记录条款
+
+**状态：** 待确认
