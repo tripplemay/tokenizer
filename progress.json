@@ -1,12 +1,12 @@
 {
-  "status": "fixing",
+  "status": "reverifying",
   "user_goal": "落地 keep-separate 裁决的双仓机械化：解冻部署管道（7 红测试）、建立 contract-fixtures + 跨仓契约 CI、paths-ignore 修正与 CLAUDE.md 对齐、keep-separate ADR 固化。",
   "total_features": 5,
   "completed_features": 5,
   "fix_rounds": 1,
   "current_sprint": "BL-REPO-MECH",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T07:36:12Z",
+  "last_updated": "2026-08-09T07:37:31Z",
   "reference_docs": [
     "docs/specs/BL-REPO-MECH-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-REPO-MECH.md",
