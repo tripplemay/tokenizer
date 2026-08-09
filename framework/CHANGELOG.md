@@ -5,6 +5,27 @@
 
 ---
 
+## v1.8.0 — 2026-08-09（contract-fixtures：跨仓契约金标进入发布契约）
+
+**来源：** tokenizer `BL-REPO-MECH` F001 —— keep-separate 裁决（2026-08-08 三视角评审一致）的
+「三件增量机械化」第一件：把闸门/mode-intent 契约两侧的隐性耦合变成每次 push 的机械校验。
+
+- **新增 `contract-fixtures/`**：canonicalJson 字节级向量（含中文/emoji——`ensure_ascii=False`
+  是契约）、pending-gate 与 mode-intent 的 valid/invalid 金标签名载荷（invalid 含「签名后篡改
+  scope 把 once 改永久」的历史攻击复刻）、TEST-ONLY Ed25519 密钥对、清单 `fixtures.json`
+  （version 锚定 VERSION 与发布清单末项 + 两 schema 快照 sha256 + 文件枚举）、确定性再生成器。
+- **新增 `scripts/validate-contract-fixtures.py`**：不自建第二套验签实现——把每个 fixture
+  **重放进真机件**（`validate-pending-gate.sh schema|guard` 签名模式 + `validate-mode-intent.sh`
+  于 scratch git 仓）：valid 必过、invalid 必拒；另校验清单/向量/密钥自洽。
+- **新增 `tests/test-contract-fixtures.py`**：负向钉子——篡改向量、篡改金标、schema 快照漂移、
+  未列册文件、版本错位，五路必红（隔离树复制中发现并顺手修掉校验器遇畸形 fixture 崩溃
+  而非记错的健壮性缺陷）。
+- **`release-contract.yml` 扩容**：paths 纳入 `contract-fixtures/**` 与 `templates/claude/console/**`，
+  steps 追加两个校验——改 schema 不重生成 fixture、发版不重打版本戳，都合不进 main。
+- 消费方接线（tokenizer 侧 contract-conformance CI）见其 BL-REPO-MECH F002。
+
+---
+
 ## v1.7.2 — 2026-08-09（generator 派发回执：local-cli 路由补齐 active_target，消除 v2 checkpoint 假阴性）
 
 **来源：** tokenizer `BL-REPO-MECH` 首次派发（v2 heterogeneous checkpoint，generator=codex local-cli）。
