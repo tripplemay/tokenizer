@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { EvidenceList } from "./evidence-list";
-import { MdGavel, MdAccountTree, MdArrowForward, MdWarning } from "react-icons/md";
+import { safeHttpUrl } from "@/shared/url";
+import { MdGavel, MdAccountTree, MdArrowForward, MdOpenInNew, MdWarning } from "react-icons/md";
 import Card from "@/components/card";
 import { prisma } from "@/server/db";
 import { requireSession } from "@/server/auth-session";
@@ -29,6 +30,7 @@ export default async function HarnessPage() {
   const session = await requireSession();
   const t = await getTranslations("harness");
   const evidenceT = await getTranslations("harness.evidence");
+  const evidenceDashboardLabel = t("dashboardLink");
   const evidenceLabels = {
     repoDoc: evidenceT("repoDoc"),
     path: evidenceT("path"),
@@ -188,6 +190,18 @@ export default async function HarnessPage() {
                         <span className="min-w-0 break-words">{p.name}</span>
                         <MdArrowForward className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500 dark:text-gray-600" />
                       </Link>
+                      {safeHttpUrl(p.dashboardUrl) ? (
+                        <a
+                          href={safeHttpUrl(p.dashboardUrl)!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={evidenceDashboardLabel}
+                          title={evidenceDashboardLabel}
+                          className="shrink-0 rounded p-0.5 text-gray-400 hover:text-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        >
+                          <MdOpenInNew className="h-4 w-4" />
+                        </a>
+                      ) : null}
                       <span className="ml-auto max-w-32 truncate font-mono text-xs text-gray-400" title={p.headSha ?? undefined}>{p.headSha}</span>
                     </div>
                     <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-gray-400">

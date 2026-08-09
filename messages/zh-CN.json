@@ -581,7 +581,8 @@
         "lastHalt": "最近停机",
         "noHalt": "没有上报停机",
         "pendingGate": "待处理闸门",
-        "noPendingGate": "没有待处理闸门"
+        "noPendingGate": "没有待处理闸门",
+        "dashboard": "进度看板"
       },
       "modes": {
         "compare": "当前模式与下次规划模式",
@@ -852,6 +853,7 @@
       "path": "路径",
       "copy": "复制路径",
       "copied": "已复制"
-    }
+    },
+    "dashboardLink": "打开进度看板"
   }
 }

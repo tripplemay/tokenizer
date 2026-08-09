@@ -581,7 +581,8 @@
         "lastHalt": "Last halt",
         "noHalt": "No halt reported",
         "pendingGate": "Pending gate",
-        "noPendingGate": "No pending gate"
+        "noPendingGate": "No pending gate",
+        "dashboard": "Dashboard"
       },
       "modes": {
         "compare": "Current and next-plan modes",
@@ -852,6 +853,7 @@
       "path": "path",
       "copy": "Copy path",
       "copied": "Copied"
-    }
+    },
+    "dashboardLink": "Open dashboard"
   }
 }

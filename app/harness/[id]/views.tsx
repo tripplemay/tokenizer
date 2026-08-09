@@ -27,6 +27,7 @@ import { formatDateTimeSeconds, formatRelativeTime, formatTokens } from "@/share
 import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import { buildTransitionTimeline } from "@/shared/harness-transitions";
 import { EvidenceList } from "../evidence-list";
+import { safeHttpUrl } from "@/shared/url";
 import {
   isConfigurableModeRole,
   modeDrilldownHref,
@@ -112,6 +113,18 @@ export async function OverviewView({ project, timezone }: { project: OwnedHarnes
             </span>
           </Fact>
           <Fact label={t("overview.repoKey")} mono><span className="break-all">{project.repoKey}</span></Fact>
+          <Fact label={t("overview.dashboard")}>
+            {safeHttpUrl(project.dashboardUrl) ? (
+              <a
+                href={safeHttpUrl(project.dashboardUrl)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all font-medium text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                {safeHttpUrl(project.dashboardUrl)}
+              </a>
+            ) : t("notReported")}
+          </Fact>
           <Fact label={t("overview.linkedProject")}>
             {project.project ? (
               <Link href={`/projects/${encodeURIComponent(project.project.id)}`} className="font-medium text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">

@@ -17,3 +17,14 @@ describe("safeHttpUrl", () => {
     expect(safeHttpUrl("")).toBe(null);
   });
 });
+
+// BL-GATE-INBOX F004：dashboardUrl 渲染防线场景（javascript:/data: 拒渲染）
+import { safeHttpUrl as guardForDashboard } from "../../src/shared/url";
+
+describe("dashboardUrl rendering guard", () => {
+  it("refuses non-http(s) dashboard URLs before they can become hrefs", () => {
+    expect(guardForDashboard("javascript:alert(1)")).toBeNull();
+    expect(guardForDashboard("data:text/html,x")).toBeNull();
+    expect(guardForDashboard("https://claude.ai/code/artifact/abc")).toBe("https://claude.ai/code/artifact/abc");
+  });
+});
