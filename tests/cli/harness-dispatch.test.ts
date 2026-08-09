@@ -182,6 +182,25 @@ describe("dispatch run summary collection", () => {
     });
   });
 
+  it("derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival)", () => {
+    // 注册表 2026-08-05 迁到 tool-integrations/1 后，仅认 agents[] 的旧实现返回空表，
+    // dispatch 镜像静默断链（BL-DISPATCH-USAGE-CAPTURE F004 实测撞出）——本用例钉死双格式解析。
+    write(".agents-registry.json", JSON.stringify({
+      version: "tool-integrations/1",
+      integrations: [
+        { id: "codex", tool: "codex", model_family: "codex", local_cli: { adapter: "codex" } }
+      ]
+    }));
+    write(
+      ".harness-dispatch/run-meta-integrations-run.json",
+      JSON.stringify(meta("integrations-run", { agent_id: "local-cli--codex--generator" }))
+    );
+    const runs = scanHarnessDispatchRuns(repo, new Set(["F004"]));
+    expect(runs.map((run) => run.taskId)).toContain("integrations-run");
+    const run = runs.find((entry) => entry.taskId === "integrations-run");
+    expect(run).toMatchObject({ agentId: "local-cli--codex--generator", modelFamily: "codex", transport: "local-cli" });
+  });
+
   it("scans at most the newest 50 bounded regular JSON files", () => {
     for (let index = 0; index < 55; index += 1) {
       const path = write(

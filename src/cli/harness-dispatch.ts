@@ -144,18 +144,38 @@ function readRegistry(repoPath: string): Map<string, RegistryAgent> {
     return new Map();
   }
   const registry = record(decoded);
-  if (!registry || !Array.isArray(registry.agents) || registry.agents.length > 50) return new Map();
+  if (!registry) return new Map();
   const agents = new Map<string, RegistryAgent>();
-  for (const rawAgent of registry.agents) {
-    const agent = record(rawAgent);
-    const id = safeId(agent?.id);
-    const modelFamily = safeId(agent?.model_family);
-    const transport = typeof agent?.transport === "string" ? agent.transport : "";
-    const roles = Array.isArray(agent?.roles)
-      ? agent.roles.filter((role): role is string => typeof role === "string" && KNOWN_ROLES.has(role))
-      : [];
-    if (!id || !modelFamily || !KNOWN_TRANSPORTS.has(transport) || agents.has(id)) continue;
-    agents.set(id, { id, modelFamily, transport, roles: [...new Set(roles)] });
+  // 历史 dispatch/1 格式：显式 agents[]
+  if (Array.isArray(registry.agents) && registry.agents.length <= 50) {
+    for (const rawAgent of registry.agents) {
+      const agent = record(rawAgent);
+      const id = safeId(agent?.id);
+      const modelFamily = safeId(agent?.model_family);
+      const transport = typeof agent?.transport === "string" ? agent.transport : "";
+      const roles = Array.isArray(agent?.roles)
+        ? agent.roles.filter((role): role is string => typeof role === "string" && KNOWN_ROLES.has(role))
+        : [];
+      if (!id || !modelFamily || !KNOWN_TRANSPORTS.has(transport) || agents.has(id)) continue;
+      agents.set(id, { id, modelFamily, transport, roles: [...new Set(roles)] });
+    }
+  }
+  // tool-integrations/1 格式：按 tool-catalog 同款规则派生 local-cli 三角色目标。
+  // 注册表 2026-08-05 迁到该格式后，旧实现返回空表使 dispatch 镜像静默断链
+  //（BL-DISPATCH-USAGE-CAPTURE F004 实测撞出）；本函数只做镜像身份匹配，
+  // 权威校验仍在机器侧 dispatch 机件与服务端白名单。
+  if (Array.isArray(registry.integrations) && registry.integrations.length <= 50) {
+    for (const rawIntegration of registry.integrations) {
+      const integration = record(rawIntegration);
+      const tool = safeId(integration?.tool) ?? safeId(integration?.id);
+      const modelFamily = safeId(integration?.model_family);
+      if (!tool || !modelFamily || !record(integration?.local_cli)) continue;
+      for (const role of KNOWN_ROLES) {
+        const id = `local-cli--${tool}--${role}`;
+        if (agents.has(id)) continue;
+        agents.set(id, { id, modelFamily, transport: "local-cli", roles: [role] });
+      }
+    }
   }
   return agents;
 }
