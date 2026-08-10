@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "前端评审 P1 安全专批：认证边界 fail-closed / 开放重定向 / tooltip 存储型 XSS / gate 决策 TOCTOU / 注册绑定 / quota accountKey 口径；顺路 F-32 批次成本查询放大治理",
   "total_features": 8,
-  "completed_features": 0,
+  "completed_features": 1,
   "fix_rounds": 0,
   "current_sprint": "BL-SECURITY-P1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T08:52:00Z",
+  "last_updated": "2026-08-10T09:13:00Z",
   "reference_docs": [
     "docs/test-reports/frontend-code-review-2026-08-10.md",
     "docs/test-reports/BL-COST-BATCH-V1-signoff.md"

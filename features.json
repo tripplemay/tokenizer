@@ -12,7 +12,12 @@
       "id": "F002",
       "title": "safeCallbackPath helper + 登录开放重定向封堵",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-7c6885a89581-20260810T085318Z",
+        "commit": "d7eace0a00152d0eab3e8f0076125e83abcdeffa"
+      }
     },
     {
       "id": "F003",
