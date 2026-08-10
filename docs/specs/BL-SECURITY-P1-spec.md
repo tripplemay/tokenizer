@@ -107,16 +107,21 @@ acceptance：
 
 ### F006 · 设备注册绑定本次 enrollment · executor: generator
 
-按上表核查结论走**最小改动**路径：token 生成接口 additive 返回 `enrollmentId`；新增 `GET /api/admin/enrollment-tokens/[id]`（登录态 + 租户作用域 + `force-dynamic` + 不经 `unstable_cache`）返回 `{ usedAt, usedById, expiresAt }`；客户端改为轮询该端点，成功判据 = `usedById` 非空，并加退避与 `AbortController`。
+按上表核查结论走**最小改动**路径：token 生成接口 additive 返回 `enrollmentId`；新增 `GET /api/admin/enrollment-tokens/[id]`（登录态 + 租户作用域 + `force-dynamic` + 不经 `unstable_cache`）返回 `{ usedAt, usedById, deviceName, expiresAt }`；客户端改为轮询该端点，成功判据 = `usedById` 非空，并加退避与 `AbortController`。
+
+**`deviceName` 的授权与理由（2026-08-10 首轮拒收后追加）：** 首份 handoff 把成功卡片的显示名赋成了原始设备 id（`已连接:dev_9f2c8ab1…`），是本批引入的用户可见回归，且波及两个入口——`/devices` 模态与**首访引导卡**（`app/_components/onboarding-card.tsx:34` ← `app/page.tsx:96`），即新用户第一次连上机器看到的那句话。故授权端点 additive 返回 `deviceName`（按 `usedById` 关联 Device 取名，同一租户作用域内，无新增泄露面）。
+❌ **不得**改用「成功后再拉 `/api/devices` 取名」：该路径经 `getDeviceSummary` 的 30s `unstable_cache`（`src/server/summaries.ts:1122`），刚注册完大概率命中注册前快照，取不到名反而回落成 id——等于绕一圈回到同一个 bug。
 
 acceptance：
-1. 端点四态：未登录 401 · 他人 enrollment 404 · 本人未使用 `{usedAt:null,usedById:null}` · 已使用返回本次 deviceId
+1. 端点四态：未登录 401 · 他人 enrollment 404 · 本人未使用 `{usedAt:null,usedById:null}` · 已使用返回本次 deviceId **与 deviceName**
 2. 端点无缓存：实现不经 `unstable_cache` 且 `dynamic="force-dynamic"`（grep + 响应实测）
-3. **回归用例直击 F-04 复现路径**：轮询期间出现一个与本次 enrollment 无关的新设备 → 不再误判成功
+3. **回归用例直击 F-04 复现路径（硬性，首轮未兑现）**：必须是**行为级**断言，不接受 `readFileSync` + `toContain` 的源码字符串断言。仓库 vitest 为 node 环境无 jsdom，故把 claim 判定抽成可 import 的纯函数（入参为该 enrollment 的状态，出参为是否 claimed），断言「存在无关新设备但本 enrollment 的 `usedById` 仍为 null → 非成功」。**测试不得逐字钉死实现语句**（首轮 `tests/shared/enroll-flow-card.test.ts:10` 即以 `toContain` 钉死了含 bug 的那行，使修复必然翻红）
 4. 轮询退避生效；组件卸载时 abort，无 setState-after-unmount 警告
 5. token 生成响应新增 `enrollmentId` 且既有字段一字不改（老客户端兼容断言）
-6. grep 断言：`src/shared/agent-feature-version.ts` 两常量未变
-7. `npm run verify` + 全量 test 绿
+6. 成功卡片显示**人类可读设备名**，不得回退为设备 id；两个入口（`/devices` 模态与首访引导卡）行为一致
+7. `EnrollFlowCard` 不再使用的 `initialDeviceIds` prop 一并清理（含 `add-device-section.tsx` / `onboarding-card.tsx` 两个调用方与 `app/page.tsx` / `app/devices/page.tsx` 的取值点）——该 prop 因本 feature 而失效，属本批产生的死重
+8. `src/cli/**` 与 `src/shared/agent-feature-version.ts` 零改动；后者可直接引用既有 oracle `tests/server/agent-version.test.ts:23-24`（两常量钉死为 9）而非新写 grep 断言
+9. `npm run verify` + 全量 test 绿（须在沙箱外复算；沙箱 EPERM 归因不构成证据）
 
 ### F007 · 批次成本查询放大治理 · executor: generator（源 BL-COST-PERF 的 F-32 分片）
 
