@@ -104,7 +104,10 @@ export async function notifyPendingGate(scope: {
     const response = await fetch(RESEND_ENDPOINT, {
       method: "POST",
       headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({ from, to: [gate.user.email], subject, text })
+      body: JSON.stringify({ from, to: [gate.user.email], subject, text }),
+      // Resend 正常响应 <1s；8s 只拦连接挂起，防止 undici 默认超时拖慢
+      // 整个 report 响应。超时抛 TimeoutError 走下方 catch 复位 claim 重试。
+      signal: AbortSignal.timeout(8_000)
     });
     if (!response.ok) throw new Error(`resend ${response.status}`);
   } catch {

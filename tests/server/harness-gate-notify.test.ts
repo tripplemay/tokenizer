@@ -86,6 +86,7 @@ describe("notifyPendingGate", () => {
     const [url, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(url).toBe("https://api.resend.com/emails");
     expect(init.headers.authorization).toBe("Bearer re_test_key");
+    expect(init.signal).toBeInstanceOf(AbortSignal);
     const body = JSON.parse(init.body);
     expect(body.to).toEqual(["owner@example.test"]);
     expect(body.subject).toContain("phase_advance");
