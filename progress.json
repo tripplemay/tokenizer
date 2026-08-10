@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "闸门触达延迟 15min→≤2min + daemon 退避 + enroll 自愈 + /events 分页；顺路 notify 超时与 dispatch model 归因闭环",
   "total_features": 7,
-  "completed_features": 6,
+  "completed_features": 7,
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-LATENCY",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T04:26:14Z",
+  "last_updated": "2026-08-10T04:27:38Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -21,7 +21,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-AGENT-LATENCY planning→building，2026-08-10】7 features（预案 5 + notify 超时 + model 归因）。规划期已发框架 v1.9.1（消费台账双锚，学习回流）并同步本仓 + harness.json 台账回填。F007 需再发框架 v1.10.0（提取器 argv 兜底）。push 即部署；F005 账本押后为最终功能 commit。"
+    "planning": "【BL-AGENT-LATENCY building 完成 7/7 → verifying，2026-08-10】F001 双条目 cron · F002 退避+抖动 · F003 enroll agentFetch · F004 /events 分页 · F005 release 1.4.0（预案 1.3.0 已被 DISPATCH-USAGE 占用，带据修正）· F006 notify 8s 超时 · F007 model 归因（框架 v1.10.0 + 服务端 unknown 补写）。规划期另发 v1.9.1 消费台账。全量 1124 四绿。待推送（触发部署）→ fan-out 验收；push 后收尾：历史 4 个 run-meta 重提取（--argv 兜底）+ 本机 agent 重装 + 用户目视 /events。"
   },
   "features": [],
   "pending_gate": null,
