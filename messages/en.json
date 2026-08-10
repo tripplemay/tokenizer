@@ -184,7 +184,18 @@
       "input": "Input",
       "output": "Output"
     },
-    "unknownModel": "Unknown model"
+    "unknownModel": "Unknown model",
+    "harnessCost": {
+      "title": "Orchestration batch cost",
+      "note": "Batches from the harness console linked to this usage project. Same aggregation as the harness detail page (time-window approximation, errs on over-counting).",
+      "col": {
+        "batch": "Batch",
+        "status": "Status",
+        "compute": "Compute",
+        "cost": "Cost"
+      },
+      "open": "Open"
+    }
   },
   "devices": {
     "title": "Devices",

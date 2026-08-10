@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { MdArrowBack, MdBolt, MdInput, MdOutput, MdCached, MdPaid } from "react-icons/md";
 import { prisma } from "@/server/db";
 import { getProjectDetail } from "@/server/summaries";
+import { getBatchCost, quantizedNowMs, type BatchCost } from "@/server/harness-cost";
 import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import Card from "@/components/card";
@@ -22,10 +23,34 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const tz = await getUserTimezone(tenantId);
   // Scope project lookup to the current tenant so a leaked URL like
   // /projects/<some-other-users-id> doesn't reveal someone else's project.
-  const [t, project, detail] = await Promise.all([
+  const [t, project, detail, harnessProjects] = await Promise.all([
     getTranslations(),
     prisma.project.findFirst({ where: { id, userId: tenantId } }),
-    getProjectDetail(tenantId, id)
+    getProjectDetail(tenantId, id),
+    // BL-COST-BATCH-V1 F003：该用量项目关联的 harness 批次（外键 HarnessProject.projectId）
+    prisma.harnessProject.findMany({
+      where: { projectId: id, userId: tenantId },
+      select: {
+        id: true,
+        name: true,
+        batch: true,
+        status: true,
+        repoKey: true,
+        transitions: {
+          where: { userId: tenantId },
+          orderBy: { observedAt: "desc" as const },
+          take: 100,
+          select: {
+            fromStatus: true,
+            toStatus: true,
+            toBatch: true,
+            batchBoundary: true,
+            fixRounds: true,
+            observedAt: true
+          }
+        }
+      }
+    })
   ]);
 
   if (!project) {
@@ -43,6 +68,25 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   }
 
   const { totals, events, bySource, byModel, projectCost } = detail;
+
+  // 与 /harness/[id] overview 同口径同值：同一 getBatchCost 导出 + 量化 now
+  //（同一 30s 缓存窗口内两页命中同一 key）。projectId 恒为本页 id（非 null），
+  // 不需要 repoKey 回退。
+  const nowMs = quantizedNowMs();
+  const harnessBatchCosts: Array<{
+    harnessProject: (typeof harnessProjects)[number];
+    cost: BatchCost | null;
+  }> = await Promise.all(
+    harnessProjects.map(async (harnessProject) => ({
+      harnessProject,
+      cost: await getBatchCost(tenantId, { projectId: id, repoKey: harnessProject.repoKey }, harnessProject.transitions, nowMs)
+    }))
+  );
+  const harnessStatusLabel = (status: string | null): string => {
+    if (!status) return "—";
+    const key = `harness.status.phase.${status}`;
+    return t.has(key) ? t(key) : status;
+  };
   const inputTokens = totals._sum.inputTokens ?? 0;
   const outputTokens = totals._sum.outputTokens ?? 0;
   const cachedInputTokens = totals._sum.cachedInputTokens ?? 0;
@@ -142,6 +186,50 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </table>
         </Card>
       </div>
+
+      {harnessBatchCosts.length > 0 ? (
+        <Card extra="p-6">
+          <h3 className="mb-1 text-lg font-bold text-navy-700 dark:text-white">{t("project.harnessCost.title")}</h3>
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">{t("project.harnessCost.note")}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max text-left text-sm">
+              <thead className="text-gray-500">
+                <tr>
+                  <th className="pb-3 pr-4">{t("project.harnessCost.col.batch")}</th>
+                  <th className="pb-3 pr-4">{t("project.harnessCost.col.status")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("project.harnessCost.col.compute")}</th>
+                  <th className="pb-3 pr-4 text-right">{t("project.harnessCost.col.cost")}</th>
+                  <th className="pb-3"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {harnessBatchCosts.map(({ harnessProject, cost }) => (
+                  <tr key={harnessProject.id} className="border-t border-gray-200 text-navy-700 dark:border-white/10 dark:text-white">
+                    <td className="py-2.5 pr-4 font-mono">{harnessProject.batch ?? "—"}</td>
+                    <td className="py-2.5 pr-4">
+                      <span className="rounded bg-gray-100 px-2 py-0.5 font-mono text-xs text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                        {harnessStatusLabel(harnessProject.status)}
+                      </span>
+                    </td>
+                    <td className="py-2.5 pr-4 text-right font-mono text-xs">
+                      {cost ? formatTokens(cost.totalComputeTokens) : "—"}
+                    </td>
+                    <td className="py-2.5 pr-4 text-right font-medium">{cost ? formatUsd(cost.totalCostUsd) : "—"}</td>
+                    <td className="py-2.5 text-right">
+                      <Link
+                        href={`/harness/${encodeURIComponent(harnessProject.id)}`}
+                        className="text-xs font-medium text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      >
+                        {t("project.harnessCost.open")}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : null}
 
       <Card extra="p-6">
         <h3 className="mb-4 text-lg font-bold text-navy-700 dark:text-white">{t("project.recentEvents")}</h3>
