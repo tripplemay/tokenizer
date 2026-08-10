@@ -2,6 +2,7 @@ import { hostname, platform } from "node:os";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { configure, ensureDevice, readConfig, readDevice, writeCredentials, writeDevice } from "./config";
+import { agentFetch } from "./fetch";
 
 function defaultDeviceName() {
   return hostname().replace(/\.local$/i, "") || "Tokenizer Device";
@@ -31,7 +32,9 @@ export async function enrollDevice(options: { enrollToken: string; serverUrl?: s
   const device = { ...current, name, hostname: hostname(), platform: platform(), metadata: { ...(current.metadata as object), enrolledAt: new Date().toISOString() } };
   writeDevice(device);
 
-  const response = await fetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/enroll`, {
+  // agentFetch 的直连/代理自愈与 enroll 同样相关：首装环境经常带着尚未
+  // 生效或刚关掉的代理，全局 fetch 在这里失败会直接终止 onboarding。
+  const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/enroll`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ enrollToken: options.enrollToken, device })
