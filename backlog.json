@@ -179,5 +179,15 @@
     ],
     "confirmed_at": "2026-08-10T10:45:00Z",
     "priority": "low"
+  },
+  {
+    "id": "BL-ENROLL-SUCCESS-PREDICATE",
+    "title": "注册成功判据不应把 deviceName 当必要条件（潜在静默挂起）",
+    "description": "BL-SECURITY-P1 F006 落地后 app/_components/enroll-flow-card.tsx:97 的成功判据是 isEnrollmentClaimed(status) && status.deviceName，把显示名做成了成功的必要条件。spec-lock critic 逐条追证今天不可达：usedById 与 Device upsert 同在一个 Serializable 事务（app/api/devices/enroll/route.ts:47,51）、Device.name 为 NOT NULL、三个写入点均保证非空、全仓无 device 删除路径。但失败形态最坏——真连上了却显示『超时,未检测到新设备』，把成功报成失败。正确形状：成功只认 isEnrollmentClaimed(status)，deviceName 只管渲染。⚠️ 兜底不得回落 usedById，那正是本 feature 拒收轮修掉的 B2 回归。顺带：tests/shared/enrollment-status.test.ts:14 是恒真断言，可一并清理。",
+    "decisions": [
+      "2026-08-10 critic 判 P3 潜在、不阻断 apply；Coordinator 裁决不为不可达路径再派第五轮"
+    ],
+    "confirmed_at": "2026-08-10T18:35:00Z",
+    "priority": "low"
   }
 ]

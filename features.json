@@ -59,7 +59,15 @@
       "id": "F006",
       "title": "设备注册绑定本次 enrollment（不可缓存状态端点 + 定向轮询）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-92160f4f6478-20260810T181007Z-r4",
+        "commit": "5d03f745796a1def8a41381004d999895146743f",
+        "rejected_rounds": 1,
+        "transport_failures": 3
+      },
+      "open_acceptance": "acceptance 4 的 abort/unmount 半边无测试（仓库无 jsdom，node 环境测不到渲染）——实现在 enroll-flow-card.tsx 的 controller.abort()+clearTimeout+cancelled 三重守卫，但无行为证明。另 tests/shared/enrollment-status.test.ts:14 是一条恒真断言（字符串字面量 not.toBe(null)），零回归检出力，承重断言在 :15。"
     },
     {
       "id": "F007",
