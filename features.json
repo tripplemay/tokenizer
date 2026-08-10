@@ -1,48 +1,36 @@
 {
-  "batch": "BL-AGENT-LATENCY",
-  "spec": "docs/specs/BL-AGENT-LATENCY-spec.md",
+  "batch": "BL-COST-BATCH-V1",
+  "spec": "docs/specs/BL-COST-BATCH-V1-spec.md",
   "features": [
     {
       "id": "F001",
-      "title": "cron fallback 拆双 crontab 条目（harness 每 2 分钟）",
+      "title": "阶段区间构建 + 时间窗成本聚合层（harness-cost.ts）",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": "F002",
-      "title": "harness 轮询错误驱动退避 + 抖动（纯函数 harness-backoff）",
+      "title": "harness 详情 overview 批次成本卡片",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": "F003",
-      "title": "enroll 切换自愈 agentFetch（src/cli 裸 fetch 清零）",
+      "title": "projects 详情批次成本联动卡片",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": "F004",
-      "title": "事件页 events cursor 分页（occurredAt+id 复合游标）",
-      "executor": "generator",
-      "status": "completed"
+      "title": "归因精度实测审计报告",
+      "executor": "evaluator",
+      "status": "pending"
     },
     {
       "id": "F005",
-      "title": "agent release 1.4.0 账本 + rollout（最终功能 commit；预案 1.3.0 已被占用，带据修正）",
+      "title": "prisma migrations 卫生：migration_lock.toml + 漂移量化收敛",
       "executor": "generator",
-      "status": "completed"
-    },
-    {
-      "id": "F006",
-      "title": "闸门邮件 notify fetch AbortSignal.timeout(8s) 兜底",
-      "executor": "generator",
-      "status": "completed"
-    },
-    {
-      "id": "F007",
-      "title": "dispatch 用量 model 归因补全（提取器 argv 兜底 v1.10.0 + 服务端 model-only 刷新）",
-      "executor": "generator",
-      "status": "completed"
+      "status": "pending"
     }
   ]
 }

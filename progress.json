@@ -1,42 +1,27 @@
 {
-  "status": "done",
-  "user_goal": "闸门触达延迟 15min→≤2min + daemon 退避 + enroll 自愈 + /events 分页；顺路 notify 超时与 dispatch model 归因闭环",
-  "total_features": 7,
-  "completed_features": 7,
+  "status": "building",
+  "user_goal": "成本×批次/阶段归因 v1：HarnessTransition 时间窗 join UsageEvent，批次成本进控制台一等公民视图；顺路 prisma migrations 卫生",
+  "total_features": 5,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-AGENT-LATENCY",
+  "current_sprint": "BL-COST-BATCH-V1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T04:54:34Z",
+  "last_updated": "2026-08-10T05:22:47Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-AGENT-LATENCY-spec.md",
+    "spec": "docs/specs/BL-COST-BATCH-V1-spec.md",
     "test_cases": null,
     "signoff": null,
     "framework_reviewed": true
   },
   "role_assignments": null,
-  "evaluator_feedback": {
-    "batch": "BL-AGENT-LATENCY",
-    "verdict": "ALL_PASS",
-    "results": {
-      "F001": "PASS",
-      "F002": "PASS",
-      "F003": "PASS",
-      "F004": "PASS",
-      "F005": "PASS",
-      "F006": "PASS",
-      "F007": "PASS"
-    },
-    "fix_rounds": 0,
-    "report": "docs/test-reports/BL-AGENT-LATENCY-signoff.md",
-    "note": "7 个隔离 evaluator fan-out 分片结论原样收录于报告；上批 soft-watch #2 闭环；L2 目视项（/events model 补显、>200 翻页、cron 主机重装）见报告末节"
-  },
+  "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-AGENT-LATENCY done，2026-08-10】7/7 全 PASS 零返工。生产 f3d7a9a；本机 agent 已升 1.4.0；4 个 run-meta 已重提取并上报落地（failed=0）。规划期发框架 v1.9.1+v1.10.0。坑两枚：①feature title 裸路由开头触发 sensitive_summary_data 拒收（已改标题）；②agent-lifecycle SIGTERM 用例 CI flake 一次（重跑绿，留观）。用户 L2 目视：/events 4 条 codex 事件应显 gpt-5.6-sol。下一批候选：BL-COST-BATCH-V1。"
+    "planning": "【BL-COST-BATCH-V1 planning→building，2026-08-10】混合批次 5 features（3 gen + F004 evaluator 审计 + F005 顺路 migrations 卫生）。契约适配决策入 spec：toBatch 切窗 + observedAt 切点 + batchBoundary 不跨聚合。push 节奏 F001→F002→F003→F005 独立 commit；F004 报告不部署。"
   },
   "features": [],
   "pending_gate": null,
