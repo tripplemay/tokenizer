@@ -6,9 +6,7 @@ export default function Fonts() {
   console.log({ prefix });
 
   return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: `
+    <style>{`
             @font-face {
               font-family: 'DM Sans';
               font-style: italic;
@@ -58,8 +56,6 @@ export default function Fonts() {
                 prefix + '/fonts/dm-sans/DMSans-Bold.ttf'
               }) format('truetype');
             }
-          `,
-      }}
-    />
+          `}</style>
   );
 }

@@ -5,6 +5,7 @@ import BarChart from "@/components/charts/BarChart";
 import LineChart from "@/components/charts/LineChart";
 import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatTokens } from "@/shared/format";
+import { escapeHtml } from "@/shared/html-escape";
 import { ChartTypeToggle } from "./_components/chart-type-toggle";
 import { useChartType } from "./_components/use-chart-type";
 
@@ -51,18 +52,18 @@ export function DailyUsageChart({ data, granularity }: { data: DailyRow[]; granu
   function tooltipHtml(date: string, input: number, output: number): string {
     return `
       <div class="duc-tooltip">
-        <div class="duc-tooltip-title">${date}</div>
+        <div class="duc-tooltip-title">${escapeHtml(date)}</div>
         <div class="duc-tooltip-row">
           <span class="duc-tooltip-label">
-            <span class="duc-tooltip-dot" style="background:${INPUT_COLOR}"></span>${t("input")}
+            <span class="duc-tooltip-dot" style="background:${escapeHtml(INPUT_COLOR)}"></span>${escapeHtml(t("input"))}
           </span>
-          <span class="duc-tooltip-value">${formatTokens(input)}</span>
+          <span class="duc-tooltip-value">${escapeHtml(formatTokens(input))}</span>
         </div>
         <div class="duc-tooltip-row">
           <span class="duc-tooltip-label">
-            <span class="duc-tooltip-dot" style="background:${OUTPUT_COLOR}"></span>${t("output")}
+            <span class="duc-tooltip-dot" style="background:${escapeHtml(OUTPUT_COLOR)}"></span>${escapeHtml(t("output"))}
           </span>
-          <span class="duc-tooltip-value">${formatTokens(output)}</span>
+          <span class="duc-tooltip-value">${escapeHtml(formatTokens(output))}</span>
         </div>
       </div>
     `;

@@ -4,6 +4,7 @@ import BarChart from "@/components/charts/BarChart";
 import LineChart from "@/components/charts/LineChart";
 import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatTokens } from "@/shared/format";
+import { escapeHtml } from "@/shared/html-escape";
 import { ChartTypeToggle } from "./_components/chart-type-toggle";
 import { useChartType } from "./_components/use-chart-type";
 
@@ -84,14 +85,14 @@ export function DailySourceChart({ dates, series }: { dates: string[]; series: S
             return `
               <div class="duc-tooltip-row">
                 <span class="duc-tooltip-label">
-                  <span class="duc-tooltip-dot" style="background:${colors[i]}"></span>${item.name}
+                  <span class="duc-tooltip-dot" style="background:${escapeHtml(colors[i])}"></span>${escapeHtml(item.name)}
                 </span>
-                <span class="duc-tooltip-value">${formatTokens(value)}</span>
+                <span class="duc-tooltip-value">${escapeHtml(formatTokens(value))}</span>
               </div>
             `;
           })
           .join("");
-        return `<div class="duc-tooltip"><div class="duc-tooltip-title">${date}</div>${rows}</div>`;
+        return `<div class="duc-tooltip"><div class="duc-tooltip-title">${escapeHtml(date)}</div>${rows}</div>`;
       }
     }
   };

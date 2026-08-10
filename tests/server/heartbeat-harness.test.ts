@@ -38,7 +38,7 @@ function harness(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function request(diagnostics?: unknown) {
+function request(diagnostics?: unknown, deviceOverrides: Record<string, unknown> = {}) {
   return new Request("http://localhost/api/devices/heartbeat", {
     method: "POST",
     headers: { authorization: "Bearer token", "content-type": "application/json" },
@@ -46,6 +46,7 @@ function request(diagnostics?: unknown) {
       device: {
         id: "device-1",
         name: "Workstation",
+        ...deviceOverrides,
         ...(diagnostics === undefined ? {} : { diagnostics })
       }
     })
@@ -91,6 +92,16 @@ describe("device heartbeat Harness diagnostics", () => {
       .toBeLessThan(mocks.tx.deviceToken.updateMany.mock.invocationCallOrder[0]);
     expect(mocks.tx.deviceToken.updateMany.mock.invocationCallOrder[0])
       .toBeLessThan(mocks.tx.device.findUnique.mock.invocationCallOrder[0]);
+  });
+
+  it("cleans a long/control-character device name without rejecting the hot path", async () => {
+    const response = await POST(request(undefined, { name: `Work\u0000station${"x".repeat(300)}` }));
+
+    expect(response.status).toBe(200);
+    const data = mocks.tx.device.update.mock.calls[0][0].data;
+    expect(data.name).toBe(`Workstation${"x".repeat(189)}`);
+    expect(data.name).toHaveLength(200);
+    expect(data.name).not.toMatch(/[\u0000-\u001F\u007F-\u009F]/);
   });
 
   it("keeps a legacy heartbeat liveness-only without marking it as an accepted reporter", async () => {

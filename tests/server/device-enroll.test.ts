@@ -133,4 +133,15 @@ describe("device enrollment", () => {
     expect(mocks.tx.device.upsert).not.toHaveBeenCalled();
     expect(mocks.tx.deviceToken.create).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["an overlong name", { name: "x".repeat(201) }],
+    ["a name containing a control character", { name: "Work\u0000station" }]
+  ])("hard-rejects %s before claiming the enrollment", async (_label, devicePatch) => {
+    const response = await POST(request({ device: { id: "device-1", ...devicePatch } }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ code: "invalid_device_name" });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
 });

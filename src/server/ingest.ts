@@ -3,6 +3,7 @@ import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-versio
 import { codexCanonicalSourceEventId } from "@/shared/codex-usage";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { pathSegments } from "@/shared/path";
+import { sanitizeDeviceForIngest, sanitizeUsageEventForIngest } from "@/shared/input-sanitization";
 import { prisma } from "./db";
 import { detectAndTrackUnpricedModels } from "./pricing/detect";
 
@@ -134,18 +135,20 @@ async function ensureDevice(device: DeviceInput, lastSyncAt: Date, userId: strin
 }
 
 export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: DeviceInput, deviceTokenId: string, userId: string) {
+  const safeDevice = sanitizeDeviceForIngest(deviceInput);
+  const safeEvents = events.map(sanitizeUsageEventForIngest);
   const now = new Date();
-  const device = await ensureDevice(deviceInput, now, userId);
+  const device = await ensureDevice(safeDevice, now, userId);
   await prisma.deviceToken.update({ where: { id: deviceTokenId }, data: { lastUsedAt: now } });
 
-  if (events.length === 0) {
+  if (safeEvents.length === 0) {
     return { inserted: 0, duplicates: 0, received: 0, deviceId: device.id };
   }
 
   // 1) Reduce N events to the small set of distinct Projects they reference,
   // upsert each once, then build a lookup map.
   const projectByKey = new Map<string, UsageEventInput>();
-  for (const event of events) {
+  for (const event of safeEvents) {
     const key = projectKey(event);
     if (!projectByKey.has(key)) projectByKey.set(key, event);
   }
@@ -166,7 +169,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   // Postgres jsonb / text columns refuse U+0000, and a single bad row would
   // otherwise fail the entire batch (createMany is not row-isolated the way
   // the old per-event create loop was).
-  const rows = events.map((event) => toRow(event, userId, device.id, projectIdByKey.get(projectKey(event)) ?? null));
+  const rows = safeEvents.map((event) => toRow(event, userId, device.id, projectIdByKey.get(projectKey(event)) ?? null));
 
   // 3) Single createMany — Postgres ON CONFLICT DO NOTHING on the unique
   // (deviceId, source, sourceEventId) index handles dedup atomically.
@@ -183,7 +186,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   // Gated on the agent's feature version — older agents still upload
   // first-row placeholder snapshots that must not regress corrected rows.
   const agentCanCorrect =
-    (deviceInput.diagnostics?.agentFeatureVersion ?? 0) >= PARSER_CORRECTION_FEATURE_VERSION;
+    (safeDevice.diagnostics?.agentFeatureVersion ?? 0) >= PARSER_CORRECTION_FEATURE_VERSION;
   const updated =
     agentCanCorrect && result.count < rows.length ? await correctStaleDuplicates(rows, device.id, userId) : 0;
 
@@ -193,7 +196,7 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   // client's upload, which has already been committed above.
   let newModelKeys: string[] = [];
   try {
-    newModelKeys = await detectAndTrackUnpricedModels(events.map((event) => event.model));
+    newModelKeys = await detectAndTrackUnpricedModels(safeEvents.map((event) => event.model));
   } catch (error) {
     console.error(`model-price detection failed (user ${userId}); ingest unaffected`, error);
   }
@@ -201,8 +204,8 @@ export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: 
   return {
     inserted: result.count,
     updated,
-    duplicates: events.length - result.count - updated,
-    received: events.length,
+    duplicates: safeEvents.length - result.count - updated,
+    received: safeEvents.length,
     deviceId: device.id,
     // Keys needing a price lookup. The batch route triggers an out-of-band
     // lookup for these after responding (see app/api/usage/events/batch).

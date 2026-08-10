@@ -1,0 +1,34 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-10T10:05:11Z",
+  "features": [
+    {
+      "feature_id": "F003",
+      "commits": [],
+      "files_touched": [
+        "app/api/devices/enroll/route.ts",
+        "app/api/devices/heartbeat/route.ts",
+        "app/daily-cost-chart.tsx",
+        "app/daily-source-chart.tsx",
+        "app/daily-usage-chart.tsx",
+        "app/devices/daily-device-cost-chart.tsx",
+        "src/Fonts.tsx",
+        "src/server/ingest.ts",
+        "src/shared/html-escape.ts",
+        "src/shared/input-sanitization.ts",
+        "tests/server/device-enroll.test.ts",
+        "tests/server/heartbeat-harness.test.ts",
+        "tests/server/usage-batch-input.test.ts",
+        "tests/shared/html-escape.test.ts",
+        "tests/shared/input-sanitization.test.ts"
+      ],
+      "notes": "Uncommitted sandbox diff implements F003. ApexCharts custom tooltips now escape &, <, >, double quote, single quote, and backtick for all dynamic leaf values across all four custom tooltip files. The raw font-style HTML sink was removed by rendering its CSS as React style text. Enrollment hard-rejects overlong/control-character device names; batch ingest and heartbeat clean names to 200 characters and remove controls; batch source values are cleaned to 100 characters without a closed-set enum. Regression coverage includes enrollment/heartbeat boundaries, HTML escaping, and a poison batch asserting HTTP 200 plus bounded persisted device/source values. Mechanical checks: npm run verify PASS (exit 0), npm run lint PASS (exit 0), targeted F003 tests PASS (45/45), git diff --check PASS, src/cli and agent-feature-version diff empty, raw HTML sink scan empty. Full npm test exited 1 with 1175 passed / 12 skipped / 4 failures in existing CLI process/IPC lifecycle tests under sandbox EPERM/visibility restrictions; no F003 test failed. No commits were created."
+    }
+  ],
+  "l1_ran": {
+    "lint": "PASS (exit 0): npm run lint; no ESLint warnings or errors",
+    "typecheck": "PASS (exit 0): npm run verify; prisma generate + tsc --noEmit",
+    "test": "PARTIAL (exit 1): npm test; 1175 passed, 12 skipped, 4 failures in tests/cli/harness-command.test.ts, tests/cli/agent-lifecycle.test.ts, and tests/cli/install-agent-lifecycle.test.ts due sandbox EPERM/process visibility"
+  },
+  "waiting": null
+}

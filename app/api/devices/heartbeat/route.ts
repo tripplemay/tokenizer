@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth";
 import { prisma } from "@/server/db";
 import { updateUserTimezoneIfValid } from "@/server/timezone";
+import { sanitizeDeviceForIngest } from "@/shared/input-sanitization";
 import { DeviceInput } from "@/shared/usage";
 import { harnessDiagnosticsFromSnapshot, parseHarnessSyncSnapshot } from "@/shared/harness-health";
 import { compareAgentReleaseVersion, normalizeAgentReleaseVersion } from "@/shared/agent-release-version";
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
 
   const body = (await request.json().catch(() => null)) as { device?: DeviceInput; timezone?: string } | null;
   if (!body?.device?.id || !body.device.name) return Response.json({ error: "device is required" }, { status: 400 });
-  if (body.device.id !== token.deviceId) return forbidden("device token does not match device");
+  const device = sanitizeDeviceForIngest(body.device);
+  if (device.id !== token.deviceId) return forbidden("device token does not match device");
 
   const now = new Date();
   // Diagnostics are optional for protocol compatibility. A reporter must
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
         // snapshot behind a newer accepted reporter instead of allowing it
         // to read before the version guard is advanced.
         const lockedDevice = await tx.device.updateMany({
-          where: { id: body.device.id, userId: token.userId },
+          where: { id: device.id, userId: token.userId },
           data: { lastSeenAt: now }
         });
         if (lockedDevice.count !== 1) throw new DeviceTokenRevokedError();
@@ -141,10 +143,10 @@ export async function POST(request: NextRequest) {
           agentFeatureVersion: "agentFeatureVersion" in diag ? featureVersion ?? null : undefined
         });
         const data: Prisma.DeviceUpdateInput = {
-          name: body.device.name,
-          hostname: body.device.hostname ?? null,
-          platform: body.device.platform ?? null,
-          metadata: body.device.metadata === undefined ? Prisma.JsonNull : (body.device.metadata as Prisma.InputJsonValue),
+          name: device.name,
+          hostname: device.hostname ?? null,
+          platform: device.platform ?? null,
+          metadata: device.metadata === undefined ? Prisma.JsonNull : (device.metadata as Prisma.InputJsonValue),
           lastSeenAt: now
         };
 
@@ -167,7 +169,7 @@ export async function POST(request: NextRequest) {
           data.reportedAt = now;
         }
 
-        await tx.device.update({ where: { id: body.device.id }, data });
+        await tx.device.update({ where: { id: device.id }, data });
 
         return {
           accepted,
@@ -190,7 +192,7 @@ export async function POST(request: NextRequest) {
   return Response.json({
     ok: true,
     accepted: heartbeat.accepted,
-    deviceId: body.device.id,
+    deviceId: device.id,
     lastSeenAt: now.toISOString(),
     agentReleaseVersion: heartbeat.agentReleaseVersion,
     agentFeatureVersion: heartbeat.agentFeatureVersion

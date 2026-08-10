@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import { DeviceInput } from "@/shared/usage";
 import { generateToken, hashToken, tokenPrefix } from "@/server/tokens";
 import { retrySerializableTransaction } from "@/server/serializable-transaction";
+import { isValidDeviceName } from "@/shared/input-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,9 @@ export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as EnrollRequest | null;
   if (!body?.enrollToken || !body.device?.id || !body.device.name) {
     return Response.json({ error: "enrollToken and device are required" }, { status: 400 });
+  }
+  if (!isValidDeviceName(body.device.name)) {
+    return Response.json({ error: "invalid device name", code: "invalid_device_name" }, { status: 400 });
   }
 
   const now = new Date();

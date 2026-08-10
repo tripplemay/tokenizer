@@ -4,6 +4,7 @@ import BarChart from "@/components/charts/BarChart";
 import LineChart from "@/components/charts/LineChart";
 import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatUsd } from "@/shared/format";
+import { escapeHtml } from "@/shared/html-escape";
 import { ChartTypeToggle } from "./_components/chart-type-toggle";
 import { useChartType } from "./_components/use-chart-type";
 
@@ -56,12 +57,12 @@ export function DailyCostChart({ data }: { data: DailyCostRow[] }) {
         const value = Number(s[0]?.[dataPointIndex] ?? 0);
         return `
           <div class="duc-tooltip">
-            <div class="duc-tooltip-title">${date}</div>
+            <div class="duc-tooltip-title">${escapeHtml(date)}</div>
             <div class="duc-tooltip-row">
               <span class="duc-tooltip-label">
-                <span class="duc-tooltip-dot" style="background:${COST_COLOR}"></span>USD
+                <span class="duc-tooltip-dot" style="background:${escapeHtml(COST_COLOR)}"></span>${escapeHtml("USD")}
               </span>
-              <span class="duc-tooltip-value">${formatUsd(value)}</span>
+              <span class="duc-tooltip-value">${escapeHtml(formatUsd(value))}</span>
             </div>
           </div>
         `;

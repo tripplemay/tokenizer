@@ -4,6 +4,7 @@ import BarChart from "@/components/charts/BarChart";
 import LineChart from "@/components/charts/LineChart";
 import { chartTypeVisuals } from "@/shared/chart-type";
 import { formatUsd } from "@/shared/format";
+import { escapeHtml } from "@/shared/html-escape";
 import { ChartTypeToggle } from "../_components/chart-type-toggle";
 import { useChartType } from "../_components/use-chart-type";
 
@@ -70,14 +71,14 @@ export function DailyDeviceCostChart({ dates, series }: { dates: string[]; serie
             return `
               <div class="duc-tooltip-row">
                 <span class="duc-tooltip-label">
-                  <span class="duc-tooltip-dot" style="background:${colors[i]}"></span>${item.name}
+                  <span class="duc-tooltip-dot" style="background:${escapeHtml(colors[i])}"></span>${escapeHtml(item.name)}
                 </span>
-                <span class="duc-tooltip-value">${formatUsd(value)}</span>
+                <span class="duc-tooltip-value">${escapeHtml(formatUsd(value))}</span>
               </div>
             `;
           })
           .join("");
-        return `<div class="duc-tooltip"><div class="duc-tooltip-title">${date}</div>${rows}</div>`;
+        return `<div class="duc-tooltip"><div class="duc-tooltip-title">${escapeHtml(date)}</div>${rows}</div>`;
       }
     }
   };
