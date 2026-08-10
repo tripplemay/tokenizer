@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-SECURITY-P1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T11:20:00Z",
+  "last_updated": "2026-08-10T17:45:00Z",
   "reference_docs": [
     "docs/test-reports/frontend-code-review-2026-08-10.md",
     "docs/test-reports/BL-COST-BATCH-V1-signoff.md"
@@ -25,7 +25,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-SECURITY-P1 planning 完成，2026-08-10】v2 non-fast heterogeneous 首次全程：intent da55b68a 已消费（generator=codex / evaluator=kimi / planner=Coordinator）。8 条 feature（7 gen + 1 eval），源 frontend-code-review-2026-08-10 P1 安全簇六项 + F-32 分片。规划期两处源码核查改变方案：① F-04 的 EnrollmentToken.usedById 早已存在且 enroll 路由已写入 → 零 schema 零协议不 bump fv；② F-01 若按报告用 NODE_ENV 判 fail-closed 会炸 Dockerfile builder（next build 内部即置 production）→ 改用构建期信号。用户已确认生产 AUTH_SECRET 真实值在位，F001 正常 push（排 push 序最后，爆炸半径最大）。F007 三件全做，口径 oracle = BL-COST-BATCH-V1 F004 审计 fixture。"
+    "building": "【BL-SECURITY-P1 building 暂停于 5/8，2026-08-10】已上线 4 条（F002 开放重定向 d7eace0 / F003 tooltip XSS+入口清洗 234e8f0 / F004 gate CAS c672181 / F005 quota accountKey cb16ce1，均 Verify+Deploy 双绿）。\n\n【暂停原因】codex 上游持续降级，F006 连续三次派发失败：r1 过载 953s、r2 被外部 SIGTERM(143) 413s、r3 过载仅 56s（快一个量级=持续降级非抖动）。已达派发封装硬停点。用户裁决：等上游恢复后重派，不换 generator、不由 Coordinator 代实现。\n\n【续接方法】主仓 clean、HEAD 即 source_ref。直接跑：\n  TASK_ID=\"build-$(git rev-parse --short=12 HEAD)-$(date -u +%Y%m%dT%H%M%SZ)-r4\"\n  bash .claude/dispatch/dispatch-generator-handoff.sh --task-id \"$TASK_ID\" --feature F006\n然后 spec-lock critic → 铺 node_modules（rm 后 cp -cR，TMPDIR=/tmp）→ accept 不带 --apply 拿 READY_TO_APPLY → 同证据 --apply。L1 文档在 scratchpad/l1-commands.json（lint/verify/test）。\n\n【F006 已知要点】前两次沙箱证明 codex 能按修订 acceptance 写对结构（已抽 src/shared/enrollment-status.ts 纯函数、已清四个调用点的死 prop），只是倒在写 handoff 前。规格已修订两处必修：端点补 deviceName（禁止走 /api/devices，那是 30s unstable_cache 会回落 id）、回归测试须行为级且不得用 toContain 钉死实现语句。\n\n【剩余】F006 → F007（F-32 三件）→ F001（AUTH_SECRET，排最后，爆炸半径=全站 500，用户已确认生产 secret 在位）→ F008 归 verifying 交 kimi。\n\n【验收必做】F004/F005 的核心断言目前只有 mock 级证据，真 DB 探针默认 skip，需 scratch 库带 EVAL_F004_DB_URL / EVAL_F005_DB_URL 实跑——已写进 features.json 各自的 open_acceptance 字段。\n\n【CI 判读】本仓无独立 CI workflow，Verify 在 Deploy VPS 内；顶层 conclusion 恒 failure（Windows install-agent-lifecycle 既有边界），必须逐 job 核 Verify/Deploy。另 agent-lifecycle SIGTERM 用例 flake 会 skip 掉 Deploy（已入 backlog BL-CI-SIGTERM-FLAKE）。"
   },
   "features": [],
   "pending_gate": null,
