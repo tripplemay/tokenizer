@@ -148,6 +148,10 @@ describe("getBatchCost", () => {
     expect(result!.totalComputeTokens).toBe((1_000_000 - 400_000 + 50_000) * 2);
     expect(result!.reworkCostUsd).toBeCloseTo(expectedPerPhase, 8);
     expect(result!.batch).toBe("BL-X");
+    // 缓存反序列化安全：返回值时间字段必须已是 ISO 串而非 Date
+    expect(typeof result!.windowStartIso).toBe("string");
+    expect(result!.phases[0].startIso).toBe("2026-08-10T10:00:00.000Z");
+    expect(result!.phases[1].durationMs).toBe(NOW.getTime() - new Date("2026-08-10T11:00:00.000Z").getTime());
   });
 
   it("queries [start, end) windows keyed by projectId when linked", async () => {

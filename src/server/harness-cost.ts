@@ -35,7 +35,17 @@ export interface PhaseInterval {
   openEnded: boolean;
 }
 
-export interface PhaseCostRow extends PhaseInterval {
+// 返回值的时间字段一律 ISO 串：unstable_cache 命中时值经 JSON 反序列化，
+// Date 会静默降级为 string——从类型上钉死，杜绝「首渲染是 Date、命中后是
+// string」的隐性双形态。
+export interface PhaseCostRow {
+  phase: string;
+  batch: string | null;
+  fixRounds: number;
+  startIso: string;
+  endIso: string;
+  openEnded: boolean;
+  durationMs: number;
   computeTokens: number;
   costUsd: number;
 }
@@ -48,8 +58,8 @@ export interface BatchCost {
   /** fixing + reverifying 各轮合计（返工小计） */
   reworkCostUsd: number;
   reworkComputeTokens: number;
-  windowStart: Date;
-  windowEnd: Date;
+  windowStartIso: string;
+  windowEndIso: string;
 }
 
 /**
@@ -126,7 +136,17 @@ async function phaseCost(
     const dollars = estimateCost(row.model, { inputTokens: i, cachedInputTokens: c, cacheWriteTokens: w, outputTokens: o }, prices);
     if (dollars != null) cost += dollars;
   }
-  return { ...interval, computeTokens: compute, costUsd: cost };
+  return {
+    phase: interval.phase,
+    batch: interval.batch,
+    fixRounds: interval.fixRounds,
+    startIso: interval.start.toISOString(),
+    endIso: interval.end.toISOString(),
+    openEnded: interval.openEnded,
+    durationMs: Math.max(0, interval.end.getTime() - interval.start.getTime()),
+    computeTokens: compute,
+    costUsd: cost
+  };
 }
 
 const REWORK_PHASES = new Set(["fixing", "reverifying"]);
@@ -157,8 +177,8 @@ async function getBatchCostImpl(
     phases,
     reworkCostUsd: rework.reduce((sum, p) => sum + p.costUsd, 0),
     reworkComputeTokens: rework.reduce((sum, p) => sum + p.computeTokens, 0),
-    windowStart: phases[0].start,
-    windowEnd: phases.at(-1)!.end
+    windowStartIso: phases[0].startIso,
+    windowEndIso: phases.at(-1)!.endIso
   };
 }
 
