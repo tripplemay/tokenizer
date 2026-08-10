@@ -148,5 +148,15 @@
     ],
     "confirmed_at": "2026-08-10T07:15:02Z",
     "priority": "medium"
+  },
+  {
+    "id": "BL-MODE-INTENT-DELIVERY",
+    "title": "签名 mode intent 投递可靠性：head_mismatch 重试语义 + 本机失败留痕 + 服务端 failed 通知",
+    "description": "框架 v1.10.1 已锁契约（console-mode.md §3.5），本条是产品侧实现。① src/cli/harness-mode-intents.ts:383 的 head_mismatch 从终态改可重试竞态——同轮临界区内以最新 HEAD 重求值，或标 retryable:true 交下一轮重投，宽限按轮数/墙钟封顶后才转终态；不可重试终态只剩 intent 自身失效（签名/期限/repo 身份/shape/台账已消费）。② 被拒 intent 落跨轮可读的持久留痕（intent_id + 原因码 + 时间戳），不能只活在单轮 issue 输出里。③ 服务端 failed 终态通知签发人，复用 BL-GATE-INBOX 已建的闸门邮件通道（Resend REST + notifiedAt claim 恰一次 + fail-open），不新建通道。来源：BL-COST-BATCH-V1 快车道回落事故（该仓 6 小时 28 次 HEAD 变更，签发到投递跨一次 commit 即烧掉整张 intent）。",
+    "decisions": [
+      "2026-08-10 用户确认沉淀回流；契约入框架 v1.10.1，实现留本条"
+    ],
+    "confirmed_at": "2026-08-10T08:40:00Z",
+    "priority": "medium"
   }
 ]

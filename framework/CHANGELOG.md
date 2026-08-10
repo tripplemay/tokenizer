@@ -5,6 +5,31 @@
 
 ---
 
+## v1.10.1 — 2026-08-10（mode intent 投递失败语义：静默丢弃三层封堵 + `/plan` §0c 强制化）
+
+**来源：** tokenizer `BL-COST-BATCH-V1` done 收尾回流（用户确认）。一张 heterogeneous mode intent 在签发与
+投递之间因 HEAD 前移被判 `head_mismatch` 且标 `retryable:false` 丢弃（该仓 6 小时内 28 次 HEAD 变更）；
+本机零留痕、服务端 failed 无声终态，整个批次按快车道跑完才在复盘中发现——人类以为已指定异构执行形态，
+机器按默认路径开跑，两端都不报错。
+
+**改动（纯契约层，无机件改动）：**
+- `harness/console-mode.md`：新增 §3.5「投递失败语义」四条——① `head_mismatch` 归**投递期竞态**，
+  device agent 不得标为不可重试终态（同轮以最新 HEAD 重求值或 `retryable:true` 重投，宽限有上界）；
+  不可重试终态只剩 intent 自身失效（签名/期限/repo 身份/shape/台账已消费）。② 被拒 intent 必须有跨轮
+  持久留痕（`intent_id` + 原因码 + 时间戳）。③ 服务端 `failed` 必须通知签发人，复用既有闸门邮件通道。
+  ④ `/plan` §0c 强制化。同步补版本历史行。
+- `templates/claude/skills/plan/SKILL.md`：step 3 追加 §0c 强制关卡——resolver（读
+  `progress.mode_intent`）与 consume（读 `harness.json.project.mode_defaults`）**数据源不相交**，跳步时
+  两端均不报错。写任何阶段状态前须留下二选一机械证据：`consume-mode-intent.sh` 运行输出，或
+  `mode_defaults` 为空/已在台账的核查输出 + 向用户显式说明。暂不开批次时不消费，但须报出 staged intent
+  的存在、profile 与有效期。
+
+**未做（留给产品侧批次）：** ①②③ 的实现分别落在 tokenizer 的 `src/cli/harness-mode-intents.ts`
+（head_mismatch 重试语义 + 失败留痕）与服务端通知链路——已登记为 backlog `BL-MODE-INTENT-DELIVERY`。
+本次只锁契约，不动机件。
+
+---
+
 ## v1.10.0 — 2026-08-10（用量提取 model 兜底档：派发 argv 的 -c model= 钉住值）
 
 **来源：** tokenizer `BL-AGENT-LATENCY` F007（承接 BL-DISPATCH-USAGE-CAPTURE spec decision-3 与

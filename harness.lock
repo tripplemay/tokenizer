@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.10.0",
-    "commit": "6743a0f"
+    "version": "1.10.1",
+    "commit": "027c369"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -172,8 +172,8 @@
     },
     ".claude/skills/plan/SKILL.md": {
       "src": "templates/claude/skills/plan/SKILL.md",
-      "sha256": "97c02f2eeecdf60cc687645331fc8e637a97956e9bc0f1c6630c36302986ee43",
-      "upstream": "97c02f2eeecdf60cc687645331fc8e637a97956e9bc0f1c6630c36302986ee43"
+      "sha256": "3f71009251e3180f473c2ae4c17a9dfc6d51dba8dd67a75d425a3964ada3a420",
+      "upstream": "3f71009251e3180f473c2ae4c17a9dfc6d51dba8dd67a75d425a3964ada3a420"
     },
     ".claude/skills/verify/SKILL.md": {
       "src": "templates/claude/skills/verify/SKILL.md",
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "6090c3ac4470fad9acc13af5c109e8ec442b4a4d24d0ad20d7f8d7d42b472a24",
-      "upstream": "6090c3ac4470fad9acc13af5c109e8ec442b4a4d24d0ad20d7f8d7d42b472a24"
+      "sha256": "82ba80555267ceffd46e94d044fe1fa6a5429a301c9b35cacbb422b6c2b33da6",
+      "upstream": "82ba80555267ceffd46e94d044fe1fa6a5429a301c9b35cacbb422b6c2b33da6"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "4f5ba6a3e380bf810cc968b58d30a8d7163eafe9e2fb1ad19bdc6d9d64a1e549",
-      "upstream": "4f5ba6a3e380bf810cc968b58d30a8d7163eafe9e2fb1ad19bdc6d9d64a1e549"
+      "sha256": "118705d21506adb8d7c06a51156bb59497679f644fb4ae3d14bbbfc366643124",
+      "upstream": "118705d21506adb8d7c06a51156bb59497679f644fb4ae3d14bbbfc366643124"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -252,8 +252,8 @@
     },
     "framework/harness/console-mode.md": {
       "src": "harness/console-mode.md",
-      "sha256": "8d4bd5d000cc2f53204c27cbc8aea1529e52cad3f9c8ff28a32bbc9898b90f4a",
-      "upstream": "8d4bd5d000cc2f53204c27cbc8aea1529e52cad3f9c8ff28a32bbc9898b90f4a"
+      "sha256": "8d3c6a3d6ae729d197492a2340e0a3db406d9c705a75e295488830a1178f2d31",
+      "upstream": "8d3c6a3d6ae729d197492a2340e0a3db406d9c705a75e295488830a1178f2d31"
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
@@ -562,8 +562,8 @@
     },
     "framework/templates/claude/skills/plan/SKILL.md": {
       "src": "templates/claude/skills/plan/SKILL.md",
-      "sha256": "97c02f2eeecdf60cc687645331fc8e637a97956e9bc0f1c6630c36302986ee43",
-      "upstream": "97c02f2eeecdf60cc687645331fc8e637a97956e9bc0f1c6630c36302986ee43"
+      "sha256": "3f71009251e3180f473c2ae4c17a9dfc6d51dba8dd67a75d425a3964ada3a420",
+      "upstream": "3f71009251e3180f473c2ae4c17a9dfc6d51dba8dd67a75d425a3964ada3a420"
     },
     "framework/templates/claude/skills/verify/SKILL.md": {
       "src": "templates/claude/skills/verify/SKILL.md",
@@ -712,8 +712,8 @@
     },
     "framework/harness/framework-releases.json": {
       "src": "harness/framework-releases.json",
-      "sha256": "0391e8ec5238addac3ee3ed8f507e1f235905cd328ec3581896bbb81692417b5",
-      "upstream": "0391e8ec5238addac3ee3ed8f507e1f235905cd328ec3581896bbb81692417b5"
+      "sha256": "99507a3c16d6f618dd12deb9c60d66ce3b58f3e75ba1b675bb0de18d56eaaacf",
+      "upstream": "99507a3c16d6f618dd12deb9c60d66ce3b58f3e75ba1b675bb0de18d56eaaacf"
     },
     ".claude/agents/planner-proposal.md": {
       "src": "templates/claude/agents/planner-proposal.md",

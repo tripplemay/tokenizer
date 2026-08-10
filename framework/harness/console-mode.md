@@ -284,6 +284,34 @@ profile 语义是机械护栏：v1 的 `fast` 要求 `role_assignments=null`；v
 只删匹配 intent_id 的 staged 条目，新 staging 原样保留。台账写入失败时消费者报错退出并明示
 「checkpoint 已写入」，由人工补记；device agent 与控制台不写台账。
 
+### 3.5 投递失败语义（v1.10.1；🔴 静默丢弃是本契约的默认失败模式）
+
+签名 intent 从「控制台签发」到「Planner 消费」要跨三段：控制台入队 → device agent staging →
+`/plan` 边界 consume。**每一段的失败都天然静默**，三层叠起来的后果是人类以为自己已经指定了执行形态，
+机器却按本机默认路径开跑，而两边都不报错。契约必须逐层堵：
+
+**① `head_mismatch` 是投递期竞态，不是意图错误。** `expected_head_sha` 只是 staging 前置条件
+（§3.4 HEAD phase rule）；在高频推送的仓里 HEAD 前移是常态，签发到投递之间隔一次 commit 就够烧掉整张
+intent。因此 device agent **不得**把它标成不可重试终态：要么在同一轮临界区内以最新 HEAD 重新求值，
+要么标 `retryable:true` 交给下一轮重投；投递窗口应有明确的宽限上界（建议按轮数或墙钟封顶，超限才转终态）。
+真正的不可重试终态只有 intent 自身失效——签名不符、过期、`repo_key` 身份不符、shape 非法、台账已消费。
+
+**② 被拒 intent 必须在本机留下跨轮痕迹。** 只写进单轮 issue 输出等于没写：下一轮覆盖后现场即消失，
+事后无法回答「那张 intent 去哪了」。失败记录必须落到跨轮可读的持久位置，且带 `intent_id` + 失败原因码 +
+时间戳。
+
+**③ 服务端 `failed` 是终态就必须通知签发人。** 不重发 + 不通知 = 人类零反馈。失败通知复用既有闸门邮件
+通道（同一收件人语义），不新建通道。
+
+**④ `/plan` §0c 不得靠自觉。** resolver（读 `progress.mode_intent`）与 consume（读
+`harness.json.project.mode_defaults`）**数据源不相交**——跳过 §0c 时 resolver 一切正常，staged intent 被静默
+漏掉，没有任何一端会报错。因此 `new` / 完成态开始新批次的路径上，写任何阶段状态之前必须二选一：
+拿到 `consume-mode-intent.sh` 的运行证据，或对「`mode_defaults` 为空」做出显式确认。
+
+> 来源：tokenizer BL-COST-BATCH-V1 快车道回落事故调查——一张 heterogeneous intent 因签发与投递之间
+> HEAD 前移被判 `head_mismatch:retryable=false` 丢弃（该仓 6 小时内 28 次 HEAD 变更），本机零留痕、
+> 服务端无声，批次整程按快车道跑完才在复盘中发现。
+
 ## 4. 组件
 
 | 组件 | 位置 | 随 bootstrap 铺入 | 状态 |
@@ -377,3 +405,4 @@ python3 console/server.py --config console/console.config.json --host 0.0.0.0 --
 | 2026-07-25 | v1.3.3：`approve-gate.sh` 支持本机签名（`--key` / 钥匙串），新增 §0 与 §3.3、红线第 5 条 —— 本机批准与开发一律不依赖控制台 | 用户裁决：控制台只是辅助工具；修掉 v1.3.2 记录的验签模式缺陷 |
 | 2026-07-27 | v1.5：签名 `project.mode_defaults` 只在下一批次边界生效；HEAD 只在 device staging 前比较 | BL-HARNESS-DETAIL-MODEINTENT F001 |
 | 2026-08-10 | v1.9.1：消费台账 `project.consumed_mode_intents` —— 重放守卫双锚，done 清 `progress.mode_intent` 不再开重放窗口；消费即移除 staged `mode_defaults` | tokenizer BL-GATE-INBOX planning 实遇误重放风险（人工按 once 语义拒绝）；端到端回归 ×3 |
+| 2026-08-10 | v1.10.1：新增 §3.5 投递失败语义 —— `head_mismatch` 归可重试竞态、被拒 intent 本机留痕、服务端 failed 走闸门邮件通道、`/plan` §0c 强制化（consume 证据或空确认二选一） | tokenizer BL-COST-BATCH-V1 快车道回落事故调查（intent 三层静默叠加） |

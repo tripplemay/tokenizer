@@ -10,6 +10,12 @@ description: Coordinator 的 /plan 入口。它在 new / planning / done 阶段�
 1. **同步与加载（新会话时）：** 运行 git pull --ff-only origin main；读取 progress.json、features.json、backlog.json、.agent-id、.agents-registry.json；加载 T0 记忆（.auto-memory/MEMORY.md、project-status.md、environment.md）和 T1（role-context/planner.md）。
 2. **确认阶段合法：** status 必须为 new、planning 或 done。若为其他状态，向用户说明当前阶段并停止，不越界。
 3. **先执行批次边界准备：** 读取项目根 planner.md，先且只执行 §0a、§0b、§0c。§0c 是唯一消费签名 mode intent 的位置；不要在 active batch 重放它。此时可收集用户目标、已选 backlog / 反馈和下一个 batch id，但不得在还没有 proposal 的情况下写 spec、features、阶段状态或替换已解析角色。
+
+   **§0c 是强制关卡，不靠自觉（`framework/harness/console-mode.md` §3.5 ④）：** resolver 读 `progress.mode_intent`、consume 读 `harness.json.project.mode_defaults`，两者**数据源不相交**——跳过 §0c 时 resolver 一切正常、staged intent 被静默漏掉，没有任何一端会报错。因此本次 `/plan` 写入任何阶段状态之前，必须在对话中留下二选一的机械证据：
+   - `bash .claude/console/consume-mode-intent.sh --batch <new-batch-id>` 的运行输出；**或**
+   - 读 `harness.json.project.mode_defaults` 得到 null / 已在台账中的核查输出，并向用户明示「本批次无待消费 intent，按本机手工选择」。
+
+   用户决定暂不开新批次时不得消费（§0c 阶段规则），但仍须向用户报出 staged intent 的存在、profile 与有效期。
 4. **判定 Planner 路径：**
    - 先运行唯一的 active-role 解析器：
 

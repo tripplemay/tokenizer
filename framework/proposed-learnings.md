@@ -213,4 +213,8 @@
 
 **建议写入：** `framework/harness/console-mode.md`（head_mismatch 宽限语义/失败通知条款）+ `.claude/skills/plan`（§0c 强制化：new/done 边界写状态前须有 consume 运行证据或 mode_defaults 为空的显式确认）+ 产品侧 backlog（失败 intent 走 BL-GATE-INBOX 邮件通道通知）
 
-**状态：** 待确认
+**状态：** ✅ 已采纳（用户 2026-08-10 确认）—— 契约层回流上游 **v1.10.1**（commit `027c369`）：
+`harness/console-mode.md` 新增 §3.5 投递失败语义四条 + `templates/claude/skills/plan/SKILL.md` step 3
+§0c 强制关卡；VERSION / framework-releases / contract-fixtures 对齐，两个 validator 双绿；tokenizer 已
+`harness.sh sync` 到 v1.10.1（6 更新 0 冲突）。产品侧实现（head_mismatch 重试语义 + 本机失败留痕 +
+服务端 failed 邮件通知）登记为 backlog `BL-MODE-INTENT-DELIVERY`，本次只锁契约不动机件。
