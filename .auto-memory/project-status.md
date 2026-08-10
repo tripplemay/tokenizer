@@ -16,9 +16,8 @@ type: project
 
 - Windows CI `install-agent-lifecycle` 既有失败使 workflow 总结论恒 failure（Linux Verify/Deploy 不受影响）——已排入 BL-AGENT-SUPPLY-CHAIN F006。
 - harness-console-demo 删除待用户执行（Contract Conformance CI 已取代其演练职能）。
-- mode intent 77af0221 已消费并入 harness.json 消费台账（v1.9.1 双锚）；下批次执行形态待控制台新签 intent 或本机手工选择。
+- mode intent：77af0221 已消费入台账；新 intent **da55b68a 已 staged 待消费**（v2 heterogeneous：generator=codex / evaluator=kimi / planner=Coordinator，有效期至 2026-08-17），下批次 /plan 边界跑 consume-mode-intent.sh。
 - accept-generator-handoff 本机操作要点：`TMPDIR=/tmp` 调用（长路径破 sun_path 104）+ 沙箱先铺 node_modules（目标已存在须先 rm 再 `cp -cR`）——根治提案在 proposed-learnings。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
 - Kimi access token TTL ≈ 15 分钟；派发前以最小 `kimi -p` 调用刷新（fail-closed 设计）。
-- prisma/migrations 缺 migration_lock.toml + legacy 漂移（backlog：BL-MIGRATION-LOCK-DRIFT，low）。
 - install.sh 重装未推进 checkout（本次手动 fetch+checkout 兜底）——归 BL-AGENT-SUPPLY-CHAIN 整改面。
