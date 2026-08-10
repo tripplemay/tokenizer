@@ -1,7 +1,7 @@
 {
   "batch_id": "FRONTEND-CODE-REVIEW-2026-08-10",
   "fix_round": 0,
-  "created_at": "2026-08-10T06:30:58Z",
+  "created_at": "2026-08-10T07:37:08Z",
   "waiting": null,
   "verdicts": [
     {
@@ -187,13 +187,13 @@
     {
       "feature_id": "F-31",
       "result": "FAIL",
-      "evidence": "P1 financial correctness: src/server/harness-cost.ts:74-106 leaves terminal statuses open until now, silently skips unpriced costs, and merges capped intervals under the successor phase; detail inputs are also capped at 100 transitions and omit observedAfter uncertainty.",
-      "steps_to_reproduce": "Build intervals ending in done and advance now, then add post-completion usage and observe the completed batch total continue growing. Repeat with an unpriced model and more than 100/60 transitions to observe silent under-counting or corrupted phase/rework attribution."
+      "evidence": "P1 financial correctness: src/server/harness-cost.ts:107-120 extends every non-done final phase to now without report freshness and merges capped intervals under the successor phase; both page inputs remain capped at 100 transitions and omit observedAfter uncertainty.",
+      "steps_to_reproduce": "Leave a harness project stale in building/verifying and advance now while adding unrelated same-project usage; observe the batch continue growing. Repeat with more than 100 transitions and more than 60 intervals to observe truncated totals or corrupted phase/rework attribution."
     },
     {
       "feature_id": "F-32",
       "result": "FAIL",
-      "evidence": "P1 performance/scalability: src/server/harness-cost.ts:110-171 issues one concurrent UsageEvent groupBy per interval (up to 60), while app/projects/[id]/page.tsx:31-84 repeats it for every unbounded HarnessProject and the 30-second now key rotates continuously.",
+      "evidence": "P1 performance/scalability: src/server/harness-cost.ts:124-193 issues one concurrent UsageEvent groupBy per interval (up to 60), while app/projects/[id]/page.tsx:31-85 repeats it for every unbounded HarnessProject and the 30-second now key rotates continuously.",
       "steps_to_reproduce": "Associate N harness projects with a usage project, seed 60 phase intervals each, open the project page on a cold cache, and count up to N*60 concurrent groupBy calls; keep detail open across 30-second refresh ticks."
     },
     {

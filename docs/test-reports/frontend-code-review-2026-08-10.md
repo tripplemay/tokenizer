@@ -1,7 +1,7 @@
 # 前端全量 Code Review
 
-> 审查日期：2026-08-10  
-> 锁定版本：`c27fb38`  
+> 审查日期：2026-08-10
+> 锁定版本：`905a90b`
 > 范围：`app/` App Router 页面、`src/components/` 共享 UI、被页面直接调用的 `src/server/` 数据/认证边界，以及前端构建与测试配置。认证和 API 问题仅在它们直接改变前端行为或安全边界时纳入。
 
 ## 结论
@@ -15,8 +15,9 @@
 - `npm run verify`：通过（在移走 `.next` 的干净条件下复跑，退出码 0）。
 - `npm run lint`：通过，无 warning/error；脚本仍使用已被 Next 标记为 deprecated 的 `next lint`。
 - `npm run build`：通过，Next 15.5.18；本地构建输出 dashboard 首屏约 132KB、设备页约 131KB、Harness 详情约 136KB First Load JS；共享 chunk 中 ApexCharts 约 535KB 未压缩（约 139KB gzip）。
-- `npm run test`：83 个测试文件通过，1127 passed，10 skipped。
-- 仓库没有 Playwright/浏览器级前端测试，也没有本地数据库容器运行；因此登录、轮询、tooltip 执行态结论来自源码链路和可复现的静态行为推导，发布前仍需补 L2 E2E。
+- `npm run test`：86 个测试文件通过、4 个文件跳过；1148 passed，12 skipped。
+- 审查期间主分支从 `c27fb38` 推进到 `905a90b`；`b1e0368` 已修复原 F-31 中的 `done` 终态封闭、未定价 token 披露和同毫秒排序稳定性。本报告已在新基线复核，F-31 只保留尚未修复的失联窗口、截断和阶段改标问题，不将已修项计入 40 项。
+- 仓库没有可执行的 Playwright/React Testing Library 前端回归套件；本次也未启用仓库 DB/contract probe，相关测试在 Vitest 中跳过。因此登录、轮询、tooltip 和并发写入的执行态结论来自完整源码链路与静态可复现推导，发布前仍需补 L2 E2E/DB 集成验证。
 
 ## Findings
 
@@ -86,15 +87,15 @@
 - **影响/复现**：新用户在非上海时区首次打开 dashboard/events/model，SQL 分桶、标签和相对时间按上海计算；PATCH 虽写入正确时区，本次页面仍保留错误数据，必须二次导航/刷新才纠正。
 - **建议**：在请求入口优先读取 cookie/客户端已知时区并传给 RSC，或 PATCH 成功后触发一次受控 refresh；同时避免首屏展示错误时区的数字。
 
-### F-31 [P1] 批次成本的时间窗正确性不成立，终态仍持续计费且可静默少算
+### F-31 [P1] 批次成本仍会在失联非终态持续计费，截断/合并还会改写归因口径
 
-- **证据**：`src/server/harness-cost.ts:74-100` 不区分 `done` 等终态，最后一个阶段始终延长到量化后的 now；现有测试明确把 `done` 保留为开区间（`tests/server/harness-cost.test.ts:56-73`），UI 在 `app/harness/[id]/views.tsx:762-777` 标成“进行中”。详情查询只取最新 100 条 transition（`src/server/harness-detail.ts:82-97`）；Harness 页映射时丢弃 `observedAfter`（`app/harness/[id]/page.tsx:53-60`），尽管 schema 明确真实切换发生在 `(observedAfter, observedAt]`（`prisma/schema.prisma:370-373`）。`phaseCost` 对 `estimateCost === null` 直接跳过（`src/server/harness-cost.ts:127-138`），返回结构却没有 partial/unpriced 标志，UI 照常显示金额。超过 60 区间时还把最老区间并入后继但保留后继的 phase/fixRounds（`:102-106`），会扭曲阶段与返工小计。
-- **影响/复现**：批次进入 `done` 后继续产生同项目用量，页面上的“已完成”批次总额每 30 秒继续上涨；超过 100 次流转、首次/离线观测或出现未定价模型时，又可以少算。因此 `messages/*:697` 声称“误差只多不少/never under”与实现矛盾。
-- **建议**：用 `doneAt`/superseded/report 新鲜度明确封闭终态和失联窗口；从当前批次边界查全量 transition，保留观测不确定性；传递 unpriced/partial 标志；超限时做不改变 phase 语义的聚合，并覆盖终态、未定价和 >60/>100 测试。
+- **证据**：`src/server/harness-cost.ts:107-113` 对任何非 `done` 的最后阶段都延长到 now，但 `getBatchCostImpl` 参数没有 `reportedAt`/新鲜度（`:176-181`），无法区分真正活跃与 agent 离线。Harness 详情和 Project 页仍只取最新 100 条 transition（`src/server/harness-detail.ts:82-98`, `app/projects/[id]/page.tsx:39-52`）；`TransitionLike`/页面映射仍丢弃 `observedAfter`（`src/server/harness-cost.ts:20-27`, `app/harness/[id]/page.tsx:53-60`），尽管 schema 明确真实切换发生在 `(observedAfter, observedAt]`（`prisma/schema.prisma:370-373`）。超过 60 区间时仍把最老区间并入后继但保留后继的 phase/fixRounds（`src/server/harness-cost.ts:116-120`），将旧阶段用量改标为后继阶段，扭曲阶段与返工小计。
+- **影响/复现**：让 agent 停在 building/verifying 后离线，再产生同项目的其他用量，批次总额会每 30 秒继续上涨；超过 100 次流转会丢掉批次早期窗口，超过 60 区间则把 fixing/reverifying 等用量归到错误标签。当前文案披露 >100 截断，但没有解决或披露失联窗口和 >60 阶段改标。
+- **建议**：用 report freshness/归档时刻封闭失联窗口；从当前批次边界查全量 transition，将 `observedAfter` 不确定性纳入边界策略；超限时预聚合同 phase/fixRound 或返回明确 partial，不要改写阶段标签；覆盖 stale、>60 语义和 >100 完整性测试。
 
 ### F-32 [P1] 批次成本按项目和阶段产生 `N × 60` 并发聚合，30 秒刷新持续换缓存键
 
-- **证据**：`src/server/harness-cost.ts:110-171` 对每个 phase interval 发一次 `usageEvent.groupBy`，再用 `Promise.all`并发，上限 60 次。`app/projects/[id]/page.tsx:31-53,75-84` 对所有关联 HarnessProject 无界查询并再次 `Promise.all(getBatchCost)`。缓存参数包含量化后 `nowMs`（`src/server/harness-cost.ts:185-207`），Harness 详情还每 30 秒整页 refresh（`app/harness/[id]/page.tsx:71-74`），所以活跃批次的 key 每个 tick 都改变。
+- **证据**：`src/server/harness-cost.ts:124-193` 对每个 phase interval 发一次 `usageEvent.groupBy`，再用 `Promise.all`并发，上限 60 次。`app/projects/[id]/page.tsx:31-54,76-85` 对所有关联 HarnessProject 无界查询并再次 `Promise.all(getBatchCost)`。缓存参数包含量化后 `nowMs`（`src/server/harness-cost.ts:209-231`），Harness 详情还每 30 秒整页 refresh（`app/harness/[id]/page.tsx:71-74`），所以活跃批次的 key 每个 tick 都改变。
 - **影响/复现**：一个 Project 关联 N 个长批次时，冷请求最多同时发起 `N × 60` 个 model groupBy；保持页面打开则每 30 秒重算当前窗口。这会在真实历史量下瞬时耗尽数据库连接/CPU，并放大 F-07。
 - **建议**：使用单条 SQL（interval `VALUES`/range join + group）完成整批聚合；关联 HarnessProject 分页/限制；已封闭批次永久缓存，活动批次只增量刷新未封闭区间；为该页加数据库 query-budget 集成测试。
 

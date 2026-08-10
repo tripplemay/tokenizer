@@ -204,3 +204,13 @@
 **补充证据（2026-08-10）：** 清 mode_intent 的另一后果——`harness.json.project.mode_defaults` 仍留着已消费 intent，而消费守卫以 `progress.mode_intent.intent_id` 为「已消费」锚点；锚点被清后同一 intent 机械上可被下一批误重放（BL-GATE-INBOX planning 实遇，Coordinator 按 once 语义人工拒绝）。根治应在消费成功后由 device agent/消费者清理或标记 staged mode_defaults。
 
 **状态：** 已回流（v1.9.1，2026-08-10）—— consume-mode-intent.sh 消费台账双锚 + 端到端回归 ×3；planner.md done 收尾节明确 mode_intent 清 null
+
+## [2026-08-10] Coordinator/主会话 — 来源：BL-COST-BATCH-V1 快车道回落事故调查（intent da55b68a 前身被 head_mismatch 静默丢弃）
+
+**类型：** 新坑 + 铁律补充候选
+
+**内容：** 签名 mode intent 的投递链存在三层静默叠加：① `head_mismatch` 标 `retryable:false`，而 HEAD 前移在高频推送流程是常态（本仓 6 小时 28 次 HEAD 变更），签发到投递跨一次 commit 即烧掉整张 intent；② 被拒 intent 本机零留痕（issue 行只存活一轮）；③ 服务端 failed 为无声终态不重发不通知。另：/plan 边界的 §0c `consume-mode-intent.sh` 纯靠 Coordinator 自觉，resolver 与 consume 数据源不相交，跳步会静默漏掉 staged intent（本次经审计为非致因侥幸）。
+
+**建议写入：** `framework/harness/console-mode.md`（head_mismatch 宽限语义/失败通知条款）+ `.claude/skills/plan`（§0c 强制化：new/done 边界写状态前须有 consume 运行证据或 mode_defaults 为空的显式确认）+ 产品侧 backlog（失败 intent 走 BL-GATE-INBOX 邮件通道通知）
+
+**状态：** 待确认
