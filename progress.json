@@ -1,12 +1,12 @@
 {
-  "status": "reverifying",
+  "status": "done",
   "user_goal": "成本×批次/阶段归因 v1：HarnessTransition 时间窗 join UsageEvent，批次成本进控制台一等公民视图；顺路 prisma migrations 卫生",
   "total_features": 5,
   "completed_features": 5,
   "fix_rounds": 1,
   "current_sprint": "BL-COST-BATCH-V1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T07:18:19Z",
+  "last_updated": "2026-08-10T07:29:22Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -14,26 +14,28 @@
   "docs": {
     "spec": "docs/specs/BL-COST-BATCH-V1-spec.md",
     "test_cases": null,
-    "signoff": null,
+    "signoff": "docs/test-reports/BL-COST-BATCH-V1-signoff.md",
     "framework_reviewed": true
   },
   "role_assignments": null,
   "evaluator_feedback": {
     "batch": "BL-COST-BATCH-V1",
-    "verdict": "ALL_PASS_SPEC + USER_ADJUDICATED_FIXING",
+    "verdict": "ALL_PASS_AFTER_FIX_ROUND",
     "results": {
       "F001": "PASS",
       "F002": "PASS",
       "F003": "PASS",
       "F004": "PASS",
-      "F005": "PASS"
+      "F005": "PASS",
+      "fix_round_1": "PASS"
     },
-    "fixing_reason": "独立前端评审（同 SHA c27fb38，docs/test-reports/frontend-code-review-2026-08-10.md）F-31 [P1]：终态批次持续计费、unpriced 静默少算与「只多不少」文案矛盾、>100 截断——用户裁决进 fixing 轮修核心三项；F-32 及其余 findings 入 backlog",
-    "note": "五分片结论原样收录于 signoff（验收面按 spec acceptance 全 PASS）"
+    "fix_rounds": 1,
+    "report": "docs/test-reports/BL-COST-BATCH-V1-signoff.md",
+    "note": "首轮五分片按 spec 全 PASS；用户按独立评审 F-31 裁决 fixing 轮（终态封闭/unpriced 披露/次级序）；复验三项全 PASS 零回归。F004 审计基线注记在案。"
   },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-COST-BATCH-V1 building 完成（4 个 generator feature）→ verifying，2026-08-10】F001 聚合层（ISO 串化防 unstable_cache 反序列化双态）· F002 overview 成本卡 · F003 projects 联动卡（quantizedNowMs 同窗口同 key）· F005 migrations 卫生（FK ON UPDATE 漂移收敛，scratch 双验）。F004（evaluator 归因审计）在 verifying 阶段执行。待推送（触发部署 + migrate deploy 约束交换）。"
+    "planning": "【BL-COST-BATCH-V1 done，2026-08-10，fix_rounds=1】战略核心兑现：批次/阶段成本进控制台。首轮全 PASS 后同 SHA 独立评审（46 findings）F-31 触发 fixing 轮：done 终态零宽封闭 + unpriced 显式披露 + orderBy 次级序，复验独立探针背书零回归（1148）。评审分流：BL-SECURITY-P1（下批优先，AUTH_SECRET/XSS/重定向/gate TOCTOU/enrollment/quota accountKey）+ BL-COST-PERF + REMAINDER。F004 审计报告钉 c27fb38 基线，HEAD 语义注记见 signoff。用户 L2 目视：harness overview 成本卡。"
   },
   "features": [],
   "pending_gate": null,

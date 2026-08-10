@@ -142,7 +142,7 @@
   {
     "id": "BL-FRONTEND-REVIEW-REMAINDER",
     "title": "前端评审剩余 findings 分类清理（P1 剩余 + 22 P2 + 3 P3）",
-    "description": "评审报告剩余项：F-03 深链丢失 / F-06 会话重复解析 / F-09 KPI 范围不一致 / F-24 历史账号误判 / F-25 时区首载 + P2 全部（a11y/i18n 混杂/移动端滚动/loading 边界/Events subtitle 等）+ P3。按域分组后可拆多个小批次。报告：docs/test-reports/frontend-code-review-2026-08-10.md。",
+    "description": "评审报告剩余项：F-03 深链丢失 / F-06 会话重复解析 / F-09 KPI 范围不一致 / F-24 历史账号误判 / F-25 时区首载 + P2 全部（a11y/i18n 混杂/移动端滚动/loading 边界/Events subtitle 等）+ P3。按域分组后可拆多个小批次。报告：docs/test-reports/frontend-code-review-2026-08-10.md。 追加：F-34 git-only 排名过滤 / F-36–F-39 quota 域采集失败可见性、快照无界增长、批量 API schema、订阅卡文案 / F-40 provider 覆盖缺口（与既有 BL-QUOTA-PROVIDERS 相关）。",
     "decisions": [
       "2026-08-10 用户裁决入 backlog 待排"
     ],

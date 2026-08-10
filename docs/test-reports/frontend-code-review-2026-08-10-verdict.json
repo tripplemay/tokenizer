@@ -1,7 +1,7 @@
 {
   "batch_id": "FRONTEND-CODE-REVIEW-2026-08-10",
   "fix_round": 0,
-  "created_at": "2026-08-10T00:00:00Z",
+  "created_at": "2026-08-10T06:30:58Z",
   "waiting": null,
   "verdicts": [
     {
@@ -127,20 +127,20 @@
     {
       "feature_id": "F-19",
       "result": "FAIL",
-      "evidence": "P2 accessibility: sidebar close is a clickable span, navigation list semantics are invalid, several inputs are placeholder-only, login errors lack alert/live semantics, and legend is nested in a div (cited app/src paths in the report).",
-      "steps_to_reproduce": "Run keyboard-only navigation and a screen-reader/axe scan on mobile sidebar, login, gate, pricing, and mode-editor flows; verify missing names, focus behavior, and announcements."
+      "evidence": "P2 accessibility/responsive: the mobile sidebar uses a clickable span, lacks inert/focus management and does not close on route changes; form semantics are incomplete, while approve and reject badges share the same green styling (app/admin-shell.tsx:19-35; src/components/sidebar/index.tsx:16-21; app/harness/page.tsx:136-149).",
+      "steps_to_reproduce": "At mobile width open the sidebar, activate a route, then tab through the new page; verify the drawer remains open and hidden links remain focusable. Inspect approved and rejected gate badges for indistinguishable green semantics."
     },
     {
       "feature_id": "F-20",
       "result": "FAIL",
-      "evidence": "P2 i18n: onboarding/enrollment/admin/navbar contain hard-coded Chinese and English strings; src/shared/format.ts:44-46 and events formatting use en-US regardless of selected locale.",
-      "steps_to_reproduce": "Switch locale between en and zh-CN on dashboard, enrollment, pricing, and navbar pages, then compare visible/aria strings and number/date formatting."
+      "evidence": "P2 i18n/data-labeling: onboarding/enrollment/admin/navbar contain hard-coded Chinese and English strings, number/date formatting is fixed, and messages/en.json plus zh-CN.json hard-code Asia/Shanghai in chart subtitles even though data is bucketed in each user's timezone.",
+      "steps_to_reproduce": "Switch locale and use a non-Asia/Shanghai timezone; compare visible/aria strings and number/date formatting, then compare the chart subtitle's claimed timezone with the actual bucket boundaries."
     },
     {
       "feature_id": "F-21",
       "result": "FAIL",
-      "evidence": "P2 performance/architecture: multiple global CSS files repeat remote Google Font imports and legacy styles; app/layout.tsx passes the complete messages payload to the client provider on every route.",
-      "steps_to_reproduce": "Inspect the cited CSS/layout imports, run a production build, and measure document payload/CSS requests with a cold browser cache on a route that needs only a small message namespace."
+      "evidence": "P2 performance/architecture: global CSS repeats remote Google Font imports and legacy styles; app/layout.tsx sends the complete messages payload and has no server-rendered theme class, while Navbar applies dark mode only after hydration.",
+      "steps_to_reproduce": "Run a cold production load with stored/system dark mode and inspect the light-to-dark flash, CSS/font requests, and serialized message payload on a route needing one small namespace."
     },
     {
       "feature_id": "F-26",
@@ -183,6 +183,66 @@
       "result": "FAIL",
       "evidence": "P3 testing: tests/ contains server/shared/CLI coverage but no Playwright, React Testing Library, or axe suite for the listed browser flows.",
       "steps_to_reproduce": "Run npm test and inventory test dependencies/files; attempt to exercise login deep links, enrollment polling, range picker, locale, keyboard, and tooltip flows and observe no automated browser gate."
+    },
+    {
+      "feature_id": "F-31",
+      "result": "FAIL",
+      "evidence": "P1 financial correctness: src/server/harness-cost.ts:74-106 leaves terminal statuses open until now, silently skips unpriced costs, and merges capped intervals under the successor phase; detail inputs are also capped at 100 transitions and omit observedAfter uncertainty.",
+      "steps_to_reproduce": "Build intervals ending in done and advance now, then add post-completion usage and observe the completed batch total continue growing. Repeat with an unpriced model and more than 100/60 transitions to observe silent under-counting or corrupted phase/rework attribution."
+    },
+    {
+      "feature_id": "F-32",
+      "result": "FAIL",
+      "evidence": "P1 performance/scalability: src/server/harness-cost.ts:110-171 issues one concurrent UsageEvent groupBy per interval (up to 60), while app/projects/[id]/page.tsx:31-84 repeats it for every unbounded HarnessProject and the 30-second now key rotates continuously.",
+      "steps_to_reproduce": "Associate N harness projects with a usage project, seed 60 phase intervals each, open the project page on a cold cache, and count up to N*60 concurrent groupBy calls; keep detail open across 30-second refresh ticks."
+    },
+    {
+      "feature_id": "F-33",
+      "result": "FAIL",
+      "evidence": "P1 authorization race: app/api/harness/gates/route.ts:73-84 reads an undecided gate, then :112-121 performs an unconditional update by id after signing, without a transaction or compare-and-swap predicate.",
+      "steps_to_reproduce": "Send concurrent approve and reject POSTs for the same undecided gate from separate sessions/tabs; both can pass the null check and return success, with the later signed decision overwriting the first."
+    },
+    {
+      "feature_id": "F-34",
+      "result": "FAIL",
+      "evidence": "P2 functional/performance: src/server/summaries.ts:728-787 takes the global top 40 projects before applying gitOnly, then scans all project-model cost groups even though only 20 rows are returned.",
+      "steps_to_reproduce": "Seed more than 40 higher-token non-git projects and lower-ranked git projects, select Git only, and observe valid git projects disappear from the result."
+    },
+    {
+      "feature_id": "F-35",
+      "result": "FAIL",
+      "evidence": "P1 quota correctness: src/server/quota.ts:43-77 selects latest rows by provider+windowKey but omits accountKey, then combines the selected windows under one provider card/account identity.",
+      "steps_to_reproduce": "Upload primary, weekly, plan, and credit snapshots from two accounts at staggered times; observe one dashboard card combine windows that do not belong to the same account."
+    },
+    {
+      "feature_id": "F-36",
+      "result": "FAIL",
+      "evidence": "P2 quota reliability: src/quota/run.ts:29-59 stores provider errors only in local agent state, server/UI expose snapshots only, and codex-chatgpt.ts:58-61 uses bare fetch instead of the proxy-aware agent fetch path.",
+      "steps_to_reproduce": "Expire the provider token or run behind a required proxy while retaining an old snapshot; verify local state records failure but the dashboard continues showing stale quota without an error/reconnect state."
+    },
+    {
+      "feature_id": "F-37",
+      "result": "FAIL",
+      "evidence": "P2 database scalability: active agents append multiple QuotaSnapshot rows every 60 seconds, while src/server/quota.ts:43-53 repeatedly computes latest windows over all user history with no retention, rollup, or current-state table.",
+      "steps_to_reproduce": "Generate months of per-minute snapshots, expire the 30-second cache, and compare EXPLAIN/latency/index reads for getQuotaLatest as history grows."
+    },
+    {
+      "feature_id": "F-38",
+      "result": "FAIL",
+      "evidence": "P2 validation/security boundary: app/api/quota/snapshots/batch/route.ts:27-55 only checks that snapshots is an array before constructing Decimal, BigInt, Date, and createMany values; no body, batch, range, length, or JSON-size limits exist.",
+      "steps_to_reproduce": "POST a valid device token with invalid dates, non-finite/unsafe numbers, negative utilization, oversized strings/raw JSON, or a huge array; inspect whole-batch 500s/resource use and a progress bar wider than 100%."
+    },
+    {
+      "feature_id": "F-39",
+      "result": "FAIL",
+      "evidence": "P2 functional/i18n: SubscriptionCard wraps an already complete relative-time phrase in messages that append ago/before, uses the past-time formatter for future resets, and hard-codes a 5h code-review label although fixture window_minutes is 60.",
+      "steps_to_reproduce": "Render quota data in en and zh-CN with a recent capture and future reset; observe duplicated ago/before suffixes, an absolute reset date instead of a countdown, and a 1h window labeled 5h."
+    },
+    {
+      "feature_id": "F-40",
+      "result": "FAIL",
+      "evidence": "P3 missing functionality/architecture: src/quota/registry.ts:4-6 and SubscriptionCard implement only codex-chatgpt; the repository roadmap explicitly records missing Claude/Kimi subscription windows and no generic provider/account UI exists.",
+      "steps_to_reproduce": "Use a tenant with Claude Code or Kimi usage but no Codex snapshot and open the dashboard; verify there is no corresponding subscription quota card, provider selector, or provider health state."
     }
   ]
 }
