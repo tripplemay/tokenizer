@@ -276,6 +276,14 @@ profile 语义是机械护栏：v1 的 `fast` 要求 `role_assignments=null`；v
 `resolution` 只用于 v2 non-fast；`adapter_dir` 只在消费命令显式传入项目内 `--adapters` 时出现）。该目录不是
 人类可选角色或签名字段，active 命令只可恢复同一路径，不能用另一个 adapter 目录覆盖。没有 mode intent 时仍走完整本机手工流程。
 
+**消费台账（v1.9.1）：** 重放守卫是双锚。`progress.mode_intent.intent_id` 是 active 批次锚，但它在 done
+收尾时会被例行清除；因此消费成功即由消费者在同一次调用内原子改写 `harness.json`——移除已消费的
+`project.mode_defaults` 并把 `{intent_id, applied_batch, consumed_at}` 追加进
+`project.consumed_mode_intents`（保留最近 20 条）。后者是耐久锚：staged 快照被同一 intent 重新写入时，
+消费者查台账直接拒绝，控制台必须签发新 intent。若 staging 在消费临界区后已换成**更新的** intent，清理
+只删匹配 intent_id 的 staged 条目，新 staging 原样保留。台账写入失败时消费者报错退出并明示
+「checkpoint 已写入」，由人工补记；device agent 与控制台不写台账。
+
 ## 4. 组件
 
 | 组件 | 位置 | 随 bootstrap 铺入 | 状态 |
@@ -368,3 +376,4 @@ python3 console/server.py --config console/console.config.json --host 0.0.0.0 --
 | 2026-07-25 | v1.3.2：通道 B 实装 —— §2 改写为两条通道；§4 补中继行与契约边界；§5 说明 push 权限只在通道 A 需要 | tokenizer 工程按本契约接入；本机整栈 + 生产各跑通一次完整往返 |
 | 2026-07-25 | v1.3.3：`approve-gate.sh` 支持本机签名（`--key` / 钥匙串），新增 §0 与 §3.3、红线第 5 条 —— 本机批准与开发一律不依赖控制台 | 用户裁决：控制台只是辅助工具；修掉 v1.3.2 记录的验签模式缺陷 |
 | 2026-07-27 | v1.5：签名 `project.mode_defaults` 只在下一批次边界生效；HEAD 只在 device staging 前比较 | BL-HARNESS-DETAIL-MODEINTENT F001 |
+| 2026-08-10 | v1.9.1：消费台账 `project.consumed_mode_intents` —— 重放守卫双锚，done 清 `progress.mode_intent` 不再开重放窗口；消费即移除 staged `mode_defaults` | tokenizer BL-GATE-INBOX planning 实遇误重放风险（人工按 once 语义拒绝）；端到端回归 ×3 |

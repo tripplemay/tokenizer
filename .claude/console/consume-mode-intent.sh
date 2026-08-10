@@ -105,7 +105,7 @@ PY
   fi
 fi
 
-if ! python3 - "$PROGRESS" "$SEALED" "$BATCH" "$PERSISTED_ADAPTER_DIR" <<'PY'
+if ! python3 - "$PROGRESS" "$SEALED" "$BATCH" "$PERSISTED_ADAPTER_DIR" "$HARNESS" <<'PY'
 import datetime
 import json
 import os
@@ -114,7 +114,8 @@ import stat
 import sys
 import tempfile
 
-progress_path, sealed_path, batch, persisted_adapter_dir = sys.argv[1:5]
+progress_path, sealed_path, batch, persisted_adapter_dir, harness_path = sys.argv[1:6]
+CONSUMED_LEDGER_LIMIT = 20
 roles = ("planner", "generator", "evaluator")
 stable_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 stable_tool = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
@@ -169,6 +170,23 @@ if execution.get("profile") != sealed.get("profile"):
 previous = progress.get("mode_intent")
 if isinstance(previous, dict) and previous.get("intent_id") == sealed["intent_id"]:
     fail("该 intent_id 已消费过，不得跨批次重放")
+
+# Second replay anchor: the progress checkpoint is routinely cleared at done
+# cleanup, so the durable consumption ledger in harness.json must also reject
+# a re-staged, already-consumed intent (v1.9.1).
+harness = load(harness_path, "harness")
+harness_project = harness.get("project") if isinstance(harness, dict) else None
+if not isinstance(harness_project, dict):
+    fail("harness.json project 节点必须是 object")
+ledger = harness_project.get("consumed_mode_intents")
+if ledger is not None and not isinstance(ledger, list):
+    fail("harness.json project.consumed_mode_intents 必须是数组")
+for entry in ledger or []:
+    if isinstance(entry, dict) and entry.get("intent_id") == sealed["intent_id"]:
+        fail(
+            "该 intent_id 已在 harness.json 消费台账中（batch "
+            f"{entry.get('applied_batch')!r}），不得重放；控制台须签发新 intent"
+        )
 
 mode = {
     "intent_id": sealed["intent_id"],
@@ -271,6 +289,63 @@ try:
         raise
 except OSError as exc:
     fail(f"progress 原子写入失败：{exc}")
+
+
+def atomic_write(path, document):
+    target = os.path.abspath(path)
+    directory = os.path.dirname(target)
+    original_mode = stat.S_IMODE(os.stat(target).st_mode)
+    fd, temporary = tempfile.mkstemp(prefix=f".{os.path.basename(target)}.mode-intent-", dir=directory)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(document, stream, ensure_ascii=False, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, original_mode)
+        os.replace(temporary, target)
+        directory_fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+# Consumption ledger (v1.9.1): drop the staged intent and record the consumed
+# intent_id durably in harness.json, so clearing progress.mode_intent at done
+# can never reopen a replay window. Re-read harness.json fresh: a concurrent
+# device staging may have replaced mode_defaults with a NEWER intent, which
+# must be left untouched — only the intent we just consumed is removed.
+try:
+    harness_now = load(harness_path, "harness（消费后台账写入）")
+    project_now = harness_now.get("project") if isinstance(harness_now, dict) else None
+    if not isinstance(project_now, dict):
+        raise ValueError("harness.json project 节点必须是 object")
+    staged_now = project_now.get("mode_defaults")
+    staged_intent = staged_now.get("intent") if isinstance(staged_now, dict) else None
+    if isinstance(staged_intent, dict) and staged_intent.get("intent_id") == sealed["intent_id"]:
+        del project_now["mode_defaults"]
+    ledger_now = project_now.get("consumed_mode_intents")
+    if not isinstance(ledger_now, list):
+        ledger_now = []
+    ledger_now.append({
+        "intent_id": sealed["intent_id"],
+        "applied_batch": batch,
+        "consumed_at": mode["applied_at"],
+    })
+    project_now["consumed_mode_intents"] = ledger_now[-CONSUMED_LEDGER_LIMIT:]
+    atomic_write(harness_path, harness_now)
+except (OSError, ValueError) as exc:
+    fail(
+        "progress checkpoint 已写入，但 harness.json 消费台账落盘失败——"
+        f"请手工移除 project.mode_defaults 并补记 consumed_mode_intents：{exc}"
+    )
 
 print(json.dumps({"intent_id": mode["intent_id"], "applied_batch": batch, "execution_version": version, "profile": profile}, ensure_ascii=False, sort_keys=True))
 PY

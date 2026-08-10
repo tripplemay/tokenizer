@@ -203,4 +203,4 @@
 
 **补充证据（2026-08-10）：** 清 mode_intent 的另一后果——`harness.json.project.mode_defaults` 仍留着已消费 intent，而消费守卫以 `progress.mode_intent.intent_id` 为「已消费」锚点；锚点被清后同一 intent 机械上可被下一批误重放（BL-GATE-INBOX planning 实遇，Coordinator 按 once 语义人工拒绝）。根治应在消费成功后由 device agent/消费者清理或标记 staged mode_defaults。
 
-**状态：** 待确认
+**状态：** 已回流（v1.9.1，2026-08-10）—— consume-mode-intent.sh 消费台账双锚 + 端到端回归 ×3；planner.md done 收尾节明确 mode_intent 清 null

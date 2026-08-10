@@ -1,8 +1,8 @@
 {
   "lock_version": 1,
   "framework": {
-    "version": "1.9.0",
-    "commit": "5894681"
+    "version": "1.9.1",
+    "commit": "e265acb"
   },
   "managed": {
     ".claude/agents/evaluator.md": {
@@ -187,8 +187,8 @@
     },
     "framework/CHANGELOG.md": {
       "src": "CHANGELOG.md",
-      "sha256": "f3d0e4197c0b4b9ce5c172a63af3de9d6036b0080a3674405f8fc9a64e90e05d",
-      "upstream": "f3d0e4197c0b4b9ce5c172a63af3de9d6036b0080a3674405f8fc9a64e90e05d"
+      "sha256": "7388b5b5b6f8226654ceb8c58decbe9d6c3d1fa41e778bc4355338847bf272b6",
+      "upstream": "7388b5b5b6f8226654ceb8c58decbe9d6c3d1fa41e778bc4355338847bf272b6"
     },
     "framework/README.md": {
       "src": "README.md",
@@ -197,8 +197,8 @@
     },
     "framework/VERSION": {
       "src": "VERSION",
-      "sha256": "30f4611383aa30a15753789f40effde81332f2f8714e6d3b2940bf0fc4592377",
-      "upstream": "30f4611383aa30a15753789f40effde81332f2f8714e6d3b2940bf0fc4592377"
+      "sha256": "0ab4fa190ca1b1d1f630ac87cf34672bfbaf1395d0148c7568d38e58335b8d68",
+      "upstream": "0ab4fa190ca1b1d1f630ac87cf34672bfbaf1395d0148c7568d38e58335b8d68"
     },
     "framework/bootstrap.sh": {
       "src": "bootstrap.sh",
@@ -252,8 +252,8 @@
     },
     "framework/harness/console-mode.md": {
       "src": "harness/console-mode.md",
-      "sha256": "3fe3331e0576786f5ac0ed6f8a6c3f5e6ff01fbe118ac00cb6d570afcb6dcb15",
-      "upstream": "3fe3331e0576786f5ac0ed6f8a6c3f5e6ff01fbe118ac00cb6d570afcb6dcb15"
+      "sha256": "8d4bd5d000cc2f53204c27cbc8aea1529e52cad3f9c8ff28a32bbc9898b90f4a",
+      "upstream": "8d4bd5d000cc2f53204c27cbc8aea1529e52cad3f9c8ff28a32bbc9898b90f4a"
     },
     "framework/harness/dispatch-mode.md": {
       "src": "harness/dispatch-mode.md",
@@ -287,8 +287,8 @@
     },
     "framework/harness/planner.md": {
       "src": "harness/planner.md",
-      "sha256": "bb24641b5c8da38423aeaa6585baf63e6ed470368c392ac6745271ed1cc6c7e6",
-      "upstream": "bb24641b5c8da38423aeaa6585baf63e6ed470368c392ac6745271ed1cc6c7e6"
+      "sha256": "4a77008505b0701fa3ccc655693d8bebae0b3b1d3b2ad385d708cbe1002c03e1",
+      "upstream": "4a77008505b0701fa3ccc655693d8bebae0b3b1d3b2ad385d708cbe1002c03e1"
     },
     "framework/harness/pre-impl-adjudication.md": {
       "src": "harness/pre-impl-adjudication.md",
@@ -617,8 +617,8 @@
     },
     "planner.md": {
       "src": "harness/planner.md",
-      "sha256": "bb24641b5c8da38423aeaa6585baf63e6ed470368c392ac6745271ed1cc6c7e6",
-      "upstream": "bb24641b5c8da38423aeaa6585baf63e6ed470368c392ac6745271ed1cc6c7e6"
+      "sha256": "4a77008505b0701fa3ccc655693d8bebae0b3b1d3b2ad385d708cbe1002c03e1",
+      "upstream": "4a77008505b0701fa3ccc655693d8bebae0b3b1d3b2ad385d708cbe1002c03e1"
     },
     ".claude/dispatch/generator-handoff.schema.json": {
       "src": "templates/claude/dispatch/generator-handoff.schema.json",
@@ -712,8 +712,8 @@
     },
     "framework/harness/framework-releases.json": {
       "src": "harness/framework-releases.json",
-      "sha256": "039175804c8686006372ceb8edf79cebfcc48bf3548b7aa604b56baea92d1d3a",
-      "upstream": "039175804c8686006372ceb8edf79cebfcc48bf3548b7aa604b56baea92d1d3a"
+      "sha256": "fa3f49c31f7cb9974b0ef129cc7798ca0076337c40cc2241429a5a116fcad857",
+      "upstream": "fa3f49c31f7cb9974b0ef129cc7798ca0076337c40cc2241429a5a116fcad857"
     },
     ".claude/agents/planner-proposal.md": {
       "src": "templates/claude/agents/planner-proposal.md",
@@ -727,8 +727,8 @@
     },
     ".claude/console/consume-mode-intent.sh": {
       "src": "templates/claude/console/consume-mode-intent.sh",
-      "sha256": "5ae34eb0d4555edbf385d0767839420abc5451538d4cd989889c2c74440cb228",
-      "upstream": "5ae34eb0d4555edbf385d0767839420abc5451538d4cd989889c2c74440cb228"
+      "sha256": "c095819fcfcbbf780ddd43486e241e85d84e79ef48600003446c5ace08f24bc2",
+      "upstream": "c095819fcfcbbf780ddd43486e241e85d84e79ef48600003446c5ace08f24bc2"
     },
     ".claude/console/resolve-mode-bindings.sh": {
       "src": "templates/claude/console/resolve-mode-bindings.sh",
@@ -822,8 +822,8 @@
     },
     "framework/templates/claude/console/consume-mode-intent.sh": {
       "src": "templates/claude/console/consume-mode-intent.sh",
-      "sha256": "5ae34eb0d4555edbf385d0767839420abc5451538d4cd989889c2c74440cb228",
-      "upstream": "5ae34eb0d4555edbf385d0767839420abc5451538d4cd989889c2c74440cb228"
+      "sha256": "c095819fcfcbbf780ddd43486e241e85d84e79ef48600003446c5ace08f24bc2",
+      "upstream": "c095819fcfcbbf780ddd43486e241e85d84e79ef48600003446c5ace08f24bc2"
     },
     "framework/templates/claude/console/resolve-mode-bindings.sh": {
       "src": "templates/claude/console/resolve-mode-bindings.sh",

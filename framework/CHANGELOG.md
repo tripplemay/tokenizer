@@ -5,6 +5,29 @@
 
 ---
 
+## v1.9.1 — 2026-08-10（mode intent 消费台账：重放守卫双锚）
+
+**来源：** tokenizer `BL-GATE-INBOX` planning 实遇 + proposed-learnings 回流（用户确认）。done 收尾
+例行清除 `progress.mode_intent`（不清会让下一批 resolver 撞过期 checkpoint 硬停），但重放守卫此前只锚在
+`progress.mode_intent.intent_id`——锚点被清后，`harness.json.project.mode_defaults` 里滞留的已消费 intent
+机械上可被下一批误重放（当时靠 Coordinator 人工按 once 语义拒绝）。
+
+**改动：**
+- `templates/claude/console/consume-mode-intent.sh`：消费成功即在同一调用内原子改写 `harness.json`——
+  移除已消费的 `project.mode_defaults`（仅当 staged `intent_id` 与本次消费一致；更新的 staging 原样保留），
+  并把 `{intent_id, applied_batch, consumed_at}` 追加进 `project.consumed_mode_intents`（保留最近 20 条）。
+  消费前置守卫改为双锚：progress 锚之外，台账内的 `intent_id` 直接拒绝重放。台账写入失败明示
+  「checkpoint 已写入」再退出，避免误判为未消费。
+- `harness/console-mode.md`：新增消费台账条款 + 版本记录行；`harness/planner.md`：§0c 双锚说明、
+  done 收尾 §3 明确 `mode_intent` 一并清 null 的依据。
+- `tests/test-consume-mode-intent-ledger.py`：端到端回归 ×3（金样签名 intent 实跑消费：台账落盘与
+  staged 清除 / 清锚重放被台账拒绝 / 无台账时 progress 锚兜底依旧生效）。
+
+**兼容性：** `project.consumed_mode_intents` 是新增独立键；device agent 对 `mode_defaults` 的严格
+shape 判定（`{intent, staged_at}`）使消费后的缺失/台账键均被视作「无 staged」，无需升级 agent。
+
+---
+
 ## v1.9.0 — 2026-08-10（派发用量捕获：run 日志机械提取 usage 进 run-meta）
 
 **来源：** tokenizer `BL-DISPATCH-USAGE-CAPTURE` F001 —— 用户发现 dispatch 模式下外部 CLI 用量

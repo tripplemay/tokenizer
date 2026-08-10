@@ -27,7 +27,9 @@
    创建下一批次时，才读取/消费 mode intent。`planning/building/verifying/fixing/reverifying` 都是 active
    batch；这些阶段不得运行消费步骤，不得改 `role_assignments`、`autonomy-policy.json` 或
    `progress.mode_intent`。若当前 `progress.mode_intent.intent_id` 已等于待消费的 `intent_id`，它已消费过，
-   不得在后续批次重复应用。
+   不得在后续批次重复应用。重放守卫是双锚（v1.9.1）：即使 done 收尾已清 `progress.mode_intent`，
+   `harness.json.project.consumed_mode_intents` 台账仍会让消费者拒绝同一 `intent_id`；两锚由
+   `consume-mode-intent.sh` 机械执行，Planner 不需手工比对。
 2. **用原子消费者机械验证并消费完整意图。** 选定新 batch id 后，在项目根运行：
 
    ```bash
@@ -547,8 +549,10 @@ grep -rn "<Y列名>:" src/          # 反查 Y 的所有赋值处，确认真实
 ### 2. 处理 proposed-learnings（如有）
 读取 `framework/proposed-learnings.md`，逐条提交用户确认，确认后写入对应 framework 文件。
 
-### 3. 清除 role_assignments
+### 3. 清除 role_assignments 与 mode_intent
 如果 progress.json 中存在 `role_assignments`，将其设为 `null`。角色分配仅对当前批次有效，下一批次重新分配。
+`mode_intent` 一并置 `null`（消费审计在 git 历史与 `harness.json.project.consumed_mode_intents` 台账中，
+v1.9.1 起清除它不再打开重放窗口；残留反而会让下一批的 resolver 撞上过期 checkpoint 硬停）。
 
 ### 4. 询问下一批次
 记忆更新完成后，告知用户本批次已归档，询问是否开始下一批次。
