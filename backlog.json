@@ -149,5 +149,35 @@
     ],
     "confirmed_at": "2026-08-10T08:40:00Z",
     "priority": "medium"
+  },
+  {
+    "id": "BL-CI-SIGTERM-FLAKE",
+    "title": "agent-lifecycle SIGTERM 锁释放用例 flake 会 skip 掉 Deploy（安全修复停在已合入未部署）",
+    "description": "tests/cli/agent-lifecycle.test.ts:152 『releases the lock when the running agent receives SIGTERM』在 CI Linux 偶发红。测试源码自注竞态：锁文件在 SIGTERM handler 安装前几条指令即出现，现有 waitFor(状态=running) 缓解在重负载调度下不足。危害不止噪声——Verify 红会 skip Deploy，2026-08-10 本批 F003 因此停在『已合入 main 未部署』，靠人工重跑才上线。实测记录：同 SHA 本地连跑 3 次全绿 + accept 沙箱全量绿 + CI 重跑绿 = 4 通过 1 失败。修法候选：SIGTERM handler 安装完成后再写锁文件（消除窗口本身），或用可观测的 handler-ready 信号替代状态轮询。",
+    "decisions": [
+      "2026-08-10 第二次记录在案；因会阻断部署，从『留观』升为待修"
+    ],
+    "confirmed_at": "2026-08-10T10:45:00Z",
+    "priority": "medium"
+  },
+  {
+    "id": "BL-GATE-SIG-ECHO-REVIEW",
+    "title": "复核 gate 决策响应回显 sig 是否应保留",
+    "description": "BL-SECURITY-P1 F004 为满足 acceptance 1『DB 终态只有一份 decisionSig 且等于 200 响应所示』在 POST /api/harness/gates 的 200 响应新增 sig 字段。唯一前端消费者 app/harness/gate-actions.tsx:36-38 只读 res.ok 与 body.error，从不使用 sig——该字段是产品死字段，却为签名决策开了第二条投递通道（原先只经 app/api/harness/decisions/route.ts:55 的设备 token 中继）。待 F004 acceptance 1 由 Evaluator 用 scratch 库签收后，评估是否撤回显并改用 DB 直查断言。本批刻意不动：现在撤会让刚立的断言失去依据。",
+    "decisions": [
+      "2026-08-10 spec-lock critic 提出，Coordinator 裁决本批不动"
+    ],
+    "confirmed_at": "2026-08-10T10:45:00Z",
+    "priority": "low"
+  },
+  {
+    "id": "BL-DEAD-FONTS-COMPONENT",
+    "title": "src/Fonts.tsx 是死代码且引用不存在的字体资源",
+    "description": "BL-SECURITY-P1 F003 稽核期机械发现：src/Fonts.tsx 全仓无任何 importer（from .*Fonts / <Fonts 均零命中），且其引用的 public/fonts/dm-sans/ 目录不存在（public/ 仅有 img / install.ps1 / install.sh）——该组件从未生效过。另含一行遗留 console.log({ prefix })。建议整体删除；若确需自托管 DM Sans 则应连同字体资源一并补齐并接线。注：CLAUDE.md 提及的字体子集 pre-commit 检查在本机 .git/hooks/pre-commit 未安装。",
+    "decisions": [
+      "2026-08-10 F003 稽核附带发现，与本批安全面正交"
+    ],
+    "confirmed_at": "2026-08-10T10:45:00Z",
+    "priority": "low"
   }
 ]

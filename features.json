@@ -35,7 +35,13 @@
       "id": "F004",
       "title": "Gate 决策数据库 CAS（并发覆盖已签名结果封堵）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-06c35907e928-20260810T101704Z",
+        "commit": "c67218155cdce7f3be0e452341db8744554c63ba"
+      },
+      "open_acceptance": "acceptance 1 的并发实测未闭合：单测以 mock 定义 CAS 语义（自证前提），真探针 tests/server/harness-gates-route-db.probe.test.ts 无 EVAL_F004_DB_URL 时 skip。Evaluator 必须用迁移过的 scratch 库实跑该探针，断言 DB 终态只有一份 decisionSig。"
     },
     {
       "id": "F005",
