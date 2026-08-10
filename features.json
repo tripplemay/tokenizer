@@ -42,7 +42,7 @@
       "id": "F007",
       "title": "dispatch 用量 model 归因补全（提取器 argv 兜底 v1.10.0 + 服务端 model-only 刷新）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
