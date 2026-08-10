@@ -6,7 +6,7 @@
       "id": "F001",
       "title": "cron fallback 拆双 crontab 条目（harness 每 2 分钟）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F002",
