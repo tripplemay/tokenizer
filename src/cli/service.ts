@@ -4,6 +4,7 @@ import { homedir, platform, release } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { installWindowsService, uninstallWindowsService, windowsServiceStatus } from "@/cli/service-windows";
+import { buildCronInstall, buildCronUninstall } from "@/cli/service-cron";
 
 // The repo root this agent is running out of (~/.tokenizer/app for a normal
 // install). Task Scheduler needs absolute paths for both the entry script and
@@ -154,18 +155,16 @@ WantedBy=default.target
 }
 
 function installCron(options: { syncMinutes: number }) {
-  const line = `*/${Math.max(1, options.syncMinutes)} * * * * ${binPath} run >> ${logPath} 2>&1`;
   let current = "";
   try {
     current = execFileSync("crontab", ["-l"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
   } catch {
     current = "";
   }
-  const filtered = current.split(/\r?\n/).filter((row) => row && !row.includes("tokenizer run"));
   const tmp = join(homedir(), ".tokenizer", "crontab.tmp");
-  writeFileSync(tmp, `${filtered.join("\n")}${filtered.length ? "\n" : ""}${line}\n`);
+  writeFileSync(tmp, buildCronInstall(current, { binPath, logPath, syncMinutes: options.syncMinutes }));
   execFileSync("crontab", [tmp], { stdio: "inherit" });
-  return "Installed cron fallback for tokenizer run";
+  return "Installed cron fallback for tokenizer run + harness";
 }
 
 export function uninstallService() {
@@ -184,9 +183,8 @@ export function uninstallService() {
   }
   try {
     const current = execFileSync("crontab", ["-l"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
-    const filtered = current.split(/\r?\n/).filter((row) => row && !row.includes("tokenizer run"));
     const tmp = join(homedir(), ".tokenizer", "crontab.tmp");
-    writeFileSync(tmp, `${filtered.join("\n")}\n`);
+    writeFileSync(tmp, buildCronUninstall(current, binPath));
     execFileSync("crontab", [tmp], { stdio: "ignore" });
     messages.push("Removed cron fallback");
   } catch {}
