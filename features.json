@@ -36,7 +36,7 @@
       "id": "F006",
       "title": "闸门邮件 notify fetch AbortSignal.timeout(8s) 兜底",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F007",
