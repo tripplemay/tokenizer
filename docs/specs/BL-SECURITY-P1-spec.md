@@ -9,6 +9,12 @@
   - 混合批次（7 generator + 1 evaluator）→ `building` → `verifying`
 - **硬约束：**
   - 零 agent 协议改动 · `src/cli/**` 一字不动 · `AGENT_FEATURE_VERSION` 两常量不动（F006 已核查确认无需 bump）
+  - 🔴 **上报热路径不得引入不自愈的整批拒收**（2026-08-10 F003 首轮拒收后追加）：`POST /api/usage/events/batch`
+    与 `POST /api/devices/heartbeat` 上任何**新增**校验都不得以 4xx 废掉整批。原因是机械的——`src/cli/sync.ts:51`
+    非 ok 即抛，`syncBatchWithRetry` 仅 2 次固定延迟重试，而 `src/cli/agent.ts:65-67` 的 `clearQueue()` /
+    `writeCursor()` **只在 sync 成功后执行**：一条永远被拒的事件会把该设备的队列与游标永久钉死，每 tick 重发同一批，
+    该设备从此再无用量入库且不会自愈。热路径一律**服务端清洗**（截断 / 剥控制字符）后入库；硬拒收只允许出现在
+    `enroll` 这类交互式、用户能立刻看到错误的首次接触路径。
   - F001–F007 **push 即部署**，各自独立 commit 以便单条 revert
   - F007 不得使批次成本口径漂移：`BL-COST-BATCH-V1` F004 审计（27/27）与既有 `tests/server/harness-cost.test.ts` 是回归 oracle
   - Evaluator 只写 `tests/` 与 `docs/test-reports/`，不碰产品代码
@@ -57,15 +63,23 @@ acceptance：
 
 ### F003 · 图表 tooltip 存储型 XSS 封堵 · executor: generator
 
-两处 `custom` tooltip 的全部动态插值走严格 HTML 实体转义（至少 `& < > " ' \``），并在输入侧对 device name / source 施加长度与控制字符约束。
+两处 `custom` tooltip 的全部动态插值走严格 HTML 实体转义（至少 `& < > " ' \``）。**渲染层转义是本项的安全防线**；输入侧约束只是纵深防御，其失败形状不得比它防的洞更贵。
+
+**输入侧的分路径规则（首轮拒收后钉死，见硬约束第 4 条）：**
+- `enroll`（交互式首次接触）：`device.name` 超长 / 含控制字符 → **硬拒收 400**，用户当场看到错误
+- `batch ingest` 与 `heartbeat`（agent 上报热路径）：**只清洗不拒收**——`device.name` 截断到上限、剥除控制字符后入库；`source` 同样只做长度与控制字符清洗
+- ❌ **不得**对 `source` 施加闭集枚举成员校验：`prisma/schema.prisma:182` 的 `source` 是自由字符串，`kimicode` 就是后加的；闭集会让「agent 先于服务端升级」这一寻常发布次序把该设备打成永久断流
+- ❌ **不得**改动 `src/cli/**`。客户端校验在本威胁模型下不是安全边界——攻击者持设备 token 会直接打接口、绕过 CLI
 
 acceptance：
 1. 单测：`item.name = '<img src=x onerror=alert(1)>'` → 产出串不含未转义 `<`，含对应实体
 2. 单测：同一 tooltip 内 date 与金额字段同样过转义（不得只护 name 一处）
-3. grep 断言：两个 chart 文件中所有进入 template string 的动态值都经过 escape helper
+3. grep 断言：涉及的 chart 文件中所有进入 template string 的动态值都经过 escape helper
 4. 全仓扫描其他同类注入点（`custom:` tooltip / `dangerouslySetInnerHTML` / `innerHTML`）——有则一并修，无则在 commit 正文记录"扫描零命中"的机械输出
-5. 输入侧：enroll 与 ingest 对 `device.name` 施加长度上限 + 控制字符拒收，单测覆盖边界
-6. `npm run verify` + 全量 test 绿
+5. `enroll` 对 `device.name` 硬拒收，单测覆盖长度与控制字符边界
+6. **毒丸回归测试（硬性）**：构造一条 `device.name` 超长且含控制字符、`source` 为未知值的上报批次，断言 `POST /api/usage/events/batch` 返回 **2xx**、事件已入库、且入库的 name 已被截断/清洗——即该批次**不会**触发 `src/cli/agent.ts` 的队列钉死路径
+7. grep 断言：`src/cli/**` 与 `src/shared/agent-feature-version.ts` 零改动
+8. `npm run verify` + 全量 test 绿
 
 ### F004 · Gate 决策数据库 CAS · executor: generator
 
@@ -139,6 +153,7 @@ acceptance：
 - **F001 的爆炸半径与上线闸门**：`app/layout.tsx` 每请求调 `auth()`，生产缺 secret 时 fail-closed = 全站 500。这是**期望的**安全语义，但要求合并前确认生产已配置真实 `AUTH_SECRET`。**该确认是 F001 push 前的人类闸门**，不由 agent 代劳。
   → **2026-08-10 用户已确认生产 GitHub Secret 与 VPS `.env` 均已配置真实值**，F001 按规格实现并在本批末尾正常 push。
 - **F006 走最小改动**：报告建议的"enroll 接口写入 enrollment id"经核查已实现（`usedById`），故本批零 schema、零协议、不 bump fv。这条是铁律 2「报告断言按线索处理」的直接收益。
+- **F003 首轮拒收（2026-08-10）**：codex 首份 handoff 被 spec-lock critic 判 OUT_OF_SCOPE 并由 Coordinator 拒收，两条越界——① 改了 `src/cli/enroll.ts`（违反硬约束，且该处客户端校验在本威胁模型下无安全价值）；② 给 `source` 加了闭集枚举 + 整批 400，而 §F003 只授权「长度与控制字符约束」。② 经机械追链证实会造成**永久不自愈的单设备断流**（`sync.ts:51` 抛 → 2 次重试耗尽 → `agent.ts:65-67` 的 `clearQueue`/`writeCursor` 永不执行）。该发现反过来暴露规格自身的疏漏：**已授权的 device name 拒收也是同一毒丸形状**。用户裁决改为热路径清洗，并升为全批硬约束第 4 条。
 - **F002 只做 helper 不做回跳**：深链回跳（F-03）留在 `BL-FRONTEND-REVIEW-REMAINDER`；本批只保证 helper 形状可被其直接复用。
 - **F007 只取 F-32 分片**：`BL-COST-PERF` 的其余成员（F-07 整树 refresh / F-08 无界列表与缺索引 / F-29 重复扫描 / F-14 徽章轮询）留在原 backlog 条目，本批不动。
 - **push 节奏**：F002/F003 → F004/F005/F006 → F007 → **F001 最后**（爆炸半径最大，且需人类确认生产 secret 后才推）。F008 报告不触发部署。
