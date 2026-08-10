@@ -10,9 +10,8 @@ import { EnrollFlowCard } from "./enroll-flow-card";
 // flow doesn't push the device table down the page.
 //
 // EnrollFlowCard is only mounted while the modal is open — closing the
-// modal unmounts it, which cancels any in-flight polling (the component
-// uses `setInterval` internally; React cleans it up on unmount).
-export function AddDeviceSection({ initialDeviceIds }: { initialDeviceIds: string[] }) {
+// modal unmounts it, which aborts any in-flight enrollment status request.
+export function AddDeviceSection() {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -36,7 +35,7 @@ export function AddDeviceSection({ initialDeviceIds }: { initialDeviceIds: strin
           </div>
         }
       >
-        {open ? <EnrollFlowCard initialDeviceIds={initialDeviceIds} /> : null}
+        {open ? <EnrollFlowCard /> : null}
       </Modal>
     </>
   );

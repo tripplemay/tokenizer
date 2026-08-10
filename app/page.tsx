@@ -90,10 +90,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   // enrolled but hasn't synced yet still gets the onboarding view so the
   // user has feedback while they wait for the first sync.
   if (summary.eventCount === 0) {
-    const devices = await getDeviceSummary(tenantId, "all");
     return (
       <div className="space-y-6">
-        <OnboardingCard initialDeviceIds={devices.map((d) => d.deviceId)} />
+        <OnboardingCard />
       </div>
     );
   }

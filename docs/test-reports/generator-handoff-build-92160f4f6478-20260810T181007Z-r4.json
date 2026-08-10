@@ -1,0 +1,29 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-10T18:31:38Z",
+  "features": [
+    {
+      "feature_id": "F006",
+      "commits": [],
+      "files_touched": [
+        "app/_components/add-device-section.tsx",
+        "app/_components/enroll-flow-card.tsx",
+        "app/_components/onboarding-card.tsx",
+        "app/api/admin/enrollment-tokens/[id]/route.ts",
+        "app/api/admin/enrollment-tokens/route.ts",
+        "app/devices/page.tsx",
+        "app/page.tsx",
+        "src/shared/enrollment-status.ts",
+        "tests/server/enrollment-tokens-route.test.ts",
+        "tests/shared/enrollment-status.test.ts"
+      ],
+      "notes": "Uncommitted sandbox diff implements F006 without schema, CLI, or agent feature-version changes. Token creation additively returns enrollmentId. The new force-dynamic, tenant-scoped status endpoint reads enrollment state directly, returns the claimed device name from the same tenant, and sends a no-store response. EnrollFlowCard polls only that enrollment with capped exponential backoff and AbortController cleanup, and both UI entry points use the returned human-readable device name. Removed initialDeviceIds and the now-unneeded summary reads. Added endpoint four-state, response compatibility, claim behavior, and backoff regressions. Mechanical checks: npm run verify PASS; lint PASS; focused tests PASS 8/8; full npm test reached 1196 passed / 15 skipped with 4 existing CLI process/IPC failures under sandbox EPERM/process-visibility restrictions; git diff --check PASS; initialDeviceIds grep zero matches; src/cli and agent-feature-version diff empty. No commits were created."
+    }
+  ],
+  "l1_ran": {
+    "lint": "PASS (exit 0): npm run lint -- --no-cache; no ESLint warnings or errors.",
+    "typecheck": "PASS (exit 0): npm run verify; prisma generate + tsc --noEmit.",
+    "test": "PARTIAL (exit 1): focused F006 Vitest PASS 8/8; full npm test 1196 passed, 15 skipped, 4 failures limited to existing tests/cli/harness-command.test.ts, tests/cli/agent-lifecycle.test.ts, and tests/cli/install-agent-lifecycle.test.ts under sandbox Unix-socket EPERM/process visibility."
+  },
+  "waiting": null
+}

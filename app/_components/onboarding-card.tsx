@@ -5,7 +5,7 @@ import { EnrollFlowCard } from "./enroll-flow-card";
 // Replaces the empty home dashboard for a fresh account. Gives the user
 // somewhere to land instead of a wall of zeros, and a single button that
 // kicks off the entire connect-your-first-machine flow inline.
-export function OnboardingCard({ initialDeviceIds }: { initialDeviceIds: string[] }) {
+export function OnboardingCard() {
   return (
     <Card extra="overflow-hidden p-0">
       <div className="relative border-b border-gray-200 bg-gradient-to-br from-brand-500/10 via-white to-brand-500/5 px-8 py-8 dark:border-white/10 dark:from-brand-500/20 dark:via-navy-800 dark:to-brand-500/5">
@@ -31,7 +31,7 @@ export function OnboardingCard({ initialDeviceIds }: { initialDeviceIds: string[
           <Step n={3} title="等待第一次同步" desc="客户端首次上线后约 60-90 秒,数据会自动出现在 dashboard。" />
         </ol>
         <div>
-          <EnrollFlowCard initialDeviceIds={initialDeviceIds} />
+          <EnrollFlowCard />
         </div>
       </div>
     </Card>

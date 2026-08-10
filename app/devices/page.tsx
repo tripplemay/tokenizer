@@ -78,7 +78,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
   const session = await requireSession();
   const tenantId = session.user.id;
   const tz = await getUserTimezone(tenantId);
-  const [t, currentDevices] = await Promise.all([getTranslations(), getDeviceSummary(tenantId, "all")]);
+  const t = await getTranslations();
 
   return (
     <div className="space-y-5">
@@ -90,7 +90,7 @@ export default async function DevicesPage({ searchParams }: { searchParams: Prom
         note={<p className="mt-0.5 text-xs text-gray-500">{t("timezone.note", { tz })}</p>}
         rightSlot={
           <div className="flex flex-wrap items-center gap-3">
-            <AddDeviceSection initialDeviceIds={currentDevices.map((d) => d.deviceId)} />
+            <AddDeviceSection />
             <DevicesRangeSelector
               current={range}
               searchParams={params}

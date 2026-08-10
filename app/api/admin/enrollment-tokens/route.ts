@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const enrollToken = generateToken("enroll");
   const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
 
-  await prisma.enrollmentToken.create({
+  const enrollment = await prisma.enrollmentToken.create({
     data: {
       userId: session.user.id,
       label: body.label?.trim() || null,
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
     enrollToken,
     expiresAt: expiresAt.toISOString(),
     installCommand,
-    installCommands
+    installCommands,
+    enrollmentId: enrollment.id
   });
 }
