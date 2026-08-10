@@ -1,39 +1,54 @@
 {
-  "batch": "BL-COST-BATCH-V1",
-  "spec": "docs/specs/BL-COST-BATCH-V1-spec.md",
+  "batch": "BL-SECURITY-P1",
+  "spec": "docs/specs/BL-SECURITY-P1-spec.md",
   "features": [
     {
       "id": "F001",
-      "title": "阶段区间构建 + 时间窗成本聚合层（harness-cost.ts）",
+      "title": "AUTH_SECRET 生产 fail-closed + deploy workflow 硬失败",
       "executor": "generator",
-      "status": "completed",
-      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
+      "status": "pending"
     },
     {
       "id": "F002",
-      "title": "harness 详情 overview 批次成本卡片",
+      "title": "safeCallbackPath helper + 登录开放重定向封堵",
       "executor": "generator",
-      "status": "completed",
-      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
+      "status": "pending"
     },
     {
       "id": "F003",
-      "title": "projects 详情批次成本联动卡片",
+      "title": "图表 tooltip 存储型 XSS 转义 + device/source 输入约束",
       "executor": "generator",
-      "status": "completed",
-      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
+      "status": "pending"
     },
     {
       "id": "F004",
-      "title": "归因精度实测审计报告",
-      "executor": "evaluator",
-      "status": "completed"
+      "title": "Gate 决策数据库 CAS（并发覆盖已签名结果封堵）",
+      "executor": "generator",
+      "status": "pending"
     },
     {
       "id": "F005",
-      "title": "prisma migrations 卫生：migration_lock.toml + 漂移量化收敛",
+      "title": "订阅额度按 accountKey 分组 + additive 索引 migration",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending"
+    },
+    {
+      "id": "F006",
+      "title": "设备注册绑定本次 enrollment（不可缓存状态端点 + 定向轮询）",
+      "executor": "generator",
+      "status": "pending"
+    },
+    {
+      "id": "F007",
+      "title": "批次成本查询放大治理：封闭批次永久缓存 + 关联设界 + 单查询聚合",
+      "executor": "generator",
+      "status": "pending"
+    },
+    {
+      "id": "F008",
+      "title": "安全专项对抗输入独立验收报告",
+      "executor": "evaluator",
+      "status": "pending"
     }
   ]
 }

@@ -1,15 +1,5 @@
 [
   {
-    "id": "BL-SECURITY-P1",
-    "title": "前端评审安全专批：AUTH_SECRET 回退 / 开放重定向 / tooltip XSS / gate TOCTOU / enrollment 绑定 / 订阅额度 accountKey",
-    "description": "来源 docs/test-reports/frontend-code-review-2026-08-10.md（锁定 c27fb38）P1 安全簇：F-01 生产缺 AUTH_SECRET 回退公开固定密钥（deploy workflow 仅 warning）· F-02 登录 callbackUrl 开放重定向 · F-05 图表 tooltip 拼接用户可控 HTML 存储型 XSS · F-33 gate 决策 TOCTOU 并发覆盖已签名结果 · F-04 设备注册成功检测未绑定本次 enrollment · F-35 订阅额度忽略 accountKey 拼接多账号窗口。用户裁决为下一批次优先。",
-    "decisions": [
-      "2026-08-10 用户批准立安全专批，优先于既有队列"
-    ],
-    "confirmed_at": "2026-08-10T07:15:02Z",
-    "priority": "high"
-  },
-  {
     "id": "BL-BUDGET",
     "title": "预算与告警：user/project/model 三级月度 cap + 75%/90% banner",
     "description": "Budget 表（scopeKey 非空默认串防 NULL 唯一索引失效；用户时区自然月经 wallClockToUtc 推导，存储查询全 UTC）；聚合层复用 costForWhere 同源口径，未定价模型计 0 并附 unpricedTokens 提示；CRUD API + /budgets 管理页 + 全站 banner + overview 成本卡变色。只告警不熔断（观测面不是网关，产品边界入 spec）。零协议改动。详细方案：batch-plans/BL-BUDGET.md。执行序：近期 #6。",
@@ -131,10 +121,11 @@
   },
   {
     "id": "BL-COST-PERF",
-    "title": "批次成本查询放大治理（F-32）+ 相关性能簇（F-07/F-08/F-29/F-14）",
-    "description": "评审 F-32：phase 逐区间 groupBy N×60 并发 + 30s 量化 nowMs 持续换缓存键；建议单条 SQL range join、封闭批次永久缓存、关联查询分页。合并 F-07（30s 整树 refresh）、F-08（无界列表+缺索引）、F-29（重复扫描）、F-14（徽章轮询重复查询）。另：F001 验收探针 4 边界用例（乱序/同刻/恰过界/时钟偏斜）折入主套件。",
+    "title": "批次成本相关性能簇（F-07/F-08/F-29/F-14；F-32 已由 BL-SECURITY-P1 F007 承接）",
+    "description": "【F-32 已出池】封闭批次永久缓存 + 关联查询设界 + 单条 range-join 聚合三件已并入 BL-SECURITY-P1 F007（2026-08-10），F001 验收期四条边界探针（乱序/同刻/恰过界/时钟偏斜）同批折入主套件。本条剩余：F-07（30s 整树 router.refresh 放大全局查询与图表重渲染）、F-08（无界列表 + 缺索引）、F-29（重复扫描）、F-14（徽章轮询重复查询）。来源 docs/test-reports/frontend-code-review-2026-08-10.md。",
     "decisions": [
-      "来源 frontend-code-review-2026-08-10 P1/P2 性能簇，用户裁决入 backlog"
+      "来源 frontend-code-review-2026-08-10 P1/P2 性能簇，用户裁决入 backlog",
+      "2026-08-10 用户裁决 F-32 提前并入安全专批 BL-SECURITY-P1 F007，本条只留其余性能项"
     ],
     "confirmed_at": "2026-08-10T07:15:02Z",
     "priority": "medium"
