@@ -1,12 +1,12 @@
 {
-  "status": "verifying",
+  "status": "done",
   "user_goal": "闸门触达延迟 15min→≤2min + daemon 退避 + enroll 自愈 + /events 分页；顺路 notify 超时与 dispatch model 归因闭环",
   "total_features": 7,
   "completed_features": 7,
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-LATENCY",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T04:44:32Z",
+  "last_updated": "2026-08-10T04:54:34Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -18,10 +18,25 @@
     "framework_reviewed": true
   },
   "role_assignments": null,
-  "evaluator_feedback": null,
+  "evaluator_feedback": {
+    "batch": "BL-AGENT-LATENCY",
+    "verdict": "ALL_PASS",
+    "results": {
+      "F001": "PASS",
+      "F002": "PASS",
+      "F003": "PASS",
+      "F004": "PASS",
+      "F005": "PASS",
+      "F006": "PASS",
+      "F007": "PASS"
+    },
+    "fix_rounds": 0,
+    "report": "docs/test-reports/BL-AGENT-LATENCY-signoff.md",
+    "note": "7 个隔离 evaluator fan-out 分片结论原样收录于报告；上批 soft-watch #2 闭环；L2 目视项（/events model 补显、>200 翻页、cron 主机重装）见报告末节"
+  },
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-AGENT-LATENCY building 完成 7/7 → verifying，2026-08-10】F001 双条目 cron · F002 退避+抖动 · F003 enroll agentFetch · F004 /events 分页 · F005 release 1.4.0（预案 1.3.0 已被 DISPATCH-USAGE 占用，带据修正）· F006 notify 8s 超时 · F007 model 归因（框架 v1.10.0 + 服务端 unknown 补写）。规划期另发 v1.9.1 消费台账。全量 1124 四绿。待推送（触发部署）→ fan-out 验收；push 后收尾：历史 4 个 run-meta 重提取（--argv 兜底）+ 本机 agent 重装 + 用户目视 /events。坑：feature title 以 /events 开头触发服务端 sensitive_summary_data 拒收（SAFE_ROUTE 白名单只放行 /api|/vN），已改标题规避——标题避免裸路由开头。"
+    "planning": "【BL-AGENT-LATENCY done，2026-08-10】7/7 全 PASS 零返工。生产 f3d7a9a；本机 agent 已升 1.4.0；4 个 run-meta 已重提取并上报落地（failed=0）。规划期发框架 v1.9.1+v1.10.0。坑两枚：①feature title 裸路由开头触发 sensitive_summary_data 拒收（已改标题）；②agent-lifecycle SIGTERM 用例 CI flake 一次（重跑绿，留观）。用户 L2 目视：/events 4 条 codex 事件应显 gpt-5.6-sol。下一批候选：BL-COST-BATCH-V1。"
   },
   "features": [],
   "pending_gate": null,
