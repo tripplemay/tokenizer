@@ -5,6 +5,22 @@
 
 ---
 
+## v1.10.0 — 2026-08-10（用量提取 model 兜底档：派发 argv 的 -c model= 钉住值）
+
+**来源：** tokenizer `BL-AGENT-LATENCY` F007（承接 BL-DISPATCH-USAGE-CAPTURE spec decision-3 与
+fix_round=1 裁决：adapter argv 实已钉 `-c model=`，unpriced 真因是提取器缺 argv 兜底档）。
+
+**改动：**
+- `templates/claude/dispatch/extract-run-usage.py`：新增 `--argv=<token>`（可重复）。model 解析两级：
+  事件流优先；事件流无 model（真实 codex exec --json 形态）时取 argv 中 `-c` + `model=<x>` 精确对
+  的钉住值。usage shape 不新增字段（下游按键白名单严格解析）。
+- `templates/claude/dispatch/sandbox-profile.sh`：提取调用点把 `D_ARGV_TEMPLATE` 以等号形式透传
+  （token 可自身以 `--` 开头）。
+- `templates/claude/dispatch/test-extract-run-usage.py`：+3 用例（钉住值填充且 shape 不变 / 事件流
+  优先 / 无钉或畸形钉保持 null），共 10 用例。
+
+---
+
 ## v1.9.1 — 2026-08-10（mode intent 消费台账：重放守卫双锚）
 
 **来源：** tokenizer `BL-GATE-INBOX` planning 实遇 + proposed-learnings 回流（用户确认）。done 收尾

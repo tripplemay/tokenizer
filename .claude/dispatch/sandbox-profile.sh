@@ -968,7 +968,10 @@ fi
 USAGE_BUNDLE="null"
 USAGE_EXTRACTOR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/extract-run-usage.py"
 if [ -f "$USAGE_EXTRACTOR" ] && [ -f "$LOG" ] && [ -n "${D_ADAPTER:-}" ]; then
-  USAGE_BUNDLE="$(python3 "$USAGE_EXTRACTOR" --log "$LOG" --adapter "$D_ADAPTER" 2>/dev/null)" || USAGE_BUNDLE="null"
+  # argv 透传给提取器作 model 兜底档（事件流缺 model 时取 -c model= 钉住值）
+  USAGE_ARGS=(--log "$LOG" --adapter "$D_ADAPTER")
+  for usage_tok in "${D_ARGV_TEMPLATE[@]}"; do USAGE_ARGS+=("--argv=$usage_tok"); done
+  USAGE_BUNDLE="$(python3 "$USAGE_EXTRACTOR" "${USAGE_ARGS[@]}" 2>/dev/null)" || USAGE_BUNDLE="null"
   [ -n "$USAGE_BUNDLE" ] || USAGE_BUNDLE="null"
 fi
 

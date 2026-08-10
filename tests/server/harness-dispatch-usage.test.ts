@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => {
     harnessDispatchRun: { upsert: vi.fn() },
     harnessTransition: { create: vi.fn() },
     harnessBatchArchive: { upsert: vi.fn() },
-    usageEvent: { upsert: vi.fn() }
+    usageEvent: { upsert: vi.fn(), updateMany: vi.fn() }
   };
   return {
     authenticateDeviceToken: vi.fn(),
@@ -153,6 +153,7 @@ describe("dispatch usage materialization", () => {
     mocks.tx.harnessTransition.create.mockResolvedValue({});
     mocks.tx.harnessBatchArchive.upsert.mockResolvedValue({});
     mocks.tx.usageEvent.upsert.mockResolvedValue({});
+    mocks.tx.usageEvent.updateMany.mockResolvedValue({ count: 0 });
     mocks.prisma.$transaction.mockImplementation(async (callback: (tx: typeof mocks.tx) => unknown) => callback(mocks.tx));
   });
 
@@ -221,6 +222,48 @@ describe("dispatch usage materialization", () => {
     );
     expect(response.status).toBe(200);
     expect(mocks.tx.usageEvent.upsert).not.toHaveBeenCalled();
+  });
+
+  it("refreshes only null-model events when the report carries a model (F007 backfill path)", async () => {
+    const response = await POST(
+      request(report([run({ usage: usage({ model: "gpt-5.6-sol" }), usageCapture: "materialize" })]))
+    );
+    expect(response.status).toBe(200);
+    expect(mocks.tx.usageEvent.updateMany).toHaveBeenCalledTimes(1);
+    // where 钳住 model: null —— 已有非空 model 的事件在 SQL 层就不可能被覆盖
+    expect(mocks.tx.usageEvent.updateMany.mock.calls[0][0]).toEqual({
+      where: {
+        deviceId: "device-1",
+        source: "codex",
+        sourceEventId: "dispatch:build-abc123-20260810T000000Z",
+        model: null
+      },
+      data: { model: "gpt-5.6-sol" }
+    });
+  });
+
+  it("never touches existing events when the report has no model", async () => {
+    const response = await POST(request(report([run({ usage: usage(), usageCapture: "materialize" })])));
+    expect(response.status).toBe(200);
+    expect(mocks.tx.usageEvent.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("skips the model refresh entirely for attribution_only runs", async () => {
+    const response = await POST(
+      request(
+        report([
+          run({
+            modelFamily: "kimi",
+            agentId: "local-cli--kimi--evaluator",
+            role: "evaluator",
+            usage: usage({ model: "kimi-k3" }),
+            usageCapture: "attribution_only"
+          })
+        ])
+      )
+    );
+    expect(response.status).toBe(200);
+    expect(mocks.tx.usageEvent.updateMany).not.toHaveBeenCalled();
   });
 
   it("leaves legacy payloads without usage untouched", async () => {

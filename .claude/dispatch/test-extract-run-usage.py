@@ -27,14 +27,24 @@ CODEX_USAGE = {
 }
 
 
-def run_tool(log: pathlib.Path, adapter: str, into: pathlib.Path | None = None) -> dict:
+def run_tool(
+    log: pathlib.Path,
+    adapter: str,
+    into: pathlib.Path | None = None,
+    argv_tokens: list[str] | None = None,
+) -> dict:
     argv = [sys.executable, str(TOOL), "--log", str(log), "--adapter", adapter]
     if into is not None:
         argv.extend(["--into", str(into)])
+    for token in argv_tokens or []:
+        argv.append(f"--argv={token}")  # 等号形式：token 可以自身以 -- 开头
     completed = subprocess.run(argv, capture_output=True, text=True)
     if completed.returncode != 0:
         raise AssertionError(completed.stderr)
     return json.loads(completed.stdout)
+
+
+PINNED_ARGV = ["exec", "--json", "--ignore-user-config", "-c", "model=gpt-5.6-sol"]
 
 
 class ExtractRunUsageTest(unittest.TestCase):
@@ -78,6 +88,42 @@ class ExtractRunUsageTest(unittest.TestCase):
     def test_codex_model_is_picked_up_when_present(self) -> None:
         log = self.write_log(json.dumps({"type": "session.created", "model": "gpt-5-codex"}), turn(CODEX_USAGE))
         self.assertEqual(run_tool(log, "codex")["usage"]["model"], "gpt-5-codex")
+
+    def test_argv_pin_fills_model_when_stream_has_none(self) -> None:
+        # BL-AGENT-LATENCY F007：事件流无 model（真实 codex exec --json 形态）
+        # 时取 -c model= 钉住值；shape 不新增字段。
+        log = self.write_log(turn(CODEX_USAGE))
+        usage = run_tool(log, "codex", argv_tokens=PINNED_ARGV)["usage"]
+        self.assertEqual(usage["model"], "gpt-5.6-sol")
+        self.assertEqual(
+            sorted(usage),
+            [
+                "cache_write_tokens",
+                "cached_input_tokens",
+                "extracted_from",
+                "input_tokens",
+                "model",
+                "output_tokens",
+                "reasoning_tokens",
+                "turns",
+            ],
+        )
+
+    def test_stream_model_wins_over_argv_pin(self) -> None:
+        log = self.write_log(json.dumps({"type": "session.created", "model": "gpt-5-codex"}), turn(CODEX_USAGE))
+        usage = run_tool(log, "codex", argv_tokens=PINNED_ARGV)["usage"]
+        self.assertEqual(usage["model"], "gpt-5-codex")
+
+    def test_argv_without_pin_or_malformed_pin_stays_null(self) -> None:
+        log = self.write_log(turn(CODEX_USAGE))
+        for tokens in [
+            ["exec", "--json"],
+            ["-c"],
+            ["-c", "sandbox=off"],
+            ["model=loose-token-without-dash-c"],
+            ["-c", "model="],
+        ]:
+            self.assertIsNone(run_tool(log, "codex", argv_tokens=tokens)["usage"]["model"])
 
     def test_corrupt_usage_yields_null_instead_of_a_guess(self) -> None:
         for bad in [{**CODEX_USAGE, "input_tokens": -1}, {**CODEX_USAGE, "output_tokens": "many"}]:

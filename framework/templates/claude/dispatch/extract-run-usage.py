@@ -21,7 +21,14 @@ dispatch outcome is untouched.
 
 Usage:
   extract-run-usage.py --log <run.log> --adapter <name> [--into <run-meta.json>]
+                       [--argv <token> ...]
 Exit 0 always (except invalid CLI arguments); prints the usage JSON (or null).
+
+Model resolution is two-tiered: the event stream wins; when it carries no
+model (observed on real codex exec --json runs), the pinned ``-c model=<x>``
+pair from the dispatch argv is the fallback — the sandbox refuses to launch
+codex without that pin, so the argv value is what the vendor CLI actually ran
+with (spec decision-3, BL-DISPATCH-USAGE-CAPTURE / BL-AGENT-LATENCY F007).
 """
 
 from __future__ import annotations
@@ -116,6 +123,23 @@ EXTRACTORS = {
 }
 
 
+def model_from_argv(argv: list[str] | None) -> str | None:
+    """Pinned-model fallback: the documented codex pin form is the token pair
+    ``-c`` ``model=<x>`` (see sandbox-profile 修法 A). Only that exact shape is
+    trusted — no guessing over other flags."""
+    if not argv:
+        return None
+    for index, token in enumerate(argv[:-1]):
+        if token != "-c":
+            continue
+        follower = argv[index + 1]
+        if isinstance(follower, str) and follower.startswith("model="):
+            candidate = follower[len("model="):]
+            if 0 < len(candidate) <= MAX_MODEL_LEN:
+                return candidate
+    return None
+
+
 def parse_log(path: Path) -> list[dict]:
     if path.stat().st_size > MAX_LOG_BYTES:
         return []
@@ -161,6 +185,7 @@ def main() -> int:
     parser.add_argument("--adapter", required=True)
     parser.add_argument("--into", default=None)
     parser.add_argument("--capture-mode", default=None, choices=sorted(USAGE_CAPTURE_MODES))
+    parser.add_argument("--argv", action="append", default=None)
     args = parser.parse_args()
 
     usage: dict | None = None
@@ -173,6 +198,11 @@ def main() -> int:
         except Exception as exc:  # bypass, never a gate
             print(f"[extract-usage] extraction failed, usage=null: {exc}", file=sys.stderr)
             usage = None
+    # Fallback tier only — a model observed in the event stream is never
+    # overridden by the argv pin. Shape stays identical (no new fields):
+    # downstream consumers whitelist usage keys strictly.
+    if usage is not None and usage.get("model") is None:
+        usage["model"] = model_from_argv(args.argv)
 
     if args.into is not None:
         merge_into(Path(args.into), usage, capture_mode)

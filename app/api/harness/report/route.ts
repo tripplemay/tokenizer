@@ -844,6 +844,20 @@ export async function POST(request: NextRequest) {
             run.usageOutputTokens !== null &&
             dispatchUsageSource !== undefined
           ) {
+            // BL-AGENT-LATENCY F007：既有事件唯一可变的字段是 model——仅当库中为
+            // null（提取器补上 argv 兜底档之前物化的历史事件）且本次报文带非空
+            // model 时补写；token 数与归因字段保持不可变（幂等语义不破）。
+            if (run.usageModel !== null) {
+              await tx.usageEvent.updateMany({
+                where: {
+                  deviceId: token.deviceId,
+                  source: dispatchUsageSource,
+                  sourceEventId: `dispatch:${run.taskId}`,
+                  model: null
+                },
+                data: { model: run.usageModel }
+              });
+            }
             await tx.usageEvent.upsert({
               where: {
                 deviceId_source_sourceEventId: {
