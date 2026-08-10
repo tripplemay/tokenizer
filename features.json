@@ -12,7 +12,7 @@
       "id": "F002",
       "title": "harness 轮询错误驱动退避 + 抖动（纯函数 harness-backoff）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F003",
