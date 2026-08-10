@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "成本×批次/阶段归因 v1：HarnessTransition 时间窗 join UsageEvent，批次成本进控制台一等公民视图；顺路 prisma migrations 卫生",
   "total_features": 5,
-  "completed_features": 2,
+  "completed_features": 3,
   "fix_rounds": 0,
   "current_sprint": "BL-COST-BATCH-V1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T05:29:17Z",
+  "last_updated": "2026-08-10T05:31:23Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
