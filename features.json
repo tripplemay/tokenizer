@@ -22,7 +22,7 @@
     },
     {
       "id": "F004",
-      "title": "/events cursor 分页（occurredAt+id 复合游标）",
+      "title": "事件页 events cursor 分页（occurredAt+id 复合游标）",
       "executor": "generator",
       "status": "completed"
     },

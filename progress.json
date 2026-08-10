@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-LATENCY",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T04:27:38Z",
+  "last_updated": "2026-08-10T04:44:32Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -21,7 +21,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-AGENT-LATENCY building 完成 7/7 → verifying，2026-08-10】F001 双条目 cron · F002 退避+抖动 · F003 enroll agentFetch · F004 /events 分页 · F005 release 1.4.0（预案 1.3.0 已被 DISPATCH-USAGE 占用，带据修正）· F006 notify 8s 超时 · F007 model 归因（框架 v1.10.0 + 服务端 unknown 补写）。规划期另发 v1.9.1 消费台账。全量 1124 四绿。待推送（触发部署）→ fan-out 验收；push 后收尾：历史 4 个 run-meta 重提取（--argv 兜底）+ 本机 agent 重装 + 用户目视 /events。"
+    "planning": "【BL-AGENT-LATENCY building 完成 7/7 → verifying，2026-08-10】F001 双条目 cron · F002 退避+抖动 · F003 enroll agentFetch · F004 /events 分页 · F005 release 1.4.0（预案 1.3.0 已被 DISPATCH-USAGE 占用，带据修正）· F006 notify 8s 超时 · F007 model 归因（框架 v1.10.0 + 服务端 unknown 补写）。规划期另发 v1.9.1 消费台账。全量 1124 四绿。待推送（触发部署）→ fan-out 验收；push 后收尾：历史 4 个 run-meta 重提取（--argv 兜底）+ 本机 agent 重装 + 用户目视 /events。坑：feature title 以 /events 开头触发服务端 sensitive_summary_data 拒收（SAFE_ROUTE 白名单只放行 /api|/vN），已改标题规避——标题避免裸路由开头。"
   },
   "features": [],
   "pending_gate": null,
