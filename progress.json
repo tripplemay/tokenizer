@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "闸门触达延迟 15min→≤2min + daemon 退避 + enroll 自愈 + /events 分页；顺路 notify 超时与 dispatch model 归因闭环",
   "total_features": 7,
-  "completed_features": 2,
+  "completed_features": 3,
   "fix_rounds": 0,
   "current_sprint": "BL-AGENT-LATENCY",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T04:18:07Z",
+  "last_updated": "2026-08-10T04:18:51Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"

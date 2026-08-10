@@ -18,7 +18,7 @@
       "id": "F003",
       "title": "enroll 切换自愈 agentFetch（src/cli 裸 fetch 清零）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F004",
