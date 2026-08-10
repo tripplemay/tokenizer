@@ -669,6 +669,21 @@
           "notScanned": "No drift scan reported",
           "driftCounts": "{modified} modified · {missing} missing · {customized} customized"
         }
+      },
+      "cost": {
+        "title": "Batch cost",
+        "total": "Batch total",
+        "compute": "Compute tokens",
+        "rework": "Rework subtotal (fixing + reverifying)",
+        "colPhase": "Phase",
+        "colWindow": "Window",
+        "colDuration": "Duration",
+        "colCompute": "Compute",
+        "colCost": "Cost",
+        "ongoing": "ongoing",
+        "empty": "No phase transitions recorded yet — cost attribution starts with the first status change report.",
+        "unlinked": "Not linked to a usage project, so no usage can be attributed.",
+        "precisionNote": "Time-window approximation: usage from the same project in the same window that is not part of this batch is also counted (errs on over-counting, never under). Phase boundaries are mirror observations (≤2 min lag). Exact per-batch attribution arrives in v2."
       }
     },
     "editor": {

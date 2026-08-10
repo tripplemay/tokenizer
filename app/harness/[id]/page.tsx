@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { MdArrowBack, MdHistory, MdSettingsSuggest, MdSpaceDashboard, MdTimeline } from "react-icons/md";
 import { prisma } from "@/server/db";
 import { requireSession } from "@/server/auth-session";
+import { getBatchCost, quantizedNowMs, type BatchCost } from "@/server/harness-cost";
 import { ownedHarnessProjectDetailQuery } from "@/server/harness-detail";
 import { signingKeyReady } from "@/server/harness-sign";
 import { getUserTimezone } from "@/server/timezone";
@@ -39,6 +40,27 @@ export default async function HarnessProjectDetailPage({
 
   const view = selectedView(query.view);
   const selectedFocus = modeDrilldownTarget(query.focus);
+
+  // 批次成本取数钉在 overview 分支（spec F002 acceptance 5）；transitions 已在
+  // detail select 内（timeline tab 同源），无额外查询。link 双空时 getBatchCost
+  // 不触 DB，由卡片渲染「未关联」提示。
+  let batchCost: BatchCost | null = null;
+  const costLinked = Boolean(project.project?.id || project.repoKey);
+  if (view === "overview") {
+    batchCost = await getBatchCost(
+      userId,
+      { projectId: project.project?.id ?? null, repoKey: project.repoKey },
+      project.transitions.map((row) => ({
+        fromStatus: row.fromStatus,
+        toStatus: row.toStatus,
+        toBatch: row.toBatch,
+        batchBoundary: row.batchBoundary,
+        fixRounds: row.fixRounds,
+        observedAt: row.observedAt
+      })),
+      quantizedNowMs()
+    );
+  }
   const icons = {
     overview: MdSpaceDashboard,
     timeline: MdTimeline,
@@ -91,7 +113,9 @@ export default async function HarnessProjectDetailPage({
         </div>
       </nav>
 
-      {view === "overview" ? <OverviewView project={project} timezone={timezone} /> : null}
+      {view === "overview" ? (
+        <OverviewView project={project} timezone={timezone} batchCost={batchCost} costLinked={costLinked} />
+      ) : null}
       {view === "timeline" ? <TimelineView project={project} timezone={timezone} /> : null}
       {view === "modes" ? (
         <ModesAndAgentsView

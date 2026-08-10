@@ -8,6 +8,7 @@ import {
   MdLock,
   MdMemory,
   MdOutlineShield,
+  MdPaid,
   MdPendingActions,
   MdSmartToy
 } from "react-icons/md";
@@ -23,7 +24,8 @@ import {
   type HarnessDetailModes
 } from "@/shared/harness-detail";
 import { HARNESS_MODE_ROLES, type HarnessModeRole } from "@/shared/harness-mode-intent";
-import { formatDateTimeSeconds, formatRelativeTime, formatTokens } from "@/shared/format";
+import { formatDateTimeSeconds, formatRelativeTime, formatTokens, formatUsd } from "@/shared/format";
+import type { BatchCost } from "@/server/harness-cost";
 import { isFreshHarnessProjectReport } from "@/shared/device-status";
 import { buildTransitionTimeline } from "@/shared/harness-transitions";
 import { EvidenceList } from "../evidence-list";
@@ -77,7 +79,17 @@ async function evidenceLabelsFor(): Promise<{ repoDoc: string; path: string; cop
   return { repoDoc: t("repoDoc"), path: t("path"), copy: t("copy"), copied: t("copied") };
 }
 
-export async function OverviewView({ project, timezone }: { project: OwnedHarnessProjectDetail; timezone: string }) {
+export async function OverviewView({
+  project,
+  timezone,
+  batchCost,
+  costLinked
+}: {
+  project: OwnedHarnessProjectDetail;
+  timezone: string;
+  batchCost: BatchCost | null;
+  costLinked: boolean;
+}) {
   const [t, statusT, allT] = await Promise.all([
     getTranslations("harness.detail"),
     getTranslations("harness.status"),
@@ -141,6 +153,8 @@ export async function OverviewView({ project, timezone }: { project: OwnedHarnes
           </Fact>
         </dl>
       </section>
+
+      <BatchCostSection batchCost={batchCost} costLinked={costLinked} timezone={timezone} statusT={statusT} />
 
       <section className="space-y-3">
         <SectionTitle icon={MdDeviceHub}>{t("overview.progress")}</SectionTitle>
@@ -695,6 +709,81 @@ export async function ActivityView({ project, timezone }: { project: OwnedHarnes
         )}
       </section>
     </div>
+  );
+}
+
+// ---- 批次成本（BL-COST-BATCH-V1 F002）---------------------------------------
+
+async function BatchCostSection({
+  batchCost,
+  costLinked,
+  timezone,
+  statusT
+}: {
+  batchCost: BatchCost | null;
+  costLinked: boolean;
+  timezone: string;
+  statusT: Translator;
+}) {
+  const t = await getTranslations("harness.detail.cost");
+  return (
+    <section className="space-y-3">
+      <SectionTitle icon={MdPaid}>{t("title")}</SectionTitle>
+      {!costLinked ? (
+        <Empty text={t("unlinked")} />
+      ) : batchCost === null ? (
+        <Empty text={t("empty")} />
+      ) : (
+        <>
+          <dl className="grid grid-cols-1 divide-y divide-gray-200 border-y border-gray-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-white/10 dark:border-white/10">
+            <Fact label={t("total")}>
+              <span className="text-lg font-bold">{formatUsd(batchCost.totalCostUsd)}</span>
+            </Fact>
+            <Fact label={t("compute")} mono>{formatTokens(batchCost.totalComputeTokens)}</Fact>
+            <Fact label={t("rework")}>
+              {formatUsd(batchCost.reworkCostUsd)}
+              <span className="mt-0.5 block font-mono text-xs text-gray-500 dark:text-gray-400">
+                {formatTokens(batchCost.reworkComputeTokens)}
+              </span>
+            </Fact>
+          </dl>
+          <div className="max-w-full overflow-x-auto">
+            <table className="w-full min-w-max border-y border-gray-200 text-left text-sm dark:border-white/10">
+              <thead className="text-xs uppercase tracking-wide text-gray-400">
+                <tr>
+                  <th className="py-2 pr-4">{t("colPhase")}</th>
+                  <th className="py-2 pr-4">{t("colWindow")}</th>
+                  <th className="py-2 pr-4">{t("colDuration")}</th>
+                  <th className="py-2 pr-4 text-right">{t("colCompute")}</th>
+                  <th className="py-2 text-right">{t("colCost")}</th>
+                </tr>
+              </thead>
+              <tbody className="text-navy-700 dark:text-white">
+                {batchCost.phases.map((phase, index) => (
+                  <tr key={`${phase.phase}-${phase.startIso}-${index}`} className="border-t border-gray-200 dark:border-white/10">
+                    <td className="py-2 pr-4 font-mono">
+                      {phaseLabel(statusT, phase.phase)}
+                      {phase.fixRounds > 0 && (phase.phase === "fixing" || phase.phase === "reverifying") ? (
+                        <span className="ml-1 text-xs text-gray-400">#{phase.fixRounds}</span>
+                      ) : null}
+                    </td>
+                    <td className="whitespace-nowrap py-2 pr-4 font-mono text-xs text-gray-500 dark:text-gray-400">
+                      {formatDateTimeSeconds(new Date(phase.startIso), timezone)}
+                      {" → "}
+                      {phase.openEnded ? t("ongoing") : formatDateTimeSeconds(new Date(phase.endIso), timezone)}
+                    </td>
+                    <td className="py-2 pr-4 font-mono text-xs">{timelineDuration(phase.durationMs)}</td>
+                    <td className="py-2 pr-4 text-right font-mono text-xs">{formatTokens(phase.computeTokens)}</td>
+                    <td className="py-2 text-right font-mono">{formatUsd(phase.costUsd)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t("precisionNote")}</p>
+        </>
+      )}
+    </section>
   );
 }
 

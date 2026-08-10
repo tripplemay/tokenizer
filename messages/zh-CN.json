@@ -669,6 +669,21 @@
           "notScanned": "尚未上报漂移扫描",
           "driftCounts": "修改 {modified} · 缺失 {missing} · 定制 {customized}"
         }
+      },
+      "cost": {
+        "title": "批次成本",
+        "total": "批次总成本",
+        "compute": "Compute tokens",
+        "rework": "返工小计（fixing + reverifying）",
+        "colPhase": "阶段",
+        "colWindow": "时间窗",
+        "colDuration": "耗时",
+        "colCompute": "Compute",
+        "colCost": "成本",
+        "ongoing": "进行中",
+        "empty": "尚无阶段流转记录——成本归因从第一次状态变更上报开始。",
+        "unlinked": "未关联用量项目，无法归因用量。",
+        "precisionNote": "时间窗近似：同项目同时段的非本批次用量也会计入（误差只多不少）。阶段边界为镜像观测时刻（延迟 ≤2 分钟）。v2 将提供精确到批次的归因。"
       }
     },
     "editor": {
