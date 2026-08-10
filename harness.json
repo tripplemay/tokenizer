@@ -14,6 +14,37 @@
         "applied_batch": "BL-REPO-MECH",
         "consumed_at": "2026-08-09T04:31:00Z"
       }
-    ]
+    ],
+    "mode_defaults": {
+      "intent": {
+        "desired": {
+          "autonomy": {
+            "enabled": false
+          },
+          "execution": {
+            "profile": "heterogeneous",
+            "role_bindings": {
+              "planner": null,
+              "evaluator": {
+                "tool": "kimi",
+                "invocation": "local-cli"
+              },
+              "generator": {
+                "tool": "codex",
+                "invocation": "local-cli"
+              }
+            }
+          }
+        },
+        "repo_key": "github.com/tripplemay/tokenizer",
+        "intent_id": "da55b68a-4e2e-4952-b1c0-6e784fd19d16",
+        "issued_at": "2026-08-10T08:26:03.684Z",
+        "issued_by": "tripplezhou@gmail.com",
+        "expected_head_sha": "905a90b3da0c8e3b01c403163d1ad65af3f781df",
+        "intent_expires_at": "2026-08-17T08:25:00.000Z",
+        "sig": "zLCDxoC+VHggA1a1VsKVdtUsoOlpxo5ITDL/iuGQDkCVXHFQMI6plT6yM9sm4PH5nvogcULYJmgLzTsQcGDWCQ=="
+      },
+      "staged_at": "2026-08-10T08:26:43.898Z"
+    }
   }
 }
