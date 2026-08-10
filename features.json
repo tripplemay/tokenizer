@@ -47,7 +47,13 @@
       "id": "F005",
       "title": "订阅额度按 accountKey 分组 + additive 索引 migration",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-b21d4034828d-20260810T103933Z",
+        "commit": "cb16ce11749ff4158a476e4d4d3cf662e5ce0af3"
+      },
+      "open_acceptance": "acceptance 1/2 真 DB 面未闭合：非 skip 单测 mock 了 $queryRaw，只验 JS 侧分组 + SQL 文本包含断言；真探针 tests/server/quota-account-db.probe.test.ts 需 EVAL_F005_DB_URL。acceptance 3 单账号回归强度不足（mock + 单 window fixture + 比对手写字面量而非改造前实际输出）。注：acceptance 4 已由稽核期临时 postgres 容器机械闭合（migrate deploy 29 条重放 EXIT=0 + pg_indexes 新旧索引并存）。"
     },
     {
       "id": "F006",
