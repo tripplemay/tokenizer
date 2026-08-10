@@ -7,6 +7,7 @@ import { readConfig, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
 import { runHarnessSync, type HarnessSyncResult } from "./harness";
+import { HARNESS_BASE_MS, initialHarnessBackoff, nextHarnessBackoff } from "./harness-backoff";
 import { acquireAgentLock } from "./agent-lock";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
@@ -185,9 +186,6 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
     // appropriate interval has elapsed, so a wake-from-sleep is reconciled
     // within ~5s instead of up to a full heartbeatSeconds.
     const TICK_MS = 5000;
-    // 闸门周转的体感上限：人在网页上批准后，最多等这么久机器才会拿到。
-    // 比 sync 快得多（sync 以分钟计），又不搭在 heartbeat 上以免拖慢存活上报。
-    const HARNESS_MS = 60_000;
     const QUOTA_ACTIVE_MS = 60_000;
     const QUOTA_IDLE_MS = 300_000;
     const ACTIVITY_WINDOW_MS = 60 * 60 * 1000;
@@ -195,6 +193,15 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
     let lastSyncAt = 0;
     let lastHarnessAt = 0;
     let harnessInFlight = false;
+    // 闸门周转的体感上限：人在网页上批准后，最多等这么久机器才会拿到。清洁轮
+    // 恒 60s；出问题后错误驱动退避（封顶 600s + 抖动），故障期不再每分钟重撞。
+    let harnessBackoff = initialHarnessBackoff;
+    let harnessDelayMs = HARNESS_BASE_MS;
+    const settleHarnessRound = (hadIssues: boolean) => {
+      const next = nextHarnessBackoff(harnessBackoff, hadIssues);
+      harnessBackoff = next.state;
+      harnessDelayMs = next.delayMs;
+    };
 
     await beat();
     lastBeatAt = Date.now();
@@ -213,12 +220,18 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
         void sync();
       }
       // 单飞：一次 harness 同步要遍历多个仓库并可能写盘 + commit，慢于 tick 时不叠加
-      if (!harnessInFlight && now - lastHarnessAt >= HARNESS_MS) {
+      if (!harnessInFlight && now - lastHarnessAt >= harnessDelayMs) {
         lastHarnessAt = now;
         harnessInFlight = true;
         void runHarnessSync(config)
-          .then(logHarness)
-          .catch((err) => log(`harness sync failed: ${err instanceof Error ? err.message : String(err)}`))
+          .then((result) => {
+            logHarness(result);
+            settleHarnessRound(result.issues.length > 0);
+          })
+          .catch((err) => {
+            log(`harness sync failed: ${err instanceof Error ? err.message : String(err)}`);
+            settleHarnessRound(true);
+          })
           .finally(() => {
             harnessInFlight = false;
           });
