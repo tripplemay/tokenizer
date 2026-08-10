@@ -212,6 +212,36 @@
 - **影响/复现**：点击 Older 后页面仍标为 Latest 200，用户无法判断当前是历史页，也无法正确理解列表范围。
 - **建议**：区分 first-page/older-page 文案，或显示游标页的时间范围和“第 N 页”。
 
+### F-34 [P2] Git-only 项目排名在全局 Top 40 之后才过滤，可丢失合法结果
+
+- **证据**：`src/server/summaries.ts:728-745` 先按所有项目 `totalTokens` 取 Top 40，`:759-786` 再查项目元数据并执行 `filter === "gitOnly"`，最后 `:787` 截成 20。同时 cost groupBy 在 `:741-745` 对全部 project×model 扫描，尽管 UI 最多返回 20 行。
+- **影响/复现**：创建 40 个无 repoKey 的高用量本地项目，再创建排名 41 以后的 Git 项目，选 Git-only 会得到空/不完整列表，而不是 Git 项目自身的 Top 20。
+- **建议**：在 top-K 之前通过 join/subquery 把 `repoKey` 条件下推到 SQL，只对候选项目聚合成本；用 >40 个混合项目的 fixture 固定排名语义。
+
+### F-36 [P2] Quota 采集失败/授权失效不会到达 UI，且该请求绕过代理感知 fetch
+
+- **证据**：`src/quota/run.ts:29-59` 只把 `quotaAuthErrors` 和 refresh status 写进 agent 本地 state；`src/server/quota.ts:42-80` 只读已入库 snapshot，`app/_components/subscription-card.tsx:8-17,45-90` 没有 provider error/disconnected/stale 状态。`src/quota/codex-chatgpt.ts:58-61` 还直接调原生 `fetch`，不走 CLI 其他同步链使用的 proxy-aware `agentFetch`；200 但空/畸形 JSON 在 `:69-73,85-136` 可映射为 0 条 snapshot 且无 error。
+- **影响/复现**：让 token 失效、仅在代理环境运行，或返回 `{}`：agent 本地知道失败，dashboard 却可以无限期显示旧额度和“已连接”视图，用户不知道需要重新登录/修复网络。
+- **建议**：把 provider health（last success/error/failure count/stale）纳入心跳或 quota 协议，校验非空响应契约；复用 `agentFetch`，重复失败退避；卡片显示旧数据年龄、错误和重连 CTA。
+
+### F-37 [P2] QuotaSnapshot 持续追加，“最新窗口”查询会随运行时间无界增长
+
+- **证据**：agent 在活跃/空闲时每 60/300 秒刷新（`src/cli/agent.ts:189-190,239-247`），每次对多个 window `createMany`；`QuotaSnapshot` 只追加，无 retention/rollup/current 表。`src/server/quota.ts:43-53` 在每次 30 秒缓存 miss 上对该用户全部历史做 `DISTINCT ON ... ORDER BY capturedAt DESC`，索引 `prisma/schema.prisma:251` 也没有 accountKey 和明确的 DESC 覆盖设计。
+- **影响/复现**：单设备一年可积累数百万窗口行，首页定期查“最新几条”的延迟、磁盘读和索引体积持续上升。
+- **建议**：将当前态 upsert 到独立 latest 表/物化视图，历史表实施 retention+降频 rollup；为 `userId,provider,accountKey,windowKey,capturedAt DESC` 做覆盖索引，用 `EXPLAIN` 和长期 soak 数据验证。
+
+### F-38 [P2] Quota 批量入库 API 缺少运行时 schema 和负载上限
+
+- **证据**：`app/api/quota/snapshots/batch/route.ts:27-55` 只验证 body 存在且 `snapshots` 是数组，随后直接 TS cast；没有 batch/body 上限、字符串长度、provider/window 枚举、finite/安全整数、`utilization` 0..1、日期有效性或 raw JSON 体积检查。`SubscriptionCard` 在 `:99-119` 只给 remaining 设下限，没有上限。
+- **影响/复现**：持有合法设备 token 的客户端发送 `NaN`/超大整数/无效日期/巨大数组，Decimal/BigInt/Date/createMany 可让整批 500 或占用过量资源；负 utilization 还会渲染 >100% 宽的进度条。
+- **建议**：用 Zod/等价 runtime schema，设置 body/batch/字段/rawJson 上限，对非法行稳定返回 4xx；UI 再防御性 clamp 到 0..100，补奇异值和超限合约测试。
+
+### F-39 [P2] 订阅卡相对时间重复后缀，未来重置和窗口时长文案也错误
+
+- **证据**：`formatRelativeTime` 已返回“5 minutes ago/5 分钟前”（`src/shared/format.ts:98-117`），`app/_components/subscription-card.tsx:86-90` 又把它传给带 `ago/前` 的 `messages/{en,zh-CN}.json:444-446`，实际输出“ago ago/前前”。重置时间也调同一个只面向过去的 formatter（`SubscriptionCard:111-114`），未来值被格式化为绝对日期而非倒计时。文案又硬编码 Code Review primary 为 5h（`messages/*:435`），但已有 fixture 的 `window_minutes` 是 60（`tests/fixtures/codex-chatgpt-response.json:20-25`）。
+- **影响/复现**：打开有 quota 数据的首页，footer 直接出现重复语法；“X 后重置/resets in X”显示日期字符串，且 1h 窗口被标为 5h，用户会误判剩余时间。
+- **建议**：分开 past/future formatter（可用 `Intl.RelativeTimeFormat`），相对值不再包一层后缀；把 `window_minutes` 结构化传到 UI 并动态生成 label；覆盖 en/zh、1h/5h/weekly 和过去/未来测试。
+
 ### F-22 [P3] 类型安全和依赖边界仍是模板式，降低重构可验证性
 
 - **证据**：`tsconfig.json:5-9` 开启 `allowJs`、`strict:false`、`noImplicitAny:false`、`strictNullChecks:false`；通用图表/Card/导航 props 使用 `any`（如 `src/components/charts/BarChart.tsx:8-9`, `src/components/card/index.tsx`）；Chakra、TanStack Table、framer-motion、react-calendar、recharts 等主要只在未引用的 legacy 组件中出现。
@@ -224,12 +254,18 @@
 - **缺失场景**：登录深链/open redirect、enrollment 并发误判和 30 秒缓存、model preset/Apply、Scan 网络失败、空状态/分页、locale parity、键盘导航和 tooltip 注入。
 - **建议**：先建立 Playwright smoke（登录、首页 range、设备注册、模型 detail、Harness gate），再加 axe/键盘矩阵；将 DB fixture 与外部邮件/定价服务 mock 隔离，纳入 CI。
 
+### F-40 [P3] 订阅额度功能只实现 Codex provider，已支持的其他 CLI 缺少对应卡片
+
+- **证据**：`src/quota/registry.ts:4-6` 生产 provider 列表只有 `codexChatgptProvider`，`app/_components/subscription-card.tsx:8-17,45-84` 也只读/渲染 `codex-chatgpt`。仓库自身路线图已明确记录“quota 仅 1 provider”以及 Claude/Kimi 订阅窗口缺失（`docs/analysis/2026-08-08-repo-strategy/appendix/roadmap.md:17,58,122`）。
+- **功能缺失**：已经通过 parser 支持 Claude Code/Kimi 等 source 的用户，首页仍无法查看对应订阅额度；也没有 provider/account 选择器或通用错误态。
+- **建议**：将采集、health、account/window 结构和卡片 renderer 定义为 provider plugin contract，根据产品范围优先实现 Claude/Kimi；用同一组 contract tests 验证多 provider/多 account 并存。
+
 ## 建议的修复顺序
 
-1. 立即处理 F-01～F-05、F-24～F-25（认证密钥、重定向、注册状态、tooltip XSS、onboarding/时区误判），并在部署前加入 fail-closed 和安全回归。
-2. 处理 F-06～F-09（请求级 session、刷新策略、分页/索引、时间范围口径），先解决数据库放大和财务数字不一致。
-3. 处理 F-10～F-19、F-21、F-26～F-30（日期控件、错误/空状态、响应式、可访问性、异步错误反馈和查询去重），补关键用户路径 E2E。
-4. 处理 F-20、F-22～F-23（i18n、资源拆分、类型和依赖治理、测试基线），作为框架演进批次持续收敛。
+1. 立即处理 F-01～F-05、F-24～F-25、F-31、F-33、F-35：先关闭认证/XSS/决策竞态风险，停止展示不可靠的批次成本和跨账号 quota，再补 fail-closed、并发和财务口径回归。
+2. 处理 F-06～F-09、F-32、F-34、F-37：合并 request session/dashboard loader，拆分整树刷新，实施分页/索引/单查询批次聚合，给热路径设置 query budget。
+3. 处理 F-10～F-21、F-26～F-30、F-36、F-38～F-39：完成日期语义、错误/空/失联状态、输入校验、响应式、可访问性和 i18n，补关键用户路径 E2E。
+4. 处理 F-22～F-23、F-40：渐进 strict，清理 legacy 依赖/资源，建立浏览器测试基线和可扩展 quota provider/account 契约。
 
 ## 保留项
 
