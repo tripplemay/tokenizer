@@ -1,45 +1,48 @@
 {
-  "sprint": "BL-GATE-INBOX",
+  "batch": "BL-AGENT-LATENCY",
+  "spec": "docs/specs/BL-AGENT-LATENCY-spec.md",
   "features": [
     {
       "id": "F001",
-      "title": "全站待批徽章 + pending-count API",
-      "priority": "high",
-      "status": "completed",
+      "title": "cron fallback 拆双 crontab 条目（harness 每 2 分钟）",
       "executor": "generator",
-      "acceptance": "GET /api/harness/gates/pending-count 未登录 401、计数条件（userId+consumedAt null+decisionAction null）与响应形状单测；徽章组件 n>0 红底 Link、n=0/fetch 失败不渲染三分支单测；30s 轮询常量导出断言；npm run verify/lint 绿。"
+      "status": "pending"
     },
     {
       "id": "F002",
-      "title": "闸门邮件通知（Resend，claim 防重发，fail-open）",
-      "priority": "high",
-      "status": "completed",
+      "title": "harness 轮询错误驱动退避 + 抖动（纯函数 harness-backoff）",
       "executor": "generator",
-      "acceptance": "HarnessGate.notifiedAt 纯 additive migration；claim 式 updateMany 并发只发一封；AUTH_RESEND_KEY 未配/email 空静默跳过且 report 200；发送失败复位 null 重试；re-raise 清 notifiedAt 再通知；邮件渲染纯函数快照含 UTC 时间与控制台链接；零新依赖。"
+      "status": "pending"
     },
     {
       "id": "F003",
-      "title": "evidence 查看先行版（路径分类+复制）",
-      "priority": "medium",
-      "status": "completed",
+      "title": "enroll 切换自愈 agentFetch（src/cli 裸 fetch 清零）",
       "executor": "generator",
-      "acceptance": "harness-evidence.ts 分类纯函数边界单测（docs/ 前缀/空串/超长）；列表页与详情页三处 gate 渲染点均引用 EvidenceList（grep 断言裸列表清零）；空数组不渲染；en/zh 键集一致；verify 绿。"
+      "status": "pending"
     },
     {
       "id": "F004",
-      "title": "dashboardUrl 补显",
-      "priority": "medium",
-      "status": "completed",
+      "title": "/events cursor 分页（occurredAt+id 复合游标）",
       "executor": "generator",
-      "acceptance": "详情 overview 外链 Fact + 列表卡片外链，经 safeHttpUrl（javascript: 拒，测试补 case）；空值 notReported 不渲染 <a>；grep -rn dashboardUrl app/ 命中 >0。"
+      "status": "pending"
     },
     {
       "id": "F005",
-      "title": "dispatch 产物补显（artifactPath/Sha256）",
-      "priority": "medium",
-      "status": "completed",
+      "title": "agent release 1.3.0 账本 + rollout（最终功能 commit）",
       "executor": "generator",
-      "acceptance": "detail select 补两列（既有排除断言反转并在 commit 说明机械依据）；Activity 产物列 path+sha 截断 title 全量、皆空显 —；decisionSig/payload/signature 排除断言保留；verify 绿。"
+      "status": "pending"
+    },
+    {
+      "id": "F006",
+      "title": "闸门邮件 notify fetch AbortSignal.timeout(8s) 兜底",
+      "executor": "generator",
+      "status": "pending"
+    },
+    {
+      "id": "F007",
+      "title": "dispatch 用量 model 归因补全（提取器 argv 兜底 v1.10.0 + 服务端 model-only 刷新）",
+      "executor": "generator",
+      "status": "pending"
     }
   ]
 }

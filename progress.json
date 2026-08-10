@@ -1,41 +1,29 @@
 {
-  "status": "done",
-  "user_goal": "闸门全局触达：全站待批徽章 + 邮件通知（fail-open）+ evidence/dashboardUrl/dispatch 产物三处存而不显补显；零协议改动。",
-  "total_features": 5,
-  "completed_features": 5,
+  "status": "building",
+  "user_goal": "闸门触达延迟 15min→≤2min + daemon 退避 + enroll 自愈 + /events 分页；顺路 notify 超时与 dispatch model 归因闭环",
+  "total_features": 7,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-GATE-INBOX",
+  "current_sprint": "BL-AGENT-LATENCY",
   "dashboard_url": null,
-  "last_updated": "2026-08-09T19:07:46Z",
+  "last_updated": "2026-08-10T04:14:59Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-GATE-INBOX-spec.md",
+    "spec": "docs/specs/BL-AGENT-LATENCY-spec.md",
     "test_cases": null,
     "signoff": null,
-    "framework_reviewed": false
+    "framework_reviewed": true
   },
   "role_assignments": null,
-  "evaluator_feedback": {
-    "batch": "BL-GATE-INBOX",
-    "verdict": "ALL_PASS",
-    "results": {
-      "F001": "PASS",
-      "F002": "PASS",
-      "F003": "PASS",
-      "F004": "PASS",
-      "F005": "PASS"
-    },
-    "fix_rounds": 0,
-    "report": "docs/test-reports/BL-GATE-INBOX-signoff.md",
-    "note": "5 个隔离 evaluator subagent fan-out 分片结论原样收录于报告；4 条 soft-watch + 2 条 L2 未尽项（生产自然验证）见报告末节"
-  },
+  "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-GATE-INBOX done，2026-08-09】5/5 全 PASS 零返工（fix_rounds=0），signoff 见 docs/test-reports/BL-GATE-INBOX-signoff.md。生产已在 ac69897（部署绿）。evaluator 补了 2 个 test-only commit（2526b6a/5426b50，F003 渲染冒烟 8 用例 + F002 fail-open 探针 4 用例，全量 1102）。L2 自然验证项：下一次真实闸门举起时用户应收到 Resend 邮件 + 导航栏红底徽章。soft-watch 已录 backlog 备注（notify fetch AbortSignal.timeout）。下一批次候选：BL-AGENT-LATENCY（近期 #5）。"
+    "planning": "【BL-AGENT-LATENCY planning→building，2026-08-10】7 features（预案 5 + notify 超时 + model 归因）。规划期已发框架 v1.9.1（消费台账双锚，学习回流）并同步本仓 + harness.json 台账回填。F007 需再发框架 v1.10.0（提取器 argv 兜底）。push 即部署；F005 账本押后为最终功能 commit。"
   },
   "features": [],
-  "pending_gate": null
+  "pending_gate": null,
+  "mode_intent": null
 }
