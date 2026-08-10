@@ -1,0 +1,22 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-10T09:01:13Z",
+  "features": [
+    {
+      "feature_id": "F002",
+      "commits": [],
+      "files_touched": [
+        "src/shared/url.ts",
+        "app/login/page.tsx",
+        "tests/shared/url.test.ts"
+      ],
+      "notes": "Added safeCallbackPath as a fail-closed same-origin absolute-path helper. It rejects protocol-relative and parser-normalized backslash escapes, leading/trailing whitespace and controls, malformed percent encoding, and recursively decoded escapes; legal paths are returned byte-for-byte. Login now passes callbackUrl through the helper. The focused test table covers 17 attack vectors, 3 legal paths, malformed encoding, controls, nested encoding, and omitted/empty values. Final direct Node TypeScript-loader smoke passed all 22 unsafe and 3 legal vectors; git diff --check passed. npm run lint exited 127 (next missing), npm run verify exited 127 (prisma missing), and npm run test -- tests/shared/url.test.ts exited 127 (vitest missing) before executing project checks."
+    }
+  ],
+  "l1_ran": {
+    "lint": "npm run lint -> exit 127 before lint (sh: next: command not found); git diff --check -> exit 0.",
+    "typecheck": "npm run verify -> exit 127 before typecheck (sh: prisma: command not found).",
+    "test": "node --experimental-strip-types direct smoke -> exit 0, safeCallbackPath smoke passed for 22 unsafe + 3 legal vectors; npm run test -- tests/shared/url.test.ts -> exit 127 before Vitest (sh: vitest: command not found)."
+  },
+  "waiting": null
+}

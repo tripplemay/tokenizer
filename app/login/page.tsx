@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth, signIn } from "@/auth";
+import { safeCallbackPath } from "@/shared/url";
 import { LoginShell } from "../_components/login-shell";
 import { LoginSubmitButton } from "../_components/login-submit-button";
 
@@ -9,7 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; callbackUrl?: string }> }) {
   const params = await searchParams;
   const session = await auth();
-  if (session?.user) redirect(params.callbackUrl ?? "/");
+  const callbackPath = safeCallbackPath(params.callbackUrl);
+  if (session?.user) redirect(callbackPath);
   const t = await getTranslations();
 
   // Server action — when AUTH_RESEND_KEY isn't configured, the "resend"
