@@ -6,7 +6,7 @@
       "id": "F001",
       "title": "阶段区间构建 + 时间窗成本聚合层（harness-cost.ts）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F002",
