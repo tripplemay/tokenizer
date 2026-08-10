@@ -199,7 +199,7 @@ describe("BL-COST-BATCH-V1 F003 projects detail card (real page render, en messa
 
     // card + note (precision wording) present
     expect(markup).toContain("Orchestration batch cost");
-    expect(markup).toContain("errs on over-counting");
+    expect(markup).toContain("discloses unpriced/truncation under-count paths");
     // batch cell + status label via harness.status.phase.*
     expect(markup).toContain(BATCH);
     expect(markup).toContain("Verifying");

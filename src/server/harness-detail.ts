@@ -81,7 +81,8 @@ export function ownedHarnessProjectDetailQuery(id: string, userId: string) {
       },
       transitions: {
         where: { userId },
-        orderBy: { observedAt: "desc" as const },
+        // 次级 id 序：同毫秒双行时保证两页序列化一致（cache key 稳定，评审 F-31 fixing 轮）
+        orderBy: [{ observedAt: "desc" as const }, { id: "desc" as const }],
         take: 100,
         select: {
           id: true,

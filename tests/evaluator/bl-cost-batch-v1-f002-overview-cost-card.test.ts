@@ -130,7 +130,8 @@ const BATCH_COST: BatchCost = {
       openEnded: false,
       durationMs: 65 * MINUTE,
       computeTokens: 900_000,
-      costUsd: 9.87
+      costUsd: 9.87,
+    unpricedComputeTokens: 0
     },
     {
       phase: "fixing",
@@ -141,7 +142,8 @@ const BATCH_COST: BatchCost = {
       openEnded: false,
       durationMs: 30 * MINUTE,
       computeTokens: 200_000,
-      costUsd: 1.5
+      costUsd: 1.5,
+    unpricedComputeTokens: 0
     },
     {
       phase: "reverifying",
@@ -152,11 +154,14 @@ const BATCH_COST: BatchCost = {
       openEnded: true,
       durationMs: 85 * MINUTE,
       computeTokens: 134_000,
-      costUsd: 0.9756
+      costUsd: 0.9756,
+    unpricedComputeTokens: 0
     }
   ],
   reworkCostUsd: 2.4756,
   reworkComputeTokens: 334_000,
+  hasUnpricedUsage: false,
+  unpricedComputeTokens: 0,
   windowStartIso: iso(180),
   windowEndIso: iso(0)
 };
@@ -225,7 +230,8 @@ describe("BL-COST-BATCH-V1 F002 overview batch-cost card smoke render (en messag
 
     // precision disclaimer (acceptance 2, en copy verbatim)
     expect(markup).toContain(
-      "Time-window approximation: usage from the same project in the same window that is not part of this batch is also counted (errs on over-counting, never under). Phase boundaries are mirror observations (≤2 min lag). Exact per-batch attribution arrives in v2."
+      // fixing 轮（评审 F-31）文案如实化后的全文断言：少算路径显式披露 + done 停止计费
+      "Time-window approximation: usage from the same project in the same window that is not part of this batch is also counted (over-counting direction). Under-counting paths are disclosed, not silent: unpriced models are shown as unpriced tokens, and batches with over 100 recorded transitions truncate the oldest windows. Phase boundaries are mirror observations (≤2 min lag). A completed batch stops accruing at done. Exact per-batch attribution arrives in v2."
     );
   });
 

@@ -7,8 +7,9 @@ import { MODEL_PRICES_CACHE_TAG } from "@/shared/model-price";
 // BL-COST-BATCH-V1 F001：批次/阶段成本归因聚合层。
 // 用 HarnessTransition 的阶段流转把批次折成时间区间，再对 UsageEvent 做
 // occurredAt 时间窗 join。v1 是时间窗近似：同项目同时段的非批次用量会被
-// 计入（误差方向恒为「只多不少」），v2 精确归因（agent 报 batch id）落地时
-// 只换数据源、不换本层接口。刻意独立成文件：summaries.ts 已 1128 行且无
+// 计入（多算方向）；未定价模型不入 costUsd（少算方向，以 unpriced 字段显式
+// 披露）；>100 条流转的截断为已知边界。v2 精确归因（agent 报 batch id）落地
+// 时只换数据源、不换本层接口。刻意独立成文件：summaries.ts 已 1128 行且无
 // 集成测试，本层纯函数占比最大化。
 
 const CACHE_REVALIDATE_SECONDS = 30;
@@ -48,6 +49,8 @@ export interface PhaseCostRow {
   durationMs: number;
   computeTokens: number;
   costUsd: number;
+  /** 未定价模型的 compute tokens：计入 computeTokens 但不计入 costUsd（少算路径的显式披露，评审 F-31） */
+  unpricedComputeTokens: number;
 }
 
 export interface BatchCost {
@@ -58,9 +61,15 @@ export interface BatchCost {
   /** fixing + reverifying 各轮合计（返工小计） */
   reworkCostUsd: number;
   reworkComputeTokens: number;
+  /** 任一阶段含未定价模型用量时为 true——UI 必须随金额披露 */
+  hasUnpricedUsage: boolean;
+  unpricedComputeTokens: number;
   windowStartIso: string;
   windowEndIso: string;
 }
+
+/** 终态：批次到此为止，成本窗口封闭——done 之后的同项目用量不再计入本批 */
+const TERMINAL_PHASES = new Set(["done"]);
 
 /**
  * 把 transition 序列折成阶段区间。纯函数、无 DB 依赖。
@@ -68,7 +77,8 @@ export interface BatchCost {
  * - batchBoundary=true 行切断聚合：只保留**最后一个批次**的区间（HarnessProject
  *   镜像只存当前批次，跨批次窗口归因交给调用方按 toBatch 过滤后的序列）
  * - fromStatus=null 的首次观测行只开启区间，不产生「未知阶段」
- * - 当前阶段为开区间，以 now 封闭
+ * - 当前**非终态**阶段为开区间，以 now 封闭；**终态（done）零宽封闭**——
+ *   fixing 轮修复（评审 F-31）：done 后批次总额不得随 now 继续上涨
  * - 区间数超过 MAX_PHASE_INTERVALS 时合并最旧的相邻区间
  */
 export function buildPhaseIntervals(transitions: TransitionLike[], now: Date): PhaseInterval[] {
@@ -95,8 +105,12 @@ export function buildPhaseIntervals(transitions: TransitionLike[], now: Date): P
     };
   }
   if (open) {
-    const end = now.getTime() > open.start.getTime() ? now : open.start;
-    intervals.push({ ...open, end, openEnded: true });
+    if (TERMINAL_PHASES.has(open.phase)) {
+      intervals.push({ ...open, end: open.start, openEnded: false });
+    } else {
+      const end = now.getTime() > open.start.getTime() ? now : open.start;
+      intervals.push({ ...open, end, openEnded: true });
+    }
   }
 
   // 上限合并：吸收最旧区间到其后继（保留后继的 phase 标签，窗口取并）
@@ -126,15 +140,22 @@ async function phaseCost(
   });
   let compute = 0;
   let cost = 0;
+  let unpriced = 0;
   for (const row of rows) {
     const i = row._sum.inputTokens ?? 0;
     const c = row._sum.cachedInputTokens ?? 0;
     const o = row._sum.outputTokens ?? 0;
     const w = row._sum.cacheWriteTokens ?? 0;
     // compute 口径 = max(0, input − cached) + output，与 summaries.ts billableOf 逐字一致
-    compute += Math.max(0, i - c) + o;
+    const rowCompute = Math.max(0, i - c) + o;
+    compute += rowCompute;
     const dollars = estimateCost(row.model, { inputTokens: i, cachedInputTokens: c, cacheWriteTokens: w, outputTokens: o }, prices);
-    if (dollars != null) cost += dollars;
+    if (dollars != null) {
+      cost += dollars;
+    } else {
+      // 未定价模型不静默：tokens 显式归入 unpriced，costUsd 因此可能少算——由 UI 披露
+      unpriced += rowCompute;
+    }
   }
   return {
     phase: interval.phase,
@@ -145,7 +166,8 @@ async function phaseCost(
     openEnded: interval.openEnded,
     durationMs: Math.max(0, interval.end.getTime() - interval.start.getTime()),
     computeTokens: compute,
-    costUsd: cost
+    costUsd: cost,
+    unpricedComputeTokens: unpriced
   };
 }
 
@@ -177,6 +199,8 @@ async function getBatchCostImpl(
     phases,
     reworkCostUsd: rework.reduce((sum, p) => sum + p.costUsd, 0),
     reworkComputeTokens: rework.reduce((sum, p) => sum + p.computeTokens, 0),
+    hasUnpricedUsage: phases.some((p) => p.unpricedComputeTokens > 0),
+    unpricedComputeTokens: phases.reduce((sum, p) => sum + p.unpricedComputeTokens, 0),
     windowStartIso: phases[0].startIso,
     windowEndIso: phases.at(-1)!.endIso
   };

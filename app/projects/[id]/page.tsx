@@ -38,7 +38,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         repoKey: true,
         transitions: {
           where: { userId: tenantId },
-          orderBy: { observedAt: "desc" as const },
+          // 与 harness-detail.ts 的 transitions 序完全一致（含次级 id 序）——cache key 同一性前提
+          orderBy: [{ observedAt: "desc" as const }, { id: "desc" as const }],
           take: 100,
           select: {
             fromStatus: true,

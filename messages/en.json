@@ -187,7 +187,7 @@
     "unknownModel": "Unknown model",
     "harnessCost": {
       "title": "Orchestration batch cost",
-      "note": "Batches from the harness console linked to this usage project. Same aggregation as the harness detail page (time-window approximation, errs on over-counting).",
+      "note": "Batches from the harness console linked to this usage project. Same aggregation as the harness detail page (time-window approximation; over-counts mixed-in usage, discloses unpriced/truncation under-count paths).",
       "col": {
         "batch": "Batch",
         "status": "Status",
@@ -694,7 +694,8 @@
         "ongoing": "ongoing",
         "empty": "No phase transitions recorded yet — cost attribution starts with the first status change report.",
         "unlinked": "Not linked to a usage project, so no usage can be attributed.",
-        "precisionNote": "Time-window approximation: usage from the same project in the same window that is not part of this batch is also counted (errs on over-counting, never under). Phase boundaries are mirror observations (≤2 min lag). Exact per-batch attribution arrives in v2."
+        "precisionNote": "Time-window approximation: usage from the same project in the same window that is not part of this batch is also counted (over-counting direction). Under-counting paths are disclosed, not silent: unpriced models are shown as unpriced tokens, and batches with over 100 recorded transitions truncate the oldest windows. Phase boundaries are mirror observations (≤2 min lag). A completed batch stops accruing at done. Exact per-batch attribution arrives in v2.",
+        "unpriced": "{tokens} compute tokens from unpriced models are excluded from the cost figures above."
       }
     },
     "editor": {

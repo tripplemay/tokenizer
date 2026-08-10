@@ -747,6 +747,12 @@ async function BatchCostSection({
               </span>
             </Fact>
           </dl>
+          {batchCost.hasUnpricedUsage ? (
+            <p className="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-300">
+              <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0" />
+              {t("unpriced", { tokens: formatTokens(batchCost.unpricedComputeTokens) })}
+            </p>
+          ) : null}
           <div className="max-w-full overflow-x-auto">
             <table className="w-full min-w-max border-y border-gray-200 text-left text-sm dark:border-white/10">
               <thead className="text-xs uppercase tracking-wide text-gray-400">

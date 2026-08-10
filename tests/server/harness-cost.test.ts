@@ -108,6 +108,22 @@ describe("buildPhaseIntervals（纯函数，无 prisma mock 依赖）", () => {
     }
   });
 
+  it("closes a terminal done phase at zero width so a finished batch stops accruing (F-31 fix)", () => {
+    const intervals = buildPhaseIntervals(
+      [
+        t({ fromStatus: null, toStatus: "verifying", observedAt: "2026-08-10T10:00:00.000Z" }),
+        t({ toStatus: "done", observedAt: "2026-08-10T11:00:00.000Z" })
+      ],
+      NOW
+    );
+    const done = intervals.at(-1)!;
+    expect(done.phase).toBe("done");
+    expect(done.openEnded).toBe(false);
+    expect(done.end.toISOString()).toBe("2026-08-10T11:00:00.000Z");
+    // 整批窗口终点 = done 时刻，不随 now 延伸
+    expect(done.end.getTime()).toBe(done.start.getTime());
+  });
+
   it("uses strict UTC Date math across a day boundary", () => {
     const intervals = buildPhaseIntervals(
       [
@@ -152,6 +168,21 @@ describe("getBatchCost", () => {
     expect(typeof result!.windowStartIso).toBe("string");
     expect(result!.phases[0].startIso).toBe("2026-08-10T10:00:00.000Z");
     expect(result!.phases[1].durationMs).toBe(NOW.getTime() - new Date("2026-08-10T11:00:00.000Z").getTime());
+  });
+
+  it("splits unpriced-model usage into disclosed unpriced tokens instead of silently dropping it", async () => {
+    mocks.prisma.usageEvent.groupBy.mockResolvedValue([
+      { model: "gpt-5.6-sol", _sum: SUMS },
+      { model: "some-unpriced-model", _sum: { inputTokens: 100_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 20_000 } }
+    ]);
+    const result = await getBatchCost("user-1", { projectId: "p1", repoKey: null }, TRANSITIONS, NOW.getTime());
+    const priced = estimateCost("gpt-5.6-sol", SUMS, PRICES as never)!;
+    // costUsd 只含已定价模型；unpriced tokens 显式披露且仍计入 compute
+    expect(result!.totalCostUsd).toBeCloseTo(priced * 2, 8);
+    expect(result!.hasUnpricedUsage).toBe(true);
+    expect(result!.unpricedComputeTokens).toBe(120_000 * 2);
+    expect(result!.totalComputeTokens).toBe((1_000_000 - 400_000 + 50_000 + 120_000) * 2);
+    expect(result!.phases[0].unpricedComputeTokens).toBe(120_000);
   });
 
   it("queries [start, end) windows keyed by projectId when linked", async () => {
