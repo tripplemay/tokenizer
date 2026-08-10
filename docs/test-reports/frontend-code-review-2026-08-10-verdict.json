@@ -1,0 +1,188 @@
+{
+  "batch_id": "FRONTEND-CODE-REVIEW-2026-08-10",
+  "fix_round": 0,
+  "created_at": "2026-08-10T00:00:00Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F-01",
+      "result": "FAIL",
+      "evidence": "P1 security/configuration: src/auth.ts:6-13 falls back to a repository-visible fixed AUTH_SECRET placeholder; .github/workflows/deploy-vps.yml:189-217 warns instead of failing closed.",
+      "steps_to_reproduce": "Inspect the cited lines, unset AUTH_SECRET, start the production build, and exercise the Auth.js route; verify that startup continues with the fixed secret."
+    },
+    {
+      "feature_id": "F-02",
+      "result": "FAIL",
+      "evidence": "P1 security/navigation: app/login/page.tsx:9-13 redirects directly to params.callbackUrl without same-origin validation.",
+      "steps_to_reproduce": "Open /login?callbackUrl=https://evil.example (also test //evil.example and encoded variants) and observe the redirect target."
+    },
+    {
+      "feature_id": "F-03",
+      "result": "FAIL",
+      "evidence": "P1 functional/auth: src/server/auth-session.ts:21-25,33-39 redirects to /login without a return path; app/login/page.tsx:18-23 signs in with redirectTo '/'.",
+      "steps_to_reproduce": "Request an unauthenticated detail URL, complete the login action, and verify that navigation ends at / instead of the original pathname and query."
+    },
+    {
+      "feature_id": "F-04",
+      "result": "FAIL",
+      "evidence": "P1 functional/enrollment: app/_components/enroll-flow-card.tsx:74-110 treats any device outside the initial set as this enrollment; app/api/devices/route.ts:6-10 uses the 30-second cached getDeviceSummary at src/server/summaries.ts:1121-1128.",
+      "steps_to_reproduce": "Create an enrollment, add a different device concurrently, and poll the UI; then add the intended device and inspect whether the endpoint can remain stale for up to 30 seconds."
+    },
+    {
+      "feature_id": "F-05",
+      "result": "FAIL",
+      "evidence": "P1 security/xss: app/devices/daily-device-cost-chart.tsx:64-80 and app/daily-source-chart.tsx:79-95 interpolate item.name into custom tooltip HTML; ApexCharts writes the tooltip through innerHTML at node_modules/apexcharts/src/modules/tooltip/Tooltip.js:526.",
+      "steps_to_reproduce": "Register or ingest a name such as <img src=x onerror=alert(1)> and hover the device/source chart; confirm the rendered tooltip treats the value as markup."
+    },
+    {
+      "feature_id": "F-06",
+      "result": "FAIL",
+      "evidence": "P1 performance/architecture: app/layout.tsx:21-27, app/session-provider.tsx:5-10, src/server/auth-session.ts:21-27, and app/devices/page.tsx:75-81,128-132,145-149 independently resolve the same session; the client provider does not receive an initial session.",
+      "steps_to_reproduce": "Load /devices with an authenticated browser, capture server/database traces and browser requests, and count repeated auth() calls plus /api/auth/session."
+    },
+    {
+      "feature_id": "F-07",
+      "result": "FAIL",
+      "evidence": "P1 performance/refresh: app/_components/auto-refresh.tsx:19-56 calls router.refresh() every 30 seconds while layout and dashboard sections re-run auth, agent-version, and multiple aggregate queries.",
+      "steps_to_reproduce": "Keep dashboard, devices, and harness tabs visible for 90 seconds, record RSC/network requests, and compare query/chart work at each refresh tick."
+    },
+    {
+      "feature_id": "F-08",
+      "result": "FAIL",
+      "evidence": "P1 performance/scalability: app/harness/page.tsx:44-64 and app/devices/page.tsx:145-149 use unbounded findMany and render all rows; prisma/schema.prisma:456-459 lacks the userId+consumedAt/order composite gate index.",
+      "steps_to_reproduce": "Seed a tenant with thousands of projects, gates, and devices, request /harness and /devices, and measure query time, response size, DOM node count, and scroll responsiveness."
+    },
+    {
+      "feature_id": "F-09",
+      "result": "FAIL",
+      "evidence": "P1 functional/data-correctness: rangeWhere('all') in src/server/summaries.ts:21-32 is unbounded, while daysForRange and daily queries at :878-882 and :914-1025 cap the chart at 180 days; UI still labels it All time.",
+      "steps_to_reproduce": "Seed events older than 180 days, select All, and compare KPI totals with the daily chart sum and subtitle."
+    },
+    {
+      "feature_id": "F-24",
+      "result": "FAIL",
+      "evidence": "P1 functional/onboarding: app/page.tsx:77-99 returns OnboardingCard whenever the selected range summary has eventCount zero; RangeSelector is only rendered in the normal branch at :104-122.",
+      "steps_to_reproduce": "Use an account with only old events, open /?range=7d (or 30d), and verify that onboarding replaces the dashboard and removes the control needed to return to All."
+    },
+    {
+      "feature_id": "F-25",
+      "result": "FAIL",
+      "evidence": "P1 functional/timezone: timezone-reporter PATCHes the browser zone only after mount (app/_components/timezone-reporter.tsx:9-19), while server pages read the default Asia/Shanghai before render (src/server/timezone.ts:4,17-31); no refresh follows success.",
+      "steps_to_reproduce": "For a new user in a non-Asia/Shanghai zone, open dashboard/events/model detail, compare first-render buckets with the browser zone, then navigate again and observe the correction."
+    },
+    {
+      "feature_id": "F-10",
+      "result": "FAIL",
+      "evidence": "P2 functional/data-correctness: rolling SQL bounds use Date.now()-N*day in src/server/summaries.ts:631-645,680-695,914-1025, but output buckets start at local midnight in :887-905.",
+      "steps_to_reproduce": "Set a timezone with a non-midnight current time, select a rolling range, and compare the first displayed local day with raw events around the lower bound; repeat across DST."
+    },
+    {
+      "feature_id": "F-11",
+      "result": "FAIL",
+      "evidence": "P2 functional/date-picker: app/models/[model]/model-range-picker.tsx:41-63 leaves localFrom/localTo stale after preset navigation; server queries use [from,to) while src/server/time-buckets.ts:112-125 includes <= to.",
+      "steps_to_reproduce": "Click a model range preset, inspect the datetime inputs, click Apply, and test a to value on a bucket boundary for an extra empty endpoint bucket."
+    },
+    {
+      "feature_id": "F-12",
+      "result": "FAIL",
+      "evidence": "P2 performance/frontend: dashboard chart components use ssr:false but have no viewport lazy loading; the production ApexCharts shared chunk is about 535KB raw (about 139KB gzip).",
+      "steps_to_reproduce": "Run npm run build, inspect the emitted ApexCharts chunk, then load the dashboard with a cold cache and observe that below-fold chart scripts and instances initialize before scrolling."
+    },
+    {
+      "feature_id": "F-13",
+      "result": "FAIL",
+      "evidence": "P2 performance/data-access: app/devices/page.tsx:75-94 calls the all-time getDeviceSummary only to derive initial device IDs, then runs range and table queries at :128-149; the summary performs full event groupBys.",
+      "steps_to_reproduce": "Clear server cache, open /devices?range=7d with a large event history, and trace the first all-time aggregate before the actual daily/table queries."
+    },
+    {
+      "feature_id": "F-14",
+      "result": "FAIL",
+      "evidence": "P2 performance/background-work: pending-gates-badge polls without visibility or in-flight guards, Navbar mounts it globally, Harness refreshes its own data, and timezone updates are unconditional (app/_components/pending-gates-badge.tsx:17-35; src/server/timezone.ts:38-43).",
+      "steps_to_reproduce": "Open multiple tabs, background one tab, visit /harness, and monitor requests and User UPDATE statements for several polling intervals."
+    },
+    {
+      "feature_id": "F-15",
+      "result": "FAIL",
+      "evidence": "P2 functional/error-handling: app/admin/pricing/pricing-actions.tsx:134-165 starts an async scan callback without catch/finally around fetch.",
+      "steps_to_reproduce": "Block the pricing endpoint or disconnect the network, click Scan now, and observe the unhandled rejection and missing user-facing error state."
+    },
+    {
+      "feature_id": "F-16",
+      "result": "FAIL",
+      "evidence": "P2 functional/auth-config: src/auth.ts:38-49 creates no provider without AUTH_RESEND_KEY, while app/login/page.tsx:15-23 does not catch signIn and therefore cannot render the documented Configuration state.",
+      "steps_to_reproduce": "Unset AUTH_RESEND_KEY, submit the login form, and verify that the action throws into a generic error path instead of the translated configuration message."
+    },
+    {
+      "feature_id": "F-17",
+      "result": "FAIL",
+      "evidence": "P2 functional/UX: app/ has no route loading.tsx, error.tsx, or global-error.tsx beyond a nested not-found; Suspense boundaries in app/page.tsx only cover pending rendering.",
+      "steps_to_reproduce": "Force a server aggregate or external pricing query to fail during a route request/RSC refresh and observe the lack of a localized retry boundary."
+    },
+    {
+      "feature_id": "F-18",
+      "result": "FAIL",
+      "evidence": "P2 functional/UX: events and detail pages render empty tbody values without EmptyState, while src/server/summaries.ts:255,413,800 cap detail events at take:100 with no continuation UI.",
+      "steps_to_reproduce": "Open an empty tenant/filter and a detail record with more than 100 events; verify the blank table and inability to request records after the first 100."
+    },
+    {
+      "feature_id": "F-19",
+      "result": "FAIL",
+      "evidence": "P2 accessibility: sidebar close is a clickable span, navigation list semantics are invalid, several inputs are placeholder-only, login errors lack alert/live semantics, and legend is nested in a div (cited app/src paths in the report).",
+      "steps_to_reproduce": "Run keyboard-only navigation and a screen-reader/axe scan on mobile sidebar, login, gate, pricing, and mode-editor flows; verify missing names, focus behavior, and announcements."
+    },
+    {
+      "feature_id": "F-20",
+      "result": "FAIL",
+      "evidence": "P2 i18n: onboarding/enrollment/admin/navbar contain hard-coded Chinese and English strings; src/shared/format.ts:44-46 and events formatting use en-US regardless of selected locale.",
+      "steps_to_reproduce": "Switch locale between en and zh-CN on dashboard, enrollment, pricing, and navbar pages, then compare visible/aria strings and number/date formatting."
+    },
+    {
+      "feature_id": "F-21",
+      "result": "FAIL",
+      "evidence": "P2 performance/architecture: multiple global CSS files repeat remote Google Font imports and legacy styles; app/layout.tsx passes the complete messages payload to the client provider on every route.",
+      "steps_to_reproduce": "Inspect the cited CSS/layout imports, run a production build, and measure document payload/CSS requests with a cold browser cache on a route that needs only a small message namespace."
+    },
+    {
+      "feature_id": "F-26",
+      "result": "FAIL",
+      "evidence": "P2 functional/performance: app/models/[model]/model-range-picker.tsx:73-94 has no max span; page parsing accepts arbitrary finite from/to and time-buckets.ts only caps generated buckets at 10,000.",
+      "steps_to_reproduce": "Request /models/<model>?from=1900-01-01T00:00&to=2100-01-01T00:00 and inspect aggregate latency, bucket count, and response size."
+    },
+    {
+      "feature_id": "F-27",
+      "result": "FAIL",
+      "evidence": "P2 responsive UX: breakdown tables in app/projects/[id]/page.tsx:83-143, app/models/[model]/page.tsx:199-337, and app/devices/[id]/page.tsx:272-354 are not inside horizontal overflow containers.",
+      "steps_to_reproduce": "Render each detail route at 320px and 390px widths with long entity names and inspect document scroll width, clipped columns, and card overflow."
+    },
+    {
+      "feature_id": "F-28",
+      "result": "FAIL",
+      "evidence": "P2 accessibility: daily usage/cost/source/device chart wrappers render ApexCharts without aria-label, textual summary, or hidden data table (app/daily-*-chart.tsx and app/devices/daily-device-cost-chart.tsx).",
+      "steps_to_reproduce": "Run an axe/screen-reader pass on dashboard and device detail charts, move focus through the page, and verify that trend and data values have a non-visual alternative."
+    },
+    {
+      "feature_id": "F-29",
+      "result": "FAIL",
+      "evidence": "P2 performance/data-access: uncached getDeviceDetail and getProjectDetail in src/server/summaries.ts:245-293,792-824 perform modelCostRows and a second costForWhere groupBy plus events/breakdowns; device detail also auto-refreshes.",
+      "steps_to_reproduce": "Open a detail route with a large event set, capture Prisma query traces across one request and one 30-second refresh, and count repeated groupBy scans over the same range."
+    },
+    {
+      "feature_id": "F-30",
+      "result": "FAIL",
+      "evidence": "P2 functional/UX: app/events/page.tsx:56-59 always passes events.length to the subtitle, while messages/en.json:131 labels the result Latest even after an Older cursor.",
+      "steps_to_reproduce": "Open /events, click Older, and verify that the subtitle remains Latest N instead of identifying the historical page or its time range."
+    },
+    {
+      "feature_id": "F-22",
+      "result": "FAIL",
+      "evidence": "P3 architecture/type-safety: tsconfig.json:5-9 disables strict/null/implicit-any checks; shared chart/card components use any and package.json retains legacy template dependencies.",
+      "steps_to_reproduce": "Inspect tsconfig and shared component props, run npm ls/bundle analysis, and trace whether the legacy packages are reachable from current app routes."
+    },
+    {
+      "feature_id": "F-23",
+      "result": "FAIL",
+      "evidence": "P3 testing: tests/ contains server/shared/CLI coverage but no Playwright, React Testing Library, or axe suite for the listed browser flows.",
+      "steps_to_reproduce": "Run npm test and inventory test dependencies/files; attempt to exercise login deep links, enrollment polling, range picker, locale, keyboard, and tooltip flows and observe no automated browser gate."
+    }
+  ]
+}

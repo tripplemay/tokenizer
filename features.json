@@ -6,19 +6,22 @@
       "id": "F001",
       "title": "阶段区间构建 + 时间窗成本聚合层（harness-cost.ts）",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending",
+      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
     },
     {
       "id": "F002",
       "title": "harness 详情 overview 批次成本卡片",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending",
+      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
     },
     {
       "id": "F003",
       "title": "projects 详情批次成本联动卡片",
       "executor": "generator",
-      "status": "completed"
+      "status": "pending",
+      "fixing_note": "F-31 核心修复：终态封闭窗口 / unpriced 标志与文案如实化 / orderBy 次级序"
     },
     {
       "id": "F004",
