@@ -148,7 +148,12 @@
     "fallbackFrom": "from {model}",
     "fallbackTo": "to {model}",
     "fallbackFromTitle": "Mid-request fallback: started on {model}, finished by the model shown",
-    "fallbackToTitle": "Mid-request fallback: this segment was abandoned and the request was re-served by {model}"
+    "fallbackToTitle": "Mid-request fallback: this segment was abandoned and the request was re-served by {model}",
+    "pagination": {
+      "older": "Older events",
+      "latest": "Back to latest",
+      "end": "End of history"
+    }
   },
   "project": {
     "back": "Back to overview",

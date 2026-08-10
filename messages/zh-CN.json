@@ -148,7 +148,12 @@
     "fallbackFrom": "降级自 {model}",
     "fallbackTo": "降级至 {model}",
     "fallbackFromTitle": "中途降级:该请求由 {model} 起步,最终由当前模型完成",
-    "fallbackToTitle": "中途降级:该片段被放弃,请求改由 {model} 完成"
+    "fallbackToTitle": "中途降级:该片段被放弃,请求改由 {model} 完成",
+    "pagination": {
+      "older": "更旧的事件",
+      "latest": "回到最新",
+      "end": "已到最早记录"
+    }
   },
   "project": {
     "back": "返回总览",

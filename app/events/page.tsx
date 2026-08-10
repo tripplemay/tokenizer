@@ -10,6 +10,12 @@ import { PageBanner } from "../_components/page-banner";
 import { formatDateTimeSeconds } from "@/shared/format";
 import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
+import {
+  EVENTS_PAGE_SIZE,
+  decodeEventsCursor,
+  encodeEventsCursor,
+  eventsCursorWhere
+} from "@/server/events-cursor";
 
 export const dynamic = "force-dynamic";
 
@@ -17,19 +23,33 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
-export default async function EventsPage() {
+export default async function EventsPage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const cursorParam = typeof params.cursor === "string" ? params.cursor : undefined;
+  const cursor = decodeEventsCursor(cursorParam);
   const session = await requireSession();
   const tenantId = session.user.id;
   const tz = await getUserTimezone(tenantId);
-  const [t, events] = await Promise.all([
+  const [t, page] = await Promise.all([
     getTranslations(),
     prisma.usageEvent.findMany({
-      where: { userId: tenantId },
-      take: 200,
-      orderBy: { occurredAt: "desc" },
+      where: { userId: tenantId, ...(cursor ? eventsCursorWhere(cursor) : {}) },
+      // 多取 1 条探测是否还有更旧页；同毫秒簇内以 id 双键排序保证游标稳定
+      take: EVENTS_PAGE_SIZE + 1,
+      orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
       include: { project: true, device: true }
     })
   ]);
+  const hasOlder = page.length > EVENTS_PAGE_SIZE;
+  const events = hasOlder ? page.slice(0, EVENTS_PAGE_SIZE) : page;
+  const last = events.at(-1);
+  const olderHref = hasOlder && last
+    ? `/events?cursor=${encodeURIComponent(encodeEventsCursor({ occurredAt: last.occurredAt, id: last.id }))}`
+    : null;
 
   return (
     <div className="space-y-5">
@@ -98,6 +118,24 @@ export default async function EventsPage() {
             </tbody>
           </table>
         </div>
+        {(olderHref || cursor) && (
+          <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 text-sm dark:border-white/10">
+            {cursor ? (
+              <Link href="/events" className="font-medium text-brand-500 hover:underline">
+                {t("events.pagination.latest")}
+              </Link>
+            ) : (
+              <span />
+            )}
+            {olderHref ? (
+              <Link href={olderHref} className="font-medium text-brand-500 hover:underline">
+                {t("events.pagination.older")}
+              </Link>
+            ) : (
+              <span className="text-gray-400">{t("events.pagination.end")}</span>
+            )}
+          </div>
+        )}
       </Card>
     </div>
   );
