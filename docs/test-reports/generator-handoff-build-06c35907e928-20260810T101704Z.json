@@ -1,0 +1,22 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-10T10:28:20Z",
+  "features": [
+    {
+      "feature_id": "F004",
+      "commits": [],
+      "files_touched": [
+        "app/api/harness/gates/route.ts",
+        "tests/server/harness-gates-route.test.ts",
+        "tests/server/harness-gates-route-db.probe.test.ts"
+      ],
+      "notes": "The gate decision write now uses updateMany with id, userId, decisionAction:null, and consumedAt:null, and requires count === 1. A non-winning CAS returns 409 without exposing its precomputed signature; only a successful response includes sig. Unit coverage includes concurrent decisions, consumed/decided gates, cross-tenant 404, and non-one CAS counts. The real Prisma concurrency probe is enabled with EVAL_F004_DB_URL and skipped without a scratch database."
+    }
+  ],
+  "l1_ran": {
+    "lint": "npm run lint: passed; Next reported no ESLint warnings or errors.",
+    "typecheck": "npm run verify: passed; prisma generate and tsc --noEmit completed without diagnostics.",
+    "test": "npx vitest run tests/server/harness-gates-route.test.ts: passed, 7/7. Full npm test: 87 files passed, 5 skipped, 3 existing CLI files failed with sandbox process/socket EPERM or timeout (4 tests); no F004 test failed."
+  },
+  "waiting": null
+}

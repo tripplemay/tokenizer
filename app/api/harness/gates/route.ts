@@ -109,8 +109,13 @@ export async function POST(request: NextRequest) {
     throw e;
   }
 
-  const updated = await prisma.harnessGate.update({
-    where: { id: gate.id },
+  const updated = await prisma.harnessGate.updateMany({
+    where: {
+      id: gate.id,
+      userId: session.user.id,
+      decisionAction: null,
+      consumedAt: null
+    },
     data: {
       decisionAction: action,
       decisionBy: by,
@@ -120,14 +125,18 @@ export async function POST(request: NextRequest) {
       decisionSig: sig
     }
   });
+  if (updated.count !== 1) {
+    return Response.json({ error: "gate is no longer pending" }, { status: 409 });
+  }
 
   return Response.json({
     ok: true,
-    id: updated.id,
+    id: gate.id,
     action,
     by,
     at: at.toISOString(),
     note: note ?? null,
+    sig,
     // 提醒：批准只是签发，机器要等 agent 下次心跳取走才生效
     pendingRelay: true
   });
