@@ -30,7 +30,7 @@
       "id": "F005",
       "title": "prisma migrations 卫生：migration_lock.toml + 漂移量化收敛",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "成本×批次/阶段归因 v1：HarnessTransition 时间窗 join UsageEvent，批次成本进控制台一等公民视图；顺路 prisma migrations 卫生",
   "total_features": 5,
-  "completed_features": 3,
+  "completed_features": 4,
   "fix_rounds": 0,
   "current_sprint": "BL-COST-BATCH-V1",
   "dashboard_url": null,
-  "last_updated": "2026-08-10T05:31:23Z",
+  "last_updated": "2026-08-10T05:33:10Z",
   "reference_docs": [
     "docs/specs/BL-GATE-INBOX-spec.md",
     "docs/analysis/2026-08-08-repo-strategy/batch-plans/BL-GATE-INBOX.md"
@@ -21,7 +21,7 @@
   "evaluator_feedback": null,
   "generator_handoff": null,
   "session_notes": {
-    "planning": "【BL-COST-BATCH-V1 planning→building，2026-08-10】混合批次 5 features（3 gen + F004 evaluator 审计 + F005 顺路 migrations 卫生）。契约适配决策入 spec：toBatch 切窗 + observedAt 切点 + batchBoundary 不跨聚合。push 节奏 F001→F002→F003→F005 独立 commit；F004 报告不部署。"
+    "planning": "【BL-COST-BATCH-V1 building 完成（4 个 generator feature）→ verifying，2026-08-10】F001 聚合层（ISO 串化防 unstable_cache 反序列化双态）· F002 overview 成本卡 · F003 projects 联动卡（quantizedNowMs 同窗口同 key）· F005 migrations 卫生（FK ON UPDATE 漂移收敛，scratch 双验）。F004（evaluator 归因审计）在 verifying 阶段执行。待推送（触发部署 + migrate deploy 约束交换）。"
   },
   "features": [],
   "pending_gate": null,
