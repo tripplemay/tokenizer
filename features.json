@@ -23,7 +23,13 @@
       "id": "F003",
       "title": "图表 tooltip 存储型 XSS 转义 + device/source 输入约束",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-1e5aa23d81c0-20260810T094804Z-r2",
+        "commit": "234e8f02ca4b43df1b2fb2008121132308edeabe",
+        "rejected_rounds": 1
+      }
     },
     {
       "id": "F004",
