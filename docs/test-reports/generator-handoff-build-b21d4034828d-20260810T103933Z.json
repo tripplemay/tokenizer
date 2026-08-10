@@ -1,0 +1,28 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-10T10:55:11Z",
+  "features": [
+    {
+      "feature_id": "F005",
+      "commits": [],
+      "files_touched": [
+        "app/_components/subscription-card.tsx",
+        "messages/en.json",
+        "messages/zh-CN.json",
+        "prisma/migrations/20260810130000_add_quota_account_index/migration.sql",
+        "prisma/schema.prisma",
+        "src/server/quota.ts",
+        "tests/server/quota-account-db.probe.test.ts",
+        "tests/server/quota.test.ts",
+        "tests/shared/subscription-card.test.ts"
+      ],
+      "notes": "Latest-window SQL and aggregation now isolate provider accounts. The existing byProvider response remains as a compatibility view containing one complete most-recent account, while accountsByProvider exposes every account for separate cards. Added bilingual account labels, an additive compound index migration, unit/render regressions, and a gated real-Postgres scratch probe. No src/cli or agent feature-version files changed."
+    }
+  ],
+  "l1_ran": {
+    "lint": "NOT RUN: sandbox has no node_modules; offline npm ci failed with ENOTCACHED for yocto-queue.",
+    "typecheck": "NOT RUN: sandbox has no node_modules; Node 25 strip-types syntax checks passed for the changed .ts test/server files and src/server/quota.ts.",
+    "test": "NOT RUN: sandbox has no node_modules, and the restricted HOME prevents Colima from starting for the scratch migrate-deploy probe. JSON parsing and git diff --check passed."
+  },
+  "waiting": null
+}

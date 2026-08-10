@@ -21,7 +21,10 @@ export type QuotaLatestProvider = {
 };
 
 export type QuotaLatest = {
+  // Compatibility view for existing API consumers; the value is one complete,
+  // most recently captured account. Use accountsByProvider for full rendering.
   byProvider: Record<string, QuotaLatestProvider>;
+  accountsByProvider: Record<string, QuotaLatestProvider[]>;
 };
 
 type LatestRow = {
@@ -41,7 +44,7 @@ type LatestRow = {
 
 async function getQuotaLatestImpl(userId: string): Promise<QuotaLatest> {
   const rows = await prisma.$queryRaw<LatestRow[]>`
-    SELECT DISTINCT ON (q."provider", q."windowKey")
+    SELECT DISTINCT ON (q."provider", q."accountKey", q."windowKey")
       q."provider", q."windowKey", q."accountKey",
       q."utilization", q."usedRaw", q."limitRaw", q."unit",
       q."resetsAt", q."capturedAt", q."capturedBy", q."rawJson",
@@ -49,12 +52,17 @@ async function getQuotaLatestImpl(userId: string): Promise<QuotaLatest> {
     FROM "QuotaSnapshot" q
     LEFT JOIN "Device" d ON d."id" = q."capturedBy"
     WHERE q."userId" = ${userId}
-    ORDER BY q."provider", q."windowKey", q."capturedAt" DESC
+    ORDER BY q."provider", q."accountKey", q."windowKey", q."capturedAt" DESC
   `;
 
-  const byProvider: Record<string, QuotaLatestProvider> = {};
+  const grouped = new Map<string, Map<string, QuotaLatestProvider>>();
   for (const r of rows) {
-    const provider = byProvider[r.provider] ?? {
+    let accounts = grouped.get(r.provider);
+    if (!accounts) {
+      accounts = new Map<string, QuotaLatestProvider>();
+      grouped.set(r.provider, accounts);
+    }
+    const provider = accounts.get(r.accountKey) ?? {
       accountKey: r.accountKey,
       capturedAt: r.capturedAt.toISOString(),
       capturedBy: r.capturedBy ? { id: r.capturedBy, name: r.deviceName } : null,
@@ -74,9 +82,20 @@ async function getQuotaLatestImpl(userId: string): Promise<QuotaLatest> {
       provider.capturedAt = capturedAtIso;
       provider.capturedBy = r.capturedBy ? { id: r.capturedBy, name: r.deviceName } : null;
     }
-    byProvider[r.provider] = provider;
+    accounts.set(r.accountKey, provider);
   }
-  return { byProvider };
+  const accountsByProvider = Object.fromEntries(
+    Array.from(grouped, ([provider, accounts]) => [provider, Array.from(accounts.values())])
+  );
+  const byProvider = Object.fromEntries(
+    Object.entries(accountsByProvider).map(([provider, accounts]) => [
+      provider,
+      accounts.reduce((latest, account) =>
+        account.capturedAt > latest.capturedAt ? account : latest
+      )
+    ])
+  );
+  return { byProvider, accountsByProvider };
 }
 
 export const getQuotaLatest = unstable_cache(

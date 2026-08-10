@@ -9,12 +9,22 @@ export async function SubscriptionCard({ userId }: { userId: string }) {
   const t = await getTranslations();
   const tz = await getUserTimezone(userId);
   const latest = await getQuotaLatest(userId);
-  const codex = latest.byProvider["codex-chatgpt"];
+  const legacyCodex = latest.byProvider["codex-chatgpt"];
+  const codexAccounts = latest.accountsByProvider?.["codex-chatgpt"] ?? (legacyCodex ? [legacyCodex] : []);
 
-  if (!codex) {
+  if (codexAccounts.length === 0) {
     return <EmptyStateCard t={t} />;
   }
-  return <ConnectedCard codex={codex} t={t} tz={tz} />;
+  if (codexAccounts.length === 1) {
+    return <ConnectedCard codex={codexAccounts[0]} t={t} tz={tz} />;
+  }
+  return (
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      {codexAccounts.map((codex) => (
+        <ConnectedCard key={codex.accountKey} codex={codex} t={t} tz={tz} />
+      ))}
+    </div>
+  );
 }
 
 type Translator = (key: string, values?: Record<string, string | number>) => string;
@@ -61,6 +71,9 @@ function ConnectedCard({ codex, t, tz }: { codex: QuotaLatestProvider; t: Transl
           </span>
           <div>
             <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("subscription.codex.title")}</h3>
+            <p className="break-all text-xs text-gray-500">
+              {t("subscription.codex.accountLabel", { account: codex.accountKey })}
+            </p>
             {planRow && (
               <p className="text-xs text-gray-500">{t("subscription.codex.planLabel", { plan: planLabel })}</p>
             )}

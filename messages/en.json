@@ -428,6 +428,7 @@
     "title": "Subscription status",
     "codex": {
       "title": "Codex / ChatGPT",
+      "accountLabel": "Account: {account}",
       "planLabel": "{plan} tier",
       "creditBalance": "Credit balance",
       "ratePrimary": "Remaining (5h window)",

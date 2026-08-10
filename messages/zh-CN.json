@@ -428,6 +428,7 @@
     "title": "订阅状态",
     "codex": {
       "title": "Codex / ChatGPT",
+      "accountLabel": "账号：{account}",
       "planLabel": "{plan} tier",
       "creditBalance": "余额",
       "ratePrimary": "剩余额度（5小时）",

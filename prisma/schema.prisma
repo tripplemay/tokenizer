@@ -249,6 +249,7 @@ model QuotaSnapshot {
   device Device? @relation(fields: [capturedBy], references: [id], onDelete: SetNull)
 
   @@index([userId, provider, windowKey, capturedAt])
+  @@index([userId, provider, accountKey, windowKey, capturedAt], map: "QuotaSnapshot_user_provider_account_window_captured_idx")
 }
 
 model CollectorState {
