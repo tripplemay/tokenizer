@@ -23,9 +23,9 @@ acceptance：预案 3 条（grep 零裸 fetch / `tests/cli/enroll.test.ts` mock 
 按预案 §F004。游标 `${occurredAt ISO}_${id}`；`take: 201` 探测；非法 cursor 静默回退首页不 500；走既有 `@@index([userId, occurredAt])`；「更旧 / 回到最新」服务端 Link；i18n `events.pagination.*` en/zh 齐备。
 acceptance：预案 4 条（编解码/tiebreak 单测 / >200 条实测无重叠 / 垃圾 cursor 200 / lint+verify+键集一致）。
 
-### F005 · agent release 1.3.0 账本 + rollout · executor: generator（最终功能 commit）
-按预案 §F005。`agent-releases.json` 追加 1.3.0（highlights zh/en 各 ≥2 条：双条目 cron、退避、enroll 自愈、model 归因重扫）；`AGENT_FEATURE_VERSION` 9/9 不动。
-acceptance：预案 4 条（LATEST=1.3.0 且 1.2.1 behind / 9/9 grep / highlights / 全量绿含硬编码 1.2.1 用例）。
+### F005 · agent release 1.4.0 账本 + rollout · executor: generator（最终功能 commit）
+按预案 §F005，版本号修正为 **1.4.0**——预案写「1.3.0」时早于 BL-DISPATCH-USAGE-CAPTURE，该批已用掉 1.3.0（机械依据：`git log -1 -- src/shared/agent-releases.json` = 7dc821d「release 1.3.0」；账本 entries 含 1.3.0）。highlights zh/en 各 ≥2 条（双条目 cron、退避、enroll 自愈、model 归因重扫）；`AGENT_FEATURE_VERSION` 9/9 不动。
+acceptance：预案 4 条按 1.4.0 读（LATEST=1.4.0 且 1.3.0/1.2.1 均 behind / 9/9 grep / highlights / 全量绿含硬编码旧版本用例）。
 
 ### F006 · 闸门邮件 notify fetch 超时兜底 · executor: generator（顺路，源 BL-NOTIFY-FETCH-TIMEOUT）
 `src/server/harness-gate-notify.ts` 的 Resend fetch 加 `signal: AbortSignal.timeout(8_000)`。超时走既有 catch → 复位 claim 重试，fail-open 语义不变。

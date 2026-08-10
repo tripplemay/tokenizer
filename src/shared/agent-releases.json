@@ -73,6 +73,25 @@
           "attribution_only adapters (e.g. Kimi) uplink attribution columns only and are never double-billed."
         ]
       }
+    },
+    {
+      "version": "1.4.0",
+      "released_on": "2026-08-10",
+      "agent_feature_version": 9,
+      "highlights": {
+        "zh-CN": [
+          "cron 后备模式拆分双条目：harness 同步独立为每 2 分钟一次，闸门批准的最坏触达延迟从 15 分钟压到 2 分钟。",
+          "常驻模式 harness 轮询升级为错误驱动指数退避加抖动（封顶 10 分钟），服务端故障期间不再每分钟重试冲击。",
+          "设备注册（enroll）切换到自愈网络通道，代理开关切换时首次安装不再失败。",
+          "派发用量的模型归因补全：历史「未知模型」的派发事件将自动补写为实际钉住的模型。"
+        ],
+        "en": [
+          "Cron fallback now installs dual entries: harness sync runs every 2 minutes on its own, cutting worst-case gate-approval latency from 15 minutes to 2.",
+          "Daemon-mode harness polling upgraded to error-driven exponential backoff with jitter (capped at 10 minutes), so server outages are no longer hammered every minute.",
+          "Device enrollment now uses the self-healing network channel, so first installs survive proxy on/off switches.",
+          "Dispatch usage model attribution completed: historical \"unknown model\" dispatch events are backfilled with the actually pinned model."
+        ]
+      }
     }
   ]
 }
