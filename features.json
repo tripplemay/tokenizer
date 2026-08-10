@@ -24,7 +24,7 @@
       "id": "F004",
       "title": "/events cursor 分页（occurredAt+id 复合游标）",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": "F005",
