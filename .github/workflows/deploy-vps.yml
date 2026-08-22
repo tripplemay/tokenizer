@@ -147,6 +147,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate deploy secrets
+        run: bash scripts/validate-deploy-secrets.sh
+
       - name: Prepare SSH
         run: |
           set -eu
@@ -184,23 +187,6 @@ jobs:
 
           if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
             NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
-          fi
-
-          # Warn (not fail) on missing Auth.js secrets so an incomplete
-          # config doesn't block the deploy. Auth.js falls back at runtime:
-          # a missing AUTH_SECRET uses a build-time placeholder (login
-          # disabled until set); a missing AUTH_RESEND_KEY just drops the
-          # Resend provider (login form renders but sending email errors).
-          if [ -z "${AUTH_SECRET:-}" ]; then
-            echo "warning: AUTH_SECRET secret not set — login will be disabled until you add it" >&2
-          fi
-          if [ -z "${AUTH_RESEND_KEY:-}" ]; then
-            echo "warning: AUTH_RESEND_KEY secret not set — magic-link emails won't send until you add it" >&2
-          fi
-          # 同样只警告不阻断：运行时本来就 fail-closed（批准接口 503），
-          # 缺这把钥匙只是 harness 人闸门不可用，不该拖住整个部署。
-          if [ -z "${HARNESS_CONSOLE_SIGNING_KEY:-}" ]; then
-            echo "warning: HARNESS_CONSOLE_SIGNING_KEY secret not set — harness 闸门批准将返回 503" >&2
           fi
 
           ENV_FILE="$(mktemp)"

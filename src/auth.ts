@@ -2,15 +2,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@/server/db";
-
-// Build-time fallback so `next build` doesn't crash when AUTH_SECRET hasn't
-// been wired into the deploy env yet. The placeholder is harmless because
-// auth.ts is only imported by routes — Auth.js refuses to mint or accept
-// real sessions without a real secret, so production MUST set AUTH_SECRET
-// in the deploy env before the login flow becomes functional.
-if (!process.env.AUTH_SECRET) {
-  process.env.AUTH_SECRET = "dev-placeholder-set-AUTH_SECRET-in-production";
-}
+import { resolveAuthSecret } from "@/server/auth-secret";
 
 // Auth.js v5 root config. The framework hands us:
 //   * handlers — mounted at /api/auth/[...nextauth]/route.ts
@@ -49,6 +41,7 @@ if (resendKey) {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: resolveAuthSecret(),
   adapter: PrismaAdapter(prisma),
   providers,
   // DB-backed sessions (rather than JWT). Cookie holds only the session id;
