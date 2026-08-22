@@ -1,0 +1,43 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "created_at": "2026-08-22T19:00:16Z",
+  "features": [
+    {
+      "feature_id": "F007",
+      "commits": [
+        "a43c52269a60e7e1b31fcf5f2cd71cca86aaa375"
+      ],
+      "files_touched": [
+        "app/projects/[id]/page.tsx",
+        "messages/en.json",
+        "messages/zh-CN.json",
+        "src/server/harness-cost.ts",
+        "tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts",
+        "tests/server/harness-cost-range-db.probe.test.ts",
+        "tests/server/harness-cost.test.ts"
+      ],
+      "notes": "Replaced per-interval groupBy calls with one range-join query, split active and closed-batch caches, and bounded linked-project loading with deterministic ordering and UI disclosure. Focused tests passed 27/27. A disposable migrated PostgreSQL 16 database ran the F007 boundary and prior F004 audit-fixture probes 2/2, with one measured raw query per batch calculation. Evaluator F008 must independently recalculate the fixture rather than treating these assertions as its evidence."
+    },
+    {
+      "feature_id": "F001",
+      "commits": [
+        "dec508f03eb9a424bbd0515e377b63f1047d6339"
+      ],
+      "files_touched": [
+        ".github/workflows/deploy-vps.yml",
+        "scripts/validate-deploy-secrets.sh",
+        "src/auth.ts",
+        "src/server/auth-secret.ts",
+        "tests/server/auth-secret.test.ts",
+        "tests/server/deploy-secrets.test.ts"
+      ],
+      "notes": "AUTH_SECRET resolution now distinguishes phase-production-build from production runtime and rejects missing, empty, historical-placeholder, whitespace-only, or short runtime values with a static error. The deploy job invokes the checked script before SSH while AUTH_RESEND_KEY and HARNESS_CONSOLE_SIGNING_KEY remain warnings. Focused tests passed 15/15; an AUTH_SECRET-free production build exited 0; starting that build without AUTH_SECRET and requesting / returned HTTP 500 with only the static configuration error in server output."
+    }
+  ],
+  "l1_ran": {
+    "lint": "PASS (exit 0): npm run lint; no ESLint warnings or errors.",
+    "typecheck": "PASS (exit 0): npm run verify; prisma generate and tsc --noEmit completed.",
+    "test": "PASS (exit 0): npm test; 96 files passed, 7 skipped, 1221 tests passed, 17 skipped. env -u AUTH_SECRET DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder npm run build also exited 0. git diff --check 455fa8e..dec508f passed, and the same range had no src/cli or src/shared/agent-feature-version.ts changes."
+  },
+  "waiting": null
+}

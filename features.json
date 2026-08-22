@@ -6,7 +6,12 @@
       "id": "F001",
       "title": "AUTH_SECRET 生产 fail-closed + deploy workflow 硬失败",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-455fa8e6d81-20260822T190016Z-resume",
+        "commit": "dec508f03eb9a424bbd0515e377b63f1047d6339"
+      }
     },
     {
       "id": "F002",
@@ -73,7 +78,12 @@
       "id": "F007",
       "title": "批次成本查询放大治理：封闭批次永久缓存 + 关联设界 + 单查询聚合",
       "executor": "generator",
-      "status": "pending"
+      "status": "completed",
+      "dispatch": {
+        "agent_id": "local-cli--codex--generator",
+        "task_id": "build-455fa8e6d81-20260822T190016Z-resume",
+        "commit": "a43c52269a60e7e1b31fcf5f2cd71cca86aaa375"
+      }
     },
     {
       "id": "F008",
