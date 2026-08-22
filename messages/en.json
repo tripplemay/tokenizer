@@ -188,6 +188,7 @@
     "harnessCost": {
       "title": "Orchestration batch cost",
       "note": "Batches from the harness console linked to this usage project. Same aggregation as the harness detail page (time-window approximation; over-counts mixed-in usage, discloses unpriced/truncation under-count paths).",
+      "truncated": "Showing the {count} most recently updated orchestration projects; older links are omitted.",
       "col": {
         "batch": "Batch",
         "status": "Status",

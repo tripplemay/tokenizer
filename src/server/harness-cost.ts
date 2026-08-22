@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { prisma } from "./db";
 import { estimateCost, type ModelPriceRow } from "@/shared/model-pricing";
 import { getEffectivePrices } from "./model-prices";
@@ -13,6 +14,8 @@ import { MODEL_PRICES_CACHE_TAG } from "@/shared/model-price";
 // 集成测试，本层纯函数占比最大化。
 
 const CACHE_REVALIDATE_SECONDS = 30;
+export const CLOSED_BATCH_NOW_MS = 0;
+export const MAX_LINKED_HARNESS_PROJECTS = 20;
 /** 区间上限：fixing⟷reverifying 多轮爆炸时合并最旧，防逐区间查询放大 */
 export const MAX_PHASE_INTERVALS = 60;
 
@@ -121,23 +124,31 @@ export function buildPhaseIntervals(transitions: TransitionLike[], now: Date): P
   return intervals;
 }
 
-async function phaseCost(
-  userId: string,
-  usageWhere: Record<string, unknown>,
+type PhaseUsageRow = {
+  intervalIdx: number;
+  model: string | null;
+  _sum: {
+    inputTokens: number;
+    cachedInputTokens: number;
+    cacheWriteTokens: number;
+    outputTokens: number;
+  };
+};
+
+type PhaseUsageQueryRow = {
+  intervalIdx: number | bigint;
+  model: string | null;
+  inputTokens: number | bigint;
+  cachedInputTokens: number | bigint;
+  cacheWriteTokens: number | bigint;
+  outputTokens: number | bigint;
+};
+
+function phaseCost(
   interval: PhaseInterval,
+  rows: PhaseUsageRow[],
   prices: Record<string, ModelPriceRow>
-): Promise<PhaseCostRow> {
-  const rows = await prisma.usageEvent.groupBy({
-    by: ["model"],
-    where: {
-      userId,
-      ...usageWhere,
-      // 开闭沿：[start, end) —— 与 summaries.ts 的 range 口径一致；恰在边界秒
-      // 的事件归属后一阶段（F004 审计以此为准）
-      occurredAt: { gte: interval.start, lt: interval.end }
-    },
-    _sum: { inputTokens: true, cachedInputTokens: true, cacheWriteTokens: true, outputTokens: true }
-  });
+): PhaseCostRow {
   let compute = 0;
   let cost = 0;
   let unpriced = 0;
@@ -171,6 +182,67 @@ async function phaseCost(
   };
 }
 
+async function loadPhaseUsage(
+  userId: string,
+  link: { projectId: string | null; repoKey: string | null },
+  intervals: PhaseInterval[]
+): Promise<Map<number, PhaseUsageRow[]>> {
+  const linkPredicate = link.projectId
+    ? Prisma.sql`usage."projectId" = ${link.projectId}`
+    : Prisma.sql`usage."repoKey" = ${link.repoKey}`;
+  const intervalValues = Prisma.join(
+    intervals.map(
+      (interval, index) =>
+        Prisma.sql`(${index}::integer, ${interval.start}::timestamptz, ${interval.end}::timestamptz)`
+    )
+  );
+
+  // One range join replaces N interval-specific groupBy calls. The [start,end)
+  // boundary is unchanged: events exactly on a transition belong to the next
+  // interval, and events exactly on the final end are excluded.
+  const rows = await prisma.$queryRaw<PhaseUsageQueryRow[]>(Prisma.sql`
+    WITH intervals("intervalIdx", "startAt", "endAt") AS (
+      VALUES ${intervalValues}
+    )
+    SELECT
+      intervals."intervalIdx" AS "intervalIdx",
+      usage."model" AS "model",
+      SUM(usage."inputTokens")::bigint AS "inputTokens",
+      SUM(usage."cachedInputTokens")::bigint AS "cachedInputTokens",
+      SUM(usage."cacheWriteTokens")::bigint AS "cacheWriteTokens",
+      SUM(usage."outputTokens")::bigint AS "outputTokens"
+    FROM intervals
+    JOIN "UsageEvent" AS usage
+      ON usage."occurredAt" >= intervals."startAt"
+     AND usage."occurredAt" < intervals."endAt"
+    WHERE usage."userId" = ${userId}
+      AND ${linkPredicate}
+    GROUP BY intervals."intervalIdx", usage."model"
+    ORDER BY intervals."intervalIdx" ASC
+  `);
+
+  const byInterval = new Map<number, PhaseUsageRow[]>();
+  for (const row of rows) {
+    const intervalIdx = Number(row.intervalIdx);
+    if (!Number.isInteger(intervalIdx) || intervalIdx < 0 || intervalIdx >= intervals.length) {
+      throw new Error("Batch cost query returned an invalid interval index");
+    }
+    const bucket = byInterval.get(intervalIdx) ?? [];
+    bucket.push({
+      intervalIdx,
+      model: row.model,
+      _sum: {
+        inputTokens: Number(row.inputTokens),
+        cachedInputTokens: Number(row.cachedInputTokens),
+        cacheWriteTokens: Number(row.cacheWriteTokens),
+        outputTokens: Number(row.outputTokens)
+      }
+    });
+    byInterval.set(intervalIdx, bucket);
+  }
+  return byInterval;
+}
+
 const REWORK_PHASES = new Set(["fixing", "reverifying"]);
 
 async function getBatchCostImpl(
@@ -182,15 +254,11 @@ async function getBatchCostImpl(
   const intervals = buildPhaseIntervals(transitions, new Date(nowMs));
   if (intervals.length === 0) return null;
   // 关联键回退链：projectId 优先；null 时按 repoKey；两者皆空不发起任何查询
-  const usageWhere = link.projectId
-    ? { projectId: link.projectId }
-    : link.repoKey
-      ? { repoKey: link.repoKey }
-      : null;
-  if (usageWhere === null) return null;
+  if (!link.projectId && !link.repoKey) return null;
 
   const prices = await getEffectivePrices();
-  const phases = await Promise.all(intervals.map((interval) => phaseCost(userId, usageWhere, interval, prices)));
+  const usageByInterval = await loadPhaseUsage(userId, link, intervals);
+  const phases = intervals.map((interval, index) => phaseCost(interval, usageByInterval.get(index) ?? [], prices));
   const rework = phases.filter((p) => REWORK_PHASES.has(p.phase));
   return {
     batch: phases.at(-1)?.batch ?? null,
@@ -211,7 +279,7 @@ async function getBatchCostImpl(
  * overview 与 /projects/[id] 联动）必须共用本导出，不许各写 where（口径漂移防线）。
  * now 由调用方钉毫秒值——unstable_cache 的 key 含参数，注入时间保证同窗口命中。
  */
-export const getBatchCost = unstable_cache(
+const getActiveBatchCost = unstable_cache(
   async (
     userId: string,
     link: { projectId: string | null; repoKey: string | null },
@@ -221,6 +289,38 @@ export const getBatchCost = unstable_cache(
   ["getBatchCost"],
   { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] }
 );
+
+const getClosedBatchCost = unstable_cache(
+  async (
+    userId: string,
+    link: { projectId: string | null; repoKey: string | null },
+    transitions: TransitionLike[],
+    nowMs: number
+  ) => getBatchCostImpl(userId, link, transitions, nowMs),
+  ["getBatchCost", "closed"],
+  { revalidate: false, tags: [MODEL_PRICES_CACHE_TAG] }
+);
+
+/** Pure cache-key decision: only a non-empty, fully closed interval set is immutable. */
+export function allPhaseIntervalsClosed(transitions: TransitionLike[], nowMs: number): boolean {
+  const intervals = buildPhaseIntervals(transitions, new Date(nowMs));
+  return intervals.length > 0 && intervals.every((interval) => !interval.openEnded);
+}
+
+export function batchCostCacheNowMs(transitions: TransitionLike[], nowMs: number): number {
+  return allPhaseIntervalsClosed(transitions, nowMs) ? CLOSED_BATCH_NOW_MS : nowMs;
+}
+
+export function getBatchCost(
+  userId: string,
+  link: { projectId: string | null; repoKey: string | null },
+  transitions: TransitionLike[],
+  nowMs: number
+): Promise<BatchCost | null> {
+  const cacheNowMs = batchCostCacheNowMs(transitions, nowMs);
+  const cached = cacheNowMs === CLOSED_BATCH_NOW_MS ? getClosedBatchCost : getActiveBatchCost;
+  return cached(userId, link, transitions, cacheNowMs);
+}
 
 /**
  * 缓存窗口对齐的 now：量化到 30s 粒度，使两页在同一窗口内拿到相同 cache key

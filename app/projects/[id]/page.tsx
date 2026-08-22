@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { MdArrowBack, MdBolt, MdInput, MdOutput, MdCached, MdPaid } from "react-icons/md";
 import { prisma } from "@/server/db";
 import { getProjectDetail } from "@/server/summaries";
-import { getBatchCost, quantizedNowMs, type BatchCost } from "@/server/harness-cost";
+import { getBatchCost, MAX_LINKED_HARNESS_PROJECTS, quantizedNowMs, type BatchCost } from "@/server/harness-cost";
 import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
 import Card from "@/components/card";
@@ -23,13 +23,17 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const tz = await getUserTimezone(tenantId);
   // Scope project lookup to the current tenant so a leaked URL like
   // /projects/<some-other-users-id> doesn't reveal someone else's project.
-  const [t, project, detail, harnessProjects] = await Promise.all([
+  const [t, project, detail, harnessProjectRows] = await Promise.all([
     getTranslations(),
     prisma.project.findFirst({ where: { id, userId: tenantId } }),
     getProjectDetail(tenantId, id),
     // BL-COST-BATCH-V1 F003：该用量项目关联的 harness 批次（外键 HarnessProject.projectId）
     prisma.harnessProject.findMany({
       where: { projectId: id, userId: tenantId },
+      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+      // Read one look-ahead row so truncation is observable without a second
+      // count query. Only the first MAX rows are costed and rendered below.
+      take: MAX_LINKED_HARNESS_PROJECTS + 1,
       select: {
         id: true,
         name: true,
@@ -68,6 +72,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
     );
   }
 
+  const harnessProjectsTruncated = harnessProjectRows.length > MAX_LINKED_HARNESS_PROJECTS;
+  const harnessProjects = harnessProjectRows.slice(0, MAX_LINKED_HARNESS_PROJECTS);
   const { totals, events, bySource, byModel, projectCost } = detail;
 
   // 与 /harness/[id] overview 同口径同值：同一 getBatchCost 导出 + 量化 now
@@ -192,6 +198,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         <Card extra="p-6">
           <h3 className="mb-1 text-lg font-bold text-navy-700 dark:text-white">{t("project.harnessCost.title")}</h3>
           <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">{t("project.harnessCost.note")}</p>
+          {harnessProjectsTruncated ? (
+            <p className="mb-4 text-xs font-medium text-amber-700 dark:text-amber-300">
+              {t("project.harnessCost.truncated", { count: MAX_LINKED_HARNESS_PROJECTS })}
+            </p>
+          ) : null}
           <div className="overflow-x-auto">
             <table className="w-full min-w-max text-left text-sm">
               <thead className="text-gray-500">

@@ -32,7 +32,7 @@ const mocks = vi.hoisted(() => ({
   prisma: {
     project: { findFirst: vi.fn() },
     harnessProject: { findMany: vi.fn() },
-    usageEvent: { groupBy: vi.fn() }
+    $queryRaw: vi.fn()
   },
   getProjectDetail: vi.fn(),
   requireSession: vi.fn(),
@@ -189,7 +189,10 @@ beforeEach(() => {
     projectCost: 0
   });
   mocks.getEffectivePrices.mockResolvedValue(PRICES);
-  mocks.prisma.usageEvent.groupBy.mockResolvedValue([{ model: "gpt-5.6-sol", _sum: SUMS }]);
+  mocks.prisma.$queryRaw.mockResolvedValue([
+    { intervalIdx: 0n, model: "gpt-5.6-sol", ...SUMS },
+    { intervalIdx: 1n, model: "gpt-5.6-sol", ...SUMS }
+  ]);
 });
 
 describe("BL-COST-BATCH-V1 F003 projects detail card (real page render, en messages)", () => {
@@ -249,7 +252,7 @@ describe("BL-COST-BATCH-V1 F003 projects detail card (real page render, en messa
 
     expect(markup).not.toContain("Orchestration batch cost");
     expect(vi.mocked(harnessCost.getBatchCost)).not.toHaveBeenCalled();
-    expect(mocks.prisma.usageEvent.groupBy).not.toHaveBeenCalled();
+    expect(mocks.prisma.$queryRaw).not.toHaveBeenCalled();
   });
 
   it("keeps the card for a linked project without transitions, shows em-dash, and issues no usage query", async () => {
@@ -259,6 +262,24 @@ describe("BL-COST-BATCH-V1 F003 projects detail card (real page render, en messa
     expect(markup).toContain("Orchestration batch cost");
     expect(markup).toContain('href="/harness/hp-1"');
     expect(markup).toContain("—");
-    expect(mocks.prisma.usageEvent.groupBy).not.toHaveBeenCalled();
+    expect(mocks.prisma.$queryRaw).not.toHaveBeenCalled();
+  });
+
+  it("bounds linked harness projects with deterministic ordering and discloses truncation", async () => {
+    const limit = harnessCost.MAX_LINKED_HARNESS_PROJECTS;
+    mocks.prisma.harnessProject.findMany.mockResolvedValue(
+      Array.from({ length: limit + 1 }, (_, index) => ({ ...HP_ROW, id: `hp-${index}` }))
+    );
+
+    const markup = await renderPage();
+
+    expect(mocks.prisma.harnessProject.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+      take: limit + 1
+    }));
+    expect(markup).toContain(`Showing the ${limit} most recently updated orchestration projects`);
+    expect(markup).toContain('href="/harness/hp-0"');
+    expect(markup).not.toContain(`href="/harness/hp-${limit}"`);
+    expect(vi.mocked(harnessCost.getBatchCost)).toHaveBeenCalledTimes(limit);
   });
 });

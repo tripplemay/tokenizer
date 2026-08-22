@@ -1,17 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  prisma: { usageEvent: { groupBy: vi.fn() }, harnessTransition: { findMany: vi.fn() } },
-  getEffectivePrices: vi.fn()
+  prisma: { $queryRaw: vi.fn(), harnessTransition: { findMany: vi.fn() } },
+  getEffectivePrices: vi.fn(),
+  cacheStores: [] as Array<Map<string, unknown>>
 }));
 vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 vi.mock("../../src/server/model-prices", () => ({ getEffectivePrices: mocks.getEffectivePrices }));
 vi.mock("next/cache", () => ({
-  unstable_cache: (fn: unknown) => fn
+  unstable_cache: (fn: (...args: unknown[]) => unknown) => {
+    const store = new Map<string, unknown>();
+    mocks.cacheStores.push(store);
+    return (...args: unknown[]) => {
+      const key = JSON.stringify(args);
+      if (!store.has(key)) store.set(key, Promise.resolve(fn(...args)));
+      return store.get(key);
+    };
+  }
 }));
 
 import {
   MAX_PHASE_INTERVALS,
+  CLOSED_BATCH_NOW_MS,
+  batchCostCacheNowMs,
   buildPhaseIntervals,
   getBatchCost,
   type TransitionLike
@@ -135,6 +146,40 @@ describe("buildPhaseIntervals（纯函数，无 prisma mock 依赖）", () => {
     expect(intervals[0].start.toISOString()).toBe("2026-08-09T23:59:59.500Z");
     expect(intervals[0].end.toISOString()).toBe("2026-08-10T00:00:00.500Z");
   });
+
+  it("sorts out-of-order transitions before constructing contiguous intervals", () => {
+    const intervals = buildPhaseIntervals(
+      [
+        t({ toStatus: "verifying", observedAt: "2026-08-10T11:00:00.000Z" }),
+        t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T10:00:00.000Z" })
+      ],
+      NOW
+    );
+    expect(intervals.map((interval) => interval.phase)).toEqual(["building", "verifying"]);
+    expect(intervals[0].end.getTime()).toBe(intervals[1].start.getTime());
+  });
+
+  it("keeps same-millisecond transitions deterministic without negative windows", () => {
+    const intervals = buildPhaseIntervals(
+      [
+        t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T10:00:00.000Z" }),
+        t({ toStatus: "verifying", observedAt: "2026-08-10T11:00:00.000Z" }),
+        t({ toStatus: "fixing", fixRounds: 1, observedAt: "2026-08-10T11:00:00.000Z" })
+      ],
+      NOW
+    );
+    expect(intervals.map((interval) => interval.phase)).toEqual(["building", "verifying", "fixing"]);
+    expect(intervals[1].end.getTime() - intervals[1].start.getTime()).toBe(0);
+    expect(intervals.every((interval) => interval.end.getTime() >= interval.start.getTime())).toBe(true);
+  });
+
+  it("clamps an open interval when the caller clock is behind its transition", () => {
+    const future = t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T13:00:00.000Z" });
+    const [interval] = buildPhaseIntervals([future], NOW);
+    expect(interval.start.toISOString()).toBe("2026-08-10T13:00:00.000Z");
+    expect(interval.end.toISOString()).toBe(interval.start.toISOString());
+    expect(interval.openEnded).toBe(true);
+  });
 });
 
 describe("getBatchCost", () => {
@@ -145,8 +190,12 @@ describe("getBatchCost", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    for (const store of mocks.cacheStores) store.clear();
     mocks.getEffectivePrices.mockResolvedValue(PRICES);
-    mocks.prisma.usageEvent.groupBy.mockResolvedValue([{ model: "gpt-5.6-sol", _sum: SUMS }]);
+    mocks.prisma.$queryRaw.mockResolvedValue([
+      { intervalIdx: 0n, model: "gpt-5.6-sol", ...SUMS },
+      { intervalIdx: 1n, model: "gpt-5.6-sol", ...SUMS }
+    ]);
   });
 
   const TRANSITIONS = [
@@ -168,12 +217,51 @@ describe("getBatchCost", () => {
     expect(typeof result!.windowStartIso).toBe("string");
     expect(result!.phases[0].startIso).toBe("2026-08-10T10:00:00.000Z");
     expect(result!.phases[1].durationMs).toBe(NOW.getTime() - new Date("2026-08-10T11:00:00.000Z").getTime());
+    expect(result).toEqual({
+      batch: "BL-X",
+      totalCostUsd: 3.7,
+      totalComputeTokens: 1_300_000,
+      phases: [
+        {
+          phase: "building",
+          batch: "BL-X",
+          fixRounds: 0,
+          startIso: "2026-08-10T10:00:00.000Z",
+          endIso: "2026-08-10T11:00:00.000Z",
+          openEnded: false,
+          durationMs: 3_600_000,
+          computeTokens: 650_000,
+          costUsd: 1.85,
+          unpricedComputeTokens: 0
+        },
+        {
+          phase: "fixing",
+          batch: "BL-X",
+          fixRounds: 1,
+          startIso: "2026-08-10T11:00:00.000Z",
+          endIso: "2026-08-10T12:00:00.000Z",
+          openEnded: true,
+          durationMs: 3_600_000,
+          computeTokens: 650_000,
+          costUsd: 1.85,
+          unpricedComputeTokens: 0
+        }
+      ],
+      reworkCostUsd: 1.85,
+      reworkComputeTokens: 650_000,
+      hasUnpricedUsage: false,
+      unpricedComputeTokens: 0,
+      windowStartIso: "2026-08-10T10:00:00.000Z",
+      windowEndIso: "2026-08-10T12:00:00.000Z"
+    });
   });
 
   it("splits unpriced-model usage into disclosed unpriced tokens instead of silently dropping it", async () => {
-    mocks.prisma.usageEvent.groupBy.mockResolvedValue([
-      { model: "gpt-5.6-sol", _sum: SUMS },
-      { model: "some-unpriced-model", _sum: { inputTokens: 100_000, cachedInputTokens: 0, cacheWriteTokens: 0, outputTokens: 20_000 } }
+    mocks.prisma.$queryRaw.mockResolvedValue([
+      { intervalIdx: 0n, model: "gpt-5.6-sol", ...SUMS },
+      { intervalIdx: 0n, model: "some-unpriced-model", inputTokens: 100_000n, cachedInputTokens: 0n, cacheWriteTokens: 0n, outputTokens: 20_000n },
+      { intervalIdx: 1n, model: "gpt-5.6-sol", ...SUMS },
+      { intervalIdx: 1n, model: "some-unpriced-model", inputTokens: 100_000n, cachedInputTokens: 0n, cacheWriteTokens: 0n, outputTokens: 20_000n }
     ]);
     const result = await getBatchCost("user-1", { projectId: "p1", repoKey: null }, TRANSITIONS, NOW.getTime());
     const priced = estimateCost("gpt-5.6-sol", SUMS, PRICES as never)!;
@@ -185,31 +273,55 @@ describe("getBatchCost", () => {
     expect(result!.phases[0].unpricedComputeTokens).toBe(120_000);
   });
 
-  it("queries [start, end) windows keyed by projectId when linked", async () => {
+  it("uses one [start, end) range-join query keyed by projectId for every interval", async () => {
     await getBatchCost("user-1", { projectId: "p1", repoKey: "github.com/a/b" }, TRANSITIONS, NOW.getTime());
-    const first = mocks.prisma.usageEvent.groupBy.mock.calls[0][0];
-    expect(first.where).toMatchObject({ userId: "user-1", projectId: "p1" });
-    expect(first.where.repoKey).toBeUndefined();
-    expect(first.where.occurredAt).toEqual({
-      gte: new Date("2026-08-10T10:00:00.000Z"),
-      lt: new Date("2026-08-10T11:00:00.000Z")
-    });
+    expect(mocks.prisma.$queryRaw).toHaveBeenCalledOnce();
+    const query = mocks.prisma.$queryRaw.mock.calls[0][0] as { text: string; values: unknown[] };
+    expect(query.text).toContain('usage."occurredAt" >= intervals."startAt"');
+    expect(query.text).toContain('usage."occurredAt" < intervals."endAt"');
+    expect(query.text).toContain('usage."projectId" =');
+    expect(query.text).not.toContain('usage."repoKey" =');
+    expect(query.values).toEqual(expect.arrayContaining(["user-1", "p1"]));
   });
 
   it("falls back to repoKey when projectId is null", async () => {
     await getBatchCost("user-1", { projectId: null, repoKey: "github.com/a/b" }, TRANSITIONS, NOW.getTime());
-    expect(mocks.prisma.usageEvent.groupBy.mock.calls[0][0].where).toMatchObject({ repoKey: "github.com/a/b" });
+    const query = mocks.prisma.$queryRaw.mock.calls[0][0] as { text: string; values: unknown[] };
+    expect(query.text).toContain('usage."repoKey" =');
+    expect(query.values).toContain("github.com/a/b");
   });
 
   it("returns null without touching the database when both link keys are null", async () => {
     const result = await getBatchCost("user-1", { projectId: null, repoKey: null }, TRANSITIONS, NOW.getTime());
     expect(result).toBeNull();
-    expect(mocks.prisma.usageEvent.groupBy).not.toHaveBeenCalled();
+    expect(mocks.prisma.$queryRaw).not.toHaveBeenCalled();
   });
 
   it("returns null for empty transitions without touching the database", async () => {
     const result = await getBatchCost("user-1", { projectId: "p1", repoKey: null }, [], NOW.getTime());
     expect(result).toBeNull();
-    expect(mocks.prisma.usageEvent.groupBy).not.toHaveBeenCalled();
+    expect(mocks.prisma.$queryRaw).not.toHaveBeenCalled();
+  });
+
+  it("normalizes closed batches to one permanent cache key across 30-second windows", async () => {
+    const closed = [
+      t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T10:00:00.000Z" }),
+      t({ toStatus: "done", observedAt: "2026-08-10T11:00:00.000Z" })
+    ];
+    expect(batchCostCacheNowMs(closed, NOW.getTime())).toBe(CLOSED_BATCH_NOW_MS);
+    expect(batchCostCacheNowMs(closed, NOW.getTime() + 60_000)).toBe(CLOSED_BATCH_NOW_MS);
+
+    await getBatchCost("closed-user", { projectId: "p1", repoKey: null }, closed, NOW.getTime());
+    await getBatchCost("closed-user", { projectId: "p1", repoKey: null }, closed, NOW.getTime() + 60_000);
+    expect(mocks.prisma.$queryRaw).toHaveBeenCalledOnce();
+  });
+
+  it("keeps active batches on distinct quantized-window cache keys", async () => {
+    expect(batchCostCacheNowMs(TRANSITIONS, NOW.getTime())).toBe(NOW.getTime());
+    expect(batchCostCacheNowMs(TRANSITIONS, NOW.getTime() + 60_000)).toBe(NOW.getTime() + 60_000);
+
+    await getBatchCost("active-user", { projectId: "p1", repoKey: null }, TRANSITIONS, NOW.getTime());
+    await getBatchCost("active-user", { projectId: "p1", repoKey: null }, TRANSITIONS, NOW.getTime() + 60_000);
+    expect(mocks.prisma.$queryRaw).toHaveBeenCalledTimes(2);
   });
 });

@@ -188,6 +188,7 @@
     "harnessCost": {
       "title": "编排批次成本",
       "note": "关联到本用量项目的 harness 批次。口径与 harness 详情页一致（时间窗近似：混入用量多算，未定价/截断少算路径均显式披露）。",
+      "truncated": "仅显示最近更新的 {count} 个编排项目，更早的关联已省略。",
       "col": {
         "batch": "批次",
         "status": "状态",
