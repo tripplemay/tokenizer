@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 // The dashboard is a fully server-rendered snapshot with no client data layer,
@@ -18,42 +18,44 @@ const DEFAULT_INTERVAL_MS = 30_000;
  */
 export function AutoRefresh({ intervalMs = DEFAULT_INTERVAL_MS }: { intervalMs?: number }) {
   const router = useRouter();
+  const [refreshing, startTransition] = useTransition();
 
   useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     const stop = () => {
       if (timer !== null) {
-        clearInterval(timer);
+        clearTimeout(timer);
         timer = null;
       }
     };
 
-    const start = () => {
-      if (timer === null) {
-        timer = setInterval(() => {
-          if (document.visibilityState === "visible") router.refresh();
-        }, intervalMs);
-      }
+    const refresh = () => {
+      timer = null;
+      if (document.visibilityState !== "visible" || refreshing) return;
+      startTransition(() => router.refresh());
+    };
+
+    const schedule = () => {
+      if (timer === null && !refreshing) timer = setTimeout(refresh, intervalMs);
     };
 
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        router.refresh(); // catch up on whatever changed while hidden
-        start();
+        refresh(); // catch up on whatever changed while hidden
       } else {
         stop();
       }
     };
 
     document.addEventListener("visibilitychange", onVisibilityChange);
-    if (document.visibilityState === "visible") start();
+    if (document.visibilityState === "visible") schedule();
 
     return () => {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       stop();
     };
-  }, [router, intervalMs]);
+  }, [router, intervalMs, refreshing, startTransition]);
 
   return null;
 }

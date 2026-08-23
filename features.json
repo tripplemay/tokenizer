@@ -7,7 +7,7 @@
       "title": "首页 refresh 串行化：one-shot timer + transition pending + visibility catch-up",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "最多一个 router.refresh 在途；完成后才重新计时；hidden/visible/unmount 行为有测试且首页布局不变。"
     },
     {
