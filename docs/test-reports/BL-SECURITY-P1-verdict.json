@@ -1,0 +1,56 @@
+{
+  "batch_id": "BL-SECURITY-P1",
+  "fix_round": 0,
+  "created_at": "2026-08-23T01:42:00Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "Production-shaped probe on isolated checkout @1b218df: `env -u AUTH_SECRET npm run build` exit 0 (build-phase bypass works despite next build setting NODE_ENV=production); `next start` without AUTH_SECRET → GET / returned HTTP 500, server log contains only the static error 'AUTH_SECRET must be configured with at least 32 characters for production runtime', grep -ci 'dev-placeholder' = 0 (no secret echo). scripts/validate-deploy-secrets.sh: no AUTH_SECRET → exit 1 with ::error::AUTH_SECRET; valid 40-char secret with the other two keys unset → exit 0 with exactly 2 ::warning:: (RESEND/SIGNING keep warning semantics). tests/server/auth-secret.test.ts green within full suite (1221 passed/17 skipped); npm run verify exit 0.",
+      "steps_to_reproduce": "1) env -u AUTH_SECRET DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder npm run build 2) same env npx next start -p 4199; curl -w '%{http_code}' / → 500; inspect server log for static-only error 3) env -u AUTH_SECRET bash scripts/validate-deploy-secrets.sh → exit 1 4) AUTH_SECRET=<40 chars> bash scripts/validate-deploy-secrets.sh → exit 0 with 2 warnings"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "Evaluator-owned vector suite tests/evaluator/bl-security-p1-f008-probes.test.ts: 24 malicious vectors (scheme URLs, //, ///, backslash variants, %2F%2F + case variants, %5C%5C, nested double-encoding, javascript:/vbscript:/data:, whitespace/control-char variants) all fall back to '/'; legit paths '/','/models/abc','/devices/x?a=1#h' returned byte-for-byte; post-decode re-validation blocks '/%2F%2Fevil.example' while preserving legit '/models%2Fabc'; non-string input fails closed. app/login/page.tsx:13-14 routes params.callbackUrl only through safeCallbackPath before redirect (grep: no bare callbackUrl into redirect). Full suite green.",
+      "steps_to_reproduce": "npx vitest run tests/evaluator/bl-security-p1-f008-probes.test.ts (F002 describes) ; grep -n 'callbackUrl' app/login/page.tsx"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "End-to-end against migrated scratch Postgres: POST /api/usage/events/batch with device.name='<img src=x onerror=alert(1)>'+500 chars+control chars and unknown overlong source → HTTP 200 (hot path does not reject; queue-pinning poison avoided), Device row persisted truncated to <=200 chars with control chars stripped, UsageEvent persisted with source <=100 chars and prefix intact (no closed-set enum rejection); escapeHtml(persisted name) contains '&lt;img' and zero unescaped '<'. Enroll hard-rejects: route.ts:21-22 → 400 via isValidDeviceName; evaluator boundary probes 200-char pass / 201-char / control-char / empty / non-string reject. All 4 custom-tooltip chart files wrap every dynamic interpolation in escapeHtml (${rows} verified line-by-line); repo scan: zero dangerouslySetInnerHTML/innerHTML in product code. 7 implementation commits touch no src/cli/** or agent-feature-version.ts (git show --name-only per commit).",
+      "steps_to_reproduce": "U=postgresql://eval:eval@127.0.0.1:5545/blsec_eval; EVAL_DB_URL=$U DATABASE_URL=$U npx vitest run tests/evaluator/bl-security-p1-f008-probes.test.ts (F003 describes incl. real-DB poison batch); npx vitest run tests/server/usage-batch-input.test.ts tests/server/device-enroll.test.ts"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "Genuine concurrency against migrated scratch PostgreSQL (evaluator probe): Promise.all of two approve POSTs → recorded statuses 200 and 409; DB final state has exactly one decisionSig, equal to the 200 response body's sig; 409 body carries no sig; a third decision attempt → 409 without overwriting. Unit suite green for consumed-gate 409, decided-gate 409, cross-tenant 404 (userId in CAS where), count!==1 never ok:true. Generator probe harness-gates-route-db.probe.test.ts also executed by evaluator with EVAL_F004_DB_URL: 1/1 passed.",
+      "steps_to_reproduce": "docker pg16 scratch + npx prisma migrate deploy; U=postgresql://eval:eval@127.0.0.1:5545/blsec_eval; EVAL_DB_URL=$U DATABASE_URL=$U npx vitest run tests/evaluator/bl-security-p1-f008-probes.test.ts -t F004; EVAL_F004_DB_URL=$U DATABASE_URL=$U npx vitest run tests/server/harness-gates-route-db.probe.test.ts"
+    },
+    {
+      "feature_id": "F005",
+      "result": "PASS",
+      "evidence": "Real scratch DB probe (EVAL_F005_DB_URL, 2/2 passed): two accountKeys with disjoint windows → each card's windows all share its accountKey (no cross-account splice); capturedAt/capturedBy are per-account maxima (a→device A 11:00, b→device B 14:00); additive index QuotaSnapshot_user_provider_account_window_captured_idx present in pg_indexes after evaluator's own prisma migrate deploy replay (29 migrations clean). Single-account equivalence regression green (tests/server/quota.test.ts:80). i18n accountLabel present in en + zh-CN; subscription-card render test green.",
+      "steps_to_reproduce": "U=postgresql://eval:eval@127.0.0.1:5545/blsec_eval; DATABASE_URL=$U npx prisma migrate deploy; EVAL_F005_DB_URL=$U DATABASE_URL=$U npx vitest run tests/server/quota-account-db.probe.test.ts; npx vitest run tests/server/quota.test.ts"
+    },
+    {
+      "feature_id": "F006",
+      "result": "PASS",
+      "evidence": "Endpoint contract verified in code + green route tests: 401 unauthenticated / 404 other tenant / unused {usedAt:null,usedById:null} / used returns usedById+deviceName; dynamic='force-dynamic' + Cache-Control no-store, no unstable_cache (grep). F-04 reproduction covered behaviorally by evaluator probe: unrelated new device with this enrollment usedById=null → isEnrollmentClaimed false; claim only on non-empty usedById. Backoff measured 1000→2000→4000→8000→10000 capped. enrollmentId additive in token route (:52), existing fields untouched. initialDeviceIds prop fully removed (grep zero hits in app/ src/). Abort/unmount: repo has no jsdom so render-level abort is not executable; triple guard (AbortController + clearTimeout + cancelled) inspected at enroll-flow-card.tsx:84-122 — objectively testable surface (pure claim + backoff functions) exercised. Full suite + verify green on macOS outside sandbox.",
+      "steps_to_reproduce": "npx vitest run tests/server/enrollment-tokens-route.test.ts tests/shared/enrollment-status.test.ts; EVAL_DB_URL=… npx vitest run tests/evaluator/bl-security-p1-f008-probes.test.ts -t F006; grep -rn initialDeviceIds app/ src/ (zero hits)"
+    },
+    {
+      "feature_id": "F007",
+      "result": "PASS",
+      "evidence": "Independent recomputation from raw fixture values via evaluator's own derivation (interval semantics, [start,end) attribution, compute=max(0,input−cached)+output, per-event estimateCost) compared field-by-field against real getBatchCost output on scratch Postgres: totalComputeTokens=1951110 and totalCostUsd=19.388000 match exactly/at 1e-10; every phase's tokens, fixRounds, ISO bounds, openEnded, durationMs, cost, unpriced match; rework (fixing+reverifying) matches; window [18:30,19:30]; hasUnpricedUsage=false. Query-count probe: exactly 1 $queryRaw per batch calculation (N_intervals→1). Cache: closed batch pins CLOSED_BATCH_NOW_MS across two >30s quanta; active batch tracks nowMs; boundary probes (out-of-order, same-ms, exactly-on-edge, clock skew) all green. /projects/[id] uses deterministic orderBy + take MAX+1 look-ahead with UI truncation disclosure (both locales).",
+      "steps_to_reproduce": "U=postgresql://eval:eval@127.0.0.1:5545/blsec_eval; EVAL_DB_URL=$U DATABASE_URL=$U npx vitest run tests/evaluator/bl-security-p1-f008-probes.test.ts -t F007"
+    },
+    {
+      "feature_id": "F008",
+      "result": "PASS",
+      "evidence": "Security audit report written with reproducible commands and decisive outputs for all six security items plus the independent F007 recomputation: docs/test-reports/BL-SECURITY-P1-security-audit-2026-08-22.md. All adversarial probes executed by this evaluator on the isolated checkout (41/41 evaluator probes passed; full repo suite 1221 passed/17 skipped; verify/lint/build exit 0). The known Windows-only CI lifecycle failure did not occur in this macOS evaluation and is unrelated. Verdict entries F001-F008 recorded with fix_round 0 in docs/test-reports/BL-SECURITY-P1-verdict.json.",
+      "steps_to_reproduce": "Read docs/test-reports/BL-SECURITY-P1-security-audit-2026-08-22.md; rerun commands per report sections (scratch pg16 container + migrate deploy, then the vitest/curl/script invocations listed there)"
+    }
+  ]
+}
