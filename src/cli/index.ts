@@ -55,7 +55,9 @@ program.command("collect").description("Collect local usage events into queue").
 program.command("sync").description("Sync queued events to server").action(async () => {
   const config = readConfig();
   const events = readQueue();
-  const result = await syncEvents(config, events);
+  const result = await syncEvents(config, events, {
+    onBatchSynced: ({ remaining }) => writeQueue(remaining)
+  });
   clearQueue();
   console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}`);
 });

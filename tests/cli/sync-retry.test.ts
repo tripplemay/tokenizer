@@ -48,30 +48,78 @@ describe("syncEvents batch retry", () => {
     vi.useFakeTimers();
   });
 
+  it("still posts an empty batch so the server can advance lastSyncAt", async () => {
+    const onBatchSynced = vi.fn();
+    fetchMock.mockResolvedValueOnce(okResponse(0));
+
+    const result = await syncEvents(config, [], { onBatchSynced });
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.events).toEqual([]);
+    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 0, total: 0, remaining: [] });
+    expect(result.received).toBe(0);
+  });
+
   it("retries a transiently failing batch instead of aborting the whole run", async () => {
-    // 400+ events → two batches. The second batch fails once at the network
+    // 25+ events -> two batches. The second batch fails once at the network
     // level (proxy blip), then succeeds; the run must complete without
     // surfacing the transient error. Re-sending a batch is idempotent
     // server-side (skipDuplicates + compare-equal corrections).
-    const events = Array.from({ length: 250 }, (_, i) => event(i));
+    const events = Array.from({ length: 40 }, (_, i) => event(i));
     fetchMock
-      .mockResolvedValueOnce(okResponse(200))
+      .mockResolvedValueOnce(okResponse(25))
       .mockRejectedValueOnce(new TypeError("fetch failed"))
-      .mockResolvedValueOnce(okResponse(50));
+      .mockResolvedValueOnce(okResponse(15));
 
     const pending = syncEvents(config, events);
     await vi.runAllTimersAsync();
     const result = await pending;
 
-    expect(result.inserted).toBe(250);
+    expect(result.inserted).toBe(40);
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
-  it("gives up after exhausting batch retries", async () => {
-    const events = Array.from({ length: 250 }, (_, i) => event(i));
-    fetchMock.mockResolvedValueOnce(okResponse(200)).mockRejectedValue(new TypeError("fetch failed"));
+  it("sends newest events first and checkpoints the remaining tail after each batch", async () => {
+    const events = Array.from({ length: 30 }, (_, i) => event(i)).map((row, i) => ({
+      ...row,
+      occurredAt: new Date(Date.UTC(2026, 6, 3, 0, 0, i)).toISOString()
+    }));
+    const inputOrder = events.map((row) => row.sourceEventId);
+    const onBatchSynced = vi.fn();
+    fetchMock.mockResolvedValueOnce(okResponse(25)).mockResolvedValueOnce(okResponse(5));
 
-    const pending = syncEvents(config, events);
+    const result = await syncEvents(config, events, { onBatchSynced });
+
+    const firstBody = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body as string);
+    expect(firstBody.events).toHaveLength(25);
+    expect(secondBody.events).toHaveLength(5);
+    expect(firstBody.events[0].sourceEventId).toBe("evt-29");
+    expect(firstBody.events.at(-1).sourceEventId).toBe("evt-5");
+    expect(secondBody.events.map((row: UsageEventInput) => row.sourceEventId)).toEqual([
+      "evt-4",
+      "evt-3",
+      "evt-2",
+      "evt-1",
+      "evt-0"
+    ]);
+    expect(onBatchSynced).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      synced: 25,
+      total: 30,
+      remaining: expect.arrayContaining([expect.objectContaining({ sourceEventId: "evt-4" })])
+    }));
+    expect(onBatchSynced).toHaveBeenLastCalledWith({ synced: 30, total: 30, remaining: [] });
+    expect(result.received).toBe(30);
+    expect(events.map((row) => row.sourceEventId)).toEqual(inputOrder);
+  });
+
+  it("gives up after exhausting batch retries", async () => {
+    const events = Array.from({ length: 40 }, (_, i) => event(i));
+    const onBatchSynced = vi.fn();
+    fetchMock.mockResolvedValueOnce(okResponse(25)).mockRejectedValue(new TypeError("fetch failed"));
+
+    const pending = syncEvents(config, events, { onBatchSynced });
     // Silence the expected rejection before advancing timers so Node does not
     // flag it as unhandled mid-flight.
     const outcome = pending.catch((error: Error) => error);
@@ -81,5 +129,8 @@ describe("syncEvents batch retry", () => {
     expect(error).toBeInstanceOf(TypeError);
     // 1 initial attempt + 2 retries for the failing batch, after 1 successful batch.
     expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(onBatchSynced).toHaveBeenCalledOnce();
+    expect(onBatchSynced).toHaveBeenCalledWith(expect.objectContaining({ synced: 25, total: 40 }));
+    expect(onBatchSynced.mock.calls[0][0].remaining).toHaveLength(15);
   });
 });

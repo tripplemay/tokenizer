@@ -15,7 +15,7 @@
       "title": "事件上传 25 条小批次 + newest-first + per-batch progress callback",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "大队列最新事件先到达；每批不超过 25 条；空批、重试、聚合结果与 remaining callback 均有回归。"
     },
     {
