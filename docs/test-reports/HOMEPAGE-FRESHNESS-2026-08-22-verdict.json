@@ -1,0 +1,32 @@
+{
+  "batch_id": "HOMEPAGE-FRESHNESS-2026-08-22",
+  "fix_round": 0,
+  "created_at": "2026-08-22T17:31:30Z",
+  "waiting": null,
+  "verdicts": [
+    {
+      "feature_id": "F001-HOMEPAGE-AUTO-REFRESH",
+      "result": "PARTIAL",
+      "evidence": "The production health endpoint reports commit 455fa8e6d8100324f3d06d3e09695db3067aba61, whose AutoRefresh uses a fixed 30-second setInterval. Next 15 serializes refresh actions behind any pending router action, while live health and ingest probes intermittently took longer than one interval or timed out; repeated ticks therefore accumulate stale refresh actions until a browser reload clears the client queue. The worktree changes AutoRefresh to a one-shot timer guarded by React useTransition, so the next timer is scheduled only after the previous refresh completes. tests/shared/auto-refresh.test.ts proves that no second router.refresh is issued while the transition is pending and polling resumes afterward. This code is intentionally not pushed or deployed under the repository's external-agent rules, so the live web fix remains pending orchestration.",
+      "steps_to_reproduce": "Run `npx vitest run tests/shared/auto-refresh.test.ts`; then inspect `app/_components/auto-refresh.tsx`. Before deployment, keep the production homepage open while an RSC refresh exceeds 30 seconds and observe that a hard reload catches up; after deployment, record RSC requests and verify at most one refresh is in flight and another is scheduled only after completion."
+    },
+    {
+      "feature_id": "F002-RECENT-EVENT-UPLOAD",
+      "result": "PASS",
+      "evidence": "The local agent had 3,274 queued events and repeated `fetch failed` / 60-second timeout errors after its last successful sync at 2026-08-22T11:10:33Z. Production probes showed 200-event uploads timing out, while 25-event batches completed with margin. The old flow sent oldest first and removed nothing until the entire run succeeded, so recent events remained behind thousands of historical duplicates. The fix sends 25-event batches newest-first and checkpoints the unsent tail after every confirmed response. A one-time recovery reduced the old queue to zero. After installing the verified local hotfix, a real incremental run synced 298 events with inserted=298 and duplicates=0; the launchd startup run then synced another 12 with inserted=12 and duplicates=0. Current queue length is zero, lastSyncStatus is success, lastError is null, heartbeat is success, and cc.tokenizer.agent is running.",
+      "steps_to_reproduce": "Run `$HOME/.local/bin/tokenizer status`, `wc -l $HOME/.tokenizer/queue.jsonl`, and inspect `$HOME/.tokenizer/state.json`; then run `npx vitest run tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts`. The retry test confirms newest-first 25-event batching and retained-tail checkpoints after a later batch fails."
+    },
+    {
+      "feature_id": "F003-INCREMENTAL-JSONL-CURSOR",
+      "result": "PASS",
+      "evidence": "Codex, Claude project, and Kimi append-only JSONL parsers now compare byte offsets and emit only rows or streamed message groups completed after the saved file size. They still scan the old prefix where needed to reconstruct Codex cumulative high-water state and Claude message grouping. Cursor writes record the exact parsed byte count, preventing a file that grows during parsing from advancing past unread data. Same-size mtime-only touches no longer replay append-only files; this eliminated a live dry-run false replay of 549 historical Claude events. The final dry run contained only events after the prior cursor (287 at that instant), and the subsequent real sync inserted all newly collected events with zero duplicates.",
+      "steps_to_reproduce": "Run `npx vitest run tests/cli/cursor.test.ts tests/parsers/codex.test.ts tests/parsers/claude.test.ts tests/parsers/kimicode.test.ts`. Tests cover UTF-8 byte offsets, mtime-only touches, Codex cumulative delta reconstruction, Claude streamed-message continuation, Kimi append-only emission, and unchanged-file skips."
+    },
+    {
+      "feature_id": "F004-REGRESSION-GATE",
+      "result": "PASS",
+      "evidence": "`npm run verify` completed successfully. Full `npm test` completed with 96 passed and 6 skipped test files, 1,209 passed and 15 skipped tests. The skipped suites are existing environment-dependent DB/contract probes. `git diff --check` passed. The installed hotfix copy also passed `npm run verify`. No branch was pushed and progress.json, features.json, and pending_gate.decision were not modified.",
+      "steps_to_reproduce": "Run `npm run verify && npm test && git diff --check` from the repository root."
+    }
+  ]
+}

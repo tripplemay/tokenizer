@@ -1,95 +1,46 @@
 {
-  "batch": "BL-SECURITY-P1",
-  "spec": "docs/specs/BL-SECURITY-P1-spec.md",
+  "batch": "BL-HOMEPAGE-FRESHNESS",
+  "spec": "docs/specs/BL-HOMEPAGE-FRESHNESS-spec.md",
   "features": [
     {
       "id": "F001",
-      "title": "AUTH_SECRET 生产 fail-closed + deploy workflow 硬失败",
+      "title": "首页 refresh 串行化：one-shot timer + transition pending + visibility catch-up",
+      "priority": "high",
       "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-455fa8e6d81-20260822T190016Z-resume",
-        "commit": "dec508f03eb9a424bbd0515e377b63f1047d6339"
-      }
+      "status": "pending",
+      "acceptance": "最多一个 router.refresh 在途；完成后才重新计时；hidden/visible/unmount 行为有测试且首页布局不变。"
     },
     {
       "id": "F002",
-      "title": "safeCallbackPath helper + 登录开放重定向封堵",
+      "title": "事件上传 25 条小批次 + newest-first + per-batch progress callback",
+      "priority": "high",
       "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-7c6885a89581-20260810T085318Z",
-        "commit": "d7eace0a00152d0eab3e8f0076125e83abcdeffa"
-      }
+      "status": "pending",
+      "acceptance": "大队列最新事件先到达；每批不超过 25 条；空批、重试、聚合结果与 remaining callback 均有回归。"
     },
     {
       "id": "F003",
-      "title": "图表 tooltip 存储型 XSS 转义 + device/source 输入约束",
+      "title": "durable queue/cursor 顺序与逐批剩余队列 checkpoint",
+      "priority": "high",
       "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-1e5aa23d81c0-20260810T094804Z-r2",
-        "commit": "234e8f02ca4b43df1b2fb2008121132308edeabe",
-        "rejected_rounds": 1
-      }
+      "status": "pending",
+      "acceptance": "queue-before-cursor；每批成功后持久化 unsent tail；任意后续失败不清空未确认事件，CLI 与 daemon 语义一致。"
     },
     {
       "id": "F004",
-      "title": "Gate 决策数据库 CAS（并发覆盖已签名结果封堵）",
+      "title": "Codex/Claude/Kimi append-only JSONL UTF-8 byte cursor",
+      "priority": "high",
       "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-06c35907e928-20260810T101704Z",
-        "commit": "c67218155cdce7f3be0e452341db8744554c63ba"
-      },
-      "open_acceptance": "acceptance 1 的并发实测未闭合：单测以 mock 定义 CAS 语义（自证前提），真探针 tests/server/harness-gates-route-db.probe.test.ts 无 EVAL_F004_DB_URL 时 skip。Evaluator 必须用迁移过的 scratch 库实跑该探针，断言 DB 终态只有一份 decisionSig。"
+      "status": "pending",
+      "acceptance": "增长文件只 emit cursor 后记录并保留上下文；same-size touch 跳过、shrink 重放、UTF-8/partial-line/stream continuation 有测试。"
     },
     {
       "id": "F005",
-      "title": "订阅额度按 accountKey 分组 + additive 索引 migration",
-      "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-b21d4034828d-20260810T103933Z",
-        "commit": "cb16ce11749ff4158a476e4d4d3cf662e5ce0af3"
-      },
-      "open_acceptance": "acceptance 1/2 真 DB 面未闭合：非 skip 单测 mock 了 $queryRaw，只验 JS 侧分组 + SQL 文本包含断言；真探针 tests/server/quota-account-db.probe.test.ts 需 EVAL_F005_DB_URL。acceptance 3 单账号回归强度不足（mock + 单 window fixture + 比对手写字面量而非改造前实际输出）。注：acceptance 4 已由稽核期临时 postgres 容器机械闭合（migrate deploy 29 条重放 EXIT=0 + pg_indexes 新旧索引并存）。"
-    },
-    {
-      "id": "F006",
-      "title": "设备注册绑定本次 enrollment（不可缓存状态端点 + 定向轮询）",
-      "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-92160f4f6478-20260810T181007Z-r4",
-        "commit": "5d03f745796a1def8a41381004d999895146743f",
-        "rejected_rounds": 1,
-        "transport_failures": 3
-      },
-      "open_acceptance": "acceptance 4 的 abort/unmount 半边无测试（仓库无 jsdom，node 环境测不到渲染）——实现在 enroll-flow-card.tsx 的 controller.abort()+clearTimeout+cancelled 三重守卫，但无行为证明。另 tests/shared/enrollment-status.test.ts:14 是一条恒真断言（字符串字面量 not.toBe(null)），零回归检出力，承重断言在 :15。"
-    },
-    {
-      "id": "F007",
-      "title": "批次成本查询放大治理：封闭批次永久缓存 + 关联设界 + 单查询聚合",
-      "executor": "generator",
-      "status": "completed",
-      "dispatch": {
-        "agent_id": "local-cli--codex--generator",
-        "task_id": "build-455fa8e6d81-20260822T190016Z-resume",
-        "commit": "a43c52269a60e7e1b31fcf5f2cd71cca86aaa375"
-      }
-    },
-    {
-      "id": "F008",
-      "title": "安全专项对抗输入独立验收报告",
+      "title": "首页 freshness 独立回归、生产部署与浏览器验证",
+      "priority": "high",
       "executor": "evaluator",
-      "status": "completed"
+      "status": "pending",
+      "acceptance": "独立验收 F001-F004；L1 全绿；生产 SHA/Deploy 健康；首页两个轮询周期内无需硬刷新即可追上新事件；固定 verdict/signoff 落盘。"
     }
   ]
 }

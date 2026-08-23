@@ -1,45 +1,27 @@
 {
-  "status": "done",
-  "user_goal": "前端评审 P1 安全专批：认证边界 fail-closed / 开放重定向 / tooltip 存储型 XSS / gate 决策 TOCTOU / 注册绑定 / quota accountKey 口径；顺路 F-32 批次成本查询放大治理",
-  "total_features": 8,
-  "completed_features": 8,
+  "status": "building",
+  "user_goal": "修复首页信息不自动刷新及最近事件长时间无法到达：关闭 refresh 排队、上传积压和 append-only JSONL 重放放大三条链路。",
+  "total_features": 5,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-SECURITY-P1",
+  "current_sprint": "BL-HOMEPAGE-FRESHNESS",
   "dashboard_url": null,
-  "last_updated": "2026-08-23T02:48:04Z",
+  "last_updated": "2026-08-23T02:55:53Z",
   "reference_docs": [
-    "docs/test-reports/frontend-code-review-2026-08-10.md",
-    "docs/test-reports/BL-COST-BATCH-V1-signoff.md"
+    "docs/test-reports/HOMEPAGE-FRESHNESS-2026-08-22-verdict.json",
+    "docs/test-reports/BL-SECURITY-P1-signoff-2026-08-22.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-SECURITY-P1-spec.md",
+    "spec": "docs/specs/BL-HOMEPAGE-FRESHNESS-spec.md",
     "test_cases": null,
-    "signoff": "docs/test-reports/BL-SECURITY-P1-signoff-2026-08-22.md",
+    "signoff": null,
     "framework_reviewed": true
   },
   "role_assignments": null,
-  "evaluator_feedback": {
-    "summary": "六个安全项 + F007 独立复算全部实测通过。F001-F008 判定见 `docs/test-reports/BL-SECURITY-P1-verdict.json`。Soft-watch 一项：`tests/shared/enrollment-status.test.ts:14` 为恒真断言（零回归检出力），承重断言 :15 在场且绿，建议下批次删除或改为行为断言——不阻断签收。",
-    "pass_count": 8,
-    "partial_count": 0,
-    "fail_count": 0,
-    "issues": []
-  },
-  "generator_handoff": {
-    "task_id": "build-455fa8e6d81-20260822T190016Z-resume",
-    "agent": "local-cli--codex--generator",
-    "transport": "local-cli",
-    "outcome": "COMPLETED",
-    "report": "docs/test-reports/BL-SECURITY-P1-generator-handoff-2026-08-22.json",
-    "implementation_commits": [
-      "a43c52269a60e7e1b31fcf5f2cd71cca86aaa375",
-      "dec508f03eb9a424bbd0515e377b63f1047d6339"
-    ]
-  },
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
-    "building": "【BL-SECURITY-P1 building 完成，2026-08-22，7/8】F001 与 F007 分别锁定在 dec508f、a43c522；F002-F006 保持既有 completed 状态。精确 HEAD 上 npm test 为 1221 passed / 17 skipped，npm run verify、npm run lint、无 AUTH_SECRET 的 npm run build 均 exit 0；F007 disposable PostgreSQL 探针 2/2，F001 生产运行时负向请求返回 HTTP 500。455fa8e..dec508f 的 src/cli 与 agent feature-version diff 为空；未 push、未部署。机械证据与逐文件清单见 generator_handoff report。",
-    "verifying": "【Evaluator 接手】执行 F008，当前日期报告路径为 docs/test-reports/BL-SECURITY-P1-security-audit-2026-08-22.md。必须独立完成六项对抗输入、F001 生产形态负向面、F004 真实并发与 DB 终态、F005 多账号 fixture、F007 独立复算；用迁移后的 scratch PostgreSQL 设置 EVAL_F004_DB_URL / EVAL_F005_DB_URL，且不要把 Generator 的 F007 断言当独立证据。F006 abort/unmount 行为仍缺 jsdom 证明，详见 features.json open_acceptance。",
-    "done": "【BL-SECURITY-P1 done，2026-08-22，8/8，fix_rounds=0】Kimi fresh-context 独立验收回执 COMPLETED，F001-F008 全 PASS；verdict / security audit / signoff 与 41 条 evaluator 自有探针已回流。真实 scratch PostgreSQL 闭合 F004/F005，F007 独立复算为 1,951,110 tokens / $19.388000；两条 low soft-watch 见 signoff。"
+    "planning": "【BL-HOMEPAGE-FRESHNESS planning→building，2026-08-22】直接用户反馈优先于 backlog：首页停留约 3 小时无新事件，硬刷新才追上。前置诊断发现 UI fixed interval 可排队，agent 曾积压 3,274 事件且 200-event 请求超时，append-only parser 对增长文件重放旧前缀。现有未提交 hotfix 仅作 Generator 候选输入，最终结论必须由隔离 Evaluator 重做。mode_defaults=null，默认快车道；F001-F004 文件面有依赖故串行，5 features 触发 verifying fan-out。"
   },
   "features": [],
   "pending_gate": null,
