@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { UsageEventInput } from "@/shared/usage";
 import {
@@ -11,7 +11,8 @@ import {
   readCodexTotalUsage
 } from "@/shared/codex-usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
-import { recordFile, shouldSkipFile } from "@/cli/cursor";
+import { appendStartOffset, recordFile, shouldSkipAppendOnlyFile } from "@/cli/cursor";
+import { readJsonlFile } from "@/parsers/jsonl";
 import { ParserConfig, ParserResult } from "./types";
 
 function walk(dir: string, files: string[] = []): string[] {
@@ -33,12 +34,13 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
   const highWater = new Map<string, CodexUsageCounters>();
 
   for (const file of walk(dir).sort()) {
-    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
+    if (config.cursor && shouldSkipAppendOnlyFile(file, config.cursor)) continue;
+    const emitAfter = config.cursor ? appendStartOffset(file, config.cursor) : 0;
     let sessionId: string | null = null;
     let workspacePath: string | null = null;
     let model: string | null = null;
     const fallbackTime = statSync(file).mtime.toISOString();
-    const lines = readFileSync(file, "utf8").split(/\r?\n/);
+    const jsonl = readJsonlFile(file);
     // Codex sometimes writes the same `token_count` event multiple times in
     // one session file (identical timestamp + identical usage numbers, on
     // different lines). The old sourceEventId included the line index, so
@@ -48,7 +50,7 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
     // content fingerprint and keep the first occurrence.
     const seenFingerprints = new Set<string>();
 
-    lines.forEach((line, index) => {
+    jsonl.lines.forEach(({ text: line, lineNumber, endOffset }) => {
       if (!line.trim()) return;
       try {
         const row = JSON.parse(line) as any;
@@ -78,13 +80,18 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
         if (!hasCodexUsage({ ...usage, totalTokens })) return;
 
         const occurredAt = row.timestamp ?? fallbackTime;
-        const legacySourceEventId = `codex:${file}:${index + 1}:${occurredAt}`;
+        const legacySourceEventId = `codex:${file}:${lineNumber}:${occurredAt}`;
         const sourceEventId = codexCanonicalSourceEventId(sessionId, row, legacySourceEventId);
         if (!totalUsage) {
           const fingerprint = `${occurredAt}:${model ?? ""}:${usage.inputTokens}:${usage.outputTokens}:${usage.cachedInputTokens}:${usage.cacheWriteTokens}:${usage.reasoningOutputTokens}:${totalTokens}`;
           if (seenFingerprints.has(fingerprint)) return;
           seenFingerprints.add(fingerprint);
         }
+
+        // The prefix was parsed to reconstruct session metadata and cumulative
+        // high-water state, but its events are already durably covered by the
+        // cursor. Emit only rows completed by the new append.
+        if (endOffset <= emitAfter) return;
 
         events.push({
           source: "codex",
@@ -103,10 +110,10 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
           rawJson: row
         });
       } catch (error) {
-        warnings.push(`Failed to parse Codex ${file}:${index + 1}: ${(error as Error).message}`);
+        warnings.push(`Failed to parse Codex ${file}:${lineNumber}: ${(error as Error).message}`);
       }
     });
-    if (config.cursor) recordFile(file, config.cursor);
+    if (config.cursor) recordFile(file, config.cursor, jsonl.byteLength);
   }
 
   return { events, warnings };

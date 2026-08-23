@@ -90,7 +90,7 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
   if (!dbPath) return { events, warnings: ["OpenCode database not found. Run tokenizer diagnose opencode to locate data files."] };
 
   const db = new Database(dbPath, { readonly: true, fileMustExist: true });
-  // Skip messages we've already ingested in a prior successful sync. The
+  // Skip messages already covered by the durable queue cursor. The
   // cursor stores the highest m.time_created we've emitted; ">" (strict) is
   // safe because (deviceId, sourceEventId) is unique on the server side and
   // we always emit each message_id exactly once per file.

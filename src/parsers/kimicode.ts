@@ -2,7 +2,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
-import { recordFile, shouldSkipFile } from "@/cli/cursor";
+import { appendStartOffset, recordFile, shouldSkipAppendOnlyFile } from "@/cli/cursor";
+import { readJsonlFile } from "@/parsers/jsonl";
 import { ParserConfig, ParserResult } from "./types";
 
 const KIMI_DIR = ".kimi-code";
@@ -62,7 +63,8 @@ export function parseKimiCodeUsage(config: ParserConfig): ParserResult {
   const workDirCache = new Map<string, string | null>();
 
   for (const file of walkWire(root)) {
-    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
+    if (config.cursor && shouldSkipAppendOnlyFile(file, config.cursor)) continue;
+    const emitAfter = config.cursor ? appendStartOffset(file, config.cursor) : 0;
     // .../<sessionDir>/agents/<agentId>/wire.jsonl -> climb three levels.
     const sessionDir = dirname(dirname(dirname(file)));
     if (!workDirCache.has(sessionDir)) workDirCache.set(sessionDir, readWorkDir(sessionDir, sessionIndex));
@@ -70,10 +72,11 @@ export function parseKimiCodeUsage(config: ParserConfig): ParserResult {
     const projectName = inferProjectName(workspacePath);
     const sessionId = basename(sessionDir);
     const fallbackTime = statSync(file).mtime.toISOString();
-    const lines = readFileSync(file, "utf8").split(/\r?\n/);
+    const jsonl = readJsonlFile(file);
 
-    lines.forEach((line, index) => {
+    jsonl.lines.forEach(({ text: line, lineNumber, endOffset }) => {
       if (!line.trim()) return;
+      if (endOffset <= emitAfter) return;
       try {
         const row = JSON.parse(line) as any;
         // Only per-turn usage rows. Each is the incremental usage of one API
@@ -97,7 +100,7 @@ export function parseKimiCodeUsage(config: ParserConfig): ParserResult {
 
         events.push({
           source: "kimicode",
-          sourceEventId: `kimicode:${file}:${index + 1}:${row.time ?? fallbackTime}`,
+          sourceEventId: `kimicode:${file}:${lineNumber}:${row.time ?? fallbackTime}`,
           projectName,
           sessionId,
           workspacePath,
@@ -111,10 +114,10 @@ export function parseKimiCodeUsage(config: ParserConfig): ParserResult {
           rawJson: row
         });
       } catch (error) {
-        warnings.push(`Failed to parse Kimi Code ${file}:${index + 1}: ${(error as Error).message}`);
+        warnings.push(`Failed to parse Kimi Code ${file}:${lineNumber}: ${(error as Error).message}`);
       }
     });
-    if (config.cursor) recordFile(file, config.cursor);
+    if (config.cursor) recordFile(file, config.cursor, jsonl.byteLength);
   }
 
   return { events, warnings };

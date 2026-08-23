@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CLAUDE_PARSER_VERSION, parseClaudeUsage } from "@/parsers/claude";
@@ -518,6 +518,29 @@ describe("parseClaudeUsage", () => {
     const third = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
     expect(third.events).toHaveLength(1);
     expect(cursor.claudeParserVersion).toBe(CLAUDE_PARSER_VERSION);
+  });
+
+  it("re-emits only a message whose streamed rows continue after the cursor", () => {
+    const file = writeJsonl("proj-append", [
+      assistantJsonlRow("msg-stable", "uuid-stable", { input: 10, output: 5 }),
+      assistantJsonlRow("msg-growing", "uuid-growing-first", { input: 20, output: 6 })
+    ]);
+    const cursor = emptyCursor();
+    const first = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
+
+    appendFileSync(
+      file,
+      `${JSON.stringify(assistantJsonlRow("msg-growing", "uuid-growing-last", { input: 20, output: 30 }))}\n`
+    );
+    const second = parseClaudeUsage({ homeDir, projectRoots: [], cursor });
+
+    expect(first.events).toHaveLength(2);
+    expect(second.events).toHaveLength(1);
+    expect(second.events[0]).toMatchObject({
+      sourceEventId: "claude-jsonl:msg-growing:uuid-growing-first",
+      inputTokens: 20,
+      outputTokens: 30
+    });
   });
 
   it("expands same-model iterations without fallback markers", () => {

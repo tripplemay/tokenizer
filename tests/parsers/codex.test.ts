@@ -185,7 +185,7 @@ describe("parseCodexUsage", () => {
     expect(result.events.map((event) => event.totalTokens)).toEqual([120, 55]);
   });
 
-  it("replays changed files with the same canonical IDs when a cursor forces a rescan", () => {
+  it("uses the old prefix for cumulative state but emits only a newly appended snapshot", () => {
     const file = writeRollout("rollout-cursor.jsonl", [
       sessionMeta(),
       turnContext(),
@@ -194,8 +194,15 @@ describe("parseCodexUsage", () => {
     ]);
     const cursor = emptyCursor();
     const first = parseCodexUsage({ homeDir, projectRoots: [], cursor });
-    appendFileSync(file, `${JSON.stringify(tokenCountEvent({ input_tokens: 150, cached_input_tokens: 0, output_tokens: 25, total_tokens: 175 }, "2026-01-01T00:00:04.000Z"))}\n`);
+    appendFileSync(file, `${JSON.stringify(tokenCountEvent({ input_tokens: 200, cached_input_tokens: 0, output_tokens: 30, total_tokens: 230 }, "2026-01-01T00:00:04.000Z"))}\n`);
     const second = parseCodexUsage({ homeDir, projectRoots: [], cursor });
-    expect(second.events.map((event) => event.sourceEventId)).toEqual(first.events.map((event) => event.sourceEventId));
+    expect(first.events).toHaveLength(2);
+    expect(second.events).toHaveLength(1);
+    expect(second.events[0]).toMatchObject({
+      sourceEventId: "codex:v2:sess-1:200:0:0:30:0:230",
+      inputTokens: 50,
+      outputTokens: 5,
+      totalTokens: 55
+    });
   });
 });

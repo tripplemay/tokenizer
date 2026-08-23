@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseKimiCodeUsage } from "@/parsers/kimicode";
+import { emptyCursor } from "@/cli/cursor";
 
 let homeDir: string;
 
@@ -142,6 +143,26 @@ describe("parseKimiCodeUsage", () => {
     const second = parseKimiCodeUsage({ homeDir, projectRoots: [] });
     expect(second.events[0].sourceEventId).toBe(first.events[0].sourceEventId);
     expect(first.events[0].sourceEventId).toContain("kimicode:");
+  });
+
+  it("emits only usage records appended after the cursor byte offset", () => {
+    const { files } = writeSession({
+      agents: { main: [usageRecord({ inputOther: 10, output: 5 }, { note: "\u9879\u76ee" })] }
+    });
+    const cursor = emptyCursor();
+    const first = parseKimiCodeUsage({ homeDir, projectRoots: [], cursor });
+
+    appendFileSync(
+      files.main,
+      `${JSON.stringify(usageRecord({ inputOther: 20, output: 6 }, { time: 1784269906214 }))}\n`
+    );
+    const second = parseKimiCodeUsage({ homeDir, projectRoots: [], cursor });
+    const third = parseKimiCodeUsage({ homeDir, projectRoots: [], cursor });
+
+    expect(first.events).toHaveLength(1);
+    expect(second.events).toHaveLength(1);
+    expect(second.events[0]).toMatchObject({ inputTokens: 20, outputTokens: 6 });
+    expect(third.events).toEqual([]);
   });
 
   it("warns when the Kimi Code sessions directory is absent", () => {

@@ -2,8 +2,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
-import { recordFile, shouldSkipFile } from "@/cli/cursor";
+import { appendStartOffset, recordFile, shouldSkipAppendOnlyFile, shouldSkipFile } from "@/cli/cursor";
 import { isPathUnder, pathSegments } from "@/shared/path";
+import { readJsonlFile } from "@/parsers/jsonl";
 import { ParserConfig, ParserResult } from "./types";
 
 // Generation of this parser's extraction semantics. Bump when re-parsing
@@ -120,6 +121,7 @@ type MessageGroup = {
   firstRow: any;
   firstRef: string;
   lastRow: any;
+  lastEndOffset: number;
   // from/to of a {type:"fallback"} content block seen on any row of the group.
   blockFallbackFrom: string | null;
   blockFallbackTo: string | null;
@@ -144,7 +146,8 @@ function modelOf(row: any): string | null {
 
 function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: UsageEventInput[], warnings: string[]) {
   for (const file of walkJsonl(projectsDir)) {
-    if (config.cursor && shouldSkipFile(file, config.cursor)) continue;
+    if (config.cursor && shouldSkipAppendOnlyFile(file, config.cursor)) continue;
+    const emitAfter = config.cursor ? appendStartOffset(file, config.cursor) : 0;
     const fallbackTime = statSync(file).mtime.toISOString();
     // Claude Code streams several rows per assistant message (same message.id,
     // different per-line uuid): early rows carry a placeholder usage snapshot,
@@ -157,8 +160,9 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
     const groups = new Map<string, MessageGroup>();
     const order: string[] = [];
     let missingIdRows = 0;
-    const lines = readFileSync(file, "utf8").replace(/\u0000/g, "").split(/\r?\n/);
-    lines.forEach((line, index) => {
+    const jsonl = readJsonlFile(file);
+    jsonl.lines.forEach(({ text, lineNumber, endOffset }) => {
+      const line = text.replace(/\u0000/g, "");
       if (!line.trim()) return;
       try {
         const row = JSON.parse(line) as any;
@@ -169,7 +173,7 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
         // streamed-snapshot double-count this parser exists to avoid. Warn so
         // an upstream format change is observable instead of silent.
         if (row.message.id == null) missingIdRows += 1;
-        const messageId = row.message.id ?? row.uuid ?? `${file}:${index + 1}`;
+        const messageId = row.message.id ?? row.uuid ?? `${file}:${lineNumber}`;
         const existing = groups.get(messageId);
         if (!existing) {
           const group: MessageGroup = {
@@ -180,8 +184,9 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
             // row of a message were ever rewritten away, the next parse
             // would mint a different ref and the event would double-count
             // instead of correcting in place.
-            firstRef: String(row.uuid ?? index + 1),
+            firstRef: String(row.uuid ?? lineNumber),
             lastRow: row,
+            lastEndOffset: endOffset,
             blockFallbackFrom: null,
             blockFallbackTo: null
           };
@@ -190,10 +195,11 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
           order.push(messageId);
         } else {
           existing.lastRow = row;
+          existing.lastEndOffset = endOffset;
           scanFallbackBlock(row, existing);
         }
       } catch (error) {
-        warnings.push(`Failed to parse Claude jsonl ${file}:${index + 1}: ${(error as Error).message}`);
+        warnings.push(`Failed to parse Claude jsonl ${file}:${lineNumber}: ${(error as Error).message}`);
       }
     });
 
@@ -201,9 +207,10 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
       warnings.push(`Claude jsonl ${file}: ${missingIdRows} assistant rows lack message.id; grouped per-line`);
     }
     for (const messageId of order) {
-      emitGroupEvents(groups.get(messageId)!, config, events, warnings, fallbackTime);
+      const group = groups.get(messageId)!;
+      if (group.lastEndOffset > emitAfter) emitGroupEvents(group, config, events, warnings, fallbackTime);
     }
-    if (config.cursor) recordFile(file, config.cursor);
+    if (config.cursor) recordFile(file, config.cursor, jsonl.byteLength);
   }
 }
 

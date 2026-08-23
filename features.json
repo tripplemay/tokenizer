@@ -31,7 +31,7 @@
       "title": "Codex/Claude/Kimi append-only JSONL UTF-8 byte cursor",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "增长文件只 emit cursor 后记录并保留上下文；same-size touch 跳过、shrink 重放、UTF-8/partial-line/stream continuation 有测试。"
     },
     {

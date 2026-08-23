@@ -10,9 +10,9 @@ export type FileFingerprint = { mtimeMs: number; size: number };
 
 export type ParserCursor = {
   // Per-file (mtime, size) fingerprint. If the fingerprint matches what we
-  // last saw, the parser can skip the file entirely. If the file grew or was
-  // rewritten, the parser re-reads it and the server's createMany skipDuplicates
-  // strips the overlap.
+  // last saw, the parser can skip the file entirely. Append-only JSONL parsers
+  // re-read a grown file for context but emit only rows beyond the saved size;
+  // rewritten files are replayed from byte zero.
   files: Record<string, FileFingerprint>;
   // OpenCode keeps usage in SQLite. We track the highest message.time_created
   // we've already ingested so subsequent runs can WHERE time_created > cursor.
@@ -61,10 +61,38 @@ export function shouldSkipFile(path: string, cursor: ParserCursor): boolean {
   }
 }
 
-export function recordFile(path: string, cursor: ParserCursor): void {
+// Codex, Claude project, and Kimi wire JSONL files are append-only. Some host
+// tools touch their mtime without changing content; for these logs, equal byte
+// size means there is no new complete or partial data to inspect.
+export function shouldSkipAppendOnlyFile(path: string, cursor: ParserCursor): boolean {
+  const prev = cursor.files[pathCacheKey(path)];
+  if (!prev) return false;
+  try {
+    return statSync(path).size === prev.size;
+  } catch {
+    return false;
+  }
+}
+
+// For append-only logs, return the byte offset already covered by the cursor.
+// A shrink is replayed from byte zero. Callers still scan the prefix when they
+// need session context; this offset only gates event emission.
+export function appendStartOffset(path: string, cursor: ParserCursor): number {
+  const prev = cursor.files[pathCacheKey(path)];
+  if (!prev) return 0;
+  try {
+    return statSync(path).size > prev.size ? prev.size : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function recordFile(path: string, cursor: ParserCursor, parsedSize?: number): void {
   try {
     const stat = statSync(path);
-    cursor.files[pathCacheKey(path)] = { mtimeMs: stat.mtimeMs, size: stat.size };
+    // JSONL files may grow between readFileSync and this stat. Never advance
+    // the cursor past bytes the parser actually inspected.
+    cursor.files[pathCacheKey(path)] = { mtimeMs: stat.mtimeMs, size: parsedSize ?? stat.size };
   } catch {
     /* file vanished — leave cursor as-is */
   }
