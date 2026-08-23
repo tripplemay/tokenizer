@@ -50,9 +50,7 @@ export async function runOnce() {
   }
   // Read cursor and pass to parsers. Parsers mutate the cursor in-place to
   // record per-file fingerprints and the OpenCode time_created high-water
-  // mark. We only persist the mutated cursor after a successful sync below,
-  // so a sync failure cleanly leaves us re-parsing the same files next run
-  // (server-side createMany skipDuplicates handles the overlap).
+  // mark.
   const cursor = readCursor();
   const collected = collectEvents(config, cursor);
   const queued = readQueue();
@@ -61,10 +59,17 @@ export async function runOnce() {
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
   writeQueue(events);
+  // The queue is the durable write-ahead buffer. Once it contains every event
+  // covered by this cursor, advancing the cursor is safe even if upload fails:
+  // successful batches are removed incrementally and the unsent tail remains.
+  // Queue-before-cursor ordering also makes a crash between these writes safe;
+  // at worst the old cursor re-parses events and server dedup handles them.
+  writeCursor(cursor);
   try {
-    const result = await syncEvents(config, events);
+    const result = await syncEvents(config, events, {
+      onBatchSynced: ({ remaining }) => writeQueue(remaining)
+    });
     clearQueue();
-    writeCursor(cursor);
     updateState({
       lastRunAt: startedAt,
       lastSyncAt: new Date().toISOString(),

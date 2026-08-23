@@ -23,7 +23,7 @@
       "title": "durable queue/cursor 顺序与逐批剩余队列 checkpoint",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "queue-before-cursor；每批成功后持久化 unsent tail；任意后续失败不清空未确认事件，CLI 与 daemon 语义一致。"
     },
     {

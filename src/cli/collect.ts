@@ -12,8 +12,8 @@ import { enrichEventsWithGit } from "./git";
 
 // `cursor` is optional. When supplied, parsers will skip files whose fingerprint
 // is unchanged and (for OpenCode) restrict the SQL query to rows newer than
-// the cutoff. Parsers mutate the cursor in-place; the caller is responsible
-// for persisting it only after a successful sync.
+// the cutoff. Parsers mutate the cursor in-place; the caller persists it only
+// after the collected events are safely present in the durable upload queue.
 export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
   const parserConfig = { homeDir: homedir(), projectRoots: config.projectRoots, cursor };
   const warnings: string[] = [];

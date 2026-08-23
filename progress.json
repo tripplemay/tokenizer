@@ -2,11 +2,11 @@
   "status": "building",
   "user_goal": "修复首页信息不自动刷新及最近事件长时间无法到达：关闭 refresh 排队、上传积压和 append-only JSONL 重放放大三条链路。",
   "total_features": 5,
-  "completed_features": 2,
+  "completed_features": 3,
   "fix_rounds": 0,
   "current_sprint": "BL-HOMEPAGE-FRESHNESS",
   "dashboard_url": null,
-  "last_updated": "2026-08-23T03:08:37Z",
+  "last_updated": "2026-08-23T03:13:11Z",
   "reference_docs": [
     "docs/test-reports/HOMEPAGE-FRESHNESS-2026-08-22-verdict.json",
     "docs/test-reports/BL-SECURITY-P1-signoff-2026-08-22.md"
