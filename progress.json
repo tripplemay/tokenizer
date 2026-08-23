@@ -6,7 +6,7 @@
   "fix_rounds": 0,
   "current_sprint": "BL-SECURITY-P1",
   "dashboard_url": null,
-  "last_updated": "2026-08-23T01:45:24Z",
+  "last_updated": "2026-08-23T02:48:04Z",
   "reference_docs": [
     "docs/test-reports/frontend-code-review-2026-08-10.md",
     "docs/test-reports/BL-COST-BATCH-V1-signoff.md"
@@ -17,11 +17,7 @@
     "signoff": "docs/test-reports/BL-SECURITY-P1-signoff-2026-08-22.md",
     "framework_reviewed": true
   },
-  "role_assignments": {
-    "planner": null,
-    "generator": "local-cli--codex--generator",
-    "evaluator": "local-cli--kimi--evaluator"
-  },
+  "role_assignments": null,
   "evaluator_feedback": {
     "summary": "六个安全项 + F007 独立复算全部实测通过。F001-F008 判定见 `docs/test-reports/BL-SECURITY-P1-verdict.json`。Soft-watch 一项：`tests/shared/enrollment-status.test.ts:14` 为恒真断言（零回归检出力），承重断言 :15 在场且绿，建议下批次删除或改为行为断言——不阻断签收。",
     "pass_count": 8,
@@ -47,56 +43,5 @@
   },
   "features": [],
   "pending_gate": null,
-  "mode_intent": {
-    "intent_id": "da55b68a-4e2e-4952-b1c0-6e784fd19d16",
-    "applied_batch": "BL-SECURITY-P1",
-    "applied_at": "2026-08-10T08:38:50Z",
-    "signed_intent": {
-      "desired": {
-        "autonomy": {
-          "enabled": false
-        },
-        "execution": {
-          "profile": "heterogeneous",
-          "role_bindings": {
-            "evaluator": {
-              "invocation": "local-cli",
-              "tool": "kimi"
-            },
-            "generator": {
-              "invocation": "local-cli",
-              "tool": "codex"
-            },
-            "planner": null
-          }
-        }
-      },
-      "expected_head_sha": "905a90b3da0c8e3b01c403163d1ad65af3f781df",
-      "intent_expires_at": "2026-08-17T08:25:00.000Z",
-      "intent_id": "da55b68a-4e2e-4952-b1c0-6e784fd19d16",
-      "issued_at": "2026-08-10T08:26:03.684Z",
-      "issued_by": "tripplezhou@gmail.com",
-      "repo_key": "github.com/tripplemay/tokenizer",
-      "sig": "zLCDxoC+VHggA1a1VsKVdtUsoOlpxo5ITDL/iuGQDkCVXHFQMI6plT6yM9sm4PH5nvogcULYJmgLzTsQcGDWCQ=="
-    },
-    "resolution": {
-      "evaluator": {
-        "agent_id": "local-cli--kimi--evaluator",
-        "execution_provenance_sha256": "bf87fcda2da33def23c799ddf0d0c9a9626ef8ca7889a95fbe4d19313a1fb410",
-        "invocation": "local-cli",
-        "model_family": "kimi",
-        "priority": 100,
-        "tool": "kimi"
-      },
-      "generator": {
-        "agent_id": "local-cli--codex--generator",
-        "execution_provenance_sha256": "92e2e2aa49efd87a7c52b31e858ecfc0a17de35f212a00dc44ffc4c4b32b0d14",
-        "invocation": "local-cli",
-        "model_family": "codex",
-        "priority": 100,
-        "tool": "codex"
-      },
-      "planner": null
-    }
-  }
+  "mode_intent": null
 }

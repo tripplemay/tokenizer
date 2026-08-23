@@ -17,7 +17,7 @@ type: project
 
 - Windows CI `install-agent-lifecycle` 既有失败使 workflow 总结论恒 failure（Linux Verify/Deploy 不受影响）——已排入 BL-AGENT-SUPPLY-CHAIN F006。
 - harness-console-demo 删除待用户执行（Contract Conformance CI 已取代其演练职能）。
-- mode intent：77af0221 与 **da55b68a 均已消费入台账**（后者 → BL-SECURITY-P1）。active checkpoint 在 `progress.mode_intent`，done 收尾才清；下批执行形态待控制台新签。
+- mode intent：77af0221 与 **da55b68a 均已消费入台账**（后者 → BL-SECURITY-P1）；done 收尾已同时清除旧 `role_assignments` / `progress.mode_intent`。`harness.json.project.mode_defaults=null`，下批按本机手工默认车道，除非控制台另签新 intent。
 - 框架 **v1.10.1**（2026-08-10 回流）：console-mode §3.5 投递失败语义——`head_mismatch` 归可重试竞态、被拒 intent 须留痕、服务端 failed 走闸门邮件、`/plan` §0c 强制化。产品侧实现在 backlog `BL-MODE-INTENT-DELIVERY`。
 - accept-generator-handoff 本机操作要点：`TMPDIR=/tmp` 调用（长路径破 sun_path 104）+ 沙箱先铺 node_modules（目标已存在须先 rm 再 `cp -cR`）——根治提案在 proposed-learnings。
 - 本机 `.claude/dispatch/agents-registry.example.json` 是用户本地定制，必须保留且不得提交。
