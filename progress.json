@@ -1,12 +1,12 @@
 {
-  "status": "building",
+  "status": "verifying",
   "user_goal": "修复首页信息不自动刷新及最近事件长时间无法到达：关闭 refresh 排队、上传积压和 append-only JSONL 重放放大三条链路。",
   "total_features": 5,
   "completed_features": 4,
   "fix_rounds": 0,
   "current_sprint": "BL-HOMEPAGE-FRESHNESS",
   "dashboard_url": null,
-  "last_updated": "2026-08-23T03:21:01Z",
+  "last_updated": "2026-08-23T03:26:53Z",
   "reference_docs": [
     "docs/test-reports/HOMEPAGE-FRESHNESS-2026-08-22-verdict.json",
     "docs/test-reports/BL-SECURITY-P1-signoff-2026-08-22.md"
@@ -19,9 +19,27 @@
   },
   "role_assignments": null,
   "evaluator_feedback": null,
-  "generator_handoff": null,
+  "generator_handoff": {
+    "task_id": "local-BL-HOMEPAGE-FRESHNESS-20260823T032653Z",
+    "agent": "main",
+    "transport": "local",
+    "outcome": "COMPLETED",
+    "implementation_commits": [
+      "fc9f0cfd18f41f81a7a59ac1467f1e307dcca9d9",
+      "a5de7a63d16bc30e5cd20386bcd52f8f75876ec3",
+      "97ecad9db35d2148e7b802a4bdd390535cc0abcc",
+      "fdb049d78478c9d5ab8f8f0bc1a83c6405fd95cc"
+    ],
+    "verification": {
+      "lint": "PASS (0 warnings, 0 errors)",
+      "typecheck": "PASS",
+      "test": "PASS (1274 passed, 20 skipped)",
+      "build": "PASS"
+    }
+  },
   "session_notes": {
-    "planning": "【BL-HOMEPAGE-FRESHNESS planning→building，2026-08-22】直接用户反馈优先于 backlog：首页停留约 3 小时无新事件，硬刷新才追上。前置诊断发现 UI fixed interval 可排队，agent 曾积压 3,274 事件且 200-event 请求超时，append-only parser 对增长文件重放旧前缀。现有未提交 hotfix 仅作 Generator 候选输入，最终结论必须由隔离 Evaluator 重做。mode_defaults=null，默认快车道；F001-F004 文件面有依赖故串行，5 features 触发 verifying fan-out。"
+    "planning": "【BL-HOMEPAGE-FRESHNESS planning→building，2026-08-22】直接用户反馈优先于 backlog：首页停留约 3 小时无新事件，硬刷新才追上。前置诊断发现 UI fixed interval 可排队，agent 曾积压 3,274 事件且 200-event 请求超时，append-only parser 对增长文件重放旧前缀。现有未提交 hotfix 仅作 Generator 候选输入，最终结论必须由隔离 Evaluator 重做。mode_defaults=null，默认快车道；F001-F004 文件面有依赖故串行，5 features 触发 verifying fan-out。",
+    "building": "【BL-HOMEPAGE-FRESHNESS building 完成，2026-08-22，4/5】F001 one-shot refresh=`fc9f0cf`；F002 25-event newest-first upload=`a5de7a6`；F003 durable queue/cursor checkpoint=`97ecad9`；F004 append-only UTF-8 byte cursor=`fdb049d`。精确 HEAD 完整 L1：lint 0 warning/error、verify PASS、1274 passed/20 skipped、无 AUTH_SECRET build PASS。F005 交隔离 Evaluator 验证真实浏览器 freshness 与最终部署。"
   },
   "features": [],
   "pending_gate": null,
