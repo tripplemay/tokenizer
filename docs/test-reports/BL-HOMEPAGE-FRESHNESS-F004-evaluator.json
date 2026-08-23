@@ -1,0 +1,37 @@
+{
+  "feature_id": "F004",
+  "result": "PASS",
+  "description": "独立 fixture 探针与干净 HEAD L1 均通过。Codex、Claude、Kimi 的 append-only cursor 符合 UTF-8 byte offset、前缀上下文恢复、后缀单次 emit、partial final line 重试和 shrink replay 要求；OpenCode SQLite 高水位行为未回归。",
+  "evidence": [
+    "验收基线为 detached clean HEAD 291810449c5894b66c5d7d613ffe525154fbadf5；L1 结束后 git status --short 为空。",
+    "Evaluator 独有探针 tests/evaluator/bl-homepage-freshness-f004.test.ts：8/8 PASS。真实临时文件验证 CRLF + 中文字符的 endOffset/byteLength 均等于 Buffer.byteLength，而非 UTF-16 字符数。",
+    "同一探针验证 append-only 文件仅 mtime 改变且 size 相同时跳过；文件缩小时 appendStartOffset 回到 0，Kimi parser 从头重放缩小后的唯一记录。",
+    "同一探针先让 Kimi 读取包含中文的未闭合末行并记录 byte cursor，再追加闭合字节与换行；第二次仅产出补全事件，warnings 从 1 降为 0。",
+    "Codex 探针初始累计快照 120/170 tokens，追加累计快照 222 tokens 后仅产出 52-token delta（input 45、output 7），证明旧前缀参与 high-water 重建但未重放旧事件。",
+    "Claude 探针追加同一 message.id 的 streamed final row 后仅重发该组，sourceEventId 保持 claude-jsonl:continued:continued-first，outputTokens 从 4 更新为 37。",
+    "Kimi 探针初扫仅产出 input 10/20，append 后仅产出 input 30，再扫为空；证明 append-only 后缀不重放。",
+    "OpenCode 临时 SQLite 探针初扫 old-1/old-2 并把 opencodeLastTimeCreated 推到 1700000001000；新增 new-1 后仅产出 new-1 并推进到 1700000002000，再扫为空。",
+    "相关既有回归 tests/cli/cursor.test.ts + Codex/Claude/Kimi/OpenCode parser tests：5 files PASS，59/59 tests PASS。",
+    "共享工作树曾被并行分片新增的未提交 tests/evaluator/bl-homepage-freshness-f002-f003.test.ts:162 污染，导致一次 npm run verify 出现 TS2322；该文件不属于 HEAD 或 F004。转到 detached clean HEAD 后 verify PASS，因此未计为产品失败。",
+    "环境为 Node v25.7.0；仓库根不存在 .nvmrc，故没有可用于一致性比对的锁定 Node 版本。"
+  ],
+  "steps_to_reproduce": [
+    "npx vitest run tests/evaluator/bl-homepage-freshness-f004.test.ts",
+    "npx vitest run tests/cli/cursor.test.ts tests/parsers/codex.test.ts tests/parsers/claude.test.ts tests/parsers/kimicode.test.ts tests/parsers/opencode.test.ts",
+    "git worktree add --detach /tmp/tokenizer-f004-l1-2918104 291810449c5894b66c5d7d613ffe525154fbadf5",
+    "在 detached worktree 安装依赖或复用同一 lockfile 对应的 node_modules，然后依次运行 npm run lint、npm run verify、npm test、npm run build。",
+    "git -C /tmp/tokenizer-f004-l1-2918104 status --short 应为空。"
+  ],
+  "l1": {
+    "head": "291810449c5894b66c5d7d613ffe525154fbadf5",
+    "worktree": "detached clean HEAD",
+    "node": "v25.7.0",
+    "nvmrc": "absent",
+    "lint": "PASS - No ESLint warnings or errors",
+    "verify": "PASS - prisma generate succeeded, tsc --noEmit succeeded",
+    "test": "PASS - 99 files passed, 7 skipped; 1274 tests passed, 20 skipped",
+    "build": "PASS - Next.js 15.5.18 compiled, typechecked, and generated production output"
+  },
+  "waiting": false,
+  "waiting_detail": null
+}

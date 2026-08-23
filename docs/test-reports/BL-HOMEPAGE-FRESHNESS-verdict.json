@@ -1,0 +1,33 @@
+{
+  "batch_id": "BL-HOMEPAGE-FRESHNESS",
+  "fix_round": 0,
+  "created_at": "2026-08-23T04:22:55Z",
+  "waiting": "auth",
+  "waiting_detail": "F005 的生产首页真实刷新验收尚未执行：应用内 Browser 当前无可用实例；Chrome 虽在运行，但所选 profile 未安装 Codex Chrome Extension，因此无法复用登录态。需要用户打开并登录 https://token.vpanel.cc/ 的应用内 Browser 首页，或安装并启用 Codex Chrome Extension 后重试。验收将只读保持首页可见至少 65 秒，记录至少两个轮询周期，并确认新事件无需硬刷新即可更新最新时间。",
+  "verdicts": [
+    {
+      "feature_id": "F001",
+      "result": "PASS",
+      "evidence": "精确产品 HEAD 291810449c5894b66c5d7d613ffe525154fbadf5。独立执行 tests/shared/auto-refresh.test.ts：1 file / 3 tests PASS；pending 跨 5 个轮询窗口无重入，transition 完成后重新计时；hidden 期间不刷新，visible 后立即 catch-up；unmount 清除 timer/listener。源码仅使用单个 setTimeout，未使用 setInterval；fc9f0cf 未修改 app/page.tsx。GitHub Actions run 32615751636 的 Linux Verify 与 Deploy 均成功；生产 /api/health 返回 ok=true 且 commit=291810449c5894b66c5d7d613ffe525154fbadf5。",
+      "steps_to_reproduce": "在产品 HEAD 291810449c5894b66c5d7d613ffe525154fbadf5 运行 `npx vitest run tests/shared/auto-refresh.test.ts --reporter=verbose`；检查 `app/_components/auto-refresh.tsx` 的 one-shot/pending/visibility/cleanup；运行 `git diff --exit-code fc9f0cf^ fc9f0cf -- app/page.tsx`；查看 GitHub Actions run 32615751636 并请求 `curl -fsS https://token.vpanel.cc/api/health`。"
+    },
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "evidence": "独立探针 tests/evaluator/bl-homepage-freshness-f002-f003.test.ts 使用 57 条压力样本，实际 wire batch 为 25/25/7，稳定 newest-first 顺序符合独立期望且未修改输入；聚合计数精确，callback 的 remaining 为 32/7/0。空输入仍 POST events=[]。第二批持续断网时仅该批执行初次加两次 retry，首批 checkpoint 保留 remaining=2。共享树定向组合 3 files / 13 tests PASS，typecheck PASS，探针 lint 0 warning/error。",
+      "steps_to_reproduce": "运行 `npx vitest run tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`，再运行 `npm run typecheck` 和 `npm run lint -- --file tests/evaluator/bl-homepage-freshness-f002-f003.test.ts`。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "evidence": "独立故障模型观察到严格顺序 queue:31 -> cursor -> post:25 -> queue:6；第二批失败后 durable queue 只保留 6 条未确认 tail，且未 clear。初始 queue、cursor、首批 checkpoint 写失败均未造成静默丢失。真实临时 HOME + loopback HTTP 子进程验证 tokenizer sync 与 run 均按 25/5 发送，第二批请求到达时 queue.jsonl 均只剩 5 条；run 上传前 cursor 已存在。定向组合 3 files / 13 tests PASS。",
+      "steps_to_reproduce": "运行 `npx vitest run tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`；检查其中 F003 durable failure states 与 F003 real CLI/daemon parity 用例，再补跑 `npx vitest run tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`。"
+    },
+    {
+      "feature_id": "F004",
+      "result": "PASS",
+      "evidence": "独立探针 tests/evaluator/bl-homepage-freshness-f004.test.ts 8/8 PASS，覆盖 CRLF + 中文 UTF-8 byte offset、mtime-only skip、shrink replay、未闭合末行重试、Codex cumulative delta、Claude streamed continuation、Kimi append-only 和 OpenCode SQLite 高水位。相关 parser/cursor 回归 59/59 PASS。detached clean 产品 HEAD 2918104 上 lint、verify、1274 passed / 20 skipped、build 全 PASS；合入两个 evaluator 探针后的共享树再次完整 L1 全绿：lint 0 warning/error、verify PASS、101 files passed / 7 skipped、1287 tests passed / 20 skipped、Next.js production build PASS。",
+      "steps_to_reproduce": "运行 `npx vitest run tests/evaluator/bl-homepage-freshness-f004.test.ts`；运行 `npx vitest run tests/cli/cursor.test.ts tests/parsers/codex.test.ts tests/parsers/claude.test.ts tests/parsers/kimicode.test.ts tests/parsers/opencode.test.ts`；最后依次运行 `npm run lint`、`npm run verify`、`npm test`、`env -u AUTH_SECRET npm run build`。"
+    }
+  ]
+}

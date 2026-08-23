@@ -1,0 +1,20 @@
+{
+  "verdicts": [
+    {
+      "feature_id": "F002",
+      "result": "PASS",
+      "description": "事件上传完整满足 25 条上限、稳定 newest-first 且不修改调用方数组、空事件仍 POST、逐批聚合与 remaining callback、第二批重试耗尽后停止等验收项。",
+      "evidence": "精确 HEAD 291810449c5894b66c5d7d613ffe525154fbadf5。独立探针 tests/evaluator/bl-homepage-freshness-f002-f003.test.ts 使用 57 条含相同时间戳及非法时间戳的逆序压力样本，实际 wire batch 为 25/25/7，稳定顺序与独立期望一致，调用前后输入 JSON 和对象引用顺序均不变；聚合结果为 inserted=54、updated=3、duplicates=3、received=57，callback 的 synced/total/remaining 依次为 25/57/32、50/57/7、57/57/0。空输入产生一次 events=[] POST 和 synced=0 callback。27 条样本的第二批被强制持续断网后共观察到该批 3 次请求（初次 + 2 次 retry），仅首批 callback 一次且 remaining=2，最终抛出 TypeError。真实子进程探针另观察到 sync 与 run 都按 25/5 发送。修正 callback 探针的隐式 number 返回后，命令 `npx vitest run tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose` 为 3 files / 13 tests PASS；`npm run typecheck`（tsc --noEmit）exit 0；定向 lint 0 warning/error。",
+      "steps_to_reproduce": "1. 在仓库 HEAD 291810449c5894b66c5d7d613ffe525154fbadf5 运行 `npx vitest run tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`。2. 查看 `F002 adversarial upload contract` 两个 case：第一个核对 57 条稳定排序、25 上限、输入不变、聚合及每批 tail；第二个核对空 POST 和第二批三次失败后耗尽。3. 运行 `npm run lint -- --file tests/evaluator/bl-homepage-freshness-f002-f003.test.ts`。"
+    },
+    {
+      "feature_id": "F003",
+      "result": "PASS",
+      "description": "daemon 的 durable 顺序为 full queue -> cursor -> upload，每批确认后 checkpoint unsent tail；初始 queue、cursor、checkpoint 任一写失败均保留未确认事件或可重放源，失败路径不 clear queue；手工 sync 与 daemon run 使用相同逐批 checkpoint 语义。",
+      "evidence": "独立故障模型直接组合真实 syncEvents 与真实 runOnce：31 条样本的可观测操作前缀严格为 queue:31、cursor、post:25、queue:6；第二批三次失败后磁盘模型仅保留 newest-first 的 6 条未确认 tail，clearQueue 未调用。初始 queue 写失败时旧 queue 保持且 cursor 不推进/不上传，故 fresh 事件仍可由未推进 cursor 重放；cursor 写失败时 full queue=[old,fresh] 已落盘且不上传；首批服务端确认后的 checkpoint 写失败时原 full queue 26 条保持、仅发生一次 POST、未 clear。额外真实集成探针为 `tokenizer sync` 与 `tokenizer run` 各创建独立临时 HOME 并连接本地 HTTP 服务：两条入口均发 25/5；第二批请求抵达时实际 queue.jsonl 均恰为第二批 5 条；结束后 queue 为空；run 的两个 batch 请求前 cursor.json 已存在，而 sync 不涉及 cursor。两条入口的 batch 和 queue-at-request 观测完全相等。修正 callback 探针的返回类型后重新执行，相关 3 files / 13 tests 全 PASS，`npm run typecheck` exit 0，且 `git diff --check` 通过。",
+      "steps_to_reproduce": "1. 运行 `npx vitest run tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`。2. 查看 `F003 durable failure states`：首个 case 核对 queue-before-cursor、逐批 tail 和 retry 耗尽终态；第二个 case 分别注入初始 queue、cursor、checkpoint 写失败并核对 durable 终态。3. 查看 `F003 real CLI/daemon parity`：它启动 loopback HTTP 服务并分别执行真实 `src/cli/index.ts sync` 与 `run` 子进程，在每次 HTTP 请求到达时读取临时 HOME 下的 queue/cursor。4. 补跑 `npx vitest run tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/evaluator/bl-homepage-freshness-f002-f003.test.ts --reporter=verbose`。"
+    }
+  ],
+  "waiting": false,
+  "waiting_detail": ""
+}
