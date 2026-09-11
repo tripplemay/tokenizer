@@ -29,4 +29,17 @@ Push main once and follow the matching `Deploy VPS` Actions run. Do not launch a
 
 Unauthenticated health/login checks are not a claim of live authenticated quota or collector verification. The independent acceptance covers real component fixtures, including desktop/narrow-screen expansion and both locales; its dark-mode and live-data limitations remain unchanged. No production data is modified for smoke checks.
 
-Post-deployment outcome will be appended after the matching run and public health have been inspected. A subsequent docs-only audit commit does not trigger deployment under the existing workflow path filters.
+## Deployment outcome
+
+- Released commit: `8db58c296bd78a70ec4f75e1c4d4ef2687277f61`, pushed to `origin/main`.
+- Actions run: https://github.com/tripplemay/tokenizer/actions/runs/34553333841 (push event, exact release SHA).
+- Linux Verify: success, including 1361 passed / 20 skipped and production build.
+- Deploy: success. VPS reported 28 existing migrations, no pending migrations, app started, PostgreSQL healthy and local health check OK at `2026-09-11T02:15:11.1654202Z`.
+- Public health at `2026-09-11T02:17:06.406Z`: `ok=true`, exact released commit. A second checked response is retained in `release-health.json`.
+- Public HTTP smoke: `/login` returned 200; unauthenticated `/` returned 307 to `https://token.vpanel.cc/login`.
+- Windows Verify: failure, so the overall workflow conclusion is failure despite successful Linux Verify and Deploy. Three failures are identical to baseline run 32615751636 at production commit `2918104`: SIGTERM lock-release timeout, POSIX installer fixture process visibility, and CRLF-sensitive installer assertion. Relevant CLI/tests/installer files have zero diff between baseline and release. No test was disabled or deployment gate changed.
+- Live authenticated UI was not verified: the retained browser tab was on `/login`, and Tabbit resume failed with `PAGE_ATTACHMENT_TIMEOUT`. No credential bypass or production test data was used. HTTP smoke does not substitute for logged-in account validation.
+
+Machine-readable job results and bounded original log extracts are retained alongside this report: `release-actions.json`, `release-health.json`, `release-vps-smoke.txt`, `release-windows-failures.txt` and `baseline-windows-failures.txt`. Extracts preserve original timestamps/ANSI output; the source jobs are 103120857559 (VPS), 103120596006 (Windows release) and 97136072636 (Windows baseline).
+
+The follow-up commit contains only these documentation/audit changes and does not trigger another deployment under the existing workflow path filters. Production should continue to report the product release SHA above, not the later documentation-only HEAD.

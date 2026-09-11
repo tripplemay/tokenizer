@@ -1,0 +1,14 @@
+306:2026-08-23T03:37:40.2957094Z [31m   [31m×[31m agent single-instance lock[2m > [22mreleases the lock when the running agent receives SIGTERM[33m 5018[2mms[22m[31m[39m
+359:2026-08-23T03:37:43.9707213Z [31m     → agent fixture process 9204 did not become visible[39m
+361:2026-08-23T03:37:43.9711814Z [31m     → expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'[39m
+440:2026-08-23T03:37:53.7099774Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 3 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+442:2026-08-23T03:37:53.7105038Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/agent-lifecycle.test.ts[2m > [22magent single-instance lock[2m > [22mreleases the lock when the running agent receives SIGTERM
+447:2026-08-23T03:37:53.7138461Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/install-agent-lifecycle.test.ts[2m > [22mPOSIX installer Agent lifecycle[2m > [22mstops this install's wrapper and child without touching another install
+448:2026-08-23T03:37:53.7145143Z [31m[1mError[22m: agent fixture process 9204 did not become visible[39m
+452:2026-08-23T03:37:53.7539977Z     [90m 38| [39m  [35mthrow[39m [35mnew[39m [33mError[39m([32m`agent fixture process [39m[36m${[39mpid[36m}[39m[32m did not become visible[39m…
+460:2026-08-23T03:37:53.7550214Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/install-agent-lifecycle.test.ts[2m > [22mPOSIX installer Agent lifecycle[2m > [22muses directory-scoped matching instead of broad tokenizer-agent process search
+461:2026-08-23T03:37:53.7553068Z [31m[1mAssertionError[22m: expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'[39m
+1042:2026-08-23T03:37:53.8117555Z [2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m97 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (106)[39m
+1043:2026-08-23T03:37:53.8120226Z [2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1263 passed[39m[22m[2m | [22m[33m28 skipped[39m[90m (1294)[39m
+1048:2026-08-23T03:37:53.8158128Z ##[error]Error: agent fixture process 9204 did not become visible
+1054:2026-08-23T03:37:53.8216993Z ##[error]AssertionError: expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'

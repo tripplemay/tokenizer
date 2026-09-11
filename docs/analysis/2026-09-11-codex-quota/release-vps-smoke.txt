@@ -1,0 +1,5 @@
+1127:2026-09-11T02:15:03.0179529Z 28 migrations found in prisma/migrations
+1130:2026-09-11T02:15:03.1966931Z No pending migrations to apply.
+1137:2026-09-11T02:15:08.5683099Z  Container tokenizer-app-1  Started
+1140:2026-09-11T02:15:08.8742157Z tokenizer-postgres-1   postgres:16-alpine   "docker-entrypoint.s…"   postgres   23 seconds ago   Up 20 seconds (healthy)   5432/tcp
+1143:2026-09-11T02:15:11.1654202Z health check OK
