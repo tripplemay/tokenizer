@@ -5,6 +5,7 @@ const CACHE_REVALIDATE_SECONDS = 30;
 
 export type QuotaLatestWindow = {
   windowKey: string;
+  capturedAt: string;
   utilization: number | null;
   usedRaw: number | null;
   limitRaw: number | null;
@@ -70,6 +71,7 @@ async function getQuotaLatestImpl(userId: string): Promise<QuotaLatest> {
     };
     provider.windows.push({
       windowKey: r.windowKey,
+      capturedAt: r.capturedAt.toISOString(),
       utilization: r.utilization != null ? Number(r.utilization) : null,
       usedRaw: r.usedRaw != null ? Number(r.usedRaw) : null,
       limitRaw: r.limitRaw != null ? Number(r.limitRaw) : null,

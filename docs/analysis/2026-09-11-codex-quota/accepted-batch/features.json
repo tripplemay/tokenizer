@@ -1,0 +1,46 @@
+{
+  "batch": "BL-HOMEPAGE-CODEX-QUOTA",
+  "spec": "docs/specs/BL-HOMEPAGE-CODEX-QUOTA-spec.md",
+  "features": [
+    {
+      "id": "F001",
+      "title": "Quota 窗口级采集时间",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "每窗口携带自身 capturedAt；账号/租户隔离及旧字段不变；局部更新回归。"
+    },
+    {
+      "id": "F002",
+      "title": "首页单 Codex 区域与其他账号折叠",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "一个 Codex 区域，最近上报默认展开，其余 native details 默认折叠；单/多/空/legacy/乱序/同时间回归；仅授权的局部布局变更。"
+    },
+    {
+      "id": "F003",
+      "title": "逐窗口过期额度标记待刷新",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "超过 15 分钟或 reset<=now 显示待刷新；未知/非法/future 时间 fail-closed；含 credits、局部新旧、阈值边界、非法 utilization 回归。"
+    },
+    {
+      "id": "F004",
+      "title": "订阅快照中英时间文案修正",
+      "priority": "medium",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "窗口采集/最近上报/绝对重置时间语义明确并遵循用户时区；无重复前后/raw key；真实 en/zh-CN 与占位符回归；不影响首页其他区块。"
+    },
+    {
+      "id": "F005",
+      "title": "异厂商独立验收与本地 UI 验证",
+      "priority": "high",
+      "executor": "evaluator",
+      "status": "completed",
+      "acceptance": "不同 family fresh-context Evaluator 独立重跑 L1、检查 F001-F004、实际组件桌面/窄屏折叠交互；固定 verdict 落盘；明确生产未部署。"
+    }
+  ]
+}

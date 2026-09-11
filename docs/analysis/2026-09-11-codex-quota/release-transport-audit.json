@@ -1,0 +1,163 @@
+{
+  "audit_type": "mechanical_transport_and_release_scope",
+  "batch_id": "BL-HOMEPAGE-CODEX-QUOTA",
+  "created_at": "2026-09-11T02:02:47Z",
+  "result": "PASS",
+  "scope_boundary": "Byte-preservation and deployment-scope audit only. This is not product acceptance and does not replace, reinterpret, or amend the independent Kimi verdict/signoff.",
+  "snapshot": {
+    "main_worktree": "/Users/yixingzhou/project/tokenizer",
+    "main_head": "03351861b49c2858985b10be04b82a31100b78b7",
+    "local_origin_main": "291810449c5894b66c5d7d613ffe525154fbadf5",
+    "origin_ref_was_not_refreshed_by_auditor": true,
+    "hotfix_worktree": "/tmp/tokenizer-homepage-codex-quota-20260911",
+    "hotfix_head": "2a4151f6b04b43019f90c36935f842b42d87349c",
+    "hotfix_worktree_clean": true,
+    "evaluated_product_sha": "d6bc7f4e4e565329adb3f08f20aea6df3e8ad7fc",
+    "evaluator_worktree": "/tmp/tokenizer-quota-evaluator-runs-20260911/BL-HOMEPAGE-CODEX-QUOTA-local-cli--kimi--evaluator-quota-verify-d6bc7f4e4e56-r0-a1"
+  },
+  "product_patch": {
+    "path": "docs/analysis/2026-09-11-codex-quota/product.patch",
+    "sha256": "35d6a4fee529caa31f569058ee52db08d0914800288a01b8225d7df85626eae3",
+    "file_count": 9,
+    "matches_hotfix_original": true,
+    "matches_git_diff_binary_from_main_head_to_hotfix_head_for_the_nine_paths": true,
+    "reverse_apply_check_exit_code": 0,
+    "all_nine_main_files_byte_equal_hotfix": true,
+    "pending_non_docs_files_exactly_match_patch_paths": true,
+    "evaluated_sha_comparison": "Eight files are byte-identical to d6bc7f4. The ninth, tests/evaluator/bl-homepage-codex-quota-probes.test.ts, was added by Kimi after that SHA and is byte-identical to both the evaluator original and the accepted hotfix copy.",
+    "file_sha256": {
+      "app/_components/subscription-card.tsx": "a4ea58801718b5162a7e18985d92e81ab3560615d19afa04bb2254588cdb727d",
+      "messages/en.json": "9beb35a37d794203ce46cc653fea17a7dac6567f1762b9904a5d590b1bfc6e95",
+      "messages/zh-CN.json": "64cb6c427f072255cc1fe74f1e71603be701a33928d477c547e077a3975f5358",
+      "src/server/quota.ts": "ff64b3640676ef2dc2bfe33738d37cda741b210807effae3e8e40f1438a98979",
+      "src/shared/quota-presentation.ts": "b1e126a61054fddbf208e8fb831f44e571c2f892097d6edb6d5358505a528daf",
+      "tests/evaluator/bl-homepage-codex-quota-probes.test.ts": "eb55497cb9e0f94697d65811792b6f70291362b5b62b9c7b90d53b715b380244",
+      "tests/server/quota.test.ts": "0ba5b71dcdf875ec40f38f810a7c654d162563e240bb6087e12cff63edb6ecfe",
+      "tests/shared/quota-presentation.test.ts": "6406234fecf3571b8ad0cc2c87eafbb8f1c0edcbeb0b5bc3b494bfd1d7d83cea",
+      "tests/shared/subscription-card.test.ts": "820ef6ada97d86ec660dd6a7b268621f1960455c5a7d0597cd9cee061c38a80c"
+    }
+  },
+  "state_preservation": {
+    "all_root_files_byte_equal_main_head": true,
+    "root_batch": "BL-HOMEPAGE-FRESHNESS",
+    "root_status": "verifying",
+    "root_file_sha256": {
+      "progress.json": "6ed0ca154968b858e6c6e1f633700e56f7f4eb7e657d20fa674fed1dcebf9d40",
+      "features.json": "0ded3b4a90241dd111cca75646c8779df9f3f795c6387cd10d6a41035a77555f",
+      ".auto-memory/project-status.md": "2395c9eba6ddaf018876b4e27cb41a965ee62bde87b9e41cd2a89b35ecaa6aeb"
+    },
+    "accepted_archive_byte_equal_hotfix_root": true,
+    "accepted_archive_sha256": {
+      "docs/analysis/2026-09-11-codex-quota/accepted-batch/progress.json": "1bb6daf5974b5aed337b344732a21a3f4ac938cdf001c9b97dbab290837017eb",
+      "docs/analysis/2026-09-11-codex-quota/accepted-batch/features.json": "6b92dfff42b547f228083a1dd6ad6895fc7c794b3bacd90ab9102d12c9bce9f4"
+    },
+    "hotfix_state_must_not_overwrite_root": true,
+    "pending_gate_decision_not_written": true
+  },
+  "acceptance_evidence_transport": {
+    "expected_docs_from_hotfix_git_diff": 31,
+    "all_expected_docs_exist_and_are_byte_equal": true,
+    "missing_or_different_files": [],
+    "verdict_and_signoff_equal_both_hotfix_and_evaluator_original": true,
+    "six_evaluator_logs_four_screenshots_and_five_fixture_assets_equal_evaluator_original": true,
+    "archived_fixture_generator_equal_evaluator_original": true,
+    "fixture_generator_source": "tests/evaluator/bl-homepage-codex-quota-fixture.test.ts",
+    "fixture_generator_archive": "docs/test-cases/bl-homepage-codex-quota-fixture/fixture.test.ts.txt",
+    "verdict_observed_without_reevaluation": "Original Kimi artifact reports F001-F005 PASS at d6bc7f4; production login/live quota/collector pipeline and dark-mode visual verification remain explicitly outside that signoff.",
+    "docs_sha256": {
+      "docs/analysis/2026-09-11-codex-quota/evaluator-dispatch.md": "b3517e34370964c4fbbd9df17758d4df227388a615e4bba4eb48584261d050ea",
+      "docs/analysis/2026-09-11-codex-quota/evaluator-envelope.json": "455c476c0ca252b5d3aaa4935fe1453ddb337f6c104ff7e7c59318b825ef833a",
+      "docs/analysis/2026-09-11-codex-quota/evaluator-run-meta.json": "fdf8ed918f9255248975e1eb95241e7a1afcc9c889b3b7f4e5a6a403298c0928",
+      "docs/analysis/2026-09-11-codex-quota/handoff.md": "1598fede95eccb5689eb306f065d09b900a09f69a8ebf69ce52456fbc85dda34",
+      "docs/analysis/2026-09-11-codex-quota/previous-batch/features.json": "0ded3b4a90241dd111cca75646c8779df9f3f795c6387cd10d6a41035a77555f",
+      "docs/analysis/2026-09-11-codex-quota/previous-batch/progress.json": "6ed0ca154968b858e6c6e1f633700e56f7f4eb7e657d20fa674fed1dcebf9d40",
+      "docs/analysis/2026-09-11-codex-quota/product.patch": "35d6a4fee529caa31f569058ee52db08d0914800288a01b8225d7df85626eae3",
+      "docs/analysis/2026-09-11-codex-quota/source-trace.md": "10663c8c11de65368afd1d4d101deaf71e741ef9443a05bd8a4bb50c14e4ede8",
+      "docs/analysis/2026-09-11-codex-quota/spec-lock-verdict.json": "a9369e76a575f647c9201637aea6850b97c5db5b52688f8dce5159b3d356610a",
+      "docs/analysis/2026-09-11-codex-quota/verdict.json": "3c536ee7b05d027913ea8753c30ca378da78b22807b8aaf4303edb5eacc0cda9",
+      "docs/specs/BL-HOMEPAGE-CODEX-QUOTA-spec.md": "71cd13b0241229386c34a8c4b5f22d0635097582ba871a3c9ac38056209353ce",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/README.md": "dab1ba673c7266723830c32edd5e52d7e0a50b1de54b3b9061b689ebbef2794a",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/css/1f95eba1953f8e1f.css": "44f90192194cb53cf5917f82ff41228783369c52a60960ec6eb1b622fa1839f6",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/css/506ff9dda362a0b6.css": "914f97272d89cc328b44a3488f2673ee46eb7d8e59e1196a0bb6ffbf668ef26e",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/css/d42c309d6dac5d03.css": "e6e0e41d73e2c03750acecb094c83327a3ff381afb83addc7c7ac75ec6f2e339",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/fixture.test.ts.txt": "500c7812328854c14e234b9999f8ccfca96e2d81a65317af7b268aa385c96470",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/index.html": "3dd9ae7d830646732ba6c7dd4a79000ad262391f7495ebe519bbeee2f1a7e83c",
+      "docs/test-cases/bl-homepage-codex-quota-fixture/zh-CN.html": "0f73430a9dab580fe29040ef4c634590d3a0a4e8f78ce90ac48616e5fa44cbd0",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-evaluator-probes.log": "d9a21fd3bfcfb15908159ed1afbcb30b73eaf712432bbd929229f1a4f681eb1f",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-fixture-gen.log": "e53d530d2d1ad39099bf0d800e589bdf2f0843bb5f75a1216e7cefd08c2e4700",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-imported-test.log": "1144668fdaf0596528330dd78d5ca7e3f1c2c66d248669131ed8de83fbbe1037",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-l1-build.log": "785a624dba2f3f6b742bd66aba3cf01e6f1521a3c450075955d831fdf63664b2",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-l1-lint.log": "696484fd19e12f493ce3b802ed7477aa2b42cd50973926e1e9065f269d0d0f06",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-l1-test.log": "efc858c57efdca8985c60657f07b9fa018f40f297c1718fa907313f81a90f2a6",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-l1-verify.log": "93e6d9c3c765b15d26de543291626250dee88284016e94904db4ce3b9313d77c",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-signoff-2026-09-11.md": "5d7e280b0fb099ea104e290636513aa7c68eb2719dc379b9c5bb4ae0ab4a6778",
+      "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-verdict.json": "5c981dde6717512774c5d19fc092444e0ad75c8883dabbc18795a002c8eb00ad",
+      "docs/test-reports/bl-homepage-codex-quota-ui/desktop-en-collapsed.png": "3184b5f2a05bbe8386ccbac619d283b65eb3b6274430fc9dc94a3702e894f97b",
+      "docs/test-reports/bl-homepage-codex-quota-ui/desktop-en-expanded.png": "10b7041a5fcb3201925884ec93488b6ea90ce1bc3f14a14166cd34e0618e391a",
+      "docs/test-reports/bl-homepage-codex-quota-ui/narrow-375-en-expanded.png": "06a0dd15868be602c018858b41984a75c618a1c773bce115be4cf0541fc59e1c",
+      "docs/test-reports/bl-homepage-codex-quota-ui/narrow-375-zh-expanded.png": "c646891281e420a8e666fa616b736005acc324050e49af5e9a62cbe435645ccf"
+    }
+  },
+  "deployment_scope": {
+    "workflow": ".github/workflows/deploy-vps.yml",
+    "workflow_sha256": "ca66e8a9d4402500041237094141ca9deb78f04357d4d99a01f77459a02bac71",
+    "workflow_unchanged": true,
+    "main_push_triggers_deployment": true,
+    "trigger_evidence": "on.push.branches contains main; product and tests paths are outside paths-ignore. The deploy job needs Linux verify and runs on refs/heads/main for push or workflow_dispatch. It is not gated on verify-windows.",
+    "deployment_operations": "Existing workflow syncs the checkout, builds containers, starts postgres, runs the existing migrate service, starts app and polls /api/health. This audit does not execute those operations or verify remote settings/runtime.",
+    "schema_or_migration_changes": false,
+    "collector_or_agent_code_changes": false,
+    "agent_capability_version_changes": false,
+    "dependency_or_deployment_configuration_changes": false,
+    "protected_paths_diff_exit_code_against_head": 0,
+    "protected_paths_diff_exit_code_origin_main_to_head": 0,
+    "protected_paths_checked": [
+      "prisma",
+      "src/cli",
+      "src/quota",
+      "src/shared/agent-feature-version.ts",
+      ".github",
+      "Dockerfile",
+      "docker-compose.yml",
+      "docker-compose.yaml",
+      "compose.yml",
+      "compose.yaml",
+      "scripts",
+      "package.json",
+      "package-lock.json"
+    ],
+    "instruction_conflict": "The generic manual-deployment text in harness-rules.md and the early CLAUDE.md section is stale relative to the checked workflow and CLAUDE.md project-specific hard constraint. No instruction file was edited. Treat main push as a production deployment action."
+  },
+  "existing_unpushed_commit": {
+    "sha": "03351861b49c2858985b10be04b82a31100b78b7",
+    "subject": "test(BL-HOMEPAGE-FRESHNESS): record independent verification",
+    "is_main_head_at_audit": true,
+    "only_commit_in_local_origin_main_to_head": true,
+    "scope": "Four existing BL-HOMEPAGE-FRESHNESS report files, progress.json, and two evaluator test files; no product or deployment configuration changes.",
+    "preserved_without_rewrite": true,
+    "release_requirement": "Keep this commit in the ancestry of the new release commit; do not reset, amend or discard it."
+  },
+  "release_notes": [
+    "Seven copied BL-HOMEPAGE-CODEX-QUOTA .log files are ignored by .gitignore:6 (*.log) at this snapshot. They exist and match the hotfix, but the Coordinator must explicitly stage them with git add -f before committing to preserve report references.",
+    "This report records pre-commit working-tree transport, not the final staged tree, release SHA, remote push, CI outcome or production verification. Recheck staged scope before release.",
+    "The Coordinator task reports explicit user authorization to commit, push and deploy. This auditor neither grants release authority nor writes a human gate decision."
+  ],
+  "audit_actions": {
+    "full_test_suite_run": false,
+    "product_acceptance_performed": false,
+    "source_or_state_files_modified": false,
+    "only_written_file": "docs/analysis/2026-09-11-codex-quota/release-transport-audit.json",
+    "git_commit_or_push_performed": false,
+    "deployment_performed": false,
+    "verification_methods": [
+      "Read harness-rules.md, CLAUDE.md, current progress.json and project T0 context from disk.",
+      "Enumerate patch paths; compare Buffer bytes and SHA-256 for main, accepted hotfix and evaluator originals where applicable.",
+      "Regenerate git diff --binary from 0335186 to 2a4151f for the nine patch paths and compare the patch bytes.",
+      "git apply --reverse --check docs/analysis/2026-09-11-codex-quota/product.patch (exit 0).",
+      "Compare root state bytes with git show HEAD:path and archived state bytes with hotfix root files.",
+      "Enumerate all 31 docs paths from the hotfix git diff and confirm no missing or different copies.",
+      "Inspect git status, untracked paths, origin/main..HEAD history, protected-path diffs and deploy workflow conditions.",
+      "git check-ignore -v confirms the seven copied log files require explicit staging."
+    ]
+  }
+}

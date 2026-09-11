@@ -1,0 +1,16 @@
+# cmd: env -u DATABASE_URL npm run verify
+# started: 2026-09-10T18:04:10Z
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 103ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+# exit_code: 0
+# finished: 2026-09-10T18:04:14Z

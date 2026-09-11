@@ -1,0 +1,960 @@
+diff --git a/app/_components/subscription-card.tsx b/app/_components/subscription-card.tsx
+index 059a053..90d6aa0 100644
+--- a/app/_components/subscription-card.tsx
++++ b/app/_components/subscription-card.tsx
+@@ -1,33 +1,55 @@
+ import { MdBolt } from "react-icons/md";
+-import { getTranslations } from "next-intl/server";
++import { getLocale, getTranslations } from "next-intl/server";
+ import Card from "@/components/card";
+ import { getQuotaLatest, type QuotaLatestProvider, type QuotaLatestWindow } from "@/server/quota";
+ import { getUserTimezone } from "@/server/timezone";
+-import { formatRelativeTime, formatUsd } from "@/shared/format";
++import { formatUsd } from "@/shared/format";
++import { formatQuotaTimestamp, getQuotaFreshness, getQuotaRemaining, orderQuotaAccounts } from "@/shared/quota-presentation";
+ 
+ export async function SubscriptionCard({ userId }: { userId: string }) {
+   const t = await getTranslations();
++  const locale = await getLocale();
+   const tz = await getUserTimezone(userId);
+   const latest = await getQuotaLatest(userId);
++  const now = Date.now();
+   const legacyCodex = latest.byProvider["codex-chatgpt"];
+-  const codexAccounts = latest.accountsByProvider?.["codex-chatgpt"] ?? (legacyCodex ? [legacyCodex] : []);
++  const codexAccounts = orderQuotaAccounts(
++    latest.accountsByProvider?.["codex-chatgpt"] ?? (legacyCodex ? [legacyCodex] : []),
++    now
++  );
+ 
+   if (codexAccounts.length === 0) {
+     return <EmptyStateCard t={t} />;
+   }
+-  if (codexAccounts.length === 1) {
+-    return <ConnectedCard codex={codexAccounts[0]} t={t} tz={tz} />;
+-  }
+   return (
+-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+-      {codexAccounts.map((codex) => (
+-        <ConnectedCard key={codex.accountKey} codex={codex} t={t} tz={tz} />
+-      ))}
+-    </div>
++    <Card extra="p-6">
++      <div className="mb-4 flex items-center gap-2">
++        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-500/10 text-brand-500">
++          <MdBolt className="h-5 w-5" />
++        </span>
++        <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("subscription.codex.title")}</h3>
++      </div>
++      <p className="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">{t("subscription.codex.latestSnapshot")}</p>
++      <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">{t("subscription.codex.windowTimesHint")}</p>
++      <AccountSnapshot codex={codexAccounts[0]} t={t} tz={tz} locale={locale} now={now} />
++      {codexAccounts.length > 1 && (
++        <details className="mt-5 border-t border-gray-200 pt-4 dark:border-white/10">
++          <summary className="cursor-pointer text-sm font-medium text-navy-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:text-white">
++            {t("subscription.codex.otherAccounts", { count: codexAccounts.length - 1 })}
++          </summary>
++          <div className="mt-4 space-y-5">
++            {codexAccounts.slice(1).map((codex) => (
++              <AccountSnapshot key={codex.accountKey} codex={codex} t={t} tz={tz} locale={locale} now={now} />
++            ))}
++          </div>
++        </details>
++      )}
++    </Card>
+   );
+ }
+ 
+ type Translator = (key: string, values?: Record<string, string | number>) => string;
++type SnapshotContext = { t: Translator; tz: string; locale: string; now: number };
+ 
+ function EmptyStateCard({ t }: { t: Translator }) {
+   return (
+@@ -52,7 +74,7 @@ function EmptyStateCard({ t }: { t: Translator }) {
+   );
+ }
+ 
+-function ConnectedCard({ codex, t, tz }: { codex: QuotaLatestProvider; t: Translator; tz: string }) {
++function AccountSnapshot({ codex, t, tz, locale, now }: { codex: QuotaLatestProvider } & SnapshotContext) {
+   const planRow = codex.windows.find((w) => w.windowKey === "plan");
+   const primaryRow = codex.windows.find((w) => w.windowKey === "rate_limit_primary");
+   const secondaryRow = codex.windows.find((w) => w.windowKey === "rate_limit_secondary");
+@@ -61,75 +83,100 @@ function ConnectedCard({ codex, t, tz }: { codex: QuotaLatestProvider; t: Transl
+   const creditRow = codex.windows.find((w) => w.windowKey === "credit_balance");
+   const planLabel = (planRow?.rawJson as { label?: string } | null)?.label ?? "—";
+   const creditRaw = creditRow?.rawJson as { balance?: number; unlimited?: boolean } | null;
++  const creditPending = getQuotaFreshness({ capturedAt: creditRow?.capturedAt }, now).pendingRefresh;
++  const creditValue = creditPending ? null : creditRaw?.unlimited === true ? "∞" :
++    typeof creditRaw?.balance === "number" && Number.isFinite(creditRaw.balance) && creditRaw.balance >= 0
++      ? formatUsd(creditRaw.balance) : null;
++  const reportedAt = getQuotaFreshness({ capturedAt: codex.capturedAt }, now).capturedAt;
++  const reportedTime = reportedAt != null ? formatQuotaTimestamp(reportedAt, locale, tz) : t("subscription.codex.timeUnknown");
+ 
+   return (
+-    <Card extra="p-6">
+-      <div className="mb-4 flex items-start justify-between gap-3">
+-        <div className="flex items-center gap-2">
+-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-500/10 text-brand-500">
+-            <MdBolt className="h-5 w-5" />
+-          </span>
+-          <div>
+-            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("subscription.codex.title")}</h3>
+-            <p className="break-all text-xs text-gray-500">
+-              {t("subscription.codex.accountLabel", { account: codex.accountKey })}
+-            </p>
+-            {planRow && (
+-              <p className="text-xs text-gray-500">{t("subscription.codex.planLabel", { plan: planLabel })}</p>
+-            )}
+-          </div>
++    <section data-account-key={codex.accountKey}>
++      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
++        <div className="min-w-0">
++          <p className="break-all text-xs text-gray-500">
++            {t("subscription.codex.accountLabel", { account: codex.accountKey })}
++          </p>
++          {planRow && (
++            <div className="text-xs text-gray-500" data-window-key="plan">
++              <p>{t("subscription.codex.planLabel", { plan: planLabel })}</p>
++              <CaptureTime window={planRow} t={t} tz={tz} locale={locale} now={now} />
++            </div>
++          )}
+         </div>
+-        {creditRaw && (
+-          <div className="text-right">
++        {creditRow && (
++          <div className="text-right" data-window-key="credit_balance">
+             <div className="text-xs text-gray-500">{t("subscription.codex.creditBalance")}</div>
+             <div className="text-lg font-bold text-navy-700 dark:text-white">
+-              {creditRaw.unlimited ? "∞" : creditRaw.balance != null ? formatUsd(creditRaw.balance) : "—"}
++              {creditValue ?? "—"}
+             </div>
++            {creditValue == null && <p className="text-xs text-gray-500">{t(creditPending ? "subscription.codex.pendingRefresh" : "subscription.codex.unknownValue")}</p>}
++            <CaptureTime window={creditRow} t={t} tz={tz} locale={locale} now={now} />
+           </div>
+         )}
+       </div>
+ 
+       <div className="space-y-3">
+-        {primaryRow && <RateLimitRow label={t("subscription.codex.ratePrimary")} window={primaryRow} t={t} tz={tz} />}
+-        {secondaryRow && <RateLimitRow label={t("subscription.codex.rateSecondary")} window={secondaryRow} t={t} tz={tz} />}
+-        {codeReviewPrimary && <RateLimitRow label={t("subscription.codex.codeReviewPrimary")} window={codeReviewPrimary} t={t} tz={tz} />}
+-        {codeReviewSecondary && <RateLimitRow label={t("subscription.codex.codeReviewSecondary")} window={codeReviewSecondary} t={t} tz={tz} />}
++        {primaryRow && <RateLimitRow label={t("subscription.codex.ratePrimary")} window={primaryRow} t={t} tz={tz} locale={locale} now={now} />}
++        {secondaryRow && <RateLimitRow label={t("subscription.codex.rateSecondary")} window={secondaryRow} t={t} tz={tz} locale={locale} now={now} />}
++        {codeReviewPrimary && <RateLimitRow label={t("subscription.codex.codeReviewPrimary")} window={codeReviewPrimary} t={t} tz={tz} locale={locale} now={now} />}
++        {codeReviewSecondary && <RateLimitRow label={t("subscription.codex.codeReviewSecondary")} window={codeReviewSecondary} t={t} tz={tz} locale={locale} now={now} />}
+       </div>
+ 
+-      <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
++      <p className="mt-4 break-words text-xs text-gray-500 dark:text-gray-400">
+         {codex.capturedBy?.name
+-          ? t("subscription.footer.viaDevice", { device: codex.capturedBy.name, ago: formatRelativeTime(codex.capturedAt, t, tz) })
+-          : t("subscription.footer.refreshed", { ago: formatRelativeTime(codex.capturedAt, t, tz) })}
++          ? t("subscription.footer.viaDevice", { device: codex.capturedBy.name, time: reportedTime })
++          : t("subscription.footer.reportedAt", { time: reportedTime })}
+       </p>
+-    </Card>
++    </section>
++  );
++}
++
++function CaptureTime({ window, t, tz, locale, now }: { window: QuotaLatestWindow } & SnapshotContext) {
++  const { capturedAt } = getQuotaFreshness({ capturedAt: window.capturedAt }, now);
++  return (
++    <p className="text-xs text-gray-500 dark:text-gray-400">
++      {capturedAt != null
++        ? t("subscription.codex.capturedAt", { time: formatQuotaTimestamp(capturedAt, locale, tz) })
++        : t("subscription.codex.captureTimeUnknown")}
++    </p>
+   );
+ }
+ 
+-function RateLimitRow({ label, window: w, t, tz }: { label: string; window: QuotaLatestWindow; t: Translator; tz: string }) {
++function RateLimitRow({ label, window: w, t, tz, locale, now }: { label: string; window: QuotaLatestWindow } & SnapshotContext) {
+   // Display as REMAINING capacity (matches Codex CLI's terminology). Bar
+   // is full at 100% remaining and empties as the user spends quota. Color
+   // thresholds invert: low remaining = danger, high remaining = healthy.
+-  const remaining = w.utilization != null ? Math.max(0, 100 - Math.round(w.utilization * 100)) : null;
++  const { pendingRefresh, resetsAt } = getQuotaFreshness(w, now);
++  const remaining = getQuotaRemaining(w.utilization, pendingRefresh);
+   const barColor =
+     remaining == null ? "bg-gray-200 dark:bg-white/10" :
+     remaining <= 10 ? "bg-red-500" :
+     remaining <= 30 ? "bg-amber-500" :
+     "bg-brand-500";
+   return (
+-    <div>
+-      <div className="mb-1 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
++    <div data-window-key={w.windowKey}>
++      <div className="mb-1 flex flex-wrap items-start justify-between gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400">
+         <span>{label}</span>
+         <span>
+           {remaining != null ? `${remaining}%` : "—"}
+-          {w.resetsAt && (
+-            <span className="ml-2 text-gray-500">
+-              {t("subscription.codex.resetsIn", { time: formatRelativeTime(w.resetsAt, t, tz) })}
+-            </span>
++          {remaining == null && (
++            <span className="ml-2">{t(pendingRefresh ? "subscription.codex.pendingRefresh" : "subscription.codex.unknownValue")}</span>
+           )}
+         </span>
+       </div>
+-      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
+-        <div className={`h-full ${barColor}`} style={{ width: remaining != null ? `${remaining}%` : "0%" }} />
++      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5" aria-hidden="true">
++        {remaining != null && <div className={`h-full ${barColor}`} style={{ width: `${remaining}%` }} />}
++      </div>
++      <div className="mt-1 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
++        <CaptureTime window={w} t={t} tz={tz} locale={locale} now={now} />
++        {w.resetsAt != null && (
++          <p>
++            {resetsAt != null
++              ? t(resetsAt <= now ? "subscription.codex.resetPassed" : "subscription.codex.resetsAt", { time: formatQuotaTimestamp(resetsAt, locale, tz) })
++              : t("subscription.codex.resetTimeUnknown")}
++          </p>
++        )}
+       </div>
+     </div>
+   );
+diff --git a/messages/en.json b/messages/en.json
+index 5b88d9d..21f43c8 100644
+--- a/messages/en.json
++++ b/messages/en.json
+@@ -430,13 +430,23 @@
+     "codex": {
+       "title": "Codex / ChatGPT",
+       "accountLabel": "Account: {account}",
+-      "planLabel": "{plan} tier",
++      "latestSnapshot": "Most recently reported account snapshot",
++      "otherAccounts": "Other account snapshots ({count})",
++      "pendingRefresh": "Awaiting refresh",
++      "unknownValue": "Unknown",
++      "windowTimesHint": "Each window has its own capture time. These are reported snapshots, not connection status.",
++      "capturedAt": "Captured: {time}",
++      "captureTimeUnknown": "Capture time unknown",
++      "timeUnknown": "Unknown",
++      "planLabel": "Reported plan: {plan}",
+       "creditBalance": "Credit balance",
+       "ratePrimary": "Remaining (5h window)",
+       "rateSecondary": "Remaining (weekly)",
+       "codeReviewPrimary": "Code review remaining (5h)",
+       "codeReviewSecondary": "Code review remaining (weekly)",
+-      "resetsIn": "resets in {time}"
++      "resetsAt": "Resets at: {time}",
++      "resetPassed": "Reset time passed: {time}",
++      "resetTimeUnknown": "Reset time unknown"
+     },
+     "empty": {
+       "title": "Codex CLI not detected",
+@@ -444,8 +454,8 @@
+       "installLink": "Installation docs"
+     },
+     "footer": {
+-      "viaDevice": "via {device}·refreshed {ago} ago",
+-      "refreshed": "refreshed {ago} ago"
++      "viaDevice": "Last reported: {time} · via {device}",
++      "reportedAt": "Last reported: {time}"
+     }
+   },
+   "upgradeBanner": {
+diff --git a/messages/zh-CN.json b/messages/zh-CN.json
+index c74bc40..b7dcdbd 100644
+--- a/messages/zh-CN.json
++++ b/messages/zh-CN.json
+@@ -430,13 +430,23 @@
+     "codex": {
+       "title": "Codex / ChatGPT",
+       "accountLabel": "账号：{account}",
+-      "planLabel": "{plan} tier",
++      "latestSnapshot": "最近上报的账号快照",
++      "otherAccounts": "其他账号快照（{count}）",
++      "pendingRefresh": "待刷新",
++      "unknownValue": "未知",
++      "windowTimesHint": "各窗口采集时间独立；此处为上报快照，不代表当前连接状态。",
++      "capturedAt": "采集时间：{time}",
++      "captureTimeUnknown": "采集时间未知",
++      "timeUnknown": "未知",
++      "planLabel": "上报套餐：{plan}",
+       "creditBalance": "余额",
+       "ratePrimary": "剩余额度（5小时）",
+       "rateSecondary": "剩余额度（一周）",
+-      "codeReviewPrimary": "Code Review 剩余额度（5小时）",
+-      "codeReviewSecondary": "Code Review 剩余额度（一周）",
+-      "resetsIn": "{time}后重置"
++      "codeReviewPrimary": "代码审查剩余额度（5小时）",
++      "codeReviewSecondary": "代码审查剩余额度（一周）",
++      "resetsAt": "重置于：{time}",
++      "resetPassed": "重置时间已过：{time}",
++      "resetTimeUnknown": "重置时间未知"
+     },
+     "empty": {
+       "title": "未检测到 Codex CLI",
+@@ -444,8 +454,8 @@
+       "installLink": "查看安装文档"
+     },
+     "footer": {
+-      "viaDevice": "由设备 {device}·{ago}前刷新",
+-      "refreshed": "{ago}前刷新"
++      "viaDevice": "最近上报：{time} · 设备：{device}",
++      "reportedAt": "最近上报：{time}"
+     }
+   },
+   "upgradeBanner": {
+diff --git a/src/server/quota.ts b/src/server/quota.ts
+index 309ea90..679c7e5 100644
+--- a/src/server/quota.ts
++++ b/src/server/quota.ts
+@@ -5,6 +5,7 @@ const CACHE_REVALIDATE_SECONDS = 30;
+ 
+ export type QuotaLatestWindow = {
+   windowKey: string;
++  capturedAt: string;
+   utilization: number | null;
+   usedRaw: number | null;
+   limitRaw: number | null;
+@@ -70,6 +71,7 @@ async function getQuotaLatestImpl(userId: string): Promise<QuotaLatest> {
+     };
+     provider.windows.push({
+       windowKey: r.windowKey,
++      capturedAt: r.capturedAt.toISOString(),
+       utilization: r.utilization != null ? Number(r.utilization) : null,
+       usedRaw: r.usedRaw != null ? Number(r.usedRaw) : null,
+       limitRaw: r.limitRaw != null ? Number(r.limitRaw) : null,
+diff --git a/src/shared/quota-presentation.ts b/src/shared/quota-presentation.ts
+new file mode 100644
+index 0000000..f1a648d
+--- /dev/null
++++ b/src/shared/quota-presentation.ts
+@@ -0,0 +1,61 @@
++import type { QuotaLatestProvider } from "@/server/quota";
++
++export const QUOTA_FRESHNESS_MS = 15 * 60 * 1000;
++
++export function parseQuotaTimestamp(value: unknown): number | null {
++  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value)) {
++    return null;
++  }
++  const timestamp = Date.parse(value);
++  const calendarDay = new Date(`${value.slice(0, 10)}T00:00:00.000Z`);
++  if (!Number.isFinite(timestamp) || !Number.isFinite(calendarDay.getTime()) || !calendarDay.toISOString().startsWith(value.slice(0, 10))) {
++    return null;
++  }
++  return timestamp;
++}
++
++export function orderQuotaAccounts(accounts: QuotaLatestProvider[], now: number): QuotaLatestProvider[] {
++  const reportedAt = (account: QuotaLatestProvider) => {
++    const timestamp = parseQuotaTimestamp(account.capturedAt);
++    return timestamp != null && timestamp <= now ? timestamp : -Infinity;
++  };
++  return [...accounts].sort((a, b) => {
++    const aTime = reportedAt(a);
++    const bTime = reportedAt(b);
++    if (aTime !== bTime) return aTime > bTime ? -1 : 1;
++    return a.accountKey < b.accountKey ? -1 : a.accountKey > b.accountKey ? 1 : 0;
++  });
++}
++
++export function getQuotaFreshness(
++  window: { capturedAt?: unknown; resetsAt?: unknown },
++  now: number
++) {
++  const reportedAt = parseQuotaTimestamp(window.capturedAt);
++  const capturedAt = reportedAt != null && reportedAt <= now ? reportedAt : null;
++  const resetsAt = parseQuotaTimestamp(window.resetsAt);
++  const pendingRefresh = capturedAt == null || now - capturedAt > QUOTA_FRESHNESS_MS ||
++    (window.resetsAt != null && (resetsAt == null || resetsAt <= now));
++  return { capturedAt, resetsAt, pendingRefresh };
++}
++
++export function getQuotaRemaining(utilization: unknown, pendingRefresh: boolean): number | null {
++  if (pendingRefresh || typeof utilization !== "number" || !Number.isFinite(utilization) || utilization < 0 || utilization > 1) {
++    return null;
++  }
++  return 100 - Math.round(utilization * 100);
++}
++
++export function formatQuotaTimestamp(timestamp: number, locale: string, timeZone: string): string {
++  return new Intl.DateTimeFormat(locale, {
++    timeZone,
++    year: "numeric",
++    month: "short",
++    day: "numeric",
++    hour: "2-digit",
++    minute: "2-digit",
++    second: "2-digit",
++    hourCycle: "h23",
++    timeZoneName: "short"
++  }).format(timestamp);
++}
+diff --git a/tests/evaluator/bl-homepage-codex-quota-probes.test.ts b/tests/evaluator/bl-homepage-codex-quota-probes.test.ts
+new file mode 100644
+index 0000000..ec30a64
+--- /dev/null
++++ b/tests/evaluator/bl-homepage-codex-quota-probes.test.ts
+@@ -0,0 +1,135 @@
++// Independent evaluator regression probes for BL-HOMEPAGE-CODEX-QUOTA.
++// Authored by the F005 evaluator at SHA d6bc7f4e4e565329adb3f08f20aea6df3e8ad7fc;
++// complements (does not duplicate) the generator's suite.
++import * as React from "react";
++import { readFileSync } from "node:fs";
++import { renderToStaticMarkup } from "react-dom/server";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { getQuotaFreshness, getQuotaRemaining, orderQuotaAccounts, QUOTA_FRESHNESS_MS } from "@/shared/quota-presentation";
++import type { QuotaLatestProvider } from "@/server/quota";
++import { createTranslator } from "next-intl";
++
++const mocks = vi.hoisted(() => ({
++  getQuotaLatest: vi.fn(),
++  getUserTimezone: vi.fn(),
++  getLocale: vi.fn(),
++  getTranslations: vi.fn()
++}));
++
++vi.mock("@/server/quota", () => ({ getQuotaLatest: mocks.getQuotaLatest }));
++vi.mock("@/server/timezone", () => ({ getUserTimezone: mocks.getUserTimezone }));
++vi.mock("next-intl/server", () => ({
++  getLocale: mocks.getLocale,
++  getTranslations: mocks.getTranslations
++}));
++
++(globalThis as Record<string, unknown>).React = React;
++const { SubscriptionCard } = await import("../../app/_components/subscription-card");
++
++const NOW = Date.parse("2026-09-11T00:00:00.000Z");
++
++function account(accountKey: string, capturedAt = "2026-09-10T23:00:00.000Z"): QuotaLatestProvider {
++  return {
++    accountKey,
++    capturedAt,
++    capturedBy: null,
++    windows: [
++      {
++        windowKey: "rate_limit_primary",
++        capturedAt,
++        utilization: 0.25,
++        usedRaw: 25,
++        limitRaw: 100,
++        unit: "tokens",
++        resetsAt: null,
++        rawJson: null
++      }
++    ]
++  };
++}
++
++async function render() {
++  return renderToStaticMarkup(await SubscriptionCard({ userId: "user-1" }));
++}
++
++describe("evaluator probes: account ordering", () => {
++  it("falls back to accountKey order when every account time is unusable", () => {
++    const accounts = [account("z", "not-a-date"), account("m", "2999-01-01T00:00:00Z"), account("a", "")];
++    expect(orderQuotaAccounts(accounts, NOW).map((a) => a.accountKey)).toEqual(["a", "m", "z"]);
++  });
++
++  it("promotes the older valid report over a future-dated one for the main region", async () => {
++    mocks.getQuotaLatest.mockResolvedValue({
++      byProvider: {},
++      accountsByProvider: {
++        "codex-chatgpt": [account("future-acct", "2999-01-01T00:00:00.000Z"), account("valid-acct")]
++      }
++    });
++    mocks.getUserTimezone.mockResolvedValue("UTC");
++    mocks.getLocale.mockResolvedValue("en");
++    mocks.getTranslations.mockResolvedValue((key: string, values?: Record<string, string | number>) =>
++      key === "subscription.codex.otherAccounts" ? `Other account snapshots (${values?.count})` : key);
++    vi.useFakeTimers();
++    vi.setSystemTime(new Date(NOW));
++    const html = await render();
++    vi.useRealTimers();
++    expect(html.indexOf("valid-acct")).toBeLessThan(html.indexOf("<details"));
++    expect(html.indexOf("future-acct")).toBeGreaterThan(html.indexOf("<details"));
++    expect(html.match(/<details\b/g)).toHaveLength(1);
++    expect(html).not.toMatch(/<details[^>]*\bopen\b/);
++  });
++});
++
++describe("evaluator probes: freshness and remaining edges", () => {
++  it("treats capture exactly 15min old as fresh and 1ms older as stale", () => {
++    const at = (age: number) => new Date(NOW - age).toISOString();
++    expect(getQuotaFreshness({ capturedAt: at(QUOTA_FRESHNESS_MS) }, NOW).pendingRefresh).toBe(false);
++    expect(getQuotaFreshness({ capturedAt: at(QUOTA_FRESHNESS_MS + 1) }, NOW).pendingRefresh).toBe(true);
++  });
++
++  it("treats resetsAt exactly at now as passed and 1ms in the future as pending-reset-free", () => {
++    const fresh = new Date(NOW).toISOString();
++    expect(getQuotaFreshness({ capturedAt: fresh, resetsAt: new Date(NOW).toISOString() }, NOW).pendingRefresh).toBe(true);
++    expect(getQuotaFreshness({ capturedAt: fresh, resetsAt: new Date(NOW + 1).toISOString() }, NOW).pendingRefresh).toBe(false);
++  });
++
++  it("keeps boundary utilization 0 and 1 renderable (100% and 0% remaining)", () => {
++    expect(getQuotaRemaining(0, false)).toBe(100);
++    expect(getQuotaRemaining(1, false)).toBe(0);
++  });
++
++  it("rejects a negative credit balance as unknown", async () => {
++    const snapshot = account("neg-credit", "2026-09-11T00:00:00.000Z");
++    snapshot.windows = [{ ...snapshot.windows[0], windowKey: "credit_balance", rawJson: { balance: -5 } }];
++    mocks.getQuotaLatest.mockResolvedValue({ byProvider: {}, accountsByProvider: { "codex-chatgpt": [snapshot] } });
++    mocks.getUserTimezone.mockResolvedValue("UTC");
++    mocks.getLocale.mockResolvedValue("en");
++    const messages = JSON.parse(readFileSync("messages/en.json", "utf8"));
++    mocks.getTranslations.mockResolvedValue(createTranslator({ locale: "en", messages, onError: (e) => { throw e; } }));
++    vi.useFakeTimers();
++    vi.setSystemTime(new Date(NOW));
++    const html = await render();
++    vi.useRealTimers();
++    expect(html).not.toContain("$-5");
++    expect(html).not.toContain("-5.00");
++    expect(html).toContain("Unknown");
++  });
++});
++
++describe("evaluator probes: i18n hygiene", () => {
++  it("keeps codex/empty/free-text values free of raw keys, ICU leaks and stale relative-reset phrasing", () => {
++    for (const locale of ["en", "zh-CN"]) {
++      const codex = JSON.parse(readFileSync(`messages/${locale}.json`, "utf8")).subscription.codex;
++      for (const [key, value] of Object.entries(codex)) {
++        expect(value, `${locale}:${key}`).not.toMatch(/ago ago|前前|前后重置|resets in|\{[a-z]+\}.*\{account\}.*\{account\}/is);
++        expect(value, `${locale}:${key}`).not.toMatch(/^subscription\./);
++      }
++    }
++  });
++
++  it("subscription.codex key sets are identical across locales", () => {
++    const en = Object.keys(JSON.parse(readFileSync("messages/en.json", "utf8")).subscription.codex).sort();
++    const zh = Object.keys(JSON.parse(readFileSync("messages/zh-CN.json", "utf8")).subscription.codex).sort();
++    expect(zh).toEqual(en);
++  });
++});
+diff --git a/tests/server/quota.test.ts b/tests/server/quota.test.ts
+index 35f54de..fd89181 100644
+--- a/tests/server/quota.test.ts
++++ b/tests/server/quota.test.ts
+@@ -64,17 +64,24 @@ describe("getQuotaLatest account grouping", () => {
+       "rate_limit_primary",
+       "rate_limit_secondary"
+     ]);
++    expect(accounts[0].windows.map((window) => window.capturedAt)).toEqual([
++      "2026-08-10T10:00:00.000Z",
++      "2026-08-10T11:00:00.000Z"
++    ]);
+     expect(accounts[1]).toMatchObject({
+       accountKey: "account-b",
+       capturedAt: "2026-08-10T12:00:00.000Z",
+       capturedBy: { id: "device-b", name: "Laptop B" }
+     });
+     expect(accounts[1].windows.map((window) => window.windowKey)).toEqual(["credit_balance"]);
++    expect(accounts[1].windows[0].capturedAt).toBe("2026-08-10T12:00:00.000Z");
+     expect(latest.byProvider["codex-chatgpt"]).toBe(accounts[1]);
+ 
+     const query = (mocks.queryRaw.mock.calls[0][0] as TemplateStringsArray).join("?");
+     expect(query).toContain('DISTINCT ON (q."provider", q."accountKey", q."windowKey")');
+     expect(query).toContain('ORDER BY q."provider", q."accountKey", q."windowKey", q."capturedAt" DESC');
++    expect(query).toContain('WHERE q."userId" = ?');
++    expect(mocks.queryRaw.mock.calls[0].slice(1)).toEqual(["user-1"]);
+   });
+ 
+   it("keeps every account-level field equivalent for a single account", async () => {
+@@ -89,6 +96,7 @@ describe("getQuotaLatest account grouping", () => {
+       windows: [
+         {
+           windowKey: "rate_limit_primary",
++          capturedAt: "2026-08-10T10:00:00.000Z",
+           utilization: 0.25,
+           usedRaw: 25,
+           limitRaw: 100,
+@@ -101,4 +109,23 @@ describe("getQuotaLatest account grouping", () => {
+     expect(latest.byProvider["codex-chatgpt"]).toEqual(expected);
+     expect(latest.accountsByProvider["codex-chatgpt"]).toEqual([expected]);
+   });
++
++  it("does not refresh older windows when only the plan is updated", async () => {
++    mocks.queryRaw.mockResolvedValue([
++      row({ windowKey: "plan", capturedAt: new Date("2026-08-10T12:00:00.000Z") }),
++      row({ windowKey: "credit_balance" }),
++      row({})
++    ]);
++
++    const latest = await getQuotaLatest("user-2");
++    const snapshot = latest.byProvider["codex-chatgpt"];
++
++    expect(snapshot.capturedAt).toBe("2026-08-10T12:00:00.000Z");
++    expect(snapshot.windows.map(({ windowKey, capturedAt }) => ({ windowKey, capturedAt }))).toEqual([
++      { windowKey: "plan", capturedAt: "2026-08-10T12:00:00.000Z" },
++      { windowKey: "credit_balance", capturedAt: "2026-08-10T10:00:00.000Z" },
++      { windowKey: "rate_limit_primary", capturedAt: "2026-08-10T10:00:00.000Z" }
++    ]);
++    expect(mocks.queryRaw.mock.calls[0].slice(1)).toEqual(["user-2"]);
++  });
+ });
+diff --git a/tests/shared/quota-presentation.test.ts b/tests/shared/quota-presentation.test.ts
+new file mode 100644
+index 0000000..6c1a2d0
+--- /dev/null
++++ b/tests/shared/quota-presentation.test.ts
+@@ -0,0 +1,51 @@
++import { describe, expect, it } from "vitest";
++import { getQuotaFreshness, getQuotaRemaining, parseQuotaTimestamp, QUOTA_FRESHNESS_MS } from "@/shared/quota-presentation";
++
++const now = Date.parse("2026-09-11T00:00:00.000Z");
++const timestamp = (age: number) => new Date(now - age).toISOString();
++
++describe("quota window freshness", () => {
++  it.each([
++    [0, false],
++    [QUOTA_FRESHNESS_MS - 1, false],
++    [QUOTA_FRESHNESS_MS, false],
++    [QUOTA_FRESHNESS_MS + 1, true],
++    [-1, true]
++  ])("checks capture age %s independently at the exact boundary", (age, pendingRefresh) => {
++    expect(getQuotaFreshness({ capturedAt: timestamp(age) }, now).pendingRefresh).toBe(pendingRefresh);
++  });
++
++  it.each([
++    [null, false],
++    [undefined, false],
++    [timestamp(-1), false],
++    [timestamp(0), true],
++    [timestamp(1), true],
++    ["not-a-date", true],
++    ["", true],
++    ["2026-02-30T00:00:00Z", true]
++  ])("checks reset %s without inferring a replenished balance", (resetsAt, pendingRefresh) => {
++    expect(getQuotaFreshness({ capturedAt: timestamp(0), resetsAt }, now).pendingRefresh).toBe(pendingRefresh);
++  });
++
++  it.each([undefined, null, "", "invalid", "2026-02-30T00:00:00Z", "2026-01-01", "2026-09-10T24:00:00Z", 0])("fails closed for capture timestamp %s", (capturedAt) => {
++    expect(getQuotaFreshness({ capturedAt }, now)).toMatchObject({ capturedAt: null, pendingRefresh: true });
++  });
++
++  it("accepts UTC and explicit timezone ISO timestamps with equal meaning", () => {
++    expect(parseQuotaTimestamp("2026-09-11T08:00:00+08:00")).toBe(now);
++    expect(parseQuotaTimestamp("2026-09-11T00:00:00Z")).toBe(now);
++    expect(parseQuotaTimestamp("2026-09-11T00:00:00.001Z")).toBe(now + 1);
++  });
++});
++
++describe("quota remaining values", () => {
++  it.each([null, undefined, NaN, Infinity, -Infinity, -0.01, 1.01, "0.5"])("shows unknown for invalid utilization %s", (utilization) => {
++    expect(getQuotaRemaining(utilization, false)).toBeNull();
++  });
++
++  it.each([[0, 100], [0.25, 75], [1, 0]])("renders utilization %s only while fresh", (utilization, remaining) => {
++    expect(getQuotaRemaining(utilization, false)).toBe(remaining);
++    expect(getQuotaRemaining(utilization, true)).toBeNull();
++  });
++});
+diff --git a/tests/shared/subscription-card.test.ts b/tests/shared/subscription-card.test.ts
+index eac252a..f333492 100644
+--- a/tests/shared/subscription-card.test.ts
++++ b/tests/shared/subscription-card.test.ts
+@@ -1,36 +1,37 @@
+ import * as React from "react";
+ import { readFileSync } from "node:fs";
+ import { renderToStaticMarkup } from "react-dom/server";
+-import { beforeEach, describe, expect, it, vi } from "vitest";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { orderQuotaAccounts } from "@/shared/quota-presentation";
++import type { QuotaLatestProvider } from "@/server/quota";
++import { createTranslator } from "next-intl";
+ 
+ const mocks = vi.hoisted(() => ({
+   getQuotaLatest: vi.fn(),
+-  getUserTimezone: vi.fn()
++  getUserTimezone: vi.fn(),
++  getLocale: vi.fn(),
++  getTranslations: vi.fn()
+ }));
+ 
+ vi.mock("@/server/quota", () => ({ getQuotaLatest: mocks.getQuotaLatest }));
+ vi.mock("@/server/timezone", () => ({ getUserTimezone: mocks.getUserTimezone }));
+ vi.mock("next-intl/server", () => ({
+-  getTranslations: async () => (key: string, values?: Record<string, string | number>) => {
+-    if (key === "subscription.codex.title") return "Codex / ChatGPT";
+-    if (key === "subscription.codex.accountLabel") return `Account: ${values?.account}`;
+-    if (key === "subscription.codex.ratePrimary") return "Primary";
+-    if (key === "subscription.footer.refreshed") return `Refreshed ${values?.ago}`;
+-    return key;
+-  }
++  getLocale: mocks.getLocale,
++  getTranslations: mocks.getTranslations
+ }));
+ 
+ (globalThis as Record<string, unknown>).React = React;
+ const { SubscriptionCard } = await import("../../app/_components/subscription-card");
+ 
+-function account(accountKey: string) {
++function account(accountKey: string, capturedAt = "2026-08-10T10:00:00.000Z"): QuotaLatestProvider {
+   return {
+     accountKey,
+-    capturedAt: "2026-08-10T10:00:00.000Z",
++    capturedAt,
+     capturedBy: null,
+     windows: [
+       {
+         windowKey: "rate_limit_primary",
++        capturedAt,
+         utilization: 0.25,
+         usedRaw: 25,
+         limitRaw: 100,
+@@ -46,12 +47,30 @@ async function render() {
+   return renderToStaticMarkup(await SubscriptionCard({ userId: "user-1" }));
+ }
+ 
++function setAccounts(accounts: QuotaLatestProvider[]) {
++  mocks.getQuotaLatest.mockResolvedValue({ byProvider: {}, accountsByProvider: { "codex-chatgpt": accounts } });
++}
++
+ describe("SubscriptionCard account rendering", () => {
+   beforeEach(() => {
+     mocks.getQuotaLatest.mockReset();
+     mocks.getUserTimezone.mockResolvedValue("UTC");
++    mocks.getLocale.mockResolvedValue("en");
++    mocks.getTranslations.mockResolvedValue((key: string, values?: Record<string, string | number>) => {
++      if (key === "subscription.codex.title") return "Codex / ChatGPT";
++      if (key === "subscription.codex.accountLabel") return `Account: ${values?.account}`;
++      if (key === "subscription.codex.ratePrimary") return "Primary";
++      if (key === "subscription.codex.otherAccounts") return `Other account snapshots (${values?.count})`;
++      if (key === "subscription.codex.pendingRefresh") return "Awaiting refresh";
++      if (key === "subscription.codex.unknownValue") return "Unknown";
++      return key;
++    });
++    vi.useFakeTimers();
++    vi.setSystemTime(new Date("2026-08-10T12:00:00.000Z"));
+   });
+ 
++  afterEach(() => vi.useRealTimers());
++
+   it("renders one card for the single-account shape", async () => {
+     mocks.getQuotaLatest.mockResolvedValue({
+       byProvider: { "codex-chatgpt": account("account-a") },
+@@ -63,6 +82,7 @@ describe("SubscriptionCard account rendering", () => {
+     expect(html.match(/Codex \/ ChatGPT/g)).toHaveLength(1);
+     expect(html).toContain("Account: account-a");
+     expect(html).not.toContain("lg:grid-cols-2");
++    expect(html).not.toContain("<details");
+   });
+ 
+   it("renders a cached legacy response during rollout", async () => {
+@@ -75,18 +95,125 @@ describe("SubscriptionCard account rendering", () => {
+     expect(html).toContain("Account: legacy-account");
+   });
+ 
+-  it("renders a separate, labeled card for every account", async () => {
++  it("renders one Codex card with the latest account outside native collapsed details", async () => {
++    const older = account("account-a");
++    const newest = account("account-z", "2026-08-10T11:00:00.000Z");
+     mocks.getQuotaLatest.mockResolvedValue({
+-      byProvider: { "codex-chatgpt": account("account-b") },
+-      accountsByProvider: { "codex-chatgpt": [account("account-a"), account("account-b")] }
++      byProvider: { "codex-chatgpt": older },
++      accountsByProvider: { "codex-chatgpt": [older, newest] }
+     });
+ 
+     const html = await render();
+ 
+-    expect(html.match(/Codex \/ ChatGPT/g)).toHaveLength(2);
++    expect(html.match(/Codex \/ ChatGPT/g)).toHaveLength(1);
+     expect(html).toContain("Account: account-a");
+-    expect(html).toContain("Account: account-b");
+-    expect(html).toContain("lg:grid-cols-2");
++    expect(html).toContain("Account: account-z");
++    expect(html).not.toContain("lg:grid-cols-2");
++    expect(html.match(/<details\b/g)).toHaveLength(1);
++    expect(html.match(/shadow-3xl/g)).toHaveLength(1);
++    expect(html).not.toMatch(/<details[^>]*\bopen\b/);
++    expect(html).toMatch(/<summary[^>]*>Other account snapshots \(1\)<\/summary>/);
++    expect(html.indexOf("Account: account-z")).toBeLessThan(html.indexOf("<details"));
++    expect(html.indexOf("Account: account-a")).toBeGreaterThan(html.indexOf("<details"));
++  });
++
++  it("preserves the empty-state guidance", async () => {
++    mocks.getQuotaLatest.mockResolvedValue({ byProvider: {}, accountsByProvider: {} });
++    const html = await render();
++    expect(html).toContain("subscription.empty.title");
++    expect(html).toContain("https://github.com/openai/codex");
++    expect(html).not.toContain("<details");
++  });
++
++  it("orders shuffled accounts by capture time without mutating the API array", () => {
++    const accounts = [account("a"), account("z", "2026-08-10T11:00:00Z"), account("b", "2026-08-10T10:30:00Z")];
++    expect(orderQuotaAccounts(accounts, Date.now()).map((item) => item.accountKey)).toEqual(["z", "b", "a"]);
++    expect(accounts.map((item) => item.accountKey)).toEqual(["a", "z", "b"]);
++  });
++
++  it("uses accountKey as a deterministic tie-breaker, including equivalent ISO offsets", async () => {
++    const accounts = [account("z"), account("b"), account("a", "2026-08-10T18:00:00+08:00")];
++    mocks.getQuotaLatest.mockResolvedValue({ byProvider: {}, accountsByProvider: { "codex-chatgpt": accounts } });
++    const html = await render();
++    expect(html.indexOf("Account: a")).toBeLessThan(html.indexOf("<details"));
++    expect(orderQuotaAccounts(accounts, Date.now()).map((item) => item.accountKey)).toEqual(["a", "b", "z"]);
++  });
++
++  it("places invalid and future account times after valid reports", () => {
++    const accounts = [account("a", "invalid"), account("b", "2026-08-11T12:00:00Z"), account("z")];
++    expect(orderQuotaAccounts(accounts, Date.now()).map((item) => item.accountKey)).toEqual(["z", "a", "b"]);
++    expect(orderQuotaAccounts(accounts.slice(0, 2).reverse(), Date.now()).map((item) => item.accountKey)).toEqual(["a", "b"]);
++  });
++
++  it("keeps old rate limits stale even when the plan has just reported", async () => {
++    const snapshot = account("partial", "2026-08-10T12:00:00Z");
++    snapshot.windows.push({ ...snapshot.windows[0], windowKey: "plan", rawJson: { label: "Plus" } });
++    snapshot.windows[0].capturedAt = "2026-08-10T11:00:00Z";
++    snapshot.windows.push({ ...snapshot.windows[0], windowKey: "rate_limit_secondary", capturedAt: "2026-08-10T11:59:00Z", utilization: 0.4 });
++    setAccounts([snapshot]);
++
++    const html = await render();
++    expect(html).toContain("Awaiting refresh");
++    expect(html).not.toContain("75%");
++    expect(html).toContain("60%");
++    expect(html.match(/style="width:/g)).toHaveLength(1);
++  });
++
++  it.each(["rate_limit_primary", "rate_limit_secondary", "code_review_rate_limit_primary", "code_review_rate_limit_secondary"])("hides the current value when %s has reset", async (windowKey) => {
++    const snapshot = account("reset", "2026-08-10T12:00:00Z");
++    snapshot.windows[0].windowKey = windowKey;
++    snapshot.windows[0].resetsAt = "2026-08-10T12:00:00Z";
++    setAccounts([snapshot]);
++    const html = await render();
++    expect(html).toContain("Awaiting refresh");
++    expect(html).not.toContain("75%");
++    expect(html).not.toContain('style="width:');
++  });
++
++  it("does not borrow an account capture time for legacy windows", async () => {
++    const snapshot = account("legacy", "2026-08-10T12:00:00Z");
++    const { capturedAt: _capturedAt, ...legacyWindow } = snapshot.windows[0];
++    mocks.getQuotaLatest.mockResolvedValue({ byProvider: { "codex-chatgpt": { ...snapshot, windows: [legacyWindow] } } });
++    const html = await render();
++    expect(html).toContain("Awaiting refresh");
++    expect(html).not.toContain("75%");
++  });
++
++  it.each([NaN, Infinity, -Infinity, -0.1, 1.1, null])("renders unknown instead of an invalid utilization %s", async (utilization) => {
++    const snapshot = account("invalid-utilization", "2026-08-10T12:00:00Z");
++    snapshot.windows[0].utilization = utilization;
++    setAccounts([snapshot]);
++    const html = await render();
++    expect(html).toContain("Unknown");
++    expect(html).not.toContain("Awaiting refresh");
++    expect(html).not.toMatch(/NaN%|Infinity%|style="width:/);
++  });
++
++  it.each([{ balance: 123.45 }, { unlimited: true }])("hides stale credit values %j using the credit row's own time", async (rawJson) => {
++    const snapshot = account("credit", "2026-08-10T12:00:00Z");
++    snapshot.windows.push({ ...snapshot.windows[0], windowKey: "credit_balance", capturedAt: "2026-08-10T11:00:00Z", rawJson });
++    setAccounts([snapshot]);
++    const html = await render();
++    expect(html).toContain("75%");
++    expect(html).toContain("Awaiting refresh");
++    expect(html).not.toContain("$123.45");
++    expect(html).not.toContain("∞");
++  });
++
++  it.each([[{ balance: 123.45 }, "$123.45"], [{ unlimited: true }, "∞"]])("preserves fresh credit values %j", async (rawJson, expected) => {
++    const snapshot = account("credit", "2026-08-10T12:00:00Z");
++    snapshot.windows = [{ ...snapshot.windows[0], windowKey: "credit_balance", rawJson }];
++    setAccounts([snapshot]);
++    expect(await render()).toContain(expected);
++  });
++
++  it.each([undefined, "invalid", "2026-08-10T12:00:00.001Z"])("hides credit balances with unknown/future capture %s", async (capturedAt) => {
++    const snapshot = account("credit", "2026-08-10T12:00:00Z");
++    const credit = { ...snapshot.windows[0], windowKey: "credit_balance", capturedAt, rawJson: { unlimited: true } };
++    mocks.getQuotaLatest.mockResolvedValue({ byProvider: { "codex-chatgpt": { ...snapshot, windows: [credit] } } });
++    const html = await render();
++    expect(html).toContain("Awaiting refresh");
++    expect(html).not.toContain("∞");
+   });
+ 
+   it("ships the account label in both locales with the same placeholder", () => {
+@@ -96,4 +223,88 @@ describe("SubscriptionCard account rendering", () => {
+     expect(en.subscription.codex.accountLabel).toBe("Account: {account}");
+     expect(zh.subscription.codex.accountLabel).toBe("账号：{account}");
+   });
++
++  describe.each(["en", "zh-CN"])("real %s translations", (locale) => {
++    beforeEach(() => {
++      const messages = JSON.parse(readFileSync(`messages/${locale}.json`, "utf8"));
++      mocks.getLocale.mockResolvedValue(locale);
++      mocks.getTranslations.mockResolvedValue(createTranslator({ locale, messages, onError: (error) => { throw error; } }));
++      mocks.getUserTimezone.mockResolvedValue("Asia/Shanghai");
++    });
++
++    it("shows independent capture times, absolute reset status and the last account report", async () => {
++      const snapshot = account("latest-account", "2026-08-10T12:00:00Z");
++      snapshot.capturedBy = { id: "device-1", name: "Laptop" };
++      const base = snapshot.windows[0];
++      snapshot.windows = [
++        { ...base, windowKey: "plan", rawJson: { label: "Plus" } },
++        { ...base, capturedAt: "2026-08-10T11:45:00Z", resetsAt: "2026-08-10T13:00:00Z" },
++        { ...base, windowKey: "rate_limit_secondary", capturedAt: "2026-08-10T11:00:00Z", resetsAt: "2026-08-10T11:30:00Z", utilization: 0.1 },
++        { ...base, windowKey: "code_review_rate_limit_primary" },
++        { ...base, windowKey: "code_review_rate_limit_secondary" },
++        { ...base, windowKey: "credit_balance", capturedAt: "2026-08-10T11:59:00Z", rawJson: { balance: 12 } }
++      ];
++      setAccounts([account("older-account"), snapshot]);
++
++      const html = await render();
++      expect(html).toContain(locale === "en" ? "Aug 10, 2026" : "2026年8月10日");
++      for (const clock of ["19:45:00", "19:00:00", "19:30:00", "19:59:00", "20:00:00", "21:00:00"]) {
++        expect(html).toContain(clock);
++      }
++      expect(html).toContain("GMT+8");
++      expect(html).toContain(locale === "en" ? "Last reported:" : "最近上报：");
++      expect(html).toContain(locale === "en" ? "Captured:" : "采集时间：");
++      expect(html).toContain(locale === "en" ? "Reported plan: Plus" : "上报套餐：Plus");
++      expect(html).toContain(locale === "en" ? "Resets at:" : "重置于：");
++      expect(html).toContain(locale === "en" ? "Reset time passed:" : "重置时间已过：");
++      expect(html).toContain(locale === "en" ? "Other account snapshots (1)" : "其他账号快照（1）");
++      expect(html).toContain("Laptop");
++      expect(html).not.toContain("90%");
++      expect(html).not.toMatch(/subscription\.[a-zA-Z]|relative\.[a-zA-Z]|\{(?:time|count|plan|device|account)\}|Invalid Date|NaN|ago ago|前前|前后重置|resets in/i);
++    });
++
++    it("uses the user's timezone rather than the server's timezone", async () => {
++      setAccounts([account("timezone", "2026-08-10T12:00:00Z")]);
++      const shanghai = await render();
++      mocks.getUserTimezone.mockResolvedValue("America/Los_Angeles");
++      const losAngeles = await render();
++      expect(shanghai).toContain("20:00:00");
++      expect(losAngeles).toContain("05:00:00");
++      expect(losAngeles).not.toContain("20:00:00");
++      expect(mocks.getUserTimezone).toHaveBeenCalledWith("user-1");
++    });
++
++    it("labels invalid or future time metadata as unknown without throwing", async () => {
++      const snapshot = account("invalid-times", "2026-08-10T12:00:00.001Z");
++      snapshot.windows[0].resetsAt = "not-a-date";
++      setAccounts([snapshot]);
++      const html = await render();
++      expect(html).toContain(locale === "en" ? "Capture time unknown" : "采集时间未知");
++      expect(html).toContain(locale === "en" ? "Reset time unknown" : "重置时间未知");
++      expect(html).toContain(locale === "en" ? "Last reported: Unknown" : "最近上报：未知");
++      expect(html).not.toMatch(/subscription\.|Invalid Date|NaN|75%/);
++    });
++
++    it("keeps the translated empty-state installation guidance", async () => {
++      setAccounts([]);
++      const html = await render();
++      expect(html).toContain(locale === "en" ? "Codex CLI not detected" : "未检测到 Codex CLI");
++      expect(html).not.toContain("subscription.");
++    });
++  });
++
++  it("keeps all subscription keys and ICU placeholders aligned between locales", () => {
++    function flatten(value: Record<string, unknown>, prefix = ""): Record<string, string> {
++      return Object.fromEntries(Object.entries(value).flatMap(([key, entry]) => {
++        const path = `${prefix}${key}`;
++        return typeof entry === "string" ? [[path, entry]] : Object.entries(flatten(entry as Record<string, unknown>, `${path}.`));
++      }));
++    }
++    const en = flatten(JSON.parse(readFileSync("messages/en.json", "utf8")).subscription);
++    const zh = flatten(JSON.parse(readFileSync("messages/zh-CN.json", "utf8")).subscription);
++    expect(Object.keys(en).sort()).toEqual(Object.keys(zh).sort());
++    for (const key of Object.keys(en)) {
++      expect(zh[key].match(/\{[^}]+\}/g)?.sort() ?? [], key).toEqual(en[key].match(/\{[^}]+\}/g)?.sort() ?? []);
++    }
++  });
+ });

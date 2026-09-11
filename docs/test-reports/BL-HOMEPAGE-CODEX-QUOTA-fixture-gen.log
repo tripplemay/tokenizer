@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /private/tmp/tokenizer-quota-evaluator-runs-20260911/BL-HOMEPAGE-CODEX-QUOTA-local-cli--kimi--evaluator-quota-verify-d6bc7f4e4e56-r0-a1
+
+ ✓ tests/evaluator/bl-homepage-codex-quota-fixture.test.ts (2 tests) 27ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  01:09:53
+   Duration  374ms (transform 34ms, setup 0ms, collect 111ms, tests 27ms, environment 0ms, prepare 39ms)
+

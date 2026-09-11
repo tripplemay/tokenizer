@@ -1,0 +1,27 @@
+{
+  "task_id": "quota-verify-d6bc7f4e4e56-r0-a1",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-HOMEPAGE-CODEX-QUOTA",
+  "ref": "d6bc7f4e4e565329adb3f08f20aea6df3e8ad7fc",
+  "worktree": "/tmp/tokenizer-quota-evaluator-runs-20260911/BL-HOMEPAGE-CODEX-QUOTA-local-cli--kimi--evaluator-quota-verify-d6bc7f4e4e56-r0-a1",
+  "artifact": "/tmp/tokenizer-quota-evaluator-runs-20260911/BL-HOMEPAGE-CODEX-QUOTA-local-cli--kimi--evaluator-quota-verify-d6bc7f4e4e56-r0-a1/docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-verdict.json",
+  "log": "/tmp/tokenizer-quota-evaluator-runs-20260911/run-quota-verify-d6bc7f4e4e56-r0-a1.log",
+  "envelope_path": "/private/tmp/tokenizer-homepage-codex-quota-20260911/docs/analysis/2026-09-11-codex-quota/evaluator-envelope.json",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 867,
+  "effective_timeout_s": 2400,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "process_exit",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

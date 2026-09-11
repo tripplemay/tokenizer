@@ -1,0 +1,88 @@
+{
+  "task": "HOMEPAGE-CODEX-QUOTA-DIAGNOSIS",
+  "status": "diagnosed_pending_user_confirmation",
+  "scope": "Independent production diagnosis and hotfix proposal; not acceptance or implementation",
+  "workspace_head": "03351861b49c2858985b10be04b82a31100b78b7",
+  "production": {
+    "url": "https://token.vpanel.cc",
+    "health_status": 200,
+    "health_ok": true,
+    "health_timestamp": "2026-09-10T17:29:09.807Z",
+    "commit": "291810449c5894b66c5d7d613ffe525154fbadf5",
+    "quota_access_status_without_redirects": 307,
+    "quota_access_location": "/login",
+    "authenticated_homepage_observed": false,
+    "actual_account_count_and_capture_times": "not verified",
+    "ssh": "BatchMode connection to the documented production host failed with Permission denied (publickey); no changes made"
+  },
+  "findings": [
+    {
+      "id": "Q001",
+      "certainty": "confirmed in the source corresponding to the deployed commit",
+      "summary": "The homepage renders one full card for every historically observed Codex account, not just currently used accounts.",
+      "evidence": [
+        "src/server/quota.ts:45-55 selects each provider/accountKey/windowKey latest row across all history, with only a userId predicate.",
+        "src/server/quota.ts:87-98 returns every account in accountsByProvider.",
+        "app/_components/subscription-card.tsx:12-29 maps all accounts to separate ConnectedCard instances."
+      ]
+    },
+    {
+      "id": "Q002",
+      "certainty": "confirmed in source; occurrence in the user's production records is unverified",
+      "summary": "No snapshot freshness or reset-expiry guard prevents old quota percentages from appearing as remaining capacity.",
+      "evidence": [
+        "app/_components/subscription-card.tsx:108-143 renders remaining percentage independently of capture age and reset expiry.",
+        "src/server/quota.ts:80-83 uses the newest window's timestamp for the whole card, while window-level capturedAt is not returned."
+      ]
+    },
+    {
+      "id": "Q003",
+      "certainty": "confirmed by git diff, specification and existing test execution",
+      "summary": "The multi-card behavior was introduced intentionally while correcting cross-account quota mixing, but the display requirement did not distinguish historical from current accounts.",
+      "introduced_by": "cb16ce11749ff4158a476e4d4d3cf662e5ce0af3",
+      "evidence": [
+        "docs/specs/BL-SECURITY-P1-spec.md:97-108 requires one card per account.",
+        "tests/shared/subscription-card.test.ts explicitly expects two titles for two account keys.",
+        "git diff 291810449c5894b66c5d7d613ffe525154fbadf5 HEAD -- app/_components/subscription-card.tsx src/server/quota.ts src/quota/codex-chatgpt.ts app/api/quota/snapshots/batch/route.ts produced no output."
+      ]
+    }
+  ],
+  "baseline_tests": {
+    "command": "npx vitest run tests/server/quota.test.ts tests/shared/subscription-card.test.ts",
+    "cwd": "/Users/yixingzhou/project/tokenizer",
+    "exit_code": 0,
+    "files_passed": 2,
+    "tests_passed": 6,
+    "meaning": "Existing behavior regression only; not proof of a fix"
+  },
+  "proposed_fix": {
+    "approval": "required before product edits under harness-rules.md hotfix rule 9",
+    "presentation": "One Codex section, defaulting to the most recently reported account; other account snapshots remain explicitly accessible but collapsed by default.",
+    "freshness": "Label data as reported snapshots, not current login state. Expose window capture timestamps; mark outdated or already-reset values as pending refresh rather than current remaining capacity. Proposed freshness budget: 15 minutes, subject to confirmation.",
+    "preserve": [
+      "Account-key isolation and tenant isolation",
+      "All historical QuotaSnapshot records",
+      "Visibility of genuine multiple accounts through explicit expansion or selection",
+      "Existing quota collection protocol and agent feature version"
+    ],
+    "regression_cases": [
+      "One account, multiple accounts, and legacy API response",
+      "A historical account and a recently updated account produce one default quota section",
+      "Recently reported does not imply currently logged-in or still configured",
+      "All accounts stale, reset time elapsed, and fresh plan row with stale quota window",
+      "Account switching does not combine windows from different accounts",
+      "Chinese and English labels and responsive layout"
+    ]
+  },
+  "workflow": {
+    "existing_batch": "BL-HOMEPAGE-FRESHNESS",
+    "existing_status": "verifying",
+    "progress_and_features_modified": false,
+    "product_code_modified": false,
+    "pushed": false,
+    "deployed": false,
+    "worktree": "/tmp/tokenizer-homepage-codex-quota-20260911",
+    "branch": "codex/homepage-codex-quota-20260911",
+    "next": "Obtain authenticated production evidence and user confirmation of the hotfix display policy. Coordinator must assign a feature before Generator changes and arrange independent cross-family evaluation."
+  }
+}

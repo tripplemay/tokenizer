@@ -1,0 +1,92 @@
+# cmd: env -u DATABASE_URL npm run build
+# started: 2026-09-10T18:04:25Z
+
+> tokenizer@0.1.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 109ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 5.22.0 -> 8.0.0-rc.13                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+   ▲ Next.js 15.5.18
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/6) ...
+   Generating static pages (1/6) 
+   Generating static pages (2/6) 
+   Generating static pages (4/6) 
+ ✓ Generating static pages (6/6)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    5.54 kB         132 kB
+├ ƒ /_not-found                            999 B         104 kB
+├ ƒ /admin/login                           206 B         103 kB
+├ ƒ /admin/pricing                       1.54 kB         107 kB
+├ ƒ /admin/setup                           206 B         103 kB
+├ ƒ /api/admin/cleanup-claude-legacy       206 B         103 kB
+├ ƒ /api/admin/enrollment-tokens           206 B         103 kB
+├ ƒ /api/admin/enrollment-tokens/[id]      206 B         103 kB
+├ ƒ /api/admin/login                       206 B         103 kB
+├ ƒ /api/admin/logout                      206 B         103 kB
+├ ƒ /api/admin/pricing/review              206 B         103 kB
+├ ƒ /api/admin/pricing/scan                206 B         103 kB
+├ ƒ /api/auth/[...nextauth]                206 B         103 kB
+├ ƒ /api/devices                           206 B         103 kB
+├ ƒ /api/devices/enroll                    206 B         103 kB
+├ ƒ /api/devices/heartbeat                 206 B         103 kB
+├ ƒ /api/events                            206 B         103 kB
+├ ƒ /api/harness/decisions                 206 B         103 kB
+├ ƒ /api/harness/gates                     206 B         103 kB
+├ ƒ /api/harness/gates/pending-count       206 B         103 kB
+├ ƒ /api/harness/mode-intents              206 B         103 kB
+├ ƒ /api/harness/mode-intents/relay        206 B         103 kB
+├ ƒ /api/harness/report                    206 B         103 kB
+├ ƒ /api/health                            206 B         103 kB
+├ ƒ /api/me/timezone                       206 B         103 kB
+├ ƒ /api/projects                          206 B         103 kB
+├ ƒ /api/quota/latest                      206 B         103 kB
+├ ƒ /api/quota/snapshots/batch             206 B         103 kB
+├ ƒ /api/summary                           206 B         103 kB
+├ ƒ /api/summary/daily                     206 B         103 kB
+├ ƒ /api/summary/projects                  206 B         103 kB
+├ ƒ /api/usage/events/batch                206 B         103 kB
+├ ƒ /devices                             4.96 kB         132 kB
+├ ƒ /devices/[id]                        1.59 kB         128 kB
+├ ƒ /events                                170 B         106 kB
+├ ƒ /harness                             1.81 kB         126 kB
+├ ƒ /harness/[id]                        11.7 kB         136 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ƒ /login                               1.28 kB         106 kB
+├ ƒ /login/verify                          472 B         103 kB
+├ ƒ /models/[model]                      2.15 kB         129 kB
+└ ƒ /projects/[id]                         170 B         106 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/1255-b28ea36bf0cdbd65.js      46.3 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js  54.2 kB
+  └ other shared chunks (total)          2.03 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+# exit_code: 0
+# finished: 2026-09-10T18:04:39Z

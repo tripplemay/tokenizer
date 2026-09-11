@@ -430,13 +430,23 @@
     "codex": {
       "title": "Codex / ChatGPT",
       "accountLabel": "账号：{account}",
-      "planLabel": "{plan} tier",
+      "latestSnapshot": "最近上报的账号快照",
+      "otherAccounts": "其他账号快照（{count}）",
+      "pendingRefresh": "待刷新",
+      "unknownValue": "未知",
+      "windowTimesHint": "各窗口采集时间独立；此处为上报快照，不代表当前连接状态。",
+      "capturedAt": "采集时间：{time}",
+      "captureTimeUnknown": "采集时间未知",
+      "timeUnknown": "未知",
+      "planLabel": "上报套餐：{plan}",
       "creditBalance": "余额",
       "ratePrimary": "剩余额度（5小时）",
       "rateSecondary": "剩余额度（一周）",
-      "codeReviewPrimary": "Code Review 剩余额度（5小时）",
-      "codeReviewSecondary": "Code Review 剩余额度（一周）",
-      "resetsIn": "{time}后重置"
+      "codeReviewPrimary": "代码审查剩余额度（5小时）",
+      "codeReviewSecondary": "代码审查剩余额度（一周）",
+      "resetsAt": "重置于：{time}",
+      "resetPassed": "重置时间已过：{time}",
+      "resetTimeUnknown": "重置时间未知"
     },
     "empty": {
       "title": "未检测到 Codex CLI",
@@ -444,8 +454,8 @@
       "installLink": "查看安装文档"
     },
     "footer": {
-      "viaDevice": "由设备 {device}·{ago}前刷新",
-      "refreshed": "{ago}前刷新"
+      "viaDevice": "最近上报：{time} · 设备：{device}",
+      "reportedAt": "最近上报：{time}"
     }
   },
   "upgradeBanner": {

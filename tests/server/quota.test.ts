@@ -64,17 +64,24 @@ describe("getQuotaLatest account grouping", () => {
       "rate_limit_primary",
       "rate_limit_secondary"
     ]);
+    expect(accounts[0].windows.map((window) => window.capturedAt)).toEqual([
+      "2026-08-10T10:00:00.000Z",
+      "2026-08-10T11:00:00.000Z"
+    ]);
     expect(accounts[1]).toMatchObject({
       accountKey: "account-b",
       capturedAt: "2026-08-10T12:00:00.000Z",
       capturedBy: { id: "device-b", name: "Laptop B" }
     });
     expect(accounts[1].windows.map((window) => window.windowKey)).toEqual(["credit_balance"]);
+    expect(accounts[1].windows[0].capturedAt).toBe("2026-08-10T12:00:00.000Z");
     expect(latest.byProvider["codex-chatgpt"]).toBe(accounts[1]);
 
     const query = (mocks.queryRaw.mock.calls[0][0] as TemplateStringsArray).join("?");
     expect(query).toContain('DISTINCT ON (q."provider", q."accountKey", q."windowKey")');
     expect(query).toContain('ORDER BY q."provider", q."accountKey", q."windowKey", q."capturedAt" DESC');
+    expect(query).toContain('WHERE q."userId" = ?');
+    expect(mocks.queryRaw.mock.calls[0].slice(1)).toEqual(["user-1"]);
   });
 
   it("keeps every account-level field equivalent for a single account", async () => {
@@ -89,6 +96,7 @@ describe("getQuotaLatest account grouping", () => {
       windows: [
         {
           windowKey: "rate_limit_primary",
+          capturedAt: "2026-08-10T10:00:00.000Z",
           utilization: 0.25,
           usedRaw: 25,
           limitRaw: 100,
@@ -100,5 +108,24 @@ describe("getQuotaLatest account grouping", () => {
     };
     expect(latest.byProvider["codex-chatgpt"]).toEqual(expected);
     expect(latest.accountsByProvider["codex-chatgpt"]).toEqual([expected]);
+  });
+
+  it("does not refresh older windows when only the plan is updated", async () => {
+    mocks.queryRaw.mockResolvedValue([
+      row({ windowKey: "plan", capturedAt: new Date("2026-08-10T12:00:00.000Z") }),
+      row({ windowKey: "credit_balance" }),
+      row({})
+    ]);
+
+    const latest = await getQuotaLatest("user-2");
+    const snapshot = latest.byProvider["codex-chatgpt"];
+
+    expect(snapshot.capturedAt).toBe("2026-08-10T12:00:00.000Z");
+    expect(snapshot.windows.map(({ windowKey, capturedAt }) => ({ windowKey, capturedAt }))).toEqual([
+      { windowKey: "plan", capturedAt: "2026-08-10T12:00:00.000Z" },
+      { windowKey: "credit_balance", capturedAt: "2026-08-10T10:00:00.000Z" },
+      { windowKey: "rate_limit_primary", capturedAt: "2026-08-10T10:00:00.000Z" }
+    ]);
+    expect(mocks.queryRaw.mock.calls[0].slice(1)).toEqual(["user-2"]);
   });
 });

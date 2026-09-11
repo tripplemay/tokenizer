@@ -1,0 +1,148 @@
+// Evaluator fixture generator for BL-HOMEPAGE-CODEX-QUOTA F005 UI verification.
+// Renders the REAL SubscriptionCard via renderToStaticMarkup with real en/zh-CN
+// translations and copies the project-compiled CSS from .next/static/css.
+// Output: docs/test-cases/bl-homepage-codex-quota-fixture/{index.html,zh-CN.html,css/*}
+// Run: npx vitest run tests/evaluator/bl-homepage-codex-quota-fixture.test.ts
+import * as React from "react";
+import { mkdirSync, readFileSync, readdirSync, copyFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { renderToStaticMarkup } from "react-dom/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createTranslator } from "next-intl";
+import type { QuotaLatestProvider, QuotaLatestWindow } from "@/server/quota";
+
+const mocks = vi.hoisted(() => ({
+  getQuotaLatest: vi.fn(),
+  getUserTimezone: vi.fn(),
+  getLocale: vi.fn(),
+  getTranslations: vi.fn()
+}));
+
+vi.mock("@/server/quota", () => ({ getQuotaLatest: mocks.getQuotaLatest }));
+vi.mock("@/server/timezone", () => ({ getUserTimezone: mocks.getUserTimezone }));
+vi.mock("next-intl/server", () => ({
+  getLocale: mocks.getLocale,
+  getTranslations: mocks.getTranslations
+}));
+
+(globalThis as Record<string, unknown>).React = React;
+const { SubscriptionCard } = await import("../../app/_components/subscription-card");
+
+const NOW = Date.parse("2026-09-11T12:00:00.000Z");
+const iso = (ms: number) => new Date(ms).toISOString();
+
+function window_(overrides: Partial<QuotaLatestWindow>): QuotaLatestWindow {
+  return {
+    windowKey: "rate_limit_primary",
+    capturedAt: iso(NOW - 2 * 60_000),
+    utilization: 0.25,
+    usedRaw: 25,
+    limitRaw: 100,
+    unit: "tokens",
+    resetsAt: null,
+    rawJson: null,
+    ...overrides
+  };
+}
+
+const FIXTURE_ACCOUNTS: QuotaLatestProvider[] = [
+  {
+    // Main region: freshest report; mixes fresh, stale and reset-passed windows.
+    accountKey: "laptop-work",
+    capturedAt: iso(NOW - 2 * 60_000),
+    capturedBy: { id: "device-1", name: "Work Laptop" },
+    windows: [
+      window_({ windowKey: "plan", rawJson: { label: "Plus" } }),
+      window_({ windowKey: "rate_limit_primary", utilization: 0.25, resetsAt: iso(NOW + 3 * 3_600_000) }),
+      window_({ windowKey: "rate_limit_secondary", capturedAt: iso(NOW - 20 * 60_000), utilization: 0.4, resetsAt: iso(NOW + 4 * 86_400_000) }),
+      window_({ windowKey: "code_review_rate_limit_primary", utilization: 0.92, resetsAt: iso(NOW - 60_000) }),
+      window_({ windowKey: "credit_balance", rawJson: { balance: 12.34 } })
+    ]
+  },
+  {
+    // Collapsed: fully stale account, reset time in the past.
+    accountKey: "desktop-home",
+    capturedAt: iso(NOW - 60 * 60_000),
+    capturedBy: { id: "device-2", name: "Home Desktop" },
+    windows: [
+      window_({ windowKey: "plan", capturedAt: iso(NOW - 60 * 60_000), rawJson: { label: "Pro" } }),
+      window_({ windowKey: "rate_limit_primary", capturedAt: iso(NOW - 60 * 60_000), utilization: 0.1, resetsAt: iso(NOW - 30 * 60_000) }),
+      window_({ windowKey: "credit_balance", capturedAt: iso(NOW - 60 * 60_000), rawJson: { unlimited: true } })
+    ]
+  },
+  {
+    // Collapsed: unknown capture time + out-of-range utilization + long key.
+    accountKey: "a-very-long-account-key-for-narrow-overflow-check-0123456789abcdef",
+    capturedAt: iso(NOW - 2 * 3_600_000),
+    capturedBy: null,
+    windows: [
+      window_({ windowKey: "rate_limit_primary", capturedAt: "not-a-date", utilization: 1.5, resetsAt: "also-not-a-date" }),
+      window_({ windowKey: "rate_limit_secondary", capturedAt: iso(NOW - 2 * 3_600_000), utilization: 0.0, resetsAt: iso(NOW + 2 * 86_400_000) })
+    ]
+  }
+];
+
+function shell(title: string, body: string): string {
+  return `<!doctype html>
+<html lang="${title}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BL-HOMEPAGE-CODEX-QUOTA fixture ${title}</title>
+<link rel="stylesheet" href="css/1f95eba1953f8e1f.css">
+<link rel="stylesheet" href="css/506ff9dda362a0b6.css">
+<link rel="stylesheet" href="css/d42c309d6dac5d03.css">
+</head>
+<body class="bg-gray-50 dark:bg-navy-900">
+<main class="mx-auto max-w-3xl p-4">
+${body}
+</main>
+</body>
+</html>
+`;
+}
+
+const OUT = "docs/test-cases/bl-homepage-codex-quota-fixture";
+
+describe("F005 fixture generator (real SubscriptionCard SSR + compiled project CSS)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(NOW));
+    mocks.getQuotaLatest.mockResolvedValue({
+      byProvider: { "codex-chatgpt": FIXTURE_ACCOUNTS[0] },
+      accountsByProvider: { "codex-chatgpt": FIXTURE_ACCOUNTS }
+    });
+    mocks.getUserTimezone.mockResolvedValue("Asia/Shanghai");
+  });
+
+  it.each([
+    ["en", "index.html"],
+    ["zh-CN", "zh-CN.html"]
+  ])("renders the %s fixture page", async (locale, file) => {
+    const messages = JSON.parse(readFileSync(`messages/${locale}.json`, "utf8"));
+    mocks.getLocale.mockResolvedValue(locale);
+    mocks.getTranslations.mockResolvedValue(createTranslator({ locale, messages, onError: (e) => { throw e; } }));
+
+    const card = renderToStaticMarkup(await SubscriptionCard({ userId: "evaluator-fixture" }));
+    mkdirSync(join(OUT, "css"), { recursive: true });
+    for (const css of readdirSync(".next/static/css").filter((f) => f.endsWith(".css"))) {
+      copyFileSync(join(".next/static/css", css), join(OUT, "css", css));
+    }
+    writeFileSync(join(OUT, file), shell(locale, card));
+
+    // The fixture itself must exhibit the acceptance surface (frozen at NOW).
+    expect(card.match(/<details\b/g)).toHaveLength(1);
+    expect(card).not.toMatch(/<details[^>]*\bopen\b/);
+    expect(card).toContain("laptop-work");
+    expect(card).toContain("desktop-home");
+    expect(card).toContain(locale === "en" ? "Awaiting refresh" : "待刷新");
+    expect(card).toContain(locale === "en" ? "Reset time passed:" : "重置时间已过：");
+    expect(card).toContain(locale === "en" ? "Resets at:" : "重置于：");
+    expect(card).toContain(locale === "en" ? "Capture time unknown" : "采集时间未知");
+    expect(card).toContain("$12.34");
+    expect(card).not.toContain("∞"); // stale unlimited credit must be hidden
+    expect(card).not.toContain("60%"); // stale secondary window must not leak its value
+    expect(card).toContain("75%");
+    expect(card).not.toMatch(/subscription\.|Invalid Date|NaN|150%/);
+  });
+});

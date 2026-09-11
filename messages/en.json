@@ -430,13 +430,23 @@
     "codex": {
       "title": "Codex / ChatGPT",
       "accountLabel": "Account: {account}",
-      "planLabel": "{plan} tier",
+      "latestSnapshot": "Most recently reported account snapshot",
+      "otherAccounts": "Other account snapshots ({count})",
+      "pendingRefresh": "Awaiting refresh",
+      "unknownValue": "Unknown",
+      "windowTimesHint": "Each window has its own capture time. These are reported snapshots, not connection status.",
+      "capturedAt": "Captured: {time}",
+      "captureTimeUnknown": "Capture time unknown",
+      "timeUnknown": "Unknown",
+      "planLabel": "Reported plan: {plan}",
       "creditBalance": "Credit balance",
       "ratePrimary": "Remaining (5h window)",
       "rateSecondary": "Remaining (weekly)",
       "codeReviewPrimary": "Code review remaining (5h)",
       "codeReviewSecondary": "Code review remaining (weekly)",
-      "resetsIn": "resets in {time}"
+      "resetsAt": "Resets at: {time}",
+      "resetPassed": "Reset time passed: {time}",
+      "resetTimeUnknown": "Reset time unknown"
     },
     "empty": {
       "title": "Codex CLI not detected",
@@ -444,8 +454,8 @@
       "installLink": "Installation docs"
     },
     "footer": {
-      "viaDevice": "via {device}·refreshed {ago} ago",
-      "refreshed": "refreshed {ago} ago"
+      "viaDevice": "Last reported: {time} · via {device}",
+      "reportedAt": "Last reported: {time}"
     }
   },
   "upgradeBanner": {

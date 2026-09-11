@@ -1,0 +1,19 @@
+# cmd: env -u DATABASE_URL npm run lint
+# started: 2026-09-10T18:04:07Z
+
+> tokenizer@0.1.0 lint
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+✔ No ESLint warnings or errors
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+# exit_code: 0
+# finished: 2026-09-10T18:04:10Z

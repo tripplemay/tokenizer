@@ -1,0 +1,6 @@
+{
+  "violation": false,
+  "detail": "仅审查固定区间 dddb4bd..05b00e0，不含并发出现的后续提交。已逐笔读取四个 feature commit 的真实 diff：4a205b9→F001、d00b728→F002、4f4a9bd→F003、05b00e0→F004，全部对应 features.json 的真实 feature。文件归属：src/server/quota.ts、tests/server/quota.test.ts→F001；app/_components/subscription-card.tsx、src/shared/quota-presentation.ts、tests/shared/subscription-card.test.ts→F002/F003/F004；tests/shared/quota-presentation.test.ts→F003；messages/en.json、messages/zh-CN.json→F002/F003/F004，翻译改动仅限 subscription 命名空间。其余 features.json、progress.json、.auto-memory/project-status.md 为该独立 worktree 的批次审计记录。未发现无 feature 归属的产品修改、无关重构、跨批次功能启动，或触碰 schema/migration、采集协议、agent 能力版本、框架、部署配置、首页其他区块与刷新机制。锁定版本 progress.current_sprint 为 F005，与批次标识不一致；这是状态元数据问题，不改变上述产品 diff 与规划 feature 的明确对应关系。本结论仅核范围，不采信实现者自述，不代表功能或 UI 验收。",
+  "offending_files": [],
+  "unmapped_tags": []
+}

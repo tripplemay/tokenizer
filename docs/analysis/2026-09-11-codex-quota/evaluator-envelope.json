@@ -1,0 +1,26 @@
+{
+  "task_id": "quota-verify-d6bc7f4e4e56-r0-a1",
+  "contract_version": "harness/1.1",
+  "batch": "BL-HOMEPAGE-CODEX-QUOTA",
+  "role": "evaluator",
+  "repo": {
+    "url": "/tmp/tokenizer-homepage-codex-quota-20260911",
+    "ref": "d6bc7f4e4e565329adb3f08f20aea6df3e8ad7fc"
+  },
+  "spec": "docs/specs/BL-HOMEPAGE-CODEX-QUOTA-spec.md",
+  "features": [
+    "F001",
+    "F002",
+    "F003",
+    "F004",
+    "F005"
+  ],
+  "l2_authorized": false,
+  "contract": "You are an independent Kimi Evaluator in a fresh process/context, not a Generator. Read the locked checkout's harness-rules.md, CLAUDE.md, evaluator.md, progress.json, features.json, specification and applicable test-environment patterns. Independently inspect actual code and run your own acceptance tests for F001-F005. Never treat Generator narratives, existing verdicts or commit messages as evidence of correctness. Before L1, require cmp package.json /tmp/tokenizer-quota-evaluator-deps-20260911/package.json and cmp package-lock.json /tmp/tokenizer-quota-evaluator-deps-20260911/package-lock.json to succeed, require node_modules absent, then cp -cR /tmp/tokenizer-quota-evaluator-deps-20260911/node_modules ./node_modules. Do not install dependencies, read any credentials or copy other worktrees' .env. Run npm run lint, npm run verify, npm test and npm run build yourself, with full output to separate docs/test-reports/ log files and exact exit codes. Use bounded output, not entire giant logs. Add independent narrow regression probes as appropriate. F005 needs desktop and narrow-screen UI with real SubscriptionCard-rendered fixture HTML and project-compiled CSS, not a hand-built imitation. Local fixture UI only is authorized: read /Users/yixingzhou/.agents/skills/tabbit/SKILL.md before using /Users/yixingzhou/.local/bin/tabbit-cli, use a new task quota-ui-review, never claim/inspect unrelated or logged-in user tabs, and navigate only to your localhost fixture. Check default collapse, click and keyboard expansion, one main Codex region, freshness displays, both locales and overflow at narrow widths. Load screenshot artifacts for visual inspection when the tools support it; report any limitation precisely rather than inventing visual evidence. Stop fixture servers and finish your browser task after use, retain necessary artifacts. You may create tests under tests/ or scripts/test/ and reports/artifacts under docs/test-cases/ or docs/test-reports/; all manual code edits must use apply_patch (available on PATH). Do not modify product code, progress.json, features.json, backlog.json, registry, adapters, framework or any pending_gate.decision. Never commit, push, deploy, access production services or real quota accounts. If genuine L2 authorization is required, emit waiting=auth with precise detail and exit 0. If the criteria need adjudication, emit waiting=adjudication. No PASS for unexecuted required checks. Write exactly the commissioned verdict path and schema; each feature must carry reproducible evidence, with the inspected SHA in evidence. If all features pass, also write docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-signoff-2026-09-11.md. Record explicitly that production was not deployed and fixtures do not verify production login or collection. Return without changing the batch stage.",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-HOMEPAGE-CODEX-QUOTA-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "deadline_s": 2400
+}
