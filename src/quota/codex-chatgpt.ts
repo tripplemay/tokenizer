@@ -7,6 +7,7 @@ const REQUEST_TIMEOUT_MS = 10_000;
 type WindowInfo = {
   used_percent?: number;
   remaining_percent?: number;
+  limit_window_seconds?: number;
   window_minutes?: number;
   resets_at?: number;
   reset_at?: number;

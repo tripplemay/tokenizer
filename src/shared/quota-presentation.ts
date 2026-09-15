@@ -2,6 +2,25 @@ import type { QuotaLatestProvider } from "@/server/quota";
 
 export const QUOTA_FRESHNESS_MS = 15 * 60 * 1000;
 
+const WINDOW_UNITS = [
+  ["week", 604800], ["day", 86400], ["hour", 3600], ["minute", 60], ["second", 1]
+] as const;
+
+export function getQuotaWindowDuration(rawJson: unknown): { unit: typeof WINDOW_UNITS[number][0]; value: number } | null {
+  if (rawJson == null || typeof rawJson !== "object" || Array.isArray(rawJson)) return null;
+  const raw = rawJson as Record<string, unknown>;
+  const validSeconds = (value: unknown): value is number =>
+    typeof value === "number" && Number.isSafeInteger(value) && value > 0;
+  const legacySeconds = typeof raw.window_minutes === "number" ? raw.window_minutes * 60 : null;
+  const seconds = validSeconds(raw.limit_window_seconds) ? raw.limit_window_seconds : legacySeconds;
+  if (!validSeconds(seconds)) return null;
+  // Keep exact periods: 90 minutes must not be rounded to one or two hours.
+  for (const [unit, size] of WINDOW_UNITS) {
+    if (seconds % size === 0) return { unit, value: seconds / size };
+  }
+  return null;
+}
+
 export function parseQuotaTimestamp(value: unknown): number | null {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value)) {
     return null;

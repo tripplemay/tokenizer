@@ -4,7 +4,7 @@ import Card from "@/components/card";
 import { getQuotaLatest, type QuotaLatestProvider, type QuotaLatestWindow } from "@/server/quota";
 import { getUserTimezone } from "@/server/timezone";
 import { formatUsd } from "@/shared/format";
-import { formatQuotaTimestamp, getQuotaFreshness, getQuotaRemaining, orderQuotaAccounts } from "@/shared/quota-presentation";
+import { formatQuotaTimestamp, getQuotaFreshness, getQuotaRemaining, getQuotaWindowDuration, orderQuotaAccounts } from "@/shared/quota-presentation";
 
 export async function SubscriptionCard({ userId }: { userId: string }) {
   const t = await getTranslations();
@@ -117,10 +117,10 @@ function AccountSnapshot({ codex, t, tz, locale, now }: { codex: QuotaLatestProv
       </div>
 
       <div className="space-y-3">
-        {primaryRow && <RateLimitRow label={t("subscription.codex.ratePrimary")} window={primaryRow} t={t} tz={tz} locale={locale} now={now} />}
-        {secondaryRow && <RateLimitRow label={t("subscription.codex.rateSecondary")} window={secondaryRow} t={t} tz={tz} locale={locale} now={now} />}
-        {codeReviewPrimary && <RateLimitRow label={t("subscription.codex.codeReviewPrimary")} window={codeReviewPrimary} t={t} tz={tz} locale={locale} now={now} />}
-        {codeReviewSecondary && <RateLimitRow label={t("subscription.codex.codeReviewSecondary")} window={codeReviewSecondary} t={t} tz={tz} locale={locale} now={now} />}
+        {primaryRow && <RateLimitRow window={primaryRow} t={t} tz={tz} locale={locale} now={now} />}
+        {secondaryRow && <RateLimitRow window={secondaryRow} t={t} tz={tz} locale={locale} now={now} />}
+        {codeReviewPrimary && <RateLimitRow codeReview window={codeReviewPrimary} t={t} tz={tz} locale={locale} now={now} />}
+        {codeReviewSecondary && <RateLimitRow codeReview window={codeReviewSecondary} t={t} tz={tz} locale={locale} now={now} />}
       </div>
 
       <p className="mt-4 break-words text-xs text-gray-500 dark:text-gray-400">
@@ -143,7 +143,12 @@ function CaptureTime({ window, t, tz, locale, now }: { window: QuotaLatestWindow
   );
 }
 
-function RateLimitRow({ label, window: w, t, tz, locale, now }: { label: string; window: QuotaLatestWindow } & SnapshotContext) {
+function RateLimitRow({ codeReview = false, window: w, t, tz, locale, now }: { codeReview?: boolean; window: QuotaLatestWindow } & SnapshotContext) {
+  const duration = getQuotaWindowDuration(w.rawJson);
+  const period = duration == null ? t("subscription.codex.windowUnknown") :
+    duration.unit === "week" && duration.value === 1 ? t("subscription.codex.windowWeekly") :
+    new Intl.NumberFormat(locale, { style: "unit", unit: duration.unit, unitDisplay: "long" }).format(duration.value);
+  const label = t(codeReview ? "subscription.codex.codeReviewRemaining" : "subscription.codex.rateRemaining", { window: period });
   // Display as REMAINING capacity (matches Codex CLI's terminology). Bar
   // is full at 100% remaining and empties as the user spends quota. Color
   // thresholds invert: low remaining = danger, high remaining = healthy.

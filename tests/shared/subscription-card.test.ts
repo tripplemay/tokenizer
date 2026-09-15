@@ -59,7 +59,7 @@ describe("SubscriptionCard account rendering", () => {
     mocks.getTranslations.mockResolvedValue((key: string, values?: Record<string, string | number>) => {
       if (key === "subscription.codex.title") return "Codex / ChatGPT";
       if (key === "subscription.codex.accountLabel") return `Account: ${values?.account}`;
-      if (key === "subscription.codex.ratePrimary") return "Primary";
+      if (key === "subscription.codex.rateRemaining") return `Remaining (${values?.window})`;
       if (key === "subscription.codex.otherAccounts") return `Other account snapshots (${values?.count})`;
       if (key === "subscription.codex.pendingRefresh") return "Awaiting refresh";
       if (key === "subscription.codex.unknownValue") return "Unknown";

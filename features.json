@@ -41,6 +41,16 @@
       "executor": "evaluator",
       "status": "pending",
       "acceptance": "独立验收 F001-F004；L1 全绿；生产 SHA/Deploy 健康；首页两个轮询周期内无需硬刷新即可追上新事件；固定 verdict/signoff 落盘。"
+    },
+    {
+      "id": "F006",
+      "title": "用户批准热修复：Codex 额度周期按实际时长显示",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "spec": "docs/specs/BL-CODEX-QUOTA-WINDOW-spec.md",
+      "source_batch": "BL-CODEX-QUOTA-WINDOW",
+      "acceptance": "回流独立批次 F001 的周期标签修复及 F002 的 Kimi 验收产物；秒优先、旧分钟兼容、未知周期不猜测；保持百分比、账号隔离、freshness 和布局。原 F005 保持 pending，不因本次热修复而签收。"
     }
   ]
 }

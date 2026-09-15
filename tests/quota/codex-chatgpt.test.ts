@@ -51,6 +51,18 @@ function mockFetch(response: { status: number; body?: unknown; throws?: Error })
 }
 
 describe("codexChatgptProvider", () => {
+  it("preserves a weekly-only primary duration without inventing a secondary window", async () => {
+    writeCodexAuth("fixture-token");
+    const primary = { used_percent: 83, limit_window_seconds: 604800, reset_after_seconds: 320100, reset_at: 1789820507 };
+    mockFetch({ status: 200, body: { plan_type: "pro", rate_limit: { primary_window: primary, secondary_window: null } } });
+    const { codexChatgptProvider } = await import("@/quota/codex-chatgpt");
+    const { snapshots } = await codexChatgptProvider.fetch();
+    expect(snapshots.find((s) => s.windowKey === "rate_limit_primary")).toMatchObject({
+      utilization: 0.83, rawJson: primary, resetsAt: "2026-09-19T12:21:47.000Z"
+    });
+    expect(snapshots.some((s) => s.windowKey === "rate_limit_secondary")).toBe(false);
+  });
+
   it("isConfigured returns false when no access token", async () => {
     writeCodexAuth(null);
     const { codexChatgptProvider } = await import("@/quota/codex-chatgpt");
