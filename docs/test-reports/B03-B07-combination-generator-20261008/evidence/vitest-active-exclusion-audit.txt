@@ -1,0 +1,8 @@
+active B03/B07 combination and successor tests discovered by Vitest:
+tests/cli/b03-b07-queue-combination.test.ts
+tests/cli/b03-replay-deadline.test.ts
+tests/cli/b07-private-queue-files.test.ts
+tests/cli/b07-queue-multiwriter.test.ts
+tests/cli/b07-queue-resolution.test.ts
+tests/cli/b07-versioned-quarantine.test.ts
+excluded historical files unexpectedly discovered (expected none):

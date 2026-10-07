@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b03-b07-combination-20261008
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  02:26:46
+   Duration  655ms (transform 170ms, setup 0ms, import 223ms, tests 91ms, environment 0ms)
+

@@ -1,0 +1,31 @@
+
+> tokenizer@0.1.0 test
+> vitest run --run
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b03-b07-combination-20261008
+
+ ❯ tests/cli/harness-command.test.ts (4 tests | 1 failed) 6247ms
+     × wires Commander options without treating the Command object as injected dependencies 6238ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/harness-command.test.ts > harness CLI output contracts > wires Commander options without treating the Command object as injected dependencies
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/cli/harness-command.test.ts:76:3
+     74|   });
+     75|
+     76|   it("wires Commander options without treating the Command object as i…
+       |   ^
+     77|     const home = mkdtempSync(join(tmpdir(), "tokenizer-harness-command…
+     78|     tempHomes.push(home);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 150 passed | 12 skipped (163)
+      Tests  1 failed | 1849 passed | 31 skipped (1881)
+   Start at  02:27:25
+   Duration  32.31s (transform 8.09s, setup 0ms, import 37.21s, tests 167.47s, environment 35ms)
+

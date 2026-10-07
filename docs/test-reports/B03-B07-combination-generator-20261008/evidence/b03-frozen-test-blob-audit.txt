@@ -1,0 +1,2 @@
+tests/evaluator/b03-scope-admission-independent.test.ts source=7792d58af56ff0ab02edfa633aca4bcf99e59f7f current=7792d58af56ff0ab02edfa633aca4bcf99e59f7f MATCH
+scripts/test/b03-scope-admission-independent.mjs source=1a041cf0a6800d44c150aaf9890e7f22e356f2f3 current=1a041cf0a6800d44c150aaf9890e7f22e356f2f3 MATCH

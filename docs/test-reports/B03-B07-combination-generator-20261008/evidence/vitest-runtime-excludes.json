@@ -1,0 +1,9 @@
+[
+  "**/node_modules/**",
+  "**/.git/**",
+  "tests/evaluator/b05-tcp-readiness-independent.test.ts",
+  "tests/cli/b06-batch-failure-queue.test.ts",
+  "tests/evaluator/b03-scope-admission-independent.test.ts",
+  "tests/cli/b06-partial-ack.test.ts",
+  "tests/ci/b06-obsolete-queue-test-archive.test.ts"
+]

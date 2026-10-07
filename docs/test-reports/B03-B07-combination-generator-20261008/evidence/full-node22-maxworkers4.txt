@@ -1,0 +1,13 @@
+
+> tokenizer@0.1.0 test
+> vitest run --run --maxWorkers=4
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b03-b07-combination-20261008
+
+
+ Test Files  151 passed | 12 skipped (163)
+      Tests  1850 passed | 31 skipped (1881)
+   Start at  02:28:28
+   Duration  38.39s (transform 4.41s, setup 0ms, import 15.22s, tests 107.51s, environment 25ms)
+

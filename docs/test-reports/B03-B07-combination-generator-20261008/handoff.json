@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "role": "generator",
+  "date": "2026-10-08",
+  "baseSha": "872ba3634d7c345dba33c32d57bd2f5773b6ca0a",
+  "inputs": {
+    "b03": "6a030f6a3099684058cd5caed049f943cf03ab9a",
+    "b07": "541287603bf3ee41d1d86adde8328d2f9b3ae437"
+  },
+  "candidateSha": "116a1fffb2bd8c800f721adf1cd99653981da2df",
+  "safeBranchRun": {
+    "id": 37675079483,
+    "statusAtFreeze": "pending",
+    "deployExpected": "skipped"
+  },
+  "local": {
+    "node": "v22.22.0",
+    "npm": "10.9.4",
+    "combination": { "passed": 4, "failed": 0 },
+    "focused": { "passed": 78, "skipped": 3, "failed": 0 },
+    "fullMaxWorkers4": { "passed": 1850, "skipped": 31, "failed": 0 },
+    "verify": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "productionAudit": { "high": 0, "total": 0 },
+    "fullAudit": { "high": 7, "total": 7 }
+  },
+  "immutability": {
+    "b03ReportEvidenceBlobs": { "checked": 88, "mismatches": 0 },
+    "b07ReportEvidenceBlobs": { "checked": 28, "mismatches": 0 },
+    "b07ScopedTestBlobs": { "checked": 16, "mismatches": 0 }
+  },
+  "readiness": "experimental_pending_exact_sha_ci_and_independent_review",
+  "verdict": null
+}
