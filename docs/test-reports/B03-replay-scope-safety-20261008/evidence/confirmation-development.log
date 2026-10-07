@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-replay-fixed-candidate-20261008
+
+ ✓ tests/cli/replay.test.ts (6 tests) 62ms
+ ✓ tests/cli/privacy-scope-safety.test.ts (10 tests) 224ms
+stdout | tests/cli/replay-safety-regression.test.ts > R2 safely refuses regular-file to FIFO swap without waiting for a writer
+FIFO_FIXED {"elapsedMs":329,"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/replay-safety-regression.test.ts (9 tests | 1 skipped) 419ms
+   ✓ R2 safely refuses regular-file to FIFO swap without waiting for a writer 332ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (3 tests) 6066ms
+   ✓ privacy admission CLI lifecycle > previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync 2354ms
+   ✓ privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 2579ms
+   ✓ privacy admission CLI lifecycle > keeps paused collection and replay execution from changing queue or cursor 1132ms
+
+ Test Files  4 passed (4)
+      Tests  27 passed | 1 skipped (28)
+   Start at  01:30:25
+   Duration  6.64s (transform 346ms, setup 0ms, collect 673ms, tests 6.77s, environment 1ms, prepare 328ms)
+

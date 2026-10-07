@@ -1,0 +1,27 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-replay-fixed-candidate-20261008
+
+ ✓ tests/cli/replay-contract.test.ts (37 tests) 18ms
+ ✓ tests/cli/replay-operational-contract.test.ts (14 tests) 11ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 16ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 161ms
+ ✓ tests/cli/replay.test.ts (6 tests) 296ms
+ ✓ tests/cli/queue-merge.test.ts (3 tests) 1065ms
+   ✓ durable queue merge > serializes concurrent replay/collection writers without losing retained backlog 1053ms
+stdout | tests/cli/replay-safety-regression.test.ts > R2 safely refuses regular-file to FIFO swap without waiting for a writer
+FIFO_FIXED {"elapsedMs":1028,"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/replay-safety-regression.test.ts (9 tests | 1 skipped) 1096ms
+   ✓ R2 safely refuses regular-file to FIFO swap without waiting for a writer 1034ms
+ ✓ tests/cli/replay-help.test.ts (1 test) 1874ms
+   ✓ bounded replay CLI help > documents the explicit file, budgets, dry-run default, and digest confirmation 1873ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (3 tests) 10320ms
+   ✓ privacy admission CLI lifecycle > previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync 5991ms
+   ✓ privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 3308ms
+   ✓ privacy admission CLI lifecycle > keeps paused collection and replay execution from changing queue or cursor 1019ms
+
+ Test Files  9 passed (9)
+      Tests  92 passed | 1 skipped (93)
+   Start at  01:20:48
+   Duration  11.88s (transform 3.31s, setup 0ms, collect 6.47s, tests 14.86s, environment 2ms, prepare 1.76s)
+
