@@ -1,0 +1,49 @@
+node=v22.22.0 npm=10.9.4 sim=/tmp/tokenizer-b02-braces-tarballsim-kXkkaE
+
+### npm ci
+exit=0
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 670 packages, and audited 671 packages in 6s
+
+186 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+### npm run lint
+exit=0
+
+> tokenizer@0.1.0 lint
+> eslint app src --max-warnings=0
+
+
+### npm test
+exit=0
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /private/tmp/tokenizer-b02-braces-tarballsim-kXkkaE
+
+
+ Test Files  117 passed | 8 skipped (125)
+      Tests  1586 passed | 22 skipped (1608)
+   Start at  23:36:53
+   Duration  16.15s (transform 5.16s, setup 0ms, import 13.97s, tests 55.95s, environment 17ms)
+
+
+### npm run build
+exit=0
+├ ƒ /harness
+├ ƒ /harness/[id]
+├ ○ /icon.svg
+├ ƒ /login
+├ ƒ /login/verify
+├ ƒ /models/[model]
+└ ƒ /projects/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

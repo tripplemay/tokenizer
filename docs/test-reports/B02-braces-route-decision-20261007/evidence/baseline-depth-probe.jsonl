@@ -1,0 +1,6 @@
+{"moduleRoot":"/Users/yixingzhou/tokenizer-b02-dependency-triage-20261007/node_modules/braces","version":"3.0.3","node":"v22.22.0"}
+{"name":"default-string-depth-1","result":"return","type":"object"}
+{"name":"default-string-depth-100","result":"return","type":"object"}
+{"name":"default-string-depth-101","result":"return","type":"object"}
+{"name":"default-string-depth-4000","result":"throw","error":"RangeError","message":"Maximum call stack size exceeded"}
+{"name":"compile-direct-ast-depth-4000","result":"throw","error":"RangeError","message":"Maximum call stack size exceeded"}

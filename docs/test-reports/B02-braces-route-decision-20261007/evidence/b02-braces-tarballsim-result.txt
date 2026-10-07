@@ -1,0 +1,23 @@
+{
+  "braces": {
+    "version": "3.0.4",
+    "resolved": "https://codeload.github.com/Im-Fran/braces/tar.gz/11568474fd2d330d4a56a3aba63f8f90030ba15e",
+    "integrity": "sha512-e7NbDnK5Y5WX8GY5blKl+cjBXFVWRh+AuG0DdA1eAjW+J4ChWNwAnEPqeKPvAtxnJKxh+zeW32mNxS4T+3N9KQ==",
+    "dev": true,
+    "license": "MIT",
+    "dependencies": {
+      "fill-range": "^7.1.1"
+    },
+    "engines": {
+      "node": ">=8.3"
+    }
+  },
+  "audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  }
+}

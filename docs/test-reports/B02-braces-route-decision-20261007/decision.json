@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "input_sha": "4d96e4bb23224f393099b2187c8b42cd7a521cd8",
+  "prior_b02_gate": "BLOCKED",
+  "decision": "NO_UNCONDITIONAL_FORK_APPROVAL",
+  "preferred_route": "supported upstream npm release or organization-controlled reviewed backport",
+  "release_acceptance_granted": false,
+  "risk_acceptance_granted": false,
+  "observed_reachability": {
+    "next_build_braces_calls": 12,
+    "distinct_inputs": [
+      "./app/**/*.{js,ts,jsx,tsx,mdx}",
+      "./components/**/*.{js,ts,jsx,tsx,mdx}",
+      "./src/**/*.{js,ts,jsx,tsx,mdx}"
+    ],
+    "input_source": "repository-controlled tailwind.config.cjs",
+    "max_observed_brace_depth": 1,
+    "eslint_braces_calls": 0,
+    "public_request_runtime_path_demonstrated": false
+  },
+  "unofficial_candidate": {
+    "repository": "Im-Fran/braces",
+    "commit": "11568474fd2d330d4a56a3aba63f8f90030ba15e",
+    "declared_version": "3.0.4",
+    "release_immutable": false,
+    "upstream_reviewed": false,
+    "string_depth_guard_verified": true,
+    "direct_ast_depth_guard_verified": false,
+    "upstream_tests": "PASS_896",
+    "project_node22_simulation": "PASS_NPM_CI_LINT_1586_TESTS_BUILD",
+    "scanner_zero_observed": true,
+    "scanner_zero_is_authoritative_registry_fix": false
+  },
+  "removing_chains": {
+    "tailwind_chain": "requires Tailwind 4/replacement migration to remove package; explicit globs only remove current call",
+    "next_eslint_chain": "requires replacing or weakening Next lint stack; not recommended",
+    "narrow_chain_removal_available": false
+  },
+  "required_before_any_fork_integration": [
+    "organization-controlled immutable source",
+    "exact source review and provenance",
+    "string and direct-AST negative tests",
+    "upstream and full project safe-branch matrix",
+    "separate scanner and authoritative advisory reporting",
+    "named owner and removal deadline"
+  ],
+  "product_or_dependency_files_modified": false,
+  "pushed": false
+}

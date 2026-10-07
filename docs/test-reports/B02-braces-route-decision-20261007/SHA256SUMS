@@ -1,0 +1,14 @@
+5431a6b1692407cabf1f7d24c89b1e2961a96b43c930a57fdd300bb69cbb235f  docs/test-reports/B02-braces-route-decision-20261007/README.md
+2e808c8b9b18f1f0896d18f7bbd7ed2b74ca2aa63fc85c30ed97e6d6999074fa  docs/test-reports/B02-braces-route-decision-20261007/braces-trace-preload.cjs
+89d8c09ba54d333f5463bcf82ae5b79e12eae77e36d1403561484926b7544d3e  docs/test-reports/B02-braces-route-decision-20261007/decision.json
+e713031ba06d5824b8844970241d800a94d4b38e689ed735465cff1c72ea0e74  docs/test-reports/B02-braces-route-decision-20261007/evidence/b02-braces-tarballsim-audit.json
+6945c1b6e277d233e6246b1bad4b38687da91b887d0734767cdbd6e404ddae83  docs/test-reports/B02-braces-route-decision-20261007/evidence/b02-braces-tarballsim-depth.jsonl
+fd955af2b5c5937c2699362c2326d7f2342eb80fff06e8035778f4b3b28228cf  docs/test-reports/B02-braces-route-decision-20261007/evidence/b02-braces-tarballsim-result.txt
+bdf49cfdea7b9d492973f6ceb786dd17a34a4d1d92ff442af5c38f5daa80ab34  docs/test-reports/B02-braces-route-decision-20261007/evidence/b02-braces-tarballsim-runtime.txt
+82bea72e6886a0acecdc9d6070a6c8ebb5d3bacd3678da5d9342b95dd2c360ac  docs/test-reports/B02-braces-route-decision-20261007/evidence/b02-braces-tarballsim-validation.txt
+6b246e8646f94a68d2d8c31cae87736d10bf7a43fbc2fade3db1691ec1e721d5  docs/test-reports/B02-braces-route-decision-20261007/evidence/baseline-depth-probe.jsonl
+bc617a4b0c07ed0ad2e026c82ef69b8c019a26f9dc0e6dfd05d2e9502af1bf65  docs/test-reports/B02-braces-route-decision-20261007/evidence/build-braces-trace.jsonl
+15962e0b72e47ee2f01fe89cce5bebaaf822c093eeda88661e1192907a1b1495  docs/test-reports/B02-braces-route-decision-20261007/evidence/fork-depth-probe.jsonl
+3d9e8583dce71473c218af56480ad229b040b48276244a83fe9ed8be5c64e2ce  docs/test-reports/B02-braces-route-decision-20261007/evidence/fork-runtime.txt
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  docs/test-reports/B02-braces-route-decision-20261007/evidence/lint-braces-trace.jsonl
+87dc3bf1dd51eb2caaaf7f2462b1fa9f56a6588fd6c4ea89574d2fccfc28ac34  docs/test-reports/B02-braces-route-decision-20261007/probe-braces-depth.cjs
