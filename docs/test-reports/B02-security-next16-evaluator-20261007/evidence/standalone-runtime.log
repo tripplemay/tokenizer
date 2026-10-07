@@ -1,0 +1,4 @@
+standalone_login_status=200
+standalone_providers_status=200
+standalone_css_status=200
+providers_body={"resend":{"id":"resend","name":"Resend","type":"email","signinUrl":"http://localhost:3140/api/auth/signin/resend","callbackUrl":"http://localhost:3140/api/auth/callback/resend"}}

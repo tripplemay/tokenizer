@@ -1,0 +1,99 @@
+
+> tokenizer@0.1.0 prisma:deploy
+> prisma migrate deploy
+
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "tokenizer_e2e_b02_eval_pw", schema "public" at "127.0.0.1:55639"
+
+28 migrations found in prisma/migrations
+
+Applying migration `20260515000000_init`
+Applying migration `20260515001000_add_device`
+Applying migration `20260515002000_tokens_and_repo_key`
+Applying migration `20260517000000_input_includes_cache`
+Applying migration `20260517100000_canonicalize_project_names`
+Applying migration `20260517200000_add_device_diagnostics`
+Applying migration `20260517300000_add_range_groupby_indexes`
+Applying migration `20260518000000_multi_tenant_foundation`
+Applying migration `20260519000000_add_user_timezone`
+Applying migration `20260519100000_add_jsonl_enrichment_fields`
+Applying migration `20260519200000_add_quota_snapshot_table`
+Applying migration `20260519400000_add_agent_feature_version`
+Applying migration `20260702000000_drop_legacy_project_unique_indexes`
+Applying migration `20260703000000_add_usage_event_fallback_columns`
+Applying migration `20260710000000_add_model_price_table`
+Applying migration `20260725000000_add_harness_console_tables`
+Applying migration `20260726000000_add_harness_project_modes`
+Applying migration `20260727000000_add_harness_mode_intents_dispatch_runs`
+Applying migration `20260730000000_add_harness_sync_diagnostics`
+Applying migration `20260731000000_add_agent_release_version`
+Applying migration `20260802000000_add_device_reporter_observability`
+Applying migration `20260806000000_canonicalize_codex_usage_events`
+Applying migration `20260809000000_add_harness_transitions`
+Applying migration `20260809000001_add_harness_batch_archive`
+Applying migration `20260810000000_add_dispatch_usage`
+Applying migration `20260810000001_add_harness_gate_notified_at`
+Applying migration `20260810120000_align_fk_referential_actions`
+Applying migration `20260810130000_add_quota_account_index`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260515000000_init/
+    └─ migration.sql
+  └─ 20260515001000_add_device/
+    └─ migration.sql
+  └─ 20260515002000_tokens_and_repo_key/
+    └─ migration.sql
+  └─ 20260517000000_input_includes_cache/
+    └─ migration.sql
+  └─ 20260517100000_canonicalize_project_names/
+    └─ migration.sql
+  └─ 20260517200000_add_device_diagnostics/
+    └─ migration.sql
+  └─ 20260517300000_add_range_groupby_indexes/
+    └─ migration.sql
+  └─ 20260518000000_multi_tenant_foundation/
+    └─ migration.sql
+  └─ 20260519000000_add_user_timezone/
+    └─ migration.sql
+  └─ 20260519100000_add_jsonl_enrichment_fields/
+    └─ migration.sql
+  └─ 20260519200000_add_quota_snapshot_table/
+    └─ migration.sql
+  └─ 20260519400000_add_agent_feature_version/
+    └─ migration.sql
+  └─ 20260702000000_drop_legacy_project_unique_indexes/
+    └─ migration.sql
+  └─ 20260703000000_add_usage_event_fallback_columns/
+    └─ migration.sql
+  └─ 20260710000000_add_model_price_table/
+    └─ migration.sql
+  └─ 20260725000000_add_harness_console_tables/
+    └─ migration.sql
+  └─ 20260726000000_add_harness_project_modes/
+    └─ migration.sql
+  └─ 20260727000000_add_harness_mode_intents_dispatch_runs/
+    └─ migration.sql
+  └─ 20260730000000_add_harness_sync_diagnostics/
+    └─ migration.sql
+  └─ 20260731000000_add_agent_release_version/
+    └─ migration.sql
+  └─ 20260802000000_add_device_reporter_observability/
+    └─ migration.sql
+  └─ 20260806000000_canonicalize_codex_usage_events/
+    └─ migration.sql
+  └─ 20260809000000_add_harness_transitions/
+    └─ migration.sql
+  └─ 20260809000001_add_harness_batch_archive/
+    └─ migration.sql
+  └─ 20260810000000_add_dispatch_usage/
+    └─ migration.sql
+  └─ 20260810000001_add_harness_gate_notified_at/
+    └─ migration.sql
+  └─ 20260810120000_align_fk_referential_actions/
+    └─ migration.sql
+  └─ 20260810130000_add_quota_account_index/
+    └─ migration.sql
+      
+All migrations have been successfully applied.

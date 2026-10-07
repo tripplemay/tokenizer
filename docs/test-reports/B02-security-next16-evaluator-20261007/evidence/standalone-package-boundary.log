@@ -1,0 +1,20 @@
+Dockerfile runner copies only .next/standalone, .next/static, public and prisma
+dev-only audited packages in standalone:
+ABSENT vitest
+ABSENT tinypool
+ABSENT vite
+ABSENT vite-node
+ABSENT tailwindcss
+ABSENT eslint
+ABSENT eslint-config-next
+ABSENT @next/eslint-plugin-next
+ABSENT fast-glob
+ABSENT micromatch
+ABSENT braces
+ABSENT chokidar
+runtime package roots in standalone:
+PRESENT next
+ABSENT next-intl
+ABSENT next-auth
+ABSENT @auth/core
+PRESENT @prisma/client

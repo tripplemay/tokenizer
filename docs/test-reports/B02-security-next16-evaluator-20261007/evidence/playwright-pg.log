@@ -1,0 +1,38 @@
+The files belonging to this database system will be owned by user "yixingzhou".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default database encoding has accordingly been set to "SQL_ASCII".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /tmp/tokenizer-b02-eval-pw-pg.dclYfO/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... Asia/Jakarta
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@16/bin/pg_ctl' -D /tmp/tokenizer-b02-eval-pw-pg.dclYfO/data -l logfile start
+
+waiting for server to start....2026-10-07 21:27:04.181 WIB [84616] LOG:  starting PostgreSQL 16.13 (Homebrew) on aarch64-apple-darwin25.2.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit
+2026-10-07 21:27:04.181 WIB [84616] LOG:  listening on IPv4 address "127.0.0.1", port 55639
+2026-10-07 21:27:04.182 WIB [84616] LOG:  listening on Unix socket "/tmp/.s.PGSQL.55639"
+2026-10-07 21:27:04.184 WIB [84619] LOG:  database system was shut down at 2026-10-07 21:27:04 WIB
+2026-10-07 21:27:04.185 WIB [84616] LOG:  database system is ready to accept connections
+ done
+server started
+2026-10-07 21:27:08.842 WIB [84616] LOG:  received fast shutdown request
+2026-10-07 21:27:08.843 WIB [84616] LOG:  aborting any active transactions
+2026-10-07 21:27:08.844 WIB [84616] LOG:  background worker "logical replication launcher" (PID 84622) exited with exit code 1
+2026-10-07 21:27:08.844 WIB [84617] LOG:  shutting down
+2026-10-07 21:27:08.844 WIB [84617] LOG:  checkpoint starting: shutdown immediate
+2026-10-07 21:27:08.906 WIB [84617] LOG:  checkpoint complete: wrote 1042 buffers (6.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.051 s, sync=0.011 s, total=0.062 s; sync files=448, longest=0.001 s, average=0.001 s; distance=5125 kB, estimate=5125 kB; lsn=0/1A1F180, redo lsn=0/1A1F180
+2026-10-07 21:27:08.910 WIB [84616] LOG:  database system is shut down

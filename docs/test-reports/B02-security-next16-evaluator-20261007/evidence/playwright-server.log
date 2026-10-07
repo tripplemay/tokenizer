@@ -1,0 +1,9 @@
+
+> tokenizer@0.1.0 start
+> next start --hostname 127.0.0.1 --port 3139
+
+▲ Next.js 16.4.0
+- Local:         http://127.0.0.1:3139
+- Network:       http://127.0.0.1:3139
+✓ Ready in 125ms
+✓ Running next.config.mjs took 66ms

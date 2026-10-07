@@ -1,0 +1,7 @@
+docker=
+failed to connect to the docker API at unix:///Users/yixingzhou/.colima/default/docker.sock; check if the path is correct and if the daemon is running: dial unix /Users/yixingzhou/.colima/default/docker.sock: connect: no such file or directory
+platform=Darwin yixingzhoudeMacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:11:03 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8132 arm64
+node=v22.22.0
+candidate_ci_jobs=  push:   pull_request:   workflow_dispatch:   verify:   verify-windows:   deploy: 
+deploy_needs=    needs: verify
+candidate_tracked_playwright_files=

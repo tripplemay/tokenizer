@@ -1,0 +1,25 @@
+
+> tokenizer@0.1.0 start
+> next start --hostname 127.0.0.1 --port 3138
+
+▲ Next.js 16.4.0
+- Local:         http://127.0.0.1:3138
+- Network:       http://127.0.0.1:3138
+✓ Ready in 126ms
+✓ Running next.config.mjs took 74ms
+prisma:error 
+Invalid `prisma.verificationToken.delete()` invocation:
+
+
+An operation failed because it depends on one or more records that were required but not found. Record to delete does not exist.
+[31m[auth][error][0m Verification: Read more at https://errors.authjs.dev#verification
+    at oF (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_1p5919vntzpge._.js:404:39751)
+    at async o1 (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_1p5919vntzpge._.js:404:50198)
+    at async o8 (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_1p5919vntzpge._.js:404:55831)
+    at async r0.renderToResponse (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:14352)
+    at async r0.executeRequest (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:17509)
+    at async z (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_0xrnuwmugxlnp._.js:1:2968)
+    at async r0.handleResponse (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:1:132981)
+    at async X (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_0xrnuwmugxlnp._.js:1:3962)
+    at async Module.y [as handler] (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/.next/server/chunks/_0xrnuwmugxlnp._.js:1:6069)
+    at async NextNodeServer.renderToResponseWithComponentsImpl (/Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007/node_modules/next/dist/server/base-server.js:1731:9)

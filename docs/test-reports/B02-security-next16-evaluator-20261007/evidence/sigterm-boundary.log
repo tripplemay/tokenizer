@@ -1,0 +1,9 @@
+candidate=305201ef44ab9e6a6a20f4f24c7c7358d57b1ebe
+parent=4b67b2ec33157b70149d708aebea21d3bd5dbbff
+lifecycle_paths_changed=false
+independent_full_suite_runs=3
+independent_full_suite_failures=0
+independent_isolated_agent_lifecycle_runs=10
+independent_isolated_agent_lifecycle_failures=0
+boundary=Next16 migration does not alter lifecycle implementation or test; evaluator did not reproduce historical SIGTERM flake
+static_race_window=src/cli/agent.ts installs signal handlers before writing state.agent.status=running; test waits for running before SIGTERM

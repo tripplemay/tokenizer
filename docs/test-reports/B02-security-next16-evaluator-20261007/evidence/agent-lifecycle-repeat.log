@@ -1,0 +1,124 @@
+=== run 1 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1666ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 328ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1034ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:35
+   Duration  2.11s (transform 33ms, setup 0ms, collect 33ms, tests 1.67s, environment 0ms, prepare 45ms)
+
+=== run 2 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1612ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 301ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1037ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:38
+   Duration  1.96s (transform 41ms, setup 0ms, collect 35ms, tests 1.61s, environment 0ms, prepare 48ms)
+
+=== run 3 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1610ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1036ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:40
+   Duration  1.86s (transform 36ms, setup 0ms, collect 35ms, tests 1.61s, environment 0ms, prepare 45ms)
+
+=== run 4 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1645ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 326ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1039ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:43
+   Duration  2.02s (transform 34ms, setup 0ms, collect 36ms, tests 1.64s, environment 0ms, prepare 32ms)
+
+=== run 5 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1541ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1032ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:45
+   Duration  1.85s (transform 28ms, setup 0ms, collect 29ms, tests 1.54s, environment 0ms, prepare 29ms)
+
+=== run 6 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1539ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1035ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:47
+   Duration  1.88s (transform 26ms, setup 0ms, collect 29ms, tests 1.54s, environment 0ms, prepare 32ms)
+
+=== run 7 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1542ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1035ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:49
+   Duration  1.77s (transform 27ms, setup 0ms, collect 29ms, tests 1.54s, environment 0ms, prepare 53ms)
+
+=== run 8 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1540ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1033ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:52
+   Duration  1.76s (transform 27ms, setup 0ms, collect 28ms, tests 1.54s, environment 0ms, prepare 30ms)
+
+=== run 9 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1543ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1037ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:54
+   Duration  1.85s (transform 30ms, setup 0ms, collect 29ms, tests 1.54s, environment 0ms, prepare 43ms)
+
+=== run 10 ===
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-eval2-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (6 tests) 1586ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1032ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:24:56
+   Duration  1.87s (transform 30ms, setup 0ms, collect 37ms, tests 1.59s, environment 0ms, prepare 23ms)
+
+failures=0
