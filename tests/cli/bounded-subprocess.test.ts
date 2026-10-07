@@ -46,6 +46,27 @@ describe("bounded replay subprocess", () => {
     expect(Date.now() - started).toBeLessThan(2_000);
   });
 
+  it("waits for descendant termination before returning from a timeout", () => {
+    const cwd = mkdtempSync(join(realpathSync(tmpdir()), "bounded-tree-"));
+    roots.push(cwd);
+    const marker = join(cwd, "orphan-marker");
+    const descendant = `setTimeout(() => require('node:fs').writeFileSync(${JSON.stringify(marker)}, 'orphan'), 1500)`;
+    const parent = [
+      "const { spawn } = require('node:child_process');",
+      `spawn(process.execPath, ['-e', ${JSON.stringify(descendant)}], { stdio: ['ignore', 'inherit', 'ignore'] });`,
+      "setTimeout(() => {}, 30000);"
+    ].join("");
+
+    expect(() => runBoundedSubprocess(process.execPath, ["-e", parent], {
+      cwd,
+      timeoutMs: 100,
+      maxOutputBytes: 1024,
+      windowsHide: true
+    })).toThrow(BoundedSubprocessTimeoutError);
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2_000);
+    expect(existsSync(marker)).toBe(false);
+  }, 5_000);
+
   it("ships the plain-JavaScript worker in both full-checkout installer paths", () => {
     expect(existsSync("src/cli/bounded-subprocess-worker.mjs")).toBe(true);
     const posix = readFileSync("public/install.sh", "utf8");

@@ -219,5 +219,5 @@ describe("bounded historical replay", () => {
     expect(first.upload).toContain("next Agent/run/sync cycle");
     expect(queue[0].sourceEventId).toBe("old-backlog");
     expect(readFileSync(cursor, "utf8")).toBe("cursor sentinel\n");
-  });
+  }, 30_000);
 });

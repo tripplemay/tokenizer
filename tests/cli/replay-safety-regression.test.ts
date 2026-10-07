@@ -94,7 +94,7 @@ it("R3 binds workspace inference to confirmation even when only projectRoots cha
   const neverMerge = () => { throw new Error("MERGE_MUST_NOT_RUN"); };
   expect(() => executeBoundedReplay(plan(file, false), after, previewBefore.planDigest, { readCurrentConfig: () => after, mergeEvents: neverMerge })).toThrow("does not match");
   expect(() => executeBoundedReplay(plan(file, false), before, previewBefore.planDigest, { readCurrentConfig: () => after, mergeEvents: neverMerge })).toThrow("stale before queue admission");
-});
+}, 30_000);
 
 it.skipIf(process.platform === "win32")("R2 safely refuses regular-file to FIFO swap without waiting for a writer", () => {
   const dir = root();

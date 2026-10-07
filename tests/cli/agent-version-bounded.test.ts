@@ -29,7 +29,8 @@ it("captures the Agent SHA once at module load and keeps it frozen", () => {
       "  process.exit(0);",
       "}"
     ].join("\n"));
-    shimEnv = { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require \"${preload}\"`.trim() };
+    const portablePreload = preload.replace(/\\/g, "/");
+    shimEnv = { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require=\"${portablePreload}\"`.trim() };
   } else {
     writeFileSync(join(bin, "git"), "#!/bin/sh\nprintf 'called\\n' >> \"$AGENT_VERSION_MARKER\"\nprintf 'abcdef123456\\n'\n", { mode: 0o700 });
   }

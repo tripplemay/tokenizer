@@ -51,7 +51,8 @@ function installStalledGit(bin: string): Record<string, string> {
     "  process.exit(1);",
     "}"
   ].join("\n"));
-  return { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require \"${preload}\"`.trim() };
+  const portablePreload = preload.replace(/\\/g, "/");
+  return { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require=\"${portablePreload}\"`.trim() };
 }
 
 it("interrupts a real stalled Git process within the replay deadline", () => {
