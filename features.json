@@ -15,7 +15,7 @@
       "title": "Independent cross-family acceptance of the combined candidate",
       "priority": "high",
       "executor": "evaluator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "Fresh different-model-family evaluator independently checks the exact committed candidate against the spec using focused adversarial and real multiprocess controls, records an immutable verdict and limitations. Native Windows/Linux/PG16 and production gates remain explicit if not exercised; no self-signoff."
     }
   ]

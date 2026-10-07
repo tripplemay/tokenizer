@@ -1,0 +1,27 @@
+{
+  "task_id": "privacy-queue-closeout-27d9664-kimi-r0",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-PRIVACY-QUEUE-CLOSEOUT",
+  "ref": "27d9664e37a659ad28962bee224d871378e4336c",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-PRIVACY-QUEUE-CLOSEOUT-local-cli--kimi--evaluator-privacy-queue-closeout-27d9664-kimi-r0",
+  "artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-PRIVACY-QUEUE-CLOSEOUT-local-cli--kimi--evaluator-privacy-queue-closeout-27d9664-kimi-r0/docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-verdict.json",
+  "log": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/run-privacy-queue-closeout-27d9664-kimi-r0.log",
+  "envelope_path": "/Volumes/ORICO/project/.worktrees/tokenizer-remaining-work-report-20261008/docs/test-reports/remaining-work-20261008/takeover-evaluation-envelope.json",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 1279,
+  "effective_timeout_s": 1800,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "process_exit",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

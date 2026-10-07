@@ -1,0 +1,59 @@
+
+> tokenizer@0.1.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 189ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 5.22.0 -> 8.0.0-rc.21                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+▲ Next.js 16.4.0 (Turbopack)
+⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+
+> Build error occurred
+Error: Failed to load native binding
+    at ignore-listed frames {
+  [cause]: [
+    Error: Cannot find module './swc.darwin-universal.node'
+    Require stack:
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/binding.js
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/index.js
+        at ignore-listed frames {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: [Array]
+    },
+    Error: Cannot find module '@swc/core-darwin-universal'
+    Require stack:
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/binding.js
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/index.js
+        at ignore-listed frames {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: [Array]
+    },
+    Error: Cannot find module './swc.darwin-arm64.node'
+    Require stack:
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/binding.js
+    - /private/tmp/pqev27d9/repo/node_modules/@swc/core/index.js
+        at ignore-listed frames {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: [Array]
+    },
+    Error: SWC native addon: validate cache root /tmp/pqev27d9/home/Library/Caches: cache root contains a non-directory or symlink. Reinstall the native package if its payload is damaged; check SWC_NATIVE_BINDING_CACHE and directory permissions for materialization failures.
+        at ignore-listed frames {
+      code: 'ERR_SWC_NATIVE_CACHE'
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "kind": "coordination_transport_verification",
+  "created_at": "2026-10-07T20:18:42.018Z",
+  "candidate": "27d9664e37a659ad28962bee224d871378e4336c",
+  "files_identical": 17,
+  "feedback_identical": true,
+  "signoff_identical": true,
+  "product_unchanged": true,
+  "evaluator_tracked_files_unchanged": true,
+  "release_ready": false,
+  "manifest": [
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/README.md",
+      "bytes": 9593,
+      "sha256": "fb48278e1f60537edc6972bd78d13495891cbf989203fbfe49fcc470b8663ab1"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/SIGNOFF.md",
+      "bytes": 1245,
+      "sha256": "3e22fdcdb700ac5572088b91f05e2e1094f1e7da94ec73bdd5cc72daa039f3a5"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/build-symlink-home-failure.log",
+      "bytes": 2797,
+      "sha256": "1ebe5a481f33e0519b79a35e48906d3583e258f0bb3bb76959569d3fe2c9bf7f"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/build.log",
+      "bytes": 2505,
+      "sha256": "17c23c7e533d3a468d9788a067461c9476d2ce7569ad69850564c49c6401a168"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/command-summary.txt",
+      "bytes": 135,
+      "sha256": "3d1bed1a376f51b103048f4543d6487694b3321b3a9daa22ff31f669bce6251c"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/focused.log",
+      "bytes": 9918,
+      "sha256": "e185155c2035beb45b856037ae37ee98536ee5b3846757d728718a00390d325f"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/full-controlled.log",
+      "bytes": 21760,
+      "sha256": "442083d5b33ba1162a76fa8d33eb03d1f7f2424432337ae432efed5f89ef7fd3"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/full-default.log",
+      "bytes": 26267,
+      "sha256": "89d726bed063eb15a5fb8108201b1631530c2396e8053d065b053b6b4237b90c"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-f002-adversarial.test.ts",
+      "bytes": 13109,
+      "sha256": "e152955ffb403ce7102817749f1c6f81af6e324ffda4e17ef7477cbe9190f8b7"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-f002-multiprocess.probe.ts",
+      "bytes": 10901,
+      "sha256": "da56f8a826c9536eeeca266aafac1e5ae1a3f33c0c518bb778fff0a532f4a680"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-f002-multiprocess.test.ts",
+      "bytes": 1501,
+      "sha256": "69b7ea0b682df060729b875124bc476d9e5775872e307cd7db6966c2c4ccbaa4"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-tests.json",
+      "bytes": 7359,
+      "sha256": "071bb1b00929c170f8b1d77a3c70b5bda3b438dc824c04f0da1fcbd776fa5aa0"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-tests.log",
+      "bytes": 53,
+      "sha256": "86d58c2acc12be32d65f59db891b01f9f7a7eb7e16f371ec74a97f85f6612128"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/lint.log",
+      "bytes": 267,
+      "sha256": "ea793133a49bac0618769c2dd860ca3aa3bdc7fc2c4d4aa042e8701a48fc6e79"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/npm-ci.log",
+      "bytes": 536,
+      "sha256": "f74f8b3bcc026b0b700cb8eefae19b6ea9f730b9528cd86570240966bfeed244"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/verify.log",
+      "bytes": 404,
+      "sha256": "1b9fcd2ef7f442ae89e005b86476e91bfbfdb01219bc1408f8cb818974d97a1e"
+    },
+    {
+      "path": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-verdict.json",
+      "bytes": 7041,
+      "sha256": "e566993cd5594cf2ebe63f85618818b610ec1ed35d4cf6fe285497bb302c38ea"
+    }
+  ]
+}
