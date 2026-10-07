@@ -58,6 +58,7 @@ async function syncBatchWithRetry(config: TokenizerConfig, batch: UsageEventInpu
 export type SyncBatchProgress = {
   synced: number;
   total: number;
+  acknowledged: UsageEventInput[];
   remaining: UsageEventInput[];
 };
 
@@ -124,7 +125,12 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
     total.received += result.received;
     total.deviceId = result.deviceId ?? total.deviceId;
     synced += batch.length;
-    await options.onBatchSynced?.({ synced, total: ordered.length, remaining: ordered.slice(synced) });
+    await options.onBatchSynced?.({
+      synced,
+      total: ordered.length,
+      acknowledged: batch,
+      remaining: ordered.slice(synced)
+    });
   }
   return total;
 }

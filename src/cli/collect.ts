@@ -1,4 +1,5 @@
 import { homedir } from "node:os";
+import { existsSync, readFileSync } from "node:fs";
 import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
 import { parseClaudeUsage } from "@/parsers/claude";
 import { parseCodexUsage } from "@/parsers/codex";
@@ -59,6 +60,51 @@ export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
 export function writeQueue(events: UsageEventInput[]) {
   const content = events.length ? events.map((event) => JSON.stringify(minimizeUsageEvent(sanitizeUsageEventGit(event)))).join("\n") + "\n" : "";
   withFileLock(queuePath, () => writeFileAtomic(queuePath, content));
+}
+
+export function mergeQueue(events: UsageEventInput[], path = queuePath): { events: UsageEventInput[]; added: number } {
+  const incoming = events.map((event) => minimizeUsageEvent(sanitizeUsageEventGit(event)));
+  let result: { events: UsageEventInput[]; added: number } | undefined;
+  withFileLock(path, () => {
+    const existing = existsSync(path)
+      ? readFileSync(path, "utf8").split(/\r?\n/).filter(Boolean)
+        .map((line) => minimizeUsageEvent(sanitizeUsageEventGit(JSON.parse(line) as UsageEventInput)))
+      : [];
+    const existingKeys = new Set(existing.map((event) => `${event.source}:${event.sourceEventId}`));
+    const merged = dedupeBySourceEventId([...existing, ...incoming]);
+    const added = new Set(incoming
+      .map((event) => `${event.source}:${event.sourceEventId}`)
+      .filter((key) => !existingKeys.has(key))).size;
+    const content = merged.length ? merged.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
+    writeFileAtomic(path, content);
+    result = { events: merged, added };
+  });
+  return result!;
+}
+
+// Remove only the exact event versions acknowledged by the server. Writers
+// may merge replay or fresh collection events while a network request is in
+// flight; rewriting a previously computed tail would erase those additions.
+// A concurrently corrected event with the same ID is retained for re-upload.
+export function acknowledgeQueuedEvents(events: UsageEventInput[], path = queuePath): UsageEventInput[] {
+  const acknowledged = new Map(events.map((event) => {
+    const minimized = minimizeUsageEvent(sanitizeUsageEventGit(event));
+    return [`${minimized.source}:${minimized.sourceEventId}`, JSON.stringify(minimized)];
+  }));
+  let remaining: UsageEventInput[] = [];
+  withFileLock(path, () => {
+    const current = existsSync(path)
+      ? readFileSync(path, "utf8").split(/\r?\n/).filter(Boolean)
+        .map((line) => minimizeUsageEvent(sanitizeUsageEventGit(JSON.parse(line) as UsageEventInput)))
+      : [];
+    remaining = current.filter((event) => {
+      const expected = acknowledged.get(`${event.source}:${event.sourceEventId}`);
+      return expected === undefined || expected !== JSON.stringify(event);
+    });
+    const content = remaining.length ? remaining.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
+    writeFileAtomic(path, content);
+  });
+  return remaining;
 }
 
 export function dedupeBySourceEventId(events: UsageEventInput[]): UsageEventInput[] {

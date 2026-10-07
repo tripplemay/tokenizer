@@ -14,7 +14,10 @@ export type JsonlFile = {
 };
 
 export function readJsonlFile(path: string): JsonlFile {
-  const bytes = readFileSync(path);
+  return readJsonlBytes(readFileSync(path));
+}
+
+export function readJsonlBytes(bytes: Buffer): JsonlFile {
   const lines: JsonlLine[] = [];
   let start = 0;
   let lineNumber = 1;

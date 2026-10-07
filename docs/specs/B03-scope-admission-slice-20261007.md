@@ -1,8 +1,9 @@
 # B03 durable admission and future bounded replay contract
 
 Isolated upgrade slice based on `ecdd354`, not the historical F005 batch.
-Coordinator-approved scope: durable admission + backlog disclosure now;
-operational bounded replay is deferred to a separate R07 slice.
+Coordinator-approved B03 scope originally delivered durable admission and
+backlog disclosure. The R07 follow-up now implements the bounded operational
+replay described below; it does not expand the remaining B03 closeout scope.
 
 ## Accepted product semantics
 
@@ -33,16 +34,18 @@ that fingerprint and no rule change can trigger a cursor rewind through it.
 
 `syncEvents` accepts already-admitted inputs. Collection callers must use
 `collectEvents`, which applies path rules before admission. Wire batching still
-applies minimization and Git sanitization. Queue ACK/concurrent-writer races,
-queue corruption recovery, and per-event provenance are not redesigned here;
-those remain separate data-reliability scope. No historical server rows change.
+applies minimization and Git sanitization. R07 serializes collection/replay
+queue merges and removes only the exact event versions acknowledged by a sync,
+so an in-flight sync cannot erase a concurrent replay. General queue corruption
+recovery and per-event provenance remain separate data-reliability scope. No
+historical server rows change.
 
-## R07 interface: non-executing contract in this slice
+## R07 operational interface
 
-`planBoundedReplay` validates an immutable request/plan only. It performs NO file
-reads, parser calls, queue/cursor writes, or networking. There is NO `replay`
-CLI and no usable historical rescan/dry-run implementation in this slice.
-An attempted `tokenizer replay ...` fails as an unknown command.
+`planBoundedReplay` validates an immutable request/plan without side effects.
+The `tokenizer replay` command then runs either a read-only preview (default) or
+an explicit, digest-confirmed queue admission. The adapter is limited to one
+Claude Code project JSONL file.
 
 Initial planned R07 adapter scope is one Claude project JSONL file. Other sources
 must be explicitly implemented and reviewed, never silently delegated to normal
@@ -56,7 +59,7 @@ source discovery. The plan contract requires:
   to: "2026-10-02T00:00:00.000Z",   // exclusive, at most 31 days
   maxBytes: 1000000,                // explicit, at most 16 MiB
   maxEvents: 100,                  // explicit, at most 5000
-  dryRun: true                    // default; execution unsupported here
+  dryRun: true                    // default; --execute changes this to false
 }
 ```
 
@@ -65,10 +68,10 @@ an unknown option and is rejected; the request cannot widen the file scope.
 
 Missing limits/range/file, roots/directories without a literal JSONL file,
 relative paths, globs, unknown recursive/home-root options, unsupported sources,
-noncanonical UTC, invalid/excess budgets, and execution requests fail closed.
-These are interface negative tests, not evidence of an operational adapter.
+noncanonical UTC, invalid/excess budgets, unsafe source changes, stale
+confirmations, and paused execution fail closed.
 
-## Required R07 implementation guardrails
+## R07 implementation guardrails
 
 - CLI requires source + one explicit absolute file + UTC range + byte/event
   budgets; defaults to dry-run. No default HOME, project root, glob, directory,
@@ -109,7 +112,8 @@ changed rules with old admitted backlog, incremental CLI collection after a
 previously excluded record, exact cursor preservation on configure, fingerprint
 absence from wire, paused collection, failed uploads, and replay fail-closed.
 
-Not a complete B03 closeout: R07 adapters/CLI, raw diagnostic opt-in with expiry,
-versioned path-containing identity migration, live multi-tenant canary/fleet
-rollout, and historical production cleanup remain separate. Historical cleanup
-requires user-approved backup/restore and bounded migration; none is performed.
+Not a complete B03 closeout: adapters for sources other than Claude Code, raw
+diagnostic opt-in with expiry, versioned path-containing identity migration,
+live multi-tenant canary/fleet rollout, and historical production cleanup remain
+separate. Historical cleanup requires user-approved backup/restore and bounded
+migration; none is performed by replay.

@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   readCursor: vi.fn(),
   writeCursor: vi.fn(),
   collectEvents: vi.fn(),
+  mergeQueue: vi.fn(),
+  acknowledgeQueuedEvents: vi.fn(),
   readQueue: vi.fn(),
   dedupeBySourceEventId: vi.fn(),
   writeQueue: vi.fn(),
@@ -40,6 +42,8 @@ vi.mock("@/cli/cursor", () => ({
 }));
 vi.mock("@/cli/collect", () => ({
   collectEvents: mocks.collectEvents,
+  mergeQueue: mocks.mergeQueue,
+  acknowledgeQueuedEvents: mocks.acknowledgeQueuedEvents,
   dedupeBySourceEventId: mocks.dedupeBySourceEventId,
   writeQueue: mocks.writeQueue
 }));
@@ -65,6 +69,11 @@ describe("runOnce durable sync checkpoint", () => {
     mocks.writeQueue.mockReset();
     mocks.writeCursor.mockReset();
     mocks.syncEvents.mockReset();
+    mocks.mergeQueue.mockImplementation((incoming: UsageEventInput[]) => {
+      const events = mocks.dedupeBySourceEventId([...mocks.readQueue(), ...incoming]);
+      return { events, added: incoming.length };
+    });
+    mocks.acknowledgeQueuedEvents.mockReset();
     mocks.readConfig.mockReturnValue({ serverUrl: "https://example.test" });
     mocks.heartbeat.mockResolvedValue({ ok: true });
     mocks.readQueue.mockReturnValue([]);
@@ -81,7 +90,7 @@ describe("runOnce durable sync checkpoint", () => {
     const result = await runOnce();
 
     expect(result.received).toBe(0);
-    expect(mocks.writeQueue).toHaveBeenCalledWith([local]);
+    expect(mocks.mergeQueue).toHaveBeenCalledWith([local]);
     expect(mocks.writeCursor).toHaveBeenCalledWith(cursor);
     expect(mocks.heartbeat).not.toHaveBeenCalled();
     expect(mocks.syncEvents).not.toHaveBeenCalled();
@@ -112,7 +121,7 @@ describe("runOnce durable sync checkpoint", () => {
 
     await runOnce();
 
-    expect(mocks.writeQueue).toHaveBeenCalledWith([backlog, fresh]);
+    expect(mocks.mergeQueue).toHaveBeenCalledWith([fresh]);
     expect(mocks.syncEvents).not.toHaveBeenCalled();
   });
 
@@ -131,7 +140,7 @@ describe("runOnce durable sync checkpoint", () => {
     await runOnce();
 
     expect(mocks.syncEvents).toHaveBeenCalledWith(config, [backlog], expect.objectContaining({ onBatchSynced: expect.any(Function) }));
-    expect(mocks.clearQueue).toHaveBeenCalledOnce();
+    expect(mocks.clearQueue).not.toHaveBeenCalled();
   });
 
   it("persists the cursor after queueing and retains only the unsent tail on failure", async () => {
@@ -141,16 +150,16 @@ describe("runOnce durable sync checkpoint", () => {
     mocks.readCursor.mockReturnValue(cursor);
     mocks.collectEvents.mockReturnValue({ events: [newest, older], warnings: [] });
     mocks.syncEvents.mockImplementation(async (_config, events, options) => {
-      await options.onBatchSynced({ synced: 1, total: 2, remaining: [events[1]] });
+      await options.onBatchSynced({ synced: 1, total: 2, acknowledged: [events[0]], remaining: [events[1]] });
       throw new Error("network timeout");
     });
 
     await expect(runOnce()).rejects.toThrow("network timeout");
 
-    expect(mocks.writeQueue).toHaveBeenNthCalledWith(1, [newest, older]);
+    expect(mocks.mergeQueue).toHaveBeenCalledWith([newest, older]);
     expect(mocks.writeCursor).toHaveBeenCalledWith(cursor);
     expect(mocks.writeCursor.mock.invocationCallOrder[0]).toBeLessThan(mocks.syncEvents.mock.invocationCallOrder[0]);
-    expect(mocks.writeQueue).toHaveBeenNthCalledWith(2, [older]);
+    expect(mocks.acknowledgeQueuedEvents).toHaveBeenCalledWith([newest]);
     expect(mocks.clearQueue).not.toHaveBeenCalled();
     expect(mocks.updateState).toHaveBeenCalledWith(expect.objectContaining({
       lastSyncStatus: "failed",
@@ -162,7 +171,7 @@ describe("runOnce durable sync checkpoint", () => {
     const cursor = { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 };
     mocks.readCursor.mockReturnValue(cursor);
     mocks.collectEvents.mockReturnValue({ events: [event("new", "2026-08-22T15:00:00.000Z")], warnings: [] });
-    mocks.writeQueue.mockImplementationOnce(() => {
+    mocks.mergeQueue.mockImplementationOnce(() => {
       throw new Error("queue disk full");
     });
 
@@ -184,8 +193,8 @@ describe("runOnce durable sync checkpoint", () => {
 
     await expect(runOnce()).rejects.toThrow("cursor disk full");
 
-    expect(mocks.writeQueue).toHaveBeenCalledOnce();
-    expect(mocks.writeQueue).toHaveBeenCalledWith([queuedEvent]);
+    expect(mocks.mergeQueue).toHaveBeenCalledOnce();
+    expect(mocks.mergeQueue).toHaveBeenCalledWith([queuedEvent]);
     expect(mocks.syncEvents).not.toHaveBeenCalled();
     expect(mocks.clearQueue).not.toHaveBeenCalled();
   });
@@ -196,20 +205,18 @@ describe("runOnce durable sync checkpoint", () => {
     const cursor = { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 };
     mocks.readCursor.mockReturnValue(cursor);
     mocks.collectEvents.mockReturnValue({ events: [newest, older], warnings: [] });
-    mocks.writeQueue
-      .mockImplementationOnce(() => undefined)
-      .mockImplementationOnce(() => {
-        throw new Error("checkpoint disk full");
-      });
+    mocks.acknowledgeQueuedEvents.mockImplementationOnce(() => {
+      throw new Error("checkpoint disk full");
+    });
     mocks.syncEvents.mockImplementation(async (_config, events, options) => {
-      await options.onBatchSynced({ synced: 1, total: 2, remaining: [events[1]] });
+      await options.onBatchSynced({ synced: 1, total: 2, acknowledged: [events[0]], remaining: [events[1]] });
       return { inserted: 2, duplicates: 0, received: 2 };
     });
 
     await expect(runOnce()).rejects.toThrow("checkpoint disk full");
 
-    expect(mocks.writeQueue).toHaveBeenNthCalledWith(1, [newest, older]);
-    expect(mocks.writeQueue).toHaveBeenNthCalledWith(2, [older]);
+    expect(mocks.mergeQueue).toHaveBeenCalledWith([newest, older]);
+    expect(mocks.acknowledgeQueuedEvents).toHaveBeenCalledWith([newest]);
     expect(mocks.clearQueue).not.toHaveBeenCalled();
     expect(mocks.updateState).toHaveBeenCalledWith(expect.objectContaining({
       lastSyncStatus: "failed",

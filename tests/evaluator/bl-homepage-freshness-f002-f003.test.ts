@@ -27,6 +27,8 @@ const mocks = vi.hoisted(() => ({
   readCursor: vi.fn(),
   writeCursor: vi.fn(),
   collectEvents: vi.fn(),
+  mergeQueue: vi.fn(),
+  acknowledgeQueuedEvents: vi.fn(),
   readQueue: vi.fn(),
   dedupeBySourceEventId: vi.fn(),
   writeQueue: vi.fn(),
@@ -52,6 +54,8 @@ vi.mock("@/cli/config", () => ({
 }));
 vi.mock("@/cli/collect", () => ({
   collectEvents: mocks.collectEvents,
+  mergeQueue: mocks.mergeQueue,
+  acknowledgeQueuedEvents: mocks.acknowledgeQueuedEvents,
   dedupeBySourceEventId: mocks.dedupeBySourceEventId,
   writeQueue: mocks.writeQueue
 }));
@@ -120,6 +124,11 @@ beforeEach(() => {
     for (const row of events) byId.set(`${row.source}:${row.sourceEventId}`, row);
     return [...byId.values()];
   });
+  mocks.mergeQueue.mockImplementation((incoming: UsageEventInput[]) => {
+    const events = mocks.dedupeBySourceEventId([...mocks.readQueue(), ...incoming]);
+    return { events, added: incoming.length };
+  });
+  mocks.acknowledgeQueuedEvents.mockImplementation(() => []);
   mocks.runQuotaRefresh.mockResolvedValue(undefined);
   mocks.runHarnessSync.mockResolvedValue({
     snapshot: { status: "clean" },
@@ -186,7 +195,7 @@ describe("F002 adversarial upload contract", () => {
     mocks.agentFetch.mockResolvedValueOnce(okResponse(0));
     await expect(syncEvents(config, [], { onBatchSynced: emptyProgress })).resolves.toMatchObject({ received: 0 });
     expect(bodyEvents(mocks.agentFetch.mock.calls[0])).toEqual([]);
-    expect(emptyProgress).toHaveBeenCalledWith({ synced: 0, total: 0, remaining: [] });
+    expect(emptyProgress).toHaveBeenCalledWith({ synced: 0, total: 0, acknowledged: [], remaining: [] });
 
     vi.clearAllMocks();
     vi.useFakeTimers();
@@ -221,9 +230,16 @@ describe("F003 durable failure states", () => {
     let durable: UsageEventInput[] = [];
     mocks.readCursor.mockReturnValue(cursor);
     mocks.collectEvents.mockReturnValue({ events: rows, warnings: [] });
-    mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
+    mocks.mergeQueue.mockImplementation((next: UsageEventInput[]) => {
       durable = structuredClone(next);
       operations.push(`queue:${next.length}`);
+      return { events: next, added: next.length };
+    });
+    mocks.acknowledgeQueuedEvents.mockImplementation((acknowledged: UsageEventInput[]) => {
+      const keys = new Set(acknowledged.map((row) => `${row.source}:${row.sourceEventId}`));
+      durable = durable.filter((row) => !keys.has(`${row.source}:${row.sourceEventId}`));
+      operations.push(`queue:${durable.length}`);
+      return durable;
     });
     mocks.writeCursor.mockImplementation(() => operations.push("cursor"));
     mocks.agentFetch.mockImplementation(async (...args: unknown[]) => {
@@ -241,12 +257,12 @@ describe("F003 durable failure states", () => {
     expect(operations.slice(0, 4)).toEqual(["queue:31", "cursor", "post:25", "queue:6"]);
     expect(operations.filter((entry) => entry === "post:6")).toHaveLength(3);
     expect(durable.map((row) => row.sourceEventId)).toEqual([
-      "durable-5",
-      "durable-4",
-      "durable-3",
-      "durable-2",
+      "durable-0",
       "durable-1",
-      "durable-0"
+      "durable-2",
+      "durable-3",
+      "durable-4",
+      "durable-5"
     ]);
     expect(mocks.clearQueue).not.toHaveBeenCalled();
   });
@@ -260,7 +276,7 @@ describe("F003 durable failure states", () => {
     mocks.collectEvents.mockReturnValue({ events: [fresh], warnings: [] });
     mocks.readCursor.mockReturnValue(cursor);
 
-    mocks.writeQueue.mockImplementationOnce(() => {
+    mocks.mergeQueue.mockImplementationOnce(() => {
       throw new Error("initial queue write failed");
     });
     await expect(runOnce()).rejects.toThrow("initial queue write failed");
@@ -275,8 +291,10 @@ describe("F003 durable failure states", () => {
     mocks.collectEvents.mockReturnValue({ events: [fresh], warnings: [] });
     mocks.readCursor.mockReturnValue(cursor);
     mocks.dedupeBySourceEventId.mockImplementation((rows: UsageEventInput[]) => rows);
-    mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
-      durable = structuredClone(next);
+    mocks.mergeQueue.mockImplementation((incoming: UsageEventInput[]) => {
+      const events = [old, ...incoming];
+      durable = structuredClone(events);
+      return { events, added: incoming.length };
     });
     mocks.writeCursor.mockImplementationOnce(() => {
       throw new Error("cursor write failed");
@@ -295,11 +313,12 @@ describe("F003 durable failure states", () => {
     mocks.collectEvents.mockReturnValue({ events: many, warnings: [] });
     mocks.readCursor.mockReturnValue(cursor);
     mocks.dedupeBySourceEventId.mockImplementation((rows: UsageEventInput[]) => rows);
-    let writes = 0;
-    mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
-      writes += 1;
-      if (writes === 2) throw new Error("checkpoint write failed");
-      durable = structuredClone(next);
+    mocks.mergeQueue.mockImplementation((incoming: UsageEventInput[]) => {
+      durable = structuredClone(incoming);
+      return { events: incoming, added: incoming.length };
+    });
+    mocks.acknowledgeQueuedEvents.mockImplementation(() => {
+      throw new Error("checkpoint write failed");
     });
     mocks.agentFetch.mockImplementation(async (...args: unknown[]) => okResponse(bodyEvents(args).length));
     await expect(runOnce()).rejects.toThrow("checkpoint write failed");
@@ -422,7 +441,7 @@ describe("F003 real CLI/daemon parity", () => {
       expect(observation.batches[0]).toEqual(Array.from({ length: 25 }, (_, index) => `cli-${29 - index}`));
       expect(observation.batches[1]).toEqual(["cli-4", "cli-3", "cli-2", "cli-1", "cli-0"]);
       expect(observation.queueAtRequest[0]).toHaveLength(30);
-      expect(observation.queueAtRequest[1]).toEqual(observation.batches[1]);
+      expect(new Set(observation.queueAtRequest[1])).toEqual(new Set(observation.batches[1]));
     }
     expect(observations.find(({ command }) => command === "sync")?.cursorAtRequest).toEqual([false, false]);
     expect(observations.find(({ command }) => command === "run")?.cursorAtRequest).toEqual([true, true]);

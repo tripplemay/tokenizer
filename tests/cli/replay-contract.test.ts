@@ -10,7 +10,7 @@ const request = {
   maxEvents: 100
 };
 
-describe("future bounded replay interface (non-executing contract only)", () => {
+describe("bounded replay request contract", () => {
   it("defaults an explicit one-file UTC-budgeted request to a frozen dry-run plan", () => {
     const plan = planBoundedReplay(request);
     expect(plan).toEqual({ ...request, maxFiles: 1, dryRun: true });
@@ -48,7 +48,8 @@ describe("future bounded replay interface (non-executing contract only)", () => 
     expect(() => planBoundedReplay({ ...request, maxEvents })).toThrow("byte/event limits");
   });
 
-  it("cannot execute or silently reinterpret a plan as collection", () => {
-    expect(() => planBoundedReplay({ ...request, dryRun: false })).toThrow("execution is not implemented");
+  it("requires an explicit false flag for the separate execution phase", () => {
+    expect(planBoundedReplay({ ...request, dryRun: false })).toEqual({ ...request, maxFiles: 1, dryRun: false });
+    expect(() => planBoundedReplay({ ...request, dryRun: "false" })).toThrow("dryRun must be boolean");
   });
 });
