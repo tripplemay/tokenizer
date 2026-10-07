@@ -1,0 +1,46 @@
+B03 replay deadline Generator evidence
+Date: 2026-10-08
+Base: d20da68391b4cde73e4b29a5385c7dc3fbbeddef
+Product candidate: ade94c914fadb6efb5aea7e3b74c1bea4efa5fd3
+Runtime: macOS; Node v22.22.0; default TMPDIR
+
+FOCUSED SUCCESSOR
+command: env PATH="$HOME/.nvm/versions/node/v22.22.0/bin:$PATH" npx vitest run tests/cli/b03-replay-deadline.test.ts
+result: 1 file passed; 4 tests passed
+real stalled Git test: 8253ms; REPLAY_REFUSED; no REPLAY_COMPLETED
+
+IMMUTABLE PREREVIEW NEGATIVES REPLAYED IN EPHEMERAL TREE
+source commit: 3220837
+files:
+  tests/cli/b03-round2-elapsed-negative.test.ts
+  tests/cli/b03-round2-final-deadline-negative.test.ts
+  tests/fixtures/b03-round2-git-timeout.ts
+result: 2 files passed; 2 tests passed
+observed:
+  GIT_ELAPSED_NEGATIVE {"elapsedMs":8376,"status":0,"stdout":"REPLAY_STARTED\nREPLAY_REFUSED Replay refused: Git enrichment exceeded 10000ms deadline\n"}
+
+FULL NODE 22
+command: env PATH="$HOME/.nvm/versions/node/v22.22.0/bin:$PATH" npm test -- --run
+result: 127 files passed; 9 skipped; 1639 tests passed; 26 skipped; 0 failed
+new real stalled Git case in full run: 8847ms
+
+STATIC AND BUILD
+command: env PATH="$HOME/.nvm/versions/node/v22.22.0/bin:$PATH" npm run verify
+result: PASS; Prisma generated; TypeScript noEmit passed
+command: env PATH="$HOME/.nvm/versions/node/v22.22.0/bin:$PATH" npm run lint
+result: PASS; eslint app src --max-warnings=0
+command: env PATH="$HOME/.nvm/versions/node/v22.22.0/bin:$PATH" npm run build
+result: PASS; Next.js production build compiled and generated pages
+command: git diff d20da68391b4cde73e4b29a5385c7dc3fbbeddef..ade94c914fadb6efb5aea7e3b74c1bea4efa5fd3 --check
+result: PASS
+
+NEGATIVE CONTROL CAUGHT DURING GENERATION
+With a 1000ms Git termination margin, the focused parent wall-clock assertion
+observed 10144ms and failed. The test was not weakened. The margin was changed
+to 2000ms; the exact Node 22 successor focused run then observed 8253ms and passed.
+
+ENVIRONMENT CONTROL
+An invocation under machine-default Node v25.7.0 failed 6 better-sqlite3 loads:
+the installed native module was built for NODE_MODULE_VERSION 127 while Node 25
+required 141. The required Node v22.22.0 rerun passed all 1639 tests. The Node 25
+result is not a product failure and is not counted as release evidence.

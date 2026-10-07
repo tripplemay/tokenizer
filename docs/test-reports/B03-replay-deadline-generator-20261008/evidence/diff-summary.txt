@@ -1,0 +1,16 @@
+Base: d20da68391b4cde73e4b29a5385c7dc3fbbeddef
+Product candidate: ade94c914fadb6efb5aea7e3b74c1bea4efa5fd3
+
+Product/test commits:
+16ee8de762812fe278573f6eb78fda784003f90f fix(cli): bound replay enrichment and admission deadline
+ade94c914fadb6efb5aea7e3b74c1bea4efa5fd3 fix(cli): reserve replay Git termination budget
+
+Files changed from base:
+ src/cli/collect.ts                         | queue lock timeout and before-mutate hook
+ src/cli/git.ts                             | optional absolute deadline and subprocess timeout
+ src/cli/replay.ts                          | one operation deadline through final admission
+ tests/cli/b03-replay-deadline.test.ts      | real/deterministic deadline and no-write controls
+ tests/cli/replay-safety-regression.test.ts | truthful Windows staged/per-case assertions
+ tests/fixtures/b03-replay-git-deadline.ts  | isolated real Git timeout fixture
+
+No old test report, progress.json, pending gate or production/deployment file changed.
