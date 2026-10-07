@@ -130,6 +130,24 @@ jobs:
       - name: Typecheck
         run: npm run verify
 
+      - name: Verify native Windows pinned installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path .ci -Force | Out-Null
+          npx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload native Windows installer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-pinned-installer
+          path: .ci/windows-installer.json
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Run unit tests
         run: npm run test
 

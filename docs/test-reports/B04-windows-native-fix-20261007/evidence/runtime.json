@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-07T15:51:11.781Z",
+  "role": "Generator self-test, not independent acceptance",
+  "node": "v22.22.0",
+  "nodeExecutable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b04-windows-native-fix-20261007",
+  "base": "bdd47309f8aecebea6b1c98f0d641a883e1cf46a",
+  "transportHead": "dabafeaa76b0621dce911caf61fcbe1733ce889a",
+  "transportCommits": [
+    "dabafeaa76b0621dce911caf61fcbe1733ce889a test(B04): record round-two agent release evaluation",
+    "9466dc4eba363f263c7e8e1d4808e9eaceda88cb fix(agent): lock installer cutovers and redact enrollment failures",
+    "f37fb456d931bb27a288e5bdad20d14366d788db fix(agent): restore legacy checkout with matching path guard",
+    "6db828bcf41304894858c1dc2ed045cd5901f0ef feat(agent): stage pinned installs with rollback paths"
+  ],
+  "next": "16.4.0",
+  "vitest": "2.1.9",
+  "tempDir": "/Volumes/ORICO/project/.b04tmp",
+  "nativeBaseline": {
+    "sha": "7b60bb6d6662f5f677c566ffa1b3db33ac4cfb5b",
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37644762713",
+    "conclusion": "failure"
+  },
+  "candidateNativeWindows": "NOT_RUN; requires Coordinator non-main CI push/rerun",
+  "ledgerLatest": "2074991717abaf3cb34d9aad894bcd4357fefbc3"
+}
