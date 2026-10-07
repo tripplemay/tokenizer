@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "task": "B04 agent release independent evaluation round 3",
+  "role": "evaluator",
+  "created_at": "2026-10-07T16:01:39Z",
+  "baseline_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "round2_evaluator_commit": "7b60bb6d6662f5f677c566ffa1b3db33ac4cfb5b",
+  "round2_verdict_sha256": "c21ca1ee368b7fdc13b94cdff8e9031d73975196575c4a8e638fd6e5b44d4678",
+  "candidate_sha": "62dba5a77333816d614dcf5f61476f2bf2cc4dd4",
+  "candidate_parent_sha": "dabafeaa76b0621dce911caf61fcbe1733ce889a",
+  "verdict": "BLOCK",
+  "candidate_branch_ci_readiness": "BLOCKED_FAILED_EXACT_NATIVE_WINDOWS_GATE",
+  "main_or_merge_readiness": "BLOCKED",
+  "release_readiness": "NOT_READY",
+  "grade": "D",
+  "normalized_score": 53,
+  "summary": "The candidate preserves the intended nonzero, rollback, lock, credential/queue and token-redaction assertions and adds a fail-closed exact-result Windows gate, but exact-SHA workflow run 37647920920 failed its dedicated native Windows installer fixture 1/1. The fixture's test-only NODE_OPTIONS value passes a quoted raw Windows path whose backslashes are stripped by Node option parsing, so the preload cannot be found. This is not evidence of a production installer or generated .cmd defect: the test injects NODE_OPTIONS, the product does not, the failure occurs during staged direct-node smoke before cmd generation or cutover, and the candidate has no installer/Agent product diff. It nevertheless leaves native Windows acceptance absent and skips the rest of the Windows suite, owner gate and PowerShell parser. Candidate CI, merge and release remain blocked. Manifest/tag, macOS launchd, real Task Scheduler and cross-platform fault-matrix blockers also remain open.",
+  "blocking_findings": [
+    {
+      "id": "B04-R3-001",
+      "severity": "high",
+      "scope": "native Windows evaluator fixture and CI gate",
+      "title": "Test-only NODE_OPTIONS quoting breaks the exact native Windows fixture before acceptance branches execute",
+      "evidence": [
+        "tests/cli/agent-release-installer-windows.test.ts:27 sets NODE_OPTIONS to --require=\"<raw Windows path>\" while deliberately using directories with spaces.",
+        "Run 37647920920 on exact SHA 62dba5a failed 1/1 at fresh install: Node 22.23.3 tried to load C:UsersRUNNER~1AppDataLocalTemptokenizer win-release-...fake binnode-preload.cjs and raised MODULE_NOT_FOUND.",
+        "The failure is at test line 114 before New-CmdShim, cutover, configure/enroll, concurrency, upgrade, rollback, service restore, and canary assertions; B04_NATIVE_FIXTURE_OBSERVATIONS was never emitted.",
+        "Windows unit tests, Windows owner-force-termination gate and install.ps1 parser step were then skipped."
+      ],
+      "classification": "FIXTURE_ONLY_DEFECT_WITH_CI_BLOCKING_IMPACT",
+      "production_assessment": "No production defect is established. NODE_OPTIONS is injected only by the test, the candidate has zero diff in public/install.ps1, public/install.sh, src/cli and src/shared/agent-releases.json, and the observed native exit was propagated fail-closed before active-install mutation.",
+      "required_action": "Fix Windows-safe preload transport while retaining spaces in fixture paths and all existing assertions; rerun the exact fixed SHA and require the dedicated fixture, full Windows suite, owner gate and PowerShell parser to pass. Do not remove the space-path boundary, weaken assertions or bypass the exact-test gate."
+    }
+  ],
+  "assertion_integrity": {
+    "native_nonzero": "PRESERVED_IN_SOURCE_NOT_FULLY_EXECUTED; manifest/fetch/npm/configure/enroll/concurrency remain nonzero assertions; only staged smoke exit 1 was observed natively",
+    "rollback": "PRESERVED_IN_SOURCE_NOT_EXECUTED_ON_WINDOWS; offline rollback and old HEAD assertions remain",
+    "queue_and_credentials": "PRESERVED_IN_SOURCE_NOT_EXECUTED_ON_WINDOWS; failure and final rollback branches still assert both canaries",
+    "token_redaction": "PRESERVED_IN_SOURCE_NOT_EXECUTED_ON_WINDOWS; injected stdout/stderr canary assertion remains, but native run failed before enroll",
+    "service_restore": "PRESERVED_AS_STUBBED_CALL_ASSERTION_NOT_REAL_TASK_SCHEDULER; expected old-revision install-service trace remains",
+    "crlf": "PASS_LOCAL; LF and CRLF variants require found staging and later stop call, plus missing/premature-stop negative controls",
+    "posix_separation": "PASS_STATIC_AND_LOCAL; POSIX executable fixture remains skipped on win32 and the Windows runtime fixture remains win32-only"
+  },
+  "exact_ci": {
+    "repository": "tripplemay/tokenizer",
+    "workflow": "Deploy VPS",
+    "run_id": 37647920920,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37647920920",
+    "event": "workflow_dispatch",
+    "head_sha": "62dba5a77333816d614dcf5f61476f2bf2cc4dd4",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": {
+      "Verify": "success",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Verify (Windows)": "failure",
+      "Deploy": "skipped"
+    },
+    "windows_job_id": 112883422406,
+    "windows_steps": {
+      "Typecheck": "success",
+      "Verify native Windows pinned installer": "failure; 1 test failed of 1",
+      "Upload native Windows installer evidence": "success",
+      "Run unit tests": "skipped",
+      "Verify Windows agent owner force termination": "skipped",
+      "Validate install.ps1 syntax": "skipped"
+    }
+  },
+  "local_execution": {
+    "runtime": "macOS arm64, Node v22.22.0",
+    "npm_ci": "PASS; 671 packages installed",
+    "focused": "PASS_WITH_PLATFORM_SKIPS; 7 files passed, 1 skipped; 43 tests passed, 5 native-Windows skipped",
+    "full_suite": "PASS_WITH_PLATFORM_SKIPS; 118 files passed, 9 skipped; 1542 tests passed, 23 skipped",
+    "verify": "PASS",
+    "lint": "PASS",
+    "actionlint": "PASS",
+    "new_script_syntax": "PASS",
+    "boundary": "Local gate and stub tests do not substitute for native Windows execution."
+  },
+  "remaining_release_blockers": [
+    {
+      "id": "B04-R3-REL-001",
+      "severity": "critical",
+      "title": "Immutable manifest/tag does not publish the B04 candidate",
+      "evidence": "The highest manifest entry remains 1.4.0 -> 2074991717abaf3cb34d9aad894bcd4357fefbc3. The candidate now has a remote branch ref, but origin advertises no refs/tags/agent/v* tags."
+    },
+    {
+      "id": "B04-R3-REL-002",
+      "severity": "critical",
+      "title": "Native Windows acceptance remains absent",
+      "evidence": "The exact native run failed before generated .cmd and all intended installer acceptance branches."
+    },
+    {
+      "id": "B04-R3-REL-003",
+      "severity": "high",
+      "title": "macOS launchd and real Windows Task Scheduler remain unverified",
+      "evidence": "No candidate macOS launchd execution was added. The Windows fixture stubs schtasks and intercepts install-service before actual Task Scheduler behavior."
+    },
+    {
+      "id": "B04-R3-REL-004",
+      "severity": "high",
+      "title": "Cross-platform failure/cutover matrix remains incomplete",
+      "evidence": "Windows reparse-point containment, native dependency failure, disk-full, cutover kill/restart windows, Linux cron fallback and other Round 2 matrix gaps have no new evidence in this test-only candidate."
+    }
+  ],
+  "scorecard": {
+    "correctness": { "score": 2, "weight": 25, "rationale": "The exact native fixture the candidate exists to repair still fails before its acceptance branches." },
+    "regression_risk": { "score": 4, "weight": 20, "rationale": "No product diff; local full suite and Linux/PG/browser CI pass." },
+    "security": { "score": 3, "weight": 15, "rationale": "Secret assertions remain but native token-redaction execution is absent." },
+    "reliability": { "score": 2, "weight": 15, "rationale": "Native rollback, locking, service restore and retained-data paths did not execute." },
+    "performance": { "score": null, "weight": 0, "rationale": "N/A for this CI/test-only correction." },
+    "maintainability": { "score": 3, "weight": 10, "rationale": "Exact-result gating is explicit, but Windows environment quoting is brittle." },
+    "test_readiness": { "score": 1, "weight": 5, "rationale": "The required Windows gate is red and downstream Windows checks were skipped." }
+  },
+  "decision_rule": "Do not integrate or release this candidate. A fixture-only repair may return to non-deploying exact-SHA CI, but the candidate must achieve a fully green Windows job before candidate-CI readiness can be reconsidered. Even then, manifest/tag, macOS launchd, real Task Scheduler and remaining failure-injection gates separately block Agent release.",
+  "scope_boundaries": [
+    "No candidate product code, progress.json, features.json, pending gate or human decision was modified.",
+    "No branch was pushed and no deployment, Agent publication, tag, production action or host-service modification was performed.",
+    "The evaluator did not claim native Windows behavior from local macOS skips or synthetic gate tests.",
+    "Passing Linux, PostgreSQL and browser jobs does not override the failed mandatory Windows acceptance gate."
+  ],
+  "evidence_paths": [
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/report.md",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-metadata.json",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows.log.gz",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows-decisive.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-installer.json",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/npm-ci-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/focused-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/full-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/verify-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/lint-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/actionlint.log",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/candidate-functional-diff.patch.gz",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/release-boundaries.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-fixture-lines.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/install-ps1-decisive-lines.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/crlf-posix-guard-lines.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-ci-gate-lines.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/SHA256SUMS"
+  ]
+}

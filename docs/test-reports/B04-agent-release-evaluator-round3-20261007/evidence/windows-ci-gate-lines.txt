@@ -1,0 +1,73 @@
+   112	  verify-windows:
+   113	    name: Verify (Windows)
+   114	    runs-on: windows-latest
+   115	    steps:
+   116	      - name: Checkout
+   117	        uses: actions/checkout@v4
+   118
+   119	      - name: Setup Node.js
+   120	        uses: actions/setup-node@v4
+   121	        with:
+   122	          node-version: 22
+   123	          cache: npm
+   124
+   125	      # Also the live check that better-sqlite3 resolves a win32-x64 prebuild
+   126	      # instead of falling back to node-gyp (which would need MSVC toolchain).
+   127	      - name: Install dependencies
+   128	        run: npm ci
+   129
+   130	      - name: Typecheck
+   131	        run: npm run verify
+   132
+   133	      - name: Verify native Windows pinned installer
+   134	        shell: pwsh
+   135	        run: |
+   136	          New-Item -ItemType Directory -Path .ci -Force | Out-Null
+   137	          npx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json
+   138	          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+   139	          node scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json
+   140	          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+   141
+   142	      - name: Upload native Windows installer evidence
+   143	        if: always()
+   144	        uses: actions/upload-artifact@v4
+   145	        with:
+   146	          name: windows-pinned-installer
+   147	          path: .ci/windows-installer.json
+   148	          if-no-files-found: warn
+   149	          retention-days: 7
+   150
+   151	      - name: Run unit tests
+   152	        run: npm run test
+   153
+   154	      - name: Verify Windows agent owner force termination
+   155	        shell: pwsh
+   156	        run: |
+   157	          New-Item -ItemType Directory -Path .ci -Force | Out-Null
+   158	          npx vitest run tests/cli/agent-lifecycle.test.ts -t "reclaims a lock after Windows force-terminates the agent" --reporter=json --outputFile=.ci/windows-agent-owner.json
+   159	          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+   160	          node scripts/ci/assert-windows-agent-owner.mjs .ci/windows-agent-owner.json
+   161	          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+   162
+   163	      - name: Upload Windows agent owner evidence
+   164	        if: always()
+   165	        uses: actions/upload-artifact@v4
+   166	        with:
+   167	          name: windows-agent-owner
+   168	          path: .ci/windows-agent-owner.json
+   169	          if-no-files-found: warn
+   170	          retention-days: 7
+   171
+   172	      # install.ps1 cannot be parsed anywhere but Windows, so a syntax error
+   173	      # would otherwise only surface on a user's machine mid-install.
+   174	      - name: Validate install.ps1 syntax
+   175	        shell: pwsh
+   176	        run: |
+   177	          $errors = $null
+   178	          [System.Management.Automation.Language.Parser]::ParseFile(
+   179	            (Resolve-Path ./public/install.ps1), [ref]$null, [ref]$errors) | Out-Null
+   180	          if ($errors) {
+   181	            $errors | ForEach-Object { Write-Host "::error::$($_.Extent.StartLineNumber): $($_.Message)" }
+   182	            exit 1
+   183	          }
+   184	          Write-Host "install.ps1 parsed cleanly"

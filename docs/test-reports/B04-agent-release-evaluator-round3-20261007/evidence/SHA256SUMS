@@ -1,0 +1,16 @@
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/actionlint.log
+dba7d00a0616977dd11dc75c9c1bb22b44f175676c3c715f4396cd03e5e9733f  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/candidate-functional-diff.patch.gz
+5d8cf5bc592d9d22ba66c8fb2fc70086bc5af26303e166171fb892e847728228  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/crlf-posix-guard-lines.txt
+d29653af1e1d0b33aff5907672c0e404276ea9f13dcdfe187384597b8ddd12db  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/focused-node22.log
+030ff1137acadb1197e18036b39751f5e902679242bb36b5891e7b43581faaa2  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/full-node22.log
+135dc6c69dca17b81324091fac79a8349d52b8d157d7476bcee4f2223c6c7da6  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/install-ps1-decisive-lines.txt
+2824302731fda7dccfe81a67ca623cf10091db20ba2690e03209c66af5bca229  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/lint-node22.log
+ccaf50dbd7f4c14e81a494b35e0b8224312385882a4a52ed99ef8f1a516007d6  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/npm-ci-node22.log
+cf8df973abf5cf0f50661f192f230dd2b3e85a77aba6560d14aa861a0d81ee59  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/release-boundaries.txt
+857628339bf2ca59b17b1f8e5e3b690fb89355f7f13ca20660db3919fde1830c  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-metadata.json
+fe47d10e7807bbb0b84cad1cd7b7b62aacc7f9cccfc621268ec536d3520d2046  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows-decisive.log
+242e88dc849d8829ffc76f24eafce2641d873d0e6aa2b493cdaa5ff24214a453  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows.log.gz
+8a77c8ec54a955c5b985d4488b5ae3f666935f81a4dc4dfef3e9f099feeca1ee  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/verify-node22.log
+eab5d01f819e1efa7d7d24ad2d9a7424f88006172f933987c23f6c8862191de3  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-ci-gate-lines.txt
+4aea333874c9c7d0f4a6b889543f9c144b1287b497a591af918d20bd75fecb74  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-fixture-lines.txt
+621b8182c60e7085572827a5648e06090848b1c1c609bb8625d1cbe0b44e4a50  docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-installer.json
