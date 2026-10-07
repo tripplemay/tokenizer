@@ -9,7 +9,7 @@ import { minimizeUsageEvent } from "@/shared/usage-privacy";
 import { enrichEventsWithGit } from "./git";
 import { mergeQueue } from "./collect";
 import { readConfig, type TokenizerConfig } from "./config";
-import { collectionScopeFingerprint, effectivePrivacy, filterUsageEvents } from "./privacy";
+import { collectionAdmissionFingerprint, collectionScopeFingerprint, effectivePrivacy, filterUsageEvents, type PrivacyConfig } from "./privacy";
 import type { BoundedReplayPlan } from "./replay-contract";
 
 const MAX_PHYSICAL_RECORDS = 50_000;
@@ -47,6 +47,7 @@ type ReplayInspection = {
   warningCount: number;
   scopeFingerprint: string;
   mode: "sync" | "local-only" | "paused";
+  admissionBinding: string;
 };
 
 export type ReplayDryRunResult = {
@@ -221,7 +222,14 @@ export function readBoundedReplayFile(file: string, maxBytes: number, hooks: Rep
   }
 }
 
-function digestPlan(plan: BoundedReplayPlan, identity: FileIdentity, config: TokenizerConfig): string {
+function admissionBinding(selected: UsageEventInput[], candidates: UsageEventInput[], privacy: PrivacyConfig): string {
+  return createHash("sha256").update(JSON.stringify({
+    physicalScope: collectionAdmissionFingerprint(selected, privacy),
+    candidates
+  })).digest("hex");
+}
+
+function digestPlan(plan: BoundedReplayPlan, identity: FileIdentity, config: TokenizerConfig, binding: string): string {
   const privacy = effectivePrivacy(config);
   return createHash("sha256").update(JSON.stringify({
     schema: "bounded-replay-confirmation-v1",
@@ -234,6 +242,7 @@ function digestPlan(plan: BoundedReplayPlan, identity: FileIdentity, config: Tok
     maxFiles: plan.maxFiles,
     identity,
     projectRoots: config.projectRoots,
+    admissionBinding: binding,
     collectionScopeFingerprint: collectionScopeFingerprint(privacy),
     privacyMode: privacy.mode
   })).digest("hex");
@@ -256,16 +265,19 @@ function inspectReplay(plan: BoundedReplayPlan, config: TokenizerConfig): Replay
     return Number.isFinite(occurredAt) && occurredAt >= from && occurredAt < to;
   });
   if (selected.length > plan.maxEvents) fail(`event limit exceeded (${selected.length} > ${plan.maxEvents})`);
+  const eligible = filterUsageEvents(enrichEventsWithGit(filterUsageEvents(selected, privacy)), privacy).map(minimizeUsageEvent);
+  const binding = admissionBinding(selected, eligible, privacy);
   if (Date.now() - started > MAX_ELAPSED_MS) fail(`parse exceeded ${MAX_ELAPSED_MS}ms`);
   return {
     snapshot,
-    planDigest: digestPlan(plan, snapshot.identity, config),
+    planDigest: digestPlan(plan, snapshot.identity, config, binding),
     parsed: parsed.events.length,
     selected,
-    eligible: filterUsageEvents(selected, privacy).map(minimizeUsageEvent),
+    eligible,
     warningCount: parsed.warnings.length,
     scopeFingerprint: collectionScopeFingerprint(privacy),
-    mode: privacy.mode
+    mode: privacy.mode,
+    admissionBinding: binding
   };
 }
 
@@ -319,7 +331,7 @@ export function executeBoundedReplay(
   // than admitting a different snapshot.
   const currentConfig = (options.readCurrentConfig ?? readConfig)();
   const confirmationSnapshot = readBoundedReplayFile(plan.file, plan.maxBytes);
-  if (digestPlan(plan, confirmationSnapshot.identity, currentConfig) !== confirmation) {
+  if (digestPlan(plan, confirmationSnapshot.identity, currentConfig, inspection.admissionBinding) !== confirmation) {
     fail("confirmation digest became stale before queue admission");
   }
   if (inspection.scopeFingerprint !== collectionScopeFingerprint(effectivePrivacy(currentConfig)) ||
@@ -327,7 +339,12 @@ export function executeBoundedReplay(
     fail("privacy scope or mode changed before queue admission");
   }
 
-  const admittedCandidates = enrichEventsWithGit(inspection.eligible).map(minimizeUsageEvent);
+  const privacy = effectivePrivacy(currentConfig);
+  const admittedCandidates = filterUsageEvents(enrichEventsWithGit(filterUsageEvents(inspection.selected, privacy)), privacy).map(minimizeUsageEvent);
+  const finalBinding = admissionBinding(inspection.selected, admittedCandidates, privacy);
+  if (digestPlan(plan, confirmationSnapshot.identity, currentConfig, finalBinding) !== confirmation) {
+    fail("physical scope or admitted candidates became stale before queue admission");
+  }
   const merged = (options.mergeEvents ?? mergeQueue)(admittedCandidates);
   return {
     dryRun: false,

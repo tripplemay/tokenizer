@@ -51,7 +51,7 @@ export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
     warnings.push(...result.warnings);
   }
 
-  return { events: enrichEventsWithGit(filterUsageEvents(events, privacy)).map(minimizeUsageEvent), warnings };
+  return { events: filterUsageEvents(enrichEventsWithGit(filterUsageEvents(events, privacy)), privacy).map(minimizeUsageEvent), warnings };
 }
 
 // Truncating write: callers are expected to pass the full deduped set they want
