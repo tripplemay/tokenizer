@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-portable-regression-fix-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 3ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 754ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 1605ms
+
+ Test Files  3 passed (3)
+      Tests  36 passed (36)
+   Start at  23:58:01
+   Duration  1.82s (transform 47ms, setup 0ms, collect 88ms, tests 2.36s, environment 0ms, prepare 130ms)
+

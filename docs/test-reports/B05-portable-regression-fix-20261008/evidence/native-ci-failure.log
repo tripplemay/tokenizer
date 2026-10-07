@@ -1,0 +1,557 @@
+Verify	Run unit tests	﻿2026-10-07T16:41:30.2022577Z ##[group]Run npm run test
+Verify	Run unit tests	2026-10-07T16:41:30.2022880Z [36;1mnpm run test[0m
+Verify	Run unit tests	2026-10-07T16:41:30.2087571Z shell: /usr/bin/bash -e {0}
+Verify	Run unit tests	2026-10-07T16:41:30.2087863Z ##[endgroup]
+Verify	Run unit tests	2026-10-07T16:41:30.3085785Z 
+Verify	Run unit tests	2026-10-07T16:41:30.3086678Z > tokenizer@0.1.0 test
+Verify	Run unit tests	2026-10-07T16:41:30.3087072Z > vitest run
+Verify	Run unit tests	2026-10-07T16:41:30.3087241Z 
+Verify	Run unit tests	2026-10-07T16:41:30.6053771Z 
+Verify	Run unit tests	2026-10-07T16:41:30.6056310Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90m/home/runner/work/tokenizer/tokenizer[39m
+Verify	Run unit tests	2026-10-07T16:41:30.6057254Z 
+Verify	Run unit tests	2026-10-07T16:41:31.6620530Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:31.7895445Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[90m 133[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:31.8256938Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m)[22m[90m 274[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:32.3068512Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[90m 45[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:32.3784933Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 70[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:32.9097164Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[90m 14[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:33.1327416Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 77[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:33.3631086Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 48[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:33.5931275Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[90m 122[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:33.7307461Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[90m 44[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.0106290Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1965[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.0107932Z    [33m[2m✓[22m[39m F003 real CLI/daemon parity[2m > [22mcheckpoints the same remaining tail between real sync and run subprocess batches [33m1908[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.1982104Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 2026[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.4952351Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[90m 53[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.6360613Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:36.9991235Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[90m 74[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:37.2077593Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 4616[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:37.2097930Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m1690[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:37.3564629Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[90m 174[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:37.4516863Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 49[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:38.3446099Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:39.0892910Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 66[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:39.2204926Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 1529[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:39.4753556Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 39[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:39.7901792Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 47[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:39.8077558Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 75[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:40.1254810Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:40.1970737Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 59[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:40.5211600Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:40.5844804Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:40.8618796Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:40.9078849Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+Verify	Run unit tests	2026-10-07T16:41:40.9081053Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:40.9083341Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+Verify	Run unit tests	2026-10-07T16:41:40.9084255Z 
+Verify	Run unit tests	2026-10-07T16:41:41.2233146Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.3427437Z  [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 3765[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.3432731Z    [33m[2m✓[22m[39m agent command parsing[2m > [22mrejects `tokenizer agent status` before it can start a daemon [33m888[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.3435250Z    [33m[2m✓[22m[39m agent single-instance lock[2m > [22mreleases the lock when the running agent receives SIGTERM [33m735[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.3438423Z    [33m[2m✓[22m[39m tokenizer wrapper lifecycle[2m > [22mhandles SIGTERM delivered before spawn returns without orphaning its child [33m1057[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.3441003Z    [33m[2m✓[22m[39m tokenizer wrapper lifecycle[2m > [22mforwards SIGTERM to its async child and waits for that child to exit [33m1072[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.8306350Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 49[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:41.9854126Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 314[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:42.2880895Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 31[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:42.6185469Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 21[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:42.6894963Z  [32m✓[39m tests/ci/recovery-evidence.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1557[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:42.6897452Z    [33m[2m✓[22m[39m allowlisted recovery evidence transport[2m > [22mdetects downloaded file tampering, missing files, extra files and wrong revision [33m314[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:43.0327351Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:43.0821970Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:43.4572244Z  [32m✓[39m tests/server/release-image.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1140[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:43.7248105Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 403[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:43.7464232Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:44.0472254Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:44.1057501Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 28[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:44.4017879Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 55[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:44.6910577Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 110[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:44.7637831Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.0717552Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 59[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.1580580Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 70[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.4665292Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.5097476Z  [32m✓[39m tests/server/release-rehearsal.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 2140[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.5127524Z    [33m[2m✓[22m[39m isolated release recovery rehearsal faults[2m > [22mfails closed when only the temporary socket accepts (source-tcp-never) [33m322[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.5157564Z    [33m[2m✓[22m[39m isolated release recovery rehearsal faults[2m > [22mfails closed when only the temporary socket accepts (restore-tcp-never) [33m343[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.5207361Z    [33m[2m✓[22m[39m isolated release recovery rehearsal faults[2m > [22mnever overwrites an earlier same-SHA backup on a retry [33m382[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.6241867Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.8843091Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:45.9888286Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:46.2857866Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 109[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:46.3044089Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:46.3907599Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:46.8159510Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m31 tests[22m[2m)[22m[90m 200[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:46.8917490Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.2021316Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.4602353Z  [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 74[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.5837579Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.6517756Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[90m 200[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.9250135Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:47.9439409Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:48.0544248Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:48.2911839Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:48.2929872Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:48.4837738Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:48.8357777Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:49.1139253Z [90mstderr[2m | tests/server/health.test.ts[2m > [22m[2mhealth layers[2m > [22m[2mfails closed on missing login configuration before touching the database
+Verify	Run unit tests	2026-10-07T16:41:49.1141088Z [22m[39mreadiness failed {
+Verify	Run unit tests	2026-10-07T16:41:49.1142152Z  [32m✓[39m tests/server/health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:49.1166648Z   requestId: [32m'8cfb2b94-7db9-4f0d-8338-588a97dbf09e'[39m,
+Verify	Run unit tests	2026-10-07T16:41:49.1195401Z   stage: [32m'runtime_config'[39m,
+Verify	Run unit tests	2026-10-07T16:41:49.1216335Z   code: [32m'config_not_ready'[39m,
+Verify	Run unit tests	2026-10-07T16:41:49.1246652Z   errorCode: [90mundefined[39m
+Verify	Run unit tests	2026-10-07T16:41:49.1256044Z }
+Verify	Run unit tests	2026-10-07T16:41:49.1276250Z 
+Verify	Run unit tests	2026-10-07T16:41:49.4071705Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:49.7047650Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 43[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:49.8261232Z  [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 1182[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:49.8268361Z    [33m[2m✓[22m[39m POSIX installer Agent lifecycle[2m > [22mstops this install's wrapper and child without touching another install [33m1179[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:50.0407575Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:50.2020369Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:50.4131524Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:50.6157509Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 22[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:50.7928153Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.1373718Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.2697561Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 2446[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.2700648Z    [33m[2m✓[22m[39m harness CLI output contracts[2m > [22mwires Commander options without treating the Command object as injected dependencies [33m2437[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.4763007Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.6143966Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.6927700Z  [32m✓[39m tests/server/standalone-artifact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 699[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:51.8152970Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.0553397Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.1207906Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.2377800Z  [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:52.4092340Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.4617100Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.5733044Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.8110909Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify	Run unit tests	2026-10-07T16:41:52.8210022Z  [31m❯[39m tests/evaluator/b05-tcp-readiness-independent.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[90m 36[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.8212723Z [31m   [31m×[31m B05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction[90m 18[2mms[22m[31m[39m
+Verify	Run unit tests	2026-10-07T16:41:52.8215372Z [31m     → Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify	Run unit tests	2026-10-07T16:41:52.8217833Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify	Run unit tests	2026-10-07T16:41:52.8219090Z [39m
+Verify	Run unit tests	2026-10-07T16:41:52.9201668Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.1382013Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.1790422Z  [32m✓[39m tests/server/release-predecessor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 471[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.2587813Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.5866316Z  [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.5917035Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.7789191Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 34[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:53.9248133Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.1027757Z  [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.2608361Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.3840671Z  [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 486[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.5977882Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.6366933Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.7907022Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.9531643Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:54.9794109Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.2685805Z  [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.3015331Z  [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.3167354Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.6177459Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.7411527Z  [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.8507663Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 31[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:55.9497843Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.1470592Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.2014164Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.3297413Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.5419879Z  [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.5479380Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.7077760Z  [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.8897974Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:56.8997580Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.0687909Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.2207798Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.2530356Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.4090843Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify	Run unit tests	2026-10-07T16:41:57.5947851Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6207099Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6391025Z 
+Verify	Run unit tests	2026-10-07T16:41:57.6457084Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6515872Z 
+Verify	Run unit tests	2026-10-07T16:41:57.6578257Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction
+Verify	Run unit tests	2026-10-07T16:41:57.6604981Z [31m[1mError[22m: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify	Run unit tests	2026-10-07T16:41:57.6629079Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify	Run unit tests	2026-10-07T16:41:57.6646194Z [39m
+Verify	Run unit tests	2026-10-07T16:41:57.6676824Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6736196Z     [90m  8| [39m
+Verify	Run unit tests	2026-10-07T16:41:57.6737631Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m120 passed[39m[22m[2m | [22m[33m8 skipped[39m[90m (129)[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6739927Z     [90m  9| [39m[35mfunction[39m [34mgitShow[39m(revision[33m:[39m string[33m,[39m path[33m:[39m string) {
+Verify	Run unit tests	2026-10-07T16:41:57.6742484Z     [90m 10| [39m  [35mreturn[39m [34mexecFileSync[39m([32m"git"[39m[33m,[39m [[32m"show"[39m[33m,[39m [32m`[39m[36m${[39mrevision[36m}[39m[32m:[39m[36m${[39mpath[36m}[39m[32m`[39m][33m,[39m { cwd[33m:[39m r…
+Verify	Run unit tests	2026-10-07T16:41:57.6757174Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1607 passed[39m[22m[2m | [22m[33m22 skipped[39m[90m (1630)[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6758618Z [2m   Start at [22m 16:41:30
+Verify	Run unit tests	2026-10-07T16:41:57.6786227Z     [90m   | [39m         [31m^[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6787656Z [2m   Duration [22m 27.03s[2m (transform 4.17s, setup 0ms, collect 13.46s, tests 28.54s, environment 41ms, prepare 13.02s)[22m
+Verify	Run unit tests	2026-10-07T16:41:57.6793453Z 
+Verify	Run unit tests	2026-10-07T16:41:57.6815910Z 
+Verify	Run unit tests	2026-10-07T16:41:57.6816535Z     [90m 11| [39m}
+Verify	Run unit tests	2026-10-07T16:41:57.6884917Z ##[error]Error: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify	Run unit tests	fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify	Run unit tests	
+Verify	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+Verify	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:50:55
+Verify	Run unit tests	
+Verify	Run unit tests	⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Verify	Run unit tests	Serialized Error: { status: 128, signal: null, output: [ null, '', 'fatal: path \'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json\' exists on disk, but not in \'11907f5df1bcedc03a5600252056502fd1e88f3f\'\n' ], pid: 7412, stdout: '', stderr: 'fatal: path \'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json\' exists on disk, but not in \'11907f5df1bcedc03a5600252056502fd1e88f3f\'\n' }
+Verify	Run unit tests	
+Verify	Run unit tests	2026-10-07T16:41:57.6900640Z     [90m 12| [39m
+Verify	Run unit tests	2026-10-07T16:41:57.6901751Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m50:55[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6902433Z 
+Verify	Run unit tests	2026-10-07T16:41:57.6902896Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+Verify	Run unit tests	2026-10-07T16:41:57.6903262Z 
+Verify	Run unit tests	2026-10-07T16:41:57.7282834Z ##[error]Process completed with exit code 1.
+Verify (Windows)	Run unit tests	﻿2026-10-07T16:41:45.1246742Z ##[group]Run npm run test
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.1247238Z [36;1mnpm run test[0m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.1332175Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.1332547Z ##[endgroup]
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.8294937Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.8295730Z > tokenizer@0.1.0 test
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.8296129Z > vitest run
+Verify (Windows)	Run unit tests	2026-10-07T16:41:45.8296317Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:41:46.3622802Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:41:46.3625962Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:46.3626325Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:41:47.5492217Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:47.7159373Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[90m 127[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:48.3564250Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 904[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:48.3785602Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[90m 58[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:48.9397775Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 153[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:48.9735978Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:49.5423325Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 64[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:49.7113073Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 81[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:50.0941423Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[90m 35[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:50.3497083Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 411[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:53.2942916Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2751[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:53.2945572Z    [33m[2m✓[22m[39m F003 real CLI/daemon parity[2m > [22mcheckpoints the same remaining tail between real sync and run subprocess batches [33m2689[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:53.8201592Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[90m 55[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:54.2323294Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:54.7468673Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[90m 54[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:55.5348656Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[90m 176[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:56.1193983Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 116[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:58.5276457Z  [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 2024[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:58.5278320Z    [33m[2m✓[22m[39m agent command parsing[2m > [22mrejects `tokenizer agent status` before it can start a daemon [33m1086[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:58.5280444Z    [33m[2m✓[22m[39m agent single-instance lock[2m > [22mreclaims a lock after Windows force-terminates the agent [33m917[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:41:59.1014044Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:41:59.5310641Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:41:59.9703665Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:00.4011758Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:00.8514395Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:01.2763024Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:01.7183826Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:04.2756038Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:04.6538016Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:05.0407975Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:05.4201944Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:05.8350553Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.2732061Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6348921Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 15884[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6351619Z    [33m[2m✓[22m[39m mode intent relay bounds[2m > [22maccepts only the exact bounded relay envelope [33m519[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6353961Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reads v2 bindings through the data-only catalog, without agent ids [33m1184[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6357183Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reports legal v2 fast null bindings without a tool catalog [33m1001[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6365082Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects v2 staging when the data-only registry validation fails [33m726[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6367411Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mvalidates, atomically stages, and commits only harness.json [33m959[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6369335Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mcommits only harness.json while preserving an unrelated staged file [33m1054[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6371152Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a tampered signature without changing the target [33m474[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6385388Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires relay, signed, and discovered repo keys to agree [33m470[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6402394Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a full HEAD drift immediately before first staging [33m762[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6406599Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window expired_intent [33m488[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6410040Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window intent_not_yet_valid [33m440[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6411732Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires harness.json to be clean [33m538[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6413612Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mretries the exact staged intent without comparing its old HEAD or creating a commit [33m1358[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6415831Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report failure after commit success and completes the next exact retry idempotently [33m934[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6418096Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrecognizes a commit that succeeded immediately before the runner threw [33m900[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6422403Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage write failure [33m678[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6425311Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage readback failure [33m674[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6427035Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores after git add failure without disturbing an unrelated staged file [33m770[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6429522Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report defaults copied into a repository with a different normalized identity [33m1062[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6431988Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrolls back a commit failure and never stages an unrelated file [33m888[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:06.6713177Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:07.1100338Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:07.5264868Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 93[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:07.5538009Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:07.9701244Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:08.3426015Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:08.3514314Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:08.7766950Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:08.7912179Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 43[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:09.1695885Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:09.4935654Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 90[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:09.5973451Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.0283276Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.1770120Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 299[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.4968056Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.5772088Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6976374Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 11790[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6981060Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22muses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing [33m419[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6985433Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22msupports a2a while reducing absolute artifacts and raw failures to safe fixed summaries [33m416[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6993408Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps a2a cancellation as a known terminal outcome with a fixed safe summary [33m451[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6996310Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps runs of other batches (usage must survive batch switch) but rejects foreign refs [33m460[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.6998784Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mrejects symlinked run-meta and never hashes a symlinked artifact [33m421[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7000979Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mderives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) [33m419[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7003124Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mscans at most the newest 50 bounded regular JSON files [33m2586[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7046510Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mcarries a valid usage block and capture mode intact into the summary [33m381[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7115799Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mkeeps legacy run-meta without usage summarized with explicit nulls (regression) [33m382[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7184468Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on unknown field but keeps the run (bypass, not a gate) [33m391[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7249133Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on negative tokens but keeps the run (bypass, not a gate) [33m391[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7253021Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate) [33m424[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7315923Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) [33m417[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7327593Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on zero turns but keeps the run (bypass, not a gate) [33m406[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7337369Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) [33m454[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7345247Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) [33m435[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7376085Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) [33m397[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7387066Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-string model but keeps the run (bypass, not a gate) [33m403[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7392053Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on oversized model name but keeps the run (bypass, not a gate) [33m412[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7394271Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on array instead of object but keeps the run (bypass, not a gate) [33m434[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7396427Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on string instead of object but keeps the run (bypass, not a gate) [33m403[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7398412Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mnulls an unknown capture mode while keeping a valid usage block [33m446[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:10.7400189Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22maccepts attribution_only with a null usage block (kimi shape) [33m438[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.1065216Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 94[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.3282712Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.5643955Z SUCCESS: The scheduled task "Tokenizer Agent Test" has successfully been created.
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.8673102Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.8675265Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.8679131Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+Verify (Windows)	Run unit tests	2026-10-07T16:42:11.8680857Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:12.2385517Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:12.7577279Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1261[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:12.7579003Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mparses under WSH, waits for the agent, and propagates a failure exit code [33m645[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:12.7580430Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mpropagates a clean exit [33m475[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:12.9610207Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 55[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:13.2048729Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 71[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.3692940Z  [32m✓[39m tests/ci/recovery-evidence.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2045[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.3719344Z    [33m[2m✓[22m[39m allowlisted recovery evidence transport[2m > [22mdetects downloaded file tampering, missing files, extra files and wrong revision [33m464[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.3733629Z    [33m[2m✓[22m[39m allowlisted recovery evidence transport[2m > [22mrejects manifest traversal paths and forged manifest hashes [33m317[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.3754697Z    [33m[2m✓[22m[39m allowlisted recovery evidence transport[2m > [22mrequires main provenance files separately and forbids main/non-main manifest downgrade [33m388[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.4880146Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1944[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.4883287Z    [33m[2m✓[22m[39m canonicalJson[2m > [22mcase 1 与机器侧 Python 规范化逐字节一致 [33m754[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.8864550Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:15.9513368Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 33[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:16.2270447Z  [2m[90m↓[39m[22m tests/server/release-image.test.ts [2m([22m[2m10 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:16.5251578Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 38[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:16.5867232Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:16.9453288Z  [2m[90m↓[39m[22m tests/server/release-rehearsal.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:17.2716626Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:17.5634714Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 666[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:17.5797231Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:18.0510074Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 101[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:18.2660416Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 333[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:18.2662946Z    [33m[2m✓[22m[39m enrichEventsWithGit credential boundary[2m > [22mkeeps synthetic remote credentials out of the event payload [33m311[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:18.6554250Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:18.6990623Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 116[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:19.0900085Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 74[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:19.4950751Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:19.5572016Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 473[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:19.9902717Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:20.0859953Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:20.3943115Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:20.7199240Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 86[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:20.7876986Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:21.2191976Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:22.2701090Z  [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 71[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:22.7271958Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m31 tests[22m[2m)[22m[33m 1641[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:22.7282049Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 28[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:23.0747697Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:23.1352929Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:23.6383053Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:23.8397351Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[90m 235[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:24.0128327Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:24.2121436Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:24.3921022Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:24.5989206Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:24.7996727Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.1629359Z  [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4818295Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 36779[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4827330Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22m同时有 progress.json 与 harness-rules.md 才算 harness 项目 [33m552[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4829610Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22muses a stable opaque key for local-only repos without leaking the root into the report [33m1455[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4831401Z    [33m[2m✓[22m[39m buildReport[2m > [22m从 features.json 统计完成度，并带上待批闸门 [33m629[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4832662Z    [33m[2m✓[22m[39m buildReport[2m > [22m待批闸门只上报 API 白名单字段 [33m553[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4833879Z    [33m[2m✓[22m[39m buildReport[2m > [22m已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 [33m550[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4835640Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22msends the running Agent identity on every device-driven Harness relay request [33m1207[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4837769Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22mreports progress.mode_intent as applied and sends the identical applied ACK [33m705[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4845132Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m签名有效时写入并提交 [33m890[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4918076Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mdoes not route an unbound legacy gate relay onto the current repository [33m522[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4924535Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mfails closed when the signed decision wrapper matches multiple local repositories [33m1001[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4933342Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 [33m602[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.4948511Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） [33m628[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5021226Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） [33m738[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5030193Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mprogress.json 有未提交改动时本轮不写，避免与状态机打架 [33m642[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5031732Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m某个项目上报失败不中断其余项目 [33m1247[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5033176Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 [33m966[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5036384Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mreport、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit [33m1483[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5038812Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mmode relay 失败不阻塞另外两步 [33m941[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5040580Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mgate relay 失败不阻塞另外两步 [33m1156[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5042671Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m本机闸门已有决策时不覆盖 [33m758[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5044193Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mapplies the exact HTTP retryability matrix [33m1793[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5054608Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies safe server codes and never retains response bodies in the snapshot [33m610[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5057219Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mfalls back to http status when a response code is not normalized [33m627[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5059657Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies timeouts for all independent subchains without short-circuiting [33m626[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5062516Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m13150[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5064723Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mwrites idle, success, degraded, and failed snapshots from actual outcomes [33m1548[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5066804Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mdeduplicates unchanged issue details and logs recovery [33m1197[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5380516Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:25.8951951Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0245248Z [90mstderr[2m | tests/server/health.test.ts[2m > [22m[2mhealth layers[2m > [22m[2mfails closed on missing login configuration before touching the database
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0247003Z [22m[39mreadiness failed {
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0248562Z   requestId: [32m'56d93255-24e9-4e34-a7d8-fe01d686e0c9'[39m,
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0254332Z  [32m✓[39m tests/server/health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0255504Z   stage: [32m'runtime_config'[39m,
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0256175Z   code: [32m'config_not_ready'[39m,
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0256849Z   errorCode: [90mundefined[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0257236Z }
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0257392Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.2728900Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 36[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.4062192Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.6705350Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:26.8225371Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:27.2241142Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:27.2749987Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:27.6888394Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.0714209Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.4414295Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.7159766Z  [32m✓[39m tests/server/standalone-artifact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1128[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.7686995Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3608[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.7689468Z    [33m[2m✓[22m[39m harness CLI output contracts[2m > [22mwires Commander options without treating the Command object as injected dependencies [33m3597[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:28.7902779Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.1435107Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 21[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.1716398Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 22[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.3072731Z  [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.5009601Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.5458658Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.6727722Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.8603513Z  [2m[90m↓[39m[22m tests/server/release-predecessor.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m5 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:29.9540637Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0147910Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0642357Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0651968Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0686857Z  [31m❯[39m tests/evaluator/b05-tcp-readiness-independent.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[90m 166[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0689353Z [31m   [31m×[31m B05 independent TCP readiness audit[2m > [22mchanges only the readiness transport in the recovery script[90m 55[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0691698Z [31m     → Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0693176Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0694060Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0695397Z [31m   [31m×[31m B05 independent TCP readiness audit[2m > [22mretains backup, cleanup, and rollback approval ordering byte-for-byte[90m 59[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0697264Z [31m     → Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0698708Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0699624Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0701171Z [31m   [31m×[31m B05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction[90m 50[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0703488Z [31m     → Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0705881Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0707089Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.1995936Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.4610731Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.6361640Z  [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.6422033Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:30.8466777Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.0183061Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[90m 21[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.2276964Z  [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.3962300Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.5872023Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.7634968Z  [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 733[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.9520878Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:31.9833661Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.1528025Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 22[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.3258797Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.4570735Z  [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.5438240Z  [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.7206347Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.9133690Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:32.9857812Z  [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.2719293Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.3095710Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 39[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.4117221Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.6914987Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.7996493Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 44[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:33.8315737Z  [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.0638857Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.1494352Z  [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.2094607Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.4494408Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.4968818Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.5855033Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.8366955Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:34.8406047Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.0418142Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.1603615Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.1977121Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 3 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.1977630Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2000233Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2003239Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mchanges only the readiness transport in the recovery script
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2007169Z [31m[1mError[22m: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2022822Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2037021Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2038529Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2250244Z     [90m  8| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2251539Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m117 passed[39m[22m[2m | [22m[33m11 skipped[39m[90m (129)[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2270833Z     [90m  9| [39m[35mfunction[39m [34mgitShow[39m(revision[33m:[39m string[33m,[39m path[33m:[39m string) {
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2272381Z [2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1567 passed[39m[22m[2m | [22m[33m60 skipped[39m[90m (1630)[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2274769Z     [90m 10| [39m  [35mreturn[39m [34mexecFileSync[39m([32m"git"[39m[33m,[39m [[32m"show"[39m[33m,[39m [32m`[39m[36m${[39mrevision[36m}[39m[32m:[39m[36m${[39mpath[36m}[39m[32m`[39m][33m,[39m { cwd[33m:[39m r…
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2276141Z [2m   Start at [22m 16:41:46
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2277198Z     [90m   | [39m         [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2278282Z [2m   Duration [22m 48.82s[2m (transform 3.61s, setup 0ms, collect 13.27s, tests 88.29s, environment 41ms, prepare 15.75s)[22m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2352588Z     [90m 11| [39m}
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2353392Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2356385Z     [90m 12| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2356617Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2358499Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m16:20[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2477520Z ##[error]Error: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:16:20
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Verify (Windows)	Run unit tests	Serialized Error: { status: 128, signal: null, output: [ null, '', 'fatal: path \'scripts/test/rehearse-release.sh\' exists on disk, but not in \'3ade5d1e45ac0f53f0f7a122711e6e219b7dac09\'\n' ], pid: 1900, stdout: '', stderr: 'fatal: path \'scripts/test/rehearse-release.sh\' exists on disk, but not in \'3ade5d1e45ac0f53f0f7a122711e6e219b7dac09\'\n' }
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2494784Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2495502Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2495869Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2497492Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mretains backup, cleanup, and rollback approval ordering byte-for-byte
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2500133Z [31m[1mError[22m: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2501933Z fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2502855Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2503758Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2504587Z     [90m  8| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2505508Z     [90m  9| [39m[35mfunction[39m [34mgitShow[39m(revision[33m:[39m string[33m,[39m path[33m:[39m string) {
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2507567Z     [90m 10| [39m  [35mreturn[39m [34mexecFileSync[39m([32m"git"[39m[33m,[39m [[32m"show"[39m[33m,[39m [32m`[39m[36m${[39mrevision[36m}[39m[32m:[39m[36m${[39mpath[36m}[39m[32m`[39m][33m,[39m { cwd[33m:[39m r…
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2508995Z     [90m   | [39m         [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2509476Z     [90m 11| [39m}
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2509907Z     [90m 12| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2511031Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m30:20[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2511627Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2512002Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2512322Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2514089Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2516777Z [31m[1mError[22m: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2518811Z fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2520010Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2520895Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2521761Z     [90m  8| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2522636Z     [90m  9| [39m[35mfunction[39m [34mgitShow[39m(revision[33m:[39m string[33m,[39m path[33m:[39m string) {
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2525160Z     [90m 10| [39m  [35mreturn[39m [34mexecFileSync[39m([32m"git"[39m[33m,[39m [[32m"show"[39m[33m,[39m [32m`[39m[36m${[39mrevision[36m}[39m[32m:[39m[36m${[39mpath[36m}[39m[32m`[39m][33m,[39m { cwd[33m:[39m r…
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2527289Z     [90m   | [39m         [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2528992Z     [90m 11| [39m}
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2529390Z     [90m 12| [39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2530516Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m50:55[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2531144Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2531512Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2531862Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2531896Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2541428Z ##[error]Error: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+Verify (Windows)	Run unit tests	fatal: path 'scripts/test/rehearse-release.sh' exists on disk, but not in '3ade5d1e45ac0f53f0f7a122711e6e219b7dac09'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:30:20
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Verify (Windows)	Run unit tests	Serialized Error: { status: 128, signal: null, output: [ null, '', 'fatal: path \'scripts/test/rehearse-release.sh\' exists on disk, but not in \'3ade5d1e45ac0f53f0f7a122711e6e219b7dac09\'\n' ], pid: 5116, stdout: '', stderr: 'fatal: path \'scripts/test/rehearse-release.sh\' exists on disk, but not in \'3ade5d1e45ac0f53f0f7a122711e6e219b7dac09\'\n' }
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2548021Z 
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2565100Z ##[error]Error: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+Verify (Windows)	Run unit tests	fatal: path 'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json' exists on disk, but not in '11907f5df1bcedc03a5600252056502fd1e88f3f'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:50:55
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Verify (Windows)	Run unit tests	Serialized Error: { status: 128, signal: null, output: [ null, '', 'fatal: path \'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json\' exists on disk, but not in \'11907f5df1bcedc03a5600252056502fd1e88f3f\'\n' ], pid: 5556, stdout: '', stderr: 'fatal: path \'docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json\' exists on disk, but not in \'11907f5df1bcedc03a5600252056502fd1e88f3f\'\n' }
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T16:42:35.3692941Z ##[error]Process completed with exit code 1.
