@@ -1,0 +1,30 @@
+{
+  "role": "generator",
+  "verdict": null,
+  "baseSha": "d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f",
+  "scope": "CI native macOS launchd abnormal-cleanup temp-path consistency",
+  "changedPaths": [
+    ".github/workflows/deploy-vps.yml",
+    "tests/ci/macos-launchd-installer-gate.test.ts",
+    "tests/ci/macos-launchd-cleanup-trap.test.ts",
+    "docs/test-reports/B04-macos-launchd-trap-path-generator-20261008/REPORT.md",
+    "docs/test-reports/B04-macos-launchd-trap-path-generator-20261008/results.json"
+  ],
+  "negativeControls": [
+    "distinct Node TMPDIR and RUNNER_TEMP are not inherently equal at the base SHA",
+    "removing the new workflow binding leaves an interrupted fixture orphaned",
+    "out-of-scope cleanup records remain refused"
+  ],
+  "verification": {
+    "node": "v22.22.0",
+    "npmCi": "pass, fresh local install",
+    "actionlint": "pass",
+    "trapAndGate": "12 passed",
+    "nativeLaunchd": "1 passed on macOS gui/501; final scoped processes 0",
+    "verify": "pass",
+    "lint": "pass",
+    "fullVitest": "1713 passed, 23 skipped; 133 files passed, 9 skipped",
+    "diffCheck": "pass",
+    "exactShaGitHubCi": "not run"
+  }
+}

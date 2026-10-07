@@ -224,6 +224,10 @@ jobs:
       - name: Verify native macOS launchd pinned installer
         run: |
           set -euo pipefail
+          : "${RUNNER_TEMP:?RUNNER_TEMP is required for native fixture cleanup}"
+          RUNNER_TEMP="$(cd "$RUNNER_TEMP" && pwd -P)"
+          TMPDIR="$RUNNER_TEMP"
+          export RUNNER_TEMP TMPDIR
           mkdir -p .ci
           cleanup_native_fixture() {
             set +e
