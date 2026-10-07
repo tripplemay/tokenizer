@@ -179,7 +179,7 @@ async function cleanupLegacy(dryRun) {
 
 async function run() {
   await prisma.user.deleteMany({ where: { id: { startsWith: "b09_real_" } } });
-  await prisma.modelPrice.deleteMany({ where: { modelKey: "gpt-5.4" } });
+  await prisma.modelPrice.deleteMany({ where: { modelKey: { in: ["gpt-5.4", "synthetic-b09-auto-free", "synthetic-b09-scan-free"] } } });
   await seedTenant("a");
   await seedTenant("b");
   await prisma.deviceToken.create({ data: {
