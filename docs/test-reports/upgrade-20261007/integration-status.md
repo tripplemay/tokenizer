@@ -50,3 +50,13 @@ B02 最小依赖升级候选 `17b47a8` 的非 main run `37656814992` 已终态 f
 - B02 最小升级加单用例 Windows timeout 的 exact `8794f4b` run `37659338402` 已全验证 job 成功；内部 `braces` 深度防护 backport 加 timeout 的 exact `b6092cd` run `37660012749` 亦成功，均 Deploy skipped。独立组合探针 `5b34204` 的 Node22 clean install、verify/lint、1704 tests/23 skip、standalone build/gate 通过，非 main CI `37661734545` 尚在运行；**完整依赖图仍报告 7 High**（生产依赖审计 0），异家族安全复核在进行，未回流本集成树或获得发布放行。
 - B03 bounded historical replay 候选 `420b539` 的同家族技术预审 `a8a4072` 复现三个 BLOCK：父目录 symlink 可被读、regular→FIFO 替换导致 `open` 阻塞超时、`projectRoots` 变化可在旧确认 digest 下改变 admission。候选不回流；Generator 在独立树修复，预审负控及历史证据保持不变。
 - B06 server bounded schema 候选 `4da6604` 的非 main run `37660586981` Linux/Windows/PG16/browser 成功、Deploy skipped；同家族技术预审 `8e415be` 指出 PG16 workflow 未执行新增专用 3 项 DB probe（普通 Verify 中 skip），虽本机真实 PG16 3/3 通过，仍须补 CI 门禁。B06 客户端 quarantine、partial ACK 与队列 liveness 尚未实现。不得把 CI 绿灯或本机 PG 测试等同完整 B06 通过。
+
+## 2026-10-08 依赖修复与验证更新
+
+- B02 最小依赖升级、内部 vendored `braces` 深度防护 backport、单一昂贵 Windows fixture timeout 已回流本隔离树（`a2f3e4e`、`29a0ffb`、`4108126`），Kimi 异家族独立报告回流于 `fe4ee7b`。本树的 `package.json`、`package-lock.json`、`vendor/braces/**`、B02 测试及 B04/B05 OCI/恢复代码与已验证组合 SHA `5b34204931a919166d8912716cac21dafea92108` 字节一致；该组合的 run `37661734545` 五个验证 job 均成功，Deploy skipped。独立报告 `docs/test-reports/B02-braces-backport-kimi-evaluator-20261008/verdict-round2.json` 另核对 B02 原候选 `b6092cd` 的 exact-SHA run `37660012749` 四项验证成功，并独立下载/验证组合 recovery artifact。两条分支的 B02 文件等价由文件比较建立，**不是 Git 祖先关系**。
+- 含开发依赖的 `npm audit` 仍显示 **7 High**：Kimi 对两个候选 SHA 的结论是七项全由同一 `braces` advisory 的包名/版本匹配及传递依赖展开造成，实际安装的是经哈希、边界负控与兼容性测试证明已修复的本地代码；这是有范围的扫描器元数据误报处置，**不是接受未修复漏洞**，不能表述为扫描器零告警。该结论只对已核验的 vendor/lock/override 字节及该栈耗尽向量有效，任何改动须重评；上游有可核验修复版后仍须迁回。生产依赖审计为 0。B02 安全修复和非 main CI 门已获独立证据，**不等于整套升级或生产发布放行**。
+- B05 组合 `8877a59` 的 run `37660385870` 已核对为五个验证 job 成功、Deploy skipped；下载的 artifact `11501715741` 经 `recovery-evidence.mjs verify` 通过，ledger `mode=synthetic`、`rollback=passed`。B05 新一轮异家族独立复核进行中；main-only 签名 provenance、真实生产备份恢复和部署未证明。
+- B06 PG16 专项 CI 门禁补丁 `029f6c53ea7193989643a1f2e4d23108ba0c9af5` 的 run `37662917327` 已终态成功；PG job 实际执行新增 `b06-batch-db.probe.test.ts` **3/3**，合计 6 文件/51 测试、0 skip。仍只覆盖服务端 bounded schema，客户端逐行 ACK/坏行隔离/活性正在独立候选开发，未回流。
+- B08 CAS/身份模型规格在独立规划树 `0de8bb1` 完成，建议首切片为 nullable revision、R07 conditional adoption guard、显式 revision 原子 CAS 与真实 PG16 并发探针；这是设计产物，不是已实现功能。B03 用户决策保持：规则更改不隐式回扫历史，旧排除数据只通过独立有界 replay；`local-only` 切回 `sync` 后排队事件在下次同步自动上传。
+
+本树仍未推送 `main`、未触发生产部署、未做 F005 登录态浏览器签收或人类发布闸门。当前 B02/B05 的 safe-branch 合成恢复证据不得替代生产镜像 provenance、真实备份恢复与业务验收。
