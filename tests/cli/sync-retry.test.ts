@@ -104,6 +104,28 @@ describe("syncEvents batch retry", () => {
     expect(fetchMock.mock.calls[0][1].body).not.toContain(canary);
   });
 
+  it("rewrites legacy queue content and remote credentials before upload", async () => {
+    const legacyEvent = {
+      ...event(1),
+      repoKey: "reader:FAKE_TOKEN@git.example/Team/Repo",
+      gitRemote: "https://reader:FAKE_TOKEN@git.example/Team/Repo.git?key=FAKE_QUERY",
+      rawJson: { message: { content: "PRIVATE_BODY_CANARY" } }
+    };
+    writeFileSync(tmp.queuePath, `${JSON.stringify(legacyEvent)}\n`);
+
+    const pending = readQueue();
+    const queue = readFileSync(tmp.queuePath, "utf8");
+    expect(queue).not.toMatch(/FAKE_TOKEN|FAKE_QUERY|PRIVATE_BODY_CANARY/);
+    expect(pending[0]).toMatchObject({
+      repoKey: "git.example/Team/Repo",
+      gitRemote: "https://git.example/Team/Repo.git"
+    });
+
+    fetchMock.mockResolvedValueOnce(okResponse(1));
+    await syncEvents(config, pending);
+    expect(fetchMock.mock.calls[0][1].body).not.toMatch(/FAKE_TOKEN|FAKE_QUERY|PRIVATE_BODY_CANARY/);
+  });
+
   it("keeps local exception details out of default device diagnostics", () => {
     const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
     writeFileSync(tmp.statePath, JSON.stringify({ lastError: `invalid JSON: ${canary}`, lastSyncStatus: "failed" }));
