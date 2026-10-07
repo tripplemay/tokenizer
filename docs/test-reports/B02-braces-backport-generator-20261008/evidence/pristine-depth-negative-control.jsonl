@@ -1,0 +1,24 @@
+{"kind":"string","operation":"default","depth":100,"result":"accepted","outputType":"array"}
+{"kind":"string","operation":"parse","depth":100,"result":"accepted","outputType":"object"}
+{"kind":"string","operation":"compile","depth":100,"result":"accepted","outputType":"string"}
+{"kind":"string","operation":"expand","depth":100,"result":"accepted","outputType":"array"}
+{"kind":"string","operation":"stringify","depth":100,"result":"accepted","outputType":"string"}
+{"kind":"direct-ast","operation":"compile","depth":100,"result":"accepted","outputType":"string"}
+{"kind":"direct-ast","operation":"expand","depth":100,"result":"accepted","outputType":"array"}
+{"kind":"direct-ast","operation":"stringify","depth":100,"result":"accepted","outputType":"string"}
+{"kind":"string","operation":"default","depth":101,"result":"accepted","outputType":"array"}
+{"kind":"string","operation":"parse","depth":101,"result":"accepted","outputType":"object"}
+{"kind":"string","operation":"compile","depth":101,"result":"accepted","outputType":"string"}
+{"kind":"string","operation":"expand","depth":101,"result":"accepted","outputType":"array"}
+{"kind":"string","operation":"stringify","depth":101,"result":"accepted","outputType":"string"}
+{"kind":"direct-ast","operation":"compile","depth":101,"result":"accepted","outputType":"string"}
+{"kind":"direct-ast","operation":"expand","depth":101,"result":"accepted","outputType":"array"}
+{"kind":"direct-ast","operation":"stringify","depth":101,"result":"accepted","outputType":"string"}
+{"kind":"string","operation":"default","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"string","operation":"parse","depth":4000,"result":"accepted","outputType":"object"}
+{"kind":"string","operation":"compile","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"string","operation":"expand","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"string","operation":"stringify","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"direct-ast","operation":"compile","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"direct-ast","operation":"expand","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}
+{"kind":"direct-ast","operation":"stringify","depth":4000,"result":"rejected","errorName":"RangeError","errorCode":null,"errorMessage":"Maximum call stack size exceeded"}

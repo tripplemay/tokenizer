@@ -57,6 +57,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.20",
+    "braces": "file:vendor/braces",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.0",
     "postcss": "^8.5.1",
@@ -67,6 +68,7 @@
     "vitest": "4.1.11"
   },
   "overrides": {
+    "braces": "$braces",
     "postcss-selector-parser": "7.1.6"
   }
 }

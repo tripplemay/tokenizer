@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-braces-backport-20261008
+
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  00:20:11
+   Duration  120ms (transform 14ms, setup 0ms, import 21ms, tests 6ms, environment 0ms)
+

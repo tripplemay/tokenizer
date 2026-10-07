@@ -1,0 +1,7 @@
+baseline=17b47a8 B02 minimal candidate CSS hashes
+017dd561560fe7511dbd67c8ef94f8a9e8d77231498d20f54fe84ebdf7984341  .next/static/chunks/0ogneuwxfzjvm.css
+72acce2f97679739ac04624e00e782c11727d60829890695efab7f3bb2cb3947  .next/static/chunks/0721-9xv87gao.css
+backport-candidate:
+72acce2f97679739ac04624e00e782c11727d60829890695efab7f3bb2cb3947  .next/static/chunks/0721-9xv87gao.css
+017dd561560fe7511dbd67c8ef94f8a9e8d77231498d20f54fe84ebdf7984341  .next/static/chunks/0ogneuwxfzjvm.css
+result=byte-identical hash multiset
