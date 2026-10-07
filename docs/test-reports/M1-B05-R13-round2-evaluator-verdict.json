@@ -1,0 +1,132 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "M1-B05-R13",
+  "feature_id": "R13-SLICE1-ROUND2",
+  "candidate_commit": "6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01",
+  "baseline_commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "created_at": "2026-10-07T15:02:39Z",
+  "evaluator": "codex/evaluator-independent-round2",
+  "result": "FAIL",
+  "release_ready": false,
+  "release_readiness": "NOT_READY",
+  "summary": "Round 2 closes substantial parts of the first verdict: the VPS no longer builds release images, deployment consumes digest references, a real Linux container rehearsal independently passed backup/checksum/isolated restore/migration/HTTP canary/non-root checks, and readiness failure containment is now fail-closed with compatibility-gated app rollback. The candidate is still not executable as a release. Its CI builds previous-source images with the previous Dockerfile, but the required baseline and B01/B02 integration predecessors do not define the revision label that the rehearsal immediately requires, so release-artifact fails before it can prove rollback. The deploy job also omits attestations:read while using gh attestation verify. Composition with B01/B02 has unresolved conflicts and the standalone candidate still carries four critical production audit findings. Most importantly, the B02 Next 16 composition turns health.ts's dynamic migration-directory read into a whole-project standalone trace; the resulting runner payload contains project state, source, framework files, and hundreds of report files. GHCR/GitHub-attestation and production/bootstrap execution were not authorized or run. Therefore B05/R13 and overall release readiness remain blocked.",
+  "findings": [
+    {
+      "id": "B05-R2-EVAL-001",
+      "severity": "BLOCKER",
+      "scope": "candidate",
+      "title": "Previous-source image rehearsal cannot pass against the actual predecessor",
+      "evidence": "release-artifact builds old-app and old-migrate from .baseline and only passes SOURCE_COMMIT as a build argument. Baseline 2074991717abaf3cb34d9aad894bcd4357fefbc3, and the B01/B02 integration predecessor inspected for composition, have no ARG SOURCE_COMMIT or org.opencontainers.image.revision label in their Dockerfile. scripts/test/rehearse-release.sh then unconditionally calls verify-release-image.sh for the previous images and requires that exact label. The build argument is ignored by those previous Dockerfiles, so the release-artifact job fails on the first real PR/main integration instead of proving old-image compatibility.",
+      "impact": "The new immutable artifact gate is not merely unexecuted; it is internally incompatible with the commit it must use as the rollback baseline. No production deployment can reach the deploy job through this path.",
+      "required_action": "Apply the previous revision label from the current trusted workflow independently of the historical Dockerfile, or build the old source through a current wrapper Dockerfile. Add a CI regression using a predecessor that lacks B05's Dockerfile changes, and require both previous app and migration images to pass exact revision verification and the business rollback canary."
+    },
+    {
+      "id": "B05-R2-EVAL-002",
+      "severity": "BLOCKER",
+      "scope": "B02 Next 16 composition",
+      "title": "Dynamic migration discovery traces the whole repository into the Next 16 runtime payload",
+      "evidence": "The composed Next 16 build uses latestMigrationName(join(process.cwd(), 'prisma', 'migrations')) followed by readdirSync of the dynamic path. Independent inspection of the generated .next/standalone tree measured 91 MiB and found CLAUDE.md, progress.json, features.json, src/server/health.ts, docs/test-reports/M1-B05-R13-round2-generator-handoff.json, framework/README.md, 311 docs files, and 137 framework files. The isolated Next 15 candidate runner was 97 MiB at /app but did not contain those sampled unrelated project files.",
+      "impact": "The required B02 security/Next 16 composition would publish internal state, source, and accumulated reports in the production image and makes the runtime payload grow with unrelated repository history. Future report content could become an image disclosure even though it is not an application dependency.",
+      "required_action": "Replace runtime directory discovery with a statically traceable migration marker or generated constant. Add a Next 16 standalone allowlist/denylist regression that fails if repository state, docs/test-reports, framework, unrelated source, or other non-runtime roots enter the runner image, and record the resulting image contents and size."
+    },
+    {
+      "id": "B05-R2-EVAL-003",
+      "severity": "BLOCKER",
+      "scope": "B01/B02 composition",
+      "title": "Standalone B05 does not preserve the four B01 release gates or the B02 release floor",
+      "evidence": "git merge-tree between the B01/B02 integration commit and this candidate reports conflicts in .env.example, .github/workflows/deploy-vps.yml, docker-compose.yml, scripts/validate-deploy-secrets.sh, and tests/server/deploy-secrets.test.ts. B01's deploy job needs verify, verify-windows, verify-db, and verify-browser; this candidate's release-artifact needs only verify and verify-windows and its unit test hard-codes that reduced list. Independently installed candidate dependencies report four critical and five high production vulnerabilities, while the candidate remains on Next 15 and conflicts with the separately validated B02 Next 16/secret changes.",
+      "impact": "A mechanical conflict resolution can silently drop real PostgreSQL/browser release gates or B02 auth/secret hardening. Releasing the standalone candidate would also bypass the dependency security floor B02 was created to close.",
+      "required_action": "Produce and independently validate one resolved composition in which release-artifact depends on all four B01 jobs, deploy depends on release-artifact, B02 secret validation is retained, the patched dependency graph is used, and the Next 16 standalone disclosure blocker is closed."
+    },
+    {
+      "id": "B05-R2-EVAL-004",
+      "severity": "HIGH",
+      "scope": "candidate GitHub Actions",
+      "title": "Deploy attestation verification does not grant attestation read permission",
+      "evidence": "The deploy job explicitly sets permissions to contents:read and packages:read, which makes unlisted GITHUB_TOKEN permissions none, but invokes gh attestation verify without --bundle-from-oci. GitHub's workflow permission contract exposes attestations:read for reading artifact attestations. The release-artifact job has attestations:write, but job tokens and job permissions are separate.",
+      "impact": "The pre-SSH provenance gate can fail because the deploy token cannot fetch repository attestations. No live GitHub run exists to disprove this fail-closed path.",
+      "required_action": "Grant deploy attestations:read, or deliberately verify an OCI-carried bundle with --bundle-from-oci under packages:read. Execute a real private/public-repository-equivalent workflow and retain the successful verification output plus a negative wrong-source/wrong-workflow test."
+    },
+    {
+      "id": "B05-R2-EVAL-005",
+      "severity": "BLOCKER",
+      "scope": "release precondition",
+      "title": "The current VPS has no independently proven retained old digest/bootstrap baseline",
+      "evidence": "The script correctly refuses replacement when a running app is not matched by a retained previous APP_IMAGE and MIGRATE_IMAGE digest. The runbook states that the legacy local-build VPS needs a separate authorized baseline cutover and that it was not executed. No production or staging artifact proves the exact currently serving image was rebuilt, attested, rehearsed, and adopted as that baseline.",
+      "impact": "Even after code fixes, the first digest deployment is intentionally blocked. Deleting the old container or fabricating the ledger would defeat the recovery invariant.",
+      "required_action": "Perform the documented authorized bootstrap on a controlled environment, bind it to the actual current production SHA/image identity, rehearse restore and compatibility, and retain the observed digest, configuration, health, and rollback evidence before release."
+    }
+  ],
+  "verified_controls": [
+    {
+      "control": "Linux container backup, restore, migration, canary, cleanup, and non-root runtime",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "On a local Linux/arm64 Docker daemon, independently built candidate app and migration images were pushed to a local registry and consumed by digest. The script applied all 28 migrations, ran enroll -> authenticated ingest -> session summary, created and checksum-verified a custom-format dump, restored it to an isolated PostgreSQL 16 container, replayed the exact migration image, preserved critical inventory 2|2|1|1|23, observed runtime UID 1000, reran the canary, and removed scratch containers/networks. The previous image was deliberately the same candidate digest, so this proves the real mechanics but not old-version compatibility. The GitHub workflow targets linux/amd64, which was not independently executed."
+    },
+    {
+      "control": "Readiness containment and compatibility-gated app rollback",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "Focused fault tests confirm migration/rehearsal failure prevents app start, failed readiness stops the new app, rollback requires an exact digest gate, failed rollback leaves the app stopped, and activation requires ready plus exact commit. This was fault-tested with controlled command doubles; production traffic switching and a distinct old-image rollback were not executed."
+    },
+    {
+      "control": "Digest-pinned release composition",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "Compose release override removes build definitions and requires app/migration digest references; the VPS script pulls and checks exact source labels and same-commit manifest immutability. actionlint, ShellCheck, bash syntax, and Compose interpolation passed. GHCR publication/attestation was not run, and the predecessor-label defect prevents the proposed CI rehearsal from succeeding."
+    },
+    {
+      "control": "Layered health and public error redaction",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "Focused tests cover liveness, readiness, configuration fail-closed behavior, migration marker checks, stable public error codes, bounded internal error metadata, and read-only harness capability. The dynamic migration directory implementation is safe in the isolated Next 15 candidate image but unsafe in the required Next 16 composition."
+    }
+  ],
+  "test_results": {
+    "npm_ci_node22": "PASS; Node v22.22.0; 637 packages; npm reported 28 total audit findings",
+    "focused": "PASS; 4 files, 49 tests",
+    "full_suite": "PASS; 108 files passed, 7 skipped; 1495 tests passed, 20 skipped",
+    "verify": "PASS",
+    "lint": "PASS; no warnings or errors",
+    "build": "PASS; Next 15.5.18 with placeholder DATABASE_URL",
+    "static_release_tools": "PASS; actionlint 1.7.12, ShellCheck 0.11.0, bash -n, Docker Compose 5.1.1",
+    "compose_config": "PASS; release override resolved only digest images and no build directives",
+    "linux_oci_runtime": "PARTIAL_PASS; local Linux/arm64 Docker 29.2.1, not workflow linux/amd64",
+    "postgres_restore_http_canary": "PASS_WITH_LIMITATIONS; real PG16/HTTP path with same candidate digest used as previous",
+    "old_version_rollback": "FAIL/BLOCKED; proposed CI predecessor lacks required revision label; no distinct old-image rehearsal completed",
+    "ghcr_attestation": "BLOCKED; no authorized GitHub publish/workflow run, plus deploy attestations:read is absent",
+    "production": "NOT_RUN",
+    "b02_production_audit": "FAIL; 4 critical, 5 high, 1 moderate in standalone candidate production graph",
+    "next16_composed_standalone": "FAIL; whole-project runtime trace confirmed"
+  },
+  "evidence_paths": [
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/environment.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/npm-ci.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/focused-tests.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/full-tests.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/verify.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/lint.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/build.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/static-release-checks.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/compose-config.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/docker-build-app.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/docker-push-app.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/docker-push-migrate.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/docker-rehearsal-same-image.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/docker-rehearsal-ledger.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/previous-image-label-precondition.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/attestation-permissions-audit.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/integration-conflicts.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/npm-audit-production.json",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/next15-runner-content-audit.log",
+    "docs/test-reports/M1-B05-R13-round2-evaluator-evidence/next16-combination-standalone-audit.log"
+  ],
+  "external_sources": [
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions",
+    "https://cli.github.com/manual/gh_attestation_verify"
+  ],
+  "scope_boundaries": [
+    "No candidate product, original repository, progress.json, features.json, pending_gate, or human decision was modified.",
+    "No branch was pushed and no production or GHCR action was performed.",
+    "The local Docker rehearsal used Linux/arm64 and the same candidate digest as the previous image; it does not prove linux/amd64 or old-version compatibility.",
+    "The Next 16 finding is explicitly a composition result; the isolated Next 15 candidate runner did not contain the sampled unrelated repository files.",
+    "No RPO/RTO, production restore, live email, login, browser, or traffic-switch claim is made."
+  ]
+}
