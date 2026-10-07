@@ -9,6 +9,11 @@ function installRoot(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 }
 
+// A copied Node executable used as git on Windows can take over one second to
+// start under CI load. Keep this bounded well below the former 30-second stall
+// while allowing the startup SHA snapshot to succeed on native Windows.
+const STARTUP_VERSION_TIMEOUT_MS = 2_000;
+
 // Captured at module load (effectively process startup). A long-running
 // daemon that started BEFORE a later `git pull` must keep reporting its
 // startup SHA, not the post-pull on-disk SHA — otherwise stale daemons
@@ -19,7 +24,7 @@ const cached: string | null = (() => {
   try {
     const result = runBoundedSubprocess("git", ["rev-parse", "--short=12", "HEAD"], {
       cwd: installRoot(),
-      timeoutMs: 1_000,
+      timeoutMs: STARTUP_VERSION_TIMEOUT_MS,
       maxOutputBytes: 128,
       windowsHide: true
     });
