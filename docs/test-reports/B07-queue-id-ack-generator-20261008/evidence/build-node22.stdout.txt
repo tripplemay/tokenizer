@@ -19,9 +19,9 @@ Tip: Want to react to database changes in your app as they happen? Discover how 
   Finished TypeScript in 1805ms ...
   Collecting page data using 9 workers ...
   Generating static pages using 9 workers (0/5) ...
-  Generating static pages using 9 workers (1/5) 
-  Generating static pages using 9 workers (2/5) 
-  Generating static pages using 9 workers (3/5) 
+  Generating static pages using 9 workers (1/5)
+  Generating static pages using 9 workers (2/5)
+  Generating static pages using 9 workers (3/5)
 ✓ Generating static pages using 9 workers (5/5) in 84ms
   Finalizing page optimization ...
 
@@ -72,4 +72,3 @@ Route (app)
 
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand
-
