@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-07T17:03:28.956Z",
+  "role": "Generator self-test; not independent acceptance",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b05-portable-regression-fix-20261008",
+  "base": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+  "testedCodeCommit": "8d646d8194074cbb0ed81807b782706ab59b5332",
+  "tempDir": "/Volumes/ORICO/project/.b05portabletmp",
+  "nativeBaselineRun": "https://github.com/tripplemay/tokenizer/actions/runs/37653910013",
+  "candidateNativeCI": "NOT_RUN; fresh native rerun and independent evaluator required",
+  "checkoutBoundary": "LF/full-history and CRLF/shallow simulations on macOS, not native Linux/Windows",
+  "noProductionChanges": true,
+  "b06Checkpoint": "c497248"
+}

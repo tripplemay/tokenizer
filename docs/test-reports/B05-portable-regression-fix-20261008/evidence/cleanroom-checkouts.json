@@ -1,0 +1,20 @@
+{
+  "full": {
+    "head": "8d646d8194074cbb0ed81807b782706ab59b5332",
+    "shallow": "false",
+    "objects": {
+      "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09": true,
+      "11907f5df1bcedc03a5600252056502fd1e88f3f": false
+    },
+    "scriptHasCRLF": false
+  },
+  "shallowCRLF": {
+    "head": "8d646d8194074cbb0ed81807b782706ab59b5332",
+    "shallow": "true",
+    "objects": {
+      "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09": false,
+      "11907f5df1bcedc03a5600252056502fd1e88f3f": false
+    },
+    "scriptHasCRLF": true
+  }
+}

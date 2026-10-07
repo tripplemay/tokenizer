@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-portable-regression-fix-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > preserves the exact readiness-only source delta and immutable supplement with LF checkout
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > preserves the exact readiness-only source delta and immutable supplement with CRLF checkout
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a temporary socket readiness mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a stale approval removal mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a backup checksum gate mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a restore fail-closed mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a rollback ledger mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects a backup cleanup mutation
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > rejects changed supplement evidence and reintroduced deployment-doc drift
+ ✓ tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > excludes only the immutable historical local-object audit, with an active portable replacement
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  00:02:52
+   Duration  1.17s (transform 123ms, setup 0ms, collect 131ms, tests 9ms, environment 0ms, prepare 90ms)
+

@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-portable-cleanroom-shallow-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 4ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 739ms
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  00:00:02
+   Duration  1.08s (transform 42ms, setup 0ms, collect 52ms, tests 743ms, environment 0ms, prepare 68ms)
+

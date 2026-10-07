@@ -1,0 +1,10 @@
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt: OK
+scripts/test/b05-tcp-readiness-independent.mjs: OK
+tests/evaluator/b05-tcp-readiness-independent.test.ts: FAILED
+shasum: WARNING: 1 computed checksum did NOT match
