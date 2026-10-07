@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -131,5 +131,40 @@ describe("B03 replay and B07 exact-version queue combination", () => {
 
     expect(executed).toMatchObject({ admitted: 1, duplicates: 0, backlog: 2 });
     expect(sameId.map((item) => item.inputTokens)).toEqual([99, 1]);
+  });
+
+  it("does not normalize or otherwise mutate legacy queue bytes during dry-run", () => {
+    const root = mkdtempSync(join(realpathSync(tmpdir()), "b03-b07-preview-"));
+    roots.push(root);
+    const file = join(root, "source.jsonl");
+    const row = {
+      type: "assistant",
+      uuid: "preview-only",
+      cwd: root,
+      timestamp: "2026-10-07T12:00:00.000Z",
+      message: { role: "assistant", id: "preview-only", usage: { input_tokens: 1 } }
+    };
+    writeFileSync(file, `${JSON.stringify(row)}\n`);
+    const legacyQueueBytes = `{ "source": "claude-code", "sourceEventId": "legacy", "occurredAt": "2026-10-07T01:00:00.000Z", "inputTokens": 1, "totalTokens": 1 }\r\n`;
+    mkdirSync(fixture.queuePath.replace(/\/queue\.jsonl$/, ""), { recursive: true });
+    writeFileSync(fixture.queuePath, legacyQueueBytes);
+    const config = {
+      serverUrl: "http://127.0.0.1:9",
+      projectRoots: [],
+      sources: { claude: true, codex: false, opencode: false, aider: false, kimicode: false },
+      privacy: { mode: "local-only" as const, includePaths: [root], excludePaths: [] }
+    };
+
+    const preview = dryRunBoundedReplay(planBoundedReplay({
+      source: "claude-code",
+      file,
+      from: "2026-10-07T00:00:00.000Z",
+      to: "2026-10-08T00:00:00.000Z",
+      maxBytes: 100_000,
+      maxEvents: 10
+    }), config);
+
+    expect(preview).toMatchObject({ dryRun: true, wouldAdmit: 1 });
+    expect(readFileSync(fixture.queuePath, "utf8")).toBe(legacyQueueBytes);
   });
 });
