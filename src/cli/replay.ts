@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { closeSync, constants, fstatSync, lstatSync, openSync, readSync } from "node:fs";
+import { dirname, isAbsolute, parse } from "node:path";
 import type { BigIntStats } from "node:fs";
 import { parseClaudeJsonlBuffer } from "@/parsers/claude";
 import type { UsageEventInput } from "@/shared/usage";
@@ -97,6 +99,53 @@ function sameIdentity(left: Omit<FileIdentity, "contentSha256">, right: Omit<Fil
     left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs;
 }
 
+type ParentIdentity = { path: string; dev: string; ino: string };
+
+function checkSourcePath(file: string, started: number, nativeAttributes = true): ParentIdentity[] {
+  const segments = file.split(process.platform === "win32" ? /[\\/]/ : /\//);
+  if (!isAbsolute(file) || segments.some((segment) => segment === "." || segment === "..")) {
+    fail("source requires an absolute path without dot traversal");
+  }
+  if (process.platform === "win32" && (!/^[a-z]:[\\/]/i.test(file) || file.slice(3).includes(":"))) {
+    fail("source requires a local Windows drive file, not a device, network path or alternate stream");
+  }
+  const parents: string[] = [];
+  for (let current = dirname(file); ; current = dirname(current)) {
+    parents.unshift(current);
+    if (current === parse(current).root) break;
+  }
+  const identities = parents.map((path) => {
+    const stat = lstatSync(path, { bigint: true });
+    if (!stat.isDirectory() || stat.isSymbolicLink()) fail("source parent must be a non-symlink directory");
+    return { path, dev: String(stat.dev), ino: String(stat.ino) };
+  });
+  if (process.platform === "win32") {
+    const leaf = lstatSync(file, { bigint: true });
+    if (!leaf.isFile() || leaf.isSymbolicLink()) fail("source must be one regular non-symlink file");
+  }
+  if (process.platform === "win32" && nativeAttributes) {
+    // Node's stat flags do not expose every Windows reparse tag. Check native
+    // attributes before/after reading; unavailable checks fail closed.
+    const script = "$ErrorActionPreference='Stop'; foreach($p in (ConvertFrom-Json $env:TOKENIZER_REPLAY_PATHS)) { if(([IO.File]::GetAttributes($p) -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'reparse point' } }; 'TOKENIZER_REPLAY_NO_REPARSE_V1'";
+    const remaining = MAX_ELAPSED_MS - (Date.now() - started);
+    if (remaining <= 0) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
+    const result = execFileSync("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script], {
+      env: { ...process.env, TOKENIZER_REPLAY_PATHS: JSON.stringify([...parents, file]) },
+      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], windowsHide: true,
+      timeout: remaining, maxBuffer: 16 * 1024
+    });
+    if (result.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") fail("source reparse-point check failed");
+  }
+  return identities;
+}
+
+function checkSameParents(before: ParentIdentity[], after: ParentIdentity[]) {
+  if (before.length !== after.length || before.some((parent, index) => {
+    const current = after[index];
+    return parent.path !== current.path || parent.dev !== current.dev || parent.ino !== current.ino;
+  })) fail("source parent changed while being read");
+}
+
 function validateRecords(bytes: Buffer): number {
   let records = 0;
   let lineStart = 0;
@@ -117,20 +166,24 @@ function validateRecords(bytes: Buffer): number {
 
 export function readBoundedReplayFile(file: string, maxBytes: number, hooks: ReplayReadHooks = {}): ReplayFileSnapshot {
   const started = Date.now();
-  const beforeStat = lstatSync(file, { bigint: true });
-  if (!beforeStat.isFile() || beforeStat.isSymbolicLink()) fail("source must be one regular non-symlink file");
-  const before = statIdentity(beforeStat);
-  if (before.size > maxBytes) fail(`byte limit exceeded (${before.size} > ${maxBytes})`);
-  hooks.afterPathStat?.();
-
-  const noFollow = process.platform === "win32" ? 0 : constants.O_NOFOLLOW;
   let descriptor: number | undefined;
   try {
-    descriptor = openSync(file, constants.O_RDONLY | noFollow);
+    const parents = checkSourcePath(file, started);
+    const beforeStat = lstatSync(file, { bigint: true });
+    if (!beforeStat.isFile() || beforeStat.isSymbolicLink()) fail("source must be one regular non-symlink file");
+    const before = statIdentity(beforeStat);
+    if (before.size > maxBytes) fail(`byte limit exceeded (${before.size} > ${maxBytes})`);
+    hooks.afterPathStat?.();
+    checkSameParents(parents, checkSourcePath(file, started, false));
+
+    // O_NOFOLLOW alone still blocks when a regular path is raced into a FIFO.
+    const flags = process.platform === "win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK;
+    descriptor = openSync(file, constants.O_RDONLY | flags);
     const openedStat = fstatSync(descriptor, { bigint: true });
     if (!openedStat.isFile()) fail("opened source is not a regular file");
     const opened = statIdentity(openedStat);
     if (!sameIdentity(before, opened)) fail("source changed between path check and open");
+    checkSameParents(parents, checkSourcePath(file, started, false));
 
     const bytes = Buffer.allocUnsafe(maxBytes + 1);
     let offset = 0;
@@ -142,6 +195,8 @@ export function readBoundedReplayFile(file: string, maxBytes: number, hooks: Rep
     }
     if (offset > maxBytes) fail(`byte limit exceeded (${offset} > ${maxBytes})`);
     hooks.afterRead?.();
+
+    checkSameParents(parents, checkSourcePath(file, started));
 
     const afterHandleStat = fstatSync(descriptor, { bigint: true });
     const afterPathStat = lstatSync(file, { bigint: true });
@@ -178,6 +233,7 @@ function digestPlan(plan: BoundedReplayPlan, identity: FileIdentity, config: Tok
     maxEvents: plan.maxEvents,
     maxFiles: plan.maxFiles,
     identity,
+    projectRoots: config.projectRoots,
     collectionScopeFingerprint: collectionScopeFingerprint(privacy),
     privacyMode: privacy.mode
   })).digest("hex");
