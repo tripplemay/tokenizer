@@ -1,0 +1,13 @@
+211:Verify	Run unit tests	2026-10-07T16:41:37.2097930Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m1690[2mms[22m[39m
+278:Verify	Run unit tests	2026-10-07T16:41:49.1141088Z [22m[39mreadiness failed {
+309:Verify	Run unit tests	2026-10-07T16:41:52.8210022Z  [31m❯[39m tests/evaluator/b05-tcp-readiness-independent.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[90m 36[2mms[22m[39m
+311:Verify	Run unit tests	2026-10-07T16:41:52.8215372Z [31m     → Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+354:Verify	Run unit tests	2026-10-07T16:41:57.6578257Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction
+355:Verify	Run unit tests	2026-10-07T16:41:57.6604981Z [31m[1mError[22m: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+358:Verify	Run unit tests	2026-10-07T16:41:57.6676824Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+360:Verify	Run unit tests	2026-10-07T16:41:57.6737631Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m120 passed[39m[22m[2m | [22m[33m8 skipped[39m[90m (129)[39m
+363:Verify	Run unit tests	2026-10-07T16:41:57.6757174Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1607 passed[39m[22m[2m | [22m[33m22 skipped[39m[90m (1630)[39m
+370:Verify	Run unit tests	2026-10-07T16:41:57.6884917Z ##[error]Error: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+373:Verify	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+374:Verify	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:50:55
+380:Verify	Run unit tests	2026-10-07T16:41:57.6901751Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m50:55[22m[39m

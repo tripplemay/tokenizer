@@ -1,0 +1,134 @@
+recovery evidence bounds and allowlist:
+     1	import { createHash } from "node:crypto";
+     2	import { lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+     3	import { join } from "node:path";
+     4
+     5	const [operation, directory, revision, provenance, output] = process.argv.slice(2);
+     6	const manifestName = "manifest.json";
+     7	const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+     8	function requireCondition(condition) {
+     9	  if (!condition) throw new Error("invalid recovery evidence");
+    10	}
+    11	function directoryEntries(path) {
+    12	  const stat = lstatSync(path);
+    13	  requireCondition(stat.isDirectory() && !stat.isSymbolicLink());
+    14	  return readdirSync(path).sort();
+    15	}
+    16	function readFile(path, maximum = 1024 * 1024) {
+    17	  const stat = lstatSync(path);
+    18	  requireCondition(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 && stat.size <= maximum);
+    19	  return readFileSync(path);
+    20	}
+    21	function expectedFiles(names) {
+    22	  const dumpPattern = new RegExp(`^${revision}\\.tokenizer-rehearsal-[0-9]+-[0-9]+\\.backup\\.dump$`);
+    23	  const dumps = names.filter((name) => dumpPattern.test(name));
+    24	  requireCondition(dumps.length === 1);
+    25	  const files = [dumps[0], `${dumps[0]}.sha256`, `${revision}.rehearsal`, `${revision}.rollback-approved`];
+    26	  if (provenance === "true") {
+    27	    for (const kind of ["app", "migrate"]) {
+    28	      files.push(`${revision}.${kind}.provenance.json`, `${revision}.${kind}.provenance-negative-controls`);
+    29	    }
+    30	  }
+    31	  return files.sort();
+    32	}
+    33	function readEvidence(path, files) {
+    34	  const contents = new Map(files.map((file) => [file, readFile(join(path, file), file.endsWith(".dump") ? 64 * 1024 * 1024 : undefined)]));
+    35	  const dump = files.find((file) => file.endsWith(".dump"));
+    36	  requireCondition(contents.get(`${dump}.sha256`).toString("utf8").trim() === `${hash(contents.get(dump))}  .releases/${dump}`);
+    37	  const ledger = contents.get(`${revision}.rehearsal`).toString("utf8").trim().split(/\r?\n/);
+    38	  requireCondition(ledger.includes(`commit=${revision}`) && ledger.includes("mode=synthetic") &&
+    39	    ledger.includes(`backup_file=.releases/${dump}`) && ledger.includes("rollback=passed"));
+    40	  requireCondition(ledger.some((line) => /^restore_inventory=[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+$/.test(line)));
+    41	  requireCondition(ledger.some((line) => /^runtime_uid=[1-9][0-9]*$/.test(line)));
+    42	  const approval = contents.get(`${revision}.rollback-approved`).toString("utf8").trim().split(/\r?\n/);
+    43	  requireCondition(approval.length === 2 && /^app_image=[a-z0-9][a-z0-9./:_-]+@sha256:[0-9a-f]{64}$/.test(approval[0]) &&
+    44	    /^previous_sha=[0-9a-f]{40}$/.test(approval[1]));
+    45	  if (provenance === "true") {
+    46	    for (const kind of ["app", "migrate"]) {
+    47	      JSON.parse(contents.get(`${revision}.${kind}.provenance.json`).toString("utf8"));
+    48	      requireCondition(contents.get(`${revision}.${kind}.provenance-negative-controls`).toString("utf8").trim() ===
+    49	        "wrong_source=rejected\nwrong_workflow=rejected");
+    50	    }
+    51	  }
+    52	  return contents;
+    53	}
+    54
+    55	try {
+    56	  requireCondition(/^[0-9a-f]{40}$/.test(revision ?? "") && ["true", "false"].includes(provenance));
+    57	  requireCondition((operation === "stage" && process.argv.length === 7) || (operation === "verify" && process.argv.length === 6));
+    58	  const names = directoryEntries(directory);
+    59	  if (operation === "stage") {
+    60	    const files = expectedFiles(names);
+    61	    const contents = readEvidence(directory, files);
+    62	    // Only exact-SHA synthetic evidence is copied; unrelated .env, live
+    63	    // backups, previous-env files, and unknown .releases entries stay out.
+    64	    mkdirSync(output, { mode: 0o700 });
+    65	    const entries = files.map((file) => {
+    66	      const bytes = contents.get(file);
+    67	      writeFileSync(join(output, file), bytes, { mode: 0o600, flag: "wx" });
+    68	      return { file, bytes: bytes.length, sha256: hash(bytes) };
+    69	    });
+    70	    writeFileSync(join(output, manifestName), JSON.stringify({ schema: 1, revision, provenanceRequired: provenance === "true", entries }, null, 2) + "\n", { mode: 0o600, flag: "wx" });
+    71	  } else {
+    72	    const manifest = JSON.parse(readFile(join(directory, manifestName)).toString("utf8"));
+    73	    requireCondition(Object.keys(manifest).sort().join(",") === "entries,provenanceRequired,revision,schema");
+    74	    requireCondition(manifest.schema === 1 && manifest.revision === revision && manifest.provenanceRequired === (provenance === "true") && Array.isArray(manifest.entries));
+    75	    const files = expectedFiles(names);
+    76	    requireCondition(names.join("\n") === [...files, manifestName].sort().join("\n") && manifest.entries.length === files.length);
+    77	    const contents = readEvidence(directory, files);
+    78	    for (const [index, file] of files.entries()) {
+    79	      const entry = manifest.entries[index];
+    80	      requireCondition(entry && Object.keys(entry).sort().join(",") === "bytes,file,sha256" && entry.file === file);
+    81	      requireCondition(entry.bytes === contents.get(file).length && entry.sha256 === hash(contents.get(file)));
+    82	    }
+    83	  }
+    84	  console.log(JSON.stringify({ recoveryEvidence: operation, revision, provenanceRequired: provenance === "true" }));
+    85	} catch {
+    86	  console.error("recovery evidence validation failed");
+    87	  process.exitCode = 1;
+    88	}
+workflow retention sequence:
+   437	          done
+   438	      - name: Backup restore migration and old-image business rehearsal
+   439	        env:
+   440	          REHEARSAL_MODE: synthetic
+   441	          EXPECTED_SHA: ${{ github.sha }}
+   442	          APP_IMAGE: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+   443	          MIGRATE_IMAGE: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+   444	          PREVIOUS_APP_IMAGE: ${{ steps.refs.outputs.old-app }}@${{ steps.old-app.outputs.digest }}
+   445	          PREVIOUS_MIGRATE_IMAGE: ${{ steps.refs.outputs.old-migrate }}@${{ steps.old-migrate.outputs.digest }}
+   446	          PREVIOUS_SHA: ${{ steps.refs.outputs.previous }}
+   447	        run: |
+   448	          set -euo pipefail
+   449	          docker pull "$APP_IMAGE"
+   450	          docker pull "$MIGRATE_IMAGE"
+   451	          bash scripts/test/rehearse-release.sh
+   452	      - name: Stage allowlisted synthetic recovery evidence
+   453	        env:
+   454	          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+   455	        run: node scripts/ci/recovery-evidence.mjs stage .releases "$GITHUB_SHA" "$REQUIRE_PROVENANCE" release-recovery-evidence
+   456	      - name: Retain synthetic recovery evidence
+   457	        if: always()
+   458	        uses: actions/upload-artifact@v4
+   459	        with:
+   460	          name: release-recovery-${{ github.sha }}
+   461	          path: release-recovery-evidence/
+   462	          include-hidden-files: true
+   463	          if-no-files-found: error
+   464	          retention-days: 14
+   465	      - name: Download retained synthetic recovery evidence
+   466	        uses: actions/download-artifact@v4
+   467	        with:
+   468	          name: release-recovery-${{ github.sha }}
+   469	          path: release-recovery-downloaded
+   470	      - name: Verify downloaded recovery evidence manifest and hashes
+   471	        env:
+   472	          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+   473	        run: node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
+   474	  deploy:
+   475	    name: Deploy
+   476	    runs-on: ubuntu-latest
+   477	    # This single main-push workflow deploys a repository that also ships the
+   478	    # Windows CLI; a failing native-agent gate must block this release path.
+   479	    permissions:
+   480	      contents: read

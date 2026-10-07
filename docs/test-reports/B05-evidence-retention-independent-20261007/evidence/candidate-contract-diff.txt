@@ -1,0 +1,383 @@
+candidate
+ec3348ecae2669c68187b7ca35dc6707a20267a8
+parent
+d18c4ffbe88073ab36b899797e865ee5e193f072
+candidate commit changed paths
+M	.github/workflows/deploy-vps.yml
+M	docs/VPS-deployment.md
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/SHA256SUMS
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/actionlint.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/build.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/development-test-syntax-error.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/focused-final.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/focused-old-defect-assertion.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/focused-retention.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/full-final.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/full-old-defect-assertion.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/lint.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/npm-ci.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/old-upload-doc-mutants-negative.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/runtime.json
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/script-syntax.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/transport-hashes.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/evidence/verify.log
+A	docs/test-reports/B05-evidence-retention-fix-20261007/generator-handoff.md
+A	scripts/ci/recovery-evidence.mjs
+A	tests/ci/recovery-evidence.test.ts
+M	tests/evaluator/b05-tcp-readiness-independent.test.ts
+recovery product script delta from fff9d37 (must be empty)
+retention workflow/script/doc diff
+diff --git a/.github/workflows/deploy-vps.yml b/.github/workflows/deploy-vps.yml
+index e568b2e..6317676 100644
+--- a/.github/workflows/deploy-vps.yml
++++ b/.github/workflows/deploy-vps.yml
+@@ -302,16 +302,19 @@ jobs:
+       attestations: write
+     outputs:
+       app-image: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+       migrate-image: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+     steps:
+       - uses: actions/checkout@v4
+         with:
+           fetch-depth: 0
++      - uses: actions/setup-node@v4
++        with:
++          node-version: '22'
+       - name: Start isolated CI registry
+         run: docker run -d --name registry -p 5000:5000 registry:2
+       - uses: docker/setup-buildx-action@v3
+         with:
+           driver-opts: network=host
+           buildkitd-config-inline: |
+             [registry."localhost:5000"]
+               http = true
+@@ -429,34 +432,50 @@ jobs:
+             if gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+               --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/not-release.yml" >/dev/null 2>&1; then
+               echo "wrong signer workflow unexpectedly passed attestation verification" >&2; exit 1
+             fi
+             printf 'wrong_source=rejected\nwrong_workflow=rejected\n' > ".releases/$GITHUB_SHA.$kind.provenance-negative-controls"
+           done
+       - name: Backup restore migration and old-image business rehearsal
+         env:
++          REHEARSAL_MODE: synthetic
+           EXPECTED_SHA: ${{ github.sha }}
+           APP_IMAGE: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+           MIGRATE_IMAGE: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+           PREVIOUS_APP_IMAGE: ${{ steps.refs.outputs.old-app }}@${{ steps.old-app.outputs.digest }}
+           PREVIOUS_MIGRATE_IMAGE: ${{ steps.refs.outputs.old-migrate }}@${{ steps.old-migrate.outputs.digest }}
+           PREVIOUS_SHA: ${{ steps.refs.outputs.previous }}
+         run: |
+           set -euo pipefail
+           docker pull "$APP_IMAGE"
+           docker pull "$MIGRATE_IMAGE"
+           bash scripts/test/rehearse-release.sh
++      - name: Stage allowlisted synthetic recovery evidence
++        env:
++          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
++        run: node scripts/ci/recovery-evidence.mjs stage .releases "$GITHUB_SHA" "$REQUIRE_PROVENANCE" release-recovery-evidence
+       - name: Retain synthetic recovery evidence
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: release-recovery-${{ github.sha }}
+-          path: .releases/
++          path: release-recovery-evidence/
++          include-hidden-files: true
++          if-no-files-found: error
+           retention-days: 14
++      - name: Download retained synthetic recovery evidence
++        uses: actions/download-artifact@v4
++        with:
++          name: release-recovery-${{ github.sha }}
++          path: release-recovery-downloaded
++      - name: Verify downloaded recovery evidence manifest and hashes
++        env:
++          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
++        run: node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
+   deploy:
+     name: Deploy
+     runs-on: ubuntu-latest
+     # This single main-push workflow deploys a repository that also ships the
+     # Windows CLI; a failing native-agent gate must block this release path.
+     permissions:
+       contents: read
+       packages: read
+diff --git a/docs/VPS-deployment.md b/docs/VPS-deployment.md
+index 4814d21..c54e045 100644
+--- a/docs/VPS-deployment.md
++++ b/docs/VPS-deployment.md
+@@ -138,21 +138,22 @@ After sync, refresh the VPS dashboard. The `Devices` count and source breakdown
+
+ ## 5. GitHub CI/CD Deployment
+
+ The repository includes `.github/workflows/deploy-vps.yml`.
+
+ Behavior:
+
+ - Runs `npm ci` and `npm run verify` on GitHub Actions.
+-- Runs tests and a Next.js build on Linux, but does not yet build the deployment image in CI.
++- Runs Linux and native Windows tests, PostgreSQL 16 and authenticated browser verification, then builds Linux app and migration OCI artifacts once in CI.
+ - Deploys automatically on pushes to `main`.
+ - Supports manual deployment from the GitHub Actions `workflow_dispatch` button.
+-- SSHs into the VPS, syncs the checked-out source, writes a permission-restricted `.env`, builds SHA-tagged images on the VPS, checks image IDs and revision labels, starts PostgreSQL, runs migrations, and restarts the app only after migration succeeds.
+-- Waits for `/api/health` readiness and the expected commit SHA. Failure leaves a diagnostic release ledger but does **not** automatically roll back the app or database.
++- Main publishes immutable digest references to GHCR and checks signed exact-source/workflow provenance; non-main evaluation uses an isolated registry without GHCR publication or attestations. Backup/restore/migration/business/old-image rehearsal and retained, downloaded, hash-verified synthetic evidence are mandatory before deployment.
++- SSHs into the VPS, syncs deployment assets, writes a permission-restricted `.env`, verifies CI-produced `@sha256:` artifacts, retains the prior digest/configuration, starts PostgreSQL, and runs migration before restarting the app. It does not rebuild app images on the VPS.
++- Waits for `/api/health`, the expected commit SHA and a business canary. App/config rollback requires the separately established previous-digest and rehearsal approval gates; database rollback is not automatic. Actual legacy baseline/bootstrap and production backup restore remain separately authorized release prerequisites, not claims established by synthetic CI.
+
+ ### Required GitHub Secrets
+
+ Add these in GitHub repository settings: `Settings` -> `Secrets and variables` -> `Actions`.
+
+ ```text
+ VPS_HOST=your-vps-ip-or-hostname
+ VPS_USER=tripplezhou
+diff --git a/scripts/ci/recovery-evidence.mjs b/scripts/ci/recovery-evidence.mjs
+new file mode 100644
+index 0000000..478fd78
+--- /dev/null
++++ b/scripts/ci/recovery-evidence.mjs
+@@ -0,0 +1,88 @@
++import { createHash } from "node:crypto";
++import { lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
++import { join } from "node:path";
++
++const [operation, directory, revision, provenance, output] = process.argv.slice(2);
++const manifestName = "manifest.json";
++const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
++function requireCondition(condition) {
++  if (!condition) throw new Error("invalid recovery evidence");
++}
++function directoryEntries(path) {
++  const stat = lstatSync(path);
++  requireCondition(stat.isDirectory() && !stat.isSymbolicLink());
++  return readdirSync(path).sort();
++}
++function readFile(path, maximum = 1024 * 1024) {
++  const stat = lstatSync(path);
++  requireCondition(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 && stat.size <= maximum);
++  return readFileSync(path);
++}
++function expectedFiles(names) {
++  const dumpPattern = new RegExp(`^${revision}\\.tokenizer-rehearsal-[0-9]+-[0-9]+\\.backup\\.dump$`);
++  const dumps = names.filter((name) => dumpPattern.test(name));
++  requireCondition(dumps.length === 1);
++  const files = [dumps[0], `${dumps[0]}.sha256`, `${revision}.rehearsal`, `${revision}.rollback-approved`];
++  if (provenance === "true") {
++    for (const kind of ["app", "migrate"]) {
++      files.push(`${revision}.${kind}.provenance.json`, `${revision}.${kind}.provenance-negative-controls`);
++    }
++  }
++  return files.sort();
++}
++function readEvidence(path, files) {
++  const contents = new Map(files.map((file) => [file, readFile(join(path, file), file.endsWith(".dump") ? 64 * 1024 * 1024 : undefined)]));
++  const dump = files.find((file) => file.endsWith(".dump"));
++  requireCondition(contents.get(`${dump}.sha256`).toString("utf8").trim() === `${hash(contents.get(dump))}  .releases/${dump}`);
++  const ledger = contents.get(`${revision}.rehearsal`).toString("utf8").trim().split(/\r?\n/);
++  requireCondition(ledger.includes(`commit=${revision}`) && ledger.includes("mode=synthetic") &&
++    ledger.includes(`backup_file=.releases/${dump}`) && ledger.includes("rollback=passed"));
++  requireCondition(ledger.some((line) => /^restore_inventory=[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+$/.test(line)));
++  requireCondition(ledger.some((line) => /^runtime_uid=[1-9][0-9]*$/.test(line)));
++  const approval = contents.get(`${revision}.rollback-approved`).toString("utf8").trim().split(/\r?\n/);
++  requireCondition(approval.length === 2 && /^app_image=[a-z0-9][a-z0-9./:_-]+@sha256:[0-9a-f]{64}$/.test(approval[0]) &&
++    /^previous_sha=[0-9a-f]{40}$/.test(approval[1]));
++  if (provenance === "true") {
++    for (const kind of ["app", "migrate"]) {
++      JSON.parse(contents.get(`${revision}.${kind}.provenance.json`).toString("utf8"));
++      requireCondition(contents.get(`${revision}.${kind}.provenance-negative-controls`).toString("utf8").trim() ===
++        "wrong_source=rejected\nwrong_workflow=rejected");
++    }
++  }
++  return contents;
++}
++
++try {
++  requireCondition(/^[0-9a-f]{40}$/.test(revision ?? "") && ["true", "false"].includes(provenance));
++  requireCondition((operation === "stage" && process.argv.length === 7) || (operation === "verify" && process.argv.length === 6));
++  const names = directoryEntries(directory);
++  if (operation === "stage") {
++    const files = expectedFiles(names);
++    const contents = readEvidence(directory, files);
++    // Only exact-SHA synthetic evidence is copied; unrelated .env, live
++    // backups, previous-env files, and unknown .releases entries stay out.
++    mkdirSync(output, { mode: 0o700 });
++    const entries = files.map((file) => {
++      const bytes = contents.get(file);
++      writeFileSync(join(output, file), bytes, { mode: 0o600, flag: "wx" });
++      return { file, bytes: bytes.length, sha256: hash(bytes) };
++    });
++    writeFileSync(join(output, manifestName), JSON.stringify({ schema: 1, revision, provenanceRequired: provenance === "true", entries }, null, 2) + "\n", { mode: 0o600, flag: "wx" });
++  } else {
++    const manifest = JSON.parse(readFile(join(directory, manifestName)).toString("utf8"));
++    requireCondition(Object.keys(manifest).sort().join(",") === "entries,provenanceRequired,revision,schema");
++    requireCondition(manifest.schema === 1 && manifest.revision === revision && manifest.provenanceRequired === (provenance === "true") && Array.isArray(manifest.entries));
++    const files = expectedFiles(names);
++    requireCondition(names.join("\n") === [...files, manifestName].sort().join("\n") && manifest.entries.length === files.length);
++    const contents = readEvidence(directory, files);
++    for (const [index, file] of files.entries()) {
++      const entry = manifest.entries[index];
++      requireCondition(entry && Object.keys(entry).sort().join(",") === "bytes,file,sha256" && entry.file === file);
++      requireCondition(entry.bytes === contents.get(file).length && entry.sha256 === hash(contents.get(file)));
++    }
++  }
++  console.log(JSON.stringify({ recoveryEvidence: operation, revision, provenanceRequired: provenance === "true" }));
++} catch {
++  console.error("recovery evidence validation failed");
++  process.exitCode = 1;
++}
+diff --git a/tests/ci/recovery-evidence.test.ts b/tests/ci/recovery-evidence.test.ts
+new file mode 100644
+index 0000000..08e8753
+--- /dev/null
++++ b/tests/ci/recovery-evidence.test.ts
+@@ -0,0 +1,148 @@
++import { createHash } from "node:crypto";
++import { spawnSync } from "node:child_process";
++import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join, resolve } from "node:path";
++import { afterEach, beforeEach, describe, expect, it } from "vitest";
++
++const sha = "a".repeat(40);
++const dump = `${sha}.tokenizer-rehearsal-123-456.backup.dump`;
++const script = resolve("scripts/ci/recovery-evidence.mjs");
++let root: string;
++let source: string;
++let staged: string;
++let downloaded: string;
++function invoke(operation = "stage", directory = source, revision = sha, provenance = "false") {
++  return spawnSync(process.execPath, [script, operation, directory, revision, provenance, ...(operation === "stage" ? [staged] : [])], { encoding: "utf8" });
++}
++function roundTrip(provenance = "false") {
++  expect(invoke("stage", source, sha, provenance).status).toBe(0);
++  cpSync(staged, downloaded, { recursive: true });
++  return invoke("verify", downloaded, sha, provenance);
++}
++function alterManifest(change: (manifest: { entries: Array<{ file: string }>; revision: string }) => void) {
++  const path = join(downloaded, "manifest.json");
++  const manifest = JSON.parse(readFileSync(path, "utf8"));
++  change(manifest);
++  writeFileSync(path, JSON.stringify(manifest));
++}
++
++describe("allowlisted recovery evidence transport", () => {
++  beforeEach(() => {
++    root = mkdtempSync(join(tmpdir(), "recovery-evidence-"));
++    source = join(root, ".releases");
++    staged = join(root, "staged");
++    downloaded = join(root, "downloaded");
++    mkdirSync(source);
++    const contents = Buffer.from("synthetic isolated canary dump\n");
++    writeFileSync(join(source, dump), contents);
++    writeFileSync(join(source, `${dump}.sha256`), `${createHash("sha256").update(contents).digest("hex")}  .releases/${dump}\n`);
++    writeFileSync(join(source, `${sha}.rehearsal`), `commit=${sha}\nmode=synthetic\nbackup_file=.releases/${dump}\nrestore_inventory=1|1|1|1|23\nruntime_uid=1000\nrollback=passed\nelapsed_seconds=1\n`);
++    writeFileSync(join(source, `${sha}.rollback-approved`), `app_image=localhost:5000/app@sha256:${"b".repeat(64)}\nprevious_sha=${"c".repeat(40)}\n`);
++  });
++  afterEach(() => rmSync(root, { recursive: true, force: true }));
++
++  it("retains only expected exact-SHA synthetic files and verifies a downloaded copy", () => {
++    for (const name of [".env", `${sha}.previous-env`, "production.backup.dump", `${"d".repeat(40)}.rehearsal`]) {
++      writeFileSync(join(source, name), "secret-canary-do-not-upload");
++    }
++    expect(roundTrip().status).toBe(0);
++    const manifest = JSON.parse(readFileSync(join(downloaded, "manifest.json"), "utf8"));
++    expect(manifest.entries).toHaveLength(4);
++    expect(manifest.provenanceRequired).toBe(false);
++    expect(JSON.stringify(manifest)).not.toContain("previous-env");
++    expect(existsSync(join(staged, ".env"))).toBe(false);
++    expect(existsSync(join(staged, "production.backup.dump"))).toBe(false);
++  });
++  it.each([dump, `${dump}.sha256`, `${sha}.rehearsal`, `${sha}.rollback-approved`])("fails closed before staging when %s is missing", (file) => {
++    rmSync(join(source, file));
++    const result = invoke();
++    expect(result.status).toBe(1);
++    expect(result.stderr.trim()).toBe("recovery evidence validation failed");
++    expect(existsSync(staged)).toBe(false);
++  });
++  it.each(["live", "unavailable"])("rejects non-synthetic or unapproved evidence (%s)", (value) => {
++    const ledger = join(source, `${sha}.rehearsal`);
++    writeFileSync(ledger, readFileSync(ledger, "utf8").replace(value === "live" ? "mode=synthetic" : "rollback=passed", value === "live" ? "mode=live" : "rollback=unavailable"));
++    expect(invoke().status).toBe(1);
++  });
++  it("rejects an ambiguous second same-SHA dump and an incorrect backup checksum", () => {
++    writeFileSync(join(source, dump.replace("123-456", "789-123")), "other dump");
++    expect(invoke().status).toBe(1);
++    rmSync(join(source, dump.replace("123-456", "789-123")));
++    writeFileSync(join(source, `${dump}.sha256`), `${"0".repeat(64)}  .releases/${dump}\n`);
++    expect(invoke().status).toBe(1);
++  });
++  it("detects downloaded file tampering, missing files, extra files and wrong revision", () => {
++    expect(roundTrip().status).toBe(0);
++    expect(invoke("verify", downloaded, "d".repeat(40)).status).toBe(1);
++    writeFileSync(join(downloaded, dump), "tampered dump");
++    expect(invoke("verify", downloaded).status).toBe(1);
++    cpSync(join(staged, dump), join(downloaded, dump));
++    writeFileSync(join(downloaded, ".env"), "secret-canary");
++    expect(invoke("verify", downloaded).status).toBe(1);
++    rmSync(join(downloaded, ".env"));
++    rmSync(join(downloaded, `${sha}.rollback-approved`));
++    expect(invoke("verify", downloaded).status).toBe(1);
++  });
++  it("rejects manifest traversal paths and forged manifest hashes", () => {
++    expect(roundTrip().status).toBe(0);
++    alterManifest((manifest) => { manifest.entries[0].file = "../.env"; });
++    expect(invoke("verify", downloaded).status).toBe(1);
++    cpSync(join(staged, "manifest.json"), join(downloaded, "manifest.json"));
++    const path = join(downloaded, "manifest.json");
++    writeFileSync(path, readFileSync(path, "utf8").replace(/"sha256": "[0-9a-f]{64}"/, `"sha256": "${"0".repeat(64)}"`));
++    expect(invoke("verify", downloaded).status).toBe(1);
++  });
++  it.skipIf(process.platform === "win32")("rejects symlink files and symlink directories", () => {
++    const original = join(root, "outside.dump");
++    cpSync(join(source, dump), original);
++    rmSync(join(source, dump));
++    symlinkSync(original, join(source, dump));
++    expect(invoke().status).toBe(1);
++    rmSync(join(source, dump));
++    cpSync(original, join(source, dump));
++    expect(roundTrip().status).toBe(0);
++    const link = join(root, "linked-evidence");
++    symlinkSync(downloaded, link);
++    expect(invoke("verify", link).status).toBe(1);
++    rmSync(join(downloaded, dump));
++    symlinkSync(original, join(downloaded, dump));
++    expect(invoke("verify", downloaded).status).toBe(1);
++  });
++  it("requires main provenance files separately and forbids main/non-main manifest downgrade", () => {
++    expect(invoke("stage", source, sha, "true").status).toBe(1);
++    for (const kind of ["app", "migrate"]) {
++      writeFileSync(join(source, `${sha}.${kind}.provenance.json`), '[{"verification":"synthetic-test-only"}]\n');
++      writeFileSync(join(source, `${sha}.${kind}.provenance-negative-controls`), "wrong_source=rejected\nwrong_workflow=rejected\n");
++    }
++    expect(roundTrip("true").status).toBe(0);
++    expect(JSON.parse(readFileSync(join(downloaded, "manifest.json"), "utf8")).entries).toHaveLength(8);
++    expect(invoke("verify", downloaded, sha, "false").status).toBe(1);
++  });
++  it("requires actual artifact upload/download in the same job with fail-closed options", () => {
++    const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf8");
++    const releaseJob = workflow.slice(workflow.indexOf("  release-artifact:"), workflow.indexOf("  deploy:"));
++    expect(releaseJob).toContain("REHEARSAL_MODE: synthetic");
++    expect(releaseJob).toContain("node scripts/ci/recovery-evidence.mjs stage .releases");
++    const upload = releaseJob.slice(releaseJob.indexOf("- name: Retain synthetic recovery evidence"), releaseJob.indexOf("- name: Download retained synthetic recovery evidence"));
++    expect(upload).toContain("uses: actions/upload-artifact@v4");
++    expect(upload).toContain("path: release-recovery-evidence/");
++    expect(upload).toContain("include-hidden-files: true");
++    expect(upload).toContain("if-no-files-found: error");
++    expect(upload).not.toContain("path: .releases/");
++    expect(releaseJob).toContain("uses: actions/download-artifact@v4");
++    expect(releaseJob.match(/name: release-recovery-\$\{\{ github.sha \}\}/g)).toHaveLength(2);
++    expect(releaseJob).toContain("node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded");
++    expect(releaseJob.indexOf("actions/download-artifact@v4")).toBeGreaterThan(releaseJob.indexOf("actions/upload-artifact@v4"));
++  });
++  it("keeps the deployment overview consistent with immutable CI artifacts", () => {
++    const doc = readFileSync("docs/VPS-deployment.md", "utf8");
++    const overview = doc.slice(doc.indexOf("## 5. GitHub CI/CD Deployment"), doc.indexOf("### Required GitHub Secrets"));
++    expect(overview).toContain("builds Linux app and migration OCI artifacts once in CI");
++    expect(overview).toContain("It does not rebuild app images on the VPS");
++    expect(overview).not.toContain("does not yet build the deployment image in CI");
++    expect(overview).not.toContain("builds SHA-tagged images on the VPS");
++    expect(doc).toContain("not images rebuilt on the VPS");
++  });
++});

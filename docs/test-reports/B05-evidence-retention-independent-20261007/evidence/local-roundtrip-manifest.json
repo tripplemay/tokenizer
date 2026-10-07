@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "revision": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+  "provenanceRequired": false,
+  "entries": [
+    {
+      "file": "ec3348ecae2669c68187b7ca35dc6707a20267a8.rehearsal",
+      "bytes": 230,
+      "sha256": "38a1a8b35c37273c55be42791fd5e159a29b7699b5b37a0d9c3f489e7ab90a65"
+    },
+    {
+      "file": "ec3348ecae2669c68187b7ca35dc6707a20267a8.rollback-approved",
+      "bytes": 155,
+      "sha256": "a744a0ea241657b20fbb1e3ea10ce7a3a17cddcb23e519d37a5e478edc6612bf"
+    },
+    {
+      "file": "ec3348ecae2669c68187b7ca35dc6707a20267a8.tokenizer-rehearsal-4242-12345.backup.dump",
+      "bytes": 27,
+      "sha256": "cfe215099bbb9e7cef0a09bb352ae3559be43628a9647ec674d2155d18252df5"
+    },
+    {
+      "file": "ec3348ecae2669c68187b7ca35dc6707a20267a8.tokenizer-rehearsal-4242-12345.backup.dump.sha256",
+      "bytes": 160,
+      "sha256": "59f815dbbec199eb3f4be9856024975377d28bb8da3f96fdd39ba238fed56fa3"
+    }
+  ]
+}

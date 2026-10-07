@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-07T16:47:00Z",
+  "role": "independent evaluator",
+  "candidate_sha": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+  "local": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.22.0",
+    "npm_ci": "pass; 671 packages installed",
+    "focused": "pass; 5 files, 44 tests",
+    "full": "pass locally only; 121 files passed, 8 skipped; 1608 tests passed, 22 skipped",
+    "verify": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "actionlint": "pass",
+    "recovery_script_syntax": "pass"
+  },
+  "github": {
+    "run_id": 37653910013,
+    "head_sha": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+    "status": "completed",
+    "conclusion": "failure",
+    "release_artifact_job": "skipped",
+    "deploy": "skipped",
+    "release_recovery_artifact_count": 0
+  }
+}

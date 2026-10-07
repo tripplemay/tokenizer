@@ -1,0 +1,30 @@
+346:Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5062516Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m13150[2mms[22m[39m
+347:Verify (Windows)	Run unit tests	2026-10-07T16:42:25.5064723Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mwrites idle, success, degraded, and failed snapshots from actual outcomes [33m1548[2mms[22m[39m
+352:Verify (Windows)	Run unit tests	2026-10-07T16:42:26.0247003Z [22m[39mreadiness failed {
+384:Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0686857Z  [31m❯[39m tests/evaluator/b05-tcp-readiness-independent.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[90m 166[2mms[22m[39m
+386:Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0691698Z [31m     → Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+390:Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0697264Z [31m     → Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+394:Verify (Windows)	Run unit tests	2026-10-07T16:42:30.0703488Z [31m     → Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+435:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2003239Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mchanges only the readiness transport in the recovery script
+436:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2007169Z [31m[1mError[22m: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+439:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2038529Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+441:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2251539Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m117 passed[39m[22m[2m | [22m[33m11 skipped[39m[90m (129)[39m
+443:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2272381Z [2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1567 passed[39m[22m[2m | [22m[33m60 skipped[39m[90m (1630)[39m
+452:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2358499Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m16:20[22m[39m
+453:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2477520Z ##[error]Error: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+456:Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+457:Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:16:20
+465:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2497492Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mretains backup, cleanup, and rollback approval ordering byte-for-byte
+466:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2500133Z [31m[1mError[22m: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+469:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2503758Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+476:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2511031Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m30:20[22m[39m
+480:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2514089Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-tcp-readiness-independent.test.ts[2m > [22mB05 independent TCP readiness audit[2m > [22mpreserves the immutable post-CI supplement while preventing the former VPS-doc contradiction
+481:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2516777Z [31m[1mError[22m: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+484:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2520895Z [36m [2m❯[22m gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m10:10[22m[39m
+491:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2530516Z [90m [2m❯[22m tests/evaluator/b05-tcp-readiness-independent.test.ts:[2m50:55[22m[39m
+496:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2541428Z ##[error]Error: Command failed: git show 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09:scripts/test/rehearse-release.sh
+499:Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+500:Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:30:20
+506:Verify (Windows)	Run unit tests	2026-10-07T16:42:35.2565100Z ##[error]Error: Command failed: git show 11907f5df1bcedc03a5600252056502fd1e88f3f:docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json
+509:Verify (Windows)	Run unit tests	 ❯ gitShow tests/evaluator/b05-tcp-readiness-independent.test.ts:10:10
+510:Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:50:55

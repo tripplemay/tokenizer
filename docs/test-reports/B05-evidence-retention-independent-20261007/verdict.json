@@ -1,0 +1,153 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "M1-B05-R13-EVIDENCE-RETENTION",
+  "created_at": "2026-10-07T16:47:00Z",
+  "role": "independent_evaluator",
+  "candidate_commit": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+  "candidate_parent": "d18c4ffbe88073ab36b899797e865ee5e193f072",
+  "prior_tcp_candidate": "fff9d3723a5fb34a2e38194f1074210f67669a6b",
+  "result": "BLOCKED",
+  "retention_design_static_local": "PASS_WITHOUT_LIVE_ARTIFACT_ACCEPTANCE",
+  "exact_sha_native_ci": "FAIL",
+  "ci_only_readiness": "BLOCKED_EXACT_SHA_TEST_FAILURE_AND_NO_ARTIFACT_ROUNDTRIP",
+  "full_b05_release_readiness": "NOT_READY",
+  "b04_boundary": "OUT_OF_SCOPE_UNRELATED",
+  "grade": "C",
+  "normalized_score": 61,
+  "summary": "The retention design is strict in local/source review: it stages an exact-SHA synthetic allowlist, bounds file sizes, rejects symlinks/tampering/extras, uploads fail-closed, downloads the named artifact in the same job, and verifies the downloaded manifest and hashes. The prior VPS documentation contradiction is corrected. However exact-SHA run 37653910013 failed before the Linux OCI/recovery job because tests/evaluator/b05-tcp-readiness-independent.test.ts calls git show on local-only objects absent from fresh CI checkouts. Verify failed 1 test, Windows failed 3, Linux OCI/recovery and Deploy were skipped, and the artifact API has no release-recovery artifact. In addition, the candidate modified that old evaluator test even though the prior evaluator SHA256SUMS covers it, so the immutable prior evidence manifest now fails while the candidate's recorded transport-hashes log incorrectly says it passes. Candidate CI admission and B05 release remain blocked.",
+  "findings": [
+    {
+      "id": "B05-RET-EVAL-001",
+      "severity": "HIGH",
+      "title": "Non-hermetic evaluator regression fails fresh CI before the retention job",
+      "evidence": [
+        "Run 37653910013 is completed/failure on exact SHA ec3348ecae2669c68187b7ca35dc6707a20267a8.",
+        "Linux Verify: tests/evaluator/b05-tcp-readiness-independent.test.ts failed 1/3 because git show could not resolve 11907f5df1bcedc03a5600252056502fd1e88f3f.",
+        "Windows: the same file failed 3/3 because git show could not resolve 3ade5d1e45ac0f53f0f7a122711e6e219b7dac09 or 11907f5df1bcedc03a5600252056502fd1e88f3f.",
+        "The local repository contains those objects, so local 44-test and full-suite success masked the fresh-checkout defect.",
+        "Linux OCI and recovery rehearsal was skipped; therefore upload, artifact download, and downloaded-hash verification never ran."
+      ],
+      "impact": "The required exact-SHA retention acceptance is absent and the candidate breaks mandatory Linux and Windows CI suites.",
+      "required_action": "Restore the original evaluator artifact, replace object-database-dependent active checks with portable candidate-owned fixtures or blobs, and rerun the complete exact-SHA workflow. Require the Linux OCI job and every stage/upload/download/verify step to pass."
+    },
+    {
+      "id": "B05-RET-EVAL-002",
+      "severity": "HIGH",
+      "title": "Candidate invalidates the prior evaluator evidence manifest",
+      "evidence": [
+        "The prior report/verdict/docs under docs/test-reports/B05-tcp-readiness-independent-20261007 remain byte-identical to evaluator commit e550e27.",
+        "Its SHA256SUMS also covers tests/evaluator/b05-tcp-readiness-independent.test.ts with original hash cd29a182..., but the candidate changes that file to b17c1656....",
+        "shasum -a 256 -c now reports exactly that evaluator test FAILED; the post-CI supplement's separate 8/8 manifest still passes.",
+        "docs/test-reports/B05-evidence-retention-fix-20261007/evidence/transport-hashes.log says the old test is OK, but that recorded output is stale relative to the final candidate."
+      ],
+      "impact": "The immutable independent evidence set is no longer self-verifying, and the candidate handoff overstates preservation.",
+      "required_action": "Restore the original test blob covered by the old manifest. Put new portable/documentation assertions in a new candidate-owned test and explicitly prevent the archived local-object-dependent test from running in fresh CI without altering its audited bytes."
+    }
+  ],
+  "retention_contract_review": {
+    "allowlist": "PASS_LOCAL_STATIC; non-main requires one exact-SHA synthetic dump, checksum, rehearsal ledger and rollback approval; main adds app/migrate provenance JSON and negative-control ledgers",
+    "secret_exclusion": "PASS_LOCAL; unknown .releases entries, .env, previous-env, live/other-revision backups and non-required provenance are not staged",
+    "limits": "PASS_LOCAL; dump is a regular non-symlink file bounded to 64 MiB, every other evidence file is bounded to 1 MiB, and source/download directories cannot be symlinks",
+    "semantic_checks": "PASS_LOCAL; exact checksum line, synthetic mode, exact commit/dump path, numeric inventory, non-root UID, rollback=passed and digest-pinned approval are required",
+    "manifest_and_hashes": "PASS_LOCAL; exact schema/file set/order/size/SHA256 are generated and verified; tamper, missing, extra, wrong revision and traversal cases fail",
+    "upload": "PASS_STATIC; non-hidden staging directory, include-hidden-files=true, if-no-files-found=error, 14-day retention",
+    "download": "PASS_STATIC; the same named artifact is downloaded into a distinct directory in the same job before verification",
+    "local_roundtrip": "PASS; independent synthetic stage/copy/verify excluded an .env canary and verified four entries plus manifest",
+    "real_artifact_api": "FAIL_NOT_REACHED; run 37653910013 contains only tokenizer-browser-e2e and zero release-recovery artifacts",
+    "real_download_and_hash_reverification": "NOT_EXECUTED; impossible because the release-artifact job was skipped and the required artifact does not exist",
+    "old_run_negative": "PASS; run 37650581332 currently exposes six artifacts and zero names beginning release-recovery-"
+  },
+  "exact_sha_run": {
+    "run_id": 37653910013,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37653910013",
+    "event": "workflow_dispatch",
+    "head_branch": "codex/b05-retained-evidence-ci-20261007",
+    "head_sha": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": {
+      "Verify": "completed/failure; 120 files passed, 8 skipped, 1 failed; 1607 tests passed, 22 skipped, 1 failed",
+      "Verify (Windows)": "completed/failure; 117 files passed, 11 skipped, 1 failed; 1567 tests passed, 60 skipped, 3 failed",
+      "Verify (PostgreSQL 16)": "completed/success",
+      "Verify (authenticated browser)": "completed/success",
+      "Linux OCI and recovery rehearsal": "completed/skipped",
+      "Deploy": "completed/skipped"
+    },
+    "artifact_api": {
+      "total_count": 1,
+      "names": ["tokenizer-browser-e2e"],
+      "release_recovery_count": 0
+    }
+  },
+  "immutable_evidence_review": {
+    "prior_report_docs_equal_original_e550e27": true,
+    "prior_report_sha256_manifest": "FAIL; 8 entries pass and tests/evaluator/b05-tcp-readiness-independent.test.ts fails",
+    "post_ci_supplement_manifest": "PASS; 8/8",
+    "candidate_transport_hash_log_current": false
+  },
+  "local_verification": {
+    "runtime": "Node.js v22.22.0 on macOS arm64",
+    "dependency_install": "fresh npm ci; 671 packages",
+    "focused": "5 files passed; 44 tests passed",
+    "full": "121 files passed, 8 skipped; 1608 tests passed, 22 skipped",
+    "verify": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "actionlint": "PASS",
+    "script_syntax": "PASS",
+    "boundary": "Local success is not fresh-clone or GitHub artifact-service acceptance; local object availability masked the CI defect."
+  },
+  "documentation": {
+    "prior_contradiction": "CLOSED_IN_SOURCE_AND_LOCAL_TEST",
+    "boundary": "Documentation correctness does not override failed exact-SHA CI or missing live artifact."
+  },
+  "remaining_hard_gates": [
+    "Repair the non-hermetic test without changing the prior evaluator evidence bytes, then obtain a fully green exact-SHA run.",
+    "Observe the native Linux OCI/recovery job stage, upload, download, and verify steps all succeed.",
+    "Use the GitHub artifacts API to prove release-recovery-<exact SHA> exists, download it independently, verify its exact file allowlist, manifest, sizes and SHA256 values, and rerun recovery-evidence.mjs verify against the downloaded bytes.",
+    "Execute authorized main-equivalent GHCR publication and signed-attestation positive/wrong-source/wrong-workflow checks.",
+    "Establish the actual production retained old-digest/bootstrap baseline.",
+    "Restore the actual production backup in isolation and execute authorized production deploy/readiness/business-canary/rollback evidence."
+  ],
+  "scorecard": {
+    "correctness": { "score": 4, "weight": 25, "rationale": "The retention contract is coherent locally, but its decisive live path was not reached." },
+    "regression_risk": { "score": 2, "weight": 20, "rationale": "A changed evaluator test breaks both Linux and Windows mandatory suites." },
+    "security": { "score": 4, "weight": 15, "rationale": "Strict allowlist, generic errors, size bounds, checksum and symlink rejection are present." },
+    "reliability": { "score": 2, "weight": 15, "rationale": "No real upload/download/hash roundtrip exists and the old evidence manifest is broken." },
+    "performance": { "score": null, "weight": 0, "rationale": "N/A for a bounded CI evidence transport helper." },
+    "maintainability": { "score": 4, "weight": 10, "rationale": "The helper is compact and explicit, but the active test depends on unavailable git objects and the handoff contains stale evidence." },
+    "test_readiness": { "score": 1, "weight": 5, "rationale": "Exact-SHA CI failed before the target job; live artifact acceptance is absent." }
+  },
+  "decision_rule": "Do not integrate ec3348e as the B05 evidence-retention fix. A replacement exact SHA must preserve the old evaluator evidence manifest, use portable tests, complete all mandatory jobs, retain the named recovery artifact, and pass an independent API/download/hash inspection. Even that only establishes CI-only readiness, not full B05 release readiness.",
+  "scope_boundaries": [
+    "No candidate product code, original repository, progress.json, status, gate or human decision was modified.",
+    "No branch was pushed and no production, GHCR, deploy, backup, restore or rollback action was performed.",
+    "B04 blockers are unrelated and excluded from this B05 verdict."
+  ],
+  "evidence_paths": [
+    "docs/test-reports/B05-evidence-retention-independent-20261007/REPORT.md",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/runtime.json",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-final.json",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-artifacts.json",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-verify.log.gz",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-verify-decisive.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-windows.log.gz",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37653910013-windows-decisive.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/run-37650581332-artifacts-negative.json",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/artifact-api-negative-summary.txt",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/immutable-prior-evaluator-evidence.txt",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/candidate-contract-diff.txt",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/allowlist-upload-download-lines.txt",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/local-roundtrip-manifest.json",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/local-roundtrip-summary.txt",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/npm-ci-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/focused-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/full-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/verify-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/lint-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/build-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/actionlint.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/script-syntax.log",
+    "docs/test-reports/B05-evidence-retention-independent-20261007/evidence/SHA256SUMS"
+  ]
+}

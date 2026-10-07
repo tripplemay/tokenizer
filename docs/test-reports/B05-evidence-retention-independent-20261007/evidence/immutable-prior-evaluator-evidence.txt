@@ -1,0 +1,51 @@
+Diff of immutable prior evaluator docs against original e550e27 (must be empty):
+Current prior evaluator manifest verification (expected failure is evidence):
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt: OK
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt: OK
+scripts/test/b05-tcp-readiness-independent.mjs: OK
+tests/evaluator/b05-tcp-readiness-independent.test.ts: FAILED
+shasum: WARNING: 1 computed checksum did NOT match
+manifest_exit=1
+Original and current report/verdict/test hashes:
+REPORT.md original=8752c142973af1923b18bfeed50383b6d8107139eca9f082ddd7e754f300d2b0
+REPORT.md current=8752c142973af1923b18bfeed50383b6d8107139eca9f082ddd7e754f300d2b0
+verdict.json original=6fc3fadcee800a5fdbb120a82f788d485ca4e88edfd9a0caeadf0faf28e7ed99
+verdict.json current=6fc3fadcee800a5fdbb120a82f788d485ca4e88edfd9a0caeadf0faf28e7ed99
+test original=cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0
+test current=b17c1656ce869338340db1a9fad915a2379668a804460a7db4a0d6660f895ef1
+Candidate diff to old evaluator test:
+diff --git a/tests/evaluator/b05-tcp-readiness-independent.test.ts b/tests/evaluator/b05-tcp-readiness-independent.test.ts
+index 342b47a..026f5f7 100644
+--- a/tests/evaluator/b05-tcp-readiness-independent.test.ts
++++ b/tests/evaluator/b05-tcp-readiness-independent.test.ts
+@@ -45,13 +45,13 @@ describe("B05 independent TCP readiness audit", () => {
+     }
+   });
+
+-  it("preserves the immutable post-CI supplement while exposing the remaining VPS-doc contradiction", () => {
++  it("preserves the immutable post-CI supplement while preventing the former VPS-doc contradiction", () => {
+     const supplementPath = "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json";
+     expect(readFileSync(supplementPath, "utf8")).toBe(gitShow(supplement, supplementPath));
+
+     const docs = readFileSync("docs/VPS-deployment.md", "utf8");
+     expect(docs).toContain("builds Linux app and migration OCI artifacts in CI");
+-    expect(docs).toContain("does not yet build the deployment image in CI");
+-    expect(docs).toContain("builds SHA-tagged images on the VPS");
++    expect(docs).not.toContain("does not yet build the deployment image in CI");
++    expect(docs).not.toContain("builds SHA-tagged images on the VPS");
+   });
+ });
+Post-CI supplement manifest verification:
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-entrypoint-decisive-excerpt.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-entrypoint-d588a446.sh.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-readme-402ab9c6.md.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-readme-decisive-excerpt.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/rehearse-release-lines-35-110.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-decisive-excerpt.log: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-job-112876984305.log.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-metadata.json: OK
