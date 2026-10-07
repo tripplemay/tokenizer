@@ -10,16 +10,17 @@ The endpoint is no-store and fails with 503 if the latest release lacks a pin.
 
 ## Publish
 
-1. Freeze a candidate Git commit. Check that it contains the intended Agent
-   code and lockfile, and test macOS, Linux, and native Windows independently.
-2. After independent acceptance, create `agent/v<version>` at that exact
-   commit. Tags are release markers; installers verify the immutable commit,
-   not a mutable tag name. Do not move an existing Agent tag.
-3. In a separate commit, set the latest release's `commit` field to the
-   candidate's full lowercase 40-hex SHA. This second commit avoids a
-   self-referential manifest. Verify that the endpoint returns the intended
-   version, commit, and repository; verify the commit is fetchable from the
-   advertised repository. Do not edit `AGENT_FEATURE_VERSION` or
+1. Prepare release commit A on an isolated branch: it contains the intended
+   Agent code, lockfile, and a new `X.Y.Z` ledger entry **without** its commit
+   pin. The CLI built at A must report `X.Y.Z`. Do not deploy A alone: the
+   endpoint intentionally returns 503 while its latest entry is unpinned.
+2. Test A on macOS, Linux, and native Windows. After independent acceptance,
+   create `agent/vX.Y.Z` at A. Tags are release markers; installers verify the
+   immutable commit, not a mutable tag name. Do not move an existing tag.
+3. In separate commit B, set the new ledger entry's `commit` to A's full
+   lowercase 40-hex SHA. This avoids a self-referential manifest. Deploy B
+   only after verifying endpoint version/commit/repository, tag target, and
+   remote fetchability. Do not edit `AGENT_FEATURE_VERSION` or
    `MIN_AGENT_FEATURE_VERSION` for an installer-only change.
 4. Deploy the server separately. Test one canary per platform, then obtain
    human approval before broadening. Do not publish Windows Agent availability
@@ -55,6 +56,14 @@ to the old checkout; on Windows, `~/.tokenizer/previous-release.txt` records
 its retained directory. Neither rollback path deletes credentials or queue.
 If service restart fails, run `tokenizer install-service` manually from the
 restored checkout and inspect `tokenizer service-status` plus Agent logs.
+
+Installers hold a per-user lock across preflight, cutover, and recovery.
+Concurrent invocations fail without touching the active checkout. POSIX uses
+`~/.tokenizer/.install.lock` with PID/start-time ownership and can reclaim a
+stale primary lock after process death; a crashed stale recovery guard at
+`.install.lock.recover` requires manually checking its recorded owner before
+removing that guard. Windows uses a kernel-held exclusive file handle; a
+leftover lock file after a crash is reusable automatically.
 
 ## Remaining gates
 
