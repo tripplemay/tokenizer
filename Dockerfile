@@ -15,6 +15,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_OUTPUT=standalone
 RUN npx prisma generate && npm run build
+RUN node scripts/verify-standalone.mjs
 
 FROM node:22-slim AS runner
 ARG SOURCE_COMMIT=unknown

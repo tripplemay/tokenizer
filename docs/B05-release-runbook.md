@@ -135,3 +135,32 @@ Primary interface references: [Docker build action](https://github.com/docker/bu
 [Docker provenance](https://docs.docker.com/build/metadata/attestations/slsa-provenance/),
 [GitHub signed attestations](https://github.com/actions/attest-build-provenance),
 [GitHub CLI verification](https://cli.github.com/manual/gh_attestation_verify).
+
+## Round 3 runtime boundary and predecessor correction
+
+The health migration-directory read now has a fixed, statically traceable path.
+Only `/api/health` explicitly includes the migration files in output tracing.
+`scripts/verify-standalone.mjs` is mandatory in the candidate Docker builder:
+it rejects unrelated repository state/reports/source/secrets and requires the
+runtime server and migration markers. Next15's two imported release JSON
+catalogs are exact-file exceptions only; Next16 inlines those catalogs. The
+historical-source rehearsal uses its historical Dockerfile plus trusted workflow
+revision labels, not the candidate Dockerfile requiring the new verifier.
+
+The deploy token grants `attestations:read`. Main artifact verification includes
+wrong-source/wrong-workflow rejection controls; real execution remains a gate.
+`scripts/select-release-predecessor.sh` uses PR base/push-before/operator SHA,
+or fetched `origin/main` on a test-branch workflow dispatch. It verifies that the
+commit exists and rejects candidate-as-predecessor. An explicit dispatch-only
+`bootstrap_rehearsal` permits a same-SHA preparatory run but **disables production
+deployment**, and must never be reported as old-version compatibility. A main
+dispatch without a distinct predecessor consequently fails closed unless this
+explicit non-deploying bootstrap mode was selected.
+
+The generator's actual Next16 standalone observation was 80M, with no dynamic-fs
+trace warning and only `.next`, `node_modules`, `package.json`, `prisma`, and
+`server.js` at its root. Against a native scratch PG16 DB, the standalone health
+returned 200; hiding its generated migration directory returned 503; restoring
+that directory returned 200. These native observations do not replace Linux OCI
+or actual previous-version/provenance acceptance. Round3 evidence is in
+`docs/test-reports/M1-B05-R13-round3-generator-handoff.json`.
