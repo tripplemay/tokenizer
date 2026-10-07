@@ -1,3 +1,6 @@
 docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/** -text
 scripts/test/b05-tcp-readiness-independent.mjs -text
 tests/evaluator/b05-tcp-readiness-independent.test.ts -text
+/tests/cli/b06-batch-failure-queue.test.ts -text
+/tests/cli/b06-partial-ack.test.ts -text
+/tests/ci/b06-obsolete-queue-test-archive.test.ts -text
