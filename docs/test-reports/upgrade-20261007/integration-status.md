@@ -11,11 +11,13 @@
 | 范围 | 集成 commit | 生成/独立评估 | 仍未满足 |
 | --- | --- | --- | --- |
 | R02 Git remote 三层脱敏 | `48efe92` | Generator `b7e4cef`；独立 R02 verdict `PASS`，见 `/tmp/tokenizer-r02-eval.4MEIQ7/docs/test-reports/R02-git-privacy-evaluator-verdict-2026-10-07.json` | 历史 queue/DB 备份与清理、跨版本仓库身份迁移、生产 Agent |
-| FR-001/007 首次使用与历史空窗 | `b79c0b0` | Generator `f5f3718`；独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b10-first-use-eval-20261007/docs/test-reports/BL-UPGRADE-FR-FIRST-USE-evaluator-verdict-20261007.json` | 真实浏览器/首上传及离线恢复、F005 原批次验收 |
-| R05/B09 可变成本缓存切片 | `106b7fd` + `0a9308a` | Generator `1925f7d` + `0ccacd8`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-cost-cache-eval-20261007/docs/test-reports/B09-usage-cost-cache-20261007/evaluator-verdict-round2.json` | B06/B08 前置、生产多实例、外部直接 DB 写入首次请求可能 stale |
+| FR-001/007 首次使用与历史空窗 | `b79c0b0` | Generator `f5f3718`；独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b10-first-use-eval-20261007/docs/test-reports/BL-UPGRADE-FR-FIRST-USE-evaluator-verdict-20261007.json` | 离线恢复、F005 原批次生产验收、B10 剩余认证闭环 |
+| R05/B09 可变成本缓存切片 | `106b7fd` + `0a9308a` + replay 修正 `f225652`/`b0ac3ce` | Generator `1925f7d` + `0ccacd8`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-cost-cache-eval-20261007/docs/test-reports/B09-usage-cost-cache-20261007/evaluator-verdict-round2.json`；组合树真实 PG/Next replay 通过 | B06/B08 前置、生产多实例、外部直接 DB 写入首次请求可能 stale |
+| B01 CI 基础门禁 | `6aeabce` | Generator `e599156`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b01-ci-eval-20261007/docs/test-reports/b01-ci-foundation-20261007/evaluator-verdict-round2.json`；组合树 Node 22 clean install、PG16 迁移和 Playwright 3/3 | GitHub Actions Linux/Windows/DB/浏览器及远程契约 fixture 未在组合 SHA 上运行 |
+| B02 安全依赖与认证配置 | `d8faf07` + 集成修正 `5b3a8be` | Generator `4b67b2e`；组合树 Node 22 clean install、verify/lint/test/build、Playwright 3/3；集成修正为合成浏览器 CI 提供非生产 `AUTH_RESEND_KEY` | B02 独立评估、真实邮件/session/双租户 PG、剩余依赖风险人类处置、Linux Docker |
 
-本树 `npm run verify` 与 lint 通过。集成全量 `npm test`：**1479 通过、21 跳过、1 失败**，唯一失败为已知 `tests/cli/agent-lifecycle.test.ts:152` SIGTERM 锁清理竞态；B01 单独整改中，未把本次结果称作绿灯。B01/B02/B04 仍在各自隔离树推进，尚未回流。
+本树 `d8faf07`（B01+B02 合并后）以 Node 22 执行 `npm ci`、verify、lint、build 与全量 `npm run test` 均通过：**1500 通过、22 跳过**；数据库 opt-in 探针和平台专属测试不能因全量绿灯而省略。`5b3a8be` 上本地 PG16 + 生产 Next + 合成认证 Playwright 关键旅程 **3/3 通过**。第一次 B02 组合 E2E 因缺少 `AUTH_RESEND_KEY` 正确失败；补测试专用值后复测通过。B03/R06 与 B04 仍在隔离树，不在本集成树。
 
 ## 发布门槛
 
-当前没有生产部署或发布验收。B01 的 Windows、PG、契约和登录态浏览器门禁，以及 B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。外部 agent 按 `AGENTS.md` 不得推送任何分支；生产发布由编排者在状态机与人闸门满足后执行，不会通过本隔离树的 commit 自动发生。
+当前没有生产部署或发布验收。B01 的真实 GitHub Actions Windows/PG/契约/浏览器、B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。用户已指定本主会话兼任发布编排者；子 agent 仍不得推送。主会话也只会在所有发布闸门满足后考虑回流和 push-main，不会因本隔离树 commit 自动发布。
