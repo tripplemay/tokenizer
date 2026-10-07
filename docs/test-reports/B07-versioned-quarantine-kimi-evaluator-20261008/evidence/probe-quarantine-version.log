@@ -1,0 +1,26 @@
+PASS: distinct versions for same sourceEventId
+PASS: queue empty after old version rejected
+PASS: quarantine has old version
+PASS: corrected version admitted to queue despite old version in quarantine
+PASS: old+corrected both retained in quarantine
+PASS: exact retry dedupe: file byte-identical after replay
+PASS: exact retry dedupe: still 2 rows
+PASS: version-keyed ACK keeps the other version
+PASS: queue.jsonl mode 600
+PASS: rejected-usage.jsonl mode 600
+INFO: pre-existing dir mode kept at 755 (no chmod side effect by design)
+PASS: queue.jsonl mode stays 600 after merge
+PASS: pre-fault queue holds both versions
+PASS: fault-injected checkpoint failure throws
+PASS: quarantine committed before the failed checkpoint (single row)
+PASS: active queue retained after failed checkpoint
+PASS: replay drains only the rejected version
+PASS: replay idempotent: quarantine not duplicated
+PASS: corrupt quarantine fails closed
+PASS: active queue byte-identical after corrupt quarantine
+SUMMARY quarantine-version failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

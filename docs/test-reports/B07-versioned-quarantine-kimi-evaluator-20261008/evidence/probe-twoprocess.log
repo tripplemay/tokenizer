@@ -1,0 +1,11 @@
+worker0 done
+worker1 done
+worker exits: w0=0 w1=0
+PASS: both workers completed
+PASS: queue parses after race (120 rows)
+PASS: all 40 corrected versions survived old-version ACK (found 40)
+PASS: old versions all ACKed (left 0)
+PASS: 80 own events present, 0 duplicates
+INFO: max rows per sourceEventId = 1 (race ids have 1: only corrected remains)
+PASS: no temp/steal litter ()
+INFO: lock files left: none

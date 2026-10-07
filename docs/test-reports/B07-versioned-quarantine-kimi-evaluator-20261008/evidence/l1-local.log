@@ -1,0 +1,27 @@
+=== L1: npm run lint ===
+> tokenizer@0.1.0 lint
+> eslint app src --max-warnings=0
+
+lint_exit=0
+=== L1: npm run verify (prisma generate + tsc --noEmit) ===
+
+Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+
+verify_exit=0
+=== L1: npm run test (vitest full) ===
+   ✓ applyHarnessDecisions > gate relay 失败不阻塞另外两步 1174ms
+   ✓ applyHarnessDecisions > 本机闸门已有决策时不覆盖 625ms
+   ✓ structured Harness sync health > applies the exact HTTP retryability matrix 1726ms
+   ✓ structured Harness sync health > classifies safe server codes and never retains response bodies in the snapshot 692ms
+   ✓ structured Harness sync health > falls back to http status when a response code is not normalized 536ms
+   ✓ structured Harness sync health > classifies timeouts for all independent subchains without short-circuiting 589ms
+   ✓ structured Harness sync health > caps structured issues at 20 while retaining the full failed-project count 8651ms
+   ✓ structured Harness sync health > writes idle, success, degraded, and failed snapshots from actual outcomes 775ms
+   ✓ structured Harness sync health > deduplicates unchanged issue details and logs recovery 580ms
+
+ Test Files  130 passed | 11 skipped (141)
+      Tests  1690 passed | 27 skipped (1717)
+   Start at  02:40:17
+   Duration  31.39s (transform 6.96s, setup 0ms, collect 32.16s, tests 112.12s, environment 117ms, prepare 27.55s)
+
+test_exit=0

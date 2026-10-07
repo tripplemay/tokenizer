@@ -1,0 +1,13 @@
+PASS: local-only: backlog admitted to durable queue
+PASS: local-only: syncEvents refused by privacy mode
+PASS: local-only: zero network requests
+PASS: local-only: backlog retained
+PASS: configure(sync): still zero network requests
+PASS: configure(sync): backlog untouched
+PASS: status copy discloses backlog + next-cycle upload
+PASS: exclude rule edit does not delete admitted backlog
+PASS: next cycle: all 3 backlog events uploaded
+PASS: next cycle: wire carried exactly the admitted IDs
+PASS: queue drained after upload
+PASS: queue file contains no path payload after drain
+SUMMARY b03-backlog failures=0

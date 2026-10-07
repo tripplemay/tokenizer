@@ -1,0 +1,74 @@
+{
+  "schema": "b07-formal-evaluator-verdict-v1",
+  "date": "2026-10-08",
+  "evaluator": "kimi-independent-cross-family",
+  "candidate_sha": "541287603bf3ee41d1d86adde8328d2f9b3ae437",
+  "baseline_sha": "4979042e3cf8d2c5f06ed5de13372e49d0bab855",
+  "review_kind": "independent cross-family formal technical acceptance",
+  "verdict": "PASS",
+  "release_ready": false,
+  "release_note": "technical acceptance only; release still requires the human gate and normal release/deployment process",
+  "product_modified": false,
+  "state_modified": false,
+  "pushed": false,
+  "commits_made": false,
+  "production": "NOT_TESTED",
+  "prereview_basis": "not used as verdict basis; prereview findings Q-01 and Q-02 independently reproduced on baseline and verified fixed on candidate",
+  "ci": {
+    "run": 37672224127,
+    "event": "workflow_dispatch",
+    "headSha_matches_candidate": true,
+    "jobs": {
+      "Verify": "success",
+      "Verify (Windows)": "success",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Deploy": "skipped"
+    },
+    "triggered_by_me": false
+  },
+  "independent_probes": [
+    { "area": "server partial row admission (real PG16+HTTP)", "result": "PASS", "checks": "20/20", "evidence": "evidence/probe-server-partial-admission.log" },
+    { "area": "wire/HTTP error classification + ACK ID/version fail-closed", "result": "PASS", "checks": "16 cases incl forged/incomplete/duplicate/out-of-range ACK, 401/403 no-retry, 503 bounded retry with real 20s backoff, old-B06 row-located compat", "evidence": "evidence/probe-ack-validation.log" },
+    { "area": "two-process exact-version queue merge/ACK race", "result": "PASS", "checks": "40 race iters, 0 loss, 0 dup, corrected survives old ACK", "evidence": "evidence/probe-twoprocess.log" },
+    { "area": "versioned quarantine old+corrected retention + exact retry dedupe", "result": "PASS", "checks": "both versions retained; replay byte-identical; version-keyed ACK", "evidence": "evidence/probe-quarantine-version.log", "baseline": "FAIL (only old version retained = prereview Q-01 reproduced)", "baseline_evidence": "evidence/baseline-4979042-quarantine.log" },
+    { "area": "file permissions + privacy minimization", "result": "PASS", "checks": "0600 files, 0700 product-created dir, git creds stripped, rawJson minimized, unknown fields dropped", "evidence": "evidence/probe-privacy-perms.log" },
+    { "area": "quarantine->active fault/crash consistency", "result": "PASS", "checks": "chflags rename-fault injection + 25 SIGKILL iters, parseable/no-loss/no-dup/idempotent replay; corrupt quarantine fail-closed", "evidence": "evidence/probe-crashkill.log" },
+    { "area": "old B06 rowless invalid_json fallback", "result": "PASS", "checks": "bisect 3,2,1,2,1,0,1; single empty probe; good neighbours never quarantined; global failure keeps all rows active", "evidence": "evidence/probe-rowless-fallback.log" },
+    { "area": "B03 local-only->sync backlog", "result": "PASS", "checks": "0 network in local-only/configure; backlog retained across rule edits; uploads next cycle; CLI status disclosure", "evidence": "evidence/probe-b03-backlog.log" },
+    { "area": "resource bounds", "result": "PASS", "checks": "1MiB+ body_too_large (buffered + chunked streaming), early declared-length rejection, content-type, malformed JSON/UTF-8 safe 400, server survives", "evidence": "evidence/probe-resource-bounds.log" },
+    { "area": "windows archive bytes (.gitattributes -text, autocrlf=true simulation)", "result": "PASS", "checks": "3 historical blobs unchanged; check-attr unset; HEAD checkout byte==blob; baseline CRLF-corrupted (Q-02 reproduced)", "evidence": "evidence/windows-archive-autocrlf-probe.log" }
+  ],
+  "candidate_gates": {
+    "lint": "pass",
+    "tsc_verify": "pass",
+    "vitest_full": "130 files / 1690 tests pass",
+    "pg16_db_probes": "b06-batch-db 3/3, b06-partial-ack-db 1/1, b07-queue-id-ack-db 1/1 on real PG16.13",
+    "evidence": "evidence/l1-local.log, evidence/db-probes-pg16.log"
+  },
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "info",
+      "decision": "NON_BLOCKING",
+      "title": "Pre-existing ~/.tokenizer dir mode is not chmodded (755 observed); files remain 0600",
+      "note": "documented design in atomic-file.ts; product-created dirs are 0700"
+    }
+  ],
+  "limitations": [
+    "native Windows not executed by this evaluator; CRLF evidence is a macOS git-attribute simulation plus byte comparison; native coverage only from same-SHA CI Verify (Windows)",
+    "no power-loss/fsync crash proof; SIGKILL x25 and rename fault injection done, physical power cut between the two renames not honestly reproducible in-process",
+    "authenticated-browser E2E not rerun locally (covered by same-SHA CI job)",
+    "429 backoff not separately timed (shares retryable() path with the measured 503 case)",
+    "all-rejected cache/pricing zero-side-effect confirmed by route code path, not separately fault-injected",
+    "quota snapshots endpoint out of this probe scope; covered by candidate tests and prior B06 acceptance",
+    "macOS-only native runtime; Linux/Windows agent lifecycles not locally executed"
+  ],
+  "runtime": {
+    "node": "v22.22.0 (nvm)",
+    "postgres": "16.13 (fresh /tmp cluster)",
+    "os": "macOS arm64",
+    "http": "real next dev server + curl/raw-socket probes",
+    "processes": "native child processes for two-process race and SIGKILL iterations"
+  }
+}

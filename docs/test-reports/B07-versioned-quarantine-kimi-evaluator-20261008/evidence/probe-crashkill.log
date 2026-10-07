@@ -1,0 +1,4 @@
+crash iterations complete, violations=0
+PASS: 25/25 SIGKILL iterations preserved parseability + no loss + no dup
+final: queue=0 quarantine=25 temps=0
+PASS: converged (25 quarantined, 0 queued, 0 temps)

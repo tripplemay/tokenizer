@@ -1,0 +1,10 @@
+## archive sha assertion, cwd pinned to each clone (core.autocrlf=true)
+## pinned: fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca
+== crlf-head HEAD=541287603bf3ee41d1d86adde8328d2f9b3ae437
+tests/cli/b06-batch-failure-queue.test.ts sha=fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca CR=0 SHA-PASS
+tests/cli/b06-partial-ack.test.ts sha=4b8e4c10f0e173946d341586034da713718573fdaf67e9c69a0c317f04c09b33 CR=0 (no pin)
+tests/ci/b06-obsolete-queue-test-archive.test.ts sha=f73566f46cca6f185d7ad82e4a8519d07ec59c037f03ec8e4629ae0e2d728480 CR=0 (no pin)
+== crlf-base HEAD=4979042e3cf8d2c5f06ed5de13372e49d0bab855
+tests/cli/b06-batch-failure-queue.test.ts sha=8e1833440daac3151366f1257505f942724a6446861478cb4170c98ef73c0255 CR=31 SHA-FAIL
+tests/cli/b06-partial-ack.test.ts sha=48276f6390e53dd077baae18826180e907738e8a6515c506a3d44d99c8f8bd76 CR=212 (no pin)
+tests/ci/b06-obsolete-queue-test-archive.test.ts sha=10d121ee93ac94bea08b39781fb303e5ca2ffd5b41cee7242d32e52f323b203e CR=29 (no pin)

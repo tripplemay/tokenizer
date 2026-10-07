@@ -1,0 +1,41 @@
+=== P1: partial batch 3 rows (good,bad-source,good) ===
+HTTP 200 {"inserted":0,"updated":0,"duplicates":2,"received":2,"deviceId":"dev_eval0001","newModelKeys":[],"protocol":"usage-partial-v1","accepted":[{"row":0,"source":"aider","sourceEventId":"probe-a"},{"row":2,"source":"codex","sourceEventId":"probe-b"}],"rejected":[{"row":1,"code":"invalid_event"}]}
+PASS: P1 http
+P1-STRUCT-PASS
+PASS: P1 db rows (only 2 good admitted)
+PASS: P1 bad row absent
+=== P2: all-rejected partial batch is write-free ===
+HTTP 200 {"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"dev_eval0001","newModelKeys":[],"protocol":"usage-partial-v1","accepted":[],"rejected":[{"row":0,"code":"invalid_event"},{"row":1,"code":"invalid_event"}]}
+PASS: P2 http
+P2-STRUCT-PASS
+PASS: P2 timezone untouched
+PASS: P2 lastSyncAt untouched
+PASS: P2 no events written
+=== P3: valid empty partial batch keeps heartbeat (lastSyncAt updates) ===
+HTTP 200 {"inserted":0,"duplicates":0,"received":0,"deviceId":"dev_eval0001","protocol":"usage-partial-v1","accepted":[],"rejected":[]}
+PASS: P3 http
+P3-STRUCT-PASS
+PASS: P3 empty batch heartbeat updated lastSyncAt (2026-10-07 19:22:42.566)
+=== P4: legacy no-header batch with one bad row -> whole 400, zero writes ===
+HTTP 400 {"error":"invalid batch request","code":"invalid_event","row":1}
+PASS: P4 http
+PASS: P4 body
+PASS: P4 good row NOT written by legacy path
+=== P5: partial header, envelope failure still whole-request 400 ===
+HTTP 400 {"error":"invalid batch request","code":"invalid_timezone"}
+PASS: P5 http
+PASS: P5 body
+=== P6: device mismatch -> 403 ===
+PASS: P6 http
+=== P7: no auth -> 401 / bogus token -> 401 ===
+PASS: P7 no-auth
+PASS: P7 bad-token
+=== P8: partial header, invalid_json structural poison locates row when possible ===
+HTTP 400 {"error":"invalid batch request","code":"invalid_json"}
+PASS: P8 http
+=== P9: oversized row count (201) -> batch_too_large even with partial header ===
+HTTP 400 {"error":"invalid batch request","code":"batch_too_large"}
+PASS: P9 http
+PASS: P9 body
+
+SUMMARY pass=20 fail=0

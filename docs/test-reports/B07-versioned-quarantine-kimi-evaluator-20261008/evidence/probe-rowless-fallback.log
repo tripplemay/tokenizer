@@ -1,0 +1,18 @@
+===== CASE poison-row =====
+INFO: request sizes = 3,2,1,2,1,0,1
+PASS: no throw
+PASS: poison quarantined with rowless code
+PASS: good neighbours NOT quarantined
+PASS: good neighbours uploaded
+PASS: rejected count surfaced
+PASS: queue fully drained
+PASS: bisected (never sent singletons of good rows before narrowing)
+PASS: singleton proof used exactly one empty probe
+PASS: no transient backoff
+SUMMARY poison-row failures=0
+===== CASE global-failure =====
+PASS: global failure surfaces as error
+PASS: nothing quarantined on global failure
+PASS: all 3 rows stay active (no silent loss of good neighbours)
+PASS: empty probe was attempted as proof and failed too
+SUMMARY global-failure failures=0

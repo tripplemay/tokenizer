@@ -1,0 +1,154 @@
+===== CASE forged-ack-id =====
+PASS: forged-ack-id: fails closed
+PASS: forged-ack-id: exactly one request (no retry of forged ACK)
+PASS: forged-ack-id: queue byte-identical after failure
+PASS: forged-ack-id: nothing quarantined
+SUMMARY forged-ack-id failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE forged-ack-source =====
+PASS: forged-ack-source: fails closed
+PASS: forged-ack-source: exactly one request (no retry of forged ACK)
+PASS: forged-ack-source: queue byte-identical after failure
+PASS: forged-ack-source: nothing quarantined
+SUMMARY forged-ack-source failures=0
+===== CASE incomplete-partition =====
+PASS: incomplete-partition: fails closed
+PASS: incomplete-partition: exactly one request (no retry of forged ACK)
+PASS: incomplete-partition: queue byte-identical after failure
+PASS: incomplete-partition: nothing quarantined
+SUMMARY incomplete-partition failures=0
+===== CASE duplicate-ack-row =====
+PASS: duplicate-ack-row: fails closed
+PASS: duplicate-ack-row: exactly one request (no retry of forged ACK)
+PASS: duplicate-ack-row: queue byte-identical after failure
+PASS: duplicate-ack-row: nothing quarantined
+SUMMARY duplicate-ack-row failures=0
+===== CASE out-of-range-row =====
+PASS: out-of-range-row: fails closed
+PASS: out-of-range-row: exactly one request (no retry of forged ACK)
+PASS: out-of-range-row: queue byte-identical after failure
+PASS: out-of-range-row: nothing quarantined
+SUMMARY out-of-range-row failures=0
+===== CASE received-mismatch =====
+PASS: received-mismatch: fails closed
+PASS: received-mismatch: exactly one request (no retry of forged ACK)
+PASS: received-mismatch: queue byte-identical after failure
+PASS: received-mismatch: nothing quarantined
+SUMMARY received-mismatch failures=0
+===== CASE protocol-mismatch =====
+PASS: protocol-mismatch: fails closed
+PASS: protocol-mismatch: exactly one request (no retry of forged ACK)
+PASS: protocol-mismatch: queue byte-identical after failure
+PASS: protocol-mismatch: nothing quarantined
+SUMMARY protocol-mismatch failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE legacy-full-ack =====
+/private/tmp/b07-eval/probes/harness.ts:19
+      const [status, payload] = plan(json, record, requests.length - 1);
+                                ^
+
+TypeError: plan is not a function or its return value is not iterable
+    at IncomingMessage.<anonymous> (/private/tmp/b07-eval/probes/harness.ts:19:33)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+Node.js v22.22.0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE permanent-401 =====
+PASS: permanent-401: throws
+PASS: permanent-401: not retried
+PASS: permanent-401: queue unchanged
+PASS: permanent-401: fast (no 5s/15s backoff)
+SUMMARY permanent-401 failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE permanent-403 =====
+PASS: permanent-403: throws
+PASS: permanent-403: not retried
+PASS: permanent-403: queue unchanged
+PASS: permanent-403: fast (no 5s/15s backoff)
+SUMMARY permanent-403 failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE compat-row-invalid-event =====
+PASS: compat-row-invalid-event: no throw
+PASS: compat-row-invalid-event: poison quarantined
+PASS: compat-row-invalid-event: good rows ACKed, queue empty
+PASS: compat-row-invalid-event: rejected count surfaced
+PASS: compat-row-invalid-event: second request excludes poison
+PASS: compat-row-invalid-event: no transient backoff
+PASS: compat-row-invalid-event: good neighbours retried immediately
+SUMMARY compat-row-invalid-event failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE compat-row-invalid-json =====
+PASS: compat-row-invalid-json: no throw
+PASS: compat-row-invalid-json: poison quarantined
+PASS: compat-row-invalid-json: good rows ACKed, queue empty
+PASS: compat-row-invalid-json: rejected count surfaced
+PASS: compat-row-invalid-json: second request excludes poison
+PASS: compat-row-invalid-json: no transient backoff
+PASS: compat-row-invalid-json: good neighbours retried immediately
+SUMMARY compat-row-invalid-json failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE rowless-invalid-event =====
+PASS: rowless-invalid-event: throws (not a per-row compat response)
+PASS: rowless-invalid-event: queue unchanged (good neighbours not pinned silently lost)
+PASS: rowless-invalid-event: nothing quarantined
+PASS: rowless-invalid-event: one request
+SUMMARY rowless-invalid-event failures=0
+===== CASE rowless-invalid-batch =====
+PASS: rowless-invalid-batch: throws (not a per-row compat response)
+PASS: rowless-invalid-batch: queue unchanged (good neighbours not pinned silently lost)
+PASS: rowless-invalid-batch: nothing quarantined
+PASS: rowless-invalid-batch: one request
+SUMMARY rowless-invalid-batch failures=0
+===== CASE legacy-full-ack =====
+PASS: legacy-full-ack: no throw
+PASS: legacy-full-ack: queue emptied (full-batch ACK)
+PASS: legacy-full-ack: one request
+PASS: legacy-full-ack: counts
+SUMMARY legacy-full-ack failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+===== CASE transient-503 =====
+PASS: transient-503: throws after bounded retries
+PASS: transient-503: exactly 3 attempts
+PASS: transient-503: queue unchanged
+INFO: transient-503 wall=20061ms (expect ~20000 for 5s+15s)
+PASS: transient-503: backoff observed
+SUMMARY transient-503 failures=0
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

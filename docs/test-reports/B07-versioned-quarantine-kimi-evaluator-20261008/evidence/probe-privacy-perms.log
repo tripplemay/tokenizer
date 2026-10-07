@@ -1,0 +1,18 @@
+PASS: queue: gitRemote credential stripped
+PASS: queue: repoKey sanitized (no creds, no userinfo)
+PASS: queue: repoKey identity is one of the sanitized inputs
+PASS: queue: repoKey-only creds stripped
+PASS: queue: unparseable gitRemote nulled
+PASS: queue: non-codex rawJson dropped
+PASS: queue: unknown field dropped
+PASS: queue: branch/path retained as identity-minimized scalars
+PASS: queue: codex rawJson minimized to cumulative counters only
+PASS: quarantine file: no source payload text
+PASS: quarantine file: no credential
+PASS: quarantine file: no unknown debug field
+PASS: quarantine file: no dropped codex text
+PASS: product-created .tokenizer dir mode 700
+PASS: queue.jsonl 600
+PASS: rejected-usage.jsonl 600
+PASS: no locks left
+SUMMARY privacy-perms failures=0

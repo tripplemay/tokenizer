@@ -1,0 +1,28 @@
+=== R1: body 1MiB+1 actual bytes -> body_too_large ===
+ 1048545 /tmp/b07-eval/bigbody.json
+{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"dev_eval0001","newModelKeys":[],"protocol":"usage-partial-v1","accepted":[],"rejected":[{"row":0,"code":"invalid_event"}]} http=200
+=== R2: lying Content-Length (declares small, sends 1MiB+) -> body_too_large via byte counting ===
+ http=400
+=== R3: declared length over limit -> body_too_large early ===
+{"error":"invalid batch request","code":"body_too_large"} http=400
+=== R4: wrong content type -> invalid_content_type ===
+{"error":"invalid batch request","code":"invalid_content_type"} http=400
+=== R5: malformed JSON stream -> safe 400 invalid_json (not thrown route error) ===
+{"error":"invalid batch request","code":"invalid_json"} http=400
+=== R6: invalid UTF-8 bytes -> safe 400 ===
+{"error":"invalid batch request","code":"invalid_json"} http=400
+=== R1 redo: body actually > 1MiB ===
+actual body bytes: 1048745
+R1 http: 400 body: {"error":"invalid batch request","code":"body_too_large"}
+=== R2 redo: raw socket, declared small length but stream 1MiB+ ===
+actual body bytes: 1100169
+Traceback (most recent call last):
+  File "<stdin>", line 15, in <module>
+ConnectionResetError: [Errno 54] Connection reset by peer
+=== server still alive after RST? ===
+alive-probe=401
+=== R2b: chunked streaming > 1MiB, no Content-Length -> byte counting cutoff ===
+actual body bytes: 1100169
+R2b http: 400 body: {"error":"invalid batch request","code":"body_too_large"}
+=== server alive after chunked cutoff? ===
+alive-probe2=401

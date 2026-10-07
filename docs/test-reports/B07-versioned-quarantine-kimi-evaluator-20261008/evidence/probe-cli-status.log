@@ -1,0 +1,16 @@
+=== real CLI: tokenizer status with quarantine present (HOME=/tmp/b07-eval/home-quar) ===
+Queue: /tmp/b07-eval/home-quar/.tokenizer/queue.jsonl (3 events)
+Rejected usage: /tmp/b07-eval/home-quar/.tokenizer/rejected-usage.jsonl (unreadable; active queue remains fail-closed)
+Privacy: sync
+Backlog: 3 previously admitted events; automatic upload on the next Agent/run/sync cycle.
+Collection scope: scope-v1:5ae899355ef72774e0e3476166bc6e5cbc5d278651c732d98b4dc917e88f8ee6 (local label; does not reset cursors)
+
+=== real CLI: status with corrupt quarantine (fail-closed disclosure) ===
+Rejected usage: /tmp/b07-eval/home-clicorrupt/.tokenizer/rejected-usage.jsonl (unreadable; active queue remains fail-closed)
+
+=== real CLI: local-only status shows backlog disclosure ===
+Queue: /tmp/b07-eval/home-clilocal/.tokenizer/queue.jsonl (1 events)
+Privacy: local-only
+Backlog: 1 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.
+=== real CLI: status with valid quarantine (25 rows from crash probe) ===
+Rejected usage: /tmp/b07-eval/home-crash/.tokenizer/rejected-usage.jsonl (25 events; manual repair/replay required)
