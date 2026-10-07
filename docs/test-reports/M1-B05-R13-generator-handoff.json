@@ -1,0 +1,39 @@
+{
+  "batch_id": "M1-B05-R13",
+  "created_at": "2026-10-07T14:10:31Z",
+  "features": [
+    {
+      "feature_id": "R13-SLICE1",
+      "commits": [],
+      "files_touched": [
+        ".env.example",
+        ".github/workflows/deploy-vps.yml",
+        "Dockerfile",
+        "app/api/health/capabilities/route.ts",
+        "app/api/health/live/route.ts",
+        "app/api/health/route.ts",
+        "docker-compose.yml",
+        "docs/B05-release-runbook.md",
+        "docs/VPS-deployment.md",
+        "docs/test-reports/M1-B05-R13-generator-handoff.json",
+        "docs/test-reports/M1-B05-R13-generator-notes-20261007.md",
+        "scripts/deploy-vps-release.sh",
+        "scripts/validate-deploy-secrets.sh",
+        "scripts/verify-release-image.sh",
+        "src/server/health-core.ts",
+        "src/server/health.ts",
+        "tests/server/deploy-secrets.test.ts",
+        "tests/server/health.test.ts",
+        "tests/server/release-image.test.ts"
+      ],
+      "notes": "R13 first slice only; see generator notes for exact failures and release blockers. No production deploy, Linux image run, scratch DB restore, business canary, CI-built OCI digest, or self-evaluation."
+    }
+  ],
+  "l1_ran": {
+    "lint": "npm run lint (exit 0)",
+    "typecheck": "npm run verify (exit 0)",
+    "test": "npm test (exit 1; 2 failed, 1479 passed, 20 skipped); B05 focused tests (exit 0; 36 passed); npm run build (exit 0)"
+  },
+  "waiting": null,
+  "waiting_detail": ""
+}

@@ -311,9 +311,11 @@ jobs:
     env:
       VPS_HOST: ${{ secrets.VPS_HOST }}
       VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
       VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
       VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
       ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
       # Auth.js v5 — sign-in / session secrets. AUTH_SECRET and
       # AUTH_RESEND_KEY come from GitHub Actions secrets (set them in repo
@@ -344,7 +346,7 @@ jobs:
         run: |
           set -eu
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/tokenizer_vps
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/tokenizer_vps
           chmod 600 ~/.ssh/tokenizer_vps
           ssh-keyscan -p "${VPS_SSH_PORT:-22}" -H "$VPS_HOST" >> ~/.ssh/known_hosts
 
@@ -358,6 +360,7 @@ jobs:
           rsync -az --delete \
             --exclude='.git' \
             --exclude='.env' \
+            --exclude='.releases' \
             --exclude='.next' \
             --exclude='node_modules' \
             -e "$SSH_CMD" \
@@ -370,15 +373,14 @@ jobs:
           SSH_TARGET="$VPS_USER@$VPS_HOST"
           SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
-          if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
-            NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
-          fi
-
+          umask 077
           ENV_FILE="$(mktemp)"
+          trap 'rm -f "$ENV_FILE"' EXIT
           {
             printf 'ADMIN_TOKEN=%s\n' "$ADMIN_TOKEN"
             printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
-            printf 'DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer\n'
+            printf 'POSTGRES_PASSWORD=%s\n' "$POSTGRES_PASSWORD"
+            printf 'DATABASE_URL=postgresql://tokenizer:%s@localhost:5432/tokenizer\n' "$POSTGRES_PASSWORD"
             printf 'APP_HOST_PORT=127.0.0.1:3010\n'
             printf 'GIT_COMMIT=%s\n' "${{ github.sha }}"
             # Auth.js v5
@@ -397,35 +399,9 @@ jobs:
             printf 'PRICING_LLM_KEY=%s\n' "${PRICING_LLM_KEY:-}"
             printf 'PRICING_LLM_MODEL=%s\n' "${PRICING_LLM_MODEL:-}"
           } > "$ENV_FILE"
+          # Preserve the previous runtime configuration for an operator-led
+          # rollback. Do not print or overwrite it on a same-SHA retry.
+          $SSH_CMD "$SSH_TARGET" "umask 077; mkdir -p '$DEPLOY_PATH/.releases'; chmod 700 '$DEPLOY_PATH/.releases'; if [ -f '$DEPLOY_PATH/.env' ] && [ ! -e '$DEPLOY_PATH/.releases/${{ github.sha }}.previous-env' ]; then cp '$DEPLOY_PATH/.env' '$DEPLOY_PATH/.releases/${{ github.sha }}.previous-env'; fi"
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
-          rm -f "$ENV_FILE"
 
-          $SSH_CMD "$SSH_TARGET" "set -e
-          cd '$DEPLOY_PATH'
-          # Reclaim disk before building so image export doesn't hit
-          # 'no space left on device'. This is a SHARED host (other projects
-          # run here too), so scope the cleanup carefully:
-          #   - builder prune -af: drop ALL build cache. It's ephemeral and
-          #     regenerates as needed; the only docker-reclaimable space here.
-          #   - image prune -f: dangling images only. Do NOT use -a, which
-          #     would delete other projects' non-running images too.
-          # Best-effort (|| true) so a prune hiccup never blocks a deploy;
-          # never touches named volumes — the postgres data stays intact.
-          docker builder prune -af || true
-          docker image prune -f || true
-          docker compose build
-          docker compose up -d postgres
-          docker compose run --rm migrate
-          docker compose up -d app
-          docker compose ps
-          echo 'Waiting for /api/health to respond...'
-          for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-            if curl -fsS http://127.0.0.1:3010/api/health > /dev/null; then
-              echo 'health check OK'
-              exit 0
-            fi
-            sleep 2
-          done
-          echo 'health check FAILED after 30s' >&2
-          curl -sS http://127.0.0.1:3010/api/health || true
-          exit 1"
+          $SSH_CMD "$SSH_TARGET" "cd '$DEPLOY_PATH' && chmod 600 .env && EXPECTED_SHA='${{ github.sha }}' bash scripts/deploy-vps-release.sh"
