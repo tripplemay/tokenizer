@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "role": "generator",
+  "is_evaluator_verdict": false,
+  "prior_candidate_sha": "c178b45107dc8b3b6053a775caf9d6564b262298",
+  "fix_commit_sha": "18ee2697bd7fae569a26549ce55c2e23b520fbed",
+  "source_ci": {
+    "run_id": 37665390447,
+    "observed_status": "in_progress",
+    "windows": "failure",
+    "macos_launchd": "success",
+    "macos_artifact_id": 11502323294,
+    "downloaded_exact_assertion": "pass"
+  },
+  "change": {
+    "kind": "test_only_cross_platform_expectation",
+    "files": ["tests/cli/service-launchd.test.ts"],
+    "product_changed": false,
+    "workflow_changed": false,
+    "threshold_changed": false,
+    "skip_added": false
+  },
+  "local_node22": {
+    "focused": { "passed": 15, "skipped": 0, "failed": 0 },
+    "full": { "passed": 1710, "skipped": 23, "failed": 0 },
+    "verify": "pass",
+    "lint": "pass",
+    "diff_check": "pass"
+  },
+  "safe_branch_ci_readiness": "REQUIRES_RERUN_AT_FINAL_SHA",
+  "production_readiness": "NOT_READY"
+}
