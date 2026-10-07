@@ -16,6 +16,8 @@ const now = Date.now();
 const at = (minutesAgo) => new Date(now - minutesAgo * 60_000);
 const runId = now.toString(36);
 const id = (suffix) => `b09_real_${runId}_${suffix}`;
+const autoFreeModel = `synthetic-b09-auto-${runId}-free`;
+const scanFreeModelKey = `synthetic-b09-scan-${runId}-free`;
 const cookie = (tenant) => `authjs.session-token=${id(`session_${tenant}`)}`;
 const stages = [];
 
@@ -130,7 +132,7 @@ async function uploadFreeModel() {
     body: JSON.stringify({
       device: { id: id("device_a"), name: "B09 a", diagnostics: { agentFeatureVersion: 9 } },
       events: [{ source: "aider", sourceEventId: "auto-free-a", workspacePath: "/synthetic/b09-a",
-        repoKey: "github.com/synthetic/b09-a", model: "synthetic-b09-auto-free", inputTokens: 1_000_000,
+        repoKey: "github.com/synthetic/b09-a", model: autoFreeModel, inputTokens: 1_000_000,
         totalTokens: 1_000_000, occurredAt: at(90).toISOString() }]
     })
   });
@@ -150,7 +152,7 @@ async function assertAutoFree(modelKey) {
 }
 
 async function scanFreeModel() {
-  const modelKey = "synthetic-b09-scan-free";
+  const modelKey = scanFreeModelKey;
   await prisma.usageEvent.create({ data: {
     id: id("scan_free"), userId: id("user_a"), deviceId: id("device_a"), projectId: id("project_a"),
     repoKey: "github.com/synthetic/b09-a", source: "aider", sourceEventId: "scan-free-a", model: modelKey,
@@ -179,7 +181,7 @@ async function cleanupLegacy(dryRun) {
 
 async function run() {
   await prisma.user.deleteMany({ where: { id: { startsWith: "b09_real_" } } });
-  await prisma.modelPrice.deleteMany({ where: { modelKey: { in: ["gpt-5.4", "synthetic-b09-auto-free", "synthetic-b09-scan-free"] } } });
+  await prisma.modelPrice.deleteMany({ where: { OR: [{ modelKey: "gpt-5.4" }, { modelKey: { startsWith: "synthetic-b09-" } }] } });
   await seedTenant("a");
   await seedTenant("b");
   await prisma.deviceToken.create({ data: {
@@ -205,7 +207,7 @@ async function run() {
     await assertPages("b", "$2.50");
 
     await uploadFreeModel();
-    await assertAutoFree("synthetic-b09-auto-free");
+    await assertAutoFree(autoFreeModel);
     await assertPages("a", "$2.50");
     await scanFreeModel();
     await assertPages("a", "$2.50");
