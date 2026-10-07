@@ -11,3 +11,5 @@ The plan README is absent from the integration base; it was read from the isolat
 Inspected: both API batch routes, auth read-only lookup, ingest device/token writes, Prisma Int/Decimal/BigInt columns, old Agent upload shape, quota provider registry, privacy minimization, and the older optional PG poison-acceptance probe. Proposed implementation should preserve old valid payloads, including quota requests without a device field, and validate all rows before timezone/device/token writes. No transaction/outbox migration is in scope.
 
 Coordinator requested a priority switch to the separate B05 evidence-retention blocker. B06 implementation will resume in this same isolated worktree after that task; B04/B05 changes must not be mixed into it. No state/gate changes or push occurred.
+
+Resume observation: local Docker remains unavailable (`evidence/docker-local.log`); no real PG probe or product edit was attempted. A second urgent B05 CI-portability assignment superseded this resumed task. B06 remains a baseline-only checkpoint pending coordinator resumption.
