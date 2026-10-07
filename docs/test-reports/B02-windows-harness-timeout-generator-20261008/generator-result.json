@@ -1,0 +1,47 @@
+{
+  "schema": "tokenizer-generator-result/1",
+  "task": "B02-windows-harness-timeout-portability",
+  "role": "generator",
+  "date": "2026-10-08",
+  "baseCommit": "17b47a8e9128eef1f982afa2f5a3257ec72737d3",
+  "result": "TEST_ONLY_CANDIDATE_REQUIRES_SAFE_BRANCH_CI",
+  "trigger": {
+    "runId": 37656814992,
+    "runConclusion": "failure",
+    "failedJob": "Verify (Windows)",
+    "failedTest": "tests/cli/harness.test.ts - caps structured issues at 20 while retaining the full failed-project count",
+    "windowsMeasuredMs": 14960,
+    "windowsSummary": "1591 passed, 33 skipped, 1 failed"
+  },
+  "change": {
+    "files": [
+      "tests/cli/harness.test.ts"
+    ],
+    "scope": "single test only",
+    "timeoutMs": 30000,
+    "globalTimeoutChanged": false,
+    "fixtureRepoCount": 23,
+    "assertionsChanged": false,
+    "productCodeChanged": false,
+    "dependencyChanged": false,
+    "workflowChanged": false,
+    "gateWeakened": false
+  },
+  "localValidation": {
+    "runtime": "Node v22.22.0, npm 10.9.4, darwin-arm64",
+    "negativeControl": "target failed at 6914.8 ms against default 5000 ms timeout",
+    "focusedPatched": "27/27 passed; target 5157.6 ms",
+    "fullVitest": "1602 passed, 23 skipped",
+    "eslintTestFile": "PASS",
+    "verify": "PASS"
+  },
+  "requiredNext": [
+    "non-main safe-branch CI at the exact candidate SHA",
+    "confirm native Windows full Vitest passes",
+    "confirm all other required CI jobs remain green",
+    "independent review before integration"
+  ],
+  "safeCiReady": false,
+  "releaseAccepted": false,
+  "pushed": false
+}
