@@ -307,6 +307,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Start isolated CI registry
         run: docker run -d --name registry -p 5000:5000 registry:2
       - uses: docker/setup-buildx-action@v3
@@ -434,6 +437,7 @@ jobs:
           done
       - name: Backup restore migration and old-image business rehearsal
         env:
+          REHEARSAL_MODE: synthetic
           EXPECTED_SHA: ${{ github.sha }}
           APP_IMAGE: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
           MIGRATE_IMAGE: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
@@ -445,13 +449,28 @@ jobs:
           docker pull "$APP_IMAGE"
           docker pull "$MIGRATE_IMAGE"
           bash scripts/test/rehearse-release.sh
+      - name: Stage allowlisted synthetic recovery evidence
+        env:
+          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+        run: node scripts/ci/recovery-evidence.mjs stage .releases "$GITHUB_SHA" "$REQUIRE_PROVENANCE" release-recovery-evidence
       - name: Retain synthetic recovery evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: release-recovery-${{ github.sha }}
-          path: .releases/
+          path: release-recovery-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
           retention-days: 14
+      - name: Download retained synthetic recovery evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: release-recovery-${{ github.sha }}
+          path: release-recovery-downloaded
+      - name: Verify downloaded recovery evidence manifest and hashes
+        env:
+          REQUIRE_PROVENANCE: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+        run: node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
   deploy:
     name: Deploy
     runs-on: ubuntu-latest

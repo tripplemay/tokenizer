@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-07T16:36:47.824Z",
+  "role": "Generator self-test; not independent acceptance",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-fix-20261007",
+  "base": "fff9d3723a5fb34a2e38194f1074210f67669a6b",
+  "independentSource": "e550e27c6882f0ff76839545fe36a4cfd7fa7966",
+  "independentTransport": "d18c4ff",
+  "tempDir": "/Volumes/ORICO/project/.b05evidencetmp",
+  "baselineNativeRun": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332",
+  "baselineNativeResult": "native jobs PASS but required release-recovery artifact ABSENT; independent overall BLOCKED",
+  "candidateNativeArtifactRoundTrip": "NOT_RUN; requires exact-SHA native workflow and fresh evaluator",
+  "localRoundTrip": "synthetic filesystem copy only, not GitHub artifact service",
+  "b06Checkpoint": "c15ac2d4456eb13c978936bfddaa92314baabc80; untouched"
+}

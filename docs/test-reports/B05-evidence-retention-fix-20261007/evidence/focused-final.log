@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-fix-20261007
+
+ ✓ tests/evaluator/b05-tcp-readiness-independent.test.ts (3 tests) 56ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 943ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 1093ms
+ ✓ tests/server/release-image.test.ts (10 tests) 1156ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 302ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 2148ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 320ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 350ms
+
+ Test Files  5 passed (5)
+      Tests  44 passed (44)
+   Start at  23:35:05
+   Duration  2.46s (transform 68ms, setup 0ms, collect 133ms, tests 5.40s, environment 0ms, prepare 267ms)
+

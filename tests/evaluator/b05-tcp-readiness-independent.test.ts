@@ -45,13 +45,13 @@ describe("B05 independent TCP readiness audit", () => {
     }
   });
 
-  it("preserves the immutable post-CI supplement while exposing the remaining VPS-doc contradiction", () => {
+  it("preserves the immutable post-CI supplement while preventing the former VPS-doc contradiction", () => {
     const supplementPath = "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-supplement.json";
     expect(readFileSync(supplementPath, "utf8")).toBe(gitShow(supplement, supplementPath));
 
     const docs = readFileSync("docs/VPS-deployment.md", "utf8");
     expect(docs).toContain("builds Linux app and migration OCI artifacts in CI");
-    expect(docs).toContain("does not yet build the deployment image in CI");
-    expect(docs).toContain("builds SHA-tagged images on the VPS");
+    expect(docs).not.toContain("does not yet build the deployment image in CI");
+    expect(docs).not.toContain("builds SHA-tagged images on the VPS");
   });
 });

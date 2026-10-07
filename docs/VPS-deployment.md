@@ -143,11 +143,12 @@ The repository includes `.github/workflows/deploy-vps.yml`.
 Behavior:
 
 - Runs `npm ci` and `npm run verify` on GitHub Actions.
-- Runs tests and a Next.js build on Linux, but does not yet build the deployment image in CI.
+- Runs Linux and native Windows tests, PostgreSQL 16 and authenticated browser verification, then builds Linux app and migration OCI artifacts once in CI.
 - Deploys automatically on pushes to `main`.
 - Supports manual deployment from the GitHub Actions `workflow_dispatch` button.
-- SSHs into the VPS, syncs the checked-out source, writes a permission-restricted `.env`, builds SHA-tagged images on the VPS, checks image IDs and revision labels, starts PostgreSQL, runs migrations, and restarts the app only after migration succeeds.
-- Waits for `/api/health` readiness and the expected commit SHA. Failure leaves a diagnostic release ledger but does **not** automatically roll back the app or database.
+- Main publishes immutable digest references to GHCR and checks signed exact-source/workflow provenance; non-main evaluation uses an isolated registry without GHCR publication or attestations. Backup/restore/migration/business/old-image rehearsal and retained, downloaded, hash-verified synthetic evidence are mandatory before deployment.
+- SSHs into the VPS, syncs deployment assets, writes a permission-restricted `.env`, verifies CI-produced `@sha256:` artifacts, retains the prior digest/configuration, starts PostgreSQL, and runs migration before restarting the app. It does not rebuild app images on the VPS.
+- Waits for `/api/health`, the expected commit SHA and a business canary. App/config rollback requires the separately established previous-digest and rehearsal approval gates; database rollback is not automatic. Actual legacy baseline/bootstrap and production backup restore remain separately authorized release prerequisites, not claims established by synthetic CI.
 
 ### Required GitHub Secrets
 
