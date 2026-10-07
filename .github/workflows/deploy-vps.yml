@@ -203,23 +203,25 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: tokenizer_ci
+          POSTGRES_DB: tokenizer_ci_scratch
           POSTGRES_USER: tokenizer_ci
           POSTGRES_PASSWORD: tokenizer_ci
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U tokenizer_ci -d tokenizer_ci"
+          --health-cmd "pg_isready -U tokenizer_ci -d tokenizer_ci_scratch"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
-      EVAL_F003_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
-      EVAL_F004_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
-      EVAL_F005_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
-      EVAL_F007_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
-      EVAL_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      TZ: UTC
+      DATABASE_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_B06_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_F003_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_F004_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_F005_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_F007_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
+      EVAL_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -240,13 +242,14 @@ jobs:
         run: |
           mkdir -p .ci
           npx vitest run \
+            tests/server/b06-batch-db.probe.test.ts \
             tests/server/quota-account-db.probe.test.ts \
             tests/server/harness-gates-route-db.probe.test.ts \
             tests/server/harness-cost-range-db.probe.test.ts \
             tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts \
             tests/evaluator/bl-security-p1-f008-probes.test.ts \
             --reporter=default --reporter=json --outputFile=.ci/db-probes.json
-          node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 10
+          node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 13
 
   verify-browser:
     name: Verify (authenticated browser)
