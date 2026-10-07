@@ -1,0 +1,35 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007
+
+ ❯ tests/server/release-rehearsal.test.ts (12 tests | 1 failed) 1308ms
+   × isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 81ms
+     → FATAL: the database system is shutting down
+: expected 6 to be +0 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/release-rehearsal.test.ts > isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket
+AssertionError: FATAL: the database system is shutting down
+: expected 6 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 6
+
+ ❯ tests/server/release-rehearsal.test.ts:81:42
+     79|   it("waits for the final TCP server instead of accepting the temporar…
+     80|     const result = run({ MOCK_DB_INIT: "1" });
+     81|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+     82|     const calls = readFileSync(join(dir, "calls"), "utf8");
+     83|     const probes = calls.split(/\r?\n/).filter((line) => line.includes…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  23:01:08
+   Duration  1.56s (transform 18ms, setup 0ms, collect 16ms, tests 1.31s, environment 0ms, prepare 26ms)
+

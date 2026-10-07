@@ -15,7 +15,7 @@ function run(overrides: Record<string, string> = {}) {
       ...process.env, PATH: `${join(dir, "bin")}:${process.env.PATH}`,
       EXPECTED_SHA: sha, APP_IMAGE: ref, MIGRATE_IMAGE: ref,
       PREVIOUS_SHA: old, PREVIOUS_APP_IMAGE: oldRef, PREVIOUS_MIGRATE_IMAGE: oldRef,
-      CALLS: join(dir, "calls"), MOCK_FAIL: "", ...overrides
+      CALLS: join(dir, "calls"), MOCK_FAIL: "", MOCK_DB_INIT: "", ...overrides
     }
   });
 }
@@ -32,8 +32,20 @@ if [[ "$1 $2" == 'image inspect' ]]; then
   printf 'sha256:${"a".repeat(64)}|%s\\n' "$revision"
 elif [[ "$*" == *'--entrypoint id'* ]]; then
   if [[ "$MOCK_FAIL" == uid ]]; then echo 0; else echo 1000; fi
+elif [[ "$*" == *pg_isready* && "$MOCK_DB_INIT" == 1 ]]; then
+  state="$CALLS.$2"
+  # The official image first accepts socket connections, shuts that server
+  # down, then starts the final TCP server. Socket success is not final ready.
+  if [[ "$*" != *'pg_isready -h 127.0.0.1 '* ]]; then exit 0; fi
+  if [[ "$MOCK_FAIL" == source-tcp-never || ( "$MOCK_FAIL" == restore-tcp-never && "$2" != *source ) ]]; then exit 1; fi
+  if [[ ! -f "$state.initializing" ]]; then touch "$state.initializing"; exit 1; fi
+  touch "$state.final"
 elif [[ "$*" == *pg_dump* ]]; then echo synthetic-dump
-elif [[ "$*" == *pg_restore* && "$MOCK_FAIL" == restore ]]; then exit 6
+elif [[ "$*" == *pg_restore* ]]; then
+  if [[ "$MOCK_FAIL" == restore ]]; then exit 6; fi
+  container="$2"
+  if [[ "$container" == -i ]]; then container="$3"; fi
+  if [[ "$MOCK_DB_INIT" == 1 && ! -f "$CALLS.$container.final" ]]; then echo 'FATAL: the database system is shutting down' >&2; exit 6; fi
 elif [[ "$*" == *psql* ]]; then
   if [[ "$MOCK_FAIL" == inventory && "$2" != *source ]]; then echo '0|0|0|0|0'; else echo '1|1|1|1|23'; fi
 elif [[ "$*" == *'prisma migrate deploy'* && "$*" != *prev-app* && "$MOCK_FAIL" == migrate ]]; then exit 7
@@ -64,6 +76,34 @@ fi
     expect(existsSync(join(dir, ".releases", `${sha}.rollback-approved`))).toBe(false);
     expect(readFileSync(join(dir, "calls"), "utf8")).toContain("rm -fv");
     expect(readFileSync(join(dir, "calls"), "utf8")).toContain("network rm");
+  });
+
+  it("waits for the final TCP server instead of accepting the temporary initialization socket", () => {
+    const result = run({ MOCK_DB_INIT: "1" });
+    expect(result.status, result.stderr).toBe(0);
+    const calls = readFileSync(join(dir, "calls"), "utf8");
+    const probes = calls.split(/\r?\n/).filter((line) => line.includes("pg_isready"));
+    // Both the synthetic source and restore target reject their first TCP
+    // probe during initialization, then accept only the final server.
+    expect(probes).toHaveLength(4);
+    expect(probes.every((line) => line.includes("pg_isready -h 127.0.0.1 -U tokenizer -d tokenizer"))).toBe(true);
+    expect(calls).toContain("pg_restore");
+    expect(existsSync(join(dir, ".releases", `${sha}.rollback-approved`))).toBe(true);
+  });
+
+  it.each(["source-tcp-never", "restore-tcp-never"])("fails closed when only the temporary socket accepts (%s)", (failure) => {
+    mkdirSync(join(dir, ".releases"));
+    const gate = join(dir, ".releases", `${sha}.rollback-approved`);
+    writeFileSync(gate, "stale-approval-must-not-survive");
+    const result = run({ MOCK_DB_INIT: "1", MOCK_FAIL: failure });
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("scratch PostgreSQL did not start");
+    expect(existsSync(gate)).toBe(false);
+    const calls = readFileSync(join(dir, "calls"), "utf8");
+    expect(calls).not.toContain("pg_restore");
+    expect(calls).toContain("rm -fv");
+    expect(calls).toContain("network rm");
+    if (failure === "restore-tcp-never") expect(calls).toContain("pg_dump");
   });
 
   it("never touches the production DB in synthetic mode", () => {

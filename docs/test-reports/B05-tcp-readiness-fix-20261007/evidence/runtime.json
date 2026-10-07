@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-07T16:09:37.018Z",
+  "role": "Generator self-test; not independent acceptance",
+  "node": "v22.22.0",
+  "nodeExecutable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007",
+  "base": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+  "transportHead": "5f6c006bea1b8a9c0b8aa0c3c445177e22220da4",
+  "transportCommits": [
+    "5f6c006bea1b8a9c0b8aa0c3c445177e22220da4 test(evaluator): transport B05 original evidence metadata unchanged",
+    "5164a63e6652f3a60078fe0264efd19a21ff1f56 test(evaluator): transport original B05 round3 verdict unchanged",
+    "2faad2ca364e06e5c147cea4558e735cc81f86f4 test(evaluator): record B05 post-CI recovery blocker",
+    "81dfcc19f886daf5477aefba744d063a872454cd test(evaluator): retain B05 round3 execution logs"
+  ],
+  "next": "16.4.0",
+  "vitest": "2.1.9",
+  "tempDir": "/Volumes/ORICO/project/.b05tmp",
+  "nativeBaseline": {
+    "sha": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37645682850",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "name": "Verify",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify (Windows)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify (PostgreSQL 16)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify (authenticated browser)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Linux OCI and recovery rehearsal",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Deploy",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "candidateNativeOCI": "NOT_RUN; requires exact-SHA non-main CI rerun",
+  "localDocker": "configured tokenizer-b05-scratch socket unavailable",
+  "originalVerdictAndEvidenceIdentical": true,
+  "supplementAndEvidenceIdentical": true,
+  "baselineScriptBlob": "017abe5d5a1e847444c2b70d4fe68d0b6f6c91f3",
+  "candidateScriptBlob": "d6d6f6bd936fc664106f467fcba326b091989e2f"
+}

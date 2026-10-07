@@ -235,11 +235,13 @@ After CI/CD is configured, normal server upgrades are:
 git push origin main
 ```
 
-The workflow handles checkout, `.env` rendering, VPS Docker rebuild, migrations, and app restart. This is **not** a CI-produced immutable OCI digest deployment; the SHA-tagged image IDs are recorded on the VPS and a same-SHA rebuild drift is rejected. Complete the image provenance, scratch restore, migration, and business canary release gates before treating B05 as release-ready.
+The workflow builds Linux app and migration OCI artifacts in CI and deploys immutable `@sha256:` references, not images rebuilt on the VPS. On the main release path it publishes to GHCR and verifies signed provenance bound to the exact source SHA and workflow, including wrong-SHA/wrong-workflow negative controls. A non-main rehearsal uses an isolated CI registry and does not exercise GHCR publication or attestations.
 
-## 6. Manual Upgrade The Server
+Deployment requires all four prerequisite verification jobs plus the OCI/recovery job, then retains the previous digest/configuration and gates migration, health, business canary, and rollback. Follow [the B05 release runbook](./B05-release-runbook.md), including the separately authorized legacy baseline/bootstrap cutover; a synthetic predecessor or passing local tests do not establish the actual production rollback baseline.
 
-On the VPS:
+## 6. Legacy / Emergency Source-Build Upgrade (Not The Release Workflow)
+
+The following source-build commands are legacy/emergency-only, require separate operator authorization, and bypass the immutable-artifact release gates. They are not the normal upgrade path. On the VPS:
 
 ```bash
 git pull

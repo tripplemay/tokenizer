@@ -1,0 +1,191 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007
+
+ ✓ tests/server/harness-mode-intent-api.test.ts (107 tests) 31ms
+ ✓ tests/shared/harness-detail.test.ts (18 tests) 16ms
+ ✓ tests/server/harness-mode-intents-route.test.ts (20 tests) 28ms
+ ✓ tests/parsers/claude.test.ts (20 tests) 31ms
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests | 3 skipped) 6ms
+ ✓ tests/cli/harness-tool-catalog.test.ts (77 tests) 166ms
+ ✓ tests/server/harness-report-mode-intent.test.ts (69 tests) 67ms
+ ✓ tests/evaluator/bl-native-subagent-bridges-f004.test.ts (13 tests) 39ms
+ ✓ tests/shared/harness-mode-intent.test.ts (81 tests) 14ms
+ ✓ tests/cli/harness-modes.test.ts (22 tests) 134ms
+ ✓ tests/server/harness-cost.test.ts (19 tests) 10ms
+ ✓ tests/server/harness-mode-intents-relay-route.test.ts (28 tests) 19ms
+ ✓ tests/server/heartbeat-harness.test.ts (31 tests) 25ms
+ ✓ tests/evaluator/bl-agent-release-acceptance.test.ts (17 tests) 46ms
+ ✓ tests/shared/subscription-card.test.ts (36 tests) 108ms
+ ✓ tests/server/harness-dispatch-usage.test.ts (14 tests) 20ms
+ ✓ tests/shared/harness-mode-drilldown.test.ts (7 tests) 48ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts (5 tests) 46ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts (4 tests) 45ms
+ ✓ tests/evaluator/bl-homepage-freshness-f004.test.ts (8 tests) 33ms
+ ↓ tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/cli/sync-retry.test.ts (9 tests) 38ms
+ ✓ tests/cli/service-windows.test.ts (24 tests | 4 skipped) 3ms
+ ✓ tests/server/ingest-project.test.ts (16 tests) 11ms
+ ↓ tests/server/harness-cost-range-db.probe.test.ts (2 tests | 2 skipped)
+stderr | tests/server/ingest-upsert.test.ts > ingestUsageEvents conflict correction > corrects a stale row in place when the re-parsed event differs
+usage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+
+ ✓ tests/server/ingest-upsert.test.ts (9 tests) 10ms
+ ✓ tests/parsers/codex.test.ts (11 tests) 19ms
+ ✓ tests/evaluator/bl-homepage-freshness-f002-f003.test.ts (5 tests) 1161ms
+   ✓ F003 real CLI/daemon parity > checkpoints the same remaining tail between real sync and run subprocess batches 1134ms
+ ✓ tests/evaluator/bl-transition-log-f003-timeline-view.test.ts (4 tests) 21ms
+ ✓ tests/server/harness-batch-archive.test.ts (4 tests) 17ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (6 tests) 6ms
+ ✓ tests/server/harness-sign.test.ts (14 tests) 272ms
+ ✓ tests/shared/model-pricing.test.ts (16 tests) 7ms
+ ✓ tests/server/harness-report-transitions.test.ts (6 tests) 11ms
+ ✓ tests/shared/path.test.ts (33 tests) 5ms
+ ↓ tests/contract/fixture-ingest.contract.test.ts (2 tests | 2 skipped)
+ ✓ tests/parsers/kimicode.test.ts (10 tests) 18ms
+ ✓ tests/cli/atomic-file.test.ts (19 tests) 360ms
+ ✓ tests/cli/git.test.ts (21 tests) 123ms
+ ✓ tests/shared/framework-version.test.ts (16 tests) 6ms
+ ✓ tests/evaluator/bl-codex-quota-window-f001-f002.test.ts (19 tests) 47ms
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 38ms
+ ✓ tests/parsers/opencode.test.ts (10 tests) 35ms
+ ✓ tests/server/model-detect.test.ts (11 tests) 5ms
+ ✓ tests/server/harness-decisions-route.test.ts (6 tests) 9ms
+ ✓ tests/server/agent-version.test.ts (14 tests) 4ms
+ ✓ tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts (8 tests) 13ms
+ ✓ tests/evaluator/bl-homepage-codex-quota-probes.test.ts (8 tests) 28ms
+ ✓ tests/server/pricing-sources.test.ts (16 tests) 4ms
+ ✓ tests/shared/harness-health.test.ts (21 tests) 17ms
+ ✓ tests/server/release-image.test.ts (10 tests) 1596ms
+   ✓ release image gate and fault rehearsal > does not mark a release active when health returns a different SHA 373ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 417ms
+ ✓ tests/server/device-enroll.test.ts (8 tests) 8ms
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 189ms
+ ✓ tests/shared/harness-transitions.test.ts (7 tests) 5ms
+ ✓ tests/shared/home-first-use.test.ts (4 tests) 31ms
+ ✓ tests/server/harness-gates-route.test.ts (7 tests) 9ms
+ ✓ tests/shared/quota-window-label.test.ts (34 tests) 95ms
+ ✓ tests/cli/agent-lifecycle.test.ts (8 tests | 1 skipped) 2949ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 434ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 401ms
+   ✓ tokenizer wrapper lifecycle > handles SIGTERM delivered before spawn returns without orphaning its child 1049ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1056ms
+ ✓ tests/server/quota.test.ts (3 tests) 5ms
+ ✓ tests/server/enrollment-tokens-route.test.ts (5 tests) 10ms
+ ↓ tests/contract/sign-verify.contract.test.ts (3 tests | 3 skipped)
+ ✓ tests/server/harness-gate-notify.test.ts (7 tests) 7ms
+ ✓ tests/parsers/aider.test.ts (8 tests) 10ms
+ ↓ tests/server/quota-account-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/shared/agent-release-version.test.ts (6 tests) 7ms
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'e9da1efd-ecb3-418d-a729-742306570e5a',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 9ms
+ ✓ tests/server/cleanup.test.ts (7 tests) 3ms
+ ✓ tests/server/time-buckets.test.ts (13 tests) 23ms
+ ✓ tests/shared/quota-presentation.test.ts (71 tests) 8ms
+ ✓ tests/cli/cursor.test.ts (9 tests) 8ms
+ ↓ tests/server/harness-gates-route-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/server/harness-gate-notify-evaluator-probes.test.ts (4 tests) 6ms
+ ✓ tests/server/usage-batch-input.test.ts (2 tests) 6ms
+ ✓ tests/server/harness-dispatch-usage-evaluator-probes.test.ts (14 tests) 4ms
+ ✓ tests/shared/auto-refresh.test.ts (3 tests) 4ms
+ ✓ tests/shared/device-status.test.ts (11 tests) 5ms
+ ✓ tests/server/harness-gate-notify-timeout-probe.test.ts (3 tests) 13ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 415ms
+ ✓ tests/shared/mode-badges.test.ts (5 tests) 7ms
+ ↓ tests/server/git-privacy-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/server/summary-metrics.test.ts (8 tests) 5ms
+ ✓ tests/quota/registry.test.ts (4 tests) 10ms
+ ✓ tests/cli/install-agent-lifecycle.test.ts (2 tests) 1181ms
+   ✓ POSIX installer Agent lifecycle > stops this install's wrapper and child without touching another install 1180ms
+ ✓ tests/shared/usage.test.ts (23 tests) 3ms
+ ✓ tests/cli/harness-command.test.ts (4 tests) 1185ms
+   ✓ harness CLI output contracts > wires Commander options without treating the Command object as injected dependencies 1182ms
+ ✓ tests/cli/harness-vm-provider-ceiling.test.ts (3 tests) 5ms
+ ✓ tests/server/model-prices.test.ts (5 tests) 3ms
+ ✓ tests/shared/agent-release-i18n.test.ts (2 tests) 4ms
+ ✓ tests/server/pricing-review.test.ts (9 tests) 5ms
+ ✓ tests/server/summary-cache-tags.test.ts (4 tests) 4ms
+ ✓ tests/server/pricing-mapping.test.ts (7 tests) 7ms
+ ✓ tests/shared/url.test.ts (25 tests) 4ms
+ ✓ tests/shared/upgrade-banner.test.ts (4 tests) 12ms
+ ✓ tests/cli/file-permissions.test.ts (5 tests) 8ms
+ ✓ tests/server/usage-cost-cache-invalidation.test.ts (3 tests) 7ms
+ ✓ tests/cli/harness-dispatch.test.ts (23 tests) 4941ms
+   ✓ dispatch run summary collection > scans at most the newest 50 bounded regular JSON files 1056ms
+ ✓ tests/cli/harness-heartbeat.test.ts (3 tests) 11ms
+ ✓ tests/quota/auth-file.test.ts (4 tests) 21ms
+ ✓ tests/cli/service-cron.test.ts (7 tests) 3ms
+ ✓ tests/cli/proxy-env.test.ts (9 tests) 9ms
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 315ms
+ ✓ tests/shared/usage-privacy.test.ts (5 tests) 3ms
+ ✓ tests/server/auth-secret.test.ts (13 tests) 4ms
+ ✓ tests/server/pricing-scan-cache.test.ts (3 tests) 9ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 3965ms
+   ✓ isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 369ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 681ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never) 672ms
+   ✓ isolated release recovery rehearsal faults > never touches the production DB in synthetic mode 380ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 829ms
+ ✓ tests/cli/harness-backoff.test.ts (5 tests) 4ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 8ms
+ ✓ tests/server/events-cursor.test.ts (5 tests) 4ms
+ ✓ tests/shared/chart-type.test.ts (8 tests) 4ms
+ ✓ tests/cli/enroll.test.ts (2 tests) 6ms
+ ✓ tests/cli/collect.test.ts (4 tests) 2ms
+ ✓ tests/server/daily-range.test.ts (6 tests) 31ms
+ ✓ tests/cli/privacy.test.ts (3 tests) 6ms
+ ✓ tests/server/harness-detail.test.ts (2 tests) 3ms
+ ✓ tests/server/dependency-security-floor.test.ts (2 tests) 2ms
+ ✓ tests/server/timezone.test.ts (6 tests) 27ms
+ ✓ tests/shared/repo-link.test.ts (5 tests) 2ms
+ ✓ tests/shared/harness-evidence.test.ts (3 tests) 3ms
+ ✓ tests/shared/input-sanitization.test.ts (3 tests) 2ms
+ ↓ tests/contract/canonical-json.contract.test.ts (1 test | 1 skipped)
+ ✓ tests/shared/enrollment-status.test.ts (3 tests) 4ms
+ ✓ tests/server/harness-gates-pending-count.test.ts (2 tests) 4ms
+ ✓ tests/shared/html-escape.test.ts (2 tests) 1ms
+ ✓ tests/shared/pending-gates-badge.test.ts (2 tests) 2ms
+ ✓ tests/cli/harness-mode-intents.test.ts (20 tests) 6470ms
+   ✓ signed mode intent staging > stages and reads v2 bindings through the data-only catalog, without agent ids 530ms
+   ✓ signed mode intent staging > stages and reports legal v2 fast null bindings without a tool catalog 458ms
+   ✓ signed mode intent staging > validates, atomically stages, and commits only harness.json 354ms
+   ✓ signed mode intent staging > commits only harness.json while preserving an unrelated staged file 360ms
+   ✓ signed mode intent staging > retries the exact staged intent without comparing its old HEAD or creating a commit 578ms
+   ✓ signed mode intent staging > does not report failure after commit success and completes the next exact retry idempotently 410ms
+   ✓ signed mode intent staging > recognizes a commit that succeeded immediately before the runner threw 332ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage write failure 308ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage readback failure 320ms
+   ✓ signed mode intent staging > restores after git add failure without disturbing an unrelated staged file 341ms
+   ✓ signed mode intent staging > does not report defaults copied into a repository with a different normalized identity 533ms
+   ✓ signed mode intent staging > rolls back a commit failure and never stages an unrelated file 394ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 1611ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 332ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 387ms
+   ✓ deterministic release predecessor > does not silently replace malformed or nonexistent explicit predecessors 324ms
+ ✓ tests/cli/harness.test.ts (27 tests) 10177ms
+   ✓ discoverHarnessRepos > uses a stable opaque key for local-only repos without leaking the root into the report 654ms
+   ✓ mode intent report ACK > sends the running Agent identity on every device-driven Harness relay request 406ms
+   ✓ applyHarnessDecisions > 签名有效时写入并提交 307ms
+   ✓ applyHarnessDecisions > fails closed when the signed decision wrapper matches multiple local repositories 365ms
+   ✓ applyHarnessDecisions > 某个项目上报失败不中断其余项目 494ms
+   ✓ applyHarnessDecisions > 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 465ms
+   ✓ applyHarnessDecisions > report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit 710ms
+   ✓ applyHarnessDecisions > mode relay 失败不阻塞另外两步 462ms
+   ✓ structured Harness sync health > applies the exact HTTP retryability matrix 336ms
+   ✓ structured Harness sync health > caps structured issues at 20 while retaining the full failed-project count 2358ms
+
+ Test Files  119 passed | 8 skipped (127)
+      Tests  1591 passed | 22 skipped (1613)
+   Start at  23:06:30
+   Duration  10.97s (transform 2.53s, setup 0ms, collect 7.87s, tests 38.75s, environment 28ms, prepare 5.47s)
+

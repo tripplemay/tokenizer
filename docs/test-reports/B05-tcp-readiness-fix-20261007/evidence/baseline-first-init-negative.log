@@ -1,0 +1,60 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007
+
+ ❯ tests/server/release-rehearsal.test.ts (12 tests | 3 failed | 9 skipped) 201ms
+   × isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 71ms
+     → FATAL: the database system is shutting down
+: expected 6 to be +0 // Object.is equality
+   × isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 65ms
+     → expected 'FATAL: the database system is shuttin…' to contain 'scratch PostgreSQL did not start'
+   × isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never) 64ms
+     → expected 'FATAL: the database system is shuttin…' to contain 'scratch PostgreSQL did not start'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/release-rehearsal.test.ts > isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket
+AssertionError: FATAL: the database system is shutting down
+: expected 6 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 6
+
+ ❯ tests/server/release-rehearsal.test.ts:81:42
+     79|   it("waits for the final TCP server instead of accepting the temporar…
+     80|     const result = run({ MOCK_DB_INIT: "1" });
+     81|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+     82|     const calls = readFileSync(join(dir, "calls"), "utf8");
+     83|     const probes = calls.split(/\r?\n/).filter((line) => line.includes…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/server/release-rehearsal.test.ts > isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never)
+ FAIL  tests/server/release-rehearsal.test.ts > isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never)
+AssertionError: expected 'FATAL: the database system is shuttin…' to contain 'scratch PostgreSQL did not start'
+
+- Expected
++ Received
+
+- scratch PostgreSQL did not start
++ FATAL: the database system is shutting down
++
+
+ ❯ tests/server/release-rehearsal.test.ts:98:27
+     96|     const result = run({ MOCK_DB_INIT: "1", MOCK_FAIL: failure });
+     97|     expect(result.status).not.toBe(0);
+     98|     expect(result.stderr).toContain("scratch PostgreSQL did not start"…
+       |                           ^
+     99|     expect(existsSync(gate)).toBe(false);
+    100|     const calls = readFileSync(join(dir, "calls"), "utf8");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 9 skipped (12)
+   Start at  23:00:36
+   Duration  625ms (transform 21ms, setup 0ms, collect 17ms, tests 201ms, environment 0ms, prepare 38ms)
+

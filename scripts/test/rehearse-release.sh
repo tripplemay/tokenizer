@@ -44,7 +44,9 @@ start_db() {
   docker run -d --name "$1" --network "$network" \
     -e POSTGRES_PASSWORD=rehearsal-only-password -e POSTGRES_USER=tokenizer -e POSTGRES_DB=tokenizer postgres:16-alpine >/dev/null
   for _ in {1..30}; do
-    if docker exec "$1" pg_isready -U tokenizer -d tokenizer >/dev/null 2>&1; then return; fi
+    # First-init uses a socket-only temporary server that will shut down.
+    # TCP readiness accepts only the final server, before migration/restore.
+    if docker exec "$1" pg_isready -h 127.0.0.1 -U tokenizer -d tokenizer >/dev/null 2>&1; then return; fi
     sleep 1
   done
   echo "scratch PostgreSQL did not start" >&2; exit 1
