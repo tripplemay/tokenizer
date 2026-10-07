@@ -1,0 +1,21 @@
+   141	The repository includes `.github/workflows/deploy-vps.yml`.
+   143	Behavior:
+   145	- Runs `npm ci` and `npm run verify` on GitHub Actions.
+   146	- Runs tests and a Next.js build on Linux, but does not yet build the deployment image in CI.
+   147	- Deploys automatically on pushes to `main`.
+   148	- Supports manual deployment from the GitHub Actions `workflow_dispatch` button.
+   149	- SSHs into the VPS, syncs the checked-out source, writes a permission-restricted `.env`, builds SHA-tagged images on the VPS, checks image IDs and revision labels, starts PostgreSQL, runs migrations, and restarts the app only after migration succeeds.
+   150	- Waits for `/api/health` readiness and the expected commit SHA. Failure leaves a diagnostic release ledger but does **not** automatically roll back the app or database.
+   152	### Required GitHub Secrets
+   154	Add these in GitHub repository settings: `Settings` -> `Secrets and variables` -> `Actions`.
+   232	After CI/CD is configured, normal server upgrades are:
+   234	```bash
+   235	git push origin main
+   236	```
+   238	The workflow builds Linux app and migration OCI artifacts in CI and deploys immutable `@sha256:` references, not images rebuilt on the VPS. On the main release path it publishes to GHCR and verifies signed provenance bound to the exact source SHA and workflow, including wrong-SHA/wrong-workflow negative controls. A non-main rehearsal uses an isolated CI registry and does not exercise GHCR publication or attestations.
+   240	Deployment requires all four prerequisite verification jobs plus the OCI/recovery job, then retains the previous digest/configuration and gates migration, health, business canary, and rollback. Follow [the B05 release runbook](./B05-release-runbook.md), including the separately authorized legacy baseline/bootstrap cutover; a synthetic predecessor or passing local tests do not establish the actual production rollback baseline.
+   242	## 6. Legacy / Emergency Source-Build Upgrade (Not The Release Workflow)
+   244	The following source-build commands are legacy/emergency-only, require separate operator authorization, and bypass the immutable-artifact release gates. They are not the normal upgrade path. On the VPS:
+   246	```bash
+   247	git pull
+   248	docker compose build

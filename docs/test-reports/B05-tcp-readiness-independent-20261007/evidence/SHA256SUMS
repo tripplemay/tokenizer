@@ -1,0 +1,9 @@
+23b93eb626eca6ceeade49a978bdcdd3416fa66145f5350e5d66dfbbdee366c0  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json
+24439cf31e666d3b1fab40a7e1518714b1ab35eaf3e646ab9bceac65b321fbf8  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json
+23ceff51fa9d93c572a6522586be0f1dff40c68e639ae599617499c77be279c7  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json
+5ab588897f8c489eea01f62cefbabacdf54b9cf30fdcc34b2da3aa2e5f8f48fd  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json
+bad86abb2e36dd80c2759a10b6963d1573e2d1b248d5d04bd5234536f96f1ef1  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt
+d5fc8d0c35ae95fb30f1022b4ec5f9d3b4808d4ebab432bde5862cb99f6a6bcc  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt
+15d05b3ade3eb9df8d65136df072e95f252e6554ea0b1c78fa18bdd4444cee7b  docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt
+b48610073e327ab60d074a7b7f28d27ad3eb98367ea8dde1c8223b66151a954d  scripts/test/b05-tcp-readiness-independent.mjs
+cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0  tests/evaluator/b05-tcp-readiness-independent.test.ts

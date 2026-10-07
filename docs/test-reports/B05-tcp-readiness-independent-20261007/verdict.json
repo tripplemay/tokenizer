@@ -1,0 +1,103 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "M1-B05-R13-TCP-READINESS-FIX",
+  "created_at": "2026-10-07T16:27:06Z",
+  "role": "independent_evaluator",
+  "candidate_commit": "fff9d3723a5fb34a2e38194f1074210f67669a6b",
+  "prior_composition_commit": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+  "immutable_post_ci_supplement_commit": "11907f5df1bcedc03a5600252056502fd1e88f3f",
+  "result": "BLOCKED",
+  "functional_tcp_fix": "PASS",
+  "exact_sha_native_ci": "PASS",
+  "ci_only_readiness": "BLOCKED_PENDING_RECOVERY_ARTIFACT_RETENTION",
+  "full_b05_release_readiness": "NOT_READY",
+  "b04_boundary": "OUT_OF_SCOPE_UNRELATED",
+  "summary": "The final-TCP readiness change is minimal and correct, the prior shutdown race is independently reproduced, deterministic failure paths fail closed, rollback/backup logic is unchanged, and exact-SHA GitHub run 37650581332 completed success including native Linux OCI recovery. Admission remains blocked because actions/upload-artifact found no .releases files and the run has no release-recovery artifact, violating the prior immutable evaluator gate. VPS deployment documentation also remains contradictory. Main-only GHCR attestations and production baseline/restore/deploy/rollback remain pending.",
+  "findings": [
+    {
+      "id": "B05-TCP-EVAL-001",
+      "severity": "HIGH",
+      "title": "Green workflow retained no recovery artifact",
+      "evidence": "Run 37650581332 logged rollback=passed, then upload-artifact used path .releases/ with include-hidden-files=false and warned that no files were found. The run artifacts API contains no release-recovery artifact.",
+      "impact": "Backup checksum, rehearsal ledger, and rollback approval cannot be independently inspected; the workflow is green despite failure of the required evidence gate.",
+      "required_action": "Upload hidden evidence or stage it under a non-hidden path, set if-no-files-found:error, rerun the full workflow on the new exact SHA, and verify the artifact contents."
+    },
+    {
+      "id": "B05-TCP-EVAL-002",
+      "severity": "MEDIUM",
+      "title": "VPS deployment guide still describes both obsolete VPS builds and current immutable CI builds",
+      "evidence": "docs/VPS-deployment.md:144-150 contradicts the corrected text at lines 238-244.",
+      "impact": "Operators can misunderstand artifact provenance and bypass the intended release model.",
+      "required_action": "Reconcile the whole GitHub CI/CD section before production handoff."
+    }
+  ],
+  "tcp_fix_verification": {
+    "baseline_negative": "PASS; expected exit 6 with FATAL database system is shutting down after socket readiness",
+    "candidate_normal": "PASS; four TCP probes across source and restore DB, restore and rollback gate completed",
+    "source_tcp_never": "PASS; exit 1, no dump/restore/gate, cleanup completed",
+    "restore_tcp_never": "PASS; source dump retained, no restore/gate, cleanup completed",
+    "script_delta": "Only two comments and pg_isready -h 127.0.0.1 differ from 3ade5d1",
+    "backup_rollback_invariants": "byte-identical to 3ade5d1"
+  },
+  "immutable_supplement": {
+    "json_identical_to_11907f5": true,
+    "sha256_manifest": "8/8 PASS",
+    "prior_failed_run": 37645682850,
+    "preservation": "unchanged"
+  },
+  "github_run": {
+    "run_id": 37650581332,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332",
+    "event": "workflow_dispatch",
+    "head_sha": "fff9d3723a5fb34a2e38194f1074210f67669a6b",
+    "head_branch": "codex/b05-tcp-readiness-ci-20261007",
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-10-07T16:23:33Z",
+    "jobs": {
+      "Verify": "completed/success",
+      "Verify (Windows)": "completed/success",
+      "Verify (PostgreSQL 16)": "completed/success",
+      "Verify (authenticated browser)": "completed/success",
+      "Linux OCI and recovery rehearsal": "completed/success",
+      "Deploy": "completed/skipped"
+    },
+    "recovery_log_result": "backup/restore, exact migrations, runtime UID, and business canary completed; rollback=passed",
+    "release_recovery_artifact": "ABSENT",
+    "artifact_upload_warning": "No files were found with the provided path: .releases/. No artifacts will be uploaded."
+  },
+  "local_verification": {
+    "runtime": "Node.js v22.22.0 on macOS 26.6.2 arm64",
+    "dependency_install": "fresh npm ci; 671 packages",
+    "focused": "6 files passed; 75 tests passed",
+    "full": "120 files passed, 8 skipped; 1594 tests passed, 22 skipped",
+    "verify": "PASS",
+    "lint": "PASS",
+    "standalone_build_and_gate": "PASS",
+    "bash_shellcheck_actionlint": "PASS",
+    "production_dependency_audit": "0 vulnerabilities",
+    "local_docker": "UNAVAILABLE; no local-native Docker claim"
+  },
+  "remaining_hard_gates": [
+    "Fix fail-open recovery artifact upload and retain inspectable exact-SHA evidence.",
+    "Execute GHCR publication and signed attestation positive/wrong-source/wrong-workflow checks on an authorized main-equivalent path.",
+    "Establish the actual production retained old-digest/bootstrap baseline.",
+    "Run isolated restore of the actual production backup and authorized production deploy/canary/rollback.",
+    "Reconcile contradictory VPS deployment documentation."
+  ],
+  "scope_boundaries": [
+    "No candidate product code, original repository, progress.json, features.json, status, gate, or human decision was modified.",
+    "No branch was pushed and no production operation was performed.",
+    "B04 blockers are unrelated and excluded from this B05 verdict."
+  ],
+  "evidence_paths": [
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/SHA256SUMS",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt",
+    "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt"
+  ]
+}

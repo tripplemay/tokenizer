@@ -1,0 +1,5 @@
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T16:23:08.4037773Z backup/restore, exact migrations, runtime UID, and business canary completed; rollback=passed
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T16:23:08.8238591Z   name: release-recovery-fff9d3723a5fb34a2e38194f1074210f67669a6b
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T16:23:08.8238953Z   path: .releases/
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T16:23:08.8240416Z   include-hidden-files: false
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T16:23:09.0054329Z ##[warning]No files were found with the provided path: .releases/. No artifacts will be uploaded.

@@ -1,0 +1,67 @@
+{
+  "databaseId": 37650581332,
+  "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332",
+  "event": "workflow_dispatch",
+  "headSha": "fff9d3723a5fb34a2e38194f1074210f67669a6b",
+  "headBranch": "codex/b05-tcp-readiness-ci-20261007",
+  "status": "completed",
+  "conclusion": "success",
+  "createdAt": "2026-10-07T16:15:18Z",
+  "updatedAt": "2026-10-07T16:23:33Z",
+  "jobs": [
+    {
+      "name": "Verify (Windows)",
+      "status": "completed",
+      "conclusion": "success",
+      "databaseId": 112892551534,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112892551534",
+      "startedAt": "2026-10-07T16:15:24Z",
+      "completedAt": "2026-10-07T16:17:53Z"
+    },
+    {
+      "name": "Verify (authenticated browser)",
+      "status": "completed",
+      "conclusion": "success",
+      "databaseId": 112892551549,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112892551549",
+      "startedAt": "2026-10-07T16:15:22Z",
+      "completedAt": "2026-10-07T16:17:37Z"
+    },
+    {
+      "name": "Verify (PostgreSQL 16)",
+      "status": "completed",
+      "conclusion": "success",
+      "databaseId": 112892551616,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112892551616",
+      "startedAt": "2026-10-07T16:15:21Z",
+      "completedAt": "2026-10-07T16:16:18Z"
+    },
+    {
+      "name": "Verify",
+      "status": "completed",
+      "conclusion": "success",
+      "databaseId": 112892551646,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112892551646",
+      "startedAt": "2026-10-07T16:15:22Z",
+      "completedAt": "2026-10-07T16:17:06Z"
+    },
+    {
+      "name": "Linux OCI and recovery rehearsal",
+      "status": "completed",
+      "conclusion": "success",
+      "databaseId": 112893707852,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112893707852",
+      "startedAt": "2026-10-07T16:17:56Z",
+      "completedAt": "2026-10-07T16:23:32Z"
+    },
+    {
+      "name": "Deploy",
+      "status": "completed",
+      "conclusion": "skipped",
+      "databaseId": 112896202066,
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37650581332/job/112896202066",
+      "startedAt": "2026-10-07T16:23:33Z",
+      "completedAt": "2026-10-07T16:23:32Z"
+    }
+  ]
+}
