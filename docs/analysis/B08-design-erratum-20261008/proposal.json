@@ -1,0 +1,23 @@
+{
+  "role": "Planner design supplement",
+  "status": "PROPOSED_NOT_IMPLEMENTED",
+  "formalEvaluatorVerdict": false,
+  "realPostgreSQLAcceptance": "NOT_RUN",
+  "sourceCommit": "0de8bb12a8d89240fb973bcd36069773c50dd36f",
+  "productBaseline": "029f6c53ea7193989643a1f2e4d23108ba0c9af5",
+  "originalProposalSha256": "8c50439f9f09ae46433fa660df376a1231273ae3a215c194db37514338a40a43",
+  "mandatoryDesignDecisions": [
+    "Sticky workspace ambiguity and no-repo attribution after path reuse",
+    "Strong or explicitly weak no-repo policy before observed collision",
+    "Historical consequences of workspace-only project promotion",
+    "Persistent equal-tuple different-hash dispute semantics",
+    "Versioned canonical payload hashing and comparator upgrade policy",
+    "Content-bound migration confirmation and ABA-safe attribution rollback",
+    "Write fencing for older server rollback"
+  ],
+  "documents": [
+    "docs/specs/B08-event-project-cas-erratum-20261008.md",
+    "docs/test-cases/B08-design-erratum-pg16-plan-20261008.md"
+  ],
+  "changes": "Additive documentation only; no product, original specification, prior review evidence, state or gate edits; no push."
+}

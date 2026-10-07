@@ -1,0 +1,5 @@
+8c50439f9f09ae46433fa660df376a1231273ae3a215c194db37514338a40a43  docs/specs/B08-event-project-cas-proposal-20261008.md
+e7bc7c4a110c953a51dbd90a1f3a0fa89872fc4e1f129cd19525a90c451bcd3a  src/server/ingest.ts
+978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77  prisma/schema.prisma
+65a46654ddc7d2a2b348028c664de114c4e0f97f91a0f1d48219e2876765b3a4  src/server/serializable-transaction.ts
+1288060b8f0a2db725b949a9b94232672361caf9c859e714023839ec2873cba6  app/api/usage/events/batch/route.ts
