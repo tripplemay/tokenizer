@@ -1,0 +1,34 @@
+{
+  "schema": "tokenizer.b03-b07.composition-prereview.v1",
+  "candidate_sha": "116a1fffb2bd8c800f721adf1cd99653981da2df",
+  "review_kind": "same-model-family technical prereview; not formal Evaluator acceptance",
+  "outcome": "BLOCK",
+  "highest_severity": "P1",
+  "findings": [
+    {
+      "id": "COMBO-P1-CLI-STARTUP-DEADLINE",
+      "severity": "P1",
+      "status": "reproduced_on_exact_candidate",
+      "summary": "Eager unbounded startup Git SHA probe delays replay before the 10-second deadline starts.",
+      "dry_run_elapsed_ms": 38289,
+      "execute_elapsed_ms": 38275,
+      "shim_calls_per_invocation": 2,
+      "queue_byte_identical": true,
+      "evidence": "evidence/git-deadline-cli-observation.json"
+    }
+  ],
+  "independent_negative_controls": {
+    "passed": 7,
+    "failed": 0,
+    "log": "evidence/composition-negative.log",
+    "test": "evidence/composition-negative.test.ts"
+  },
+  "limitations": [
+    "No fresh npm ci; ignored node_modules symlink used for local execution",
+    "No real PG16 or native Windows on this prereview",
+    "No full Node-22 suite, production build, deployment, or formal different-model-family evaluation"
+  ],
+  "human_gate_written": false,
+  "product_code_modified": false,
+  "pushed": false
+}
