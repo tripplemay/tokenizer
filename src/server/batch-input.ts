@@ -16,11 +16,11 @@ const EVENT_STRINGS: Record<string, number> = {
   repoKey: 2048, gitRemote: 4096, gitBranch: 512, gitCommit: 128, model: 256,
   serviceTier: 100, fallbackFromModel: 256, fallbackToModel: 256
 };
-type ErrorCode = "invalid_json" | "body_too_large" | "invalid_content_type" | "invalid_batch" | "batch_too_large" | "invalid_device" | "invalid_timezone" | "invalid_event" | "invalid_snapshot" | "invalid_raw_json";
-class BatchInputError extends Error {
-  constructor(readonly code: ErrorCode, readonly row?: number) { super(code); }
+export type BatchInputErrorCode = "invalid_json" | "body_too_large" | "invalid_content_type" | "invalid_batch" | "batch_too_large" | "invalid_device" | "invalid_timezone" | "invalid_event" | "invalid_snapshot" | "invalid_raw_json";
+export class BatchInputError extends Error {
+  constructor(readonly code: BatchInputErrorCode, readonly row?: number) { super(code); }
 }
-function check(condition: unknown, code: ErrorCode, row?: number): asserts condition {
+function check(condition: unknown, code: BatchInputErrorCode, row?: number): asserts condition {
   if (!condition) throw new BatchInputError(code, row);
 }
 function record(value: unknown): value is Record<string, unknown> {
@@ -74,7 +74,10 @@ function rawJson(value: unknown, row?: number) {
 
 // Do not trust Content-Length or request.json(): cap the actual byte stream
 // before parsing, then cap traversal before recursive sanitizers or DB writes.
-export async function readBoundedBatchJson(request: Request): Promise<unknown> {
+export async function readBoundedBatchJson(
+  request: Request,
+  options: { locateInvalidUsageRow?: boolean } = {}
+): Promise<unknown> {
   check(/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? ""), "invalid_content_type");
   const length = request.headers.get("content-length");
   if (length !== null) {
@@ -99,7 +102,13 @@ export async function readBoundedBatchJson(request: Request): Promise<unknown> {
     }
     chunks.push(decoder.decode());
     const body: unknown = JSON.parse(chunks.join(""));
-    check(boundedJson(body, 32), "invalid_json");
+    if (!boundedJson(body, 32)) {
+      if (options.locateInvalidUsageRow && record(body) && Array.isArray(body.events)) {
+        const row = body.events.findIndex((event) => !boundedJson(event, 30));
+        if (row >= 0) throw new BatchInputError("invalid_json", row);
+      }
+      throw new BatchInputError("invalid_json");
+    }
     return body;
   } catch (error) {
     if (error instanceof BatchInputError) throw error;
@@ -155,6 +164,45 @@ export function validateUsageBatch(value: unknown): BatchUsageRequest & { device
   }
   value.events.forEach(validateEvent);
   return value as unknown as BatchUsageRequest & { device: DeviceInput; events: UsageEventInput[] };
+}
+
+export type UsagePartialRejection = {
+  row: number;
+  code: "invalid_event" | "invalid_raw_json";
+};
+
+export function validateUsageBatchPartial(value: unknown): {
+  body: BatchUsageRequest & { device: DeviceInput };
+  acceptedRows: number[];
+  rejected: UsagePartialRejection[];
+} {
+  check(record(value) && Array.isArray(value.events), "invalid_batch");
+  check(value.events.length <= MAX_USAGE_BATCH_ROWS, "batch_too_large");
+  validateDevice(value.device, true);
+  if (value.timezone !== undefined) {
+    check(text(value.timezone, 64, true), "invalid_timezone");
+    try { new Intl.DateTimeFormat("en-US", { timeZone: value.timezone as string }); }
+    catch { throw new BatchInputError("invalid_timezone"); }
+  }
+
+  const acceptedRows: number[] = [];
+  const rejected: UsagePartialRejection[] = [];
+  value.events.forEach((event, row) => {
+    try {
+      validateEvent(event, row);
+      acceptedRows.push(row);
+    } catch (error) {
+      if (!(error instanceof BatchInputError) || error.row !== row ||
+          (error.code !== "invalid_event" && error.code !== "invalid_raw_json")) throw error;
+      rejected.push({ row, code: error.code });
+    }
+  });
+  const events = acceptedRows.map((row) => value.events[row]) as UsageEventInput[];
+  return {
+    body: { ...value, events } as unknown as BatchUsageRequest & { device: DeviceInput },
+    acceptedRows,
+    rejected
+  };
 }
 
 export function validateQuotaBatch(value: unknown): { device?: { id: string }; snapshots: QuotaSnapshotInput[] } {

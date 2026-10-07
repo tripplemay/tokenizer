@@ -10,6 +10,27 @@ import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 import { sanitizeUsageEventGit } from "@/shared/git-remote";
 import { effectivePrivacy } from "./privacy";
+import { quarantineUsageEvents } from "./rejected-events";
+import { USAGE_PARTIAL_ACK_PROTOCOL } from "@/shared/usage-batch-protocol";
+
+const ROW_REJECTION_CODES = new Set(["invalid_event", "invalid_raw_json", "invalid_json"]);
+
+type BatchResult = {
+  inserted: number;
+  updated?: number;
+  duplicates: number;
+  received: number;
+  deviceId?: string;
+  protocol?: string;
+  accepted?: Array<{ row: number; source: string; sourceEventId: string }>;
+  rejected?: Array<{ row: number; code: string }>;
+};
+
+class BatchHttpError extends Error {
+  constructor(readonly status: number, readonly code?: string, readonly row?: number) {
+    super(`Sync failed: ${status}${code ? ` ${code}` : ""}`);
+  }
+}
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -49,10 +70,15 @@ async function syncBatchWithRetry(config: TokenizerConfig, batch: UsageEventInpu
     try {
       return await postBatch(config, batch);
     } catch (error) {
-      if (attempt >= BATCH_RETRY_DELAYS_MS.length) throw error;
+      if (!retryable(error) || attempt >= BATCH_RETRY_DELAYS_MS.length) throw error;
       await new Promise((resolve) => setTimeout(resolve, BATCH_RETRY_DELAYS_MS[attempt]));
     }
   }
+}
+
+function retryable(error: unknown): boolean {
+  if (!(error instanceof BatchHttpError)) return true;
+  return error.status === 408 || error.status === 425 || error.status === 429 || error.status >= 500;
 }
 
 export type SyncBatchProgress = {
@@ -63,6 +89,15 @@ export type SyncBatchProgress = {
 
 export type SyncEventsOptions = {
   onBatchSynced?: (progress: SyncBatchProgress) => void | Promise<void>;
+};
+
+export type SyncEventsResult = {
+  inserted: number;
+  updated: number;
+  duplicates: number;
+  received: number;
+  rejected?: number;
+  deviceId: string;
 };
 
 function newestFirst(events: UsageEventInput[]): UsageEventInput[] {
@@ -89,18 +124,63 @@ async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${credentials.deviceToken}`
+      authorization: `Bearer ${credentials.deviceToken}`,
+      "x-tokenizer-batch-protocol": USAGE_PARTIAL_ACK_PROTOCOL
     },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
-  if (!response.ok) throw new Error(`Sync failed: ${response.status} ${await response.text()}`);
-  return response.json() as Promise<{ inserted: number; updated?: number; duplicates: number; received: number; deviceId?: string }>;
+  if (!response.ok) {
+    let error: { code?: unknown; row?: unknown } = {};
+    try { error = await response.json() as typeof error; } catch { /* fixed local error below */ }
+    throw new BatchHttpError(
+      response.status,
+      typeof error.code === "string" ? error.code : undefined,
+      Number.isInteger(error.row) && (error.row as number) >= 0 ? error.row as number : undefined
+    );
+  }
+  return response.json() as Promise<BatchResult>;
+}
+
+function partialResolution(batch: UsageEventInput[], result: BatchResult): Array<{ event: UsageEventInput; code: string }> | null {
+  const hasPartialFields = result.protocol !== undefined || result.accepted !== undefined || result.rejected !== undefined;
+  if (!hasPartialFields) return null;
+  if (result.protocol !== USAGE_PARTIAL_ACK_PROTOCOL || !Array.isArray(result.accepted) || !Array.isArray(result.rejected)) {
+    throw new Error("Invalid partial ACK response");
+  }
+  const resolved = new Set<number>();
+  for (const accepted of result.accepted) {
+    if (!Number.isInteger(accepted.row) || accepted.row < 0 || accepted.row >= batch.length || resolved.has(accepted.row)) {
+      throw new Error("Invalid partial ACK response");
+    }
+    const event = batch[accepted.row];
+    if (accepted.source !== event.source || accepted.sourceEventId !== event.sourceEventId) {
+      throw new Error("Invalid partial ACK response");
+    }
+    resolved.add(accepted.row);
+  }
+  const rejected: Array<{ event: UsageEventInput; code: string }> = [];
+  for (const item of result.rejected) {
+    if (!Number.isInteger(item.row) || item.row < 0 || item.row >= batch.length || resolved.has(item.row) ||
+        typeof item.code !== "string" || !ROW_REJECTION_CODES.has(item.code)) {
+      throw new Error("Invalid partial ACK response");
+    }
+    resolved.add(item.row);
+    rejected.push({ event: batch[item.row], code: item.code });
+  }
+  if (resolved.size !== batch.length || result.received !== result.accepted.length) {
+    throw new Error("Invalid partial ACK response");
+  }
+  return rejected;
 }
 
 // Inputs are already admitted by collection or durable queue persistence.
 // Collection path rules are not a retroactive deletion policy for that backlog.
-export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[], options: SyncEventsOptions = {}) {
+export async function syncEvents(
+  config: TokenizerConfig,
+  events: UsageEventInput[],
+  options: SyncEventsOptions = {}
+): Promise<SyncEventsResult> {
   const privacy = effectivePrivacy(config);
   if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
   // A large historical retry must not keep today's data behind thousands of
@@ -108,25 +188,51 @@ export async function syncEvents(config: TokenizerConfig, events: UsageEventInpu
   // presentation semantics; newest-first restores dashboard freshness early.
   const ordered = newestFirst(events.map(minimizeUsageEvent));
   const total = { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
-  // Preserve the empty POST: it advances the server-side lastSyncAt even when
-  // no local source produced an event during this run.
-  const batches = ordered.length === 0
-    ? [[]]
-    : Array.from({ length: Math.ceil(ordered.length / BATCH_SIZE) }, (_, index) =>
-        ordered.slice(index * BATCH_SIZE, (index + 1) * BATCH_SIZE)
-      );
-  let synced = 0;
-  for (const batch of batches) {
-    const result = await syncBatchWithRetry(config, batch);
+  let rejectedCount = 0;
+  let remaining = [...ordered];
+  let sentEmpty = ordered.length > 0;
+  while (remaining.length > 0 || !sentEmpty) {
+    const batch = remaining.slice(0, BATCH_SIZE);
+    if (batch.length === 0) sentEmpty = true;
+    let result: BatchResult;
+    try {
+      result = await syncBatchWithRetry(config, batch);
+    } catch (error) {
+      if (!(error instanceof BatchHttpError) || error.status !== 400 || error.row === undefined ||
+          !error.code || !ROW_REJECTION_CODES.has(error.code) || error.row >= batch.length) throw error;
+      // Compatibility fallback for the previous B06 server: it rejects the
+      // whole batch but identifies one permanent row. Quarantine it first,
+      // checkpoint the still-live good rows, then retry without backoff.
+      quarantineUsageEvents([{ event: batch[error.row], code: error.code }]);
+      remaining.splice(error.row, 1);
+      rejectedCount += 1;
+      await options.onBatchSynced?.({
+        synced: ordered.length - remaining.length,
+        total: ordered.length,
+        remaining: [...remaining]
+      });
+      continue;
+    }
+    const rejected = partialResolution(batch, result);
+    if (rejected) {
+      // The server has already accepted the good subset. Persist rejected
+      // rows before removing anything from the active queue.
+      quarantineUsageEvents(rejected);
+      rejectedCount += rejected.length;
+    }
     total.inserted += result.inserted;
     total.updated += result.updated ?? 0;
     total.duplicates += result.duplicates;
     total.received += result.received;
     total.deviceId = result.deviceId ?? total.deviceId;
-    synced += batch.length;
-    await options.onBatchSynced?.({ synced, total: ordered.length, remaining: ordered.slice(synced) });
+    remaining.splice(0, batch.length);
+    await options.onBatchSynced?.({
+      synced: ordered.length - remaining.length,
+      total: ordered.length,
+      remaining: [...remaining]
+    });
   }
-  return total;
+  return rejectedCount > 0 ? { ...total, rejected: rejectedCount } : total;
 }
 
 export function readDiagnostics(

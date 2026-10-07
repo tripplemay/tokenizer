@@ -215,13 +215,14 @@ jobs:
           mkdir -p .ci
           npx vitest run \
             tests/server/b06-batch-db.probe.test.ts \
+            tests/server/b06-partial-ack-db.probe.test.ts \
             tests/server/quota-account-db.probe.test.ts \
             tests/server/harness-gates-route-db.probe.test.ts \
             tests/server/harness-cost-range-db.probe.test.ts \
             tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts \
             tests/evaluator/bl-security-p1-f008-probes.test.ts \
             --reporter=default --reporter=json --outputFile=.ci/db-probes.json
-          node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 13
+          node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 14
 
   verify-browser:
     name: Verify (authenticated browser)

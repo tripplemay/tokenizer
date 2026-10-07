@@ -28,6 +28,7 @@ export const configPath = join(homedir(), ".tokenizer", "config.json");
 export const devicePath = join(homedir(), ".tokenizer", "device.json");
 export const credentialsPath = join(homedir(), ".tokenizer", "credentials.json");
 export const queuePath = join(homedir(), ".tokenizer", "queue.jsonl");
+export const rejectedUsagePath = join(homedir(), ".tokenizer", "rejected-usage.jsonl");
 export const statePath = join(homedir(), ".tokenizer", "state.json");
 
 export function defaultConfig(): TokenizerConfig {

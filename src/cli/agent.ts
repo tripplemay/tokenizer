@@ -92,10 +92,11 @@ export async function runOnce() {
       lastError: null,
       lastCollectedEvents: collected.events.length,
       lastSentEvents: events.length,
+      lastRejectedEvents: result.rejected ?? 0,
       lastInserted: result.inserted,
       lastDuplicates: result.duplicates
     });
-    log(`sync received=${result.received} inserted=${result.inserted} updated=${(result as { updated?: number }).updated ?? 0} duplicates=${result.duplicates}`);
+    log(`sync received=${result.received} inserted=${result.inserted} updated=${result.updated ?? 0} duplicates=${result.duplicates} rejected=${result.rejected ?? 0}`);
     for (const warning of collected.warnings) log(`warning ${warning}`);
     // Refresh lastEventActivityAt so the agent's active-vs-idle scheduler knows
     // the user is still coding. Active threshold is 1h of zero events.
