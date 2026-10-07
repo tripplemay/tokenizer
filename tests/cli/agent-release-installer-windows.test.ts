@@ -4,6 +4,7 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync,
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { preloadNodeOptions } from "../fixtures/agent-release-node-options";
 
 const roots: string[] = [];
 const servers: Server[] = [];
@@ -24,7 +25,7 @@ function startInstaller(script: string, home: string, fakeBin: string, serverUrl
   const result = new Promise<{ code: number | string; output: string }>((resolve) => { finish = resolve; });
   const env: NodeJS.ProcessEnv = {
     ...process.env, ...extraEnv,
-    NODE_OPTIONS: `--require="${join(fakeBin, "node-preload.cjs")}"`,
+    NODE_OPTIONS: preloadNodeOptions(join(fakeBin, "node-preload.cjs")),
     TEST_CLI_TRACE: join(home, "cli-trace.jsonl"),
     TEST_TASK_TRACE: join(home, "task-trace.txt")
   };

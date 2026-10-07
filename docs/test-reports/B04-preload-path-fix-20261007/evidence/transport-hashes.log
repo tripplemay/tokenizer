@@ -1,0 +1,16 @@
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/actionlint.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/candidate-functional-diff.patch.gz: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/crlf-posix-guard-lines.txt: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/focused-node22.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/full-node22.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/install-ps1-decisive-lines.txt: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/lint-node22.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/npm-ci-node22.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/release-boundaries.txt: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-metadata.json: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows-decisive.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/run-37647920920-windows.log.gz: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/verify-node22.log: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-ci-gate-lines.txt: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-fixture-lines.txt: OK
+docs/test-reports/B04-agent-release-evaluator-round3-20261007/evidence/windows-installer.json: OK
