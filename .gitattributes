@@ -1,2 +1,3 @@
 docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/** -text
+scripts/test/b05-tcp-readiness-independent.mjs -text
 tests/evaluator/b05-tcp-readiness-independent.test.ts -text
