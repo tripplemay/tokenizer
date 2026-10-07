@@ -51,6 +51,8 @@ describe("macOS launchd native fixture gate", () => {
     expect(job).toContain('launchctl print "gui/$(id -u)"');
     expect(job).toContain("tests/cli/agent-release-installer-macos.test.ts");
     expect(job).toContain("node scripts/ci/assert-macos-launchd-installer.mjs");
+    expect(job).toContain("trap cleanup_native_fixture EXIT INT TERM");
+    expect(job).toContain('"$TOKENIZER_FIXTURE_LABEL" != cc.tokenizer.agent.ci.*');
     expect(job).toContain("if-no-files-found: error");
     expect(workflow).toContain("needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser]");
     expect(workflow).toContain("needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser, release-artifact]");
