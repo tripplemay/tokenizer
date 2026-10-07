@@ -57,7 +57,7 @@ for the commands below. Raw output lives in `sigterm-fix-evidence/`.
 | `npm run lint` | exit 0; no warnings/errors | `lint.log` |
 | `npm run verify` | exit 0; Prisma generation + TypeScript | `verify.log` |
 | `DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder npm run build` | exit 0; Next production build | `build.log` |
-| `git diff --check` | exit 0 | run before commit |
+| `git diff --check 2756ee6..HEAD -- tests/cli/agent-lifecycle.test.ts` | exit 0 | source-only whitespace check |
 
 Focused repetition command (zsh):
 
@@ -74,6 +74,9 @@ The first full-suite run overlapped repeated SIGTERM runs and lint/verify;
 subsequent full-suite runs overlapped repetition/build. This is scheduling-load
 regression self-test evidence, not an evaluator-owned performance acceptance.
 The six skips per filtered repeat are unselected tests, not SIGTERM skips.
+Raw logs retain command-emitted CR/blank lines; all-path `git diff --check`
+therefore reports log whitespace, not source whitespace. `SHA256SUMS` covers
+the handoff, runtime metadata, and all 59 logs and was checked successfully.
 
 ## Required independent follow-up
 
