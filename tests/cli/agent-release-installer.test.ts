@@ -1,12 +1,10 @@
 import { execFile, execFileSync } from "node:child_process";
 import { createServer, type Server } from "node:http";
-import { mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { promisify } from "node:util";
 import { afterEach, describe, expect, it } from "vitest";
 
-const run = promisify(execFile);
 const roots: string[] = [];
 const servers: Server[] = [];
 
@@ -21,17 +19,20 @@ function commitFixture(repo: string, revision: string): string {
   return git(repo, "rev-parse", "HEAD");
 }
 
+function startInstaller(script: string, home: string, fakeBin: string, serverUrl: string, args: string[] = [], extraEnv: Record<string, string> = {}) {
+  let finish!: (result: { code: number | string; output: string }) => void;
+  const result = new Promise<{ code: number | string; output: string }>((resolve) => { finish = resolve; });
+  const child = execFile("bash", [script, "--no-service", ...args], {
+    env: { ...process.env, HOME: home, PATH: `${fakeBin}:${process.env.PATH}`, TOKENIZER_SERVER_URL: serverUrl, ...extraEnv },
+    timeout: 60_000
+  }, (error, stdout, stderr) => {
+    finish({ code: error ? (error.code ?? 1) : 0, output: stdout + stderr });
+  });
+  return { child, result };
+}
+
 async function invoke(script: string, home: string, fakeBin: string, serverUrl: string, args: string[] = [], extraEnv: Record<string, string> = {}) {
-  try {
-    const result = await run("bash", [script, "--no-service", ...args], {
-      env: { ...process.env, HOME: home, PATH: `${fakeBin}:${process.env.PATH}`, TOKENIZER_SERVER_URL: serverUrl, ...extraEnv },
-      timeout: 60_000
-    });
-    return { code: 0, output: result.stdout + result.stderr };
-  } catch (error) {
-    const failure = error as Error & { code?: number; stdout?: string; stderr?: string };
-    return { code: failure.code ?? 1, output: (failure.stdout ?? "") + (failure.stderr ?? "") };
-  }
+  return startInstaller(script, home, fakeBin, serverUrl, args, extraEnv).result;
 }
 
 afterEach(async () => {
@@ -56,7 +57,7 @@ describe.skipIf(process.platform === "win32")("pinned POSIX Agent installer", ()
     writeFileSync(join(repo, "src", "cli", "index.ts"), "// fixture\n");
     const first = commitFixture(repo, "first");
     writeFileSync(join(fakeBin, "node"), `#!/bin/sh\nif [ "$1" = --import ]; then exit 0; fi\nexec '${process.execPath}' "$@"\n`, { mode: 0o755 });
-    writeFileSync(join(fakeBin, "npm"), "#!/bin/sh\nif [ \"$TEST_NPM_FAIL\" = 1 ]; then exit 33; fi\nexit 0\n", { mode: 0o755 });
+    writeFileSync(join(fakeBin, "npm"), "#!/bin/sh\nif [ \"$TEST_NPM_FAIL\" = 1 ]; then exit 33; fi\nif [ -n \"$TEST_NPM_HOLD\" ]; then touch \"$TEST_NPM_HOLD.ready\"; while [ -e \"$TEST_NPM_HOLD\" ]; do sleep 0.1; done; fi\nexit 0\n", { mode: 0o755 });
     const source = readFileSync("public/install.sh", "utf8");
     const script = join(root, "install.sh");
     writeFileSync(script, source.replaceAll("https://github.com/tripplemay/tokenizer.git", repo));
@@ -64,6 +65,9 @@ describe.skipIf(process.platform === "win32")("pinned POSIX Agent installer", ()
     mkdirSync(dataDir);
     writeFileSync(join(dataDir, "credentials.json"), "credential-canary");
     writeFileSync(join(dataDir, "queue.jsonl"), "queue-canary");
+    const lock = join(dataDir, ".install.lock");
+    mkdirSync(lock);
+    writeFileSync(join(lock, "owner"), "999999999|stale process\n");
     let status = 200;
     let pin = first;
     const server = createServer((_request, response) => {
@@ -78,6 +82,7 @@ describe.skipIf(process.platform === "win32")("pinned POSIX Agent installer", ()
 
     const initialInstall = await invoke(script, home, fakeBin, url);
     expect(initialInstall.code, initialInstall.output).toBe(0);
+    expect(existsSync(lock)).toBe(false);
     const active = join(dataDir, "app");
     expect(git(active, "rev-parse", "HEAD")).toBe(first);
     const firstPath = realpathSync(active);
@@ -100,9 +105,39 @@ describe.skipIf(process.platform === "win32")("pinned POSIX Agent installer", ()
     expect((await invoke(script, home, fakeBin, url, [], { TEST_CONFIGURE_FAIL: "1" })).code).not.toBe(0);
     expect(realpathSync(active)).toBe(firstPath);
 
-    expect((await invoke(script, home, fakeBin, url)).code).toBe(0);
+    const hold = join(root, "hold-npm");
+    writeFileSync(hold, "hold");
+    const held = startInstaller(script, home, fakeBin, url, [], { TEST_NPM_HOLD: hold });
+    try {
+      for (let attempt = 0; attempt < 120 && !existsSync(`${hold}.ready`); attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
+      expect(existsSync(`${hold}.ready`)).toBe(true);
+      const concurrent = await invoke(script, home, fakeBin, url);
+      expect(concurrent.code).not.toBe(0);
+      expect(concurrent.output).toContain("Another Tokenizer installation is running");
+      expect(realpathSync(active)).toBe(firstPath);
+    } finally {
+      held.child.kill("SIGKILL");
+      if (existsSync(hold)) unlinkSync(hold);
+      await held.result;
+    }
+    expect(existsSync(lock)).toBe(true);
+    expect(realpathSync(active)).toBe(firstPath);
+    const recoveredUpgrade = await invoke(script, home, fakeBin, url);
+    expect(recoveredUpgrade.code, recoveredUpgrade.output).toBe(0);
     expect(git(active, "rev-parse", "HEAD")).toBe(second);
-    expect(realpathSync(join(dataDir, "previous"))).toBe(firstPath);
+    const previous = join(dataDir, "previous");
+    expect(realpathSync(previous)).toBe(firstPath);
+
+    unlinkSync(previous);
+    symlinkSync(repo, previous);
+    const escapedRollback = await invoke(script, home, fakeBin, url, ["--rollback"]);
+    expect(escapedRollback.code).not.toBe(0);
+    expect(escapedRollback.output).toContain("outside the Agent releases directory");
+    expect(git(active, "rev-parse", "HEAD")).toBe(second);
+    unlinkSync(previous);
+    symlinkSync(firstPath, previous);
     status = 503;
     expect((await invoke(script, home, fakeBin, url, ["--rollback"])).code).toBe(0);
     expect(git(active, "rev-parse", "HEAD")).toBe(first);
@@ -117,6 +152,10 @@ describe("Windows installer release boundary", () => {
     expect(source).toContain('/api/agent/releases');
     expect(source).toContain("Agent commit digest mismatch");
     expect(source).toContain("Invoke-Checked npm ci");
+    expect(source).toContain("[IO.FileShare]::None");
+    expect(source).toContain("$Arguments -contains \"--enroll-token\"");
+    expect(source).toContain("& $Exe @Arguments *> $null");
+    expect(source).not.toContain("$($Arguments -join ' ')");
     expect(source).not.toContain('"origin/$Branch"');
     expect(source.indexOf("Invoke-Checked npm ci")).toBeLessThan(source.indexOf("Stop-RunningAgent\n"));
   });

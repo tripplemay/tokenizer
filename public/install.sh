@@ -141,6 +141,72 @@ stop_existing_agents() {
   fi
 }
 
+LOCK_DIR="${INSTALL_DIR%/app}/.install.lock"
+LOCK_RECOVERY_DIR="${INSTALL_DIR%/app}/.install.lock.recover"
+LOCK_OWNED="0"
+LOCK_OWNER="$$|$(LC_ALL=C ps -p "$$" -o lstart= | tr -s ' ' | sed 's/^ //;s/ $//')"
+if [ "$LOCK_OWNER" = "$$|" ]; then
+  echo "Cannot identify the installer process for locking." >&2
+  exit 1
+fi
+
+lock_is_active() {
+  local directory="$1" pid started observed modified now
+  if [ -f "$directory/owner" ]; then
+    IFS='|' read -r pid started < "$directory/owner" || true
+    if [[ "$pid" =~ ^[0-9]+$ ]] && [ -n "$started" ]; then
+      observed="$(LC_ALL=C ps -p "$pid" -o lstart= 2>/dev/null | tr -s ' ' | sed 's/^ //;s/ $//')"
+      [ "$observed" = "$started" ] && return 0
+    fi
+    return 1
+  fi
+  # A newly created lock may not have its owner file yet. Never steal it.
+  modified="$(stat -f %m "$directory" 2>/dev/null || stat -c %Y "$directory" 2>/dev/null || true)"
+  now="$(date +%s)"
+  [ -z "$modified" ] || [ "$((now - modified))" -lt 30 ]
+}
+
+release_install_lock() {
+  if [ "$LOCK_OWNED" = "1" ] && [ -f "$LOCK_DIR/owner" ] &&
+     [ "$(cat "$LOCK_DIR/owner")" = "$LOCK_OWNER" ]; then
+    rm -f "$LOCK_DIR/owner"
+    rmdir "$LOCK_DIR" 2>/dev/null || true
+  fi
+}
+
+acquire_install_lock() {
+  local stale
+  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    if lock_is_active "$LOCK_DIR"; then
+      echo "Another Tokenizer installation is running; existing installation was not changed." >&2
+      return 1
+    fi
+    if ! mkdir "$LOCK_RECOVERY_DIR" 2>/dev/null; then
+      echo "Installer lock recovery is already in progress; retry later." >&2
+      return 1
+    fi
+    printf '%s\n' "$LOCK_OWNER" > "$LOCK_RECOVERY_DIR/owner"
+    if [ -d "$LOCK_DIR" ] && ! lock_is_active "$LOCK_DIR"; then
+      stale="$LOCK_DIR.stale.$$"
+      mv "$LOCK_DIR" "$stale"
+      rm -rf "$stale"
+    fi
+    rm -f "$LOCK_RECOVERY_DIR/owner"
+    rmdir "$LOCK_RECOVERY_DIR"
+    if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+      echo "Another Tokenizer installation acquired the lock; retry later." >&2
+      return 1
+    fi
+  fi
+  printf '%s\n' "$LOCK_OWNER" > "$LOCK_DIR/owner.new.$$"
+  mv "$LOCK_DIR/owner.new.$$" "$LOCK_DIR/owner"
+  LOCK_OWNED="1"
+}
+
+mkdir -p "${INSTALL_DIR%/app}"
+acquire_install_lock
+trap release_install_lock EXIT
+
 # Decide whether enrollment is needed BEFORE doing any installation work so we
 # fail fast if the caller asked for a fresh install without a token.
 NEED_ENROLL="0"
@@ -239,6 +305,21 @@ atomic_link() {
   node -e 'require("node:fs").renameSync(process.argv[1], process.argv[2])' "$temporary" "$link"
 }
 
+release_realpath() {
+  # shellcheck disable=SC2016
+  node -e '
+    const fs = require("node:fs");
+    const path = require("node:path");
+    const root = fs.realpathSync(process.argv[1]);
+    const target = fs.realpathSync(process.argv[2]);
+    const relative = path.relative(root, target);
+    if (!relative || relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      throw new Error("rollback target is outside the Agent releases directory");
+    }
+    process.stdout.write(target);
+  ' "$RELEASES_DIR" "$1"
+}
+
 STAGE_DIR=""
 OLD_TARGET=""
 HAD_OLD="0"
@@ -271,6 +352,7 @@ cleanup() {
     fi
   fi
   if [ -n "$STAGE_DIR" ] && [ -d "$STAGE_DIR" ]; then rm -rf "$STAGE_DIR"; fi
+  release_install_lock
   exit "$status"
 }
 trap cleanup EXIT
@@ -287,8 +369,8 @@ if [ "$ROLLBACK" = "1" ]; then
     echo "No previous release available for rollback." >&2
     exit 1
   fi
-  OLD_TARGET="$(node -e 'process.stdout.write(require("node:fs").realpathSync(process.argv[1]))' "$INSTALL_DIR")"
-  ROLLBACK_TARGET="$(node -e 'process.stdout.write(require("node:fs").realpathSync(process.argv[1]))' "$PREVIOUS_LINK")"
+  OLD_TARGET="$(release_realpath "$INSTALL_DIR")"
+  ROLLBACK_TARGET="$(release_realpath "$PREVIOUS_LINK")"
   [ -d "$ROLLBACK_TARGET/.git" ] || { echo "Previous release is not a Git checkout." >&2; exit 1; }
   (cd "$ROLLBACK_TARGET" && node --import tsx src/cli/index.ts --help >/dev/null)
   HAD_OLD="1"

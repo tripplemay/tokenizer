@@ -63,3 +63,42 @@ No branch was pushed, no production deployment was attempted, and neither
 
 Independent Evaluator should review the actual diff and run cross-platform
 installer/service fault injection before any B04 acceptance claim.
+
+## Fix round after independent BLOCK verdict
+
+The independent evaluator's `B04-EVAL-004/005/006` findings drove this fix
+round. The evaluator verdict itself was not changed.
+
+- POSIX now holds a per-user PID/start-time lock from credential preflight
+  through restore/commit. A dead owner's primary lock is reclaimed under a
+  recovery guard. The fixture injects an active competing invocation, then
+  kills the holder with SIGKILL and proves a later invocation recovers.
+- POSIX offline rollback resolves both active and previous symlinks and
+  rejects a real path outside `~/.tokenizer/releases` before stopping service.
+  The fixture points `previous` to an external Git checkout and verifies
+  rejection plus unchanged active commit.
+- Native Windows uses an exclusive `FileStream` lock held through its
+  `finally` block; a stale file after a crash is reusable by OS semantics.
+  `Invoke-Checked` suppresses all streams for enrollment and never includes
+  arguments in thrown command errors. A new
+  `tests/cli/agent-release-installer-windows.test.ts` executes on
+  `windows-latest` as part of `npm test`: isolated first install, offline and
+  digest/npm/configure/enroll failures, concurrent upgrade lock, successful
+  upgrade, offline rollback, token redaction, and queue/credential canaries.
+  It is skipped on macOS and has **not yet produced a native Windows result**.
+- `B04-EVAL-001` is not patched by changing the pin to an unaccepted commit.
+  The two-commit A/tag/B release sequence is now explicit in the runbook.
+  `B04-EVAL-002/003` platform and supervisor evidence remains outstanding.
+
+Local fix-round commands: `shellcheck public/install.sh`, `bash -n
+public/install.sh`, `npm run lint`, `npm run verify`, and targeted installer
+tests passed. The first full `npm test` exposed the existing lifecycle test's
+function-source extraction reading the new lock code without `TOKENIZER_HOME`
+(`TOKENIZER_HOME: unbound variable`); the lock root was changed to derive from
+`INSTALL_DIR`, and that lifecycle test now passes. This original failure is
+not hidden by the later green rerun.
+
+The later full macOS `npm test` rerun passed: 1,456 passed / 21 skipped;
+the additional skip is the new native Windows installer suite. `npm run
+verify`, `npm run lint`, `shellcheck public/install.sh`, `bash -n
+public/install.sh`, and `git diff --check` also passed after the fix.
