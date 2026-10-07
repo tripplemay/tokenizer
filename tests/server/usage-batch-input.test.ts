@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   updateTimezone: vi.fn(),
   detectAndTrackUnpricedModels: vi.fn(),
   maybeTriggerPriceLookup: vi.fn(),
+  invalidateUsageCostCache: vi.fn(),
   prisma: {
     device: { upsert: vi.fn() },
     deviceToken: { update: vi.fn() },
@@ -22,6 +23,7 @@ vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 vi.mock("@/server/timezone", () => ({ updateUserTimezoneIfValid: mocks.updateTimezone }));
 vi.mock("@/server/pricing/detect", () => ({ detectAndTrackUnpricedModels: mocks.detectAndTrackUnpricedModels }));
 vi.mock("@/server/pricing/trigger", () => ({ maybeTriggerPriceLookup: mocks.maybeTriggerPriceLookup }));
+vi.mock("@/server/usage-cost-cache", () => ({ invalidateUsageCostCache: mocks.invalidateUsageCostCache }));
 
 import { POST } from "../../app/api/usage/events/batch/route";
 
@@ -73,5 +75,14 @@ describe("usage batch hot-path input cleaning", () => {
     expect(eventRows[0].source).toBe(`kimicode${"x".repeat(92)}`);
     expect(eventRows[0].source).toHaveLength(100);
     expect(eventRows[0].source).not.toMatch(/[\u0000-\u001F\u007F-\u009F]/);
+    expect(mocks.invalidateUsageCostCache).toHaveBeenCalledOnce();
+    expect(mocks.invalidateUsageCostCache).toHaveBeenCalledWith("user-1");
+  });
+
+  it("does not invalidate cost when a batch contains only duplicates", async () => {
+    mocks.prisma.usageEvent.createMany.mockResolvedValueOnce({ count: 0 });
+    const response = await POST(request());
+    expect(response.status).toBe(200);
+    expect(mocks.invalidateUsageCostCache).not.toHaveBeenCalled();
   });
 });

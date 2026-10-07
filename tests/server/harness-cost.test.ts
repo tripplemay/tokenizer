@@ -3,19 +3,34 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   prisma: { $queryRaw: vi.fn(), harnessTransition: { findMany: vi.fn() } },
   getEffectivePrices: vi.fn(),
-  cacheStores: [] as Array<Map<string, unknown>>
+  cacheStores: new Map<string, { values: Map<string, unknown>; tags: string[]; revalidate: number | false | undefined }>(),
+  invalidatedTags: [] as string[]
 }));
 vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
 vi.mock("../../src/server/model-prices", () => ({ getEffectivePrices: mocks.getEffectivePrices }));
 vi.mock("next/cache", () => ({
-  unstable_cache: (fn: (...args: unknown[]) => unknown) => {
-    const store = new Map<string, unknown>();
-    mocks.cacheStores.push(store);
+  unstable_cache: (
+    fn: (...args: unknown[]) => unknown,
+    keyParts: string[] = [],
+    options: { tags?: string[]; revalidate?: number | false } = {}
+  ) => {
+    const id = JSON.stringify([fn.toString(), keyParts]);
+    let entry = mocks.cacheStores.get(id);
+    if (!entry) {
+      entry = { values: new Map<string, unknown>(), tags: options.tags ?? [], revalidate: options.revalidate };
+      mocks.cacheStores.set(id, entry);
+    }
     return (...args: unknown[]) => {
       const key = JSON.stringify(args);
-      if (!store.has(key)) store.set(key, Promise.resolve(fn(...args)));
-      return store.get(key);
+      if (!entry!.values.has(key)) entry!.values.set(key, Promise.resolve(fn(...args)));
+      return entry!.values.get(key);
     };
+  },
+  revalidateTag: (tag: string) => {
+    mocks.invalidatedTags.push(tag);
+    for (const entry of mocks.cacheStores.values()) {
+      if (entry.tags.includes(tag)) entry.values.clear();
+    }
   }
 }));
 
@@ -27,6 +42,7 @@ import {
   getBatchCost,
   type TransitionLike
 } from "../../src/server/harness-cost";
+import { invalidateUsageCostCache, usageCostCacheTag } from "../../src/server/usage-cost-cache";
 import { estimateCost } from "../../src/shared/model-pricing";
 
 const NOW = new Date("2026-08-10T12:00:00.000Z");
@@ -190,7 +206,8 @@ describe("getBatchCost", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    for (const store of mocks.cacheStores) store.clear();
+    mocks.invalidatedTags.length = 0;
+    for (const entry of mocks.cacheStores.values()) entry.values.clear();
     mocks.getEffectivePrices.mockResolvedValue(PRICES);
     mocks.prisma.$queryRaw.mockResolvedValue([
       { intervalIdx: 0n, model: "gpt-5.6-sol", ...SUMS },
@@ -303,7 +320,7 @@ describe("getBatchCost", () => {
     expect(mocks.prisma.$queryRaw).not.toHaveBeenCalled();
   });
 
-  it("normalizes closed batches to one permanent cache key across 30-second windows", async () => {
+  it("shares a fixed closed-batch key but bounds staleness and tags the tenant", async () => {
     const closed = [
       t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T10:00:00.000Z" }),
       t({ toStatus: "done", observedAt: "2026-08-10T11:00:00.000Z" })
@@ -314,6 +331,30 @@ describe("getBatchCost", () => {
     await getBatchCost("closed-user", { projectId: "p1", repoKey: null }, closed, NOW.getTime());
     await getBatchCost("closed-user", { projectId: "p1", repoKey: null }, closed, NOW.getTime() + 60_000);
     expect(mocks.prisma.$queryRaw).toHaveBeenCalledOnce();
+    const entry = [...mocks.cacheStores.values()].find((cache) => cache.tags.includes(usageCostCacheTag("closed-user")));
+    expect(entry?.revalidate).toBe(30);
+  });
+
+  it("recomputes a closed batch after late usage without invalidating another tenant", async () => {
+    const closed = [
+      t({ fromStatus: null, toStatus: "building", observedAt: "2026-08-10T10:00:00.000Z" }),
+      t({ toStatus: "done", observedAt: "2026-08-10T11:00:00.000Z" })
+    ];
+    const link = { projectId: "p1", repoKey: null };
+    const before = await getBatchCost("changed-user", link, closed, NOW.getTime());
+    const other = await getBatchCost("other-user", link, closed, NOW.getTime());
+    mocks.prisma.$queryRaw.mockResolvedValue([
+      { intervalIdx: 0n, model: "gpt-5.6-sol", ...SUMS, inputTokens: 2_000_000 },
+      { intervalIdx: 1n, model: "gpt-5.6-sol", ...SUMS }
+    ]);
+
+    expect(await getBatchCost("changed-user", link, closed, NOW.getTime())).toEqual(before);
+    invalidateUsageCostCache("changed-user");
+    const after = await getBatchCost("changed-user", link, closed, NOW.getTime());
+    expect(after!.totalCostUsd).toBeGreaterThan(before!.totalCostUsd);
+    expect(await getBatchCost("other-user", link, closed, NOW.getTime())).toEqual(other);
+    expect(mocks.prisma.$queryRaw).toHaveBeenCalledTimes(3);
+    expect(mocks.invalidatedTags).toEqual([usageCostCacheTag("changed-user")]);
   });
 
   it("keeps active batches on distinct quantized-window cache keys", async () => {

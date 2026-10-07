@@ -48,7 +48,7 @@ vi.mock("@/server/auth", () => ({
 vi.mock("@/server/timezone", () => ({ updateUserTimezoneIfValid: mocks.updateTimezone }));
 vi.mock("@/server/pricing/detect", () => ({ detectAndTrackUnpricedModels: mocks.detectAndTrackUnpricedModels }));
 vi.mock("@/server/pricing/trigger", () => ({ maybeTriggerPriceLookup: mocks.maybeTriggerPriceLookup }));
-vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn }));
+vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn, revalidateTag: vi.fn() }));
 
 // ---------------------------------------------------------------- F002 ----
 describe("F002 safeCallbackPath adversarial vectors (evaluator)", () => {

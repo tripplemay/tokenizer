@@ -4,6 +4,7 @@ import { computeSummaryMetrics } from "./summary-metrics";
 import { decomposeCost, estimateCost, getModelPrice, sumCostAcrossModels, type ModelPriceRow } from "@/shared/model-pricing";
 import { getEffectivePrices } from "./model-prices";
 import { MODEL_PRICES_CACHE_TAG } from "@/shared/model-price";
+import { usageCostCacheTag } from "./usage-cost-cache";
 import { bucketKeys, granularityForSpan, sqlBucket } from "./time-buckets";
 
 // Short-TTL cache for the dashboard's expensive aggregates. Each summary
@@ -1098,9 +1099,9 @@ async function getBreakdownImpl(tenantId: string, field: "source" | "model", ran
 }
 
 // ---- Cached public API ---------------------------------------------------
-// Wrappers attach Next's unstable_cache with a 30s revalidate. Arguments are
-// part of the cache key automatically, so (range, filter, field) tuples each
-// get their own slot. Detail functions (getProjectDetail, getDeviceDetail)
+// Wrappers attach a tenant tag and a 30s revalidate. Arguments are part of
+// Next's cache key, so (range, filter, field) tuples each get their own slot.
+// Detail functions (getProjectDetail, getDeviceDetail)
 // are intentionally NOT cached — they return Prisma Date objects that the
 // JSON cache layer would coerce to strings and break their consumers.
 
@@ -1108,21 +1109,38 @@ async function getBreakdownImpl(tenantId: string, field: "source" | "model", ran
 // unstable_cache miss with its underlying query time — useful for spotting
 // when a regression starts bypassing the cache. Off by default.
 const CACHE_DEBUG = process.env.CACHE_DEBUG === "1";
-function instrument<T extends (...args: never[]) => Promise<unknown>>(name: string, fn: T): T {
+function instrument<Args extends unknown[], Result>(
+  name: string,
+  fn: (...args: Args) => Promise<Result>
+): (...args: Args) => Promise<Result> {
   if (!CACHE_DEBUG) return fn;
-  return (async (...args: never[]) => {
+  return async (...args: Args) => {
     const start = Date.now();
     const result = await fn(...args);
     console.log(`[cache-miss] ${name}(${JSON.stringify(args)}) ${Date.now() - start}ms`);
     return result;
-  }) as T;
+  };
 }
 
-export const getSummary = unstable_cache(instrument("getSummary", getSummaryImpl), ["getSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getDeviceSummary = unstable_cache(instrument("getDeviceSummary", getDeviceSummaryImpl), ["getDeviceSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getProjectSummary = unstable_cache(instrument("getProjectSummary", getProjectSummaryImpl), ["getProjectSummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getDailySummary = unstable_cache(instrument("getDailySummary", getDailySummaryImpl), ["getDailySummary"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getDailyCost = unstable_cache(instrument("getDailyCost", getDailyCostImpl), ["getDailyCost"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getDailyBySource = unstable_cache(instrument("getDailyBySource", getDailyBySourceImpl), ["getDailyBySource"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getDailyByDevice = unstable_cache(instrument("getDailyByDevice", getDailyByDeviceImpl), ["getDailyByDevice"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
-export const getBreakdown = unstable_cache(instrument("getBreakdown", getBreakdownImpl), ["getBreakdown"], { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] });
+function tenantCached<Args extends unknown[], Result>(
+  name: string,
+  fn: (tenantId: string, ...args: Args) => Promise<Result>
+): (tenantId: string, ...args: Args) => Promise<Result> {
+  const instrumented = instrument(name, fn);
+  return (tenantId: string, ...args: Args) => {
+    const cached = unstable_cache(instrumented, [name, tenantId], {
+      revalidate: CACHE_REVALIDATE_SECONDS,
+      tags: [MODEL_PRICES_CACHE_TAG, usageCostCacheTag(tenantId)]
+    });
+    return cached(tenantId, ...args);
+  };
+}
+
+export const getSummary = tenantCached("getSummary", getSummaryImpl);
+export const getDeviceSummary = tenantCached("getDeviceSummary", getDeviceSummaryImpl);
+export const getProjectSummary = tenantCached("getProjectSummary", getProjectSummaryImpl);
+export const getDailySummary = tenantCached("getDailySummary", getDailySummaryImpl);
+export const getDailyCost = tenantCached("getDailyCost", getDailyCostImpl);
+export const getDailyBySource = tenantCached("getDailyBySource", getDailyBySourceImpl);
+export const getDailyByDevice = tenantCached("getDailyByDevice", getDailyByDeviceImpl);
+export const getBreakdown = tenantCached("getBreakdown", getBreakdownImpl);

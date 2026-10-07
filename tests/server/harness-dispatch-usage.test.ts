@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => {
   };
   return {
     authenticateDeviceToken: vi.fn(),
+    invalidateUsageCostCache: vi.fn(),
     tx,
     prisma: {
       project: { findFirst: vi.fn() },
@@ -29,6 +30,7 @@ vi.mock("@/server/auth", () => ({
   forbidden: (message: string) => Response.json({ error: message }, { status: 403 })
 }));
 vi.mock("@/server/db", () => ({ prisma: mocks.prisma }));
+vi.mock("@/server/usage-cost-cache", () => ({ invalidateUsageCostCache: mocks.invalidateUsageCostCache }));
 
 import { POST } from "../../app/api/harness/report/route";
 import { parseDispatchRuns } from "../../src/server/harness-mode-intent-api";
@@ -159,6 +161,7 @@ describe("dispatch usage materialization", () => {
 
   it("materializes a codex run into an idempotent usage event with attribution metadata", async () => {
     const response = await POST(request(report([run({ usage: usage(), usageCapture: "materialize" })])));
+    expect(mocks.invalidateUsageCostCache).toHaveBeenCalledWith("user-1");
     expect(response.status).toBe(200);
     expect(mocks.tx.usageEvent.upsert).toHaveBeenCalledTimes(1);
     const call = mocks.tx.usageEvent.upsert.mock.calls[0][0];
@@ -210,6 +213,7 @@ describe("dispatch usage materialization", () => {
     );
     expect(response.status).toBe(200);
     expect(mocks.tx.usageEvent.upsert).not.toHaveBeenCalled();
+    expect(mocks.invalidateUsageCostCache).not.toHaveBeenCalled();
     // 归因列仍然入库
     const runData = mocks.tx.harnessDispatchRun.upsert.mock.calls[0][0].create;
     expect(runData.usageInputTokens).toBe(2_150_425);
@@ -222,6 +226,14 @@ describe("dispatch usage materialization", () => {
     );
     expect(response.status).toBe(200);
     expect(mocks.tx.usageEvent.upsert).not.toHaveBeenCalled();
+    expect(mocks.invalidateUsageCostCache).not.toHaveBeenCalled();
+  });
+
+  it("does not invalidate when usage materialization fails before commit", async () => {
+    mocks.tx.usageEvent.upsert.mockRejectedValueOnce(new Error("synthetic database failure"));
+    await expect(POST(request(report([run({ usage: usage(), usageCapture: "materialize" })]))))
+      .rejects.toThrow("synthetic database failure");
+    expect(mocks.invalidateUsageCostCache).not.toHaveBeenCalled();
   });
 
   it("refreshes only null-model events when the report carries a model (F007 backfill path)", async () => {

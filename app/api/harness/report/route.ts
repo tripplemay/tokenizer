@@ -25,6 +25,7 @@ import {
 import { normalizeHarnessRepoKey } from "@/shared/harness-mode-intent";
 import { retrySerializableTransaction } from "@/server/serializable-transaction";
 import { notifyPendingGate } from "@/server/harness-gate-notify";
+import { invalidateUsageCostCache } from "@/server/usage-cost-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -494,7 +495,7 @@ export async function POST(request: NextRequest) {
     select: { id: true }
   });
 
-  let result: { projectId: string };
+  let result: { projectId: string; materializedUsage: boolean };
   try {
     result = await retrySerializableTransaction(() =>
       prisma.$transaction(
@@ -795,6 +796,7 @@ export async function POST(request: NextRequest) {
           });
         }
 
+        let materializedUsage = false;
         for (const run of report.dispatchRuns) {
           const runData = {
             taskId: run.taskId,
@@ -895,10 +897,11 @@ export async function POST(request: NextRequest) {
                 }
               }
             });
+            materializedUsage = true;
           }
         }
 
-        return { projectId: project.id };
+        return { projectId: project.id, materializedUsage };
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
       )
@@ -907,6 +910,8 @@ export async function POST(request: NextRequest) {
     if (error instanceof HarnessApiInputError) return harnessInputErrorResponse(error);
     throw error;
   }
+
+  if (result.materializedUsage) invalidateUsageCostCache(token.userId);
 
   // 通知在事务外（BL-GATE-INBOX F002）：notifyPendingGate 内部 fail-open 永不 throw，
   // claim 列保证并发上报恰一次；此 await 只在真的要发信时增加毫秒级延迟

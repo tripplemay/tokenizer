@@ -1,11 +1,11 @@
 import { NextRequest } from "next/server";
-import { revalidateTag } from "next/cache";
 import { prisma } from "@/server/db";
 import { authorizeAdminRequest } from "@/server/admin-auth";
 import { unauthorized } from "@/server/auth";
-import { MODEL_PRICES_CACHE_TAG, MODEL_PRICE_STATUS } from "@/shared/model-price";
+import { MODEL_PRICE_STATUS } from "@/shared/model-price";
 import { resolveReviewTransition, REVIEW_ACTIONS, type PriceInput, type ReviewAction } from "@/server/pricing/review";
 import { maybeTriggerPriceLookup } from "@/server/pricing/trigger";
+import { invalidateModelPricesCache } from "@/server/pricing/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
   // Refresh the price overlay + every cached dashboard at once, so an approval
   // reprices history immediately instead of waiting out the 30s cache TTL.
-  revalidateTag(MODEL_PRICES_CACHE_TAG);
+  invalidateModelPricesCache();
 
   // A relookup puts the row back to detected — kick the pipeline for it.
   if (updated.status === MODEL_PRICE_STATUS.detected) {

@@ -1,6 +1,6 @@
-import { revalidateTag } from "next/cache";
 import { prisma } from "../db";
-import { MODEL_PRICES_CACHE_TAG, MODEL_PRICE_STATUS, REPROCESSABLE_STATUSES } from "@/shared/model-price";
+import { MODEL_PRICE_STATUS, REPROCESSABLE_STATUSES } from "@/shared/model-price";
+import { invalidateModelPricesCache } from "./cache";
 import { toLiteLLMKeys, toOpenRouterId } from "./mapping";
 import { classifyStructuredCandidates, parseLiteLLMPrice, parseOpenRouterPrice, type PriceCandidate } from "./sources";
 import { fetchLiteLLMCatalog, fetchOpenRouterCatalog, liteLLMUrl, openRouterUrl } from "./catalog";
@@ -114,5 +114,5 @@ export async function runPriceLookups(modelKeys: string[]): Promise<void> {
   }
 
   // If any model became billable, refresh the overlay + dashboards immediately.
-  if (anyBillable) revalidateTag(MODEL_PRICES_CACHE_TAG);
+  if (anyBillable) invalidateModelPricesCache();
 }

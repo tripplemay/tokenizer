@@ -4,6 +4,7 @@ import { prisma } from "./db";
 import { estimateCost, type ModelPriceRow } from "@/shared/model-pricing";
 import { getEffectivePrices } from "./model-prices";
 import { MODEL_PRICES_CACHE_TAG } from "@/shared/model-price";
+import { usageCostCacheTag } from "./usage-cost-cache";
 
 // BL-COST-BATCH-V1 F001：批次/阶段成本归因聚合层。
 // 用 HarnessTransition 的阶段流转把批次折成时间区间，再对 UsageEvent 做
@@ -274,34 +275,15 @@ async function getBatchCostImpl(
   };
 }
 
-/**
- * 批次成本聚合（30s 缓存，与 summaries.ts 同款包装）。两页卡片（/harness/[id]
- * overview 与 /projects/[id] 联动）必须共用本导出，不许各写 where（口径漂移防线）。
- * now 由调用方钉毫秒值——unstable_cache 的 key 含参数，注入时间保证同窗口命中。
- */
-const getActiveBatchCost = unstable_cache(
-  async (
-    userId: string,
-    link: { projectId: string | null; repoKey: string | null },
-    transitions: TransitionLike[],
-    nowMs: number
-  ) => getBatchCostImpl(userId, link, transitions, nowMs),
-  ["getBatchCost"],
-  { revalidate: CACHE_REVALIDATE_SECONDS, tags: [MODEL_PRICES_CACHE_TAG] }
-);
+/** The closed interval is fixed; its underlying usage rows are not. */
+function cachedBatchCost(userId: string, closed: boolean) {
+  return unstable_cache(getBatchCostImpl, ["getBatchCost", closed ? "closed" : "active", userId], {
+    revalidate: CACHE_REVALIDATE_SECONDS,
+    tags: [MODEL_PRICES_CACHE_TAG, usageCostCacheTag(userId)]
+  });
+}
 
-const getClosedBatchCost = unstable_cache(
-  async (
-    userId: string,
-    link: { projectId: string | null; repoKey: string | null },
-    transitions: TransitionLike[],
-    nowMs: number
-  ) => getBatchCostImpl(userId, link, transitions, nowMs),
-  ["getBatchCost", "closed"],
-  { revalidate: false, tags: [MODEL_PRICES_CACHE_TAG] }
-);
-
-/** Pure cache-key decision: only a non-empty, fully closed interval set is immutable. */
+/** A non-empty, fully closed interval set has a fixed time window. */
 export function allPhaseIntervalsClosed(transitions: TransitionLike[], nowMs: number): boolean {
   const intervals = buildPhaseIntervals(transitions, new Date(nowMs));
   return intervals.length > 0 && intervals.every((interval) => !interval.openEnded);
@@ -318,7 +300,7 @@ export function getBatchCost(
   nowMs: number
 ): Promise<BatchCost | null> {
   const cacheNowMs = batchCostCacheNowMs(transitions, nowMs);
-  const cached = cacheNowMs === CLOSED_BATCH_NOW_MS ? getClosedBatchCost : getActiveBatchCost;
+  const cached = cachedBatchCost(userId, cacheNowMs === CLOSED_BATCH_NOW_MS);
   return cached(userId, link, transitions, cacheNowMs);
 }
 

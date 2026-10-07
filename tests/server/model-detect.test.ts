@@ -8,8 +8,10 @@ const prismaMock = vi.hoisted(() => ({
   usageEvent: { createMany: vi.fn() },
   modelPrice: { findMany: vi.fn(), createMany: vi.fn() }
 }));
+const cacheMock = vi.hoisted(() => ({ invalidateModelPricesCache: vi.fn() }));
 
 vi.mock("@/server/db", () => ({ prisma: prismaMock }));
+vi.mock("@/server/pricing/cache", () => cacheMock);
 
 import { planModelPriceDetection, detectAndTrackUnpricedModels } from "@/server/pricing/detect";
 import { ingestUsageEvents } from "@/server/ingest";
@@ -66,6 +68,7 @@ describe("detectAndTrackUnpricedModels (DB glue)", () => {
     expect(keys).toEqual([]);
     expect(prismaMock.modelPrice.findMany).not.toHaveBeenCalled();
     expect(prismaMock.modelPrice.createMany).not.toHaveBeenCalled();
+    expect(cacheMock.invalidateModelPricesCache).not.toHaveBeenCalled();
   });
 
   it("creates detected/free rows for new keys and returns the ones needing a lookup", async () => {
@@ -84,8 +87,17 @@ describe("detectAndTrackUnpricedModels (DB glue)", () => {
     expect(created).toContainEqual(expect.objectContaining({ modelKey: "newvendor-flash-free", status: "auto_applied", input: 0 }));
     expect(created).toHaveLength(2);
     expect(prismaMock.modelPrice.createMany).toHaveBeenCalledWith({ data: created, skipDuplicates: true });
+    expect(cacheMock.invalidateModelPricesCache).toHaveBeenCalledOnce();
     // Only the detected key needs a lookup; the -free row is already priced.
     expect(keys).toEqual(["brand-new-pro"]);
+  });
+
+  it("does not invalidate prices for detected-only or conflict-skipped rows", async () => {
+    prismaMock.modelPrice.findMany.mockResolvedValue([]);
+    prismaMock.modelPrice.createMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+    await detectAndTrackUnpricedModels(["new-paid-model"]);
+    await detectAndTrackUnpricedModels(["new-free-model-free"]);
+    expect(cacheMock.invalidateModelPricesCache).not.toHaveBeenCalled();
   });
 });
 

@@ -1,0 +1,27 @@
+{
+  "role": "generator",
+  "package": "B09",
+  "finding": "R05",
+  "base_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-cost-cache-fix-20261007",
+  "status": "candidate_not_accepted",
+  "tests": {
+    "focused_passed": 56,
+    "full_passed": 1466,
+    "full_skipped": 20,
+    "full_failed": 1,
+    "full_failure": "pre-existing flaky tests/cli/agent-lifecycle.test.ts:152 SIGTERM lock cleanup; isolated rerun 6/6 passed; B01 owns fix",
+    "verify": "passed",
+    "lint": "passed",
+    "production_build": "passed",
+    "postgres_migrations": "28/28",
+    "next_pg_replay": "passed_including_auto_free_detection_and_scan_with_external_db_stale_first_read_limitation"
+  },
+  "limits": [
+    "B06 and B08 prerequisites not integrated",
+    "direct database writes bypass tag invalidation and can yield one stale-while-revalidate response after the 30-second TTL",
+    "first independent evaluator found auto-applied free price invalidation gap; fixed, awaiting independent second pass",
+    "no production, multi-instance, or browser acceptance"
+  ],
+  "release": "not_pushed_not_deployed"
+}

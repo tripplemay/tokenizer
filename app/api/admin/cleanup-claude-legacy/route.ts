@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { isAdminAuthorized, unauthorized } from "@/server/auth";
 import { prisma } from "@/server/db";
 import { selectClaudeLegacyCleanup } from "@/server/cleanup";
+import { invalidateUsageCostCache } from "@/server/usage-cost-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   const oldRows = await prisma.usageEvent.findMany({
     where: { source: "claude-code", sourceEventId: { startsWith: "claude:" } },
-    select: { id: true, deviceId: true, sessionId: true, totalTokens: true, sourceEventId: true }
+    select: { id: true, userId: true, deviceId: true, sessionId: true, totalTokens: true, sourceEventId: true }
   });
 
   const existingStableRows = await prisma.usageEvent.findMany({
@@ -52,6 +53,11 @@ export async function POST(request: NextRequest) {
     ),
     prisma.usageEvent.deleteMany({ where: { id: { in: plan.toDelete } } })
   ]);
+
+  const changedIds = new Set([...plan.toUpdate.map((row) => row.id), ...plan.toDelete]);
+  for (const userId of new Set(oldRows.filter((row) => changedIds.has(row.id)).map((row) => row.userId))) {
+    invalidateUsageCostCache(userId);
+  }
 
   return Response.json({ dryRun: false, executed: true, summary });
 }

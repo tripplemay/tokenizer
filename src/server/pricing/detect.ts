@@ -1,6 +1,7 @@
 import { prisma } from "../db";
 import { MODEL_PRICES, normalizeModelKey } from "@/shared/model-pricing";
 import { MODEL_PRICE_STATUS, isFreeConventionKey } from "@/shared/model-price";
+import { invalidateModelPricesCache } from "./cache";
 
 export type DetectedModelRow = {
   modelKey: string;
@@ -78,7 +79,10 @@ export async function detectAndTrackUnpricedModels(
   const toCreate = planModelPriceDetection([...candidateKeys], existingKeys);
   if (toCreate.length === 0) return [];
 
-  await prisma.modelPrice.createMany({ data: toCreate, skipDuplicates: true });
+  const created = await prisma.modelPrice.createMany({ data: toCreate, skipDuplicates: true });
+  if (created.count > 0 && toCreate.some((row) => row.status === MODEL_PRICE_STATUS.autoApplied)) {
+    invalidateModelPricesCache();
+  }
   return toCreate
     .filter((row) => row.status === MODEL_PRICE_STATUS.detected)
     .map((row) => row.modelKey);

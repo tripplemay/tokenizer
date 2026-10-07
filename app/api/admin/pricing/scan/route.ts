@@ -5,6 +5,7 @@ import { unauthorized } from "@/server/auth";
 import { planModelPriceDetection } from "@/server/pricing/detect";
 import { MODEL_PRICE_STATUS } from "@/shared/model-price";
 import { maybeTriggerPriceLookup } from "@/server/pricing/trigger";
+import { invalidateModelPricesCache } from "@/server/pricing/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (plan.length > 0) {
-    await prisma.modelPrice.createMany({ data: plan, skipDuplicates: true });
+    const created = await prisma.modelPrice.createMany({ data: plan, skipDuplicates: true });
+    if (created.count > 0 && summary.toAutoFree > 0) invalidateModelPricesCache();
   }
   if (detectedKeys.length > 0) {
     await maybeTriggerPriceLookup(detectedKeys);
