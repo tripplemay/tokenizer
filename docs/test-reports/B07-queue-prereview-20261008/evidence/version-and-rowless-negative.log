@@ -1,0 +1,92 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b07-prereview-20261008
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > same ID corrected rejection must remain recoverable after older version was already quarantined
+QUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T18:58:27.523Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > two same-ID versions rejected in one response must both remain recoverable
+QUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T18:58:27.558Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+SYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T18:58:27.564Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > commit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+CRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T18:58:27.732Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > old-server rowless fallback must not discard corrected poison when old version was quarantined
+ROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T18:58:27.759Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+ ❯ tests/cli/b07-prereview-version-negative.test.ts (9 tests | 5 failed) 256ms
+   × same ID corrected rejection must remain recoverable after older version was already quarantined 23ms
+     → expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+   × two same-ID versions rejected in one response must both remain recoverable 20ms
+     → expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+   × partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted 161ms
+     → expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+   × commit failure then same-ID corrected rejection must retain BOTH exact versions on retry 6ms
+     → expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+   × old-server rowless fallback must not discard corrected poison when old version was quarantined 14ms
+     → expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/b07-prereview-version-negative.test.ts > same ID corrected rejection must remain recoverable after older version was already quarantined
+AssertionError: expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+ ❯ tests/cli/b07-prereview-version-negative.test.ts:27:33
+     25|   mergeQueueEvents([corrected]); expect(readQueue().map(queueEventVers…
+     26|   reject(corrected); console.log("QUARANTINE_VERSION_NEGATIVE", JSON.s…
+     27|   expect(recoverableVersions()).toContain(queueEventVersion(corrected)…
+       |                                 ^
+     28| });
+     29| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/cli/b07-prereview-version-negative.test.ts > two same-ID versions rejected in one response must both remain recoverable
+AssertionError: expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+ ❯ tests/cli/b07-prereview-version-negative.test.ts:34:63
+     32|   resolveQueueEvents({ accepted: [], rejected: versions.map((input) =>…
+     33|   console.log("QUARANTINE_SAME_BATCH_NEGATIVE", JSON.stringify({ activ…
+     34|   for (const input of versions) expect(recoverableVersions()).toContai…
+       |                                                               ^
+     35| });
+     36| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/cli/b07-prereview-version-negative.test.ts > partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+AssertionError: expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+ ❯ tests/cli/b07-prereview-version-negative.test.ts:42:33
+     40|   const result = await syncEvents({ serverUrl: "http://127.0.0.1:9" } …
+     41|   console.log("SYNC_VERSION_NEGATIVE", JSON.stringify({ result, active…
+     42|   expect(recoverableVersions()).toContain(queueEventVersion(corrected)…
+       |                                 ^
+     43| });
+     44| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/cli/b07-prereview-version-negative.test.ts > commit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+AssertionError: expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+ ❯ tests/cli/b07-prereview-version-negative.test.ts:58:71
+     56|   resolveQueueEvents({ accepted: [], rejected: [old, corrected].map((i…
+     57|   console.log("CRASH_CORRECTION_NEGATIVE", JSON.stringify({ active: re…
+     58|   for (const input of [old, corrected]) expect(recoverableVersions()).…
+       |                                                                       ^
+     59| });
+     60| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/cli/b07-prereview-version-negative.test.ts > old-server rowless fallback must not discard corrected poison when old version was quarantined
+AssertionError: expected [ Array(1) ] to include '{"source":"aider","sourceEventId":"sa…'
+ ❯ tests/cli/b07-prereview-version-negative.test.ts:79:93
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 4 passed (9)
+   Start at  01:58:26
+   Duration  1.62s (transform 153ms, setup 0ms, collect 189ms, tests 256ms, environment 0ms, prepare 117ms)
+

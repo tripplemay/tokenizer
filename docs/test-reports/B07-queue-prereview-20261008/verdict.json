@@ -1,0 +1,48 @@
+{
+  "schema": "b07-technical-prereview-v1",
+  "date": "2026-10-08",
+  "candidate_sha": "4979042e3cf8d2c5f06ed5de13372e49d0bab855",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b07-prereview-20261008",
+  "review_kind": "isolated same-family technical prereview",
+  "formal_cross_family_acceptance": false,
+  "verdict": "BLOCK",
+  "product_modified": false,
+  "state_modified": false,
+  "pushed": false,
+  "production": "NOT_TESTED",
+  "findings": [
+    {
+      "id": "Q-01",
+      "severity": "P1",
+      "decision": "BLOCK",
+      "title": "Quarantine source-ID dedup loses exact rejected correction versions",
+      "actual": "active queue empty, quarantine contains only old inputTokens=1; correction inputTokens=200 lost",
+      "reproduced": ["sequential rejection", "same response", "partial ACK sync", "queue commit failure/retry", "rowless old server", "separate native processes"],
+      "evidence": ["evidence/version-and-rowless-negative.log", "evidence/process-negative-and-control.log"]
+    },
+    {
+      "id": "Q-02",
+      "severity": "acceptance gate",
+      "decision": "BLOCK_CI",
+      "title": "Native Windows immutable-test raw-byte hash fails due to checkout CRLF",
+      "runtime_queue_failure_observed_in_ci": false,
+      "evidence": ["evidence/ci-windows.log", "evidence/archive-line-ending-probe.json"]
+    }
+  ],
+  "tests": {
+    "first_negative": { "passed": 3, "failed": 4 },
+    "expanded_negative": { "passed": 4, "failed": 5 },
+    "native_process": { "passed": 1, "failed": 1 },
+    "candidate_focused": { "passed": 33, "failed": 0 }
+  },
+  "ci": {
+    "run_id": 37669971304,
+    "exact_head_sha_verified": true,
+    "conclusion": "failure",
+    "windows_job": 112958913200,
+    "windows_unit": { "passed": 1664, "failed": 1, "skipped": 37 },
+    "deploy": "skipped"
+  },
+  "limitations": ["native Windows independent probes not run", "no power-loss fsync proof", "no physical crash at two-file rename gap", "no every-interleaving stale lock proof", "local reused-dependency typecheck failure"],
+  "report": "REPORT.md"
+}

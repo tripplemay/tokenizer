@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b07-prereview-20261008
+
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 12ms
+ ✓ tests/cli/b07-private-queue-files.test.ts (2 tests) 14ms
+ ✓ tests/cli/b07-queue-resolution.test.ts (9 tests) 134ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 168ms
+ ✓ tests/cli/b06-rejected-events-concurrency.test.ts (1 test) 516ms
+   ✓ B06 rejected usage concurrency > serializes two native processes without losing either rejected event 515ms
+ ✓ tests/cli/b07-queue-multiwriter.test.ts (1 test) 2240ms
+   ✓ B07 native two-process queue liveness > preserves concurrent collection, newer versions and crash retries over real HTTP 2237ms
+
+ Test Files  6 passed (6)
+      Tests  33 passed (33)
+   Start at  01:54:52
+   Duration  3.68s (transform 488ms, setup 0ms, collect 1.11s, tests 3.08s, environment 1ms, prepare 938ms)
+
