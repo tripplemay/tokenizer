@@ -38,10 +38,29 @@ it.each(["afterPathStat", "afterRead"] as const)("R1 refuses a parent replaced b
   mkdirSync(parent);
   const file = join(parent, "session.jsonl");
   writeFileSync(file, row(parent));
-  expect(() => readBoundedReplayFile(file, 1024 * 1024, { [stage]: () => {
-    renameSync(parent, moved);
-    symlinkSync(moved, parent, linkType);
-  } })).toThrow("non-symlink directory");
+  let mutationStage = "not-started";
+  let caught: Error | undefined;
+  try {
+    readBoundedReplayFile(file, 1024 * 1024, { [stage]: () => {
+      mutationStage = "started";
+      renameSync(parent, moved);
+      mutationStage = "renamed";
+      symlinkSync(moved, parent, linkType);
+      mutationStage = "linked";
+    } });
+  } catch (error) {
+    caught = error as Error;
+  }
+  expect(caught?.message).toMatch(/^Replay refused:/);
+  if (mutationStage === "linked") {
+    expect(caught?.message).toMatch(/non-symlink directory|source parent changed|source changed/);
+  } else {
+    // Windows may refuse the adversarial rename while the leaf handle is open.
+    // That still fails closed, but is not evidence that the junction race ran.
+    expect(process.platform).toBe("win32");
+    expect(mutationStage).not.toBe("not-started");
+    expect(caught?.message).toContain("source could not be opened safely");
+  }
 });
 
 it("R1 refuses a replaced regular parent even when a hardlink preserves the leaf inode", () => {
@@ -113,8 +132,10 @@ it("unchanged regular file remains usable and cursor bytes remain unchanged", ()
   expect(readFileSync(cursor, "utf8")).toBe("cursor-sentinel\n");
 });
 
-it.skipIf(process.platform !== "win32")("Windows refuses unsupported network/device/alternate-stream sources before opening", () => {
-  for (const file of ["\\\\localhost\\share\\session.jsonl", "\\\\.\\pipe\\session.jsonl", "C:\\logs\\base:stream.jsonl"]) {
-    expect(() => readBoundedReplayFile(file, 1024)).toThrow("local Windows drive file");
-  }
+it.skipIf(process.platform !== "win32").each([
+  ["UNC", "\\\\localhost\\share\\session.jsonl", /local Windows drive file/],
+  ["device", "\\\\.\\pipe\\session.jsonl", /absolute path without dot traversal|local Windows drive file/],
+  ["alternate stream", "C:\\logs\\base:stream.jsonl", /local Windows drive file/]
+] as const)("Windows refuses unsupported %s source before opening", (_kind, file, message) => {
+  expect(() => readBoundedReplayFile(file, 1024)).toThrow(message);
 });

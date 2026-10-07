@@ -62,7 +62,11 @@ export function writeQueue(events: UsageEventInput[]) {
   withFileLock(queuePath, () => writeFileAtomic(queuePath, content));
 }
 
-export function mergeQueue(events: UsageEventInput[], path = queuePath): { events: UsageEventInput[]; added: number } {
+export function mergeQueue(
+  events: UsageEventInput[],
+  path = queuePath,
+  options: { timeoutMs?: number; beforeMutate?: () => void } = {}
+): { events: UsageEventInput[]; added: number } {
   const incoming = events.map((event) => minimizeUsageEvent(sanitizeUsageEventGit(event)));
   let result: { events: UsageEventInput[]; added: number } | undefined;
   withFileLock(path, () => {
@@ -76,9 +80,10 @@ export function mergeQueue(events: UsageEventInput[], path = queuePath): { event
       .map((event) => `${event.source}:${event.sourceEventId}`)
       .filter((key) => !existingKeys.has(key))).size;
     const content = merged.length ? merged.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
+    options.beforeMutate?.();
     writeFileAtomic(path, content);
     result = { events: merged, added };
-  });
+  }, { timeoutMs: options.timeoutMs });
   return result!;
 }
 

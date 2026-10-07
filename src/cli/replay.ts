@@ -85,6 +85,25 @@ function fail(message: string): never {
   throw new Error(`Replay refused: ${message}`);
 }
 
+function replayDeadline(): number {
+  return Date.now() + MAX_ELAPSED_MS;
+}
+
+function assertWithinDeadline(deadlineMs: number, stage: string): void {
+  if (Date.now() >= deadlineMs) fail(`${stage} exceeded ${MAX_ELAPSED_MS}ms deadline`);
+}
+
+function enrichReplayEvents(events: UsageEventInput[], deadlineMs: number): UsageEventInput[] {
+  try {
+    return enrichEventsWithGit(events, { deadlineMs });
+  } catch (error) {
+    if (error instanceof Error && /deadline|timeout/i.test(error.message)) {
+      fail(`Git enrichment exceeded ${MAX_ELAPSED_MS}ms deadline`);
+    }
+    fail("Git enrichment could not complete safely");
+  }
+}
+
 function statIdentity(stat: BigIntStats): Omit<FileIdentity, "contentSha256"> {
   return {
     dev: String(stat.dev),
@@ -102,7 +121,8 @@ function sameIdentity(left: Omit<FileIdentity, "contentSha256">, right: Omit<Fil
 
 type ParentIdentity = { path: string; dev: string; ino: string };
 
-function checkSourcePath(file: string, started: number, nativeAttributes = true): ParentIdentity[] {
+function checkSourcePath(file: string, deadlineMs: number, nativeAttributes = true): ParentIdentity[] {
+  assertWithinDeadline(deadlineMs, "source inspection");
   const segments = file.split(process.platform === "win32" ? /[\\/]/ : /\//);
   if (!isAbsolute(file) || segments.some((segment) => segment === "." || segment === "..")) {
     fail("source requires an absolute path without dot traversal");
@@ -128,7 +148,7 @@ function checkSourcePath(file: string, started: number, nativeAttributes = true)
     // Node's stat flags do not expose every Windows reparse tag. Check native
     // attributes before/after reading; unavailable checks fail closed.
     const script = "$ErrorActionPreference='Stop'; foreach($p in (ConvertFrom-Json $env:TOKENIZER_REPLAY_PATHS)) { if(([IO.File]::GetAttributes($p) -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'reparse point' } }; 'TOKENIZER_REPLAY_NO_REPARSE_V1'";
-    const remaining = MAX_ELAPSED_MS - (Date.now() - started);
+    const remaining = deadlineMs - Date.now();
     if (remaining <= 0) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
     const result = execFileSync("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script], {
       env: { ...process.env, TOKENIZER_REPLAY_PATHS: JSON.stringify([...parents, file]) },
@@ -137,6 +157,7 @@ function checkSourcePath(file: string, started: number, nativeAttributes = true)
     });
     if (result.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") fail("source reparse-point check failed");
   }
+  assertWithinDeadline(deadlineMs, "source inspection");
   return identities;
 }
 
@@ -165,17 +186,22 @@ function validateRecords(bytes: Buffer): number {
   return records;
 }
 
-export function readBoundedReplayFile(file: string, maxBytes: number, hooks: ReplayReadHooks = {}): ReplayFileSnapshot {
-  const started = Date.now();
+export function readBoundedReplayFile(
+  file: string,
+  maxBytes: number,
+  hooks: ReplayReadHooks = {},
+  deadlineMs = replayDeadline()
+): ReplayFileSnapshot {
   let descriptor: number | undefined;
   try {
-    const parents = checkSourcePath(file, started);
+    const parents = checkSourcePath(file, deadlineMs);
     const beforeStat = lstatSync(file, { bigint: true });
     if (!beforeStat.isFile() || beforeStat.isSymbolicLink()) fail("source must be one regular non-symlink file");
     const before = statIdentity(beforeStat);
     if (before.size > maxBytes) fail(`byte limit exceeded (${before.size} > ${maxBytes})`);
     hooks.afterPathStat?.();
-    checkSameParents(parents, checkSourcePath(file, started, false));
+    assertWithinDeadline(deadlineMs, "source inspection");
+    checkSameParents(parents, checkSourcePath(file, deadlineMs, false));
 
     // O_NOFOLLOW alone still blocks when a regular path is raced into a FIFO.
     const flags = process.platform === "win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK;
@@ -184,7 +210,7 @@ export function readBoundedReplayFile(file: string, maxBytes: number, hooks: Rep
     if (!openedStat.isFile()) fail("opened source is not a regular file");
     const opened = statIdentity(openedStat);
     if (!sameIdentity(before, opened)) fail("source changed between path check and open");
-    checkSameParents(parents, checkSourcePath(file, started, false));
+    checkSameParents(parents, checkSourcePath(file, deadlineMs, false));
 
     const bytes = Buffer.allocUnsafe(maxBytes + 1);
     let offset = 0;
@@ -192,12 +218,13 @@ export function readBoundedReplayFile(file: string, maxBytes: number, hooks: Rep
       const count = readSync(descriptor, bytes, offset, bytes.length - offset, null);
       if (count === 0) break;
       offset += count;
-      if (Date.now() - started > MAX_ELAPSED_MS) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
+      assertWithinDeadline(deadlineMs, "read");
     }
     if (offset > maxBytes) fail(`byte limit exceeded (${offset} > ${maxBytes})`);
     hooks.afterRead?.();
 
-    checkSameParents(parents, checkSourcePath(file, started));
+    assertWithinDeadline(deadlineMs, "read");
+    checkSameParents(parents, checkSourcePath(file, deadlineMs));
 
     const afterHandleStat = fstatSync(descriptor, { bigint: true });
     const afterPathStat = lstatSync(file, { bigint: true });
@@ -205,7 +232,7 @@ export function readBoundedReplayFile(file: string, maxBytes: number, hooks: Rep
     const afterHandle = statIdentity(afterHandleStat);
     const afterPath = statIdentity(afterPathStat);
     if (!sameIdentity(opened, afterHandle) || !sameIdentity(opened, afterPath)) fail("source changed while being read");
-    if (Date.now() - started > MAX_ELAPSED_MS) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
+    assertWithinDeadline(deadlineMs, "read");
 
     const content = bytes.subarray(0, offset);
     return Object.freeze({
@@ -248,10 +275,10 @@ function digestPlan(plan: BoundedReplayPlan, identity: FileIdentity, config: Tok
   })).digest("hex");
 }
 
-function inspectReplay(plan: BoundedReplayPlan, config: TokenizerConfig): ReplayInspection {
-  const started = Date.now();
+function inspectReplay(plan: BoundedReplayPlan, config: TokenizerConfig, deadlineMs: number): ReplayInspection {
+  assertWithinDeadline(deadlineMs, "inspection");
   const privacy = effectivePrivacy(config);
-  const snapshot = readBoundedReplayFile(plan.file, plan.maxBytes);
+  const snapshot = readBoundedReplayFile(plan.file, plan.maxBytes, {}, deadlineMs);
   const parsed = parseClaudeJsonlBuffer({
     file: plan.file,
     bytes: snapshot.bytes,
@@ -265,9 +292,14 @@ function inspectReplay(plan: BoundedReplayPlan, config: TokenizerConfig): Replay
     return Number.isFinite(occurredAt) && occurredAt >= from && occurredAt < to;
   });
   if (selected.length > plan.maxEvents) fail(`event limit exceeded (${selected.length} > ${plan.maxEvents})`);
-  const eligible = filterUsageEvents(enrichEventsWithGit(filterUsageEvents(selected, privacy)), privacy).map(minimizeUsageEvent);
+  assertWithinDeadline(deadlineMs, "parse and scope admission");
+  const eligible = filterUsageEvents(
+    enrichReplayEvents(filterUsageEvents(selected, privacy), deadlineMs),
+    privacy
+  ).map(minimizeUsageEvent);
+  assertWithinDeadline(deadlineMs, "Git enrichment and scope admission");
   const binding = admissionBinding(selected, eligible, privacy);
-  if (Date.now() - started > MAX_ELAPSED_MS) fail(`parse exceeded ${MAX_ELAPSED_MS}ms`);
+  assertWithinDeadline(deadlineMs, "inspection");
   return {
     snapshot,
     planDigest: digestPlan(plan, snapshot.identity, config, binding),
@@ -296,7 +328,7 @@ export function dryRunBoundedReplay(plan: BoundedReplayPlan, config: TokenizerCo
   if (!Number.isSafeInteger(sampleCount) || sampleCount < 0 || sampleCount > MAX_REPLAY_SAMPLE) {
     fail(`sample limit must be between 0 and ${MAX_REPLAY_SAMPLE}`);
   }
-  const inspection = inspectReplay(plan, config);
+  const inspection = inspectReplay(plan, config, replayDeadline());
   return {
     dryRun: true,
     planDigest: inspection.planDigest,
@@ -323,14 +355,16 @@ export function executeBoundedReplay(
   if (plan.dryRun) fail("dry-run plan cannot execute");
   if (!/^[0-9a-f]{64}$/.test(confirmation)) fail("execution requires an exact lowercase SHA-256 confirmation digest");
   if (effectivePrivacy(config).mode === "paused") fail("execution is disabled while privacy mode is paused");
-  const inspection = inspectReplay(plan, config);
+  const deadlineMs = replayDeadline();
+  const inspection = inspectReplay(plan, config, deadlineMs);
   if (inspection.planDigest !== confirmation) fail("confirmation digest does not match the current file, scope, mode, window, or budgets");
 
   // Re-open immediately before admission. A file replacement/growth or a
   // configure change after the preview invalidates the confirmation rather
   // than admitting a different snapshot.
   const currentConfig = (options.readCurrentConfig ?? readConfig)();
-  const confirmationSnapshot = readBoundedReplayFile(plan.file, plan.maxBytes);
+  assertWithinDeadline(deadlineMs, "final config admission");
+  const confirmationSnapshot = readBoundedReplayFile(plan.file, plan.maxBytes, {}, deadlineMs);
   if (digestPlan(plan, confirmationSnapshot.identity, currentConfig, inspection.admissionBinding) !== confirmation) {
     fail("confirmation digest became stale before queue admission");
   }
@@ -340,12 +374,23 @@ export function executeBoundedReplay(
   }
 
   const privacy = effectivePrivacy(currentConfig);
-  const admittedCandidates = filterUsageEvents(enrichEventsWithGit(filterUsageEvents(inspection.selected, privacy)), privacy).map(minimizeUsageEvent);
+  const admittedCandidates = filterUsageEvents(
+    enrichReplayEvents(filterUsageEvents(inspection.selected, privacy), deadlineMs),
+    privacy
+  ).map(minimizeUsageEvent);
+  assertWithinDeadline(deadlineMs, "final Git enrichment and admission");
   const finalBinding = admissionBinding(inspection.selected, admittedCandidates, privacy);
   if (digestPlan(plan, confirmationSnapshot.identity, currentConfig, finalBinding) !== confirmation) {
     fail("physical scope or admitted candidates became stale before queue admission");
   }
-  const merged = (options.mergeEvents ?? mergeQueue)(admittedCandidates);
+  assertWithinDeadline(deadlineMs, "queue admission");
+  const remainingMs = Math.max(1, deadlineMs - Date.now());
+  const merged = options.mergeEvents
+    ? options.mergeEvents(admittedCandidates)
+    : mergeQueue(admittedCandidates, undefined, {
+      timeoutMs: remainingMs,
+      beforeMutate: () => assertWithinDeadline(deadlineMs, "queue admission")
+    });
   return {
     dryRun: false,
     planDigest: confirmation,
