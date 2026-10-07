@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+ ❯ tests/server/batch-schema.test.ts (65 tests | 1 failed | 64 skipped) 7ms
+   × B06 bounded pre-side-effect batch admission > rejects mixed good/poison usage rows for source="secret-canary" without a partial ACK 6ms
+     → expected 200 to be 400 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/batch-schema.test.ts > B06 bounded pre-side-effect batch admission > rejects mixed good/poison usage rows for source="secret-canary" without a partial ACK
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/server/batch-schema.test.ts:97:29
+     95|   ])("rejects mixed good/poison usage rows for %s=%j without a partial…
+     96|     const response = await usage(request({ ...usageBody(), events: [ev…
+     97|     expect(response.status).toBe(400);
+       |                             ^
+     98|     const result = await response.json();
+     99|     expect(result.code).toBe(typeof value === "string" && (value.inclu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 64 skipped (65)
+   Start at  00:21:07
+   Duration  270ms (transform 70ms, setup 0ms, collect 90ms, tests 7ms, environment 0ms, prepare 41ms)
+

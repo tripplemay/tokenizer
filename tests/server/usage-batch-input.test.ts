@@ -27,18 +27,18 @@ vi.mock("@/server/usage-cost-cache", () => ({ invalidateUsageCostCache: mocks.in
 
 import { POST } from "../../app/api/usage/events/batch/route";
 
-function request() {
+function request(poison = false) {
   return new Request("http://localhost/api/usage/events/batch", {
     method: "POST",
     headers: { authorization: "Bearer token", "content-type": "application/json" },
     body: JSON.stringify({
       device: {
         id: "device-1",
-        name: `Desk\u0000agent${"x".repeat(300)}`
+        name: poison ? `Desk\u0000agent${"x".repeat(300)}` : "Desk agent"
       },
       events: [
         {
-          source: `kimicode\u0001${"x".repeat(200)}`,
+          source: poison ? `kimicode\u0001${"x".repeat(200)}` : "kimicode",
           sourceEventId: "event-1",
           model: "new-model",
           occurredAt: "2026-08-10T00:00:00.000Z",
@@ -53,7 +53,7 @@ function request() {
 describe("usage batch hot-path input cleaning", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.authenticateDeviceToken.mockResolvedValue({ id: "token-1", userId: "user-1", deviceId: "device-1" });
+    mocks.authenticateDeviceToken.mockResolvedValue({ id: "token-1", userId: "user-1", deviceId: "device-1", device: { id: "device-1", userId: "user-1" } });
     mocks.prisma.device.upsert.mockResolvedValue({ id: "device-1" });
     mocks.prisma.deviceToken.update.mockResolvedValue({});
     mocks.prisma.project.findFirst.mockResolvedValue(null);
@@ -64,17 +64,22 @@ describe("usage batch hot-path input cleaning", () => {
     mocks.detectAndTrackUnpricedModels.mockResolvedValue([]);
   });
 
-  it("accepts a poison batch and stores bounded device/source values", async () => {
-    const response = await POST(request());
+  it("rejects the former poison batch before any business writes", async () => {
+    const response = await POST(request(true));
 
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "invalid batch request", code: "invalid_json" });
+    expect(mocks.prisma.device.upsert).not.toHaveBeenCalled();
+    expect(mocks.prisma.deviceToken.update).not.toHaveBeenCalled();
+    expect(mocks.prisma.usageEvent.createMany).not.toHaveBeenCalled();
+    expect(mocks.updateTimezone).not.toHaveBeenCalled();
+    expect(mocks.invalidateUsageCostCache).not.toHaveBeenCalled();
+  });
+
+  it("preserves legitimate old Agent fields and successful cache invalidation", async () => {
+    const response = await POST(request());
     expect(response.status).toBe(200);
-    const deviceWrite = mocks.prisma.device.upsert.mock.calls[0][0];
-    const eventRows = mocks.prisma.usageEvent.createMany.mock.calls[0][0].data;
-    expect(deviceWrite.update.name).toBe(`Deskagent${"x".repeat(191)}`);
-    expect(deviceWrite.update.name).toHaveLength(200);
-    expect(eventRows[0].source).toBe(`kimicode${"x".repeat(92)}`);
-    expect(eventRows[0].source).toHaveLength(100);
-    expect(eventRows[0].source).not.toMatch(/[\u0000-\u001F\u007F-\u009F]/);
+    expect(mocks.prisma.usageEvent.createMany.mock.calls[0][0].data[0].source).toBe("kimicode");
     expect(mocks.invalidateUsageCostCache).toHaveBeenCalledOnce();
     expect(mocks.invalidateUsageCostCache).toHaveBeenCalledWith("user-1");
   });

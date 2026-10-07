@@ -1,0 +1,23 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+F004 concurrent statuses: 200, 409
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+F004 stored decisionSig matches 200-response sig: true
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > B06 F003 e2e: poison batch returns 400 before device, token or event writes
+F003 poison batch HTTP status: 400
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F007: independent recompute of the audit fixture + exactly one aggregate query
+F007 independent recompute: totalComputeTokens=1951110 totalCostUsd=19.388000
+
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests) 57ms
+ ✓ tests/server/b06-batch-db.probe.test.ts (3 tests) 54ms
+
+ Test Files  2 passed (2)
+      Tests  44 passed (44)
+   Start at  00:19:53
+   Duration  355ms (transform 143ms, setup 0ms, collect 228ms, tests 111ms, environment 0ms, prepare 94ms)
+

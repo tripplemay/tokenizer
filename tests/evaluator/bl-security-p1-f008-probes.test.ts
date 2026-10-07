@@ -11,6 +11,8 @@
  * F007 expectations are recomputed here from raw fixture values by an
  * independent implementation; Generator-authored expected literals are not
  * consulted.
+ * B06 Generator updates only the active F003 DB expectation to fail-closed
+ * admission; historical independent reports/verdicts are not changed.
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { safeCallbackPath } from "../../src/shared/url";
@@ -283,9 +285,9 @@ describeDb("DB-backed adversarial probes (scratch PostgreSQL)", () => {
     expect(after.decisionSig).toBe(stored.decisionSig);
   });
 
-  it("F003 e2e: poison batch returns 2xx, persists sanitized values, renders tooltip-safe", async () => {
+  it("B06 F003 e2e: poison batch returns 400 before device, token or event writes", async () => {
     const { POST } = await import("../../app/api/usage/events/batch/route");
-    mocks.authenticateDeviceToken.mockResolvedValue({ id: "tok-f008", userId: USER, deviceId: "device-f008-poison" });
+    mocks.authenticateDeviceToken.mockResolvedValue({ id: "tok-f008", userId: USER, deviceId: "device-f008-poison", device: { id: "device-f008-poison", userId: USER } });
     mocks.detectAndTrackUnpricedModels.mockResolvedValue([]);
     // token row must exist: ingest stamps lastUsedAt on it after device upsert
     await prisma.device.create({ data: { id: "device-f008-poison", userId: USER, name: "pre" } });
@@ -313,18 +315,14 @@ describeDb("DB-backed adversarial probes (scratch PostgreSQL)", () => {
       }) as never
     );
     console.log(`F003 poison batch HTTP status: ${response.status}`);
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(400);
 
     const device = await prisma.device.findUniqueOrThrow({ where: { id: "device-f008-poison" } });
     const events = await prisma.usageEvent.findMany({ where: { sourceEventId: "f008-e1" } });
-    expect(events).toHaveLength(1); // event ingested — queue-pinning path avoided
-    expect(device.name!.length).toBeLessThanOrEqual(MAX_DEVICE_NAME_LENGTH);
-    expect(device.name).not.toMatch(/[\u0000-\u001F]/);
-    expect(events[0].source.length).toBeLessThanOrEqual(MAX_SOURCE_LENGTH);
-    expect(events[0].source).toMatch(/^brandnewsource/); // no closed-set rejection
-    const tooltipHtml = escapeHtml(device.name!);
-    expect(tooltipHtml).not.toContain("<");
-    expect(tooltipHtml).toContain("&lt;img");
+    expect(events).toHaveLength(0);
+    expect(device.name).toBe("pre");
+    expect(device.lastSyncAt).toBeNull();
+    expect((await prisma.deviceToken.findUniqueOrThrow({ where: { id: "tok-f008" } })).lastUsedAt).toBeNull();
   });
 
   it("F007: independent recompute of the audit fixture + exactly one aggregate query", async () => {

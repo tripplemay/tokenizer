@@ -1,0 +1,15 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 104ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+tests/cli/b06-batch-failure-queue.test.ts(20,18): error TS2352: Conversion of type '{ source: "unknown"; sourceEventId: string; projectName?: string | null; sessionId?: string | null; workspacePath?: string | null; localWorkspacePath?: string | null; repoKey?: string | null; ... 19 more ...; rawJson?: unknown; }' to type 'UsageEventInput' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'source' are incompatible.
+    Type '"unknown"' is not comparable to type 'UsageSource'.

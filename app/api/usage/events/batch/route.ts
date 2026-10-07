@@ -4,7 +4,7 @@ import { ingestUsageEvents } from "@/server/ingest";
 import { invalidateUsageCostCache } from "@/server/usage-cost-cache";
 import { maybeTriggerPriceLookup } from "@/server/pricing/trigger";
 import { updateUserTimezoneIfValid } from "@/server/timezone";
-import { BatchUsageRequest } from "@/shared/usage";
+import { invalidBatchResponse, readBoundedBatchJson, validateUsageBatch } from "@/server/batch-input";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +12,12 @@ export async function POST(request: NextRequest) {
   const token = await authenticateDeviceToken(request);
   if (!token) return unauthorized();
 
-  const body = (await request.json()) as BatchUsageRequest;
-  if (!body?.device?.id || !body.device.name || !Array.isArray(body.events)) {
-    return Response.json({ error: "device and events are required" }, { status: 400 });
+  if (!token.device || token.device.id !== token.deviceId || token.device.userId !== token.userId) return forbidden();
+  let body: ReturnType<typeof validateUsageBatch>;
+  try {
+    body = validateUsageBatch(await readBoundedBatchJson(request));
+  } catch (error) {
+    return invalidBatchResponse(error);
   }
   if (body.device.id !== token.deviceId) return forbidden("device token does not match device");
 

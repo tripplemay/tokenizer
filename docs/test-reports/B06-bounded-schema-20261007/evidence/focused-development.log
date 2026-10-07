@@ -1,0 +1,38 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 71ms
+ ❯ tests/server/usage-batch-input.test.ts (3 tests | 1 failed) 22ms
+   × usage batch hot-path input cleaning > rejects the former poison batch before any business writes 16ms
+     → expected { Object (error, code) } to deeply equal { Object (error, code) }
+ ✓ tests/server/batch-schema.test.ts (57 tests) 109ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/usage-batch-input.test.ts > usage batch hot-path input cleaning > rejects the former poison batch before any business writes
+AssertionError: expected { Object (error, code) } to deeply equal { Object (error, code) }
+
+- Expected
++ Received
+
+  Object {
+-   "code": "invalid_device",
++   "code": "invalid_json",
+    "error": "invalid batch request",
+  }
+
+ ❯ tests/server/usage-batch-input.test.ts:71:35
+     69| 
+     70|     expect(response.status).toBe(400);
+     71|     expect(await response.json()).toEqual({ error: "invalid batch requ…
+       |                                   ^
+     72|     expect(mocks.prisma.device.upsert).not.toHaveBeenCalled();
+     73|     expect(mocks.prisma.deviceToken.update).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 67 passed (68)
+   Start at  00:15:00
+   Duration  897ms (transform 200ms, setup 0ms, collect 401ms, tests 202ms, environment 0ms, prepare 195ms)
+
