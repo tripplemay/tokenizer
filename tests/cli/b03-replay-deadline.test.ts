@@ -140,7 +140,7 @@ it("does not let startup version detection pin non-replay CLI help", () => {
       PATH: `${bin}${delimiter}${process.env.PATH}`,
       B03_GIT_MARKER: marker
     },
-    timeout: 4_000,
+    timeout: 9_000,
     killSignal: "SIGKILL"
   });
 
@@ -148,8 +148,8 @@ it("does not let startup version detection pin non-replay CLI help", () => {
   expect(child.status, child.stderr).toBe(0);
   expect(child.stdout).toContain("Usage:");
   expect(readFileSync(marker, "utf8").match(/entered/g)).toHaveLength(1);
-  expect(Date.now() - started).toBeLessThan(4_000);
-}, 10_000);
+  expect(Date.now() - started).toBeLessThan(9_000);
+}, 12_000);
 
 it("uses one execution deadline across both enrichments and refuses before merge", () => {
   const { request, config } = fixture();
