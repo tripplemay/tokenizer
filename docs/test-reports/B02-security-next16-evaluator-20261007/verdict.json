@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "batch_id": "B02-security-next16-20261007",
+  "role": "independent_evaluator",
+  "evaluated_at": "2026-10-07T14:30:36Z",
+  "review_baseline_commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "round_one_candidate_commit": "4b67b2ec33157b70149d708aebea21d3bd5dbbff",
+  "candidate_commit": "305201ef44ab9e6a6a20f4f24c7c7358d57b1ebe",
+  "verdict": "PASS_WITH_RELEASE_BLOCKERS",
+  "release_ready": false,
+  "summary": "The exact candidate successfully replaces the remaining audited production Next 15/PostCSS and next-intl 3 graph with Next 16.4.0 and next-intl 4.14.9. Independent Node 22 clean install, production-only audit, lint, typecheck, normal and standalone builds, targeted tests, three complete test runs, PostgreSQL migrations, Auth.js database sessions, one-time magic-link callback, two-tenant isolation, Chromium rendering and standalone runtime smokes passed. It is not a release-ready immutable SHA: this commit does not contain B01's PostgreSQL/Playwright/lint deploy gates, Windows does not block deployment, a real Linux Docker image and GitHub-hosted CI were not executed, and real Resend delivery plus production secret rotation/configuration remain unverified.",
+  "scope_result": {
+    "next16_next_intl4_migration": "PASS",
+    "production_dependency_audit": "PASS_0_CRITICAL_0_HIGH_0_MODERATE",
+    "full_dependency_audit": "OPEN_2_CRITICAL_10_HIGH_4_MODERATE_DEV_TOOLCHAIN_RECORDS",
+    "authjs_database_session": "PASS",
+    "magic_link_callback": "PASS_SYNTHETIC_TOKEN_NO_REAL_EMAIL",
+    "tenant_isolation": "PASS_LOCAL_POSTGRESQL",
+    "next_intl_runtime": "PASS_ZH_CN_AND_EN",
+    "lint_typecheck_build": "PASS_LOCAL_NODE_22",
+    "full_test_suite": "PASS_3_OF_3_INDEPENDENT_RUNS",
+    "playwright": "PASS_LOCAL_EXTERNAL_EVALUATOR_TOOLING_NOT_CANDIDATE_CI",
+    "candidate_ci_release_gate": "FAIL_NOT_INTEGRATED_WITH_B01",
+    "linux_docker_windows_real_ci": "UNVERIFIED",
+    "production_release_gate": "BLOCKED"
+  },
+  "audit": {
+    "production_only": {
+      "command": "npm audit --omit=dev --json",
+      "exit_code": 0,
+      "critical": 0,
+      "high": 0,
+      "moderate": 0,
+      "total": 0,
+      "evidence": "evidence/npm-audit-production.json",
+      "interpretation": "This closes the round-one nested PostCSS High and next-intl Moderate package records. It is a production dependency graph result, not a whole-tree zero-vulnerability claim."
+    },
+    "all_dependencies": {
+      "command": "npm audit --json",
+      "exit_code": 1,
+      "critical": 2,
+      "high": 10,
+      "moderate": 4,
+      "total": 16,
+      "evidence": "evidence/npm-audit-all.json",
+      "critical_chain": [
+        "vitest",
+        "tinypool"
+      ],
+      "high_chains": [
+        "vite/esbuild",
+        "tailwindcss/chokidar/braces/micromatch/fast-glob",
+        "eslint-config-next/@next/eslint-plugin-next/fast-glob",
+        "browserslist/brace-expansion"
+      ],
+      "reachability_judgement": "These records are absent from the generated standalone runtime tree and the audited Vitest UI/Vite dev-server paths are not launched by the current build or test commands. Their present attack surface is ephemeral build/test/lint processing of repository-controlled source, configuration, globs and tests, not remote requests to the deployed Next server. They therefore do not independently block the runtime dependency migration under the current artifact boundary, but they are real build/CI supply-chain and availability risk and must not be described as clean or ignored.",
+      "required_follow_up": "Create an owned, dated toolchain batch to migrate Vitest/Vite/tinypool first and then Tailwind/glob and ESLint glob chains with Node 22, Windows, PostgreSQL and Playwright regression coverage. Do not use audit fix --force. Until then keep Vitest UI and Vite development servers unexposed, run CI on ephemeral least-privilege runners, accept only repository-controlled build inputs, and verify the release image excludes dev dependencies. Re-evaluate before enabling persistent or network-exposed developer tooling."
+    }
+  },
+  "verified_claims": [
+    {
+      "claim": "The reported production dependency blockers are removed without an unsupported override.",
+      "result": "PASS",
+      "evidence": [
+        "evidence/npm-ci.log",
+        "evidence/npm-audit-production.json",
+        "evidence/npm-ls.txt",
+        "tests/server/dependency-security-floor.test.ts"
+      ],
+      "observed": "next=16.4.0, next-intl=4.14.9, Next nested postcss=8.5.23, baseline-browser-mapping=2.11.27; production audit is 0/0/0."
+    },
+    {
+      "claim": "Next 16 and next-intl 4 preserve compilation, linting and production build behavior on the target Node major.",
+      "result": "PASS",
+      "evidence": [
+        "evidence/verify.log",
+        "evidence/lint.log",
+        "evidence/build.log",
+        "evidence/build-standalone.log"
+      ],
+      "observed": "Node 22.22.0; lint had 0 warnings under --max-warnings=0; both standard and standalone Turbopack builds passed."
+    },
+    {
+      "claim": "The migration does not regress the local test suite.",
+      "result": "PASS",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/test-full-run1.log",
+        "evidence/test-full-run2.log",
+        "evidence/test-full-run3.log"
+      ],
+      "observed": "Targeted dependency/auth/admin/pricing tests: 32/32. Each of three full runs: 107 files passed, 7 skipped; 1475 tests passed, 20 skipped."
+    },
+    {
+      "claim": "Auth.js database sessions, magic-link callback consumption/replay protection, tenant isolation and next-intl rendering work against real PostgreSQL after the migration.",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": [
+        "evidence/pg-migrate.log",
+        "evidence/runtime-auth-tenant-magic-link.log",
+        "scripts/test/b02-next16-magic-link.mjs"
+      ],
+      "observed": "All 28 migrations applied to isolated PostgreSQL 16. Two synthetic users were isolated across events/summary/page, session deletion revoked access, zh-CN/en login rendered, and a manually seeded Auth.js verification token produced one database session and failed closed on replay.",
+      "limitation": "The callback probe intentionally bypasses Resend delivery. It does not prove outbound email, delivered-link fidelity or production DNS/provider configuration."
+    },
+    {
+      "claim": "A real browser can render authenticated Next 16 pages and anonymous auth redirects.",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": [
+        "evidence/playwright.log",
+        "evidence/playwright-migrate.log",
+        "scripts/test/b02-next16-playwright.cjs"
+      ],
+      "observed": "Headless Chromium rendered a database-backed authenticated /events page and redirected anonymous /events to /login.",
+      "limitation": "Playwright 1.63.0 was evaluator tooling borrowed from the B01 worktree. Candidate commit 305201e has no tracked Playwright suite or browser CI gate."
+    },
+    {
+      "claim": "The standalone runtime artifact starts and serves Auth.js/i18n assets while excluding the audited dev-tool roots.",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": [
+        "evidence/standalone-runtime.log",
+        "evidence/auth-url-boundary.log",
+        "evidence/standalone-package-boundary.log"
+      ],
+      "observed": "Standalone /login, /api/auth/providers and linked CSS returned 200; an external HTTPS AUTH_URL was preserved in provider URLs; Vitest/Vite/Tailwind/ESLint/glob tool roots were absent from .next/standalone.",
+      "limitation": "This is a macOS standalone-tree smoke, not a Linux Docker image build or SBOM/image-layer inspection."
+    }
+  ],
+  "sigterm_flake_assessment": {
+    "result": "KNOWN_BASELINE_FLAKE_NOT_REPRODUCED_AND_NOT_FIXED_BY_THIS_CANDIDATE",
+    "evidence": [
+      "evidence/sigterm-boundary.log",
+      "evidence/agent-lifecycle-repeat.log",
+      "evidence/test-full-run1.log",
+      "evidence/test-full-run2.log",
+      "evidence/test-full-run3.log"
+    ],
+    "independent_observation": "Three complete suite runs and ten isolated lifecycle runs passed on macOS/Node 22.",
+    "causal_boundary": "The candidate changes none of tests/cli/agent-lifecycle.test.ts, src/cli/agent.ts, src/cli/agent-lock.ts or bin/tokenizer. The historical stale-lock/wrapper failures are process signal-readiness and scheduling behavior in the B01 lifecycle domain, not a Next/next-intl execution path.",
+    "root_cause_confidence": "The current test waits for state.agent.status=running, which is written after signal handlers are installed, so the original pre-handler readiness window is guarded in this checkout. Because the evaluator could not reproduce a failure, no narrower remaining root cause is proven. A green retry must not be represented as a causal fix.",
+    "release_effect": "Do not reject this dependency migration as the cause of the historical flake, but require the combined B01 candidate and real Linux/Windows CI to pass without retry-based masking before release."
+  },
+  "release_blockers": [
+    {
+      "id": "B02-E1",
+      "severity": "P1",
+      "description": "The exact candidate still has only verify, verify-windows and deploy jobs; deploy needs only verify. It does not run lint, PostgreSQL probes or authenticated Playwright, and Windows failures do not block production.",
+      "required_action": "Integrate the independently accepted B01 CI gate changes with this Next 16 lockfile/config, then run the resulting immutable SHA in GitHub Actions."
+    },
+    {
+      "id": "B02-E2",
+      "severity": "P1",
+      "description": "Docker was unavailable locally, so the Linux image build, final image dependency boundary, startup and deployment path were not independently executed. Windows was also not available.",
+      "required_action": "Pass Linux image build/startup/SBOM or package inspection and the GitHub-hosted Windows suite on the combined SHA."
+    },
+    {
+      "id": "B02-E3",
+      "severity": "P1",
+      "description": "Real Resend send/delivery/click-through and production ADMIN_TOKEN/AUTH_SECRET/AUTH_RESEND_KEY generation, rotation and secret-store configuration were not verified.",
+      "required_action": "Run the separately authorized staging mail journey and human secret/configuration gate without recording secret values."
+    }
+  ],
+  "non_blocking_follow_ups": [
+    {
+      "id": "B02-F1",
+      "priority": "P1_TOOLCHAIN",
+      "description": "Remediate or explicitly time-bound the full-tree 2 Critical / 10 High / 4 Moderate dev-tool package records. This is mandatory toolchain debt, not evidence of a vulnerable deployed runtime."
+    },
+    {
+      "id": "B02-F2",
+      "priority": "P2",
+      "description": "Reassess the four disabled React Compiler diagnostics before enabling reactCompiler; they were disabled to preserve the prior lint baseline."
+    }
+  ],
+  "limitations": [
+    "No production service, production database, real email provider, real user credential, gate decision, push or deployment was accessed.",
+    "Local runtime checks used macOS arm64. PostgreSQL was real version 16, but Linux container and Windows target behavior remain unverified.",
+    "The candidate's preserved Generator reports were not used as acceptance evidence; all PASS claims above come from evaluator runs or direct diff/runtime inspection.",
+    "The browser probe covers a narrow authenticated render and redirect, not B01's full first-use browser journey matrix."
+  ],
+  "reproducible_commands": [
+    "source $HOME/.nvm/nvm.sh && nvm use 22.22.0 && npm ci",
+    "npm audit --omit=dev --json",
+    "npm audit --json",
+    "npm run verify",
+    "npm run lint",
+    "DATABASE_URL=postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder NODE_ENV=production npm run build",
+    "NEXT_OUTPUT=standalone DATABASE_URL=postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder NODE_ENV=production npm run build",
+    "npx vitest run tests/server/dependency-security-floor.test.ts tests/server/auth-secret.test.ts tests/server/pricing-review.test.ts tests/server/admin-token.test.ts",
+    "npm test",
+    "CI_E2E=1 DATABASE_URL=<local tokenizer_e2e PostgreSQL URL> E2E_DATABASE_URL=$DATABASE_URL CI_E2E_BASE_URL=<local server> node scripts/test-next16-auth-tenant.mjs",
+    "CI_E2E=1 DATABASE_URL=<local tokenizer_e2e PostgreSQL URL> E2E_DATABASE_URL=$DATABASE_URL CI_E2E_BASE_URL=<local server> AUTH_SECRET=<synthetic> node scripts/test/b02-next16-magic-link.mjs"
+  ]
+}
