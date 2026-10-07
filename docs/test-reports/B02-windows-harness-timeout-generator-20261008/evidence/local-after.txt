@@ -1,0 +1,19 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-windows-harness-timeout-20261008
+
+ ✓ tests/cli/harness.test.ts (27 tests) 10996ms
+     ✓ report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit  305ms
+     ✓ gate relay 失败不阻塞另外两步  353ms
+     ✓ applies the exact HTTP retryability matrix  614ms
+     ✓ classifies safe server codes and never retains response bodies in the snapshot  306ms
+     ✓ falls back to http status when a response code is not normalized  477ms
+     ✓ classifies timeouts for all independent subchains without short-circuiting  326ms
+     ✓ caps structured issues at 20 while retaining the full failed-project count  5158ms
+     ✓ writes idle, success, degraded, and failed snapshots from actual outcomes  335ms
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  00:25:48
+   Duration  11.26s (transform 156ms, setup 0ms, import 206ms, tests 11.00s, environment 0ms)
+
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-b02-windows-harness-timeout-20261008/docs/test-reports/B02-windows-harness-timeout-generator-20261008/evidence/local-after.json
