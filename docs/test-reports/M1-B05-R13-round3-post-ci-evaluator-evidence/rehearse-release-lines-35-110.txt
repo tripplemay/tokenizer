@@ -1,0 +1,76 @@
+    35	  trap - EXIT
+    36	  docker rm -fv "$app" "$db" "$source_db" >/dev/null 2>&1 || true
+    37	  docker network rm "$network" >/dev/null 2>&1 || true
+    38	  rm -f "$temp_dump"
+    39	  exit "$status"
+    40	}
+    41	trap cleanup EXIT
+    42	docker network create --internal "$network" >/dev/null
+    43	start_db() {
+    44	  docker run -d --name "$1" --network "$network" \
+    45	    -e POSTGRES_PASSWORD=rehearsal-only-password -e POSTGRES_USER=tokenizer -e POSTGRES_DB=tokenizer postgres:16-alpine >/dev/null
+    46	  for _ in {1..30}; do
+    47	    if docker exec "$1" pg_isready -U tokenizer -d tokenizer >/dev/null 2>&1; then return; fi
+    48	    sleep 1
+    49	  done
+    50	  echo "scratch PostgreSQL did not start" >&2; exit 1
+    51	}
+    52	db_url() { printf 'postgresql://tokenizer:rehearsal-only-password@%s:5432/tokenizer' "$1"; }
+    53	migrate() {
+    54	  docker run --rm --network "$network" -e DATABASE_URL="$(db_url "$2")" "$1" ./node_modules/.bin/prisma migrate deploy
+    55	}
+    56	inventory() {
+    57	  docker exec "$1" psql -U tokenizer -d tokenizer -At -v ON_ERROR_STOP=1 -c \
+    58	    'SELECT (SELECT count(*) FROM "User"), (SELECT count(*) FROM "Device"), (SELECT count(*) FROM "Project"), (SELECT count(*) FROM "UsageEvent"), (SELECT COALESCE(sum("totalTokens"),0) FROM "UsageEvent");'
+    59	}
+    60	start_app() {
+    61	  image="$1"; revision="$2"; database="$3"
+    62	  docker rm -f "$app" >/dev/null 2>&1 || true
+    63	  docker run -d --name "$app" --network "$network" -e DATABASE_URL="$(db_url "$database")" \
+    64	    -e GIT_COMMIT="$revision" -e HOSTNAME=0.0.0.0 -e AUTH_TRUST_HOST=true \
+    65	    -e AUTH_URL="http://$app:3000" -e NEXT_PUBLIC_APP_URL="http://$app:3000" \
+    66	    -e AUTH_SECRET=synthetic-auth-secret-at-least-thirty-two-chars \
+    67	    -e ADMIN_TOKEN=synthetic-admin-token-at-least-thirty-two-chars -e AUTH_RESEND_KEY=re_synthetic \
+    68	    -e AUTH_EMAIL_FROM=release-canary@example.test \
+    69	    -e PRICING_AUTO_ENABLED=0 "$image" >/dev/null
+    70	  for _ in {1..60}; do
+    71	    if docker exec "$app" node -e "fetch('http://127.0.0.1:3000/api/health').then(async r=>{let b=await r.json();process.exit(r.ok&&b.ok&&b.commit==='$revision'?0:1)}).catch(()=>process.exit(1))" >/dev/null 2>&1; then return; fi
+    72	    sleep 1
+    73	  done
+    74	  echo "rehearsal app readiness failed" >&2; exit 1
+    75	}
+    76	canary() {
+    77	  docker run --rm --network "$network" -e DATABASE_URL="$(db_url "$1")" \
+    78	    -e CANARY_URL="http://$app:3000" -e CANARY_KEEP="${2:-0}" \
+    79	    -v "$PWD/scripts/test:/app/scripts/test:ro" "$MIGRATE_IMAGE" ./node_modules/.bin/tsx scripts/test/release-canary.ts
+    80	}
+    81	if [[ "$mode" == live ]]; then
+    82	  docker compose -f docker-compose.yml -f docker-compose.release.yml exec -T postgres \
+    83	    pg_dump -U tokenizer -d tokenizer -Fc --no-owner > "$temp_dump"
+    84	else
+    85	  if ! valid_image "$previous_app" || ! valid_image "$previous_migrate"; then echo "synthetic rehearsal requires previous images" >&2; exit 2; fi
+    86	  start_db "$source_db"
+    87	  migrate "$previous_migrate" "$source_db"
+    88	  start_app "$previous_app" "$previous_sha" "$source_db"
+    89	  canary "$source_db" 1
+    90	  source_inventory="$(inventory "$source_db")"
+    91	  docker exec "$source_db" pg_dump -U tokenizer -d tokenizer -Fc --no-owner > "$temp_dump"
+    92	fi
+    93	[[ -s "$temp_dump" ]] || { echo "empty PostgreSQL backup" >&2; exit 1; }
+    94	mv "$temp_dump" "$dump"
+    95	sha256sum "$dump" > "$dump.sha256"
+    96	sha256sum -c "$dump.sha256" >/dev/null
+    97	start_db "$db"
+    98	docker exec -i "$db" pg_restore -U tokenizer -d tokenizer --exit-on-error --no-owner < "$dump"
+    99	restored_inventory="$(inventory "$db")"
+   100	if [[ "$mode" == synthetic && "$source_inventory" != "$restored_inventory" ]]; then
+   101	  echo "restored inventory differs from synthetic backup source" >&2; exit 1
+   102	fi
+   103	migrate "$MIGRATE_IMAGE" "$db"
+   104	[[ "$(inventory "$db")" == "$restored_inventory" ]] || { echo "migration changed critical row/token inventory" >&2; exit 1; }
+   105	uid="$(docker run --rm --entrypoint id "$APP_IMAGE" -u)"
+   106	[[ "$uid" =~ ^[0-9]+$ && "$uid" != 0 ]] || { echo "app runtime must be non-root" >&2; exit 1; }
+   107	bash scripts/verify-release-image.sh "$APP_IMAGE" "$expected" >/dev/null
+   108	bash scripts/verify-release-image.sh "$MIGRATE_IMAGE" "$expected" >/dev/null
+   109	start_app "$APP_IMAGE" "$expected" "$db"
+   110	canary "$db"
