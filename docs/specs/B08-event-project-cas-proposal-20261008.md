@@ -1,7 +1,7 @@
 # B08 Event revision 与 Project identity CAS 规格提案
 
-> 角色：Planner / 设计预研，不是 Generator 或 Evaluator。  
-> 只读基线：`029f6c53ea7193989643a1f2e4d23108ba0c9af5`（包含 B06 bounded server schema 与 PG16 CI gate）。  
+> 角色：Planner / 设计预研，不是 Generator 或 Evaluator。
+> 只读基线：`029f6c53ea7193989643a1f2e4d23108ba0c9af5`（包含 B06 bounded server schema 与 PG16 CI gate）。
 > 日期：2026-10-08。本文不修改产品、状态或人闸门，也不构成发布验收。
 
 ## 1. 目标与非目标
