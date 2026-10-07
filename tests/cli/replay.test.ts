@@ -3,6 +3,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   renameSync,
   rmSync,
   symlinkSync,
@@ -28,7 +29,7 @@ afterEach(() => {
 });
 
 function temporaryRoot(): string {
-  const root = mkdtempSync(join(tmpdir(), "tokenizer-bounded-replay-"));
+  const root = mkdtempSync(join(realpathSync(tmpdir()), "tokenizer-bounded-replay-"));
   roots.push(root);
   return root;
 }

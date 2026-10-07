@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
 import { createServer, type Server } from "node:http";
 import { tmpdir } from "node:os";
@@ -11,7 +11,7 @@ const children: ChildProcess[] = [];
 const cli = join(process.cwd(), "src", "cli", "index.ts");
 
 beforeEach(() => {
-  home = mkdtempSync(join(tmpdir(), "tokenizer-admission-cli-"));
+  home = mkdtempSync(join(realpathSync(tmpdir()), "tokenizer-admission-cli-"));
   mkdirSync(join(home, ".tokenizer"), { recursive: true });
   writeFileSync(join(home, ".tokenizer", "config.json"), JSON.stringify({
     serverUrl: "http://127.0.0.1:9",

@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { linkSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { linkSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, it } from "vitest";
@@ -9,7 +9,7 @@ import type { TokenizerConfig } from "../../src/cli/config";
 
 const roots: string[] = [];
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
-function root() { const path = mkdtempSync(join(tmpdir(), "b03-safety-")); roots.push(path); return path; }
+function root() { const path = mkdtempSync(join(realpathSync(tmpdir()), "b03-safety-")); roots.push(path); return path; }
 function row(cwd: string) {
   return JSON.stringify({ type: "assistant", uuid: "one", cwd, timestamp: "2026-10-07T12:00:00.000Z", message: { role: "assistant", id: "one", model: "claude-test", usage: { input_tokens: 1, output_tokens: 1 } } }) + "\n";
 }
