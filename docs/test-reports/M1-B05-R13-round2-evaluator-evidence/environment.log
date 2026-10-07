@@ -1,0 +1,12 @@
+v22.22.0
+10.9.4
+Darwin yixingzhoudeMacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:11:03 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8132 arm64
+6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01
+client=29.3.1 server=29.2.1 os=linux arch=arm64
+Docker Compose version 5.1.1
+1.7.12
+installed from Homebrew
+built with go1.26.3 compiler for darwin/arm64
+ShellCheck - shell script analysis tool
+version: 0.11.0
+license: GNU General Public License, version 3

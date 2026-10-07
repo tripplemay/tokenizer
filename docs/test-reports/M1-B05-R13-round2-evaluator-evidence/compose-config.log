@@ -1,0 +1,80 @@
+name: tokenizer-b05-round2-eval-20261007
+services:
+  app:
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+        required: true
+      postgres:
+        condition: service_healthy
+        required: true
+    environment:
+      ADMIN_TOKEN: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      AUTH_EMAIL_FROM: noreply@token.vpanel.cc
+      AUTH_RESEND_KEY: re_test
+      AUTH_SECRET: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      AUTH_TRUST_HOST: "true"
+      AUTH_URL: https://example.test
+      DATABASE_URL: postgresql://tokenizer:testpassword@postgres:5432/tokenizer
+      GIT_COMMIT: cccccccccccccccccccccccccccccccccccccccc
+      HARNESS_CONSOLE_SIGNING_KEY: ""
+      LITELLM_PRICES_URL: ""
+      NEXT_PUBLIC_APP_URL: https://example.test
+      OPENROUTER_MODELS_URL: ""
+      PRICING_AUTO_ENABLED: "0"
+      PRICING_LLM_BASE_URL: ""
+      PRICING_LLM_KEY: ""
+      PRICING_LLM_MODEL: ""
+    image: localhost:5000/test/app@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 3000
+        published: "3010"
+        protocol: tcp
+    restart: unless-stopped
+  migrate:
+    command:
+      - npx
+      - prisma
+      - migrate
+      - deploy
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: true
+    environment:
+      DATABASE_URL: postgresql://tokenizer:testpassword@postgres:5432/tokenizer
+    image: localhost:5000/test/migrate@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    networks:
+      default: null
+    restart: "no"
+  postgres:
+    environment:
+      POSTGRES_DB: tokenizer
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_USER: tokenizer
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U tokenizer -d tokenizer
+      timeout: 5s
+      interval: 10s
+      retries: 5
+    image: postgres:16-alpine
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: postgres-data
+        target: /var/lib/postgresql/data
+        volume: {}
+networks:
+  default:
+    name: tokenizer-b05-round2-eval-20261007_default
+volumes:
+  postgres-data:
+    name: tokenizer-b05-round2-eval-20261007_postgres-data

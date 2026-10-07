@@ -1,0 +1,24 @@
+The push refers to repository [localhost:5001/tokenizer/app]
+aa7268e3e147: Waiting
+0d03511498e9: Waiting
+a8e3f40b26e8: Waiting
+c281680b8c24: Waiting
+46277ce71d9a: Waiting
+b9b61d2ad9f8: Waiting
+0f68d37cc252: Waiting
+c75f989a229d: Waiting
+8d752b15e163: Waiting
+4b23a8ab3fbe: Waiting
+a7d3259c0556: Waiting
+aa7268e3e147: Pushed
+a8e3f40b26e8: Pushed
+c281680b8c24: Pushed
+b9b61d2ad9f8: Pushed
+0f68d37cc252: Pushed
+8d752b15e163: Pushed
+4b23a8ab3fbe: Pushed
+0d03511498e9: Pushed
+c75f989a229d: Pushed
+a7d3259c0556: Pushed
+46277ce71d9a: Pushed
+6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01: digest: sha256:fe320d074a993bacee2066079cfda4a3f4a928bda92cff031491d2879c8ed120 size: 2722
