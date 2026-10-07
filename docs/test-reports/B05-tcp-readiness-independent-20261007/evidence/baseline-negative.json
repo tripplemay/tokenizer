@@ -1,0 +1,18 @@
+{
+  "expectation": "baseline",
+  "revision": "3ade5d1",
+  "normal": {
+    "failure": "none",
+    "status": 6,
+    "stderr": "FATAL: the database system is shutting down",
+    "tcpProbeCount": 0,
+    "socketProbeCount": 2,
+    "dumped": true,
+    "restored": true,
+    "backupFileCount": 1,
+    "checksumFileCount": 1,
+    "rollbackGate": false,
+    "removedContainers": true,
+    "removedNetwork": true
+  }
+}

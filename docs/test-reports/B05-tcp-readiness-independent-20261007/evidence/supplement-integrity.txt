@@ -1,0 +1,9 @@
+supplement-json-identical: yes
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-entrypoint-decisive-excerpt.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-entrypoint-d588a446.sh.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-readme-402ab9c6.md.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-readme-decisive-excerpt.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/rehearse-release-lines-35-110.txt: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-decisive-excerpt.log: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-job-112876984305.log.gz: OK
+docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-metadata.json: OK
