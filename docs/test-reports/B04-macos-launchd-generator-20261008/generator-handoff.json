@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "role": "generator",
+  "is_evaluator_verdict": false,
+  "base_sha": "8877a592d21305f03cdaea5d874d58a581e910a1",
+  "implementation_sha": "9e18e41823579fa1915adfdd4acde05dbd896ad7",
+  "scope": "B04 native macOS launchd installer lifecycle fixture and independent CI gate",
+  "local_native": {
+    "platform": "darwin",
+    "os": "macOS 26.6.2 (25G83)",
+    "arch": "arm64",
+    "node": "v22.22.0",
+    "launchd_gui_domain": "available",
+    "native_fixture": "pass",
+    "exact_result_gate": "pass",
+    "credentials_retained": true,
+    "queue_retained": true,
+    "default_label_presence_unchanged": true,
+    "scoped_processes_after_unload": 0
+  },
+  "checks": {
+    "npm_ci": "pass",
+    "verify": "pass",
+    "lint": "pass",
+    "actionlint": "pass",
+    "diff_check": "pass",
+    "focused_tests": { "passed": 15, "skipped": 0, "failed": 0 },
+    "full_tests": { "passed": 1710, "skipped": 23, "failed": 0 }
+  },
+  "safe_branch_ci": {
+    "status": "not_run",
+    "required_job": "verify-macos-agent",
+    "runner": "macos-latest",
+    "fail_closed_without_gui_domain": true,
+    "artifact": "macos-launchd-pinned-installer"
+  },
+  "release_readiness": "NOT_READY",
+  "remaining_boundaries": [
+    "safe-branch macos-latest terminal result at final SHA",
+    "independent external-family evaluation",
+    "real release endpoint and manifest/tag publication",
+    "live enrollment, heartbeat, queue upload, and token rotation",
+    "real Windows Task Scheduler execution",
+    "destructive macOS failure matrix including launchctl load, permissions, disk full, and abrupt power/process loss",
+    "packaging, signing, notarization, and production installation"
+  ]
+}
