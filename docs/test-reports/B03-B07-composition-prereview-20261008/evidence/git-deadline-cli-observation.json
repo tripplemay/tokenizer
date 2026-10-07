@@ -1,0 +1,38 @@
+{
+  "candidate": "116a1fffb2bd8c800f721adf1cd99653981da2df",
+  "node": "v22.22.0",
+  "shim": "#!/bin/sh; echo entered >> $MARKER; sleep 30; exit 1",
+  "t1": {
+    "label": "T1-stalled-dry-run",
+    "elapsedMs": 38289,
+    "status": 1,
+    "errorCode": null,
+    "markerCalls": 2,
+    "queueSha256": "66cef1a7a93e25d95ffca661464f0f7361d7dc818f273c0c9b62e1b5a1c03882",
+    "queueUnchanged": true,
+    "stdout": "",
+    "stderr": "Replay refused: Git enrichment exceeded 10000ms deadline\n"
+  },
+  "preview": {
+    "label": "T2-native-preview",
+    "elapsedMs": 329,
+    "status": 0,
+    "errorCode": null,
+    "markerCalls": 2,
+    "queueSha256": "66cef1a7a93e25d95ffca661464f0f7361d7dc818f273c0c9b62e1b5a1c03882",
+    "queueUnchanged": true,
+    "stdout": "{\n  \"dryRun\": true,\n  \"planDigest\": \"5d49df1d3386e2eaaf8651a14c7e885666e1817b53e9e7c9a351932778b62891\",\n  \"bytes\": 313,\n  \"records\": 1,\n  \"parsed\": 1,\n  \"selected\": 1,\n  \"filtered\": 0,\n  \"wouldAdmit\": 1,\n  \"warningCount\": 0,\n  \"sample\": []\n}\n",
+    "stderr": ""
+  },
+  "t2": {
+    "label": "T2-stalled-execute",
+    "elapsedMs": 38275,
+    "status": 1,
+    "errorCode": null,
+    "markerCalls": 4,
+    "queueSha256": "66cef1a7a93e25d95ffca661464f0f7361d7dc818f273c0c9b62e1b5a1c03882",
+    "queueUnchanged": true,
+    "stdout": "",
+    "stderr": "Replay refused: Git enrichment exceeded 10000ms deadline\n"
+  }
+}
