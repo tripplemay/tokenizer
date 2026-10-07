@@ -1,0 +1,5 @@
+verbose: Linting .github/workflows/deploy-vps.yml
+verbose: Using project at /Users/yixingzhou/tokenizer-b05-round3-eval-20261007
+verbose: Found 0 parse errors in 3 ms for .github/workflows/deploy-vps.yml
+verbose: Rule "pyflakes" was disabled: exec: "pyflakes": executable file not found in $PATH
+verbose: Found total 0 errors in 482 ms for .github/workflows/deploy-vps.yml

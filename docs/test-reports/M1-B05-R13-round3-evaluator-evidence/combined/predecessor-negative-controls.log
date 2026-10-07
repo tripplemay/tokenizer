@@ -1,0 +1,9 @@
+explicit=2074991717abaf3cb34d9aad894bcd4357fefbc3
+distinct predecessor required; refusing same-candidate rollback rehearsal
+same_sha=REJECTED
+explicit bootstrap rehearsal: same SHA does not prove old-version compatibility; deployment disabled
+bootstrap=3ade5d1e45ac0f53f0f7a122711e6e219b7dac09
+distinct predecessor required; refusing same-candidate rollback rehearsal
+push_bootstrap=REJECTED
+fatal: Needed a single revision
+nonexistent=REJECTED

@@ -1,0 +1,11 @@
+root entries:
+.next
+node_modules
+package.json
+prisma
+server.js
+forbidden paths:
+project-state-name scan:
+size:
+ 80M	.next/standalone
+{"standalone":"clean","filesOutsideDependenciesAndNext":31,"bytesOutsideDependenciesAndNext":47873}

@@ -1,0 +1,24 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  6.994MB
+Step 1/28 : FROM node:22-slim AS deps
+ ---> c3de60bf2f9d
+Step 2/28 : WORKDIR /app
+ ---> Running in 8230fa92a5d2
+ ---> Removed intermediate container 8230fa92a5d2
+ ---> c2dc61d3bb11
+Step 3/28 : RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+ ---> Running in f6ea00c11919
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+Get:4 http://deb.debian.org/debian bookworm/main arm64 Packages [8689 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main arm64 Packages [6936 B]
+Get:6 http://deb.debian.org/debian-security bookworm-security/main arm64 Packages [347 kB]
+Fetched 9285 kB in 4s (2117 kB/s)
+Reading package lists...
+[91mE: Could not open lock file /var/lib/dpkg/lock-frontend - open (5: Input/output error)
+E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
+[0mThe command '/bin/sh -c apt-get update && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates && rm -rf /var/lib/apt/lists/*' returned a non-zero code: 100
