@@ -1,0 +1,179 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-replay-fixed-candidate-20261008
+
+ ❯ tests/cli/privacy-scope-safety.test.ts (7 tests | 6 failed) 217ms
+   × R4 dot alias to an excluded workspace is rejected by preview, replay and ordinary collection 20ms
+     → expected 1 to be +0 // Object.is equality
+   × R5 an allowed symlink/junction to an excluded Git repo never reaches durable admission 104ms
+     → expected 1 to be +0 // Object.is equality
+   × an alias into a target outside the include scope is not rescued by any other allowed path 83ms
+     → expected [ …(2) ] to deeply equal []
+   × nonexistent descendants still resolve their existing symlink ancestor for scope admission 5ms
+     → expected [ { source: 'claude-code', …(4) } ] to deeply equal []
+   × Windows mixed separators, traversal and conflicting aliases cannot bypass scope on any host 1ms
+     → expected [ { source: 'claude-code', …(4) } ] to deeply equal []
+   × an allowed physical target keeps legacy event identity and path bytes unchanged 2ms
+     → expected [] to deeply equal [ { source: 'claude-code', …(4) } ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > R4 dot alias to an excluded workspace is rejected by preview, replay and ordinary collection
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ assertNoAdmission tests/cli/privacy-scope-safety.test.ts:38:30
+     36|   const preview = dryRunBoundedReplay(plan(file), cfg);
+     37|   expect(preview.parsed).toBe(1);
+     38|   expect(preview.wouldAdmit).toBe(0);
+       |                              ^
+     39|   const queue = join(dir, "queue.jsonl");
+     40|   const legacy = event("/previously-admitted");
+ ❯ tests/cli/privacy-scope-safety.test.ts:52:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > R5 an allowed symlink/junction to an excluded Git repo never reaches durable admission
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ assertNoAdmission tests/cli/privacy-scope-safety.test.ts:38:30
+     36|   const preview = dryRunBoundedReplay(plan(file), cfg);
+     37|   expect(preview.parsed).toBe(1);
+     38|   expect(preview.wouldAdmit).toBe(0);
+       |                              ^
+     39|   const queue = join(dir, "queue.jsonl");
+     40|   const legacy = event("/previously-admitted");
+ ❯ tests/cli/privacy-scope-safety.test.ts:58:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > an alias into a target outside the include scope is not rescued by any other allowed path
+AssertionError: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "localWorkspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-h7PbQw/allowed/alias",
++     "occurredAt": "2026-10-07T12:00:00.000Z",
++     "source": "claude-code",
++     "sourceEventId": "stable-id",
++     "workspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-h7PbQw/allowed",
++   },
++   Object {
++     "localWorkspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-h7PbQw/allowed",
++     "occurredAt": "2026-10-07T12:00:00.000Z",
++     "source": "claude-code",
++     "sourceEventId": "stable-id",
++     "workspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-h7PbQw/allowed/alias",
++   },
++ ]
+
+ ❯ tests/cli/privacy-scope-safety.test.ts:66:91
+     64|   const alias = join(allowed, "alias"); symlinkSync(outside, alias, li…
+     65|   const cfg = config([allowed]);
+     66|   expect(filterUsageEvents([event(allowed, alias), event(alias, allowe…
+       |                                                                                           ^
+     67|   assertNoAdmission(dir, alias, cfg);
+     68| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > nonexistent descendants still resolve their existing symlink ancestor for scope admission
+AssertionError: expected [ { source: 'claude-code', …(4) } ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "localWorkspacePath": undefined,
++     "occurredAt": "2026-10-07T12:00:00.000Z",
++     "source": "claude-code",
++     "sourceEventId": "stable-id",
++     "workspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-lUk52b/allowed/alias/not-yet-created/project",
++   },
++ ]
+
+ ❯ tests/cli/privacy-scope-safety.test.ts:74:95
+     72|   mkdirSync(allowed); mkdirSync(denied); const alias = join(allowed, "…
+     73|   const cfg = config([allowed], [denied]);
+     74|   expect(filterUsageEvents([event(join(alias, "not-yet-created", "proj…
+       |                                                                                               ^
+     75| });
+     76| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > Windows mixed separators, traversal and conflicting aliases cannot bypass scope on any host
+AssertionError: expected [ { source: 'claude-code', …(4) } ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "localWorkspacePath": undefined,
++     "occurredAt": "2026-10-07T12:00:00.000Z",
++     "source": "claude-code",
++     "sourceEventId": "stable-id",
++     "workspacePath": "c:/allowed/../denied",
++   },
++ ]
+
+ ❯ tests/cli/privacy-scope-safety.test.ts:85:112
+     83| it("Windows mixed separators, traversal and conflicting aliases cannot…
+     84|   const cfg = config(["C:\\allowed"], ["C:\\denied"]);
+     85|   expect(filterUsageEvents([event("c:/allowed/../denied"), event("C:\\…
+       |                                                                                                                ^
+     86| });
+     87| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > an allowed physical target keeps legacy event identity and path bytes unchanged
+AssertionError: expected [] to deeply equal [ { source: 'claude-code', …(4) } ]
+
+- Expected
++ Received
+
+- Array [
+-   Object {
+-     "localWorkspacePath": undefined,
+-     "occurredAt": "2026-10-07T12:00:00.000Z",
+-     "source": "claude-code",
+-     "sourceEventId": "stable-id",
+-     "workspacePath": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/b03-scope-2bTO83/alias",
+-   },
+- ]
++ Array []
+
+ ❯ tests/cli/privacy-scope-safety.test.ts:92:52
+     90|   const alias = join(dir, "alias"); symlinkSync(allowed, alias, linkTy…
+     91|   const input = event(alias); const cfg = config([allowed]);
+     92|   expect(filterUsageEvents([input], cfg.privacy!)).toEqual([input]);
+       |                                                    ^
+     93|   expect(input).toEqual(event(alias));
+     94|   const file = source(dir, alias); const preview = dryRunBoundedReplay…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)
+   Start at  01:24:38
+   Duration  2.16s (transform 373ms, setup 0ms, collect 525ms, tests 217ms, environment 0ms, prepare 101ms)
+

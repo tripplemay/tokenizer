@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-replay-fixed-candidate-20261008
+
+ ❯ tests/cli/privacy-scope-safety.test.ts (10 tests | 1 failed | 9 skipped) 47ms
+   × retargeting a workspace alias cannot reuse a zero-admission confirmation for newly eligible rows 46ms
+     → expected '84ecd80b72f64d18351be1838d00f48a635e8…' not to be '84ecd80b72f64d18351be1838d00f48a635e8…' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/privacy-scope-safety.test.ts > retargeting a workspace alias cannot reuse a zero-admission confirmation for newly eligible rows
+AssertionError: expected '84ecd80b72f64d18351be1838d00f48a635e8…' not to be '84ecd80b72f64d18351be1838d00f48a635e8…' // Object.is equality
+ ❯ tests/cli/privacy-scope-safety.test.ts:126:32
+    124|   rmSync(alias); symlinkSync(allowed, alias, linkType);
+    125|   const after = dryRunBoundedReplay(plan(file), cfg); expect(after.wou…
+    126|   expect(after.planDigest).not.toBe(before.planDigest);
+       |                                ^
+    127|   const merge = vi.fn(() => ({ events: [], added: 0 }));
+    128|   expect(() => executeBoundedReplay(plan(file, false), cfg, before.pla…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 skipped (10)
+   Start at  01:29:23
+   Duration  941ms (transform 176ms, setup 0ms, collect 246ms, tests 47ms, environment 0ms, prepare 83ms)
+
