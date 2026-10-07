@@ -1,0 +1,12 @@
+file:///Volumes/ORICO/project/.worktrees/tokenizer-b06-pg16-ci-gate-20261008/scripts/ci/assert-vitest-results.mjs:20
+  throw new Error(
+        ^
+
+Error: Expected at least 13 passing tests with no skips or failures; got total=51, passed=48, skipped=3, failed=0
+    at file:///Volumes/ORICO/project/.worktrees/tokenizer-b06-pg16-ci-gate-20261008/scripts/ci/assert-vitest-results.mjs:20:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.22.0
+assert_exit=1
