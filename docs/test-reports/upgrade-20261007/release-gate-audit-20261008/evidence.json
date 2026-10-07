@@ -1,0 +1,49 @@
+{
+  "schema": "tokenizer-release-gate-audit-v1",
+  "observed_at_utc": "2026-10-07T19:50:42Z",
+  "scope": "read-only same-family technical gate audit; not formal Evaluator signoff",
+  "source_sha": "6d90f37aaa6eeda06f1107e3cf2690ac2f81df63",
+  "main_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "production_health_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+  "state": {
+    "status": "verifying",
+    "current_sprint": "BL-HOMEPAGE-FRESHNESS",
+    "f005": "pending",
+    "pending_gate": null
+  },
+  "non_main_composed_ci": {
+    "sha": "8d5583715a915dbfbc340be27cd872c9ff66526e",
+    "run_id": 37673679082,
+    "verification_jobs": "six succeeded",
+    "deploy": "skipped",
+    "recovery_artifact_id": 11506626427,
+    "recovery_mode": "synthetic"
+  },
+  "non_main_b03_b07_combination": {
+    "sha": "116a1fffb2bd8c800f721adf1cd99653981da2df",
+    "run_id": 37675079483,
+    "conclusion": "failure",
+    "blocking_job": "Verify (Windows)",
+    "independent_technical_prereview": "docs/test-reports/B03-B07-composition-prereview-20261008/REPORT.md"
+  },
+  "new_workflow_preflight": {
+    "required_secret_missing_from_name_list": "POSTGRES_PASSWORD",
+    "production_environment_protection_rules": [],
+    "first_deploy_legacy_digest_baseline": "not established",
+    "main_only_signed_provenance": "not exercised",
+    "live_backup_restore": "not exercised"
+  },
+  "no_schema_diff_against_origin_main": true,
+  "sources": [
+    "progress.json",
+    "features.json",
+    "CLAUDE.md",
+    ".github/workflows/deploy-vps.yml",
+    "scripts/validate-deploy-secrets.sh",
+    "scripts/deploy-vps-release.sh",
+    "docs/B05-release-runbook.md",
+    "docs/test-reports/upgrade-20261007/integration-status.md",
+    "docs/test-reports/B05-kimi-evaluator-20261008/verdict.json",
+    "docs/test-reports/B04-macos-trap-kimi-evaluator-20261008/verdict.json"
+  ]
+}
