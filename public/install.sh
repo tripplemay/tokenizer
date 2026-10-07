@@ -255,7 +255,7 @@ cleanup() {
       if [ -d "$OLD_TARGET" ]; then
         if [ "$OLD_TARGET" = "$INSTALL_DIR" ]; then
           log "Previous checkout is already in place."
-        elif [ "$OLD_TARGET" = "$RELEASES_DIR"/legacy-* ]; then
+        elif [[ "$OLD_TARGET" == "$RELEASES_DIR"/legacy-* ]]; then
           mv "$OLD_TARGET" "$INSTALL_DIR"
         else
           atomic_link "$OLD_TARGET" "$INSTALL_DIR"
@@ -322,6 +322,7 @@ manifest="$(curl -fsSL --max-time 15 "$SERVER_URL/api/agent/releases")" || {
   echo "Cannot obtain the pinned Agent release; existing installation was not changed." >&2
   exit 1
 }
+# shellcheck disable=SC2016
 pin="$(printf '%s' "$manifest" | node -e '
   let input = "";
   process.stdin.on("data", chunk => input += chunk);
