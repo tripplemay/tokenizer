@@ -5,6 +5,8 @@ dist
 .env.local
 *.log
 coverage
+test-results/
+.ci/
 *.tsbuildinfo
 prisma/*.db
 prisma/*.db-journal

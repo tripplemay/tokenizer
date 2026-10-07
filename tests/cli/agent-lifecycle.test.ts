@@ -47,6 +47,9 @@ async function waitFor(condition: () => boolean, message: string, timeoutMs = 5_
 }
 
 async function waitForExit(child: ChildProcess, timeoutMs = 5_000): Promise<{ code: number | null; signal: NodeJS.Signals | null }> {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return { code: child.exitCode, signal: child.signalCode };
+  }
   return await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`Timed out waiting for pid ${child.pid} to exit`)), timeoutMs);
     child.once("close", (code, signal) => {
@@ -69,7 +72,7 @@ describe("agent command parsing", () => {
     const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
     const result = spawnSync(process.execPath, [tsx, "src/cli/index.ts", "agent", "status"], {
       cwd: process.cwd(),
-      env: { ...process.env, HOME: home },
+      env: { ...process.env, HOME: home, USERPROFILE: home },
       encoding: "utf8",
       timeout: 5_000,
       killSignal: "SIGTERM"
@@ -115,7 +118,7 @@ describe("agent single-instance lock", () => {
     expect(readFileSync(path, "utf8")).toBe(successor);
   });
 
-  it("releases the lock when the running agent receives SIGTERM", async () => {
+  it.skipIf(process.platform === "win32")("releases the lock when the running agent receives SIGTERM", async () => {
     const home = join(dir, "agent-home");
     const tokenizerDir = join(home, ".tokenizer");
     mkdirSync(tokenizerDir, { recursive: true });
@@ -128,7 +131,7 @@ describe("agent single-instance lock", () => {
     const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
     const agent = spawn(process.execPath, [tsx, "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
       cwd: process.cwd(),
-      env: { ...process.env, HOME: home },
+      env: { ...process.env, HOME: home, USERPROFILE: home },
       stdio: "ignore"
     });
     processes.push(agent);
@@ -150,7 +153,35 @@ describe("agent single-instance lock", () => {
     agent.kill("SIGTERM");
     await waitForExit(agent);
     expect(existsSync(lockPath)).toBe(false);
-  });
+  }, 15_000);
+
+  it.skipIf(process.platform !== "win32")("reclaims a lock after Windows force-terminates the agent", async () => {
+    const home = join(dir, "agent-home");
+    const tokenizerDir = join(home, ".tokenizer");
+    mkdirSync(tokenizerDir, { recursive: true });
+    writeFileSync(join(tokenizerDir, "config.json"), JSON.stringify({
+      serverUrl: "http://127.0.0.1:9",
+      projectRoots: [],
+      sources: { claude: false, codex: false, opencode: false, aider: false, kimicode: false }
+    }));
+
+    const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
+    const agent = spawn(process.execPath, [tsx, "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
+      cwd: process.cwd(),
+      env: { ...process.env, HOME: home, USERPROFILE: home },
+      stdio: "ignore"
+    });
+    processes.push(agent);
+
+    const lockPath = join(tokenizerDir, "agent.lock");
+    await waitFor(() => existsSync(lockPath), "agent did not acquire lock", 10_000);
+    agent.kill("SIGTERM");
+    await waitForExit(agent, 10_000);
+    const recovered = acquireAgentLock({ path: lockPath });
+    expect(JSON.parse(readFileSync(lockPath, "utf8")).pid).toBe(process.pid);
+    recovered.release();
+    expect(existsSync(lockPath)).toBe(false);
+  }, 20_000);
 });
 
 const describePosix = process.platform === "win32" ? describe.skip : describe;

@@ -2,21 +2,37 @@ name: Contract Conformance
 
 # BL-REPO-MECH F002：双仓契约一致性守门。
 # checkout harness-template @ harness.json 钉住的框架 commit，对其 contract-fixtures
-# 跑双向契约测试（tests/contract/）。独立于 Deploy VPS——契约测试挂掉不阻塞与
-# 契约无关的部署；deploy 关键路径仍只 needs verify。
+# 跑双向契约测试（tests/contract/）。协议改动的 Deploy VPS verify 也会跑
+# 相同的锁定契约测试并阻止失败部署；本工作流保留独立可观察的契约结果。
 
 on:
   push:
     branches: [main]
     paths:
-      - src/server/harness-sign.ts
-      - src/server/harness-mode-intent-api.ts
-      - src/cli/harness.ts
-      - src/cli/harness-mode-intents.ts
+      - src/server/harness-*
+      - src/cli/harness*
+      - src/shared/harness*
       - app/api/harness/**
       - .claude/console/**
       - harness.json
+      - prisma/schema.prisma
+      - prisma/migrations/**
       - tests/contract/**
+      - scripts/ci/assert-vitest-results.mjs
+      - .github/workflows/contract-conformance.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - src/server/harness-*
+      - src/cli/harness*
+      - src/shared/harness*
+      - app/api/harness/**
+      - .claude/console/**
+      - harness.json
+      - prisma/schema.prisma
+      - prisma/migrations/**
+      - tests/contract/**
+      - scripts/ci/assert-vitest-results.mjs
       - .github/workflows/contract-conformance.yml
   workflow_dispatch: {}
 
@@ -27,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - name: Checkout harness-template at the pinned framework commit
         run: |
@@ -44,4 +60,7 @@ jobs:
       - name: Run bidirectional contract tests against the pinned fixtures
         env:
           CONTRACT_FIXTURES_DIR: ${{ github.workspace }}/harness-template/contract-fixtures
-        run: npx vitest run tests/contract/
+        run: |
+          mkdir -p .ci
+          npx vitest run tests/contract/ --reporter=default --reporter=json --outputFile=.ci/contract-results.json
+          node scripts/ci/assert-vitest-results.mjs .ci/contract-results.json 6

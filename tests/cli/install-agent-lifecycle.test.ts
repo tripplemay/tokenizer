@@ -71,7 +71,9 @@ function lifecycleFunctionSource(): string {
   return source.slice(start, end);
 }
 
-describe("POSIX installer Agent lifecycle", () => {
+const describePosix = process.platform === "win32" ? describe.skip : describe;
+
+describePosix("POSIX installer Agent lifecycle", () => {
   it("stops this install's wrapper and child without touching another install", async () => {
     const home = mkdtempSync(join(tmpdir(), "tokenizer-install-home-"));
     const ownChild = startNamedProcess(join(home, ".tokenizer", "app", "src", "cli", "index.ts"));
@@ -106,9 +108,11 @@ stop_existing_agents
       rmSync(home, { recursive: true, force: true });
     }
   });
+});
 
+describe("POSIX installer source guard", () => {
   it("uses directory-scoped matching instead of broad tokenizer-agent process search", () => {
-    const source = readFileSync("public/install.sh", "utf8");
+    const source = readFileSync("public/install.sh", "utf8").replace(/\r\n/g, "\n");
     expect(source).toContain("stop_existing_service\nstop_existing_agents");
     expect(source).toContain('"$BIN_DIR/tokenizer" uninstall-service');
     expect(source).toContain("ps -axww -o pid= -o command=");

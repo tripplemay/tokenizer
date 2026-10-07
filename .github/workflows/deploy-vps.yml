@@ -42,6 +42,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -52,14 +54,55 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install test runner (transient, not persisted to lockfile)
-        run: npm install --no-save --no-audit --no-fund vitest @vitest/coverage-v8
+      - name: Lint
+        run: npm run lint
 
       - name: Typecheck
         run: npm run verify
 
       - name: Run unit tests
         run: npm run test
+
+      - name: Detect contract changes
+        id: contract-impact
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]] ||
+             [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] ||
+             [[ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]] ||
+             ! git cat-file -e "$BASE_SHA^{commit}"; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          CHANGED="$(git diff --name-only "$BASE_SHA" HEAD)"
+          if printf '%s\n' "$CHANGED" | rg -q '^(src/(cli|server|shared)/harness|app/api/harness/|\.claude/console/|framework/harness/|tests/contract/|scripts/ci/assert-vitest-results\.mjs$|prisma/(schema\.prisma$|migrations/)|\.github/workflows/(deploy-vps|contract-conformance)\.yml$|harness\.json$)'; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout pinned framework fixtures
+        if: steps.contract-impact.outputs.required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          FRAMEWORK_COMMIT="$(jq -er .framework.commit harness.json)"
+          FRAMEWORK_URL="$(jq -er .framework.source_url harness.json)"
+          git clone --quiet "$FRAMEWORK_URL" harness-template
+          git -C harness-template checkout --quiet "$FRAMEWORK_COMMIT"
+          echo "framework pinned at $(git -C harness-template rev-parse HEAD)"
+
+      - name: Run pinned bidirectional contract tests
+        if: steps.contract-impact.outputs.required == 'true'
+        env:
+          CONTRACT_FIXTURES_DIR: ${{ github.workspace }}/harness-template/contract-fixtures
+        run: |
+          mkdir -p .ci
+          npx vitest run tests/contract/ --reporter=default --reporter=json --outputFile=.ci/contract-results.json
+          node scripts/ci/assert-vitest-results.mjs .ci/contract-results.json 6
 
       - name: Next.js build smoke check
         run: npm run build
@@ -84,9 +127,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install test runner (transient, not persisted to lockfile)
-        run: npm install --no-save --no-audit --no-fund vitest @vitest/coverage-v8
-
       - name: Typecheck
         run: npm run verify
 
@@ -110,12 +150,125 @@ jobs:
       # No Next.js build here: the server only ever runs on Linux. This job
       # exists to guard the CLI collector, which is what users install natively.
 
+  verify-db:
+    name: Verify (PostgreSQL 16)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: tokenizer_ci
+          POSTGRES_USER: tokenizer_ci
+          POSTGRES_PASSWORD: tokenizer_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tokenizer_ci -d tokenizer_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      EVAL_F003_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      EVAL_F004_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      EVAL_F005_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      EVAL_F007_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+      EVAL_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply all database migrations
+        run: npm run prisma:deploy
+
+      - name: Run database integration probes without skips
+        run: |
+          mkdir -p .ci
+          npx vitest run \
+            tests/server/quota-account-db.probe.test.ts \
+            tests/server/harness-gates-route-db.probe.test.ts \
+            tests/server/harness-cost-range-db.probe.test.ts \
+            tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts \
+            tests/evaluator/bl-security-p1-f008-probes.test.ts \
+            --reporter=default --reporter=json --outputFile=.ci/db-probes.json
+          node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 10
+
+  verify-browser:
+    name: Verify (authenticated browser)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: tokenizer_e2e
+          POSTGRES_USER: tokenizer_e2e
+          POSTGRES_PASSWORD: tokenizer_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tokenizer_e2e -d tokenizer_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      CI_E2E: "1"
+      DATABASE_URL: postgresql://tokenizer_e2e:tokenizer_e2e@localhost:5432/tokenizer_e2e
+      E2E_DATABASE_URL: postgresql://tokenizer_e2e:tokenizer_e2e@localhost:5432/tokenizer_e2e
+      AUTH_SECRET: ci-e2e-synthetic-auth-secret-not-for-production
+      AUTH_TRUST_HOST: "true"
+      AUTH_URL: http://127.0.0.1:3781
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3781
+      PRICING_AUTO_ENABLED: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply all database migrations
+        run: npm run prisma:deploy
+
+      - name: Build production server
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run authenticated critical journeys
+        run: npm run test:e2e
+
+      - name: Keep browser failure screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tokenizer-browser-e2e
+          path: test-results/e2e/
+          if-no-files-found: ignore
+          retention-days: 7
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    # Deliberately not gated on verify-windows: the server only runs on Linux,
-    # and a Windows-only CLI regression should not block a server deploy.
-    needs: verify
+    # This single main-push workflow deploys a repository that also ships the
+    # Windows CLI; a failing native-agent gate must block this release path.
+    needs: [verify, verify-windows, verify-db, verify-browser]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment: production
     env:
