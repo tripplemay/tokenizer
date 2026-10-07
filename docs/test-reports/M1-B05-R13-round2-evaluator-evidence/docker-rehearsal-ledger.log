@@ -1,0 +1,19 @@
+--- rehearsal ledger ---
+commit=6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01
+mode=synthetic
+backup_file=.releases/6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01.tokenizer-rehearsal-56596-19236.backup.dump
+restore_inventory=2|2|1|1|23
+runtime_uid=1000
+rollback=passed
+elapsed_seconds=35
+--- rollback gate ---
+app_image=localhost:5001/tokenizer/app@sha256:fe320d074a993bacee2066079cfda4a3f4a928bda92cff031491d2879c8ed120
+previous_sha=6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01
+--- retained backup files ---
+-rw-------  1 yixingzhou  staff    64K Oct  7 21:57 .releases/6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01.tokenizer-rehearsal-56596-19236.backup.dump
+-rw-------  1 yixingzhou  staff   161B Oct  7 21:57 .releases/6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01.tokenizer-rehearsal-56596-19236.backup.dump.sha256
+--- checksum verify ---
+.releases/6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01.tokenizer-rehearsal-56596-19236.backup.dump: OK
+--- scratch cleanup ---
+none
+none

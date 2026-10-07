@@ -1,0 +1,26 @@
+combo_head=419c3e555a7fb1a1de5769774426fdb3ff684fbf
+next=16.4.0
+ 91M	/Volumes/ORICO/project/.worktrees/tokenizer-b05-round2-combined-probe-20261007/.next/standalone
+--- health dynamic path ---
+     7	type HealthCode = "ready" | "config_not_ready" | "database_unavailable" | "schema_not_ready";
+     8	
+     9	export function latestMigrationName(migrationsPath = join(process.cwd(), "prisma", "migrations")): string | null {
+    10	  try {
+    11	    return readdirSync(migrationsPath, { withFileTypes: true })
+    12	      .filter((entry) => entry.isDirectory())
+    13	      .map((entry) => entry.name)
+    14	      .sort()
+    15	      .at(-1) ?? null;
+    16	  } catch {
+    17	    return null;
+    18	  }
+--- unexpected files copied into standalone ---
+PRESENT CLAUDE.md
+PRESENT progress.json
+PRESENT features.json
+PRESENT src/server/health.ts
+PRESENT docs/test-reports/M1-B05-R13-round2-generator-handoff.json
+PRESENT framework/README.md
+--- counts ---
+docs_files=311
+framework_files=137

@@ -1,0 +1,48 @@
+previous=2074991717abaf3cb34d9aad894bcd4357fefbc3
+--- previous Dockerfile revision metadata declarations ---
+NONE
+--- workflow previous build settings ---
+        with:
+          context: .baseline
+          file: Dockerfile
+          target: runner
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.refs.outputs.old-app }}:${{ steps.refs.outputs.previous }}
+          build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
+      - name: Build previous source migration artifact
+        id: old-migrate
+        uses: docker/build-push-action@v6
+        with:
+          context: .baseline
+          file: Dockerfile
+          target: builder
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.refs.outputs.old-migrate }}:${{ steps.refs.outputs.previous }}
+          build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
+      - name: Attest app digest from this workflow
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.refs.outputs.app }}
+          subject-digest: ${{ steps.app.outputs.digest }}
+          push-to-registry: true
+      - name: Attest migration digest from this workflow
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.refs.outputs.migrate }}
+          subject-digest: ${{ steps.migrate.outputs.digest }}
+          push-to-registry: true
+--- rehearsal previous-image verification ---
+rollback=unavailable
+if [[ -n "$previous_app" ]]; then
+  docker pull "$previous_app" >/dev/null
+  bash scripts/verify-release-image.sh "$previous_app" "$previous_sha" >/dev/null
+  start_app "$previous_app" "$previous_sha" "$db"
+  canary "$db"
+  [[ "$(inventory "$db")" == "$restored_inventory" ]] || { echo "rollback canary cleanup changed inventory" >&2; exit 1; }
+  printf 'app_image=%s\nprevious_sha=%s\n' "$previous_app" "$previous_sha" > "$gate"
+  rollback=passed
+RESULT=FAIL: previous-source Dockerfile ignores SOURCE_COMMIT and emits no revision label, while rehearsal requires it

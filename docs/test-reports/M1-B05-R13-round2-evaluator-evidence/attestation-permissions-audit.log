@@ -1,0 +1,68 @@
+--- release-artifact permissions ---
+  release-artifact:
+    name: Linux OCI and recovery rehearsal
+    runs-on: ubuntu-latest
+    needs: [verify, verify-windows]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      app-image: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+      migrate-image: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+--- deploy permissions ---
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    needs: [verify, verify-windows, release-artifact]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    environment: production
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+      VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+--- verification uses GitHub attestation API via gh ---
+      # Auto-pricing (all optional; feature ships off). Toggle/URLs live in repo
+      # Variables; the LLM-fallback key is a Secret.
+      PRICING_AUTO_ENABLED: ${{ vars.PRICING_AUTO_ENABLED }}
+      LITELLM_PRICES_URL: ${{ vars.LITELLM_PRICES_URL }}
+      OPENROUTER_MODELS_URL: ${{ vars.OPENROUTER_MODELS_URL }}
+      PRICING_LLM_BASE_URL: ${{ vars.PRICING_LLM_BASE_URL }}
+      PRICING_LLM_MODEL: ${{ vars.PRICING_LLM_MODEL }}
+      PRICING_LLM_KEY: ${{ secrets.PRICING_LLM_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate deploy secrets
+RESULT=FAIL: deploy specifies permissions but omits attestations: read, so GitHub sets it to none
+233-          mkdir -p .releases
+234-          for kind in app migrate; do
+235-            if [[ "$kind" == app ]]; then image="$APP_IMAGE"; else image="$MIGRATE_IMAGE"; fi
+236:            gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+237-              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" \
+238-              --format json > ".releases/$GITHUB_SHA.$kind.provenance.json"
+239-          done
+--
+311-          username: ${{ github.actor }}
+312-          password: ${{ secrets.GITHUB_TOKEN }}
+313-
+314:      - name: Independently verify artifact provenance before SSH
+315-        env:
+316-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+317-        run: |
+318-          set -euo pipefail
+319-          for image in "$APP_IMAGE" "$MIGRATE_IMAGE"; do
+320:            gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+321-              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml"
+322-          done
+323-

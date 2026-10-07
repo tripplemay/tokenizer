@@ -1,0 +1,42 @@
+--- merge-tree conflicts: B01/B02 integration f92a884 + B05 round2 6c3937b ---
+95f07ce5bd1ba72bb34fb5a2c7782b14d2ed88fe
+100644 fee336c0d24edd6c8d0200dbb3f96e62def67ddd 1	.env.example
+100644 49acf38459e3e25e8e852fb8ff257f2da0dcd8a4 2	.env.example
+100644 0c1376539b98bdffc87596a5428f03bd6d627e57 3	.env.example
+100644 1142d85463e76b79a48a58aca43e03e24ff50251 1	.github/workflows/deploy-vps.yml
+100644 7737f10fd846cc42c97e4368b66e11aa0253fc32 2	.github/workflows/deploy-vps.yml
+100644 74a4a12c6b5653beb57ff0e7f67f389dac88a897 3	.github/workflows/deploy-vps.yml
+100644 6aa175a31b5452761c8d057609218178b628c2fa 1	docker-compose.yml
+100644 dc028f7dd021b06b5eff0da2c57cc4dd92bff40b 2	docker-compose.yml
+100644 50f68b856f48608148f282f424ab0fa0dcbd777b 3	docker-compose.yml
+100644 83eeb646717e7a731d223fb194dc11b3f4e4c8d4 1	scripts/validate-deploy-secrets.sh
+100644 27024cc7264ee0ec4f748f79287745dfd12f9e20 2	scripts/validate-deploy-secrets.sh
+100644 b41a178ecbbcdca07e51f78287b557040617d36e 3	scripts/validate-deploy-secrets.sh
+100644 10f002091605cdf04c1bcd3c3fcf0065a8c2ef1a 1	tests/server/deploy-secrets.test.ts
+100644 4c70530d9a31d20cfa8179c45e6d2fb047e22335 2	tests/server/deploy-secrets.test.ts
+100644 f25a52ff62d1bd9178fedcde70629537a2903c0c 3	tests/server/deploy-secrets.test.ts
+
+Auto-merging .env.example
+CONFLICT (content): Merge conflict in .env.example
+Auto-merging .github/workflows/deploy-vps.yml
+CONFLICT (content): Merge conflict in .github/workflows/deploy-vps.yml
+Auto-merging docker-compose.yml
+CONFLICT (content): Merge conflict in docker-compose.yml
+Auto-merging scripts/validate-deploy-secrets.sh
+CONFLICT (content): Merge conflict in scripts/validate-deploy-secrets.sh
+Auto-merging tests/server/deploy-secrets.test.ts
+CONFLICT (content): Merge conflict in tests/server/deploy-secrets.test.ts
+--- B01/B02 deploy needs ---
+39:  verify:
+112:  verify-windows:
+153:  verify-db:
+205:  verify-browser:
+267:  deploy:
+272:    needs: [verify, verify-windows, verify-db, verify-browser]
+--- standalone B05 deploy needs ---
+39:  verify:
+69:  verify-windows:
+113:  release-artifact:
+116:    needs: [verify, verify-windows]
+261:  deploy:
+267:    needs: [verify, verify-windows, release-artifact]

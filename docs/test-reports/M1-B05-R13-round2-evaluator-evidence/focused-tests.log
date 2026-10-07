@@ -1,0 +1,22 @@
+
+ RUN  v2.1.9 /Users/yixingzhou/tokenizer-b05-round2-eval-20261007
+
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'd66ebd0f-b6a8-4220-9ae3-bf6b96a30bb6',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 7ms
+ ✓ tests/server/deploy-secrets.test.ts (24 tests) 100ms
+ ✓ tests/server/release-image.test.ts (10 tests) 857ms
+ ✓ tests/server/release-rehearsal.test.ts (9 tests) 1061ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 340ms
+
+ Test Files  4 passed (4)
+      Tests  49 passed (49)
+   Start at  21:45:18
+   Duration  1.48s (transform 117ms, setup 0ms, collect 159ms, tests 2.02s, environment 0ms, prepare 156ms)
+

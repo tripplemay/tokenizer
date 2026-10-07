@@ -1,0 +1,12 @@
+The push refers to repository [localhost:5001/tokenizer/migrate]
+1eb3e79661bf: Pushed
+aa7268e3e147: Mounted from tokenizer/app
+a7d3259c0556: Mounted from tokenizer/app
+c75f989a229d: Mounted from tokenizer/app
+8d752b15e163: Mounted from tokenizer/app
+a8e3f40b26e8: Mounted from tokenizer/app
+c281680b8c24: Mounted from tokenizer/app
+6adfce48172c: Pushed
+f232ccef2088: Pushed
+ac562718139f: Pushed
+6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01: digest: sha256:104c390d7447d0d7162ae871ae019c460b8c1e60359b92e599d398ea74d6a83a size: 2499
