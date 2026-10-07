@@ -17,6 +17,8 @@
   "lintExitCode": 0,
   "buildExitCode": 0,
   "diffCheckExitCode": 0,
+  "diffCheckScope": "product/tests/spec/report text excluding byte-preserved raw command logs",
+  "rawEvidenceWhitespaceCheckExitCode": 2,
   "negativeControls": { "originalRouteUnitExitCode": 1, "originalRoutePGExitCode": 1, "oldObservedStatus": 200, "candidateRequiredStatus": 400 },
   "preservedDevelopmentFailure": "focused first run had one wrong NUL error-code expectation; verify-final-3 rejected intentional poison fixture cast. Final nullable PG rerun initially stopped DB before yielded tests finished, producing retained connection/cleanup errors; correct awaited rerun passed 44, interrupted synthetic rows cleaned by exact IDs. All raw logs retained",
   "remaining": ["client poison-row quarantine", "partial/rejected-ID ACK protocol", "good-row liveness and explicit queue repair", "B07 outbox and valid-request operational atomicity", "fresh independent evaluation", "native CI"]

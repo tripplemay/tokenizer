@@ -1,0 +1,77 @@
+docs/test-reports/B06-bounded-schema-20261007/evidence/baseline-negative-pg.log:33: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/baseline-negative-unit.log:33: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/baseline-poison-acceptance.log:10: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/build-final.log:22: trailing whitespace.
++  Generating static pages using 9 workers (1/5) 
+docs/test-reports/B06-bounded-schema-20261007/evidence/build-final.log:23: trailing whitespace.
++  Generating static pages using 9 workers (2/5) 
+docs/test-reports/B06-bounded-schema-20261007/evidence/build-final.log:24: trailing whitespace.
++  Generating static pages using 9 workers (3/5) 
+docs/test-reports/B06-bounded-schema-20261007/evidence/build-final.log:75: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-development.log:25: trailing whitespace.
++     69| 
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-development.log:38: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-final-2.log:12: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-final-3.log:14: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-final-4.log:17: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/focused-final.log:12: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/full-final-2.log:204: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/full-final-3.log:220: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/full-final.log:202: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/lint-final.log:4: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-confirmation.log:1: trailing whitespace.
++        id         
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-confirmation.log:6: trailing whitespace.
++ b06_synthetic_users 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-confirmation.log:11: trailing whitespace.
++ f008_synthetic_users 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-confirmation.log:15: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-final.log:1: trailing whitespace.
++                       id                       
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-cleanup-final.log:7: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-initdb.log:23: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-migrate.log:94: trailing whitespace.
++      
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-orphan-cleanup.log:2: trailing whitespace.
++        id         
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-orphan-cleanup.log:6: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-development.log:23: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null-2.log:23: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:6: trailing whitespace.
++prisma:error 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:17: trailing whitespace.
++prisma:error 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:31: trailing whitespace.
++prisma:error 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:42: trailing whitespace.
++prisma:error 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:47: trailing whitespace.
++  225 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:57: trailing whitespace.
++PrismaClientUnknownRequestError: 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:77: trailing whitespace.
++    225| 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:82: trailing whitespace.
++PrismaClientKnownRequestError: 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:87: trailing whitespace.
++  225 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:96: trailing whitespace.
++    225| 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:106: trailing whitespace.
++PrismaClientKnownRequestError: 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:125: trailing whitespace.
++PrismaClientKnownRequestError: 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final-null.log:154: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-probe-final.log:23: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-version-cleanup.log:1: trailing whitespace.
++                                                           version                                                            
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-version-cleanup.log:6: trailing whitespace.
++ TimeZone 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-version-cleanup.log:11: trailing whitespace.
++ users_after_probe 
+docs/test-reports/B06-bounded-schema-20261007/evidence/pg-version-cleanup.log:15: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/queue-final.log:10: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/verify-development.log:12: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final-2.log:12: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final-4.log:12: new blank line at EOF.
+docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final.log:12: new blank line at EOF.

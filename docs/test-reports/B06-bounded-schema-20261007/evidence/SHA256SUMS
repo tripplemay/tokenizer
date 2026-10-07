@@ -39,6 +39,8 @@ ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d  docs/test-repo
 ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d  docs/test-reports/B06-bounded-schema-20261007/evidence/pg-stop.log
 0fdf3270795c050c4540bc4d6cb402bdc7eaedf93412a114287cffb7edcc689b  docs/test-reports/B06-bounded-schema-20261007/evidence/pg-version-cleanup.log
 0d5cb23d6b69b357c078c524cdc5f4f5b724ef4a3f8c3cb863a7c05ebe577a3f  docs/test-reports/B06-bounded-schema-20261007/evidence/queue-final.log
+230a42570458f982cce58b106427dd09a5b7b5951fd0258b05894044c8278b33  docs/test-reports/B06-bounded-schema-20261007/evidence/raw-evidence-whitespace.log
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  docs/test-reports/B06-bounded-schema-20261007/evidence/source-diff-check.log
 4e4e1a0216fcc0fe13ba42b8d8d4bd319b967c4d3156ffa2fa06ab02b75c952c  docs/test-reports/B06-bounded-schema-20261007/evidence/verify-development-2.log
 b9670587f17be51fcc82a199897fae936ae40828151ae4bbd9f2c09c175194af  docs/test-reports/B06-bounded-schema-20261007/evidence/verify-development.log
 e7908af93bd534fd1004ab367837b786577262564a72ab8a6e7687bcf1ddedf2  docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final-2.log
@@ -46,8 +48,8 @@ e7908af93bd534fd1004ab367837b786577262564a72ab8a6e7687bcf1ddedf2  docs/test-repo
 2ce9135b92de4bc690ac8ebe4ea50483656d3a34cd8b51b8180022f6693240a4  docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final-4.log
 8e17ec5fa601dd5903ffc6f88750144d4f21d69095e63669e27ca1a06f2af92c  docs/test-reports/B06-bounded-schema-20261007/evidence/verify-final.log
 b249e2ce55665e487aeac6be58711f384ef2f7a2b21dfd65cba6c9ef20dfab72  docs/test-reports/B06-bounded-schema-20261007/generator-checkpoint.md
-978a0d50fe85a8d295e9d0eefa3a648cc82a3d1e29a9f0b5782ecceee0b96f9e  docs/test-reports/B06-bounded-schema-20261007/generator-handoff.md
-4bb0d269ae187e11a7248760d98c2f24a48ef80407148f6750903e062487d545  docs/test-reports/B06-bounded-schema-20261007/results.json
+e922eeea6f6da1c47550efb2be1f944c17f3f41cdcd06aaf20105d0cf0d1715d  docs/test-reports/B06-bounded-schema-20261007/generator-handoff.md
+4e8daf5b5b39798ab2f7f2122a7eca1b3cf3cb9e44ba94c164732d7d30d97879  docs/test-reports/B06-bounded-schema-20261007/results.json
 1288060b8f0a2db725b949a9b94232672361caf9c859e714023839ec2873cba6  app/api/usage/events/batch/route.ts
 a84cc1d3f9bdc662f4e2665d11fc401cdf8bb1f145c1ff2cd6bc57db03e73e62  app/api/quota/snapshots/batch/route.ts
 09873edaea09edf35f8c2cfb23e7e393eb92c72e158e24b96712fad7fada6ea9  src/server/batch-input.ts

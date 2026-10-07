@@ -71,7 +71,8 @@ reports that described poison acceptance remain historical and are not rewritten
 | verify (final tests included, fixture type corrected) | exit 0 | verify-final-4.log |
 | lint | exit 0 | lint-final.log |
 | build | exit 0 | build-final.log |
-| git diff --check | exit 0 | diff-check.log |
+| source/docs diff --check excluding raw evidence | exit 0 | source-diff-check.log |
+| raw evidence diff --check | exit 2: native command-output trailing whitespace/EOF blank lines retained deliberately | raw-evidence-whitespace.log |
 
 Tests cover malformed/UTF-8/stream exceptions, missing or forged Content-Length,
 1MiB+1 actual bytes with cancellation and no parsing ACK, exact 1MiB including
