@@ -2,7 +2,7 @@
 
 ## 基线与状态机边界
 
-- 原仓 `main` 仍为 `2074991717abaf3cb34d9aad894bcd4357fefbc3`。原 worktree 预存大量 mode-only 工作区变更，本集成树未读取/覆盖这些改动。编排者仅推送了 B04/B05 非 main 验证分支；没有 push main 或生产部署。
+- 原仓 `main` 仍为 `2074991717abaf3cb34d9aad894bcd4357fefbc3`。原 worktree 预存大量 mode-only 工作区变更，本集成树未读取/覆盖这些改动。编排者仅推送非 main 验证分支；没有 push main 或生产部署。
 - 2026-10-07 16:54 UTC 对 `https://token.vpanel.cc/api/health` 的只读请求返回 `ok=true`、`commit=92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1`；它比远端 main 少一个仅文档 commit `2074991`。这只确认公开 health 与当前 source revision，**不**证明真实登录业务、生产 image digest、恢复点或 F005 验收。
 - 与该生产 commit 对应的旧 GitHub push run `35017447796` 整体为 failure（Windows Verify failed），但旧 Deploy job 为 success；这证明以往部署门槛未等待 Windows 成功，不能把既有生产状态当成本次 B01/B04 验收依据。
 - `progress.json.status=verifying`、`current_sprint=BL-HOMEPAGE-FRESHNESS`；`features.json` F005 仍 `pending`，`pending_gate=null`。当前升级修复采用独立 hotfix 候选树，**不冒充旧批次 F005 签收**，不写 `pending_gate.decision`。
@@ -43,3 +43,10 @@ B05 证据留存候选 `ec3348e` 的非 main run `37653910013` 在 OCI/recovery 
 后续 B05 candidate `6164b4e` 的非 main run `37656417182` 已终态 success：Verify、native Windows、PG16、认证浏览器、Linux OCI/recovery 五个 job 成功，Deploy skipped。GitHub artifact API 确认 `release-recovery-6164b4e29922dbce685d01bf2c4c9d41428c9a08` 存在且未过期；编排者下载后运行候选 `recovery-evidence.mjs verify` 成功，文件精确为合成 dump、checksum、rehearsal、rollback-approved、manifest；ledger 显示 `mode=synthetic`、`rollback=passed`。这修复的是**非 main CI 合成证据留存门**；独立复评、main-only GHCR attestation/负控、真实生产前驱 digest/备份恢复/部署仍未完成，不是 B05 发布放行。
 
 B02 最小依赖升级候选 `17b47a8` 的非 main run `37656814992` 已终态 failure：Linux Verify、PG16 与认证浏览器成功，Windows full suite 的 `tests/cli/harness.test.ts:577` 在创建 22 个真实 Git fixture 的场景触发 Vitest 默认 5 秒 timeout（实测约 15 秒）；其余 Windows 1591 tests 通过/33 跳过，Deploy skipped。该 candidate 仍残留 `braces` 7 High，且尚未完成 Windows 通过与独立评估；正在做只针对昂贵 fixture 的 test-timeout/效率修复，不扩大全局测试阈值。
+
+## 2026-10-08 后续检查点（以上历史失败记录保留）
+
+- B04+B05 组合 `8877a59` 已回流本隔离集成树。首次 exact `3cce52e` run `37659301770` 因 Windows checkout 将历史 `SHA256SUMS` 转 CRLF 而失败；两轮 scoped `.gitattributes` 修正后，run `37660385870` 的 Linux Verify、native Windows、PG16、认证浏览器、OCI/recovery 均成功，Deploy skipped。编排者独立下载 artifact `11501715741`，manifest 4 个 allowlist 文件及 SHA 校验通过；ledger `mode=synthetic`、`restore_inventory=2|2|1|1|23`、`runtime_uid=1000`、`rollback=passed`。技术预审 `a7730f0` 不是异家族正式 verdict；main-only provenance、真实生产备份恢复与部署仍未验证。
+- B02 最小升级加单用例 Windows timeout 的 exact `8794f4b` run `37659338402` 已全验证 job 成功；内部 `braces` 深度防护 backport 加 timeout 的 exact `b6092cd` run `37660012749` 亦成功，均 Deploy skipped。独立组合探针 `5b34204` 的 Node22 clean install、verify/lint、1704 tests/23 skip、standalone build/gate 通过，非 main CI `37661734545` 尚在运行；**完整依赖图仍报告 7 High**（生产依赖审计 0），异家族安全复核在进行，未回流本集成树或获得发布放行。
+- B03 bounded historical replay 候选 `420b539` 的同家族技术预审 `a8a4072` 复现三个 BLOCK：父目录 symlink 可被读、regular→FIFO 替换导致 `open` 阻塞超时、`projectRoots` 变化可在旧确认 digest 下改变 admission。候选不回流；Generator 在独立树修复，预审负控及历史证据保持不变。
+- B06 server bounded schema 候选 `4da6604` 的非 main run `37660586981` Linux/Windows/PG16/browser 成功、Deploy skipped；同家族技术预审 `8e415be` 指出 PG16 workflow 未执行新增专用 3 项 DB probe（普通 Verify 中 skip），虽本机真实 PG16 3/3 通过，仍须补 CI 门禁。B06 客户端 quarantine、partial ACK 与队列 liveness 尚未实现。不得把 CI 绿灯或本机 PG 测试等同完整 B06 通过。
