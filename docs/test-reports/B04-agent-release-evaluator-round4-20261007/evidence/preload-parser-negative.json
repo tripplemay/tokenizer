@@ -1,0 +1,17 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "input": "C:\\tokenizer fixture\\fake bin\\missing-preload.cjs",
+  "legacy": {
+    "exit": 1,
+    "resolved": "C:tokenizer fixturefake binmissing-preload.cjs"
+  },
+  "normalized": {
+    "exit": 1,
+    "resolved": "C:/tokenizer fixture/fake bin/missing-preload.cjs"
+  },
+  "expectation": {
+    "legacy_backslashes_stripped": true,
+    "normalized_path_preserved": true
+  }
+}

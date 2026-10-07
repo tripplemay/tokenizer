@@ -1,0 +1,27 @@
+preserved assertions:
+108:    const assertOldData = () => {
+123:    assertOldData();
+127:    assertOldData();
+130:    assertOldData();
+134:    assertOldData();
+139:      { command: "install-service", exitCode: 0, revision: "first" }
+141:    assertOldData();
+144:    expect(sensitive.output).not.toContain("enroll-secret-canary");
+146:    assertOldData();
+158:      expect(concurrent.output).toContain("Another Tokenizer installation is running");
+172:    expect(existsSync(join(dataDir, ".install.lock"))).toBe(true);
+177:      offlineRollbackExit: rollback.code, activeCommitAfterRollback: git(active, "rev-parse", "HEAD"),
+178:      expectedOldCommit: first, queueCanaryRetained: true, credentialCanaryRetained: true
+manifest latest:
+{
+  "version": "1.4.0",
+  "commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "released_on": "2026-08-10",
+  "agent_feature_version": 9
+}
+remote agent/v tags (empty means absent):
+round3 transported report hashes:
+report.md candidate 14a7cd00d0955b242e642ad515d30fca3397f05baa54ffabf071c2219621dd40
+report.md 8acf5ba 14a7cd00d0955b242e642ad515d30fca3397f05baa54ffabf071c2219621dd40
+verdict.json candidate aa92f57b73d94cfe8c23c40d11b44245fb5b42f3822c5776f2fc391b70d71cbb
+verdict.json 8acf5ba aa92f57b73d94cfe8c23c40d11b44245fb5b42f3822c5776f2fc391b70d71cbb

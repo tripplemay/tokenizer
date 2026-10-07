@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-07T16:34:53Z",
+  "role": "independent evaluator",
+  "candidate_sha": "26607f5e9174656a5fd086dd62e6e106a702de7c",
+  "fixture_comparison_base": "62dba5a77333816d614dcf5f61476f2bf2cc4dd4",
+  "prior_round3_evaluator_commit": "8acf5ba28739cb647abccb2344c37361f54bedc9",
+  "local": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.22.0",
+    "npm_ci": "pass; 671 packages installed",
+    "preload_contract": "pass; 3/3",
+    "focused": "pass with native Windows skip; 7 files passed, 1 skipped; 26 tests passed, 1 skipped",
+    "full": "pass with platform/DB/contract skips; 118 files passed, 9 skipped; 1543 tests passed, 23 skipped",
+    "verify": "pass",
+    "lint": "pass",
+    "actionlint": "pass"
+  },
+  "github": {
+    "run_id": 37651552909,
+    "head_sha": "26607f5e9174656a5fd086dd62e6e106a702de7c",
+    "status": "completed",
+    "conclusion": "success",
+    "windows_node": "v22.23.3",
+    "deploy": "skipped"
+  }
+}

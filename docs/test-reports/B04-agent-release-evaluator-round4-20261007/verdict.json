@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "task": "B04 Agent release independent evaluation round 4",
+  "role": "evaluator",
+  "created_at": "2026-10-07T16:34:53Z",
+  "candidate_sha": "26607f5e9174656a5fd086dd62e6e106a702de7c",
+  "fixture_comparison_base": "62dba5a77333816d614dcf5f61476f2bf2cc4dd4",
+  "prior_round3_evaluator_commit": "8acf5ba28739cb647abccb2344c37361f54bedc9",
+  "verdict": "PASS_CI_GATE_ONLY",
+  "candidate_branch_ci_readiness": "PASS",
+  "safe_branch_ci_readiness": "PASS",
+  "fixture_only_integration_readiness": "READY",
+  "main_or_merge_readiness": "FIXTURE_ONLY_CHANGE_READY_FOR_NON_DEPLOYING_INTEGRATION; MAIN_PUSH_NOT_AUTHORIZED",
+  "push_main_readiness": "BLOCKED_BY_PRODUCTION_DEPLOY_POLICY_AND_RELEASE_GATES",
+  "agent_release_readiness": "NOT_READY",
+  "grade_for_fixture_only_correction": "A",
+  "normalized_score_for_fixture_only_correction": 93,
+  "summary": "The fixture-only correction is accepted. Independent diff review found no product installer, Agent CLI or release-manifest change. The new NODE_OPTIONS encoder preserves a Windows path containing spaces; the explicit legacy negative reproduces backslash stripping. Exact-SHA GitHub run 37651552909 completed SUCCESS, and its native Windows job passed the dedicated installer fixture, full suite, owner termination gate and PowerShell parser. The native fixture executed fail-closed configuration/service/enrollment failures, successful upgrade and offline rollback, retained queue/credentials, secret-redaction and mutual-exclusion assertions. This closes Round 3's CI-only fixture blocker. It does not make B04 releasable: the manifest is still pinned to pre-B04 1.4.0/207499..., no agent/v* tag exists, and native macOS launchd, real Task Scheduler plus the disk-full/kill/dependency fault matrix remain open.",
+  "candidate_findings": [],
+  "accepted_evidence": {
+    "fixture_only_diff": {
+      "status": "PASS",
+      "evidence": [
+        "Relative to 62dba5a, non-report changes are limited to two Windows fixture tests and tests/fixtures/agent-release-node-options.ts.",
+        "There is no diff in public/install.ps1, public/install.sh, src/cli or src/shared/agent-releases.json.",
+        "The imported helper changes only test NODE_OPTIONS construction from a raw backslash path to forward slashes."
+      ]
+    },
+    "preload_negative_and_fix": {
+      "status": "PASS",
+      "evidence": [
+        "Node v22.22.0 independently reproduced the legacy parse as C:tokenizer fixturefake binmissing-preload.cjs.",
+        "The corrected value preserved C:/tokenizer fixture/fake bin/missing-preload.cjs.",
+        "tests/cli/agent-release-installer-windows-fixture.test.ts passed 3/3 and covers both the parser negative and real preloaded configure/enroll exits."
+      ]
+    },
+    "native_windows": {
+      "status": "PASS",
+      "run_id": 37651552909,
+      "job_id": 112896203770,
+      "node": "v22.23.3",
+      "dedicated_fixture": "1 passed / 1; uploaded artifact success=true and 1/1 passed",
+      "full_suite": "119 files passed / 8 skipped; 1533 tests passed / 33 skipped",
+      "observations": {
+        "config_failure_exit": 1,
+        "service_config_failure_exit": 1,
+        "enrollment_failure_exit": 1,
+        "completed_upgrade_exit": 0,
+        "offline_rollback_exit": 0,
+        "rollback_head_equal_to_expected_old_commit": true,
+        "queue_canary_retained": true,
+        "credential_canary_retained": true
+      },
+      "additional_gates": [
+        "Native Windows direct-owner force termination and stale-lock recovery passed.",
+        "PowerShell parser reported install.ps1 parsed cleanly.",
+        "The dedicated test's passing secret-canary assertion establishes that installer output did not contain enroll-secret-canary."
+      ]
+    },
+    "exact_sha_ci": {
+      "repository": "tripplemay/tokenizer",
+      "workflow": "Deploy VPS",
+      "event": "workflow_dispatch",
+      "head_branch": "codex/b04-preload-path-ci-20261007",
+      "head_sha": "26607f5e9174656a5fd086dd62e6e106a702de7c",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": {
+        "Verify": "success",
+        "Verify (Windows)": "success",
+        "Verify (PostgreSQL 16)": "success",
+        "Verify (authenticated browser)": "success",
+        "Deploy": "skipped"
+      }
+    },
+    "local_node22": {
+      "runtime": "macOS arm64, Node v22.22.0",
+      "npm_ci": "PASS; 671 packages installed",
+      "preload_contract": "PASS; 1 file, 3 tests",
+      "focused": "PASS_WITH_NATIVE_WINDOWS_SKIP; 7 files passed, 1 skipped; 26 tests passed, 1 skipped",
+      "full": "PASS_WITH_PLATFORM_DB_CONTRACT_SKIPS; 118 files passed, 9 skipped; 1543 tests passed, 23 skipped",
+      "verify": "PASS",
+      "lint": "PASS",
+      "actionlint": "PASS",
+      "boundary": "The local macOS run is not native Windows or macOS launchd evidence."
+    }
+  },
+  "assertion_integrity": {
+    "native_nonzero": "PASS_NATIVE_WINDOWS; manifest/fetch/npm/configure/service-config/enroll/concurrency expectations remain; emitted top-level exits for configure, service-config and enrollment were nonzero",
+    "rollback": "PASS_NATIVE_WINDOWS; upgrade exit 0, offline rollback exit 0 and restored HEAD equals the expected old commit",
+    "queue_and_credentials": "PASS_NATIVE_WINDOWS; canaries retained after failure paths and final rollback",
+    "token_redaction": "PASS_NATIVE_WINDOWS_ASSERTION; the passing dedicated fixture retains output.not.toContain(enroll-secret-canary) and the trace omits the token",
+    "installer_lock": "PASS_NATIVE_WINDOWS_FIXTURE; concurrent invocation is rejected; separate direct-owner force termination and stale-lock recovery gate passed",
+    "service_restore": "PASS_STUBBED_CONTRACT_ONLY; old-revision install-service trace is asserted, but real Task Scheduler remains untested",
+    "posix_rollback_containment": "PASS_LOCAL; external symlink rollback target is rejected",
+    "windows_path_containment": "NOT_CLOSED; no native reparse-point escape test",
+    "product_assertions_changed_by_this_candidate": false
+  },
+  "remaining_release_blockers": [
+    {
+      "id": "B04-R4-REL-001",
+      "severity": "critical",
+      "title": "Immutable release identity is still pre-B04",
+      "evidence": "src/shared/agent-releases.json still ends at 1.4.0 -> 2074991717abaf3cb34d9aad894bcd4357fefbc3, and origin advertises no refs/tags/agent/v* tag.",
+      "required_action": "After all platform gates pass, publish the reviewed B04 commit through an immutable agent/v* tag and update the manifest to that exact commit using the authorized release flow."
+    },
+    {
+      "id": "B04-R4-REL-002",
+      "severity": "high",
+      "title": "Native service-manager acceptance is incomplete",
+      "evidence": "No native macOS launchd run is present. The Windows fixture places a schtasks.cmd stub on PATH and intercepts install-service, so it does not establish real Task Scheduler install/start/upgrade/rollback behavior.",
+      "required_action": "Run fresh install, upgrade, failure restore, restart and rollback against native launchd and real Windows Task Scheduler."
+    },
+    {
+      "id": "B04-R4-REL-003",
+      "severity": "high",
+      "title": "Destructive fault matrix remains incomplete",
+      "evidence": "No new native disk-full, real dependency-install failure beyond a stubbed npm exit, process/host kill at cutover boundaries, Windows reparse-point containment or Linux cron-fallback recovery evidence was added by this fixture-only correction.",
+      "required_action": "Execute and retain the bounded cross-platform disk-full, dependency, kill/restart, containment and cron fallback matrix."
+    }
+  ],
+  "scorecard_fixture_only_scope": {
+    "correctness": { "score": 5, "weight": 25, "rationale": "The parser regression is directly reproduced and fixed; exact native Windows acceptance is green." },
+    "regression_risk": { "score": 5, "weight": 20, "rationale": "No product diff; local and exact-SHA full suites pass." },
+    "security": { "score": 4, "weight": 15, "rationale": "Secret and retained-data assertions execute natively, but real service-manager and full containment evidence are release follow-ups." },
+    "reliability": { "score": 4, "weight": 15, "rationale": "Rollback and lock acceptance pass; destructive native fault injection remains a release gate." },
+    "performance": { "score": null, "weight": 0, "rationale": "N/A for a test-fixture path encoder." },
+    "maintainability": { "score": 5, "weight": 10, "rationale": "The isolated helper documents the NODE_OPTIONS parser boundary and is covered by an explicit regression test." },
+    "test_readiness": { "score": 5, "weight": 5, "rationale": "Dedicated exact-result gate, full Windows suite and artifact all pass on the exact SHA." }
+  },
+  "decision_rule": "The fixture-only correction may enter a non-deploying candidate integration branch. Do not interpret this PASS as authorization to push main or publish an Agent. B04 release remains blocked until immutable manifest/tag identity, native launchd and real Task Scheduler acceptance, and the remaining destructive fault matrix are complete.",
+  "scope_boundaries": [
+    "No candidate product code, progress.json, features.json, pending_gate.decision or human gate was modified.",
+    "No branch was pushed; no deployment, tag, Agent publication or host service change was performed.",
+    "Deploy was skipped in run 37651552909.",
+    "Mocked schtasks/install-service coverage is not reported as real Task Scheduler acceptance.",
+    "Local macOS POSIX tests are not reported as native launchd acceptance."
+  ],
+  "evidence_paths": [
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/report.md",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/runtime.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/candidate-fixture-only-diff.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/assertion-and-release-boundaries.txt",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/preload-parser-negative.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/preload-negative-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/run-37651552909-metadata.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/run-37651552909-artifacts.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/run-37651552909-windows.log.gz",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/run-37651552909-windows-decisive.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/windows-installer.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/windows-agent-owner.json",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/npm-ci-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/focused-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/full-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/verify-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/lint-node22.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/actionlint.log",
+    "docs/test-reports/B04-agent-release-evaluator-round4-20261007/evidence/SHA256SUMS"
+  ]
+}

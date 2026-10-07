@@ -1,0 +1,129 @@
+candidate:
+26607f5e9174656a5fd086dd62e6e106a702de7c
+parent:
+3c05399e6ed94af80591ef533f341196a77e3083
+base-for-fixture-only-comparison:
+62dba5a77333816d614dcf5f61476f2bf2cc4dd4
+non-report diff names (62dba5a..candidate):
+M	tests/cli/agent-release-installer-windows-fixture.test.ts
+M	tests/cli/agent-release-installer-windows.test.ts
+A	tests/fixtures/agent-release-node-options.ts
+product installer/agent/manifest diff (must be empty):
+candidate functional diff:
+diff --git a/tests/cli/agent-release-installer-windows-fixture.test.ts b/tests/cli/agent-release-installer-windows-fixture.test.ts
+index b94bff7..35476a6 100644
+--- a/tests/cli/agent-release-installer-windows-fixture.test.ts
++++ b/tests/cli/agent-release-installer-windows-fixture.test.ts
+@@ -1,35 +1,54 @@
+ import { spawnSync } from "node:child_process";
+-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { describe, expect, it } from "vitest";
++import { preloadNodeOptions } from "../fixtures/agent-release-node-options";
+
+ describe("native Node installer failure fixture contract", () => {
++  it("preserves Windows separators and spaces through the real NODE_OPTIONS parser", () => {
++    const path = String.raw`C:\tokenizer fixture\fake bin\missing-preload.cjs`;
++    const invoke = (options: string) => spawnSync(process.execPath, ["-e", "0"], {
++      env: { ...process.env, NODE_OPTIONS: options }, encoding: "utf8", timeout: 5_000
++    });
++    const legacy = invoke(`--require="${path}"`);
++    expect(legacy.error).toBeUndefined();
++    expect(legacy.status).toBe(1);
++    expect(legacy.stderr).toContain("Cannot find module 'C:tokenizer fixturefake binmissing-preload.cjs'");
++    const safe = invoke(preloadNodeOptions(path));
++    expect(safe.error).toBeUndefined();
++    expect(safe.status).toBe(1);
++    expect(safe.stderr).toContain("Cannot find module 'C:/tokenizer fixture/fake bin/missing-preload.cjs'");
++  });
++
+   it.each([ ["configure", "TEST_CONFIGURE_FAIL", 42], ["enroll", "TEST_ENROLL_FAIL", 55] ] as const)("uses real Node argv for %s and preserves the injected nonzero exit", (command, flag, exitCode) => {
+     const root = mkdtempSync(join(tmpdir(), "tokenizer fixture argv-"));
+     try {
+       const dir = join(root, "src", "cli");
+       mkdirSync(dir, { recursive: true });
+       const target = join(dir, "index.ts");
+       const trace = join(root, "trace.jsonl");
++      const preload = join(root, "fake bin", "node-preload.cjs");
++      mkdirSync(join(root, "fake bin"));
++      copyFileSync("tests/fixtures/agent-release-node-preload.cjs", preload);
+       writeFileSync(target, 'throw new Error("CLI target must never execute");\n');
+       writeFileSync(join(root, "revision"), "candidate");
+       const result = spawnSync(process.execPath, [
+         "--import", "fixture-nonexistent-tsx", target, command, "--enroll-token", "synthetic-token-canary"
+       ], {
+         cwd: root,
+         env: {
+           ...process.env, HOME: root, USERPROFILE: root,
+-          NODE_OPTIONS: `--require="${join(process.cwd(), "tests", "fixtures", "agent-release-node-preload.cjs")}"`,
++          NODE_OPTIONS: preloadNodeOptions(preload),
+           TEST_CLI_TRACE: trace, [flag]: "1"
+         },
+         encoding: "utf8", timeout: 5_000
+       });
+       expect(result.error).toBeUndefined();
+       expect(result.status).toBe(exitCode);
+       const text = readFileSync(trace, "utf8");
+       expect(JSON.parse(text)).toEqual({ command, exitCode, revision: "candidate" });
+       expect(text).not.toContain("synthetic-token-canary");
+       expect(result.stderr).not.toContain("fixture-nonexistent-tsx");
+     } finally {
+       rmSync(root, { recursive: true, force: true });
+diff --git a/tests/cli/agent-release-installer-windows.test.ts b/tests/cli/agent-release-installer-windows.test.ts
+index 47b18a5..e5f769f 100644
+--- a/tests/cli/agent-release-installer-windows.test.ts
++++ b/tests/cli/agent-release-installer-windows.test.ts
+@@ -1,39 +1,40 @@
+ import { execFile, execFileSync } from "node:child_process";
+ import { createServer, type Server } from "node:http";
+ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { afterEach, describe, expect, it } from "vitest";
++import { preloadNodeOptions } from "../fixtures/agent-release-node-options";
+
+ const roots: string[] = [];
+ const servers: Server[] = [];
+
+ function git(repo: string, ...args: string[]): string {
+   return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8" }).trim();
+ }
+
+ function commitFixture(repo: string, revision: string): string {
+   writeFileSync(join(repo, "revision"), revision);
+   git(repo, "add", ".");
+   git(repo, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", revision);
+   return git(repo, "rev-parse", "HEAD");
+ }
+
+ function startInstaller(script: string, home: string, fakeBin: string, serverUrl: string, args: string[] = [], extraEnv: Record<string, string> = {}, withService = false) {
+   let finish!: (result: { code: number | string; output: string }) => void;
+   const result = new Promise<{ code: number | string; output: string }>((resolve) => { finish = resolve; });
+   const env: NodeJS.ProcessEnv = {
+     ...process.env, ...extraEnv,
+-    NODE_OPTIONS: `--require="${join(fakeBin, "node-preload.cjs")}"`,
++    NODE_OPTIONS: preloadNodeOptions(join(fakeBin, "node-preload.cjs")),
+     TEST_CLI_TRACE: join(home, "cli-trace.jsonl"),
+     TEST_TASK_TRACE: join(home, "task-trace.txt")
+   };
+   for (const key of Object.keys(env)) {
+     if (key.toLowerCase() === "path") delete env[key];
+   }
+   env.Path = `${fakeBin};${process.env.Path ?? process.env.PATH}`;
+   const child = execFile("powershell.exe", [
+     "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", script,
+     "-ServerUrl", serverUrl, "-ProjectRoot", home, ...(withService ? [] : ["-NoService"]), ...args
+   ], {
+     env,
+diff --git a/tests/fixtures/agent-release-node-options.ts b/tests/fixtures/agent-release-node-options.ts
+new file mode 100644
+index 0000000..d0526d3
+--- /dev/null
++++ b/tests/fixtures/agent-release-node-options.ts
+@@ -0,0 +1,4 @@
++export function preloadNodeOptions(path: string): string {
++  // NODE_OPTIONS consumes backslashes as escapes, even inside double quotes.
++  return `--require="${path.replaceAll("\\", "/")}"`;
++}
