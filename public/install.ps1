@@ -29,9 +29,7 @@ param(
   [switch] $NoService,
   [switch] $ForceEnroll,
   [switch] $Yes,
-  # Branch to install from. Exists so a change can be tested end-to-end on a
-  # real machine before it is merged and deployed.
-  [string] $Branch = $(if ($env:TOKENIZER_BRANCH) { $env:TOKENIZER_BRANCH } else { "main" })
+  [switch] $Rollback
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +38,8 @@ Set-StrictMode -Version Latest
 $RepoUrl         = "https://github.com/tripplemay/tokenizer.git"
 $TokenizerHome   = Join-Path $HOME ".tokenizer"
 $InstallDir      = Join-Path $TokenizerHome "app"
+$ReleasesDir     = Join-Path $TokenizerHome "releases"
+$PreviousFile    = Join-Path $TokenizerHome "previous-release.txt"
 $BinDir          = Join-Path $TokenizerHome "bin"
 $CredentialsFile = Join-Path $TokenizerHome "credentials.json"
 
@@ -148,64 +148,130 @@ Assert-Command -Name "node" -WingetId "OpenJS.NodeJS.LTS"
 Assert-Command -Name "git"  -WingetId "Git.Git"
 Assert-NodeVersion
 
-Write-Log "Installing Tokenizer client to $InstallDir"
-New-Item -ItemType Directory -Force -Path $TokenizerHome, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
-
-Stop-RunningAgent
-
-if ($Branch -ne "main") { Write-Log "Installing from branch '$Branch'" }
-
-if (Test-Path (Join-Path $InstallDir ".git")) {
-  Invoke-Checked git -C $InstallDir fetch --prune origin
-  Invoke-Checked git -C $InstallDir checkout --force "origin/$Branch"
-} else {
-  if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
-  Invoke-Checked git clone $RepoUrl $InstallDir
-  Invoke-Checked git -C $InstallDir checkout --force "origin/$Branch"
+if ($Rollback -and $ForceEnroll) { throw "-Rollback and -ForceEnroll cannot be combined." }
+$needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
+if (-not $Rollback -and $needEnroll -and -not $EnrollToken) {
+  throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
 }
 
-Push-Location $InstallDir
-try {
-  # better-sqlite3 (the OpenCode collector) resolves a win32-x64 prebuild
-  # here. If that download is blocked, npm falls back to node-gyp and will
-  # ask for Visual Studio Build Tools.
-  Invoke-Checked npm ci
-} finally {
-  Pop-Location
-}
-
-New-CmdShim
-Add-ToUserPath -Directory $BinDir
-$env:Path = "$BinDir;$env:Path"
-
+New-Item -ItemType Directory -Force -Path $TokenizerHome, $ReleasesDir, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
+$stageDir = $null
+$candidateDir = $null
+$oldDir = $null
+$oldMoved = $false
+$newMoved = $false
+$stopAttempted = $false
+$hadExistingApp = $false
 $tokenizer = Join-Path $BinDir "tokenizer.cmd"
 
-if ($DeviceName) { Invoke-Checked $tokenizer init --device-name $DeviceName } else { Invoke-Checked $tokenizer init }
-Invoke-Checked $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
-
-$needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
-if ($needEnroll) {
-  if (-not $EnrollToken) {
-    throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
+try {
+  if ($Rollback) {
+    if (-not (Test-Path $InstallDir) -or -not (Test-Path $PreviousFile)) {
+      throw "No previous release available for rollback."
+    }
+    $candidateDir = [IO.Path]::GetFullPath((Get-Content -Raw $PreviousFile).Trim())
+    $releasePrefix = [IO.Path]::GetFullPath($ReleasesDir).TrimEnd('\') + '\'
+    if (-not $candidateDir.StartsWith($releasePrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        -not (Test-Path (Join-Path $candidateDir ".git"))) {
+      throw "Previous release path is invalid."
+    }
+  } else {
+    # Old servers, offline hosts, and malformed manifests fail before touching
+    # the current checkout or Task Scheduler. There is no origin/main fallback.
+    $serverUri = [Uri]$ServerUrl
+    if ($serverUri.UserInfo -or
+        ($serverUri.Scheme -ne "https" -and -not ($serverUri.Scheme -eq "http" -and $serverUri.IsLoopback))) {
+      throw "Agent release manifest requires HTTPS (except loopback testing)."
+    }
+    $manifest = Invoke-RestMethod -Uri "$($ServerUrl.TrimEnd('/'))/api/agent/releases" -TimeoutSec 15
+    $release = $manifest.release
+    if ($manifest.schema_version -ne 1 -or
+        $release.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' -or
+        $release.commit -cnotmatch '^[0-9a-f]{40}$' -or
+        $release.repository -cne $RepoUrl) {
+      throw "Invalid pinned Agent release manifest."
+    }
+    Assert-Command -Name "git" -WingetId "Git.Git"
+    $stageDir = Join-Path $TokenizerHome (".stage-" + [guid]::NewGuid().ToString("N"))
+    New-Item -ItemType Directory -Path $stageDir | Out-Null
+    Invoke-Checked git -C $stageDir init -q
+    Invoke-Checked git -C $stageDir remote add origin $RepoUrl
+    Invoke-Checked git -C $stageDir fetch --no-tags --depth=1 origin $release.commit
+    Invoke-Checked git -C $stageDir checkout --detach --force $release.commit
+    $actualCommit = (& git -C $stageDir rev-parse --verify HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or $actualCommit -cne $release.commit) {
+      throw "Agent commit digest mismatch."
+    }
+    Push-Location $stageDir
+    try {
+      Invoke-Checked npm ci
+      Invoke-Checked node --import tsx "src\cli\index.ts" --help
+    } finally {
+      Pop-Location
+    }
+    $candidateDir = Join-Path $ReleasesDir ("$($release.commit)-" + [guid]::NewGuid().ToString("N"))
+    Move-Item -LiteralPath $stageDir -Destination $candidateDir
+    $stageDir = $null
   }
-  $enrollArgs = @("enroll", "--enroll-token", $EnrollToken, "--server-url", $ServerUrl)
-  if ($DeviceName) { $enrollArgs += @("--device-name", $DeviceName) }
-  if ($Yes)        { $enrollArgs += "--yes" }
-  Invoke-Checked $tokenizer @enrollArgs
-} else {
-  Write-Log "Re-using existing credentials at $CredentialsFile."
-}
 
-if (-not $NoService) {
-  Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
-  # The task's repeating revive trigger will start the agent within 15 minutes
-  # on its own. Run it now so the first heartbeat lands immediately.
-  try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
-    Write-Log "Could not start the scheduled task immediately; it will start within 15 minutes."
+  if ((Test-Path $InstallDir) -and -not (Test-Path (Join-Path $InstallDir ".git"))) {
+    throw "Existing app path is not a Git checkout; refusing to replace it."
   }
-}
+  Push-Location $candidateDir
+  try { Invoke-Checked node --import tsx "src\cli\index.ts" --help } finally { Pop-Location }
 
-# Best-effort, mirroring `tokenizer run || true` in install.sh: a first
-# collection failure should not undo a successful install.
-& $tokenizer run
-Write-Log "Tokenizer installed. Run: tokenizer status"
+  $hadExistingApp = Test-Path $InstallDir
+  if ($hadExistingApp) {
+    $oldDir = Join-Path $ReleasesDir ("previous-" + [guid]::NewGuid().ToString("N"))
+  }
+  $stopAttempted = $true
+  Stop-RunningAgent
+  if ($oldDir) {
+    Move-Item -LiteralPath $InstallDir -Destination $oldDir
+    $oldMoved = $true
+  }
+  Move-Item -LiteralPath $candidateDir -Destination $InstallDir
+  $newMoved = $true
+
+  New-CmdShim
+  $env:Path = "$BinDir;$env:Path"
+  if (-not $Rollback) {
+    if ($DeviceName) { Invoke-Checked $tokenizer init --device-name $DeviceName } else { Invoke-Checked $tokenizer init }
+    Invoke-Checked $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
+    if ($needEnroll) {
+      $enrollArgs = @("enroll", "--enroll-token", $EnrollToken, "--server-url", $ServerUrl)
+      if ($DeviceName) { $enrollArgs += @("--device-name", $DeviceName) }
+      if ($Yes) { $enrollArgs += "--yes" }
+      Invoke-Checked $tokenizer @enrollArgs
+    } else {
+      Write-Log "Re-using existing credentials at $CredentialsFile."
+    }
+  }
+  if (-not $NoService) {
+    Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
+    try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
+      Write-Log "Could not start the scheduled task immediately; it will start within 15 minutes."
+    }
+  }
+  if ($oldDir) { Set-Content -Path $PreviousFile -Value $oldDir -Encoding ASCII }
+  Add-ToUserPath -Directory $BinDir
+  if (-not $Rollback) { & $tokenizer run }
+  Write-Log "Tokenizer installed. Run: tokenizer status"
+} catch {
+  if ($newMoved -and (Test-Path $InstallDir)) {
+    Move-Item -LiteralPath $InstallDir -Destination $candidateDir
+  }
+  if ($oldMoved -and (Test-Path $oldDir)) {
+    Move-Item -LiteralPath $oldDir -Destination $InstallDir
+  }
+  if (-not $hadExistingApp -and (Test-Path $tokenizer)) {
+    Remove-Item -LiteralPath $tokenizer -Force
+  }
+  if ($stopAttempted -and $hadExistingApp -and -not $NoService -and (Test-Path $tokenizer)) {
+    try { Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes }
+    catch { Write-Warning "Previous Agent restored, but service restart failed. Run tokenizer install-service manually." }
+  }
+  throw
+} finally {
+  if ($stageDir -and (Test-Path $stageDir)) { Remove-Item -Recurse -Force $stageDir }
+}
