@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ❯ tests/cli/agent-lifecycle.test.ts (7 tests | 1 failed | 6 skipped) 346ms
+   × agent single-instance lock > releases the lock when the running agent receives SIGTERM 346ms
+     → expected 18808 to be 18807 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/agent-lifecycle.test.ts > agent single-instance lock > releases the lock when the running agent receives SIGTERM
+AssertionError: expected 18808 to be 18807 // Object.is equality
+
+- Expected
++ Received
+
+- 18807
++ 18808
+
+ ❯ tests/cli/agent-lifecycle.test.ts:154:60
+    152|     }, "agent did not reach running state", 10_000);
+    153|     trackedPids.add(JSON.parse(readFileSync(lockPath, "utf8")).pid);
+    154|     expect(JSON.parse(readFileSync(lockPath, "utf8")).pid).toBe(agent.…
+       |                                                            ^
+    155|     agent.kill("SIGTERM");
+    156|     await waitForExit(agent);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+   Start at  21:29:32
+   Duration  688ms (transform 33ms, setup 0ms, collect 33ms, tests 346ms, environment 0ms, prepare 32ms)
+

@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (7 tests | 1 skipped) 1916ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 485ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 376ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1048ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed | 1 skipped (7)
+   Start at  21:30:05
+   Duration  2.26s (transform 60ms, setup 0ms, collect 65ms, tests 1.92s, environment 0ms, prepare 82ms)
+

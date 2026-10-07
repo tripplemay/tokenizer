@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (7 tests | 6 skipped) 1461ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 1460ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  21:31:40
+   Duration  2.96s (transform 103ms, setup 0ms, collect 110ms, tests 1.46s, environment 0ms, prepare 103ms)
+
