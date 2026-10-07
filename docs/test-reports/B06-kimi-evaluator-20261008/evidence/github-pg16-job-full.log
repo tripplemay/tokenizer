@@ -1,0 +1,517 @@
+﻿2026-10-07T17:57:49.7004285Z Current runner version: '2.337.0'
+2026-10-07T17:57:49.7035010Z ##[group]Runner Image Provisioner
+2026-10-07T17:57:49.7036457Z Hosted Compute Agent
+2026-10-07T17:57:49.7037124Z Version: 20260901.588
+2026-10-07T17:57:49.7037777Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-07T17:57:49.7038624Z Build Date: 2026-09-01T19:56:44Z
+2026-10-07T17:57:49.7039332Z Worker ID: {95d57e56-b7f3-4a2f-a65d-b519546f3ad6}
+2026-10-07T17:57:49.7040107Z Azure Region: northcentralus
+2026-10-07T17:57:49.7040814Z ##[endgroup]
+2026-10-07T17:57:49.7042443Z ##[group]Operating System
+2026-10-07T17:57:49.7043333Z Ubuntu
+2026-10-07T17:57:49.7043938Z 24.04.5
+2026-10-07T17:57:49.7044508Z LTS
+2026-10-07T17:57:49.7045098Z ##[endgroup]
+2026-10-07T17:57:49.7045671Z ##[group]Runner Image
+2026-10-07T17:57:49.7046524Z Image: ubuntu-24.04
+2026-10-07T17:57:49.7047114Z Version: 20260927.320.1
+2026-10-07T17:57:49.7048516Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-07T17:57:49.7050143Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+2026-10-07T17:57:49.7051598Z ##[endgroup]
+2026-10-07T17:57:49.7052881Z ##[group]GITHUB_TOKEN Permissions
+2026-10-07T17:57:49.7055342Z Contents: read
+2026-10-07T17:57:49.7056142Z Metadata: read
+2026-10-07T17:57:49.7056714Z Packages: read
+2026-10-07T17:57:49.7057394Z ##[endgroup]
+2026-10-07T17:57:49.7059716Z Secret source: Actions
+2026-10-07T17:57:49.7060786Z Cache mode: write
+2026-10-07T17:57:49.7061554Z Prepare workflow directory
+2026-10-07T17:57:49.7513044Z Prepare all required actions
+2026-10-07T17:57:49.7563311Z Getting action download info
+2026-10-07T17:57:50.0082808Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-07T17:57:50.1225616Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-07T17:57:50.3230209Z Complete job name: Verify (PostgreSQL 16)
+2026-10-07T17:57:50.3758906Z ##[group]Checking docker version
+2026-10-07T17:57:50.3772463Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+2026-10-07T17:57:50.4619735Z '1.48'
+2026-10-07T17:57:50.4631552Z Docker daemon API version: '1.48'
+2026-10-07T17:57:50.4632527Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+2026-10-07T17:57:50.4828809Z '1.48'
+2026-10-07T17:57:50.4842670Z Docker client API version: '1.48'
+2026-10-07T17:57:50.4848834Z ##[endgroup]
+2026-10-07T17:57:50.4851500Z ##[group]Clean up resources from previous jobs
+2026-10-07T17:57:50.4856901Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=55f79d"
+2026-10-07T17:57:50.5013035Z ##[command]/usr/bin/docker network prune --force --filter "label=55f79d"
+2026-10-07T17:57:50.5152965Z ##[endgroup]
+2026-10-07T17:57:50.5153533Z ##[group]Create local container network
+2026-10-07T17:57:50.5165006Z ##[command]/usr/bin/docker network create --label 55f79d github_network_6ebd0a6222e54901b46f32a890f4690f
+2026-10-07T17:57:50.5732748Z 667c80c346a2d81583917b66397d7e2b18418f91a999b1ab41237c9358d2c74a
+2026-10-07T17:57:50.5751084Z ##[endgroup]
+2026-10-07T17:57:50.5775716Z ##[group]Starting postgres service container
+2026-10-07T17:57:50.5799358Z ##[command]/usr/bin/docker pull postgres:16-alpine
+2026-10-07T17:57:51.0227366Z 16-alpine: Pulling from library/postgres
+2026-10-07T17:57:51.1661872Z e2de96513ba9: Already exists
+2026-10-07T17:57:51.1667211Z 1b7f9cd581ee: Pulling fs layer
+2026-10-07T17:57:51.1668606Z 210b280f9556: Pulling fs layer
+2026-10-07T17:57:51.1669371Z 81717818649a: Pulling fs layer
+2026-10-07T17:57:51.1670113Z 3ae6141cfd99: Pulling fs layer
+2026-10-07T17:57:51.1670739Z 25b77f59fd95: Pulling fs layer
+2026-10-07T17:57:51.1671351Z 6c25da34e03f: Pulling fs layer
+2026-10-07T17:57:51.1671972Z a88782f92806: Pulling fs layer
+2026-10-07T17:57:51.1672582Z d8d21be4bf02: Pulling fs layer
+2026-10-07T17:57:51.1673192Z 6117bd39f23f: Pulling fs layer
+2026-10-07T17:57:51.1673804Z 509688edf37b: Pulling fs layer
+2026-10-07T17:57:51.1674457Z 6c25da34e03f: Waiting
+2026-10-07T17:57:51.1675354Z a88782f92806: Waiting
+2026-10-07T17:57:51.1676871Z d8d21be4bf02: Waiting
+2026-10-07T17:57:51.1677801Z 6117bd39f23f: Waiting
+2026-10-07T17:57:51.1678670Z 509688edf37b: Waiting
+2026-10-07T17:57:51.1679466Z 3ae6141cfd99: Waiting
+2026-10-07T17:57:51.1680270Z 25b77f59fd95: Waiting
+2026-10-07T17:57:51.2443283Z 1b7f9cd581ee: Verifying Checksum
+2026-10-07T17:57:51.2445651Z 1b7f9cd581ee: Download complete
+2026-10-07T17:57:51.2458198Z 81717818649a: Verifying Checksum
+2026-10-07T17:57:51.2459967Z 81717818649a: Download complete
+2026-10-07T17:57:51.2543539Z 210b280f9556: Verifying Checksum
+2026-10-07T17:57:51.2544582Z 210b280f9556: Download complete
+2026-10-07T17:57:51.3166273Z 3ae6141cfd99: Download complete
+2026-10-07T17:57:51.3299485Z 6c25da34e03f: Download complete
+2026-10-07T17:57:51.3894457Z a88782f92806: Verifying Checksum
+2026-10-07T17:57:51.3896466Z a88782f92806: Download complete
+2026-10-07T17:57:51.4034155Z d8d21be4bf02: Verifying Checksum
+2026-10-07T17:57:51.4036393Z d8d21be4bf02: Download complete
+2026-10-07T17:57:51.4805016Z 6117bd39f23f: Verifying Checksum
+2026-10-07T17:57:51.4806572Z 6117bd39f23f: Download complete
+2026-10-07T17:57:51.4835735Z 509688edf37b: Download complete
+2026-10-07T17:57:51.7462026Z 25b77f59fd95: Verifying Checksum
+2026-10-07T17:57:53.6887795Z 25b77f59fd95: Download complete
+2026-10-07T17:57:53.6890081Z 1b7f9cd581ee: Pull complete
+2026-10-07T17:57:53.9263533Z 210b280f9556: Pull complete
+2026-10-07T17:57:53.9377400Z 81717818649a: Pull complete
+2026-10-07T17:57:53.9450756Z 3ae6141cfd99: Pull complete
+2026-10-07T17:57:56.4728629Z 25b77f59fd95: Pull complete
+2026-10-07T17:57:56.4836517Z 6c25da34e03f: Pull complete
+2026-10-07T17:57:56.4951681Z a88782f92806: Pull complete
+2026-10-07T17:57:56.5030587Z d8d21be4bf02: Pull complete
+2026-10-07T17:57:56.5109251Z 6117bd39f23f: Pull complete
+2026-10-07T17:57:56.5224019Z 509688edf37b: Pull complete
+2026-10-07T17:57:56.5258129Z Digest: sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+2026-10-07T17:57:56.5270540Z Status: Downloaded newer image for postgres:16-alpine
+2026-10-07T17:57:56.5279213Z docker.io/library/postgres:16-alpine
+2026-10-07T17:57:56.5346952Z ##[command]/usr/bin/docker create --name 349b06f503cf466db19469a2815d50b7_postgres16alpine_9894b2 --label 55f79d --network github_network_6ebd0a6222e54901b46f32a890f4690f --network-alias postgres -p 5432:5432 --health-cmd "pg_isready -U tokenizer_ci -d tokenizer_ci_scratch" --health-interval 10s --health-timeout 5s --health-retries 5 -e "POSTGRES_DB=tokenizer_ci_scratch" -e "POSTGRES_USER=tokenizer_ci" -e "POSTGRES_PASSWORD=tokenizer_ci" -e GITHUB_ACTIONS=true -e CI=true postgres:16-alpine
+2026-10-07T17:57:56.5616914Z 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:56.5641827Z ##[command]/usr/bin/docker start 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:56.7608176Z 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:56.7663463Z ##[command]/usr/bin/docker ps --all --filter id=01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47 --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+2026-10-07T17:57:56.7817908Z 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47 Up Less than a second (health: starting)
+2026-10-07T17:57:56.7843903Z ##[command]/usr/bin/docker port 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:56.7999789Z 5432/tcp -> 0.0.0.0:5432
+2026-10-07T17:57:56.8000828Z 5432/tcp -> [::]:5432
+2026-10-07T17:57:56.8036548Z ##[endgroup]
+2026-10-07T17:57:56.8045405Z ##[group]Waiting for all services to be ready
+2026-10-07T17:57:56.8059300Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:56.8201721Z starting
+2026-10-07T17:57:56.8225683Z postgres service is starting, waiting 2 seconds before checking again.
+2026-10-07T17:57:58.8228590Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:57:58.8353387Z starting
+2026-10-07T17:57:58.8367579Z postgres service is starting, waiting 4 seconds before checking again.
+2026-10-07T17:58:02.9040294Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:58:02.9178072Z starting
+2026-10-07T17:58:02.9191523Z postgres service is starting, waiting 7 seconds before checking again.
+2026-10-07T17:58:10.6045311Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:58:10.6172616Z healthy
+2026-10-07T17:58:10.6191075Z postgres service is healthy.
+2026-10-07T17:58:10.6192515Z ##[endgroup]
+2026-10-07T17:58:10.6490107Z ##[group]Run actions/checkout@v4
+2026-10-07T17:58:10.6490653Z with:
+2026-10-07T17:58:10.6490892Z   repository: tripplemay/tokenizer
+2026-10-07T17:58:10.6493571Z   token: ***
+2026-10-07T17:58:10.6493795Z   ssh-strict: true
+2026-10-07T17:58:10.6494021Z   ssh-user: git
+2026-10-07T17:58:10.6494245Z   persist-credentials: true
+2026-10-07T17:58:10.6494496Z   clean: true
+2026-10-07T17:58:10.6494719Z   sparse-checkout-cone-mode: true
+2026-10-07T17:58:10.6494999Z   fetch-depth: 1
+2026-10-07T17:58:10.6495213Z   fetch-tags: false
+2026-10-07T17:58:10.6495432Z   show-progress: true
+2026-10-07T17:58:10.6495658Z   lfs: false
+2026-10-07T17:58:10.6496034Z   submodules: false
+2026-10-07T17:58:10.6496259Z   set-safe-directory: true
+2026-10-07T17:58:10.6496528Z   allow-unsafe-pr-checkout: false
+2026-10-07T17:58:10.6496985Z env:
+2026-10-07T17:58:10.6497173Z   TZ: UTC
+2026-10-07T17:58:10.6497689Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6498322Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6498874Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6499377Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6499867Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6500343Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6500800Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6501094Z ##[endgroup]
+2026-10-07T17:58:10.7627056Z Syncing repository: tripplemay/tokenizer
+2026-10-07T17:58:10.7628597Z ##[group]Getting Git version info
+2026-10-07T17:58:10.7629018Z Working directory is '/home/runner/work/tokenizer/tokenizer'
+2026-10-07T17:58:10.7629600Z [command]/usr/bin/git version
+2026-10-07T17:58:10.7689683Z git version 2.55.0
+2026-10-07T17:58:10.7709755Z ##[endgroup]
+2026-10-07T17:58:10.7726402Z Temporarily overriding HOME='/home/runner/work/_temp/ac6b44d5-fa50-4705-8ebe-7e5266d16347' before making global git config changes
+2026-10-07T17:58:10.7727925Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-07T17:58:10.7733641Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tokenizer/tokenizer
+2026-10-07T17:58:10.7793415Z Deleting the contents of '/home/runner/work/tokenizer/tokenizer'
+2026-10-07T17:58:10.7798091Z ##[group]Initializing the repository
+2026-10-07T17:58:10.7803626Z [command]/usr/bin/git init /home/runner/work/tokenizer/tokenizer
+2026-10-07T17:58:10.7890886Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-07T17:58:10.7892076Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-07T17:58:10.7893215Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-07T17:58:10.7894109Z hint: call:
+2026-10-07T17:58:10.7894408Z hint:
+2026-10-07T17:58:10.7894874Z hint: 	git config --global init.defaultBranch <name>
+2026-10-07T17:58:10.7895414Z hint:
+2026-10-07T17:58:10.7896759Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-07T17:58:10.7897581Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-07T17:58:10.7898181Z hint:
+2026-10-07T17:58:10.7898497Z hint: 	git branch -m <name>
+2026-10-07T17:58:10.7898863Z hint:
+2026-10-07T17:58:10.7899363Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-07T17:58:10.7900246Z Initialized empty Git repository in /home/runner/work/tokenizer/tokenizer/.git/
+2026-10-07T17:58:10.7904115Z [command]/usr/bin/git remote add origin https://github.com/tripplemay/tokenizer
+2026-10-07T17:58:10.7951700Z ##[endgroup]
+2026-10-07T17:58:10.7952139Z ##[group]Disabling automatic garbage collection
+2026-10-07T17:58:10.7957371Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-07T17:58:10.7991461Z ##[endgroup]
+2026-10-07T17:58:10.7991857Z ##[group]Setting up auth
+2026-10-07T17:58:10.8000110Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-07T17:58:10.8034477Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-07T17:58:10.8395511Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-07T17:58:10.8442930Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-07T17:58:10.8705365Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-07T17:58:10.8750607Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-07T17:58:10.9012490Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-07T17:58:10.9057204Z ##[endgroup]
+2026-10-07T17:58:10.9057806Z ##[group]Fetching the repository
+2026-10-07T17:58:10.9066878Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +029f6c53ea7193989643a1f2e4d23108ba0c9af5:refs/remotes/origin/codex/b06-pg16-ci-gate-20261008
+2026-10-07T17:58:11.6527311Z From https://github.com/tripplemay/tokenizer
+2026-10-07T17:58:11.6528196Z  * [new ref]         029f6c53ea7193989643a1f2e4d23108ba0c9af5 -> origin/codex/b06-pg16-ci-gate-20261008
+2026-10-07T17:58:11.6531460Z ##[endgroup]
+2026-10-07T17:58:11.6532050Z ##[group]Determining the checkout info
+2026-10-07T17:58:11.6534791Z ##[endgroup]
+2026-10-07T17:58:11.6543311Z [command]/usr/bin/git sparse-checkout disable
+2026-10-07T17:58:11.6600606Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-07T17:58:11.6636217Z ##[group]Checking out the ref
+2026-10-07T17:58:11.6647440Z [command]/usr/bin/git checkout --progress --force -B codex/b06-pg16-ci-gate-20261008 refs/remotes/origin/codex/b06-pg16-ci-gate-20261008
+2026-10-07T17:58:11.7690033Z Switched to a new branch 'codex/b06-pg16-ci-gate-20261008'
+2026-10-07T17:58:11.7693118Z branch 'codex/b06-pg16-ci-gate-20261008' set up to track 'origin/codex/b06-pg16-ci-gate-20261008'.
+2026-10-07T17:58:11.7701671Z ##[endgroup]
+2026-10-07T17:58:11.7750850Z [command]/usr/bin/git log -1 --format=%H
+2026-10-07T17:58:11.7783415Z 029f6c53ea7193989643a1f2e4d23108ba0c9af5
+2026-10-07T17:58:11.8052849Z ##[group]Run actions/setup-node@v4
+2026-10-07T17:58:11.8053137Z with:
+2026-10-07T17:58:11.8053338Z   node-version: 22
+2026-10-07T17:58:11.8053551Z   cache: npm
+2026-10-07T17:58:11.8053756Z   always-auth: false
+2026-10-07T17:58:11.8053980Z   check-latest: false
+2026-10-07T17:58:11.8056722Z   token: ***
+2026-10-07T17:58:11.8056926Z env:
+2026-10-07T17:58:11.8057113Z   TZ: UTC
+2026-10-07T17:58:11.8057596Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8058144Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8058866Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8059365Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8059850Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8060333Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8060803Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8061137Z ##[endgroup]
+2026-10-07T17:58:11.9612010Z Found in cache @ /opt/hostedtoolcache/node/22.23.3/x64
+2026-10-07T17:58:11.9617376Z (node:2693) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-07T17:58:11.9618369Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-07T17:58:11.9620142Z ##[group]Environment details
+2026-10-07T17:58:12.3210252Z node: v22.23.3
+2026-10-07T17:58:12.3210543Z npm: 10.9.9
+2026-10-07T17:58:12.3210752Z yarn: 1.22.22
+2026-10-07T17:58:12.3211458Z ##[endgroup]
+2026-10-07T17:58:12.3231456Z [command]/opt/hostedtoolcache/node/22.23.3/x64/bin/npm config get cache
+2026-10-07T17:58:12.4308024Z /home/runner/.npm
+2026-10-07T17:58:12.5672270Z npm cache is not found
+2026-10-07T17:58:12.5816863Z ##[group]Run npm ci
+2026-10-07T17:58:12.5817175Z [36;1mnpm ci[0m
+2026-10-07T17:58:12.6015367Z shell: /usr/bin/bash -e {0}
+2026-10-07T17:58:12.6015668Z env:
+2026-10-07T17:58:12.6016102Z   TZ: UTC
+2026-10-07T17:58:12.6016707Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6017257Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6017789Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6018285Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6018770Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6019248Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6019769Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6020108Z ##[endgroup]
+2026-10-07T17:58:14.8686078Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+2026-10-07T17:58:27.0859108Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2026-10-07T17:58:51.1084725Z 
+2026-10-07T17:58:51.1085660Z added 677 packages, and audited 678 packages in 38s
+2026-10-07T17:58:51.1086494Z 
+2026-10-07T17:58:51.1086749Z 189 packages are looking for funding
+2026-10-07T17:58:51.1087211Z   run `npm fund` for details
+2026-10-07T17:58:51.2182326Z 
+2026-10-07T17:58:51.2183340Z 16 vulnerabilities (4 moderate, 10 high, 2 critical)
+2026-10-07T17:58:51.2183750Z 
+2026-10-07T17:58:51.2184078Z To address issues that do not require attention, run:
+2026-10-07T17:58:51.2184560Z   npm audit fix
+2026-10-07T17:58:51.2184749Z 
+2026-10-07T17:58:51.2185104Z To address all issues (including breaking changes), run:
+2026-10-07T17:58:51.2185606Z   npm audit fix --force
+2026-10-07T17:58:51.2186042Z 
+2026-10-07T17:58:51.2186251Z Run `npm audit` for details.
+2026-10-07T17:58:51.2857601Z ##[group]Run npm run prisma:deploy
+2026-10-07T17:58:51.2857950Z [36;1mnpm run prisma:deploy[0m
+2026-10-07T17:58:51.2929176Z shell: /usr/bin/bash -e {0}
+2026-10-07T17:58:51.2929447Z env:
+2026-10-07T17:58:51.2929646Z   TZ: UTC
+2026-10-07T17:58:51.2930410Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2930953Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2931493Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2932017Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2932500Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2932956Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2933438Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:51.2933982Z ##[endgroup]
+2026-10-07T17:58:51.4007097Z 
+2026-10-07T17:58:51.4007875Z > tokenizer@0.1.0 prisma:deploy
+2026-10-07T17:58:51.4008579Z > prisma migrate deploy
+2026-10-07T17:58:51.4008829Z 
+2026-10-07T17:58:51.8677354Z Prisma schema loaded from prisma/schema.prisma
+2026-10-07T17:58:51.8731667Z Datasource "db": PostgreSQL database "tokenizer_ci_scratch", schema "public" at "localhost:5432"
+2026-10-07T17:58:51.9453301Z 
+2026-10-07T17:58:51.9454195Z 28 migrations found in prisma/migrations
+2026-10-07T17:58:51.9454652Z 
+2026-10-07T17:58:51.9954923Z Applying migration `20260515000000_init`
+2026-10-07T17:58:52.0233985Z Applying migration `20260515001000_add_device`
+2026-10-07T17:58:52.0380472Z Applying migration `20260515002000_tokens_and_repo_key`
+2026-10-07T17:58:52.0629235Z Applying migration `20260517000000_input_includes_cache`
+2026-10-07T17:58:52.0683912Z Applying migration `20260517100000_canonicalize_project_names`
+2026-10-07T17:58:52.0720904Z Applying migration `20260517200000_add_device_diagnostics`
+2026-10-07T17:58:52.0763037Z Applying migration `20260517300000_add_range_groupby_indexes`
+2026-10-07T17:58:52.0842336Z Applying migration `20260518000000_multi_tenant_foundation`
+2026-10-07T17:58:52.1356055Z Applying migration `20260519000000_add_user_timezone`
+2026-10-07T17:58:52.1383387Z Applying migration `20260519100000_add_jsonl_enrichment_fields`
+2026-10-07T17:58:52.1431717Z Applying migration `20260519200000_add_quota_snapshot_table`
+2026-10-07T17:58:52.1527416Z Applying migration `20260519400000_add_agent_feature_version`
+2026-10-07T17:58:52.1554074Z Applying migration `20260702000000_drop_legacy_project_unique_indexes`
+2026-10-07T17:58:52.1593849Z Applying migration `20260703000000_add_usage_event_fallback_columns`
+2026-10-07T17:58:52.1622498Z Applying migration `20260710000000_add_model_price_table`
+2026-10-07T17:58:52.1710417Z Applying migration `20260725000000_add_harness_console_tables`
+2026-10-07T17:58:52.1955728Z Applying migration `20260726000000_add_harness_project_modes`
+2026-10-07T17:58:52.1985802Z Applying migration `20260727000000_add_harness_mode_intents_dispatch_runs`
+2026-10-07T17:58:52.2242758Z Applying migration `20260730000000_add_harness_sync_diagnostics`
+2026-10-07T17:58:52.2274597Z Applying migration `20260731000000_add_agent_release_version`
+2026-10-07T17:58:52.2304274Z Applying migration `20260802000000_add_device_reporter_observability`
+2026-10-07T17:58:52.2346065Z Applying migration `20260806000000_canonicalize_codex_usage_events`
+2026-10-07T17:58:52.2435049Z Applying migration `20260809000000_add_harness_transitions`
+2026-10-07T17:58:52.2546215Z Applying migration `20260809000001_add_harness_batch_archive`
+2026-10-07T17:58:52.2670659Z Applying migration `20260810000000_add_dispatch_usage`
+2026-10-07T17:58:52.2713631Z Applying migration `20260810000001_add_harness_gate_notified_at`
+2026-10-07T17:58:52.2742543Z Applying migration `20260810120000_align_fk_referential_actions`
+2026-10-07T17:58:52.3036464Z Applying migration `20260810130000_add_quota_account_index`
+2026-10-07T17:58:52.3080616Z 
+2026-10-07T17:58:52.3090358Z The following migration(s) have been applied:
+2026-10-07T17:58:52.3090944Z 
+2026-10-07T17:58:52.3091976Z migrations/
+2026-10-07T17:58:52.3092995Z   └─ 20260515000000_init/
+2026-10-07T17:58:52.3093474Z     └─ migration.sql
+2026-10-07T17:58:52.3093999Z   └─ 20260515001000_add_device/
+2026-10-07T17:58:52.3094511Z     └─ migration.sql
+2026-10-07T17:58:52.3095050Z   └─ 20260515002000_tokens_and_repo_key/
+2026-10-07T17:58:52.3095574Z     └─ migration.sql
+2026-10-07T17:58:52.3096292Z   └─ 20260517000000_input_includes_cache/
+2026-10-07T17:58:52.3096899Z     └─ migration.sql
+2026-10-07T17:58:52.3097453Z   └─ 20260517100000_canonicalize_project_names/
+2026-10-07T17:58:52.3098026Z     └─ migration.sql
+2026-10-07T17:58:52.3098571Z   └─ 20260517200000_add_device_diagnostics/
+2026-10-07T17:58:52.3099091Z     └─ migration.sql
+2026-10-07T17:58:52.3099596Z   └─ 20260517300000_add_range_groupby_indexes/
+2026-10-07T17:58:52.3100533Z     └─ migration.sql
+2026-10-07T17:58:52.3101142Z   └─ 20260518000000_multi_tenant_foundation/
+2026-10-07T17:58:52.3101638Z     └─ migration.sql
+2026-10-07T17:58:52.3102135Z   └─ 20260519000000_add_user_timezone/
+2026-10-07T17:58:52.3102602Z     └─ migration.sql
+2026-10-07T17:58:52.3103115Z   └─ 20260519100000_add_jsonl_enrichment_fields/
+2026-10-07T17:58:52.3103624Z     └─ migration.sql
+2026-10-07T17:58:52.3104099Z   └─ 20260519200000_add_quota_snapshot_table/
+2026-10-07T17:58:52.3104709Z     └─ migration.sql
+2026-10-07T17:58:52.3105400Z   └─ 20260519400000_add_agent_feature_version/
+2026-10-07T17:58:52.3106234Z     └─ migration.sql
+2026-10-07T17:58:52.3107022Z   └─ 20260702000000_drop_legacy_project_unique_indexes/
+2026-10-07T17:58:52.3107773Z     └─ migration.sql
+2026-10-07T17:58:52.3108517Z   └─ 20260703000000_add_usage_event_fallback_columns/
+2026-10-07T17:58:52.3109133Z     └─ migration.sql
+2026-10-07T17:58:52.3109673Z   └─ 20260710000000_add_model_price_table/
+2026-10-07T17:58:52.3110227Z     └─ migration.sql
+2026-10-07T17:58:52.3110880Z   └─ 20260725000000_add_harness_console_tables/
+2026-10-07T17:58:52.3111569Z     └─ migration.sql
+2026-10-07T17:58:52.3112185Z   └─ 20260726000000_add_harness_project_modes/
+2026-10-07T17:58:52.3112771Z     └─ migration.sql
+2026-10-07T17:58:52.3113546Z   └─ 20260727000000_add_harness_mode_intents_dispatch_runs/
+2026-10-07T17:58:52.3114005Z     └─ migration.sql
+2026-10-07T17:58:52.3114408Z   └─ 20260730000000_add_harness_sync_diagnostics/
+2026-10-07T17:58:52.3114755Z     └─ migration.sql
+2026-10-07T17:58:52.3115111Z   └─ 20260731000000_add_agent_release_version/
+2026-10-07T17:58:52.3115521Z     └─ migration.sql
+2026-10-07T17:58:52.3116310Z   └─ 20260802000000_add_device_reporter_observability/
+2026-10-07T17:58:52.3117071Z     └─ migration.sql
+2026-10-07T17:58:52.3117581Z   └─ 20260806000000_canonicalize_codex_usage_events/
+2026-10-07T17:58:52.3118048Z     └─ migration.sql
+2026-10-07T17:58:52.3118477Z   └─ 20260809000000_add_harness_transitions/
+2026-10-07T17:58:52.3118973Z     └─ migration.sql
+2026-10-07T17:58:52.3119430Z   └─ 20260809000001_add_harness_batch_archive/
+2026-10-07T17:58:52.3119871Z     └─ migration.sql
+2026-10-07T17:58:52.3120298Z   └─ 20260810000000_add_dispatch_usage/
+2026-10-07T17:58:52.3120714Z     └─ migration.sql
+2026-10-07T17:58:52.3121227Z   └─ 20260810000001_add_harness_gate_notified_at/
+2026-10-07T17:58:52.3121719Z     └─ migration.sql
+2026-10-07T17:58:52.3122172Z   └─ 20260810120000_align_fk_referential_actions/
+2026-10-07T17:58:52.3122639Z     └─ migration.sql
+2026-10-07T17:58:52.3123156Z   └─ 20260810130000_add_quota_account_index/
+2026-10-07T17:58:52.3123669Z     └─ migration.sql
+2026-10-07T17:58:52.3124004Z       
+2026-10-07T17:58:52.3124433Z All migrations have been successfully applied.
+2026-10-07T17:58:52.3571240Z ##[group]Run mkdir -p .ci
+2026-10-07T17:58:52.3571901Z [36;1mmkdir -p .ci[0m
+2026-10-07T17:58:52.3572277Z [36;1mnpx vitest run \[0m
+2026-10-07T17:58:52.3572764Z [36;1m  tests/server/b06-batch-db.probe.test.ts \[0m
+2026-10-07T17:58:52.3573441Z [36;1m  tests/server/quota-account-db.probe.test.ts \[0m
+2026-10-07T17:58:52.3574121Z [36;1m  tests/server/harness-gates-route-db.probe.test.ts \[0m
+2026-10-07T17:58:52.3574808Z [36;1m  tests/server/harness-cost-range-db.probe.test.ts \[0m
+2026-10-07T17:58:52.3575633Z [36;1m  tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts \[0m
+2026-10-07T17:58:52.3576637Z [36;1m  tests/evaluator/bl-security-p1-f008-probes.test.ts \[0m
+2026-10-07T17:58:52.3577435Z [36;1m  --reporter=default --reporter=json --outputFile=.ci/db-probes.json[0m
+2026-10-07T17:58:52.3578287Z [36;1mnode scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 13[0m
+2026-10-07T17:58:52.3672937Z shell: /usr/bin/bash -e {0}
+2026-10-07T17:58:52.3673422Z env:
+2026-10-07T17:58:52.3673722Z   TZ: UTC
+2026-10-07T17:58:52.3674528Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3675426Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3676490Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3677584Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3678357Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3679099Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3679861Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:52.3680318Z ##[endgroup]
+2026-10-07T17:58:53.0112599Z 
+2026-10-07T17:58:53.0114408Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90m/home/runner/work/tokenizer/tokenizer[39m
+2026-10-07T17:58:53.0115262Z 
+2026-10-07T17:58:53.9784073Z  [32m✓[39m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 260[2mms[22m[39m
+2026-10-07T17:58:54.0049039Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 245[2mms[22m[39m
+2026-10-07T17:58:54.0155652Z [90mstdout[2m | tests/evaluator/bl-security-p1-f008-probes.test.ts[2m > [22m[2mDB-backed adversarial probes (scratch PostgreSQL)[2m > [22m[2mF004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+2026-10-07T17:58:54.0158068Z [22m[39mF004 concurrent statuses: 200, 409
+2026-10-07T17:58:54.0158806Z 
+2026-10-07T17:58:54.0208758Z [90mstdout[2m | tests/evaluator/bl-security-p1-f008-probes.test.ts[2m > [22m[2mDB-backed adversarial probes (scratch PostgreSQL)[2m > [22m[2mF004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+2026-10-07T17:58:54.0212202Z [22m[39mF004 stored decisionSig matches 200-response sig: true
+2026-10-07T17:58:54.0213018Z 
+2026-10-07T17:58:54.1720233Z [90mstdout[2m | tests/evaluator/bl-security-p1-f008-probes.test.ts[2m > [22m[2mDB-backed adversarial probes (scratch PostgreSQL)[2m > [22m[2mB06 F003 e2e: poison batch returns 400 before device, token or event writes
+2026-10-07T17:58:54.1747395Z [22m[39mF003 poison batch HTTP status: 400
+2026-10-07T17:58:54.1748303Z 
+2026-10-07T17:58:54.2213434Z [90mstdout[2m | tests/evaluator/bl-security-p1-f008-probes.test.ts[2m > [22m[2mDB-backed adversarial probes (scratch PostgreSQL)[2m > [22m[2mF007: independent recompute of the audit fixture + exactly one aggregate query
+2026-10-07T17:58:54.2216391Z [22m[39mF007 independent recompute: totalComputeTokens=1951110 totalCostUsd=19.388000
+2026-10-07T17:58:54.2217649Z 
+2026-10-07T17:58:54.2526784Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m)[22m[33m 338[2mms[22m[39m
+2026-10-07T17:58:54.5570155Z  [32m✓[39m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 147[2mms[22m[39m
+2026-10-07T17:58:54.8249993Z  [32m✓[39m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m)[22m[90m 175[2mms[22m[39m
+2026-10-07T17:58:54.8917391Z  [32m✓[39m tests/server/b06-batch-db.probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 281[2mms[22m[39m
+2026-10-07T17:58:54.9056831Z 
+2026-10-07T17:58:54.9068446Z [2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+2026-10-07T17:58:54.9069806Z [2m      Tests [22m [1m[32m51 passed[39m[22m[90m (51)[39m
+2026-10-07T17:58:54.9070734Z [2m   Start at [22m 17:58:53
+2026-10-07T17:58:54.9086569Z [2m   Duration [22m 1.89s[2m (transform 748ms, setup 0ms, collect 1.28s, tests 1.45s, environment 2ms, prepare 1.05s)[22m
+2026-10-07T17:58:54.9091056Z 
+2026-10-07T17:58:54.9108541Z JSON report written to /home/runner/work/tokenizer/tokenizer/.ci/db-probes.json
+2026-10-07T17:58:54.9730005Z Verified 51 tests with no skips or failures
+2026-10-07T17:58:54.9861703Z Post job cleanup.
+2026-10-07T17:58:55.1161690Z (node:3313) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-07T17:58:55.1163053Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-07T17:58:55.1397449Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/tokenizer/tokenizer --files-from manifest.txt --use-compress-program zstdmt
+2026-10-07T17:58:55.7061203Z (node:3313) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-07T17:58:56.6940846Z Sent 0 of 243496437 (0.0%), 0.0 MBs/sec
+2026-10-07T17:58:57.3862662Z Sent 243496437 of 243496437 (100.0%), 137.2 MBs/sec
+2026-10-07T17:58:57.5700513Z Cache saved with the key: node-cache-Linux-x64-npm-4168e6fc4abafa19cb712e6fbf85fe960cd1c3ddafdc2444551d98d3fe823579
+2026-10-07T17:58:57.5878582Z Post job cleanup.
+2026-10-07T17:58:57.6790443Z [command]/usr/bin/git version
+2026-10-07T17:58:57.6838488Z git version 2.55.0
+2026-10-07T17:58:57.6881716Z Temporarily overriding HOME='/home/runner/work/_temp/fcc9b117-6493-4b0b-87fd-612b7a68f2e6' before making global git config changes
+2026-10-07T17:58:57.6883121Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-07T17:58:57.6888634Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tokenizer/tokenizer
+2026-10-07T17:58:57.6932781Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-07T17:58:57.6970668Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-07T17:58:57.7238376Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-07T17:58:57.7269855Z http.https://github.com/.extraheader
+2026-10-07T17:58:57.7292067Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-07T17:58:57.7333802Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-07T17:58:57.7608749Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-07T17:58:57.7651893Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-07T17:58:57.8040187Z Print service container logs: 349b06f503cf466db19469a2815d50b7_postgres16alpine_9894b2
+2026-10-07T17:58:57.8045287Z ##[command]/usr/bin/docker logs --details 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:58:57.8175211Z  The files belonging to this database system will be owned by user "postgres".
+2026-10-07T17:58:57.8177442Z  sh: locale: not found
+2026-10-07T17:58:57.8178016Z  2026-10-07 17:57:57.256 UTC [35] WARNING:  no usable system locales were found
+2026-10-07T17:58:57.8178704Z  This user must also own the server process.
+2026-10-07T17:58:57.8180182Z  initdb: warning: enabling "trust" authentication for local connections
+2026-10-07T17:58:57.8181361Z  initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+2026-10-07T17:58:57.8182812Z  2026-10-07 17:57:58.062 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-10-07T17:58:57.8183876Z  2026-10-07 17:57:58.062 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-10-07T17:58:57.8184643Z  2026-10-07 17:57:58.062 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-10-07T17:58:57.8185496Z  2026-10-07 17:57:58.063 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-07T17:58:57.8186630Z  2026-10-07 17:57:58.066 UTC [57] LOG:  database system was shut down at 2026-10-07 17:57:57 UTC
+2026-10-07T17:58:57.8187476Z  2026-10-07 17:57:58.071 UTC [1] LOG:  database system is ready to accept connections
+2026-10-07T17:58:57.8188049Z  
+2026-10-07T17:58:57.8188530Z  The database cluster will be initialized with locale "en_US.utf8".
+2026-10-07T17:58:57.8189579Z  The default database encoding has accordingly been set to "UTF8".
+2026-10-07T17:58:57.8190270Z  The default text search configuration will be set to "english".
+2026-10-07T17:58:57.8190815Z  
+2026-10-07T17:58:57.8191128Z  Data page checksums are disabled.
+2026-10-07T17:58:57.8191516Z  
+2026-10-07T17:58:57.8192065Z  fixing permissions on existing directory /var/lib/postgresql/data ... ok
+2026-10-07T17:58:57.8192751Z  creating subdirectories ... ok
+2026-10-07T17:58:57.8193270Z  selecting dynamic shared memory implementation ... posix
+2026-10-07T17:58:57.8193857Z  selecting default max_connections ... 100
+2026-10-07T17:58:57.8194339Z  selecting default shared_buffers ... 128MB
+2026-10-07T17:58:57.8194803Z  selecting default time zone ... UTC
+2026-10-07T17:58:57.8195237Z  creating configuration files ... ok
+2026-10-07T17:58:57.8196639Z  running bootstrap script ... ok
+2026-10-07T17:58:57.8197131Z  performing post-bootstrap initialization ... ok
+2026-10-07T17:58:57.8197597Z  syncing data to disk ... ok
+2026-10-07T17:58:57.8197861Z  
+2026-10-07T17:58:57.8198044Z  
+2026-10-07T17:58:57.8198285Z  Success. You can now start the database server using:
+2026-10-07T17:58:57.8198612Z  
+2026-10-07T17:58:57.8198893Z      pg_ctl -D /var/lib/postgresql/data -l logfile start
+2026-10-07T17:58:57.8199210Z  
+2026-10-07T17:58:57.8199808Z  waiting for server to start....2026-10-07 17:57:57.791 UTC [41] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-10-07T17:58:57.8200583Z  2026-10-07 17:57:57.791 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-07T17:58:57.8201135Z  2026-10-07 17:57:57.793 UTC [44] LOG:  database system was shut down at 2026-10-07 17:57:57 UTC
+2026-10-07T17:58:57.8201648Z  2026-10-07 17:57:57.797 UTC [41] LOG:  database system is ready to accept connections
+2026-10-07T17:58:57.8202021Z   done
+2026-10-07T17:58:57.8202218Z  server started
+2026-10-07T17:58:57.8202447Z  CREATE DATABASE
+2026-10-07T17:58:57.8202656Z  
+2026-10-07T17:58:57.8202835Z  
+2026-10-07T17:58:57.8203165Z  /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+2026-10-07T17:58:57.8203555Z  
+2026-10-07T17:58:57.8204155Z  waiting for server to shut down....2026-10-07 17:57:57.940 UTC [41] LOG:  received fast shutdown request
+2026-10-07T17:58:57.8204716Z  2026-10-07 17:57:57.940 UTC [41] LOG:  aborting any active transactions
+2026-10-07T17:58:57.8205312Z  2026-10-07 17:57:57.943 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+2026-10-07T17:58:57.8206086Z  2026-10-07 17:57:57.944 UTC [42] LOG:  shutting down
+2026-10-07T17:58:57.8206503Z  2026-10-07 17:57:57.945 UTC [42] LOG:  checkpoint starting: shutdown immediate
+2026-10-07T17:58:57.8207576Z  2026-10-07 17:57:57.960 UTC [42] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.014 s, sync=0.002 s, total=0.017 s; sync files=301, longest=0.001 s, average=0.001 s; distance=4283 kB, estimate=4283 kB; lsn=0/1925D70, redo lsn=0/1925D70
+2026-10-07T17:58:57.8208595Z  2026-10-07 17:57:57.968 UTC [41] LOG:  database system is shut down
+2026-10-07T17:58:57.8208929Z   done
+2026-10-07T17:58:57.8209123Z  server stopped
+2026-10-07T17:58:57.8209332Z  
+2026-10-07T17:58:57.8209583Z  PostgreSQL init process complete; ready for start up.
+2026-10-07T17:58:57.8209896Z  
+2026-10-07T17:58:57.8215634Z Stop and remove container: 349b06f503cf466db19469a2815d50b7_postgres16alpine_9894b2
+2026-10-07T17:58:57.8220929Z ##[command]/usr/bin/docker rm --force 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:58:57.9812628Z 01b5dfd02ff248468513caab69aafa16643853e42e61001b01227b00a370ef47
+2026-10-07T17:58:57.9842093Z Remove container network: github_network_6ebd0a6222e54901b46f32a890f4690f
+2026-10-07T17:58:57.9846530Z ##[command]/usr/bin/docker network rm github_network_6ebd0a6222e54901b46f32a890f4690f
+2026-10-07T17:58:58.0860472Z github_network_6ebd0a6222e54901b46f32a890f4690f
+2026-10-07T17:58:58.0932887Z Cleaning up orphan processes
+2026-10-07T17:58:58.1359736Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

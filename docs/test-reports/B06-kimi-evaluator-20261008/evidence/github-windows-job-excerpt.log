@@ -1,0 +1,5 @@
+2026-10-07T17:59:53.3531322Z [2m Test Files [22m [1m[32m121 passed[39m[22m[2m | [22m[33m9 skipped[39m[90m (130)[39m
+2026-10-07T17:59:53.3542121Z [2m      Tests [22m [1m[32m1647 passed[39m[22m[2m | [22m[33m35 skipped[39m[90m (1682)[39m
+2026-10-07T17:59:56.4456069Z Verified native Windows direct-owner force termination and stale-lock recovery
+2026-10-07T17:59:57.6371883Z [36;1mWrite-Host "install.ps1 parsed cleanly"[0m
+2026-10-07T17:59:57.9647740Z install.ps1 parsed cleanly

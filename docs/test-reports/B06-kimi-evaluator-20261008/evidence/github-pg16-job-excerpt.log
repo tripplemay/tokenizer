@@ -1,0 +1,20 @@
+2026-10-07T17:57:56.5346952Z ##[command]/usr/bin/docker create --name 349b06f503cf466db19469a2815d50b7_postgres16alpine_9894b2 --label 55f79d --network github_network_6ebd0a6222e54901b46f32a890f4690f --network-alias postgres -p 5432:5432 --health-cmd "pg_isready -U tokenizer_ci -d tokenizer_ci_scratch" --health-interval 10s --health-timeout 5s --health-retries 5 -e "POSTGRES_DB=tokenizer_ci_scratch" -e "POSTGRES_USER=tokenizer_ci" -e "POSTGRES_PASSWORD=tokenizer_ci" -e GITHUB_ACTIONS=true -e CI=true postgres:16-alpine
+2026-10-07T17:58:10.6497173Z   TZ: UTC
+2026-10-07T17:58:10.6497689Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6498322Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6498874Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6499377Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6499867Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6500343Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:10.6500800Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8057113Z   TZ: UTC
+2026-10-07T17:58:11.8057596Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8058144Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8058866Z   EVAL_F003_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8059365Z   EVAL_F004_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8059850Z   EVAL_F005_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8060333Z   EVAL_F007_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:11.8060803Z   EVAL_DB_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6016102Z   TZ: UTC
+2026-10-07T17:58:12.6016707Z   DATABASE_URL: ***localhost:5432/tokenizer_ci_scratch
+2026-10-07T17:58:12.6017257Z   EVAL_B06_DB_URL: ***localhost:5432/tokenizer_ci_scratch

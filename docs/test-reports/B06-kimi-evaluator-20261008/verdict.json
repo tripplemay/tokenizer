@@ -1,0 +1,100 @@
+{
+  "kind": "independent_evaluator_verdict",
+  "evaluator": {
+    "identity": "kimi-evaluator-20261008",
+    "model_family": "kimi",
+    "context": "fresh isolated external CLI session; generator is codex-family (different family)",
+    "inputs": "own code inspection, own probe suites, live GitHub API/log fetches, local PG16 reproduction; generator handoffs treated as claims, not proof"
+  },
+  "candidate": {
+    "head_sha": "029f6c53ea7193989643a1f2e4d23108ba0c9af5",
+    "head_sha_verified_locally": true,
+    "clone_has_remotes": false,
+    "baseline_sha": "c4972489510698979bc184b5603a514d72ea3d64",
+    "spec": "docs/specs/B06-bounded-server-schema-slice.md",
+    "product_files_changed": [
+      "src/server/batch-input.ts",
+      "app/api/usage/events/batch/route.ts",
+      "app/api/quota/snapshots/batch/route.ts"
+    ],
+    "ci_files_changed": [".github/workflows/deploy-vps.yml"],
+    "out_of_scope_untouched_verified": ["src/cli/", "src/quota/", "src/shared/", "prisma/", "progress.json", "features.json", "pending_gate"]
+  },
+  "scope": {
+    "evaluated": [
+      "server admission ordering",
+      "bounded body/JSON/row/field validation",
+      "reject-before-write (no DB/timezone/cache/pricing side effects on invalid requests)",
+      "whole-batch 400 contract and old-Agent compatibility",
+      "PostgreSQL 16 CI gate (statics + GitHub run 37662917327 + local reproduction)"
+    ],
+    "explicitly_open_not_evaluated": [
+      "client poison-row quarantine",
+      "partial ACK / explicit rejected IDs protocol",
+      "good-row liveness / isolation of bad rows from queued good rows",
+      "user-visible repair/replay"
+    ]
+  },
+  "gates": [
+    { "id": "G1", "name": "admission_ordering_auth_device_validation_writes", "status": "pass", "evidence": ["route code read", "evidence/independent-adversarial.log"] },
+    { "id": "G2", "name": "body_transport_bounds_1mib_contenttype_utf8_stream", "status": "pass", "evidence": ["evidence/independent-adversarial.log"] },
+    { "id": "G3", "name": "json_complexity_depth32_nodes100k_finite_no_nul_surrogates", "status": "pass", "evidence": ["evidence/independent-adversarial.log"] },
+    { "id": "G4", "name": "row_field_bounds_exact_spec_table", "status": "pass", "evidence": ["evidence/independent-adversarial.log"] },
+    { "id": "G5", "name": "reject_before_write_real_pg16_state_unchanged", "status": "pass", "evidence": ["evidence/independent-db.log"] },
+    { "id": "G6", "name": "whole_batch_400_contract_and_old_agent_compatibility", "status": "pass", "evidence": ["evidence/independent-adversarial.log", "evidence/independent-db.log", "tests/cli/b06-batch-failure-queue.test.ts re-run"] },
+    { "id": "G7", "name": "pg16_ci_gate_statics", "status": "pass", "evidence": [".github/workflows/deploy-vps.yml:171-224", "scripts/ci/assert-vitest-results.mjs", "tests/ci/b06-pg16-workflow-gate.test.ts 2/2"] },
+    { "id": "G8", "name": "pg16_ci_gate_github_run_37662917327", "status": "pass", "evidence": ["evidence/github-run-37662917327.json", "evidence/github-run-37662917327-jobs.json", "evidence/github-pg16-job-full.log", "evidence/github-windows-job-excerpt.log", "evidence/github-browser-job-excerpt.log"],
+      "details": {
+        "event": "workflow_dispatch",
+        "head_branch": "codex/b06-pg16-ci-gate-20261008",
+        "head_sha": "029f6c53ea7193989643a1f2e4d23108ba0c9af5",
+        "head_sha_matches_candidate_exactly": true,
+        "postgres_version_in_job": "16.15 (postgres:16-alpine)",
+        "dedicated_b06_tests_executed": 3,
+        "dedicated_b06_tests_skipped": 0,
+        "matrix_total": 51, "matrix_passed": 51, "matrix_skipped": 0, "matrix_failed": 0,
+        "assert_message": "Verified 51 tests with no skips or failures",
+        "verify_job": "success",
+        "windows_job": "success (1647 passed / 35 skipped / 0 failed; native owner force-termination check; install.ps1 parse)",
+        "auth_browser_job": "success (3 passed)",
+        "deploy_job": "skipped (safe branch; no production deploy)"
+      }
+    },
+    { "id": "G9", "name": "pg16_gate_independent_local_reproduction", "status": "pass", "evidence": ["evidence/pg16-workflow-matrix-local.log", "evidence/pg16-assert-local.log", "evidence/pg16-missing-env-negative.log"],
+      "details": { "local_postgres": "16.13 Homebrew, UTC scratch", "matrix": "51/51 zero skip", "assert_floor_13": "exit 0", "negative_control_missing_env": "13 skipped, assert exit 1" }
+    },
+    { "id": "G10", "name": "l1_at_exact_head", "status": "pass", "evidence": ["evidence/lint-local.log", "evidence/verify-local.log", "evidence/full-suite-local.log"],
+      "details": { "lint": "0 warnings 0 errors", "typecheck": "pass", "unit_tests": "121 files / 1657 passed / 25 skipped / 0 failed", "node": "v25.7.0 (CI used Node 22, also green)" }
+    },
+    { "id": "G11", "name": "scope_discipline_no_out_of_slice_changes", "status": "pass", "evidence": ["git diff --name-only c497248..HEAD", "git status --short"] },
+    { "id": "G12", "name": "client_quarantine_partial_ack_liveness", "status": "open", "note": "Not in this candidate by spec and dispatch; a poisoned batch can still pin good queued neighbours. Must stay open." },
+    { "id": "G13", "name": "production_deploy_and_human_gate", "status": "not_exercised", "note": "Deploy job correctly skipped on safe-branch run; no deploy, no post-deploy health verification, human gate untouched." }
+  ],
+  "independent_probes": {
+    "adversarial_unit": { "file": "independent-adversarial.test.ts", "tests": 111, "passed": 111, "skipped": 0, "failed": 0 },
+    "real_pg16_db": { "file": "independent-db.test.ts", "tests": 4, "passed": 4, "skipped": 0, "failed": 0, "postgres": "16.13 UTC scratch" },
+    "expectations_source": "derived from docs/specs/B06-bounded-server-schema-slice.md without consulting generator tests"
+  },
+  "non_blocking_observations": [
+    "Deliberate tightenings (unknown sources, coercions, fractional/unsafe numbers, impossible/non-UTC dates, control chars, oversize, content-type requirement) match spec and do not break the current released agent wire (verified src/cli/sync.ts + src/quota/sync.ts).",
+    "queueDepth:null rejected while other diagnostics fields are nullable-legacy; consistent with current agent which always sends a number.",
+    "assert-vitest-results floor is a minimum (>=13), relying on zero-skip + workflow static test to prevent dilution.",
+    "quota BigInt conversion no longer rounds (baseline BigInt(Math.round(x)) removed); exactness verified to 9007199254740991n in a real DB row."
+  ],
+  "limitations": [
+    "Local DB verification on PostgreSQL 16.13 (CI used 16.15-alpine); same major line.",
+    "Local runtime Node v25.7.0 vs CI Node 22; both green.",
+    "Production deploy and post-deploy health not exercised (safe-branch run by design).",
+    "Route handlers tested directly; Next.js HTTP stack covered only via CI build smoke and browser job.",
+    "Playwright suite not re-run locally; CI browser job log used as evidence.",
+    "No client-side behavior evaluated (out of candidate scope)."
+  ],
+  "release_ready": false,
+  "release_ready_reasons": [
+    "Candidate is explicitly an isolated server slice, not full B06: client quarantine / partial ACK / good-row liveness (G12) remain open.",
+    "Production deploy path and human gate (G13) were not exercised in this evaluation."
+  ],
+  "candidate_slice_verdict": "pass",
+  "created_at": "2026-10-08",
+  "report": "docs/test-reports/B06-kimi-evaluator-20261008/REPORT.md"
+}

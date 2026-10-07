@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-kimi-eval-20261008
+
+ ✓ docs/test-reports/B06-kimi-evaluator-20261008/independent-db.test.ts (4 tests) 127ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  18:46:51
+   Duration  517ms (transform 64ms, setup 0ms, collect 161ms, tests 127ms, environment 0ms, prepare 40ms)
+
