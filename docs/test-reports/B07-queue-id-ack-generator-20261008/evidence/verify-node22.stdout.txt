@@ -13,4 +13,3 @@ Tip: Want to react to database changes in your app as they happen? Discover how 
 
 > tokenizer@0.1.0 lint
 > eslint app src --max-warnings=0
-
