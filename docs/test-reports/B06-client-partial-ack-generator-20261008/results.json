@@ -1,0 +1,42 @@
+{
+  "role": "generator",
+  "verdict": null,
+  "baseSha": "029f6c53ea7193989643a1f2e4d23108ba0c9af5",
+  "productCommit": "ecc19c59e1b2a395891339e0fe0d8feffa28e867",
+  "protocol": "usage-partial-v1",
+  "implemented": [
+    "explicit accepted event ID ACK with complete-partition client validation",
+    "row-scoped rejection with accepted-subset persistence",
+    "durable privacy-minimized poison-row quarantine",
+    "previous B06 whole-batch 400 compatibility fallback",
+    "bounded transient retry and no retry for permanent 4xx",
+    "queue checkpoint crash recovery and two-process quarantine locking",
+    "real HTTP-to-PostgreSQL 16 liveness and idempotent replay probe",
+    "explicit PG16 CI probe with no-skip floor 14"
+  ],
+  "verification": {
+    "node": "v22.22.0",
+    "focused": { "filesPassed": 7, "testsPassed": 93 },
+    "full": { "filesPassed": 124, "filesSkipped": 10, "testsPassed": 1670, "testsSkipped": 26 },
+    "postgres": { "version": "16.13 (Homebrew)", "timezone": "UTC", "filesPassed": 2, "testsPassed": 4, "scratchStopped": true },
+    "lint": "pass",
+    "verify": "pass",
+    "build": "pass",
+    "nativeCiExactSha": "not_run"
+  },
+  "historicalEvidence": {
+    "path": "tests/cli/b06-batch-failure-queue.test.ts",
+    "sha256": "fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca",
+    "modified": false,
+    "active": false,
+    "replacement": "tests/cli/b06-partial-ack.test.ts"
+  },
+  "knownGaps": [
+    "exact-SHA native CI and independent evaluation",
+    "quota partial ACK/quarantine",
+    "explicit quarantine repair/revalidation/replay CLI",
+    "B07 multi-writer queue/cursor reconciliation and operational atomicity",
+    "server-first rollout sequencing",
+    "agent manifest/version/tag/installer and production deployment"
+  ]
+}
