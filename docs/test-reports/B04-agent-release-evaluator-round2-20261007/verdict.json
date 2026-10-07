@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "task": "B04 agent release independent evaluation round 2",
+  "role": "evaluator",
+  "date": "2026-10-07",
+  "baseline_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "candidate_sha": "c8c79cf7bb112b33010c05f3332ec7a12c1b88f7",
+  "previous_evaluated_sha": "3cdadd89617153c1865efb23e0d1f05ffde30278",
+  "verdict": "BLOCK",
+  "release_readiness": "NOT_READY",
+  "candidate_branch_ci_readiness": "READY_FOR_PR_CI_ONLY",
+  "main_or_release_readiness": "BLOCKED",
+  "summary": "Round 2 closes the first verdict's concrete POSIX lock, POSIX rollback-containment, and PowerShell argument-redaction findings at the code and fixture level. A native Linux systemd fixture also passed install, upgrade, offline rollback, retained-data checks, and supervisor kill/restart. B04 is still not releasable: the public manifest pins the pre-B04 baseline, no agent/v* tag or remote candidate ref exists, the Windows test has not run on Windows, native macOS launchd was not exercised, and the required cross-platform cutover fault matrix remains incomplete.",
+  "prior_finding_disposition": [
+    {
+      "id": "B04-EVAL-001",
+      "status": "OPEN_BLOCKER",
+      "detail": "src/shared/agent-releases.json still maps 1.4.0 to 2074991717abaf3cb34d9aad894bcd4357fefbc3. Candidate c8c79cf7bb112b33010c05f3332ec7a12c1b88f7 is absent from origin refs, and origin advertises no agent/v* tags. This is correctly documented as an unfinished two-commit release sequence, not fixed in the candidate."
+    },
+    {
+      "id": "B04-EVAL-002",
+      "status": "OPEN_BLOCKER",
+      "detail": "A meaningful native-Windows-only Vitest fixture was added, but it skipped on macOS and Linux. No PowerShell parser/runtime, directory cutover, FileStream lock, Task Scheduler, or restore result from native Windows is available yet."
+    },
+    {
+      "id": "B04-EVAL-003",
+      "status": "PARTIALLY_CLOSED_BLOCKER",
+      "detail": "Native Ubuntu 25.10 arm64 with Node 22.23.3 and a running systemd user manager passed real npm ci, first install, upgrade, offline rollback, queue/credential retention, and systemd SIGKILL restart using a local immutable Git/manifest fixture. Native macOS launchd, Linux cron fallback runtime, Windows Task Scheduler, disk-full, native dependency failure, and installer-kill cutover windows remain unverified."
+    },
+    {
+      "id": "B04-EVAL-004",
+      "status": "CLOSED_FOR_CODE_AND_FIXTURE",
+      "detail": "POSIX now holds a PID/start-time lock and recovers a stale primary lock after SIGKILL; Windows uses a kernel FileStream with FileShare.None. Concurrent POSIX fixture execution failed closed without changing the active release. The Windows path still requires native CI evidence. A SIGKILL during POSIX recovery-guard ownership can leave .install.lock.recover requiring the documented manual removal, so kill-window coverage remains part of the platform matrix."
+    },
+    {
+      "id": "B04-EVAL-005",
+      "status": "CLOSED_FOR_POSIX",
+      "detail": "POSIX rollback canonicalizes both app and previous targets and rejects targets outside ~/.tokenizer/releases before service stop or cutover. The fixture proved an escaped symlink is rejected while the active commit remains unchanged. Windows uses lexical GetFullPath/StartsWith containment and still requires native reparse-point testing."
+    },
+    {
+      "id": "B04-EVAL-006",
+      "status": "CLOSED_STATIC_PENDING_NATIVE_WINDOWS",
+      "detail": "PowerShell no longer includes arguments in Invoke-Checked failures and suppresses every stream for enrollment commands. Static assertions passed, but the token-canary execution is Windows-only and has not run in this evaluation environment."
+    }
+  ],
+  "blocking_findings": [
+    {
+      "id": "B04-R2-001",
+      "severity": "critical",
+      "title": "The exact B04 candidate is not published by an immutable release manifest",
+      "evidence": [
+        "The manifest latest entry remains 1.4.0 -> 2074991717abaf3cb34d9aad894bcd4357fefbc3.",
+        "Candidate c8c79cf7bb112b33010c05f3332ec7a12c1b88f7 is absent from git ls-remote origin output.",
+        "git ls-remote --tags origin refs/tags/agent/v* returns no tags."
+      ],
+      "required_action": "After platform acceptance, create a new release commit A/version, publish immutable tag agent/vX.Y.Z at A, then commit B with the full A SHA in the ledger. Verify endpoint output, tag target, and remote fetchability before any Agent rollout."
+    },
+    {
+      "id": "B04-R2-002",
+      "severity": "critical",
+      "title": "Native Windows acceptance is still absent",
+      "evidence": [
+        "pwsh/Windows is unavailable on the evaluator host.",
+        "tests/cli/agent-release-installer-windows.test.ts skipped on both executed hosts.",
+        "The existing Windows service suite skipped four Windows-only cases on both executed hosts."
+      ],
+      "required_action": "Run the pull-request verify-windows job and preserve its native output. Require the new installer fixture, install.ps1 parser check, service tests, and Task Scheduler install/upgrade/rollback checks to pass before advertising a Windows Agent."
+    },
+    {
+      "id": "B04-R2-003",
+      "severity": "high",
+      "title": "macOS launchd and the cross-platform cutover fault matrix remain incomplete",
+      "evidence": [
+        "The macOS host already runs a real cc.tokenizer.agent launchd job, so this evaluator did not disrupt it; macOS installer coverage remained --no-service with mocked npm/CLI.",
+        "Linux systemd normal install/upgrade/offline rollback and service SIGKILL restart passed, but disk-full and SIGKILL at each directory/symlink cutover boundary were not injected.",
+        "Linux cron fallback runtime and native dependency-install failure were not exercised."
+      ],
+      "required_action": "Run isolated macOS launchd and Windows Task Scheduler hosts plus the remaining disk-full, dependency-failure, and process-kill cutover matrix. Retain logs and data canaries for every recovery branch."
+    }
+  ],
+  "verified": [
+    "POSIX active-lock contention, stale-primary recovery after SIGKILL, and escaped rollback-target rejection passed in the executable fixture.",
+    "PowerShell source no longer formats argument arrays into errors and suppresses all enrollment command streams; the corresponding static guards passed.",
+    "Ubuntu 25.10 arm64 / Node 22.23.3 native systemd fixture passed real npm ci, first install, upgrade, offline rollback, credential/queue preservation, and supervisor SIGKILL restart.",
+    "Node 22.22.0 macOS targeted installer/release tests passed: 31 passed, 5 skipped; skips were native Windows-only.",
+    "Node 22.23.3 Linux targeted tests passed: 38 passed, 5 skipped; skips were native Windows-only.",
+    "Node 22.23.3 Linux full suite passed: 107 files passed, 8 skipped; 1456 tests passed, 21 skipped.",
+    "Node 22.22.0 verify, lint, and production build passed on macOS; build included /api/agent/releases.",
+    "bash syntax, ShellCheck, and git diff whitespace checks passed for product installer and evaluator script."
+  ],
+  "execution_notes": [
+    "The first macOS Node 22 full-suite attempt reused a Node 25 better-sqlite3 binary and was invalid for native-addon cases. The evaluator replaced the symlink with an independent node_modules copy and rebuilt better-sqlite3 under Node 22 before the recorded run.",
+    "The corrected macOS Node 22 full suite reached 1455 passed with one existing timing-sensitive failure in tests/cli/agent-lifecycle.test.ts; that file immediately passed 6/6 in isolation. The clean Linux Node 22 full suite passed 1456/1456 non-skipped tests.",
+    "The Linux native installer test patches only the advertised repository constant to a local immutable Git fixture. It exercises native Linux filesystem, npm, Node, systemd, and installer behavior, but it is not evidence that the unpublished c8c79cf commit is remotely fetchable.",
+    "No production, main branch, human gate, progress.json, or existing host Agent was changed."
+  ],
+  "commands": [
+    {
+      "command": "PATH=$HOME/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- --run tests/cli/agent-release-installer.test.ts tests/cli/agent-release-installer-windows.test.ts tests/server/agent-releases-route.test.ts tests/cli/install-agent-lifecycle.test.ts tests/cli/service-windows.test.ts tests/shared/agent-release-version.test.ts",
+      "result": "PASS: 31 passed, 5 native-Windows skipped"
+    },
+    {
+      "command": "PATH=$HOME/.nvm/versions/node/v22.22.0/bin:$PATH npm test",
+      "result": "PARTIAL: 1455 passed, 21 skipped, 1 existing agent-lifecycle SIGTERM timing test failed; isolated rerun passed 6/6"
+    },
+    {
+      "command": "Ubuntu 25.10 arm64 Node 22.23.3 npm test",
+      "result": "PASS: 107 files passed, 8 skipped; 1456 passed, 21 skipped"
+    },
+    {
+      "command": "Ubuntu 25.10 arm64 Node 22.23.3 targeted installer/service suite",
+      "result": "PASS: 38 passed, 5 native-Windows skipped"
+    },
+    {
+      "command": "B04_NATIVE_CONFIRM=1 scripts/test/b04-agent-release-linux-native.sh",
+      "result": "PASS: native systemd first install, upgrade, offline rollback, data retention, SIGKILL restart"
+    },
+    {
+      "command": "Node 22 npm run verify && npm run lint && DATABASE_URL=placeholder npm run build",
+      "result": "PASS: typecheck, zero lint warnings/errors, production build"
+    },
+    {
+      "command": "bash -n and shellcheck on public/install.sh and scripts/test/b04-agent-release-linux-native.sh; git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "environment_boundaries": {
+    "macos_host": "macOS 26.6.2 arm64; Node 22.22.0 for recorded checks",
+    "macos_posix_installer": "executable local Git fixture with mocked npm/CLI and --no-service",
+    "macos_launchd": "not executed against candidate; an existing real user Agent made destructive label reuse unsafe",
+    "linux_host": "Lima Ubuntu 25.10 arm64; Node 22.23.3; systemd 257 user manager running",
+    "linux_systemd": "native execution passed normal install/upgrade/offline rollback/data retention/service kill-restart using local immutable fixture",
+    "linux_cron": "builder/unit coverage only; no native cron daemon execution",
+    "native_windows": "not available; Windows-only installer and service tests skipped",
+    "remote_tag_and_fetchability": "failed/not published for candidate",
+    "production": "not touched"
+  },
+  "ci_decision": {
+    "safe_to_open_pull_request_for_candidate_ci": true,
+    "reason": "deploy-vps.yml pull_request runs Ubuntu Node 22 verification and native windows-latest verification while its deploy job is restricted to main push/workflow_dispatch. The Windows job is the next required evidence, not optional validation.",
+    "conditions": [
+      "Do not push or merge directly to main.",
+      "Require both Verify and Verify (Windows) to pass and archive the Windows installer output.",
+      "Do not interpret PR CI success as B04 release approval; manifest/tag plus macOS and remaining fault-injection gates still apply."
+    ]
+  },
+  "decision_rule": "The candidate may enter non-deploying pull-request CI to obtain native Windows evidence. B04 remains BLOCKED for main/release until a new immutable manifest/tag publishes the accepted Agent commit and native macOS, Windows, and remaining Linux fault-injection gates pass."
+}
