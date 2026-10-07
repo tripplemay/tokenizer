@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath, updateState } from "./config";
+import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, rejectedUsagePath, statePath, updateState } from "./config";
 import { acknowledgeQueuedEvents, collectEvents, mergeQueue } from "./collect";
 import { readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
@@ -14,6 +14,7 @@ import { collectionScopeFingerprint, describePrivacyBacklog, effectivePrivacy } 
 import { readCursor, writeCursor } from "./cursor";
 import { planBoundedReplay } from "./replay-contract";
 import { dryRunBoundedReplay, executeBoundedReplay } from "./replay";
+import { readRejectedUsageEvents } from "./rejected-events";
 
 const program = new Command();
 
@@ -143,12 +144,12 @@ program.command("sync").description("Sync queued events to server").action(async
   const result = await syncEvents(config, events, {
     onBatchSynced: ({ acknowledged }) => { acknowledgeQueuedEvents(acknowledged); }
   });
-  console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}`);
+  console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}, rejected=${result.rejected ?? 0}`);
 });
 
 program.command("run").description("Collect and sync in one step").action(async () => {
   const result = await runOnce();
-  console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}`);
+  console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}, rejected=${result.rejected ?? 0}`);
 });
 
 program.command("heartbeat").description("Send one device heartbeat").action(async () => {
@@ -178,6 +179,15 @@ program.command("status").description("Show local configuration and queue status
   console.log(`Device: ${existsSync(devicePath) ? `${devicePath} (${readDevice().name}, ${readDevice().id})` : "missing"}`);
   console.log(`Credentials: ${existsSync(credentialsPath) ? credentialsPath : "missing"}`);
   console.log(`Queue: ${existsSync(queuePath) ? `${queuePath} (${backlogCount} events)` : "empty"}`);
+  if (existsSync(rejectedUsagePath)) {
+    try {
+      console.log(`Rejected usage: ${rejectedUsagePath} (${readRejectedUsageEvents().length} events; manual repair/replay required)`);
+    } catch {
+      console.log(`Rejected usage: ${rejectedUsagePath} (unreadable; active queue remains fail-closed)`);
+    }
+  } else {
+    console.log("Rejected usage: empty");
+  }
   console.log(`State: ${existsSync(statePath) ? statePath : "missing"}`);
   if (existsSync(configPath)) {
     const privacy = effectivePrivacy(readConfig());
