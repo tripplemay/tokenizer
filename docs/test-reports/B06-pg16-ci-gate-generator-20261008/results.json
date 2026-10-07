@@ -1,0 +1,33 @@
+{
+  "kind": "generator_handoff",
+  "base_sha": "4da6604d0c086cdaa9ef56e492e1ff333b5caf4b",
+  "product_commit": "d3bbb67df44950d2eb5bcc93b86a45a417fc54f4",
+  "node": "v22.22.0",
+  "checks": {
+    "verify": "pass",
+    "lint": "pass",
+    "full_tests": {
+      "passed": 1657,
+      "skipped": 25
+    },
+    "workflow_static_tests": {
+      "passed": 2,
+      "skipped": 0
+    },
+    "pg16_workflow_matrix": {
+      "version": "16.13",
+      "timezone": "UTC",
+      "passed": 51,
+      "skipped": 0,
+      "failed": 0
+    },
+    "missing_b06_env_negative": {
+      "passed": 48,
+      "skipped": 3,
+      "assert_exit": 1
+    }
+  },
+  "github_run": null,
+  "deploy_performed": false,
+  "formal_verdict": false
+}

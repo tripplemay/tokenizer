@@ -1,0 +1,14 @@
+7b2d550501855166170bfff7845bbd5db391c6ff323876d72f78f81ad18dac43  .github/workflows/deploy-vps.yml
+f93458416950c1d6e4e1ea5f94b3cf6cdf0e528ef3449e2c3e870df4feb5f71a  tests/ci/b06-pg16-workflow-gate.test.ts
+a3a97f031915d7a969db371cb10a46c86a9330395c447ea6b51d90375d16c061  docs/test-reports/B06-pg16-ci-gate-generator-20261008/generator-handoff.md
+5e079a2ebf6d555ac1d079ac16f3792143848692b71d5eb46aafaf7d5b3b5dea  docs/test-reports/B06-pg16-ci-gate-generator-20261008/results.json
+c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/node-version.log
+bf46f2d6078901aaca5d10dbecc926a8444cda4d4e955e7c6ca6e034f0299853  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/workflow-static-test-final.log
+96949f030c112ab8ae9d2e84c069c5b80d377a3ba79b7f88f2198f5065b082a7  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/verify-node22-final.log
+6f72dd022c6c0b0b88bea54acd13e30e181426d7e1196d05cf385e554242d78c  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/lint-node22-final.log
+59d918d2cf19bc0ad056af8a8a0b02b37e517fb845c57669ff345cd8604e6e6a  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/full-node22-final.log
+1ed816c2d40f4eedba1164d3fb621d211ff0c7441a2e7924e16a357c4341f579  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/pg16-workflow-matrix.log
+1400ab786f62a3c45ba0c36496d64e90fc562c5677b1dad30befa82a6c25e649  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/pg16-assert.log
+ccdf652043c321003b3bb2547ea6ad21aa58a01f8f4b3943513684eb216083c4  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/pg16-missing-b06-negative.log
+3df2400be76cd144a8d3ae088709753e58e3c6d724833c269943bb461ba3d51f  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/pg16-version-timezone-cleanup.log
+ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d  docs/test-reports/B06-pg16-ci-gate-generator-20261008/evidence/pg-stop.log
