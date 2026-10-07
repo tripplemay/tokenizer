@@ -51,9 +51,25 @@ function Write-Log { param([string] $Message) Write-Host "[tokenizer] $Message" 
 # which is the behaviour `set -euo pipefail` gives install.sh for free.
 function Invoke-Checked {
   param([Parameter(Mandatory)][string] $Exe, [Parameter(ValueFromRemainingArguments)][string[]] $Arguments)
-  & $Exe @Arguments
-  if ($LASTEXITCODE -ne 0) {
-    throw "Command failed with exit code ${LASTEXITCODE}: $Exe $($Arguments -join ' ')"
+  if ($Arguments -contains "--enroll-token") {
+    # Native diagnostics may echo argv. Suppress all streams for enrollment;
+    # neither exceptions nor the console may repeat the one-time token.
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+      & $Exe @Arguments *> $null
+      $exitCode = $LASTEXITCODE
+    } catch {
+      throw "Sensitive command failed to start: $Exe"
+    } finally {
+      $ErrorActionPreference = $previousPreference
+    }
+  } else {
+    & $Exe @Arguments
+    $exitCode = $LASTEXITCODE
+  }
+  if ($exitCode -ne 0) {
+    throw "Command failed with exit code ${exitCode}: $Exe"
   }
 }
 
@@ -148,13 +164,26 @@ Assert-Command -Name "node" -WingetId "OpenJS.NodeJS.LTS"
 Assert-Command -Name "git"  -WingetId "Git.Git"
 Assert-NodeVersion
 
-if ($Rollback -and $ForceEnroll) { throw "-Rollback and -ForceEnroll cannot be combined." }
-$needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
-if (-not $Rollback -and $needEnroll -and -not $EnrollToken) {
-  throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
+New-Item -ItemType Directory -Force -Path $TokenizerHome | Out-Null
+$lockFile = Join-Path $TokenizerHome ".install.lock"
+try {
+  # FileShare.None is a kernel-held, cross-process lock. A stale lock file is
+  # harmless: the OS releases its handle on crash and the next open recovers.
+  $lockStream = [IO.File]::Open($lockFile, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+} catch [IO.IOException] {
+  throw "Another Tokenizer installation is running; existing installation was not changed."
+}
+try {
+  $owner = [Text.Encoding]::UTF8.GetBytes("$PID|$([DateTime]::UtcNow.ToString('o'))")
+  $lockStream.SetLength(0)
+  $lockStream.Write($owner, 0, $owner.Length)
+  $lockStream.Flush()
+} catch {
+  $lockStream.Dispose()
+  throw
 }
 
-New-Item -ItemType Directory -Force -Path $TokenizerHome, $ReleasesDir, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
+$needEnroll = $false
 $stageDir = $null
 $candidateDir = $null
 $oldDir = $null
@@ -165,6 +194,12 @@ $hadExistingApp = $false
 $tokenizer = Join-Path $BinDir "tokenizer.cmd"
 
 try {
+  if ($Rollback -and $ForceEnroll) { throw "-Rollback and -ForceEnroll cannot be combined." }
+  $needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
+  if (-not $Rollback -and $needEnroll -and -not $EnrollToken) {
+    throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
+  }
+  New-Item -ItemType Directory -Force -Path $ReleasesDir, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
   if ($Rollback) {
     if (-not (Test-Path $InstallDir) -or -not (Test-Path $PreviousFile)) {
       throw "No previous release available for rollback."
@@ -273,5 +308,9 @@ try {
   }
   throw
 } finally {
-  if ($stageDir -and (Test-Path $stageDir)) { Remove-Item -Recurse -Force $stageDir }
+  try {
+    if ($stageDir -and (Test-Path $stageDir)) { Remove-Item -Recurse -Force $stageDir }
+  } finally {
+    $lockStream.Dispose()
+  }
 }
