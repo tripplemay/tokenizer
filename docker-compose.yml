@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: tokenizer
       POSTGRES_USER: tokenizer
-      POSTGRES_PASSWORD: tokenizer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tokenizer}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -15,27 +15,35 @@ services:
       retries: 5
 
   migrate:
+    image: tokenizer-migrate:${GIT_COMMIT:-local}
     build:
       context: .
       target: builder
+      args:
+        SOURCE_COMMIT: ${GIT_COMMIT:-unknown}
     restart: "no"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
+      DATABASE_URL: postgresql://tokenizer:${POSTGRES_PASSWORD:-tokenizer}@postgres:5432/tokenizer
     command: ["npx", "prisma", "migrate", "deploy"]
 
   app:
+    image: tokenizer-app:${GIT_COMMIT:-local}
     build:
       context: .
       target: runner
+      args:
+        SOURCE_COMMIT: ${GIT_COMMIT:-unknown}
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
-      DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
+      DATABASE_URL: postgresql://tokenizer:${POSTGRES_PASSWORD:-tokenizer}@postgres:5432/tokenizer
       ADMIN_TOKEN: ${ADMIN_TOKEN:-}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       GIT_COMMIT: ${GIT_COMMIT:-unknown}

@@ -2,6 +2,10 @@
 
 This guide deploys Tokenizer as a central server. Each computer runs the CLI locally and uploads usage events to the VPS API. The VPS stores events in PostgreSQL and serves the dashboard.
 
+> The B05 deploy changes are a candidate, not a production rollout. A push to
+> `main` triggers the production workflow; do not merge this candidate until the
+> release gates in [B05 release runbook](./B05-release-runbook.md) have passed.
+
 ## 1. Prepare The VPS
 
 Install Docker and the Docker Compose plugin on the VPS.
@@ -23,12 +27,14 @@ Edit `.env`:
 
 ```env
 ADMIN_TOKEN=use-a-long-random-private-token
+POSTGRES_PASSWORD=the-current-database-password
+AUTH_SECRET=use-an-independent-random-secret-of-at-least-32-characters
+AUTH_RESEND_KEY=re_your-mail-provider-key
 NEXT_PUBLIC_APP_URL=https://your-domain.example
-DATABASE_URL=postgresql://tokenizer:tokenizer@localhost:5432/tokenizer
 APP_HOST_PORT=127.0.0.1:3010
 ```
 
-`ADMIN_TOKEN` is used in the dashboard to generate one-time client enrollment commands. Keep it private.
+`ADMIN_TOKEN` is used in the dashboard to generate one-time client enrollment commands. Keep it private. For an existing volume, `POSTGRES_PASSWORD` must match the *current* database password; setting a new Compose value does not rotate a persisted PostgreSQL user's password. Follow a separately approved rotation SOP instead of changing it during this release.
 
 ## 2. Start Services
 
@@ -137,10 +143,11 @@ The repository includes `.github/workflows/deploy-vps.yml`.
 Behavior:
 
 - Runs `npm ci` and `npm run verify` on GitHub Actions.
-- Deploys only after verification passes.
+- Runs tests and a Next.js build on Linux, but does not yet build the deployment image in CI.
 - Deploys automatically on pushes to `main`.
 - Supports manual deployment from the GitHub Actions `workflow_dispatch` button.
-- SSHs into the VPS, checks out the pushed commit, writes `.env`, builds images, starts PostgreSQL, runs migrations, and restarts the app.
+- SSHs into the VPS, syncs the checked-out source, writes a permission-restricted `.env`, builds SHA-tagged images on the VPS, checks image IDs and revision labels, starts PostgreSQL, runs migrations, and restarts the app only after migration succeeds.
+- Waits for `/api/health` readiness and the expected commit SHA. Failure leaves a diagnostic release ledger but does **not** automatically roll back the app or database.
 
 ### Required GitHub Secrets
 
@@ -151,6 +158,9 @@ VPS_HOST=your-vps-ip-or-hostname
 VPS_USER=tripplezhou
 VPS_SSH_KEY=<private SSH key used by GitHub Actions>
 ADMIN_TOKEN=use-a-long-random-private-token
+POSTGRES_PASSWORD=<existing production database password>
+AUTH_SECRET=<at least 32 independent characters>
+AUTH_RESEND_KEY=<mail provider key>
 NEXT_PUBLIC_APP_URL=https://token.vpanel.cc
 ```
 
@@ -205,10 +215,7 @@ ssh deploy@<vps-ip>
 docker compose version
 ```
 
-The workflow clones the GitHub repository on the VPS during the first deployment. If the repository is private, make sure the deploy user can clone it. The simplest options are:
-
-- Use a read-only deploy key on the repository and configure it in the deploy user's SSH config.
-- Clone once manually on the VPS using credentials, then let CI fetch future commits.
+The workflow uses `rsync --delete` to sync the Actions checkout; the VPS does not need repository credentials. It preserves `.env` and `.releases` across syncs. Review any additional host-local files before using the workflow.
 
 ### Trigger A Deployment
 
@@ -228,7 +235,7 @@ After CI/CD is configured, normal server upgrades are:
 git push origin main
 ```
 
-The workflow handles checkout, `.env` rendering, Docker rebuild, migrations, and app restart.
+The workflow handles checkout, `.env` rendering, VPS Docker rebuild, migrations, and app restart. This is **not** a CI-produced immutable OCI digest deployment; the SHA-tagged image IDs are recorded on the VPS and a same-SHA rebuild drift is rejected. Complete the image provenance, scratch restore, migration, and business canary release gates before treating B05 as release-ready.
 
 ## 6. Manual Upgrade The Server
 
@@ -243,6 +250,7 @@ docker compose up -d app
 ```
 
 Run the `migrate` service on every upgrade before restarting `app`.
+For a production release, use the workflow and the B05 runbook instead of this unsupervised manual sequence.
 
 ## 7. Backup Data
 
@@ -257,6 +265,8 @@ Restore into a fresh database:
 ```bash
 docker compose exec -T postgres psql -U tokenizer tokenizer < tokenizer-backup.sql
 ```
+
+The backup command alone is not a verified recovery point. Restore into an **isolated scratch** database/volume, check key queries, and rehearse the exact pending migration before release. Record backup timestamp, checksum, restore result, and measured RPO/RTO. Never restore over the active volume as a routine image rollback.
 
 ## 8. Reverse Proxy Notes
 
