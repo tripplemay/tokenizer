@@ -91,5 +91,5 @@ migrations/
     └─ migration.sql
   └─ 20260810130000_add_quota_account_index/
     └─ migration.sql
-      
+
 All migrations have been successfully applied.
