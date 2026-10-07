@@ -1,0 +1,6 @@
+{
+  "violation": false,
+  "detail": "补充判定，不改写上一轮结论。已只读核验 HEAD=27d9664e37a659ad28962bee224d871378e4336c，父提交=f8449e80fcdf78f689dcc924dd50fb78c83a1acc，worktree 干净。提交标题 feat(BL-PRIVACY-QUEUE-CLOSEOUT-F001): compose replay with exact-version queue 正确映射 features.json 中 generator-owned F001。最终 110 个变更文件均属于上一轮已审的 31 个 source/test/config、两个规格文件、两个批次状态文件、引用的冻结证据及本批次 Generator 证据目录；没有未知范围文件。31 个 source/test/config 文件集合及逐文件哈希均与上一轮相同，其汇总 SHA256 仍为 e46d5b245a61093457b136835428c4cba3e1921621d9c410b3b5f2bfed859e23。两个规格文件哈希亦未变化；110 个文件的工作树字节全部等于最终提交对象。另复核导入的 26 个报告/证据文件，分别与 3220837、7da2452 逐字节一致。状态为 verifying，F001 completed、F002 pending；evaluator_feedback、signoff、pending_gate 保持 null，未出现代写验收或人闸门决定。最终 features.json SHA256=6c40af1c978befb756047263093ae0c944930150fc1b91330bc6ef884bde281b，progress.json SHA256=21dd850feb79ec66e43aacf86b0e7af679f6fa60f9572288d7ec48898a117013。本补充只确认提交标签、范围与冻结字节，不核定 Generator 验证结果，不构成功能验收；未运行产品测试或修改文件。",
+  "offending_files": [],
+  "unmapped_tags": []
+}

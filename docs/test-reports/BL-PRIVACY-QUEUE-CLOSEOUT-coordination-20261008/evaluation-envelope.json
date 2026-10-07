@@ -1,0 +1,23 @@
+{
+  "task_id": "privacy-queue-closeout-27d9664-kimi-r0",
+  "contract_version": "harness/1.1",
+  "batch": "BL-PRIVACY-QUEUE-CLOSEOUT",
+  "role": "evaluator",
+  "repo": {
+    "url": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008",
+    "ref": "27d9664e37a659ad28962bee224d871378e4336c"
+  },
+  "spec": "docs/specs/BL-PRIVACY-QUEUE-CLOSEOUT-spec.md",
+  "features": [
+    "F001",
+    "F002"
+  ],
+  "l2_authorized": false,
+  "deadline_s": 1800,
+  "contract": "Act as a fresh independent Kimi-family Evaluator, not Generator. Read the frozen spec, features.json, progress.json, evaluator.md and real code/tests at repo.ref. Evaluate F001 and perform F002 independently; generator reports are claims, not proof. Verify the exact SHA. Derive adversarial checks from the spec, run your own synthetic multiprocess/HTTP and replay scope/deadline/version/quarantine controls, retain raw outputs, and report all failures and limitations. Use /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin in PATH and fresh npm ci in your own sandbox checkout, no shared node_modules. For synthetic test homes use short unique /tmp roots so macOS AF_UNIX path length is not exceeded; preserve any environmental failures and causality evidence. You may write only NEW tests, test-case/report artifacts, not product/config/state files or old evidence; no commits, pulls that change the frozen checkout, branch push, deployment, production access, personal source/queue/config reads, or human gate decisions. Local synthetic tests are authorized; external business/production actions are not. Never run native service installers against the user's Agent. Do not infer Windows/Linux/PG16/production or F005 acceptance from macOS tests. Check the spec's immutable evidence and exact-version queue invariants; separately report default versus controlled test concurrency behavior. Save a detailed report and exact SHA under docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/. Return per-feature PASS/PARTIAL/FAIL with mechanical evidence in the specified schema-valid artifact; keep release readiness false and all unexecuted gates explicit. If local acceptance is complete, you may additionally write a scoped signoff report without marking production ready. If any prerequisite prevents evaluation, describe it truthfully using the schema waiting fields rather than inventing a result. Keep final response concise and include artifact paths.",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  }
+}

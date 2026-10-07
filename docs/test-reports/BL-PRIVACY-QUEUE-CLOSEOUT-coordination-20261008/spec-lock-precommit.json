@@ -1,0 +1,6 @@
+{
+  "violation": false,
+  "detail": "仅作只读 spec-lock 稽核，不构成功能验收。观察 HEAD 为 f8449e80fcdf78f689dcc924dd50fb78c83a1acc；已读 AGENTS.md、harness-rules.md、CLAUDE.md、spec-lock-critic.md、pre-impl-adjudication.md §4.6/§4.7、features.json、progress.json、批次/B03/B06 规格、实际 diff 及全部新增 source/test/config。31 个变更 source/test/config 文件均可归属 BL-PRIVACY-QUEUE-CLOSEOUT/F001；未见 F002 自验收、无归属产品改动或禁止范围扩张。B06 规格仅落实批次已明确的 exact-version 隔离及清理裁决。两个新增 B06 排除项保留原始测试字节，并有对应 successor 控制；B05 配置组合被实际导出配置使用，原测试保持活跃。独立比较 1030 个冻结文件：995 个来自 f8449e8、19 个来自 3220837、16 个来自 7da2452，全部逐字节一致，包括旧报告、SHA256SUMS 和被忽略的日志；7da2452 的 16 个输入亦与 9486633 一致。末次复核 31 个源/测试/配置文件无新增、删除或哈希变化。其摘要为 e46d5b245a61093457b136835428c4cba3e1921621d9c410b3b5f2bfed859e23，算法为路径按 localeCompare('en') 排序后连接每项 'sha256  path\\n' 再 SHA256。批次规格 SHA256=d19c7cce2b5d59dfc90677d1e1fc2697b62444b77547f1bac60783df77be0b21；B06 规格 SHA256=464b72b7351b18e868e526f76102424b3b1793aa4137e9d6858262e268a8b5fe；features.json SHA256=c63dcb4c05867772165edcd4de150b499857b708fe5c13695faff27931a185b0；progress.json SHA256=e60d4d870bdbf9e4622e98d911762ef1242b4ff79d2a5493667896e7a69bdc70。尚无本次实现提交，因此最终 commit tag 未核；Coordinator 须在提交后确认其映射 F001 并保持上述源文件摘要一致。仍在写入的验证/交接结果不在此结论覆盖范围。未运行产品测试、修改文件或推送。",
+  "offending_files": [],
+  "unmapped_tags": []
+}
