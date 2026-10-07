@@ -1,0 +1,9 @@
+HTTP/1.1 401 Unauthorized
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Wed, 07 Oct 2026 09:10:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"unauthorized"}

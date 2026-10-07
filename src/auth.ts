@@ -2,7 +2,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@/server/db";
-import { resolveAuthSecret } from "@/server/auth-secret";
+import { resolveAuthSecret, resolveResendKey } from "@/server/auth-secret";
 
 // Auth.js v5 root config. The framework hands us:
 //   * handlers — mounted at /api/auth/[...nextauth]/route.ts
@@ -27,7 +27,7 @@ declare module "next-auth" {
   }
 }
 
-const resendKey = process.env.AUTH_RESEND_KEY;
+const resendKey = resolveResendKey();
 const emailFrom = process.env.AUTH_EMAIL_FROM ?? "no-reply@token.vpanel.cc";
 
 const providers = [];

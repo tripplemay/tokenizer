@@ -7,6 +7,7 @@ const script = "scripts/validate-deploy-secrets.sh";
 
 interface SecretOverrides {
   AUTH_SECRET?: string;
+  ADMIN_TOKEN?: string;
   AUTH_RESEND_KEY?: string;
   HARNESS_CONSOLE_SIGNING_KEY?: string;
 }
@@ -33,6 +34,7 @@ describe("deployment secret validation", () => {
   ])("fails before deployment when AUTH_SECRET is %s", (_, secret) => {
     const result = validate({
       AUTH_SECRET: secret,
+      ADMIN_TOKEN: "a-production-admin-token-with-at-least-32-characters",
       AUTH_RESEND_KEY: "configured",
       HARNESS_CONSOLE_SIGNING_KEY: "configured"
     });
@@ -42,13 +44,42 @@ describe("deployment secret validation", () => {
     if (secret) expect(result.stderr).not.toContain(secret);
   });
 
-  it("only warns when optional feature secrets are missing", () => {
+  it.each([
+    ["missing", undefined],
+    ["historical placeholder", "change-me"],
+    ["too short", "short-token"],
+    ["whitespace-padded", " a-production-admin-token-with-at-least-32-characters"]
+  ])("rejects %s ADMIN_TOKEN", (_, token) => {
     const result = validate({
-      AUTH_SECRET: "a-production-secret-with-at-least-32-characters"
+      AUTH_SECRET: "a-production-secret-with-at-least-32-characters",
+      ADMIN_TOKEN: token,
+      AUTH_RESEND_KEY: "configured"
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("::error::ADMIN_TOKEN");
+    if (token) expect(result.stderr).not.toContain(token);
+  });
+
+  it.each([undefined, "", "   "])("rejects a missing or blank magic-link key: %s", (key) => {
+    const result = validate({
+      AUTH_SECRET: "a-production-secret-with-at-least-32-characters",
+      ADMIN_TOKEN: "a-production-admin-token-with-at-least-32-characters",
+      AUTH_RESEND_KEY: key
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("::error::AUTH_RESEND_KEY");
+  });
+
+  it("accepts required secrets and warns only for optional signing", () => {
+    const result = validate({
+      AUTH_SECRET: "a-production-secret-with-at-least-32-characters",
+      ADMIN_TOKEN: "a-production-admin-token-with-at-least-32-characters",
+      AUTH_RESEND_KEY: "configured"
     });
 
     expect(result.status).toBe(0);
-    expect(result.stderr).toContain("::warning::AUTH_RESEND_KEY");
     expect(result.stderr).toContain("::warning::HARNESS_CONSOLE_SIGNING_KEY");
     expect(result.stderr).not.toContain("::error::");
   });

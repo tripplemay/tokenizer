@@ -5,6 +5,7 @@ export const AUTH_SECRET_MIN_LENGTH = 32;
 
 interface AuthSecretEnvironment {
   AUTH_SECRET?: string;
+  AUTH_RESEND_KEY?: string;
   NEXT_PHASE?: string;
   NODE_ENV?: string;
 }
@@ -30,4 +31,18 @@ export function resolveAuthSecret(
   }
 
   return normalizedSecret ? secret! : AUTH_SECRET_DEVELOPMENT_PLACEHOLDER;
+}
+
+export function resolveResendKey(
+  environment: AuthSecretEnvironment = process.env
+): string | null {
+  const key = environment.AUTH_RESEND_KEY?.trim();
+  if (
+    !key &&
+    environment.NODE_ENV === "production" &&
+    environment.NEXT_PHASE !== AUTH_SECRET_BUILD_PHASE
+  ) {
+    throw new Error("AUTH_RESEND_KEY must be configured for production runtime");
+  }
+  return key || null;
 }

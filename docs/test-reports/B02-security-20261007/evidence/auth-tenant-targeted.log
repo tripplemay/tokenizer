@@ -1,0 +1,16 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-security-20261007
+
+ ✓ tests/server/auth-secret.test.ts (13 tests) 8ms
+ ✓ tests/server/harness-gates-route.test.ts (7 tests) 22ms
+ ✓ tests/server/pricing-review.test.ts (9 tests) 9ms
+ ✓ tests/server/pricing-sources.test.ts (16 tests) 13ms
+ ✓ tests/server/deploy-secrets.test.ts (14 tests) 174ms
+ ✓ tests/server/enrollment-tokens-route.test.ts (5 tests) 21ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 27ms
+ ✓ tests/server/harness-mode-intents-route.test.ts (20 tests) 75ms
+
+ Test Files  8 passed (8)
+      Tests  92 passed (92)
+   Start at  16:13:52
+   Duration  1.14s (transform 623ms, setup 0ms, collect 1.58s, tests 350ms, environment 2ms, prepare 996ms)

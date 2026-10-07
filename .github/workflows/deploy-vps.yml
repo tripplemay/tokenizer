@@ -333,11 +333,6 @@ jobs:
           SSH_TARGET="$VPS_USER@$VPS_HOST"
           SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
-          if [ -z "${ADMIN_TOKEN:-}" ]; then
-            echo "ADMIN_TOKEN secret is required" >&2
-            exit 1
-          fi
-
           if [ -z "${NEXT_PUBLIC_APP_URL:-}" ]; then
             NEXT_PUBLIC_APP_URL="https://token.vpanel.cc"
           fi

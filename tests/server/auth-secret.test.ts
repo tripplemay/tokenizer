@@ -3,7 +3,8 @@ import {
   AUTH_SECRET_BUILD_PHASE,
   AUTH_SECRET_DEVELOPMENT_PLACEHOLDER,
   AUTH_SECRET_MIN_LENGTH,
-  resolveAuthSecret
+  resolveAuthSecret,
+  resolveResendKey
 } from "@/server/auth-secret";
 
 describe("resolveAuthSecret", () => {
@@ -49,6 +50,25 @@ describe("resolveAuthSecret", () => {
 
     expect(resolveAuthSecret({ NODE_ENV: "production", AUTH_SECRET: secret })).toBe(
       secret
+    );
+  });
+});
+
+describe("resolveResendKey", () => {
+  it("allows a missing key while building or developing", () => {
+    expect(resolveResendKey({ NODE_ENV: "production", NEXT_PHASE: AUTH_SECRET_BUILD_PHASE })).toBeNull();
+    expect(resolveResendKey({ NODE_ENV: "development" })).toBeNull();
+  });
+
+  it.each([undefined, "", "   "])("rejects a missing production key without echoing it", (key) => {
+    expect(() => resolveResendKey({ NODE_ENV: "production", AUTH_RESEND_KEY: key })).toThrow(
+      "AUTH_RESEND_KEY must be configured"
+    );
+  });
+
+  it("preserves a configured production key", () => {
+    expect(resolveResendKey({ NODE_ENV: "production", AUTH_RESEND_KEY: "re_configured" })).toBe(
+      "re_configured"
     );
   });
 });

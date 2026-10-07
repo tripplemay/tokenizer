@@ -1,0 +1,50 @@
+{
+  "batch_id": "B02-security-20261007",
+  "created_at": "2026-10-07T09:13:11Z",
+  "features": [
+    {
+      "feature_id": "B02",
+      "commits": [],
+      "files_touched": [
+        ".env.example",
+        ".github/workflows/deploy-vps.yml",
+        "app/api/admin/login/route.ts",
+        "docker-compose.yml",
+        "package.json",
+        "package-lock.json",
+        "scripts/validate-deploy-secrets.sh",
+        "src/auth.ts",
+        "src/server/admin-token.ts",
+        "src/server/auth-secret.ts",
+        "src/server/auth.ts",
+        "tests/server/admin-token.test.ts",
+        "tests/server/auth-secret.test.ts",
+        "tests/server/deploy-secrets.test.ts",
+        "docs/test-reports/B02-security-20261007/README.md",
+        "docs/test-reports/B02-security-20261007/generator-handoff.json",
+        "docs/test-reports/B02-security-20261007/evidence/agent-lifecycle-retry.log",
+        "docs/test-reports/B02-security-20261007/evidence/auth-tenant-targeted.log",
+        "docs/test-reports/B02-security-20261007/evidence/build.log",
+        "docs/test-reports/B02-security-20261007/evidence/lint.log",
+        "docs/test-reports/B02-security-20261007/evidence/npm-audit-production-after.json",
+        "docs/test-reports/B02-security-20261007/evidence/npm-audit-production-before.json",
+        "docs/test-reports/B02-security-20261007/evidence/npm-ci.log",
+        "docs/test-reports/B02-security-20261007/evidence/runtime-admin-denied.http",
+        "docs/test-reports/B02-security-20261007/evidence/runtime-tenant-unauthenticated.http",
+        "docs/test-reports/B02-security-20261007/evidence/test-excluding-known-flake.log",
+        "docs/test-reports/B02-security-20261007/evidence/test-final.log",
+        "docs/test-reports/B02-security-20261007/evidence/test-rerun.log",
+        "docs/test-reports/B02-security-20261007/evidence/test.log",
+        "docs/test-reports/B02-security-20261007/evidence/verify.log"
+      ],
+      "notes": "B02 is an upgrade-plan package, not an active features.json feature. Candidate only; nested Next/PostCSS High remains in production audit and requires human risk disposition. Real mail, PostgreSQL two-tenant, Linux image and independent Evaluator verification remain open. No push, state-machine or gate changes."
+    }
+  ],
+  "l1_ran": {
+    "lint": "Node 22.22.0 npm run lint: exit 0; evidence/lint.log",
+    "typecheck": "Node 22.22.0 npm run verify: exit 0; evidence/verify.log",
+    "test": "Targeted auth/tenant after final change: 92 passed. Latest full suite: 1470 passed, 1 SIGTERM lifecycle timing failure, 20 skipped; two earlier full runs also failed on SIGTERM. Evidence logs preserved; not a full-suite pass."
+  },
+  "waiting": null,
+  "waiting_detail": "Independent evaluation and human risk acceptance are required before B02 signoff or release."
+}

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "./db";
 import { hashToken, safeEqual } from "./tokens";
+import { resolveAdminToken } from "./admin-token";
 
 export const ADMIN_COOKIE = "admin_token";
 
@@ -14,7 +15,7 @@ export const ADMIN_COOKIE = "admin_token";
 export const DEFAULT_TENANT_ID = "user_default_seed";
 
 export function isAdminAuthorized(request: NextRequest): boolean {
-  const expected = process.env.ADMIN_TOKEN;
+  const expected = resolveAdminToken();
   if (!expected) return false;
   const header = request.headers.get("x-admin-token");
   if (header && safeEqual(header, expected)) return true;
@@ -24,7 +25,7 @@ export function isAdminAuthorized(request: NextRequest): boolean {
 }
 
 export async function isAdminAuthorizedFromCookie(): Promise<boolean> {
-  const expected = process.env.ADMIN_TOKEN;
+  const expected = resolveAdminToken();
   if (!expected) return false;
   const store = await cookies();
   const provided = store.get(ADMIN_COOKIE)?.value;

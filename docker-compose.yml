@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://tokenizer:tokenizer@postgres:5432/tokenizer
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       GIT_COMMIT: ${GIT_COMMIT:-unknown}
       # Auth.js v5 — values are passed in via the deploy workflow's .env file.
