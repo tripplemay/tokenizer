@@ -1,0 +1,7 @@
+{"operation":"default","input":"{src,app}/**/*.{js,ts,jsx,tsx,mdx}","options":{},"equal":true,"before":["(src|app)/**/*.(js|ts|jsx|tsx|mdx)"],"after":["(src|app)/**/*.(js|ts|jsx|tsx|mdx)"]}
+{"operation":"compile","input":"app/{reading,writing}/**/*.{js,jsx}","options":{},"equal":true,"before":"app/(reading|writing)/**/*.(js|jsx)","after":"app/(reading|writing)/**/*.(js|jsx)"}
+{"operation":"expand","input":"page-{1..3}.js","options":{},"equal":true,"before":["page-1.js","page-2.js","page-3.js"],"after":["page-1.js","page-2.js","page-3.js"]}
+{"operation":"expand","input":"a\\{b,c\\}","options":{},"equal":true,"before":["a{b,c}"],"after":["a{b,c}"]}
+{"operation":"expand","input":"{a,b}{1,2}","options":{"nodupes":true},"equal":true,"before":["a1","a2","b1","b2"],"after":["a1","a2","b1","b2"]}
+{"operation":"stringify","input":"{a,{b,c}}","options":{},"equal":true,"before":"{a,{b,c}}","after":"{a,{b,c}}"}
+{"operation":"compile-parsed","input":"a/{b,c}/d","options":{},"equal":true,"before":"a/(b|c)/d","after":"a/(b|c)/d"}

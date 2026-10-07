@@ -1,0 +1,62 @@
+{
+  "schema": "tokenizer-generator-result/1",
+  "task": "B02-braces-internal-backport",
+  "role": "generator",
+  "date": "2026-10-08",
+  "baseCommit": "17b47a8e9128eef1f982afa2f5a3257ec72737d3",
+  "result": "CANDIDATE_REQUIRES_INDEPENDENT_SECURITY_REVIEW_AND_SAFE_CI",
+  "implementation": {
+    "source": "npm braces@3.0.3 exact tarball",
+    "sourceTarballSha256": "1cd18e862c8640b4568b1425a7df4ee030ff201d45b2da8f9f222d2987494ffc",
+    "upstreamReference": "https://github.com/micromatch/braces/pull/78",
+    "upstreamReferenceStatus": "open-unmerged-at-capture",
+    "install": "file:vendor/braces plus $braces npm override",
+    "remoteGitDependency": false,
+    "guards": [
+      "parser-braces",
+      "parser-parentheses",
+      "direct-ast-compile",
+      "direct-ast-expand",
+      "direct-ast-stringify"
+    ],
+    "maxContainerDepth": 100,
+    "rejection": {
+      "name": "SyntaxError",
+      "code": "ERR_BRACES_MAX_DEPTH"
+    }
+  },
+  "validation": {
+    "runtime": "Node v22.22.0, npm 10.9.4, darwin-arm64",
+    "cleanInstall": "PASS",
+    "focusedTests": "10/10 PASS",
+    "fullTests": "1612 passed, 23 skipped",
+    "verify": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "css": "byte-identical to base 17b47a8 emitted CSS",
+    "postgres16": "48/48 PASS, zero skipped",
+    "browser": "3/3 PASS",
+    "negativeControl": "pristine deep string walkers and direct AST walkers produce RangeError at --stack_size=512",
+    "patchedControl": "depth 100 accepted; 101 and 4000 rejected with controlled SyntaxError",
+    "patchReplay": "PASS"
+  },
+  "audit": {
+    "all": {
+      "high": 7,
+      "total": 7,
+      "interpretation": "registry advisory remains because internal package version is transparently 3.0.3"
+    },
+    "production": {
+      "total": 0
+    },
+    "auditIsNotAuthoritativeFixEvidence": true
+  },
+  "requiredNext": [
+    "independent security evaluation",
+    "Windows install and probe validation",
+    "safe-branch CI after separate Windows harness-timeout portability fix",
+    "release decision by coordinator only"
+  ],
+  "releaseAccepted": false,
+  "pushed": false
+}

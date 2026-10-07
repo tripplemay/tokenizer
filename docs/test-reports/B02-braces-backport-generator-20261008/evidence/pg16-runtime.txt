@@ -1,0 +1,3 @@
+pgdata=/tmp/tokenizer-b02-braces-pg16.Zduxph
+port=55441
+postgres_version=postgres (PostgreSQL) 16.13 (Homebrew)

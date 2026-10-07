@@ -1,0 +1,6 @@
+source_url=https://registry.npmjs.org/braces/-/braces-3.0.3.tgz
+npm_integrity=sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==
+npm_shasum=490332f40919452272d55a8480adc0c441358789
+downloaded_sha256=1cd18e862c8640b4568b1425a7df4ee030ff201d45b2da8f9f222d2987494ffc
+downloaded_sha512=c906d780efce499543d88b222e5ae8fbb1dfe90d7c109aca484b1da0ccca78f29772dde0bc3f282dc390748cc6ba9af9163f840def203bf9717350737cca71bc
+packed_filename=braces-3.0.3.tgz

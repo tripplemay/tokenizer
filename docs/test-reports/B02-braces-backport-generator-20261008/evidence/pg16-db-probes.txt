@@ -1,0 +1,27 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-braces-backport-20261008
+
+ ✓ tests/server/quota-account-db.probe.test.ts (2 tests) 40ms
+ ✓ tests/server/harness-gates-route-db.probe.test.ts (1 test) 67ms
+ ✓ tests/server/harness-cost-range-db.probe.test.ts (2 tests) 296ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts (2 tests) 147ms
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+F004 concurrent statuses: 200, 409
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig
+F004 stored decisionSig matches 200-response sig: true
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F003 e2e: poison batch returns 2xx, persists sanitized values, renders tooltip-safe
+F003 poison batch HTTP status: 200
+
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL) > F007: independent recompute of the audit fixture + exactly one aggregate query
+F007 independent recompute: totalComputeTokens=1951110 totalCostUsd=19.388000
+
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests) 212ms
+
+ Test Files  5 passed (5)
+      Tests  48 passed (48)
+   Start at  00:21:42
+   Duration  914ms (transform 1.29s, setup 0ms, import 1.68s, tests 762ms, environment 0ms)
+
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-b02-braces-backport-20261008/docs/test-reports/B02-braces-backport-generator-20261008/evidence/pg16-db-probes.json

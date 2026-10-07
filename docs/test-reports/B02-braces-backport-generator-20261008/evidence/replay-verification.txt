@@ -1,0 +1,4 @@
+tarball_sha256=PASS
+patch_apply_p1=PASS
+patched_runtime_files_cmp=PASS
+patch_sha256=c869abad619e5428422136751634b425786425131a6694130254fd482cd2a303
