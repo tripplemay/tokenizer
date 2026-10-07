@@ -1,0 +1,10 @@
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/SHA256SUMS: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt: text: unset
+docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt: text: unset
+scripts/test/b05-tcp-readiness-independent.mjs: text: unset
+tests/evaluator/b05-tcp-readiness-independent.test.ts: text: unset

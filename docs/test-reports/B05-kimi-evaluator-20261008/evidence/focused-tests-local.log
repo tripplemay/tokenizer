@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-kimi-eval-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 4ms
+ ✓ tests/evaluator/b05-evidence-retention-round2.test.ts (4 tests) 347ms
+   ✓ B05 retained recovery evidence round 2 > round-trips only four non-main allowlisted files and rejects downloaded tampering 340ms
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 978ms
+ ✓ tests/ci/windows-installer-gate.test.ts (8 tests) 981ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 2840ms
+   ✓ allowlisted recovery evidence transport > detects downloaded file tampering, missing files, extra files and wrong revision 587ms
+   ✓ allowlisted recovery evidence transport > rejects manifest traversal paths and forged manifest hashes 339ms
+   ✓ allowlisted recovery evidence transport > rejects symlink files and symlink directories 393ms
+   ✓ allowlisted recovery evidence transport > requires main provenance files separately and forbids main/non-main manifest downgrade 311ms
+
+ Test Files  5 passed (5)
+      Tests  44 passed (44)
+   Start at  01:22:00
+   Duration  3.19s (transform 144ms, setup 0ms, collect 191ms, tests 5.15s, environment 1ms, prepare 412ms)
+

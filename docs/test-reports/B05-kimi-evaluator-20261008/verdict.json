@@ -1,0 +1,131 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "B05-release-recovery-evidence",
+  "evaluator": "kimi-independent-20261008",
+  "created_at": "2026-10-08",
+  "candidate_commit": "8877a592d21305f03cdaea5d874d58a581e910a1",
+  "candidate_matches_local_head": true,
+  "working_tree_clean": true,
+  "result": "PASS_SAFE_BRANCH_CI_ONLY",
+  "release_ready": false,
+  "gates": {
+    "safe_branch_ci_exact_sha": {
+      "result": "PASS",
+      "scope": "non-main",
+      "run_id": 37660385870,
+      "run_url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870",
+      "event": "workflow_dispatch",
+      "head_branch": "codex/b04-b05-integration-ci-20261008",
+      "head_sha": "8877a592d21305f03cdaea5d874d58a581e910a1",
+      "conclusion": "success",
+      "branch_tip_reverified": "8877a592d21305f03cdaea5d874d58a581e910a1",
+      "jobs": {
+        "Verify": "success (129 files, 1694 passed, 23 skipped; contract 6/6)",
+        "Verify (Windows)": "success (127 files, 1656 passed, 61 skipped)",
+        "Verify (PostgreSQL 16)": "success",
+        "Verify (authenticated browser)": "success",
+        "Linux OCI and recovery rehearsal": "success",
+        "Deploy": "skipped (0 steps, correct for non-main dispatch)"
+      }
+    },
+    "linux_oci_recovery_rehearsal": {
+      "result": "PASS",
+      "scope": "synthetic only",
+      "mode": "synthetic",
+      "previous_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+      "previous_sha_is_origin_main_tip": true,
+      "previous_sha_is_ancestor_of_candidate": true,
+      "restore_inventory": "2|2|1|1|23",
+      "runtime_uid": 1000,
+      "rollback": "passed",
+      "business_canary": "enroll-ingest-summary ok, eventCount=1, totalTokens=23 (candidate and old image against migrated scratch DB)",
+      "limitation_no_migration_delta": "candidate vs previous diff in prisma/migrations is empty; candidate migrate step logged 'No pending migrations to apply' - no schema-changing forward migration was exercised",
+      "elapsed_seconds": 40,
+      "not_evidence_of": "production data, production registry, RPO/RTO SLA, schema-delta migration compatibility"
+    },
+    "evidence_artifact_allowlist_manifest_ledger": {
+      "result": "PASS",
+      "artifact_id": 11501715741,
+      "artifact_name": "release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1",
+      "expires_at": "2026-10-21T17:45:33Z",
+      "api_zip_digest": "sha256:4883e760b18208c959f50d0eff242ecba45e04bae9f6e8c7cdc52fbc34ca93c0",
+      "downloaded_zip_sha256_match": true,
+      "files": "exactly 4 allowlisted files + manifest.json (dump, dump.sha256, .rehearsal, .rollback-approved)",
+      "manifest": "schema 1, revision exact match, provenanceRequired false, 4/4 entry hashes recomputed and matching",
+      "ledger": "commit exact, mode=synthetic, backup_file name consistent, rollback=passed",
+      "rollback_approved_previous_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3 (real commit, origin/main tip)",
+      "repo_verifier_on_real_artifact": "exit 0",
+      "negative_controls": {
+        "tampered_dump": "exit 1",
+        "tampered_manifest_bytes": "exit 1",
+        "wrong_revision": "exit 1",
+        "extra_env_file": "exit 1",
+        "require_provenance_on_non_main_manifest": "exit 1",
+        "missing_rollback_approved": "exit 1"
+      }
+    },
+    "windows_crlf_portability": {
+      "result": "PASS",
+      "prior_failure_confirmed": "run 37659301770 @ 3cce52e: Verify (Windows) failed only in tests/evaluator/b05-evidence-retention-round2.test.ts nine-entry manifest check; Linux/PG16/browser passed; OCI+Deploy skipped",
+      "interim_run_cancelled": "run 37660179532 @ 8546afa cancelled",
+      "fix": ".gitattributes -text on evidence/**, scripts/test/b05-tcp-readiness-independent.mjs, tests/evaluator/b05-tcp-readiness-independent.test.ts (no product code change)",
+      "check_attr": "text unset for all 9 manifest payload paths and SHA256SUMS itself",
+      "historical_manifest_local_recheck": "9/9 OK via shasum -a 256 -c",
+      "historical_test_sha256": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0 (verified)",
+      "native_windows_at_exact_sha": "b05-evidence-retention-round2 4/4, recovery-evidence 14 (1 platform skip), b05-recovery-source 10/10",
+      "focused_local": "5 files / 44 tests pass (macOS, Node v25.7.0, clean npm ci)"
+    },
+    "main_only_provenance": {
+      "result": "NOT_EXERCISED",
+      "evidence": "GHCR login, both attest-build-provenance steps, and signed provenance verification all skipped in run 37660385870 (main-only if-conditions); no GHCR digests or signed attestations exist for this candidate",
+      "static_design": "registry switches to GHCR only on main; gh attestation verify pins source-digest and exact signer workflow with wrong-source/wrong-workflow negative controls; deploy job re-verifies before SSH; evidence transport refuses main/non-main manifest downgrade (locally proven)",
+      "closure_requirement": "real main-path workflow run publishing to GHCR with signed attestations and executed negative controls"
+    },
+    "real_backup_restore_gates": {
+      "result": "NOT_EXERCISED",
+      "evidence": "REHEARSAL_MODE=live never run; Deploy skipped; no .releases/<sha>.previous-env baseline ledger; production https://token.vpanel.cc/api/health serves commit 92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1, not the candidate",
+      "closure_requirement": "authorized production baseline cutover to digest-pinned predecessor, live pg_dump/restore rehearsal before live migration, real deploy with health/business canary and auditable rollback"
+    }
+  },
+  "remaining_hard_gates": [
+    "Main-path run: publish candidate digests to GHCR, generate and verify signed exact-source/exact-workflow attestations including negative controls",
+    "Establish production retained predecessor digest/configuration via authorized baseline cutover (runbook bootstrap)",
+    "Live-mode rehearsal: real production pg_dump, isolated restore, exact migration replay, business and old-image canaries before any live migration",
+    "Authorized production deploy with health/SHA verification, business canary, and auditable rollback evidence",
+    "Future candidates adding prisma migrations re-open the no-migration-delta limitation of this rehearsal",
+    "Cross-scope: B02 dependency/auth release blockers tracked outside B05 must also clear before any release"
+  ],
+  "limitations": [
+    "GitHub-hosted runner integrity trusted via API-reported metadata/logs; cross-checked internally consistent",
+    "Artifact retention is 14 days (expires 2026-10-21T17:45:33Z); byte-level findings reproducible until then, raw copies preserved under evidence/",
+    "Prior round-2 candidate 6164b4e29922dbce685d01bf2c4c9d41428c9a08 not present in this clone; claims about that different candidate not re-derived and not needed for this verdict",
+    "rehearse-release.sh not re-executed locally (no Linux Docker daemon on macOS host); CI execution evidence re-fetched and script statically audited",
+    "Production health endpoint check is read-only and public; proves served commit only"
+  ],
+  "local_execution": {
+    "environment": "macOS arm64, Node v25.7.0, clean npm ci at exact candidate HEAD",
+    "focused_tests": "5 files, 44/44 passed (tests/ci/recovery-evidence, tests/ci/b05-recovery-source, tests/evaluator/b05-evidence-retention-round2, tests/ci/windows-installer-gate, tests/ci/windows-agent-owner-gate)",
+    "artifact_verifier": "exit 0 on real downloaded artifact; 6/6 negative controls fail closed",
+    "historical_manifest": "9/9 sha256 OK",
+    "no_push_no_state_changes": true
+  },
+  "synthetic_vs_production": "All passing evidence in this verdict is synthetic, non-main CI evidence: ephemeral localhost:5000 registry, synthetic secrets, synthetic canary data, no production credentials/data/deployment. It must not be reported as production release evidence.",
+  "prior_verdicts_used_as": "pointers only; all load-bearing claims re-derived independently via gh API, recomputed hashes, local tests and negative controls",
+  "evidence_paths": [
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/run-37660385870.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/run-37660385870-jobs.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/artifact-11501715741-api.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/artifact-downloaded-zip-sha256.txt",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/artifact-manifest-hash-recheck.txt",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/artifact-verify-and-negative-controls.txt",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/oci-rehearsal-step.log",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/branch-tip.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/main-tip.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/prior-run-37659301770.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/prior-run-37660179532.json",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/git-check-attr.txt",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/historical-manifest-check.txt",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/focused-tests-local.log",
+    "docs/test-reports/B05-kimi-evaluator-20261008/evidence/production-health-20261008.json"
+  ]
+}

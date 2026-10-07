@@ -1,0 +1,11 @@
+== verify real downloaded artifact (expect exit 0) ==
+{"recoveryEvidence":"verify","revision":"8877a592d21305f03cdaea5d874d58a581e910a1","provenanceRequired":false}
+EXIT=0
+
+== negative controls (expect exit 1 each) ==
+tamper-dump -> exit=1
+tamper-manifest -> exit=1
+wrong-rev -> exit=1
+extra-file -> exit=1
+require-prov -> exit=1
+missing-file -> exit=1
