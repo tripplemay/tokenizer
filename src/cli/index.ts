@@ -2,8 +2,8 @@ import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath, updateState } from "./config";
-import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
-import { clearQueue, readQueue, syncEvents } from "./sync";
+import { acknowledgeQueuedEvents, collectEvents, mergeQueue } from "./collect";
+import { readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
 import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
@@ -12,6 +12,8 @@ import { runHarnessCommand } from "./harness-command";
 import { installService, serviceStatus, uninstallService } from "./service";
 import { collectionScopeFingerprint, describePrivacyBacklog, effectivePrivacy } from "./privacy";
 import { readCursor, writeCursor } from "./cursor";
+import { planBoundedReplay } from "./replay-contract";
+import { dryRunBoundedReplay, executeBoundedReplay } from "./replay";
 
 const program = new Command();
 
@@ -59,6 +61,48 @@ program.command("preview").description("Preview local usage events without enrol
     console.log(JSON.stringify({ mode: privacy.mode, includePaths: privacy.includePaths, excludePaths: privacy.excludePaths, count: events.length, sample: events.slice(0, limit), warnings }, null, 2));
   });
 
+program.command("replay")
+  .description("Bounded replay of one explicit Claude JSONL file (dry-run by default)")
+  .requiredOption("--source <source>", "Source adapter; currently only claude-code")
+  .requiredOption("--file <absolute-jsonl>", "One literal absolute JSONL file; directories and globs are rejected")
+  .requiredOption("--from <utc>", "Inclusive canonical UTC timestamp")
+  .requiredOption("--to <utc>", "Exclusive canonical UTC timestamp, at most 31 days after --from")
+  .requiredOption("--max-bytes <bytes>", "Explicit byte budget, at most 16777216")
+  .requiredOption("--max-events <count>", "Explicit selected-event budget, at most 5000")
+  .option("--sample <count>", "Dry-run safe sample count, 0..5", "0")
+  .option("--execute", "Admit matching events to the durable queue; requires --confirm")
+  .option("--confirm <sha256>", "Digest printed by an unchanged dry-run plan")
+  .action((options: {
+    source: string;
+    file: string;
+    from: string;
+    to: string;
+    maxBytes: string;
+    maxEvents: string;
+    sample: string;
+    execute?: boolean;
+    confirm?: string;
+  }) => {
+    const sample = Number(options.sample);
+    if (!Number.isSafeInteger(sample)) throw new Error("Replay sample must be an integer");
+    if (!options.execute && options.confirm) throw new Error("Replay --confirm is only valid with --execute");
+    if (options.execute && sample !== 0) throw new Error("Replay --sample is dry-run only");
+    const plan = planBoundedReplay({
+      source: options.source,
+      file: options.file,
+      from: options.from,
+      to: options.to,
+      maxBytes: Number(options.maxBytes),
+      maxEvents: Number(options.maxEvents),
+      dryRun: !options.execute
+    });
+    const config = readConfig();
+    const result = plan.dryRun
+      ? dryRunBoundedReplay(plan, config, sample)
+      : executeBoundedReplay(plan, config, options.confirm ?? "");
+    console.log(JSON.stringify(result, null, 2));
+  });
+
 program.command("enroll").description("Enroll this device with a one-time enrollment token").requiredOption("--enroll-token <token>", "Enrollment token").option("--server-url <url>", "Tokenizer server URL").option("--device-name <name>", "Human-readable device name").option("--yes", "Use detected device name without prompting").action(async (options: { enrollToken: string; serverUrl?: string; deviceName?: string; yes?: boolean }) => {
   const { device } = await enrollDevice(options);
   console.log(`Enrolled device: ${device.name} (${device.id})`);
@@ -82,9 +126,7 @@ program.command("collect").description("Collect local usage events into queue").
   }
   const cursor = readCursor();
   const { events, warnings } = collectEvents(config, cursor);
-  const queued = readQueue();
-  const merged = dedupeBySourceEventId([...queued, ...events]);
-  writeQueue(merged);
+  const merged = mergeQueue(events).events;
   writeCursor(cursor);
   updateState({ lastCollectionScopeFingerprint: collectionScopeFingerprint(privacy) });
   console.log(`Collected ${events.length} events; queue holds ${merged.length} unique events at ${queuePath}`);
@@ -98,11 +140,9 @@ program.command("sync").description("Sync queued events to server").action(async
   if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
   const events = readQueue();
   console.log(describePrivacyBacklog(privacy.mode, events.length));
-  writeQueue(events);
   const result = await syncEvents(config, events, {
-    onBatchSynced: ({ remaining }) => writeQueue(remaining)
+    onBatchSynced: ({ acknowledged }) => { acknowledgeQueuedEvents(acknowledged); }
   });
-  clearQueue();
   console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}`);
 });
 

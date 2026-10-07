@@ -4,7 +4,7 @@ import { normalizeTokenCount, UsageEventInput } from "@/shared/usage";
 import { findWorkspaceFromPath, inferProjectName } from "@/cli/project";
 import { appendStartOffset, recordFile, shouldSkipAppendOnlyFile, shouldSkipFile } from "@/cli/cursor";
 import { isPathUnder, pathSegments } from "@/shared/path";
-import { readJsonlFile } from "@/parsers/jsonl";
+import { readJsonlBytes, readJsonlFile, type JsonlFile } from "@/parsers/jsonl";
 import { ParserConfig, ParserResult } from "./types";
 
 // Generation of this parser's extraction semantics. Bump when re-parsing
@@ -126,6 +126,30 @@ type MessageGroup = {
   blockFallbackTo: string | null;
 };
 
+export type ClaudeExplicitFileInput = {
+  file: string;
+  bytes: Buffer;
+  mtime: Date;
+  projectRoots: string[];
+};
+
+// R07 explicit-file adapter. It deliberately accepts already-opened bytes and
+// the original source identity, so callers can enforce file-handle safety
+// without redirecting the parser through a temporary path or source discovery.
+export function parseClaudeJsonlBuffer(input: ClaudeExplicitFileInput): ParserResult {
+  const events: UsageEventInput[] = [];
+  const warnings: string[] = [];
+  parseProjectJsonlFile(
+    input.file,
+    { homeDir: "", projectRoots: input.projectRoots },
+    events,
+    warnings,
+    readJsonlBytes(input.bytes),
+    input.mtime.toISOString()
+  );
+  return { events, warnings };
+}
+
 function scanFallbackBlock(row: any, group: MessageGroup) {
   const content = row.message?.content;
   if (!Array.isArray(content)) return;
@@ -146,8 +170,20 @@ function modelOf(row: any): string | null {
 function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: UsageEventInput[], warnings: string[]) {
   for (const file of walkJsonl(projectsDir)) {
     if (config.cursor && shouldSkipAppendOnlyFile(file, config.cursor)) continue;
+    parseProjectJsonlFile(file, config, events, warnings);
+  }
+}
+
+function parseProjectJsonlFile(
+  file: string,
+  config: ParserConfig,
+  events: UsageEventInput[],
+  warnings: string[],
+  suppliedJsonl?: JsonlFile,
+  suppliedFallbackTime?: string
+) {
     const emitAfter = config.cursor ? appendStartOffset(file, config.cursor) : 0;
-    const fallbackTime = statSync(file).mtime.toISOString();
+    const fallbackTime = suppliedFallbackTime ?? statSync(file).mtime.toISOString();
     // Claude Code streams several rows per assistant message (same message.id,
     // different per-line uuid): early rows carry a placeholder usage snapshot,
     // only the last row has the final bill — and on a mid-request model
@@ -159,7 +195,7 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
     const groups = new Map<string, MessageGroup>();
     const order: string[] = [];
     let missingIdRows = 0;
-    const jsonl = readJsonlFile(file);
+    const jsonl = suppliedJsonl ?? readJsonlFile(file);
     jsonl.lines.forEach(({ text, lineNumber, endOffset }) => {
       const line = text.replace(/\u0000/g, "");
       if (!line.trim()) return;
@@ -210,7 +246,6 @@ function parseProjectJsonl(projectsDir: string, config: ParserConfig, events: Us
       if (group.lastEndOffset > emitAfter) emitGroupEvents(group, config, events, warnings, fallbackTime);
     }
     if (config.cursor) recordFile(file, config.cursor, jsonl.byteLength);
-  }
 }
 
 function emitGroupEvents(group: MessageGroup, config: ParserConfig, events: UsageEventInput[], warnings: string[], fallbackTime: string) {

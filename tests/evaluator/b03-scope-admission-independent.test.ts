@@ -32,10 +32,17 @@ describe("B03 independent replay admission boundary", () => {
   it.each([
     { execute: true },
     { recursive: true },
-    { maxFiles: 1 },
-    { dryRun: false }
-  ])("rejects execution or caller-controlled widening: %j", (extra) => {
+    { maxFiles: 1 }
+  ])("rejects CLI-only flags or caller-controlled widening: %j", (extra) => {
     expect(() => planBoundedReplay({ ...base, ...extra })).toThrow();
+  });
+
+  it("represents the separately confirmed operational phase without widening scope", () => {
+    expect(planBoundedReplay({ ...base, dryRun: false })).toEqual({
+      ...base,
+      maxFiles: 1,
+      dryRun: false
+    });
   });
 
   it.each([

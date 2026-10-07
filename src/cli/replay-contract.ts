@@ -8,11 +8,9 @@ export type BoundedReplayPlan = Readonly<{
   maxBytes: number;
   maxEvents: number;
   maxFiles: 1;
-  dryRun: true;
+  dryRun: boolean;
 }>;
 
-// Contract validation only. No parser adapter, file I/O, or executable CLI is
-// provided in this slice; R07 must enforce these budgets while reading.
 export function planBoundedReplay(input: unknown): BoundedReplayPlan {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("Replay requires an explicit bounded request");
   const request = input as Record<string, unknown>;
@@ -37,9 +35,8 @@ export function planBoundedReplay(input: unknown): BoundedReplayPlan {
   if (!limit(request.maxBytes, 16 * 1024 * 1024) || !limit(request.maxEvents, 5_000)) {
     throw new Error("Replay requires byte/event limits within 16 MiB and 5000 events");
   }
-  if (request.dryRun !== undefined && request.dryRun !== true) {
-    throw new Error("Replay execution is not implemented; only a non-executing plan is available");
-  }
+  if (request.dryRun !== undefined && typeof request.dryRun !== "boolean") throw new Error("Replay dryRun must be boolean");
+  const dryRun: boolean = request.dryRun === undefined ? true : request.dryRun as boolean;
   return Object.freeze({
     source: request.source,
     file: request.file,
@@ -48,6 +45,6 @@ export function planBoundedReplay(input: unknown): BoundedReplayPlan {
     maxBytes: request.maxBytes,
     maxEvents: request.maxEvents,
     maxFiles: 1,
-    dryRun: true
+    dryRun
   });
 }

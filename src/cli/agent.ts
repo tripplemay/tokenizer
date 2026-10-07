@@ -1,8 +1,8 @@
 import { mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
-import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
-import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
+import { acknowledgeQueuedEvents, collectEvents, mergeQueue } from "./collect";
+import { syncEvents, heartbeat } from "./sync";
 import { readConfig, readDevice, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
@@ -61,14 +61,12 @@ export async function runOnce() {
   // mark.
   const cursor = readCursor();
   const collected = collectEvents(config, cursor);
-  const queued = readQueue();
   // Queued events were admitted under their collection-time scope. Rule changes
   // only affect collectEvents, never erase a previously admitted backlog.
-  const events = dedupeBySourceEventId([...queued, ...collected.events]);
+  const events = mergeQueue(collected.events).events;
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
-  writeQueue(events);
   // The queue is the durable write-ahead buffer. Once it contains every event
   // covered by this cursor, advancing the cursor is safe even if upload fails:
   // successful batches are removed incrementally and the unsent tail remains.
@@ -82,9 +80,8 @@ export async function runOnce() {
   }
   try {
     const result = await syncEvents(config, events, {
-      onBatchSynced: ({ remaining }) => writeQueue(remaining)
+      onBatchSynced: ({ acknowledged }) => { acknowledgeQueuedEvents(acknowledged); }
     });
-    clearQueue();
     updateState({
       lastRunAt: startedAt,
       lastSyncAt: new Date().toISOString(),

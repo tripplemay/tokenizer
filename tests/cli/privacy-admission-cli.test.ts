@@ -62,6 +62,68 @@ function pending() {
 }
 
 describe("privacy admission CLI lifecycle", () => {
+  it("previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync", async () => {
+    const tokenizer = join(home, ".tokenizer");
+    const source = join(home, "explicit-history.jsonl");
+    const queue = join(tokenizer, "queue.jsonl");
+    const cursor = join(tokenizer, "cursor.json");
+    writeFileSync(source, row("replayed", "/work/old"));
+    writeFileSync(queue, JSON.stringify({
+      source: "claude-code",
+      sourceEventId: "retained-backlog",
+      occurredAt: "2026-10-01T00:00:00.000Z"
+    }) + "\n");
+    writeFileSync(cursor, "{\"files\":{},\"opencodeLastTimeCreated\":0,\"claudeParserVersion\":2}\n");
+    const queueBefore = readFileSync(queue, "utf8");
+    const cursorBefore = readFileSync(cursor, "utf8");
+    const args = [
+      "replay", "--source", "claude-code", "--file", source,
+      "--from", "2026-10-07T00:00:00.000Z", "--to", "2026-10-08T00:00:00.000Z",
+      "--max-bytes", "100000", "--max-events", "10"
+    ];
+
+    const preview = await runCli([...args, "--sample", "1"]);
+    expect(preview.code, preview.stderr).toBe(0);
+    const previewJson = JSON.parse(preview.stdout);
+    expect(previewJson).toMatchObject({ dryRun: true, selected: 1, wouldAdmit: 1 });
+    expect(JSON.stringify(previewJson.sample)).not.toContain("/work/old");
+    expect(readFileSync(queue, "utf8")).toBe(queueBefore);
+    expect(readFileSync(cursor, "utf8")).toBe(cursorBefore);
+
+    const first = await runCli([...args, "--execute", "--confirm", previewJson.planDigest]);
+    expect(first.code, first.stderr).toBe(0);
+    expect(JSON.parse(first.stdout)).toMatchObject({ dryRun: false, admitted: 1, duplicates: 0, backlog: 2 });
+    const second = await runCli([...args, "--execute", "--confirm", previewJson.planDigest]);
+    expect(second.code, second.stderr).toBe(0);
+    expect(JSON.parse(second.stdout)).toMatchObject({ admitted: 0, duplicates: 1, backlog: 2 });
+    expect(readFileSync(cursor, "utf8")).toBe(cursorBefore);
+    expect(pending().map((event) => event.sourceEventId)).toEqual([
+      "retained-backlog", "claude-jsonl:msg-replayed:replayed"
+    ]);
+
+    const requests: { events: { sourceEventId: string }[] }[] = [];
+    server = createServer((request, response) => {
+      let text = "";
+      request.on("data", (chunk) => { text += chunk; });
+      request.on("end", () => {
+        const body = JSON.parse(text);
+        requests.push(body);
+        response.writeHead(200, { "content-type": "application/json" });
+        response.end(JSON.stringify({ inserted: body.events.length, duplicates: 0, received: body.events.length }));
+      });
+    });
+    await new Promise<void>((resolve) => server!.listen(0, "127.0.0.1", resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") throw new Error("Missing fixture server address");
+    writeFileSync(join(tokenizer, "credentials.json"), JSON.stringify({ deviceToken: "synthetic-fixture-token" }));
+    expect((await runCli(["configure", "--privacy-mode", "sync", "--server-url", `http://127.0.0.1:${address.port}`])).code).toBe(0);
+    expect(requests).toHaveLength(0);
+    expect((await runCli(["sync"])).code).toBe(0);
+    expect(requests[0].events.map((event) => event.sourceEventId)).toEqual([
+      "claude-jsonl:msg-replayed:replayed", "retained-backlog"
+    ]);
+  }, 30_000);
+
   it("preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync", async () => {
     const sourceDir = join(home, ".claude", "projects", "fixture");
     mkdirSync(sourceDir, { recursive: true });
@@ -119,7 +181,7 @@ describe("privacy admission CLI lifecycle", () => {
     expect(pending()).toHaveLength(0);
   }, 30_000);
 
-  it("keeps paused collection and the unavailable replay CLI from changing queue or cursor", async () => {
+  it("keeps paused collection and replay execution from changing queue or cursor", async () => {
     const tokenizer = join(home, ".tokenizer");
     const queue = join(tokenizer, "queue.jsonl");
     const cursor = join(tokenizer, "cursor.json");
@@ -130,9 +192,15 @@ describe("privacy admission CLI lifecycle", () => {
     const queueBefore = readFileSync(queue, "utf8");
     const cursorBefore = readFileSync(cursor, "utf8");
     expect((await runCli(["collect"])).stdout).toContain("Collection paused");
-    const replay = await runCli(["replay", "--source", "all", "--file", "/", "--execute"]);
+    const source = join(home, "paused.jsonl");
+    writeFileSync(source, row("paused", "/work/old"));
+    const replay = await runCli([
+      "replay", "--source", "claude-code", "--file", source,
+      "--from", "2026-10-07T00:00:00.000Z", "--to", "2026-10-08T00:00:00.000Z",
+      "--max-bytes", "100000", "--max-events", "10", "--execute", "--confirm", "0".repeat(64)
+    ]);
     expect(replay.code).not.toBe(0);
-    expect(replay.stderr).toContain("unknown command");
+    expect(replay.stderr).toContain("disabled while privacy mode is paused");
     expect(readFileSync(queue, "utf8")).toBe(queueBefore);
     expect(readFileSync(cursor, "utf8")).toBe(cursorBefore);
   }, 15_000);

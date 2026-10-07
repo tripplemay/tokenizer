@@ -74,7 +74,7 @@ describe("syncEvents batch retry", () => {
     const uploaded = JSON.parse(fetchMock.mock.calls[0][1].body).events;
     expect(uploaded).toHaveLength(1);
     expect(uploaded).toMatchObject([backlog]);
-    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 1, total: 1, remaining: [] });
+    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 1, total: 1, acknowledged: [expect.objectContaining({ sourceEventId: backlog.sourceEventId })], remaining: [] });
   });
 
   it.each(["local-only", "paused"] as const)("does not upload admitted backlog while %s", async (mode) => {
@@ -174,7 +174,7 @@ describe("syncEvents batch retry", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body.events).toEqual([]);
-    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 0, total: 0, remaining: [] });
+    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 0, total: 0, acknowledged: [], remaining: [] });
     expect(result.received).toBe(0);
   });
 
@@ -246,7 +246,12 @@ describe("syncEvents batch retry", () => {
       total: 30,
       remaining: expect.arrayContaining([expect.objectContaining({ sourceEventId: "evt-4" })])
     }));
-    expect(onBatchSynced).toHaveBeenLastCalledWith({ synced: 30, total: 30, remaining: [] });
+    expect(onBatchSynced).toHaveBeenLastCalledWith(expect.objectContaining({
+      synced: 30,
+      total: 30,
+      acknowledged: expect.any(Array),
+      remaining: []
+    }));
     expect(result.received).toBe(30);
     expect(events.map((row) => row.sourceEventId)).toEqual(inputOrder);
   });

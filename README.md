@@ -34,6 +34,7 @@ npm run cli -- init
 npm run cli -- enroll --enroll-token <enroll-token>
 npm run cli -- collect
 npm run cli -- sync
+npm run cli -- replay --help
 npm run cli -- diagnose opencode
 npm run cli -- harness --status
 npm run cli -- harness --json
@@ -46,6 +47,50 @@ npm link
 tokenizer init
 tokenizer run
 ```
+
+### Bounded historical replay
+
+Historical admission is deliberately separate from normal incremental
+collection. It accepts exactly one absolute Claude Code JSONL file, a canonical
+UTC `[from,to)` interval, and explicit byte/event budgets. It never searches
+`HOME`, walks a directory, or resets normal parser cursors.
+
+Start with the default dry-run:
+
+```bash
+tokenizer replay \
+  --source claude-code \
+  --file /absolute/path/to/session.jsonl \
+  --from 2026-10-01T00:00:00.000Z \
+  --to 2026-10-02T00:00:00.000Z \
+  --max-bytes 1000000 \
+  --max-events 100 \
+  --sample 2
+```
+
+The preview prints aggregate counts, a capped safe sample, and a `planDigest`.
+It does not read or write the queue/cursor/config/state and performs no network
+request. To admit that exact unchanged snapshot under the same current privacy
+mode and include/exclude scope, repeat the request with explicit confirmation:
+
+```bash
+tokenizer replay \
+  --source claude-code \
+  --file /absolute/path/to/session.jsonl \
+  --from 2026-10-01T00:00:00.000Z \
+  --to 2026-10-02T00:00:00.000Z \
+  --max-bytes 1000000 \
+  --max-events 100 \
+  --execute \
+  --confirm <planDigest>
+```
+
+The digest binds the file identity and content, interval, budgets, collection
+scope, and privacy mode. Any change requires another dry-run; paused mode
+rejects execution. Execution idempotently merges admitted events into the
+durable queue without changing normal cursors and never uploads immediately.
+In `sync` mode the backlog uploads on the next Agent, `run`, or `sync` cycle;
+in `local-only` it remains local until sync mode is enabled.
 
 Harness sync diagnostics are stored locally in `~/.tokenizer/state.json`. Use
 `tokenizer harness --status` to read the latest snapshot without making any
