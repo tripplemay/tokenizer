@@ -1,0 +1,23 @@
+{
+  "artifactRole": "Generator local self-test evidence",
+  "base": "4d96e4bb23224f393099b2187c8b42cd7a521cd8",
+  "checkpoint": "c4972489510698979bc184b5603a514d72ea3d64",
+  "slice": "B06 pre-side-effect bounded whole-batch server validation",
+  "fullB06Complete": false,
+  "independentEvaluation": "pending",
+  "nativeCI": "not run by Generator",
+  "environment": { "node": "22.22.0", "os": "macOS arm64", "postgres": "16.13 Homebrew isolated UTC scratch" },
+  "focused": {
+    "command": "npx vitest run tests/server/batch-schema.test.ts tests/server/usage-batch-input.test.ts tests/server/batch-wire-compatibility.test.ts tests/server/b06-batch-db.probe.test.ts tests/quota/codex-chatgpt.test.ts tests/cli/sync-retry.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/cli/b06-batch-failure-queue.test.ts",
+    "passed": 99, "skipped": 3, "exitCode": 0
+  },
+  "realPG": { "passed": 44, "skipped": 0, "exitCode": 0, "syntheticUsersRemaining": 0, "migrationSeedUsersRemaining": 1, "ownedClusterStopped": true },
+  "full": { "command": "npm test", "passed": 1655, "skipped": 25, "exitCode": 0 },
+  "verifyExitCode": 0,
+  "lintExitCode": 0,
+  "buildExitCode": 0,
+  "diffCheckExitCode": 0,
+  "negativeControls": { "originalRouteUnitExitCode": 1, "originalRoutePGExitCode": 1, "oldObservedStatus": 200, "candidateRequiredStatus": 400 },
+  "preservedDevelopmentFailure": "focused first run had one wrong NUL error-code expectation; verify-final-3 rejected intentional poison fixture cast. Final nullable PG rerun initially stopped DB before yielded tests finished, producing retained connection/cleanup errors; correct awaited rerun passed 44, interrupted synthetic rows cleaned by exact IDs. All raw logs retained",
+  "remaining": ["client poison-row quarantine", "partial/rejected-ID ACK protocol", "good-row liveness and explicit queue repair", "B07 outbox and valid-request operational atomicity", "fresh independent evaluation", "native CI"]
+}

@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+ ✓ tests/server/usage-batch-input.test.ts (3 tests) 16ms
+ ✓ tests/server/batch-schema.test.ts (57 tests) 56ms
+ ↓ tests/server/b06-batch-db.probe.test.ts (3 tests | 3 skipped)
+
+ Test Files  2 passed | 1 skipped (3)
+      Tests  60 passed | 3 skipped (63)
+   Start at  00:19:05
+   Duration  535ms (transform 172ms, setup 0ms, collect 491ms, tests 72ms, environment 0ms, prepare 118ms)
+

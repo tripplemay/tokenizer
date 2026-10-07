@@ -2,34 +2,20 @@ import { NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
 import { authenticateDeviceToken, forbidden, unauthorized } from "@/server/auth";
 import { prisma } from "@/server/db";
+import { invalidBatchResponse, readBoundedBatchJson, validateQuotaBatch } from "@/server/batch-input";
 
 export const dynamic = "force-dynamic";
-
-type SnapshotBody = {
-  device?: { id: string; name?: string };
-  snapshots: Array<{
-    provider: string;
-    accountKey: string;
-    windowKey: string;
-    utilization?: number;
-    usedRaw?: number;
-    limitRaw?: number;
-    unit?: string;
-    resetsAt?: string;
-    rawJson?: unknown;
-  }>;
-};
 
 export async function POST(request: NextRequest) {
   const token = await authenticateDeviceToken(request);
   if (!token) return unauthorized();
 
-  const body = (await request.json().catch(() => null)) as SnapshotBody | null;
-  if (!body) {
-    return Response.json({ error: "invalid JSON body" }, { status: 400 });
-  }
-  if (!Array.isArray(body?.snapshots)) {
-    return Response.json({ error: "snapshots required" }, { status: 400 });
+  if (!token.device || token.device.id !== token.deviceId || token.device.userId !== token.userId) return forbidden();
+  let body: ReturnType<typeof validateQuotaBatch>;
+  try {
+    body = validateQuotaBatch(await readBoundedBatchJson(request));
+  } catch (error) {
+    return invalidBatchResponse(error);
   }
   if (body.device && body.device.id !== token.deviceId) {
     return forbidden("device token does not match device");
@@ -44,8 +30,8 @@ export async function POST(request: NextRequest) {
     accountKey: s.accountKey,
     windowKey: s.windowKey,
     utilization: s.utilization != null ? new Prisma.Decimal(s.utilization) : null,
-    usedRaw: s.usedRaw != null ? BigInt(Math.round(s.usedRaw)) : null,
-    limitRaw: s.limitRaw != null ? BigInt(Math.round(s.limitRaw)) : null,
+    usedRaw: s.usedRaw != null ? BigInt(s.usedRaw) : null,
+    limitRaw: s.limitRaw != null ? BigInt(s.limitRaw) : null,
     unit: s.unit ?? null,
     resetsAt: s.resetsAt ? new Date(s.resetsAt) : null,
     capturedBy: token.deviceId,

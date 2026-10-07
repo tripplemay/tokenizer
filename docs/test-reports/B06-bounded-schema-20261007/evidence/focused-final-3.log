@@ -1,0 +1,14 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 61ms
+ ✓ tests/server/batch-wire-compatibility.test.ts (2 tests) 17ms
+ ✓ tests/server/usage-batch-input.test.ts (3 tests) 13ms
+ ↓ tests/server/b06-batch-db.probe.test.ts (3 tests | 3 skipped)
+ ✓ tests/server/batch-schema.test.ts (65 tests) 95ms
+
+ Test Files  4 passed | 1 skipped (5)
+      Tests  78 passed | 3 skipped (81)
+   Start at  00:22:40
+   Duration  403ms (transform 203ms, setup 0ms, collect 487ms, tests 186ms, environment 0ms, prepare 225ms)
+

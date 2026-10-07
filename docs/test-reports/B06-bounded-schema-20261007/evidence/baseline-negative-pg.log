@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+ ❯ tests/server/b06-batch-db.probe.test.ts (3 tests | 1 failed | 2 skipped) 43ms
+   × B06 pre-write admission against an isolated real PG16 > rejects mixed rows, malformed counts/dates and foreign devices without changing any persisted state 25ms
+     → expected 200 to be 400 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/b06-batch-db.probe.test.ts > B06 pre-write admission against an isolated real PG16 > rejects mixed rows, malformed counts/dates and foreign devices without changing any persisted state
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/server/b06-batch-db.probe.test.ts:51:31
+     49|     for (const poison of [{ ...event, source: "poison" }, { ...event, …
+     50|       const response = await usage(req({ device: { id: device, name: "…
+     51|       expect(response.status).toBe(400);
+       |                               ^
+     52|       expect(await state()).toEqual(before);
+     53|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+   Start at  00:21:08
+   Duration  346ms (transform 66ms, setup 0ms, collect 122ms, tests 43ms, environment 0ms, prepare 35ms)
+

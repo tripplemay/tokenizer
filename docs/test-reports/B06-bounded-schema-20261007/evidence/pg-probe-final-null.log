@@ -1,0 +1,154 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007
+
+stdout | tests/server/b06-batch-db.probe.test.ts > B06 pre-write admission against an isolated real PG16
+prisma:error Error in PostgreSQL connection: Error { kind: Io, cause: Some(Os { code: 54, kind: ConnectionReset, message: "Connection reset by peer" }) }
+prisma:error 
+Invalid `prisma.device.createMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/server/b06-batch-db.probe.test.ts:40:25
+
+  37 const version = await prisma.$queryRaw<Array<{ server_version: string }>>`SHOW server_version`;
+  38 expect(version[0].server_version).toMatch(/^16\./);
+  39 await prisma.user.createMany({ data: [{ id: user, email: `${suffix}@example.invalid`, timezone: "Asia/Shanghai" }, { id: otherUser, email: `other-${suffix}@example.invalid` }] });
+→ 40 await prisma.device.createMany(
+Server has closed the connection.
+
+stdout | tests/server/b06-batch-db.probe.test.ts > B06 pre-write admission against an isolated real PG16
+prisma:error 
+Invalid `prisma.user.deleteMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/server/b06-batch-db.probe.test.ts:44:23
+
+  41   await prisma.deviceToken.create({ data: { id: tokenId, userId: user, deviceId: device, tokenHash: hashToken(credential), prefix: "synthetic" } });
+  42 });
+  43 afterAll(async () => {
+→ 44   await prisma.user.deleteMany(
+Can't reach database server at `127.0.0.1:55466`
+
+Please make sure your database server is running at `127.0.0.1:55466`.
+
+ ❯ tests/server/b06-batch-db.probe.test.ts (3 tests | 3 skipped) 61ms
+stdout | tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL)
+prisma:error 
+Invalid `prisma.device.create()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/evaluator/bl-security-p1-f008-probes.test.ts:223:25
+
+  220 ({ prisma } = await import("../../src/server/db"));
+  221 await prisma.user.deleteMany({ where: { id: USER } });
+  222 await prisma.user.create({ data: { id: USER, email: "f008-eval@example.test" } });
+→ 223 await prisma.device.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "57P01", message: "terminating connection due to administrator command", severity: "FATAL", detail: None, column: None, hint: None }), transient: false })
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error 
+Invalid `prisma.user.deleteMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/evaluator/bl-security-p1-f008-probes.test.ts:227:23
+
+  224 });
+  225 
+  226 afterAll(async () => {
+→ 227   await prisma.user.deleteMany(
+Server has closed the connection.
+
+ ❯ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests | 3 skipped) 109ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL)
+PrismaClientUnknownRequestError: 
+Invalid `prisma.device.create()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/evaluator/bl-security-p1-f008-probes.test.ts:223:25
+
+  220 ({ prisma } = await import("../../src/server/db"));
+  221 await prisma.user.deleteMany({ where: { id: USER } });
+  222 await prisma.user.create({ data: { id: USER, email: "f008-eval@example.test" } });
+→ 223 await prisma.device.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "57P01", message: "terminating connection due to administrator command", severity: "FATAL", detail: None, column: None, hint: None }), transient: false })
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7505
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/evaluator/bl-security-p1-f008-probes.test.ts:223:5
+    221|     await prisma.user.deleteMany({ where: { id: USER } });
+    222|     await prisma.user.create({ data: { id: USER, email: "f008-eval@exa…
+    223|     await prisma.device.create({ data: { id: DEVICE, userId: USER, nam…
+       |     ^
+    224|   });
+    225| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/evaluator/bl-security-p1-f008-probes.test.ts > DB-backed adversarial probes (scratch PostgreSQL)
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.deleteMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/evaluator/bl-security-p1-f008-probes.test.ts:227:23
+
+  224 });
+  225 
+  226 afterAll(async () => {
+→ 227   await prisma.user.deleteMany(
+Server has closed the connection.
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/evaluator/bl-security-p1-f008-probes.test.ts:227:5
+    225| 
+    226|   afterAll(async () => {
+    227|     await prisma.user.deleteMany({ where: { id: USER } });
+       |     ^
+    228|     await prisma.$disconnect();
+    229|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/server/b06-batch-db.probe.test.ts > B06 pre-write admission against an isolated real PG16
+PrismaClientKnownRequestError: 
+Invalid `prisma.device.createMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/server/b06-batch-db.probe.test.ts:40:25
+
+  37 const version = await prisma.$queryRaw<Array<{ server_version: string }>>`SHOW server_version`;
+  38 expect(version[0].server_version).toMatch(/^16\./);
+  39 await prisma.user.createMany({ data: [{ id: user, email: `${suffix}@example.invalid`, timezone: "Asia/Shanghai" }, { id: otherUser, email: `other-${suffix}@example.invalid` }] });
+→ 40 await prisma.device.createMany(
+Server has closed the connection.
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/server/b06-batch-db.probe.test.ts:40:5
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/server/b06-batch-db.probe.test.ts > B06 pre-write admission against an isolated real PG16
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.deleteMany()` invocation in
+/Volumes/ORICO/project/.worktrees/tokenizer-b06-bounded-schema-20261007/tests/server/b06-batch-db.probe.test.ts:44:23
+
+  41   await prisma.deviceToken.create({ data: { id: tokenId, userId: user, deviceId: device, tokenHash: hashToken(credential), prefix: "synthetic" } });
+  42 });
+  43 afterAll(async () => {
+→ 44   await prisma.user.deleteMany(
+Can't reach database server at `127.0.0.1:55466`
+
+Please make sure your database server is running at `127.0.0.1:55466`.
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/server/b06-batch-db.probe.test.ts:44:5
+     42|   });
+     43|   afterAll(async () => {
+     44|     await prisma.user.deleteMany({ where: { id: { in: [user, otherUser…
+       |     ^
+     45|     await prisma.$disconnect();
+     46|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+ Test Files  2 failed (2)
+      Tests  38 passed | 6 skipped (44)
+   Start at  00:32:30
+   Duration  397ms (transform 137ms, setup 0ms, collect 252ms, tests 170ms, environment 0ms, prepare 74ms)
+

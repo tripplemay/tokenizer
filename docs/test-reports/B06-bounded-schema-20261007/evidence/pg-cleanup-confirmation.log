@@ -1,0 +1,15 @@
+        id         
+-------------------
+ user_default_seed
+(1 row)
+
+ b06_synthetic_users 
+---------------------
+                   0
+(1 row)
+
+ f008_synthetic_users 
+----------------------
+                    0
+(1 row)
+
