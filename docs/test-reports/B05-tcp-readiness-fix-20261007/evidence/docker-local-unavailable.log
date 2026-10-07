@@ -1,0 +1,2 @@
+  
+failed to connect to the docker API at unix:///Users/yixingzhou/.colima/tokenizer-b05-scratch/docker.sock; check if the path is correct and if the daemon is running: dial unix /Users/yixingzhou/.colima/tokenizer-b05-scratch/docker.sock: connect: no such file or directory

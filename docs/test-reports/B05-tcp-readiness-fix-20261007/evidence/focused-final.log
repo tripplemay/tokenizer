@@ -1,0 +1,15 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007
+
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 123ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 294ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 801ms
+ ✓ tests/server/release-image.test.ts (10 tests) 818ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 1674ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 306ms
+
+ Test Files  5 passed (5)
+      Tests  72 passed (72)
+   Start at  23:05:26
+   Duration  1.87s (transform 73ms, setup 0ms, collect 126ms, tests 3.71s, environment 1ms, prepare 208ms)
+

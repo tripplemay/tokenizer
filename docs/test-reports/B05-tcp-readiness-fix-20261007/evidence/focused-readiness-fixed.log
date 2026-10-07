@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-tcp-readiness-fix-20261007
+
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 1403ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  23:04:10
+   Duration  1.61s (transform 17ms, setup 0ms, collect 16ms, tests 1.40s, environment 0ms, prepare 21ms)
+
