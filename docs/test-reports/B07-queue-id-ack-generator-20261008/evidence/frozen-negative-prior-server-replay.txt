@@ -1,0 +1,37 @@
+{
+  "priorResponse": {
+    "error": "invalid batch request",
+    "code": "invalid_json"
+  },
+  "currentResponse": {
+    "error": "invalid batch request",
+    "code": "invalid_json",
+    "row": 1
+  },
+  "error": "Sync failed: 400 invalid_json",
+  "requests": 3,
+  "queueIds": [
+    "good",
+    "poison"
+  ],
+  "rejectedIds": []
+}
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+3 !== 1
+
+    at <anonymous> (/private/tmp/tokenizer-b07-replay.f7WuQK/docs/test-reports/B06-client-prereview-20261008/prior-b06-invalid-json.probe.ts:61:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 3,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0
