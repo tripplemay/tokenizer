@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "work_package": "B02",
+  "evaluation_type": "independent cross-family CI evidence update (round 2, additive)",
+  "evaluator": "kimi-code-cli",
+  "date": "2026-10-08",
+  "supersedes": null,
+  "preserves_round1_artifacts": true,
+  "input": {
+    "b02_candidate_sha": "b6092cd82f511101f3675c680e36972098b49998",
+    "composed_candidate_sha": "5b34204931a919166d8912716cac21dafea92108",
+    "runs": {
+      "37660012749": {
+        "headSha_verified": "b6092cd82f511101f3675c680e36972098b49998",
+        "event": "workflow_dispatch",
+        "headBranch": "codex/b02-backport-composed-ci-20261008",
+        "conclusion": "success",
+        "jobs": {
+          "Verify": "success (Lint, Typecheck, unit tests, contract tests, Next.js build; zero failed steps)",
+          "Verify (Windows)": "success (native npm ci with file:vendor/braces link, 669 packages; full suite 123 files/1602 tests passed, 8 files/33 tests skipped)",
+          "Verify (PostgreSQL 16)": "success",
+          "Verify (authenticated browser)": "success (production server build, Chromium journeys)",
+          "Deploy": "skipped (workflow condition is refs/heads/main only)"
+        },
+        "verification_method": "gh run view metadata + jobs API + raw job log of job 112925181228"
+      },
+      "37661734545": {
+        "headSha_verified": "5b34204931a919166d8912716cac21dafea92108",
+        "event": "workflow_dispatch",
+        "headBranch": "codex/b02-b04-b05-composition-ci-20261008",
+        "conclusion": "success",
+        "jobs": {
+          "Verify": "success",
+          "Verify (Windows)": "success (669 packages; 1666 tests passed / 61 skipped of 1727)",
+          "Verify (PostgreSQL 16)": "success",
+          "Verify (authenticated browser)": "success",
+          "Linux OCI and recovery rehearsal": "success (app+migration builds, previous-source compatibility build, backup/restore/migration rehearsal, evidence stage/retain/download/verify; attestation and provenance steps skipped: provenanceRequired=false)",
+          "Deploy": "skipped (workflow condition is refs/heads/main only)"
+        },
+        "verification_method": "gh run view metadata + jobs API step conclusions + raw Windows job log of job 112931455261"
+      }
+    },
+    "ancestry_check": {
+      "compare": "b6092cd...5b34204",
+      "result": "diverged (ahead 30, behind 3): composed commit is NOT a descendant of the B02 candidate",
+      "b02_equivalence_basis": "file-level: vendor/braces/**, package.json, package-lock.json, tests/vendor/braces-backport.test.ts, tests/cli/harness.test.ts, scripts/test/probe-braces-*.cjs all absent from the 300-file compare list (identical); only B02 docs/test-reports generator evidence differs; non-docs delta is the 10-file B04/B05 Docker/OCI/health scope"
+    },
+    "artifact_11500958197": {
+      "name": "release-recovery-5b34204931a919166d8912716cac21dafea92108",
+      "workflow_run": 37661734545,
+      "api_digest": "sha256:7e860299d56b1ba44a21a2e79ede11dce3484fa90877347ec302f6b3bfcf5795",
+      "downloaded_zip_sha256": "7e860299d56b1ba44a21a2e79ede11dce3484fa90877347ec302f6b3bfcf5795 (matches API digest)",
+      "manifest_entries": "4/4 recomputed SHA-256 and byte sizes match; dump sidecar hash matches dump",
+      "ledger": "commit=5b34204931a919166d8912716cac21dafea92108, mode=synthetic, restore_inventory=2|2|1|1|23, runtime_uid=1000, rollback=passed, elapsed_seconds=36",
+      "rollback_approved": "app image pinned by digest @sha256:af392c6e..., previous_sha=2074991717abaf3cb34d9aad894bcd4357fefbc3",
+      "in_repo_tool_run": "node scripts/ci/recovery-evidence.mjs (fetched from composed SHA) verify <downloaded-dir> 5b34204931a919166d8912716cac21dafea92108 false -> exit 0"
+    }
+  },
+  "reassessment": {
+    "safe_branch_ci_readiness_b02_candidate": {
+      "round1_status": "NOT_PROVEN",
+      "round2_status": "PROVEN_GREEN_ON_EXACT_SHA",
+      "basis": "run 37660012749 on b6092cd82f511101f3675c680e36972098b49998: all verify jobs success including native Windows (the job that failed at base in run 37656814992), PG16, authenticated browser; Deploy structurally skipped"
+    },
+    "safe_branch_ci_readiness_composed_candidate": {
+      "round2_status": "PROVEN_GREEN_ON_EXACT_SHA",
+      "basis": "run 37661734545 on 5b34204931a919166d8912716cac21dafea92108: all jobs success including OCI build and synthetic recovery rehearsal; B02 substance file-identical to the B02 candidate"
+    },
+    "standing_boundaries": [
+      "both runs are workflow_dispatch on codex/* branches; a push to main is a different event (Deploy becomes eligible) and has not occurred",
+      "OCI attestation/provenance steps were skipped (provenanceRequired=false); main-only signed provenance unverified",
+      "recovery rehearsal ran mode=synthetic on CI fixtures; it is not an actual production backup/restore"
+    ]
+  },
+  "audit_disposition": {
+    "question": "do the 7 High entries refer to already-patched vendored code or to an unpatched residual",
+    "answer": "all 7 entries trace to the single advisory GHSA-vfj7-8cjw-p6xm (range <=3.0.3): braces itself plus 6 transitive fan-out entries flagged only via:braces; no second advisory exists; the installed braces code at both SHAs is the hash-verified patched vendored copy whose guarded behavior was demonstrated by patched-vs-pristine controls",
+    "precise_characterization": "entries are true about package identity (braces@3.0.3 in range) and false about the installed code's actual vulnerability; no entry is a distinct unpatched residual",
+    "false_positive_vs_risk_acceptance": {
+      "technically_different": true,
+      "explanation": "risk acceptance ships vulnerable bytes and waives exposure with owner+deadline; this disposition ships bytes proven fixed (diff, hashes, boundary/negative controls, differential compatibility, exact-SHA CI) and documents why the scanner still fires on metadata it cannot inspect; the user chose remediation before release, and rounds 1-2 supply the discriminating evidence",
+      "standing_caveats": [
+        "per-tree validity only: holds while vendor/braces/**, package.json, package-lock.json match verified content; dropping the $braces override or modifying those files invalidates it pending re-verification",
+        "scoped to the advisory's stack-exhaustion vector; upstream still has no official fix for the ecosystem at large",
+        "B02 housekeeping item remains: adopt a verified upstream release when available (removal trigger in vendor/braces/TOKENIZER-BACKPORT.md)"
+      ]
+    }
+  },
+  "production_release_readiness": {
+    "status": "BLOCKED",
+    "release_acceptance_granted": false,
+    "independent_open_gates": [
+      "F005 homepage-freshness browser verification pending in progress.json",
+      "main-only signed provenance/attestation (skipped on safe branch)",
+      "actual production backup/restore (round-2 rehearsal was synthetic-mode)",
+      "coordinator human gate and manual Deploy workflow; no push to main has occurred"
+    ]
+  },
+  "verdict": "B02_SECURITY_REMEDIATION_PROVEN_AND_SAFE_CI_GREEN_ON_BOTH_EXACT_SHAS__PRODUCTION_RELEASE_BLOCKED_ON_INDEPENDENT_GATES",
+  "evaluator_actions": {
+    "round1_artifacts_modified": false,
+    "product_files_modified": false,
+    "tests_modified": false,
+    "package_files_modified": false,
+    "state_or_gate_files_modified": false,
+    "git_configuration_modified": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "network_use": "read-only GitHub API/gh CLI plus artifact download to /tmp/b02-eval"
+  }
+}

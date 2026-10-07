@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "work_package": "B02",
+  "evaluation_type": "independent cross-family security evaluation of vendored braces backport",
+  "evaluator": "kimi-code-cli",
+  "evaluator_independence": "fresh context, no generator narrative relied upon; all load-bearing claims re-derived by evaluator commands",
+  "date": "2026-10-08",
+  "input": {
+    "tree": "/Volumes/ORICO/project/.worktrees/tokenizer-b02-claude-eval-20261008",
+    "sha": "b6092cd82f511101f3675c680e36972098b49998",
+    "sha_verified_by": "git rev-parse HEAD (detached, no remotes)",
+    "base_sha": "17b47a8e9128eef1f982afa2f5a3257ec72737d3",
+    "candidate_commits": ["326e68a", "b6092cd"]
+  },
+  "runtime": {
+    "node": "v25.7.0",
+    "npm": "10.8.2",
+    "platform": "darwin-arm64",
+    "note": "CI pins Node 22; generator validated on Node v22.22.0 / npm 10.9.4"
+  },
+  "verdict": "ACTION_REQUIRED",
+  "security_remediation_truth": {
+    "advisory": "GHSA-vfj7-8cjw-p6xm",
+    "status": "PROVEN_CLOSED_FOR_CANDIDATE_SHA",
+    "character": "internal unofficial backport of braces@3.0.3, not an upstream release",
+    "evidence": {
+      "supply_chain_replay": "fresh registry tarball SHA-256/SHA-512/SHA-1 and npm integrity all match PATCH-MANIFEST.json; 14/14 per-file pristine+patched hashes match; LICENSE/index.js/README.md byte-identical to pristine; evaluator's own diff shows only the depth guard and devDependency removal",
+      "install_graph": "npm ci PASS (670 packages); braces resolves to vendor/braces/index.js from root, micromatch, fast-glob, chokidar, @next/eslint-plugin-next, tailwindcss; symlink link:true; overrides $braces; lockfile contains no git/codeload sources",
+      "boundary": "depth 100 accepted, 101/102/4000 rejected with SyntaxError ERR_BRACES_MAX_DEPTH on string default/parse/compile/expand/stringify and direct-AST compile/expand/stringify, at normal stack and --stack_size=512 (52/52 probe rows as specified)",
+      "parenthesis_guard": "100 accepted, 101 rejected; mixed brace-in-paren rejected",
+      "cyclic_ast": "controlled SyntaxError instead of RangeError in all three walkers",
+      "negative_control": "pristine RangeError at 512KiB stack: expand depth 4000, cyclic compile/expand, direct-AST compile/stringify depth 50000/200000",
+      "no_false_positives": "quoted, escaped, and bracket-class braces do not consume depth budget",
+      "compatibility": "2562 differential comparisons pristine vs patched (854 cases x 3 ops, incl. Tailwind globs, ranges, escapes, unicode, invalid input, depth-100, fuzz): 0 mismatches",
+      "end_to_end": "npm run build PASS; 12 traced braces calls all from node_modules/micromatch on the three repository-controlled Tailwind globs against the patched copy",
+      "upstream_state_verified_live": "advisory still <=3.0.3 with patched_versions null (updated 2026-10-02); PR micromatch/braces#78 open and unmerged at manifest-captured head 97308a01d091b211cf015314a2d0696da28a5392"
+    }
+  },
+  "local_gates": {
+    "npm_ci": "PASS",
+    "lint": "PASS (--max-warnings=0)",
+    "verify_tsc": "PASS",
+    "full_vitest": "PASS (122 files passed/9 skipped; 1612 passed/23 skipped)",
+    "focused_backport_tests": "PASS (10/10)",
+    "build": "PASS (Next 16.4.0)"
+  },
+  "audit_residual": {
+    "npm_audit": {"high": 7, "total": 7},
+    "npm_audit_omit_dev": {"total": 0},
+    "composition": "single advisory GHSA-vfj7-8cjw-p6xm fan-out: braces, chokidar, micromatch, fast-glob, @next/eslint-plugin-next, eslint-config-next, tailwindcss",
+    "interpretation": "advisory matches package identity (version retained at 3.0.3); installed code proven patched independently; residual is metadata, not unpatched code; a future zero count via reclassification must not be cited as a code fix",
+    "disposition_required": "adopt verified upstream release when available (removal trigger documented in vendor/braces/TOKENIZER-BACKPORT.md) or authorized residual-risk acceptance with named owner and deadline"
+  },
+  "windows_timeout_scope": {
+    "change": "tests/cli/harness.test.ts only: 2-line comment + per-test 30_000 timeout on the 23-repository integration test; assertions byte-unchanged; no global timeout, workflow, or product change",
+    "justification_verified": "base safe run 37656814992 failed only Verify (Windows) on this test (14960 ms native vs 5000 ms default); base workflow verify-windows runs the full npm run test suite",
+    "natively_validated_on_windows": false
+  },
+  "safe_branch_ci_readiness": {
+    "status": "NOT_PROVEN",
+    "reasons": [
+      "no safe-branch CI run exists for combined candidate b6092cd82f511101f3675c680e36972098b49998 (the only safe run was at the base SHA and failed the Windows job this candidate patches)",
+      "native Windows install of the file:vendor/braces link plus $braces override and execution of the new probes/tests are unproven",
+      "local L1 was run on Node v25.7.0, not the CI-pinned Node 22"
+    ]
+  },
+  "production_release_readiness": {
+    "status": "BLOCKED",
+    "release_acceptance_granted": false,
+    "reasons": [
+      "safe-branch CI green on all jobs (including Verify Windows) is a prerequisite and does not exist",
+      "production release requires the coordinator human gate and manual Deploy workflow; an evaluator cannot grant release",
+      "PostgreSQL 16 probe and authenticated browser journeys were not re-run by this evaluator (generator evidence only)"
+    ]
+  },
+  "limitations": [
+    "evaluator runtime Node v25.7.0/npm 10.8.2 differs from CI Node 22 and generator Node v22.22.0",
+    "PostgreSQL 16 48/48 probe, 3/3 Chromium journeys, and base-CSS byte-identity not independently re-run",
+    "pre-existing out-of-scope residuals unchanged: expand cartesian explosion (memory/CPU, not stack; reachable project path uses compile) and handcrafted parent-pointer-cycle hang in expand's iterative parent walk (not the advisory's vector)",
+    "walkers bound container depth, not total node count; parsed input remains bounded by MAX_LENGTH 10000",
+    "7 High audit residual cannot reach zero while vendored version stays 3.0.3 (deliberate transparency)"
+  ],
+  "blockers": [
+    "safe-branch CI for b6092cd82f511101f3675c680e36972098b49998 never run; all jobs incl. Verify (Windows) must be green before CI-ready claim",
+    "coordinator human gate + Deploy workflow required for any production release",
+    "B02 advisory closure requires upstream release adoption or authorized residual-risk acceptance with owner and deadline"
+  ],
+  "evaluator_actions": {
+    "product_files_modified": false,
+    "tests_modified": false,
+    "package_files_modified": false,
+    "state_or_gate_files_modified": false,
+    "git_configuration_modified": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "temporary_artifacts": "/tmp/b02-eval and gitignored node_modules only"
+  }
+}
