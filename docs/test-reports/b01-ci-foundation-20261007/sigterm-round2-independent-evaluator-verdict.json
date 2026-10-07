@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "candidate_sha": "7b4290b3adf1bd56a395cac7840002e73df98daf",
+  "round1_baseline_sha": "e684bbd7b898fd982c5e505b8543d487920fa8ea",
+  "verdict": "PASS_FOR_SAFE_BRANCH_CI",
+  "local_code_blocker": false,
+  "safe_branch_ci_ready": true,
+  "release_ready": false,
+  "round1_blocker_disposition": {
+    "id": "B01-SIGTERM-WINDOWS-PID-BOUNDARY",
+    "status": "FIXED_IN_SOURCE_PENDING_NATIVE_WINDOWS",
+    "evidence": [
+      "tests/cli/agent-lifecycle.test.ts:166-217",
+      "sigterm-round2-independent-eval-evidence/direct-owner-hard-kill.json",
+      "sigterm-round2-independent-eval-evidence/workflow-focused-darwin.json"
+    ]
+  },
+  "scoped_results": {
+    "windows_direct_owner_source_semantics": "PASS",
+    "windows_native_runtime": "NOT_RUN",
+    "windows_focused_json_gate": "PASS_STATIC_AND_NEGATIVE_RUNTIME",
+    "posix_wrapper_pre_spawn_negative_control": "PASS",
+    "posix_wrapper_pre_spawn_fix": "PASS",
+    "posix_sigterm_pressure": "PASS",
+    "node22_full_regression": "PASS"
+  },
+  "runtime_evidence": {
+    "platform": "darwin/arm64",
+    "node": "v22.22.0",
+    "npm": "10.9.4",
+    "cold_install": "PASS (641 packages)",
+    "focused": "PASS (15 passed, 1 Windows-only skipped)",
+    "stress": "PASS (32/32 processes, parallelism 8)",
+    "full_suite": "PASS (1525 passed, 22 skipped; 113 files passed, 8 skipped)",
+    "lint": "PASS",
+    "verify": "PASS",
+    "build": "PASS with placeholder DATABASE_URL",
+    "actionlint": "PASS"
+  },
+  "wrapper_pre_spawn_comparison": {
+    "round1": {
+      "exit_code": null,
+      "exit_signal": "SIGTERM",
+      "child_alive_after_wrapper_exit": true
+    },
+    "round2": {
+      "exit_code": 0,
+      "exit_signal": null,
+      "child_alive_after_wrapper_exit": false
+    }
+  },
+  "remaining_release_gates": [
+    "Run the full verify-windows job on native windows-latest with Node 22.",
+    "Require the focused JSON target to pass exactly once and retain its uploaded artifact.",
+    "Require all existing Linux, database, browser, and contract gates on the integrated SHA."
+  ],
+  "not_claimed": [
+    "Native Windows signal behavior",
+    "Task Scheduler or VBS runtime behavior",
+    "Linux CI runtime",
+    "Production deployment or service-manager fleet behavior",
+    "Historical F005 acceptance"
+  ]
+}

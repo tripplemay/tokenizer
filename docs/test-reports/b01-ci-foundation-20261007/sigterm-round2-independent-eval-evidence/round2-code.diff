@@ -1,0 +1,303 @@
+diff --git a/.github/workflows/deploy-vps.yml b/.github/workflows/deploy-vps.yml
+index 7737f10..9dae2d9 100644
+--- a/.github/workflows/deploy-vps.yml
++++ b/.github/workflows/deploy-vps.yml
+@@ -133,6 +133,24 @@ jobs:
+       - name: Run unit tests
+         run: npm run test
+ 
++      - name: Verify Windows agent owner force termination
++        shell: pwsh
++        run: |
++          New-Item -ItemType Directory -Path .ci -Force | Out-Null
++          npx vitest run tests/cli/agent-lifecycle.test.ts -t "reclaims a lock after Windows force-terminates the agent" --reporter=json --outputFile=.ci/windows-agent-owner.json
++          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
++          node scripts/ci/assert-windows-agent-owner.mjs .ci/windows-agent-owner.json
++          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
++
++      - name: Upload Windows agent owner evidence
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: windows-agent-owner
++          path: .ci/windows-agent-owner.json
++          if-no-files-found: warn
++          retention-days: 7
++
+       # install.ps1 cannot be parsed anywhere but Windows, so a syntax error
+       # would otherwise only surface on a user's machine mid-install.
+       - name: Validate install.ps1 syntax
+diff --git a/bin/tokenizer b/bin/tokenizer
+index 9668d43..ff9bfde 100755
+--- a/bin/tokenizer
++++ b/bin/tokenizer
+@@ -4,32 +4,38 @@ import { dirname, resolve } from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
+ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+-// cwd MUST point at the installed app root so node can resolve the bundled
+-// `tsx` loader. Without this, running `tokenizer …` from any unrelated cwd
+-// (including cron's default $HOME) fails with ERR_MODULE_NOT_FOUND for tsx.
+-const child = spawn("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
+-  stdio: "inherit",
+-  cwd: root
+-});
+-
++let child;
+ let childExited = false;
++let pendingSignal = null;
+ 
+ // `spawnSync` made this wrapper a brittle process boundary: launchd could
+ // terminate the wrapper while its Node child continued as an orphan. Keep the
+ // wrapper alive until the child exits, and relay the lifecycle signals the
+-// service manager sends to both processes.
++// service manager sends to both processes. Install before spawn: a child can
++// become observable before spawn returns, while the wrapper is still starting.
++const relaySignal = (signal) => {
++  if (childExited) return;
++  if (!child) {
++    pendingSignal ??= signal;
++    return;
++  }
++  if (child.killed) return;
++  try {
++    child.kill(signal);
++  } catch {
++    // The child's close handler remains the single completion boundary.
++  }
++};
+ for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+-  process.on(signal, () => {
+-    if (childExited || child.killed) return;
+-    try {
+-      child.kill(signal);
+-    } catch {
+-      // The child can exit between the state check and kill(). Its close
+-      // handler below remains the single place that completes this wrapper.
+-    }
+-  });
++  process.on(signal, () => relaySignal(signal));
+ }
+ 
++// cwd MUST point at the installed app root so node can resolve bundled tsx.
++child = spawn("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
++  stdio: "inherit",
++  cwd: root
++});
++
+ child.once("error", (error) => {
+   console.error(`Failed to start tokenizer: ${error.message}`);
+   process.exitCode = 1;
+@@ -42,3 +48,5 @@ child.once("close", (code) => {
+   // orphan during shutdown.
+   process.exitCode = code ?? 1;
+ });
++
++if (pendingSignal) relaySignal(pendingSignal);
+diff --git a/scripts/ci/assert-windows-agent-owner.mjs b/scripts/ci/assert-windows-agent-owner.mjs
+new file mode 100644
+index 0000000..85f026b
+--- /dev/null
++++ b/scripts/ci/assert-windows-agent-owner.mjs
+@@ -0,0 +1,19 @@
++import { readFileSync } from "node:fs";
++
++if (process.platform !== "win32") {
++  throw new Error("Windows agent owner acceptance requires a native Windows runner");
++}
++
++const [path] = process.argv.slice(2);
++if (!path) throw new Error("Usage: node assert-windows-agent-owner.mjs <report.json>");
++
++const result = JSON.parse(readFileSync(path, "utf8"));
++const name = "agent single-instance lock reclaims a lock after Windows force-terminates the agent";
++const cases = (result.testResults ?? []).flatMap((file) => file.assertionResults ?? [])
++  .filter((test) => test.fullName === name);
++
++if (result.success !== true || result.numFailedTests !== 0 || result.numPassedTests !== 1 || cases.length !== 1 || cases[0].status !== "passed") {
++  throw new Error("Expected the exact Windows force-termination owner test to pass once, not skip or disappear");
++}
++
++console.log("Verified native Windows direct-owner force termination and stale-lock recovery");
+diff --git a/tests/ci/windows-agent-owner-gate.test.ts b/tests/ci/windows-agent-owner-gate.test.ts
+new file mode 100644
+index 0000000..1dc34e8
+--- /dev/null
++++ b/tests/ci/windows-agent-owner-gate.test.ts
+@@ -0,0 +1,58 @@
++import { afterEach, beforeEach, describe, expect, it } from "vitest";
++import { spawnSync } from "node:child_process";
++import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { pathToFileURL } from "node:url";
++
++let dir: string;
++const name = "agent single-instance lock reclaims a lock after Windows force-terminates the agent";
++
++beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "tokenizer-windows-owner-gate-")); });
++afterEach(() => { rmSync(dir, { recursive: true, force: true }); });
++
++function check(cases: { fullName: string; status: string }[], platform = "win32", success = true) {
++  const report = join(dir, "report.json");
++  writeFileSync(report, JSON.stringify({
++    success,
++    numFailedTests: cases.filter((test) => test.status === "failed").length,
++    numPassedTests: cases.filter((test) => test.status === "passed").length,
++    testResults: [{ assertionResults: cases }]
++  }));
++  const script = join(process.cwd(), "scripts", "ci", "assert-windows-agent-owner.mjs");
++  // Synthetic platform/report controls test the gate, not Windows process behavior.
++  return spawnSync(process.execPath, ["--input-type=module", "-e", `
++    Object.defineProperty(process, "platform", { value: ${JSON.stringify(platform)} });
++    process.argv = [process.execPath, ${JSON.stringify(script)}, ${JSON.stringify(report)}];
++    await import(${JSON.stringify(pathToFileURL(script).href)});
++  `], { encoding: "utf8", timeout: 5_000 });
++}
++
++describe("native Windows agent owner CI gate", () => {
++  it("accepts exactly one passed target on Windows", () => {
++    expect(check([{ fullName: name, status: "passed" }]).status).toBe(0);
++  });
++
++  it("rejects a non-Windows runner even with a passed target", () => {
++    const result = check([{ fullName: name, status: "passed" }], "darwin");
++    expect(result.status).not.toBe(0);
++    expect(result.stderr).toContain("native Windows runner");
++  });
++
++  it.each(["skipped", "pending", "failed"])("rejects a %s target", (status) => {
++    expect(check([{ fullName: name, status }]).status).not.toBe(0);
++  });
++
++  it("rejects a missing or renamed target", () => {
++    expect(check([]).status).not.toBe(0);
++    expect(check([{ fullName: "unrelated case", status: "passed" }]).status).not.toBe(0);
++  });
++
++  it("rejects duplicate target results", () => {
++    expect(check([{ fullName: name, status: "passed" }, { fullName: name, status: "passed" }]).status).not.toBe(0);
++  });
++
++  it("rejects an unsuccessful report despite a passed target", () => {
++    expect(check([{ fullName: name, status: "passed" }], "win32", false).status).not.toBe(0);
++  });
++});
+diff --git a/tests/cli/agent-lifecycle.test.ts b/tests/cli/agent-lifecycle.test.ts
+index 212481e..701048f 100644
+--- a/tests/cli/agent-lifecycle.test.ts
++++ b/tests/cli/agent-lifecycle.test.ts
+@@ -173,8 +173,7 @@ describe("agent single-instance lock", () => {
+       sources: { claude: false, codex: false, opencode: false, aider: false, kimicode: false }
+     }));
+ 
+-    const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
+-    const agent = spawn(process.execPath, [tsx, "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
++    const agent = spawn(process.execPath, ["--import", "tsx", "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
+       cwd: process.cwd(),
+       env: { ...process.env, HOME: home, USERPROFILE: home },
+       stdio: "ignore"
+@@ -182,11 +181,35 @@ describe("agent single-instance lock", () => {
+     processes.push(agent);
+ 
+     const lockPath = join(tokenizerDir, "agent.lock");
+-    await waitFor(() => existsSync(lockPath), "agent did not acquire lock", 10_000);
+-    agent.kill("SIGTERM");
++    const statePath = join(tokenizerDir, "state.json");
++    await waitFor(() => {
++      if (!existsSync(lockPath) || !existsSync(statePath)) return false;
++      try {
++        return JSON.parse(readFileSync(statePath, "utf8"))?.agent?.status === "running";
++      } catch {
++        return false;
++      }
++    }, "agent did not reach running state", 10_000);
++    const originalLock = readFileSync(lockPath, "utf8");
++    const owner = JSON.parse(originalLock);
++    const runningState = JSON.parse(readFileSync(statePath, "utf8")).agent;
++    expect(owner.pid).toBe(agent.pid);
++    expect(runningState.pid).toBe(agent.pid);
++    expect(isAlive(owner.pid)).toBe(true);
++    expect(() => acquireAgentLock({ path: lockPath })).toThrow(`already running (pid ${owner.pid})`);
++    expect(readFileSync(lockPath, "utf8")).toBe(originalLock);
++
++    // Windows force-terminates this direct owner; no graceful signal handler
++    // runs. SIGKILL also makes the intended stale-lock fixture explicit.
++    expect(agent.kill("SIGKILL")).toBe(true);
+     await waitForExit(agent, 10_000);
++    expect(isAlive(owner.pid)).toBe(false);
++    expect(readFileSync(lockPath, "utf8")).toBe(originalLock);
++    expect(JSON.parse(readFileSync(statePath, "utf8")).agent).toEqual(runningState);
+     const recovered = acquireAgentLock({ path: lockPath });
+-    expect(JSON.parse(readFileSync(lockPath, "utf8")).pid).toBe(process.pid);
++    const successor = JSON.parse(readFileSync(lockPath, "utf8"));
++    expect(successor.pid).toBe(process.pid);
++    expect(successor.token).not.toBe(owner.token);
+     recovered.release();
+     expect(existsSync(lockPath)).toBe(false);
+   }, 20_000);
+@@ -195,6 +218,64 @@ describe("agent single-instance lock", () => {
+ const describePosix = process.platform === "win32" ? describe.skip : describe;
+ 
+ describePosix("tokenizer wrapper lifecycle", () => {
++  it("handles SIGTERM delivered before spawn returns without orphaning its child", async () => {
++    const bin = join(dir, "bin");
++    const fakeNode = join(bin, "node");
++    const childPidPath = join(dir, "early-child.pid");
++    const preloadPath = join(dir, "early-signal.mjs");
++    mkdirSync(bin, { recursive: true });
++    writeFileSync(fakeNode, `#!/bin/sh
++trap 'exit 0' INT TERM HUP
++printf '%s' "$$" > "$TOKENIZER_TEST_CHILD_PID_FILE"
++while :; do sleep 1; done
++`);
++    chmodSync(fakeNode, 0o755);
++    // Hold the wrapper inside spawn until the child is ready and a helper
++    // has sent SIGTERM. This deterministically tests handler ordering.
++    writeFileSync(preloadPath, `
++import childProcess from "node:child_process";
++import { syncBuiltinESMExports } from "node:module";
++const originalSpawn = childProcess.spawn;
++childProcess.spawn = (...args) => {
++  const child = originalSpawn(...args);
++  const trigger = childProcess.spawnSync(process.execPath, ["-e", ${JSON.stringify(`
++    const fs = require("node:fs");
++    const deadline = Date.now() + 5000;
++    function signalWhenReady() {
++      const path = process.env.TOKENIZER_TEST_CHILD_PID_FILE;
++      if (fs.existsSync(path) && /^\\d+$/.test(fs.readFileSync(path, "utf8"))) {
++        process.kill(Number(process.argv[1]), "SIGTERM");
++      } else if (Date.now() >= deadline) {
++        process.exitCode = 1;
++      } else {
++        setTimeout(signalWhenReady, 10);
++      }
++    }
++    signalWhenReady();
++  `)}, String(process.pid)], { timeout: 6000 });
++  if (trigger.status !== 0) throw new Error("early SIGTERM trigger failed");
++  return child;
++};
++syncBuiltinESMExports();
++`);
++
++    const wrapper = spawn(process.execPath, ["--import", preloadPath, join(process.cwd(), "bin", "tokenizer")], {
++      cwd: process.cwd(),
++      env: {
++        ...process.env,
++        PATH: `${bin}${delimiter}${process.env.PATH ?? ""}`,
++        TOKENIZER_TEST_CHILD_PID_FILE: childPidPath
++      },
++      stdio: "ignore"
++    });
++    processes.push(wrapper);
++    await waitFor(() => existsSync(childPidPath) && /^\d+$/.test(readFileSync(childPidPath, "utf8")), "early-signal child did not start");
++    const childPid = Number(readFileSync(childPidPath, "utf8"));
++    trackedPids.add(childPid);
++    expect(await waitForExit(wrapper)).toEqual({ code: 0, signal: null });
++    await waitFor(() => !isAlive(childPid), "early SIGTERM orphaned the wrapper child");
++  }, 15_000);
++
+   it("forwards SIGTERM to its async child and waits for that child to exit", async () => {
+     const bin = join(dir, "bin");
+     const fakeNode = join(bin, "node");

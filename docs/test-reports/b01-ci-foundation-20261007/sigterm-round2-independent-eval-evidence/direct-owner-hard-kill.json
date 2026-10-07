@@ -1,0 +1,18 @@
+{
+  "platform": "darwin",
+  "spawnedPid": 51302,
+  "ownerPid": 51302,
+  "ownerMatchesSpawned": true,
+  "liveReclaimRejected": true,
+  "killAccepted": true,
+  "exit": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "ownerAliveAfter": false,
+  "lockPreservedAfterKill": true,
+  "statePreservedAfterKill": true,
+  "successorPid": 51300,
+  "successorTokenChanged": true,
+  "lockExistsAfterRelease": false
+}

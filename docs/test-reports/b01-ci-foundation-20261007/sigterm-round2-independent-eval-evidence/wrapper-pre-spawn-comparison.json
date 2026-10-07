@@ -1,0 +1,20 @@
+[
+  {
+    "label": "round1",
+    "exit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "childAliveAfterWrapperExit": true,
+    "durationMs": 93
+  },
+  {
+    "label": "round2",
+    "exit": {
+      "code": 0,
+      "signal": null
+    },
+    "childAliveAfterWrapperExit": false,
+    "durationMs": 1064
+  }
+]

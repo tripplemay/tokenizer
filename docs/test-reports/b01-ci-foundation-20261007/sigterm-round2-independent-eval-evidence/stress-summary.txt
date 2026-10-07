@@ -1,0 +1,6 @@
+exit=0
+runs=32
+parallelism=8
+matching_pass_logs=32
+failed_markers=0
+duration_seconds=13
