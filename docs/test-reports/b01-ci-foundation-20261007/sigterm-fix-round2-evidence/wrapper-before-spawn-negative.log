@@ -1,0 +1,37 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ❯ tests/cli/agent-lifecycle.test.ts (8 tests | 1 failed | 7 skipped) 62ms
+   × tokenizer wrapper lifecycle > handles SIGTERM delivered before spawn returns without orphaning its child 61ms
+     → expected { code: null, signal: 'SIGTERM' } to deeply equal { code: +0, signal: null }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/agent-lifecycle.test.ts > tokenizer wrapper lifecycle > handles SIGTERM delivered before spawn returns without orphaning its child
+AssertionError: expected { code: null, signal: 'SIGTERM' } to deeply equal { code: +0, signal: null }
+
+- Expected
++ Received
+
+  Object {
+-   "code": 0,
+-   "signal": null,
++   "code": null,
++   "signal": "SIGTERM",
+  }
+
+ ❯ tests/cli/agent-lifecycle.test.ts:275:40
+    273|     const childPid = Number(readFileSync(childPidPath, "utf8"));
+    274|     trackedPids.add(childPid);
+    275|     expect(await waitForExit(wrapper)).toEqual({ code: 0, signal: null…
+       |                                        ^
+    276|     await waitFor(() => !isAlive(childPid), "early SIGTERM orphaned th…
+    277|   }, 15_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 skipped (8)
+   Start at  21:49:06
+   Duration  384ms (transform 53ms, setup 0ms, collect 56ms, tests 62ms, environment 0ms, prepare 76ms)
+

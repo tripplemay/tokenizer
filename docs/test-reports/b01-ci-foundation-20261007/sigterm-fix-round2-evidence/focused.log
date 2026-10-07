@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 238ms
+ ✓ tests/cli/agent-lifecycle.test.ts (7 tests | 1 skipped) 1606ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 357ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1031ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed | 1 skipped (15)
+   Start at  21:46:23
+   Duration  1.91s (transform 48ms, setup 0ms, collect 61ms, tests 1.84s, environment 0ms, prepare 100ms)
+

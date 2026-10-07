@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (7 tests | 6 skipped) 216ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  21:44:55
+   Duration  507ms (transform 35ms, setup 0ms, collect 35ms, tests 216ms, environment 0ms, prepare 35ms)
+

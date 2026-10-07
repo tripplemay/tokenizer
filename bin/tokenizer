@@ -4,31 +4,37 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-// cwd MUST point at the installed app root so node can resolve the bundled
-// `tsx` loader. Without this, running `tokenizer …` from any unrelated cwd
-// (including cron's default $HOME) fails with ERR_MODULE_NOT_FOUND for tsx.
-const child = spawn("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
-  stdio: "inherit",
-  cwd: root
-});
-
+let child;
 let childExited = false;
+let pendingSignal = null;
 
 // `spawnSync` made this wrapper a brittle process boundary: launchd could
 // terminate the wrapper while its Node child continued as an orphan. Keep the
 // wrapper alive until the child exits, and relay the lifecycle signals the
-// service manager sends to both processes.
+// service manager sends to both processes. Install before spawn: a child can
+// become observable before spawn returns, while the wrapper is still starting.
+const relaySignal = (signal) => {
+  if (childExited) return;
+  if (!child) {
+    pendingSignal ??= signal;
+    return;
+  }
+  if (child.killed) return;
+  try {
+    child.kill(signal);
+  } catch {
+    // The child's close handler remains the single completion boundary.
+  }
+};
 for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
-  process.on(signal, () => {
-    if (childExited || child.killed) return;
-    try {
-      child.kill(signal);
-    } catch {
-      // The child can exit between the state check and kill(). Its close
-      // handler below remains the single place that completes this wrapper.
-    }
-  });
+  process.on(signal, () => relaySignal(signal));
 }
+
+// cwd MUST point at the installed app root so node can resolve bundled tsx.
+child = spawn("node", ["--import", "tsx", resolve(root, "src/cli/index.ts"), ...process.argv.slice(2)], {
+  stdio: "inherit",
+  cwd: root
+});
 
 child.once("error", (error) => {
   console.error(`Failed to start tokenizer: ${error.message}`);
@@ -42,3 +48,5 @@ child.once("close", (code) => {
   // orphan during shutdown.
   process.exitCode = code ?? 1;
 });
+
+if (pendingSignal) relaySignal(pendingSignal);

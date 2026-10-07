@@ -173,8 +173,7 @@ describe("agent single-instance lock", () => {
       sources: { claude: false, codex: false, opencode: false, aider: false, kimicode: false }
     }));
 
-    const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
-    const agent = spawn(process.execPath, [tsx, "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
+    const agent = spawn(process.execPath, ["--import", "tsx", "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
       cwd: process.cwd(),
       env: { ...process.env, HOME: home, USERPROFILE: home },
       stdio: "ignore"
@@ -182,11 +181,35 @@ describe("agent single-instance lock", () => {
     processes.push(agent);
 
     const lockPath = join(tokenizerDir, "agent.lock");
-    await waitFor(() => existsSync(lockPath), "agent did not acquire lock", 10_000);
-    agent.kill("SIGTERM");
+    const statePath = join(tokenizerDir, "state.json");
+    await waitFor(() => {
+      if (!existsSync(lockPath) || !existsSync(statePath)) return false;
+      try {
+        return JSON.parse(readFileSync(statePath, "utf8"))?.agent?.status === "running";
+      } catch {
+        return false;
+      }
+    }, "agent did not reach running state", 10_000);
+    const originalLock = readFileSync(lockPath, "utf8");
+    const owner = JSON.parse(originalLock);
+    const runningState = JSON.parse(readFileSync(statePath, "utf8")).agent;
+    expect(owner.pid).toBe(agent.pid);
+    expect(runningState.pid).toBe(agent.pid);
+    expect(isAlive(owner.pid)).toBe(true);
+    expect(() => acquireAgentLock({ path: lockPath })).toThrow(`already running (pid ${owner.pid})`);
+    expect(readFileSync(lockPath, "utf8")).toBe(originalLock);
+
+    // Windows force-terminates this direct owner; no graceful signal handler
+    // runs. SIGKILL also makes the intended stale-lock fixture explicit.
+    expect(agent.kill("SIGKILL")).toBe(true);
     await waitForExit(agent, 10_000);
+    expect(isAlive(owner.pid)).toBe(false);
+    expect(readFileSync(lockPath, "utf8")).toBe(originalLock);
+    expect(JSON.parse(readFileSync(statePath, "utf8")).agent).toEqual(runningState);
     const recovered = acquireAgentLock({ path: lockPath });
-    expect(JSON.parse(readFileSync(lockPath, "utf8")).pid).toBe(process.pid);
+    const successor = JSON.parse(readFileSync(lockPath, "utf8"));
+    expect(successor.pid).toBe(process.pid);
+    expect(successor.token).not.toBe(owner.token);
     recovered.release();
     expect(existsSync(lockPath)).toBe(false);
   }, 20_000);
@@ -195,6 +218,64 @@ describe("agent single-instance lock", () => {
 const describePosix = process.platform === "win32" ? describe.skip : describe;
 
 describePosix("tokenizer wrapper lifecycle", () => {
+  it("handles SIGTERM delivered before spawn returns without orphaning its child", async () => {
+    const bin = join(dir, "bin");
+    const fakeNode = join(bin, "node");
+    const childPidPath = join(dir, "early-child.pid");
+    const preloadPath = join(dir, "early-signal.mjs");
+    mkdirSync(bin, { recursive: true });
+    writeFileSync(fakeNode, `#!/bin/sh
+trap 'exit 0' INT TERM HUP
+printf '%s' "$$" > "$TOKENIZER_TEST_CHILD_PID_FILE"
+while :; do sleep 1; done
+`);
+    chmodSync(fakeNode, 0o755);
+    // Hold the wrapper inside spawn until the child is ready and a helper
+    // has sent SIGTERM. This deterministically tests handler ordering.
+    writeFileSync(preloadPath, `
+import childProcess from "node:child_process";
+import { syncBuiltinESMExports } from "node:module";
+const originalSpawn = childProcess.spawn;
+childProcess.spawn = (...args) => {
+  const child = originalSpawn(...args);
+  const trigger = childProcess.spawnSync(process.execPath, ["-e", ${JSON.stringify(`
+    const fs = require("node:fs");
+    const deadline = Date.now() + 5000;
+    function signalWhenReady() {
+      const path = process.env.TOKENIZER_TEST_CHILD_PID_FILE;
+      if (fs.existsSync(path) && /^\\d+$/.test(fs.readFileSync(path, "utf8"))) {
+        process.kill(Number(process.argv[1]), "SIGTERM");
+      } else if (Date.now() >= deadline) {
+        process.exitCode = 1;
+      } else {
+        setTimeout(signalWhenReady, 10);
+      }
+    }
+    signalWhenReady();
+  `)}, String(process.pid)], { timeout: 6000 });
+  if (trigger.status !== 0) throw new Error("early SIGTERM trigger failed");
+  return child;
+};
+syncBuiltinESMExports();
+`);
+
+    const wrapper = spawn(process.execPath, ["--import", preloadPath, join(process.cwd(), "bin", "tokenizer")], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        PATH: `${bin}${delimiter}${process.env.PATH ?? ""}`,
+        TOKENIZER_TEST_CHILD_PID_FILE: childPidPath
+      },
+      stdio: "ignore"
+    });
+    processes.push(wrapper);
+    await waitFor(() => existsSync(childPidPath) && /^\d+$/.test(readFileSync(childPidPath, "utf8")), "early-signal child did not start");
+    const childPid = Number(readFileSync(childPidPath, "utf8"));
+    trackedPids.add(childPid);
+    expect(await waitForExit(wrapper)).toEqual({ code: 0, signal: null });
+    await waitFor(() => !isAlive(childPid), "early SIGTERM orphaned the wrapper child");
+  }, 15_000);
+
   it("forwards SIGTERM to its async child and waits for that child to exit", async () => {
     const bin = join(dir, "bin");
     const fakeNode = join(bin, "node");
