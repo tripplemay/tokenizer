@@ -39,6 +39,10 @@ export function readQueue(path = queuePath): UsageEventInput[] {
 // correction for that ID.
 export type MergeQueueOptions = { timeoutMs?: number; beforeMutate?: () => void };
 
+function queueEventIdentity(event: UsageEventInput): string {
+  return `${event.source}\u0000${event.sourceEventId}`;
+}
+
 export function mergeQueue(
   events: UsageEventInput[],
   path = queuePath,
@@ -48,12 +52,20 @@ export function mergeQueue(
   withFileLock(path, () => {
     const existing = readQueueUnlocked(path);
     const existingVersions = new Set(existing.map(queueEventVersion));
-    const byVersion = new Map<string, UsageEventInput>();
+    const identityOrder: string[] = [];
+    const versionsByIdentity = new Map<string, Map<string, UsageEventInput>>();
     for (const event of [...existing, ...events]) {
       const normalized = normalizeQueueEvent(event);
-      byVersion.set(queueEventVersion(normalized), normalized);
+      const identity = queueEventIdentity(normalized);
+      let versions = versionsByIdentity.get(identity);
+      if (!versions) {
+        versions = new Map();
+        versionsByIdentity.set(identity, versions);
+        identityOrder.push(identity);
+      }
+      versions.set(queueEventVersion(normalized), normalized);
     }
-    const merged = [...byVersion.values()];
+    const merged = identityOrder.flatMap((identity) => [...versionsByIdentity.get(identity)!.values()]);
     const added = new Set(events.map(queueEventVersion).filter((version) => !existingVersions.has(version))).size;
     options.beforeMutate?.();
     writeFileAtomic(path, serializeQueue(merged), SECURE_QUEUE_WRITE);
