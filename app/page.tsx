@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/server/auth-session";
 import { getUserTimezone } from "@/server/timezone";
+import { prisma } from "@/server/db";
 import { MdInput, MdOutput, MdCached, MdSpeed, MdSave, MdDevices, MdInsights, MdArrowUpward, MdArrowDownward, MdRemove, MdBolt, MdPaid } from "react-icons/md";
 import {
   getBreakdown,
@@ -85,14 +87,64 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const t = await getTranslations();
   const summary = await getSummary(tenantId, range);
 
-  // Fresh tenants land on a guided onboarding card instead of a wall of
-  // zeros. Threshold is "no events", not "no devices" — a device that just
-  // enrolled but hasn't synced yet still gets the onboarding view so the
-  // user has feedback while they wait for the first sync.
+  // lastEventAt is all-time even when the selected range is empty. Only a
+  // tenant with no usage anywhere should see first-use onboarding.
   if (summary.eventCount === 0) {
+    if (summary.lastEventAt !== null) {
+      return (
+        <div className="space-y-6">
+          <AutoRefresh intervalMs={AUTO_REFRESH_INTERVAL_MS} />
+          <PageBanner
+            title={t("home.title")}
+            note={<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("timezone.note", { tz })}</p>}
+            rightSlot={
+              <RangeSelector
+                current={range}
+                searchParams={params}
+                labels={{
+                  sevenDay: t("home.range.sevenDay"),
+                  thirtyDay: t("home.range.thirtyDay"),
+                  all: t("home.range.all")
+                }}
+              />
+            }
+          />
+          <Card extra="p-6">
+            <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.emptyWindow.title")}</h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              {t("home.emptyWindow.description", { range: t(rangeLabelKey(range)) })}
+            </p>
+          </Card>
+          <Suspense fallback={null}>
+            <EmptyWindowDevices tenantId={tenantId} />
+          </Suspense>
+        </div>
+      );
+    }
+
+    const enrolledDevice = await prisma.device.findFirst({
+      where: { userId: tenantId },
+      orderBy: { createdAt: "desc" },
+      select: { name: true }
+    });
     return (
       <div className="space-y-6">
-        <OnboardingCard />
+        <AutoRefresh intervalMs={AUTO_REFRESH_INTERVAL_MS} />
+        <OnboardingCard
+          deviceName={enrolledDevice?.name ?? null}
+          labels={{
+            title: t("home.onboarding.title"),
+            description: t("home.onboarding.description"),
+            waitingTitle: t("home.onboarding.waitingTitle", { device: enrolledDevice?.name ?? "" }),
+            waitingDescription: t("home.onboarding.waitingDescription"),
+            devicesLink: t("home.onboarding.devicesLink"),
+            steps: [
+              { title: t("home.onboarding.step1Title"), desc: t("home.onboarding.step1Description") },
+              { title: t("home.onboarding.step2Title"), desc: t("home.onboarding.step2Description") },
+              { title: t("home.onboarding.step3Title"), desc: t("home.onboarding.step3Description") }
+            ]
+          }}
+        />
       </div>
     );
   }
@@ -250,6 +302,36 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 }
 
 // ---- Streamed sections ---------------------------------------------------
+
+async function EmptyWindowDevices({ tenantId }: { tenantId: string }) {
+  const [t, devices] = await Promise.all([
+    getTranslations(),
+    prisma.device.findMany({
+      where: { userId: tenantId },
+      orderBy: { lastSeenAt: "desc" },
+      take: 5,
+      select: { id: true, name: true, lastSeenAt: true }
+    })
+  ]);
+  if (devices.length === 0) return null;
+  const nowMs = Date.now();
+  return (
+    <Card extra="p-6">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h3 className="text-lg font-bold text-navy-700 dark:text-white">{t("home.connectedClients.title")}</h3>
+        <Link href="/devices" className="text-sm font-medium text-brand-500 hover:underline">{t("home.emptyWindow.devicesLink")}</Link>
+      </div>
+      <ul className="divide-y divide-gray-200 dark:divide-white/10">
+        {devices.map((device) => (
+          <li key={device.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+            <Link href={`/devices/${device.id}`} className="truncate text-navy-700 hover:underline dark:text-white">{device.name}</Link>
+            <ClientStatusBadge lastSeenAt={device.lastSeenAt?.toISOString() ?? null} initialNowMs={nowMs} />
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
 
 type SummaryShape = Awaited<ReturnType<typeof getSummary>>;
 

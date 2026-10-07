@@ -10,6 +10,24 @@
   },
   "home": {
     "title": "编程 Token 用量",
+    "onboarding": {
+      "title": "👋 欢迎使用 Tokenizer",
+      "description": "Tokenizer 自动追踪 Claude Code / Codex CLI / OpenCode / Aider 等开发工具的 token 用量与成本。要看到数据，请先连接你的第一台机器。",
+      "waitingTitle": "已连接 {device}，等待首次同步",
+      "waitingDescription": "设备已注册，但还没有收到用量事件。保持此页面打开；首次同步完成后看板会自动出现。",
+      "devicesLink": "查看设备状态",
+      "step1Title": "生成安装命令",
+      "step1Description": "点击右侧按钮，服务器签发一条仅本次有效的安装命令（30 分钟过期）。",
+      "step2Title": "在你的 Mac / Linux / WSL 终端粘贴",
+      "step2Description": "安装脚本会自动检测 Node、注册设备、配置后台 agent。",
+      "step3Title": "等待第一次同步",
+      "step3Description": "客户端首次上线后约 60–90 秒，数据会自动出现在看板。"
+    },
+    "emptyWindow": {
+      "title": "所选时间范围内暂无用量",
+      "description": "{range}没有用量事件。历史记录仍在；可切换到“全部”查看。此页面会自动刷新。",
+      "devicesLink": "查看全部设备"
+    },
     "scale": {
       "events": "事件总数",
       "projects": "项目数",

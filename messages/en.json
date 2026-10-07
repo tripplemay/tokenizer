@@ -10,6 +10,24 @@
   },
   "home": {
     "title": "Coding Token Usage",
+    "onboarding": {
+      "title": "Welcome to Tokenizer",
+      "description": "Tokenizer tracks token usage and cost from Claude Code, Codex CLI, OpenCode, Aider, and other coding tools. Connect your first device to start seeing usage.",
+      "waitingTitle": "{device} is connected; waiting for the first sync",
+      "waitingDescription": "The device is registered, but no usage events have arrived yet. Keep this page open; the dashboard will appear automatically after the first sync.",
+      "devicesLink": "View device status",
+      "step1Title": "Generate an install command",
+      "step1Description": "Create a one-time install command that expires in 30 minutes.",
+      "step2Title": "Run it on Mac, Linux, or WSL",
+      "step2Description": "The installer checks Node, enrolls the device, and configures the background agent.",
+      "step3Title": "Wait for the first sync",
+      "step3Description": "Usage will appear on the dashboard automatically about 60–90 seconds after the client comes online."
+    },
+    "emptyWindow": {
+      "title": "No usage in this time range",
+      "description": "There are no usage events in {range}. Your history is still available; switch to All to view it. This page refreshes automatically.",
+      "devicesLink": "View all devices"
+    },
     "scale": {
       "events": "Events",
       "projects": "Projects",
