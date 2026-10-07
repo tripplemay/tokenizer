@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-fix-20261007
+
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 1539ms
+   ✓ allowlisted recovery evidence transport > detects downloaded file tampering, missing files, extra files and wrong revision 325ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  23:32:46
+   Duration  2.45s (transform 65ms, setup 0ms, collect 79ms, tests 1.54s, environment 0ms, prepare 470ms)
+

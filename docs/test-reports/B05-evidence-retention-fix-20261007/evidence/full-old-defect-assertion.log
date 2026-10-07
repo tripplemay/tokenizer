@@ -1,0 +1,560 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-fix-20261007
+
+ ✓ tests/server/harness-mode-intent-api.test.ts (107 tests) 38ms
+ ✓ tests/shared/harness-detail.test.ts (18 tests) 29ms
+ ✓ tests/server/harness-mode-intents-route.test.ts (20 tests) 39ms
+ ✓ tests/parsers/claude.test.ts (20 tests) 32ms
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests | 3 skipped) 5ms
+ ✓ tests/cli/harness-tool-catalog.test.ts (77 tests) 247ms
+ ✓ tests/server/harness-report-mode-intent.test.ts (69 tests) 66ms
+ ✓ tests/shared/harness-mode-intent.test.ts (81 tests) 16ms
+ ✓ tests/evaluator/bl-native-subagent-bridges-f004.test.ts (13 tests) 43ms
+ ✓ tests/cli/harness-modes.test.ts (22 tests) 186ms
+ ✓ tests/server/harness-mode-intents-relay-route.test.ts (28 tests) 31ms
+ ✓ tests/server/harness-cost.test.ts (19 tests) 27ms
+ ✓ tests/server/heartbeat-harness.test.ts (31 tests) 46ms
+ ✓ tests/evaluator/bl-agent-release-acceptance.test.ts (17 tests) 51ms
+ ✓ tests/shared/subscription-card.test.ts (36 tests) 177ms
+ ✓ tests/server/harness-dispatch-usage.test.ts (14 tests) 22ms
+ ✓ tests/shared/harness-mode-drilldown.test.ts (7 tests) 88ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts (5 tests) 56ms
+ ✓ tests/evaluator/bl-homepage-freshness-f004.test.ts (8 tests) 47ms
+ ↓ tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts (4 tests) 56ms
+ ✓ tests/cli/sync-retry.test.ts (9 tests) 36ms
+ ✓ tests/cli/service-windows.test.ts (24 tests | 4 skipped) 7ms
+ ✓ tests/server/ingest-project.test.ts (16 tests) 12ms
+stderr | tests/server/ingest-upsert.test.ts > ingestUsageEvents conflict correction > corrects a stale row in place when the re-parsed event differs
+usage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+
+ ✓ tests/server/ingest-upsert.test.ts (9 tests) 18ms
+ ↓ tests/server/harness-cost-range-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/parsers/codex.test.ts (11 tests) 22ms
+ ✓ tests/evaluator/bl-transition-log-f003-timeline-view.test.ts (4 tests) 28ms
+ ✓ tests/evaluator/bl-homepage-freshness-f002-f003.test.ts (5 tests) 1700ms
+   ✓ F003 real CLI/daemon parity > checkpoints the same remaining tail between real sync and run subprocess batches 1653ms
+ ✓ tests/server/harness-batch-archive.test.ts (4 tests) 18ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (6 tests) 10ms
+ ✓ tests/server/harness-sign.test.ts (14 tests) 364ms
+ ✓ tests/server/harness-report-transitions.test.ts (6 tests) 22ms
+ ✓ tests/shared/model-pricing.test.ts (16 tests) 6ms
+ ✓ tests/shared/path.test.ts (33 tests) 6ms
+ ↓ tests/contract/fixture-ingest.contract.test.ts (2 tests | 2 skipped)
+ ✓ tests/cli/atomic-file.test.ts (19 tests) 373ms
+ ✓ tests/parsers/kimicode.test.ts (10 tests) 30ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 1294ms
+ ✓ tests/cli/git.test.ts (21 tests) 164ms
+ ✓ tests/shared/framework-version.test.ts (16 tests) 7ms
+ ✓ tests/evaluator/bl-codex-quota-window-f001-f002.test.ts (19 tests) 60ms
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 50ms
+ ✓ tests/parsers/opencode.test.ts (10 tests) 40ms
+ ✓ tests/server/model-detect.test.ts (11 tests) 8ms
+ ✓ tests/server/harness-decisions-route.test.ts (6 tests) 14ms
+ ✓ tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts (8 tests) 18ms
+ ✓ tests/server/agent-version.test.ts (14 tests) 7ms
+ ✓ tests/cli/agent-lifecycle.test.ts (8 tests | 1 skipped) 3249ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 561ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 556ms
+   ✓ tokenizer wrapper lifecycle > handles SIGTERM delivered before spawn returns without orphaning its child 1061ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1062ms
+ ✓ tests/server/pricing-sources.test.ts (16 tests) 7ms
+ ✓ tests/shared/harness-health.test.ts (21 tests) 22ms
+ ✓ tests/evaluator/bl-homepage-codex-quota-probes.test.ts (8 tests) 55ms
+ ✓ tests/shared/harness-transitions.test.ts (7 tests) 6ms
+ ✓ tests/server/device-enroll.test.ts (8 tests) 20ms
+ ✓ tests/server/release-image.test.ts (10 tests) 2181ms
+   ✓ release image gate and fault rehearsal > does not mark a release active when health returns a different SHA 465ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 612ms
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 373ms
+ ✓ tests/server/harness-gates-route.test.ts (7 tests) 15ms
+ ✓ tests/server/enrollment-tokens-route.test.ts (5 tests) 14ms
+ ✓ tests/shared/home-first-use.test.ts (4 tests) 45ms
+ ✓ tests/server/quota.test.ts (3 tests) 8ms
+ ↓ tests/contract/sign-verify.contract.test.ts (3 tests | 3 skipped)
+ ✓ tests/shared/quota-window-label.test.ts (34 tests) 124ms
+ ✓ tests/server/harness-gate-notify.test.ts (7 tests) 11ms
+ ✓ tests/parsers/aider.test.ts (8 tests) 13ms
+ ↓ tests/server/quota-account-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/shared/agent-release-version.test.ts (6 tests) 9ms
+ ✓ tests/server/cleanup.test.ts (7 tests) 7ms
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: '24a98d37-0c07-486b-ae2f-aa05215f66e7',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 21ms
+ ✓ tests/server/time-buckets.test.ts (13 tests) 27ms
+ ✓ tests/shared/quota-presentation.test.ts (71 tests) 14ms
+ ✓ tests/cli/cursor.test.ts (9 tests) 21ms
+ ↓ tests/server/harness-gates-route-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/server/harness-gate-notify-evaluator-probes.test.ts (4 tests) 8ms
+ ✓ tests/server/usage-batch-input.test.ts (2 tests) 8ms
+ ✓ tests/server/harness-dispatch-usage-evaluator-probes.test.ts (14 tests) 6ms
+ ✓ tests/shared/auto-refresh.test.ts (3 tests) 5ms
+ ✓ tests/shared/device-status.test.ts (11 tests) 10ms
+ ✓ tests/cli/install-agent-lifecycle.test.ts (2 tests) 1293ms
+   ✓ POSIX installer Agent lifecycle > stops this install's wrapper and child without touching another install 1291ms
+ ✓ tests/server/harness-gate-notify-timeout-probe.test.ts (3 tests) 14ms
+ ✓ tests/shared/mode-badges.test.ts (5 tests) 19ms
+ ✓ tests/quota/registry.test.ts (4 tests) 20ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 710ms
+ ↓ tests/server/git-privacy-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/cli/harness-dispatch.test.ts (23 tests) 6240ms
+   ✓ dispatch run summary collection > scans at most the newest 50 bounded regular JSON files 1369ms
+ ✓ tests/shared/usage.test.ts (23 tests) 5ms
+ ✓ tests/server/summary-metrics.test.ts (8 tests) 5ms
+ ✓ tests/cli/harness-vm-provider-ceiling.test.ts (3 tests) 6ms
+ ✓ tests/shared/agent-release-i18n.test.ts (2 tests) 5ms
+ ✓ tests/server/model-prices.test.ts (5 tests) 7ms
+ ✓ tests/cli/harness-command.test.ts (4 tests) 2080ms
+   ✓ harness CLI output contracts > wires Commander options without treating the Command object as injected dependencies 2073ms
+ ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts (3 tests | 1 failed) 137ms
+   × B05 independent TCP readiness audit > preserves the immutable post-CI supplement while exposing the remaining VPS-doc contradiction 53ms
+     → expected '# VPS Deployment\n\nThis guide deploy…' to contain 'does not yet build the deployment ima…'
+ ✓ tests/server/pricing-review.test.ts (9 tests) 13ms
+ ✓ tests/server/pricing-mapping.test.ts (7 tests) 6ms
+ ✓ tests/server/summary-cache-tags.test.ts (4 tests) 6ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 5044ms
+   ✓ isolated release recovery rehearsal faults > backs up, restores, applies exact migration, and rehearses old-image canary before approving rollback 301ms
+   ✓ isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 525ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 729ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never) 905ms
+   ✓ isolated release recovery rehearsal faults > never touches the production DB in synthetic mode 506ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 993ms
+ ✓ tests/shared/url.test.ts (25 tests) 6ms
+ ✓ tests/shared/upgrade-banner.test.ts (4 tests) 49ms
+ ✓ tests/cli/file-permissions.test.ts (5 tests) 10ms
+ ✓ tests/server/usage-cost-cache-invalidation.test.ts (3 tests) 10ms
+ ✓ tests/quota/auth-file.test.ts (4 tests) 18ms
+ ✓ tests/cli/harness-heartbeat.test.ts (3 tests) 8ms
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 455ms
+ ✓ tests/cli/service-cron.test.ts (7 tests) 6ms
+ ✓ tests/server/auth-secret.test.ts (13 tests) 4ms
+ ✓ tests/cli/proxy-env.test.ts (9 tests) 9ms
+ ✓ tests/shared/usage-privacy.test.ts (5 tests) 4ms
+ ✓ tests/cli/harness-backoff.test.ts (5 tests) 6ms
+ ✓ tests/cli/harness-mode-intents.test.ts (20 tests) 8203ms
+   ✓ signed mode intent staging > stages and reads v2 bindings through the data-only catalog, without agent ids 584ms
+   ✓ signed mode intent staging > stages and reports legal v2 fast null bindings without a tool catalog 525ms
+   ✓ signed mode intent staging > validates, atomically stages, and commits only harness.json 509ms
+   ✓ signed mode intent staging > commits only harness.json while preserving an unrelated staged file 445ms
+   ✓ signed mode intent staging > rejects a full HEAD drift immediately before first staging 312ms
+   ✓ signed mode intent staging > retries the exact staged intent without comparing its old HEAD or creating a commit 666ms
+   ✓ signed mode intent staging > does not report failure after commit success and completes the next exact retry idempotently 572ms
+   ✓ signed mode intent staging > recognizes a commit that succeeded immediately before the runner threw 488ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage write failure 362ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage readback failure 412ms
+   ✓ signed mode intent staging > restores after git add failure without disturbing an unrelated staged file 430ms
+   ✓ signed mode intent staging > does not report defaults copied into a repository with a different normalized identity 741ms
+   ✓ signed mode intent staging > rolls back a commit failure and never stages an unrelated file 601ms
+ ✓ tests/server/pricing-scan-cache.test.ts (3 tests) 11ms
+ ✓ tests/server/events-cursor.test.ts (5 tests) 5ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 11ms
+ ✓ tests/shared/chart-type.test.ts (8 tests) 5ms
+ ✓ tests/cli/privacy.test.ts (3 tests) 4ms
+ ✓ tests/server/daily-range.test.ts (6 tests) 40ms
+ ✓ tests/cli/enroll.test.ts (2 tests) 7ms
+ ✓ tests/server/harness-detail.test.ts (2 tests) 4ms
+ ✓ tests/cli/collect.test.ts (4 tests) 58ms
+ ✓ tests/server/timezone.test.ts (6 tests) 39ms
+ ✓ tests/server/dependency-security-floor.test.ts (2 tests) 2ms
+ ✓ tests/shared/harness-evidence.test.ts (3 tests) 7ms
+ ✓ tests/shared/repo-link.test.ts (5 tests) 6ms
+ ✓ tests/shared/input-sanitization.test.ts (3 tests) 2ms
+ ✓ tests/server/harness-gates-pending-count.test.ts (2 tests) 5ms
+ ✓ tests/shared/enrollment-status.test.ts (3 tests) 6ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 2060ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 396ms
+   ✓ deterministic release predecessor > uses the explicit PR base/push-before SHA when available 366ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 519ms
+   ✓ deterministic release predecessor > does not silently replace malformed or nonexistent explicit predecessors 355ms
+   ✓ deterministic release predecessor > uses origin/main for the zero before SHA and fails if the fetched ref is absent 423ms
+ ✓ tests/shared/html-escape.test.ts (2 tests) 3ms
+ ↓ tests/contract/canonical-json.contract.test.ts (1 test | 1 skipped)
+ ✓ tests/shared/pending-gates-badge.test.ts (2 tests) 3ms
+ ✓ tests/cli/harness.test.ts (27 tests) 14283ms
+   ✓ discoverHarnessRepos > uses a stable opaque key for local-only repos without leaking the root into the report 697ms
+   ✓ mode intent report ACK > sends the running Agent identity on every device-driven Harness relay request 530ms
+   ✓ applyHarnessDecisions > 签名有效时写入并提交 379ms
+   ✓ applyHarnessDecisions > fails closed when the signed decision wrapper matches multiple local repositories 482ms
+   ✓ applyHarnessDecisions > 陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） 388ms
+   ✓ applyHarnessDecisions > progress.json 有未提交改动时本轮不写，避免与状态机打架 440ms
+   ✓ applyHarnessDecisions > 某个项目上报失败不中断其余项目 628ms
+   ✓ applyHarnessDecisions > 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 636ms
+   ✓ applyHarnessDecisions > report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit 872ms
+   ✓ applyHarnessDecisions > mode relay 失败不阻塞另外两步 619ms
+   ✓ applyHarnessDecisions > gate relay 失败不阻塞另外两步 726ms
+   ✓ applyHarnessDecisions > 本机闸门已有决策时不覆盖 460ms
+   ✓ structured Harness sync health > applies the exact HTTP retryability matrix 622ms
+   ✓ structured Harness sync health > caps structured issues at 20 while retaining the full failed-project count 3466ms
+   ✓ structured Harness sync health > writes idle, success, degraded, and failed snapshots from actual outcomes 307ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/b05-tcp-readiness-independent.test.ts > B05 independent TCP readiness audit > preserves the immutable post-CI supplement while exposing the remaining VPS-doc contradiction
+AssertionError: expected '# VPS Deployment\n\nThis guide deploy…' to contain 'does not yet build the deployment ima…'
+
+- Expected
++ Received
+
+- does not yet build the deployment image in CI
++ # VPS Deployment
++
++ This guide deploys Tokenizer as a central server. Each computer runs the CLI locally and uploads usage events to the VPS API. The VPS stores events in PostgreSQL and serves the dashboard.
++
++ > The B05 deploy changes are a candidate, not a production rollout. A push to
++ > `main` triggers the production workflow; do not merge this candidate until the
++ > release gates in [B05 release runbook](./B05-release-runbook.md) have passed.
++
++ ## 1. Prepare The VPS
++
++ Install Docker and the Docker Compose plugin on the VPS.
++
++ Clone the repository:
++
++ ```bash
++ git clone https://github.com/tripplemay/tokenizer.git
++ cd tokenizer
++ ```
++
++ Create the environment file:
++
++ ```bash
++ cp .env.example .env
++ ```
++
++ Edit `.env`:
++
++ ```env
++ ADMIN_TOKEN=use-a-long-random-private-token
++ POSTGRES_PASSWORD=the-current-database-password
++ AUTH_SECRET=use-an-independent-random-secret-of-at-least-32-characters
++ AUTH_RESEND_KEY=re_your-mail-provider-key
++ NEXT_PUBLIC_APP_URL=https://your-domain.example
++ APP_HOST_PORT=127.0.0.1:3010
++ ```
++
++ `ADMIN_TOKEN` is used in the dashboard to generate one-time client enrollment commands. Keep it private. For an existing volume, `POSTGRES_PASSWORD` must match the *current* database password; setting a new Compose value does not rotate a persisted PostgreSQL user's password. Follow a separately approved rotation SOP instead of changing it during this release.
++
++ ## 2. Start Services
++
++ Build and start PostgreSQL, run migrations, then start the app:
++
++ ```bash
++ docker compose build
++ docker compose up -d postgres
++ docker compose run --rm migrate
++ docker compose up -d app
++ ```
++
++ The compose stack includes:
++
++ - `postgres`: PostgreSQL with persistent Docker volume `postgres-data`.
++ - `migrate`: one-shot `prisma migrate deploy` job, run during deploys.
++ - `app`: Next.js dashboard and ingestion API on port `3000`.
++
++ PostgreSQL is only exposed inside the Docker Compose network. It is not published to the VPS host because the production server already runs other database services.
++
++ Check status:
++
++ ```bash
++ docker compose ps
++ docker compose logs -f app
++ ```
++
++ Open the dashboard:
++
++ ```text
++ https://token.vpanel.cc
++ ```
++
++ The production VPS uses Nginx with Let's Encrypt HTTPS and proxies `token.vpanel.cc` to `127.0.0.1:3010`.
++
++ ## 3. Configure A Client Machine
++
++ Generate a one-time install command from the dashboard, then run it on each client machine:
++
++ ```bash
++ curl -fsSL https://token.vpanel.cc/install.sh | bash -s -- --enroll-token enroll_xxx
++ ```
++
++ The installer creates `~/.tokenizer/config.json`:
++
++ ```json
++ {
++   "serverUrl": "https://your-domain.example",
++   "projectRoots": ["/Users/you/project"],
++   "sources": {
++     "claude": true,
++     "codex": true,
++     "opencode": true
++   }
++ }
++ ```
++
++ It also restricts the device token in `~/.tokenizer/credentials.json` to the
++ current user: file mode `0600` on macOS and Linux, and an `icacls` ACL granting
++ only the current account on Windows (`chmod` there only toggles the read-only
++ attribute and would leave the token readable by other local accounts). If the
++ CLI cannot apply the restriction it prints a warning rather than failing the
++ enrollment — check for that warning if the token must stay confidential.
++
++ For a raw VPS IP without HTTPS, use:
++
++ ```json
++ "serverUrl": "http://<vps-ip>:3000"
++ ```
++
++ Each machine gets a stable local device file:
++
++ ```text
++ ~/.tokenizer/device.json
++ ```
++
++ Do not copy this file between machines. Run `tokenizer init` separately on every device.
++
++ ## 4. Upload Usage Events
++
++ Diagnose OpenCode if needed:
++
++ ```bash
++ npm run cli -- diagnose opencode
++ ```
++
++ Collect and sync in one step:
++
++ ```bash
++ npm run cli -- run
++ ```
++
++ Or collect and sync separately:
++
++ ```bash
++ npm run cli -- collect
++ npm run cli -- sync
++ ```
++
++ After sync, refresh the VPS dashboard. The `Devices` count and source breakdown should update.
++
++ ## 5. GitHub CI/CD Deployment
++
++ The repository includes `.github/workflows/deploy-vps.yml`.
++
++ Behavior:
++
++ - Runs `npm ci` and `npm run verify` on GitHub Actions.
++ - Runs Linux and native Windows tests, PostgreSQL 16 and authenticated browser verification, then builds Linux app and migration OCI artifacts once in CI.
++ - Deploys automatically on pushes to `main`.
++ - Supports manual deployment from the GitHub Actions `workflow_dispatch` button.
++ - Main publishes immutable digest references to GHCR and checks signed exact-source/workflow provenance; non-main evaluation uses an isolated registry without GHCR publication or attestations. Backup/restore/migration/business/old-image rehearsal and retained, downloaded, hash-verified synthetic evidence are mandatory before deployment.
++ - SSHs into the VPS, syncs deployment assets, writes a permission-restricted `.env`, verifies CI-produced `@sha256:` artifacts, retains the prior digest/configuration, starts PostgreSQL, and runs migration before restarting the app. It does not rebuild app images on the VPS.
++ - Waits for `/api/health`, the expected commit SHA and a business canary. App/config rollback requires the separately established previous-digest and rehearsal approval gates; database rollback is not automatic. Actual legacy baseline/bootstrap and production backup restore remain separately authorized release prerequisites, not claims established by synthetic CI.
++
++ ### Required GitHub Secrets
++
++ Add these in GitHub repository settings: `Settings` -> `Secrets and variables` -> `Actions`.
++
++ ```text
++ VPS_HOST=your-vps-ip-or-hostname
++ VPS_USER=tripplezhou
++ VPS_SSH_KEY=<private SSH key used by GitHub Actions>
++ ADMIN_TOKEN=use-a-long-random-private-token
++ POSTGRES_PASSWORD=<existing production database password>
++ AUTH_SECRET=<at least 32 independent characters>
++ AUTH_RESEND_KEY=<mail provider key>
++ NEXT_PUBLIC_APP_URL=https://token.vpanel.cc
++ ```
++
++ Optional secrets:
++
++ ```text
++ VPS_SSH_PORT=22
++ VPS_DEPLOY_PATH=/opt/tokenizer
++ ```
++
++ If `VPS_DEPLOY_PATH` is omitted, the workflow deploys to `/opt/tokenizer`.
++
++ Current production values (deploysvr, migrated 2026-07-13):
++
++ ```text
++ VPS_HOST=194.238.26.173
++ VPS_USER=root
++ NEXT_PUBLIC_APP_URL=https://token.vpanel.cc
++ VPS_DEPLOY_PATH=/opt/tokenizer
++ ```
++
++ > Migrated off the retiring shared host `34.180.93.185` (user `tripplezhou`) on
++ > 2026-07-13. The new host `deploysvr` is a shared box (kolmatrix / aigc-gateway
++ > / invoce / grandtianfu also run there); tokenizer's compose stack, `postgres-data`
++ > volume, and the `127.0.0.1:3010` app port are isolated per compose project.
++
++ ### Prepare The VPS User
++
++ Create a deploy user and deployment directory if they do not already exist:
++
++ ```bash
++ sudo adduser deploy
++ sudo usermod -aG docker deploy
++ sudo mkdir -p /opt/tokenizer
++ sudo chown deploy:deploy /opt/tokenizer
++ ```
++
++ Add the public key matching `VPS_SSH_KEY` to the deploy user's authorized keys:
++
++ ```bash
++ sudo mkdir -p /home/deploy/.ssh
++ sudo nano /home/deploy/.ssh/authorized_keys
++ sudo chown -R deploy:deploy /home/deploy/.ssh
++ sudo chmod 700 /home/deploy/.ssh
++ sudo chmod 600 /home/deploy/.ssh/authorized_keys
++ ```
++
++ Verify SSH access from your local machine before relying on CI:
++
++ ```bash
++ ssh deploy@<vps-ip>
++ docker compose version
++ ```
++
++ The workflow uses `rsync --delete` to sync the Actions checkout; the VPS does not need repository credentials. It preserves `.env` and `.releases` across syncs. Review any additional host-local files before using the workflow.
++
++ ### Trigger A Deployment
++
++ Push to `main`:
++
++ ```bash
++ git push origin main
++ ```
++
++ Or open GitHub Actions, select `Deploy VPS`, and click `Run workflow`.
++
++ ### CI/CD Upgrade Flow
++
++ After CI/CD is configured, normal server upgrades are:
++
++ ```bash
++ git push origin main
++ ```
++
++ The workflow builds Linux app and migration OCI artifacts in CI and deploys immutable `@sha256:` references, not images rebuilt on the VPS. On the main release path it publishes to GHCR and verifies signed provenance bound to the exact source SHA and workflow, including wrong-SHA/wrong-workflow negative controls. A non-main rehearsal uses an isolated CI registry and does not exercise GHCR publication or attestations.
++
++ Deployment requires all four prerequisite verification jobs plus the OCI/recovery job, then retains the previous digest/configuration and gates migration, health, business canary, and rollback. Follow [the B05 release runbook](./B05-release-runbook.md), including the separately authorized legacy baseline/bootstrap cutover; a synthetic predecessor or passing local tests do not establish the actual production rollback baseline.
++
++ ## 6. Legacy / Emergency Source-Build Upgrade (Not The Release Workflow)
++
++ The following source-build commands are legacy/emergency-only, require separate operator authorization, and bypass the immutable-artifact release gates. They are not the normal upgrade path. On the VPS:
++
++ ```bash
++ git pull
++ docker compose build
++ docker compose up -d postgres
++ docker compose run --rm migrate
++ docker compose up -d app
++ ```
++
++ Run the `migrate` service on every upgrade before restarting `app`.
++ For a production release, use the workflow and the B05 runbook instead of this unsupervised manual sequence.
++
++ ## 7. Backup Data
++
++ The database is stored in the Docker volume `postgres-data`. For a logical backup:
++
++ ```bash
++ docker compose exec postgres pg_dump -U tokenizer tokenizer > tokenizer-backup.sql
++ ```
++
++ Restore into a fresh database:
++
++ ```bash
++ docker compose exec -T postgres psql -U tokenizer tokenizer < tokenizer-backup.sql
++ ```
++
++ The backup command alone is not a verified recovery point. Restore into an **isolated scratch** database/volume, check key queries, and rehearse the exact pending migration before release. Record backup timestamp, checksum, restore result, and measured RPO/RTO. Never restore over the active volume as a routine image rollback.
++
++ ## 8. Reverse Proxy Notes
++
++ Production uses Nginx and Certbot on the VPS. HTTPS traffic for `token.vpanel.cc` is proxied to the app on local port `3010`.
++
++ Required behavior:
++
++ - Forward normal HTTP requests to `http://127.0.0.1:3010`.
++ - Preserve request headers, including `authorization` and `x-admin-token`.
++ - Set `NEXT_PUBLIC_APP_URL` to the public HTTPS URL.
++
++ The active Nginx site is version-controlled at `deploy/nginx/tokenizer.conf` and
++ installed on the host as:
++
++ ```text
++ /etc/nginx/sites-available/tokenizer.conf   (symlinked into sites-enabled/)
++ ```
++
++ token.vpanel.cc is DNS-only (Cloudflare grey cloud, proxied=false), so clients
++ connect straight to the origin over HTTPS. The certificate is issued and renewed
++ by Certbot via the Cloudflare DNS-01 challenge (no HTTP-01 / DNS cutover needed):
++
++ ```text
++ certbot certonly --dns-cloudflare \
++   --dns-cloudflare-credentials /root/.secrets/cloudflare.ini -d token.vpanel.cc
++
++ /etc/letsencrypt/live/token.vpanel.cc/fullchain.pem
++ /etc/letsencrypt/live/token.vpanel.cc/privkey.pem
++ ```
++
++ ## 9. Troubleshooting
++
++ Unauthorized sync:
++
++ - Confirm the client has `~/.tokenizer/credentials.json`.
++ - Confirm the device was enrolled with a valid one-time enrollment token.
++ - Confirm reverse proxy forwards `authorization`.
++
++ App starts before tables exist:
++
++ - Run `docker compose run --rm migrate` manually and check the output.
++ - Confirm `docker compose up -d app` is run only after migrations succeed.
++
++ OpenCode events missing:
++
++ - Run `npm run cli -- diagnose opencode` on the client machine.
++ - Confirm `~/.local/share/opencode/opencode.db` exists and has tokenized messages.
++
++ Duplicate counts on repeated sync:
++
++ - This is expected. The server deduplicates by `deviceId`, `source`, and `sourceEventId`.
++
++ GitHub Actions cannot connect to VPS:
++
++ - Confirm `VPS_HOST`, `VPS_USER`, `VPS_SSH_PORT`, and `VPS_SSH_KEY` are correct.
++ - Confirm the matching public key is in `/home/<user>/.ssh/authorized_keys`.
++ - Confirm the VPS firewall allows SSH from GitHub Actions runners.
++
++ GitHub Actions can SSH but Docker fails:
++
++ - Confirm Docker is installed.
++ - Confirm `VPS_USER` is in the `docker` group.
++ - Log out and back in after adding the user to the Docker group.
++
+
+ ❯ tests/evaluator/b05-tcp-readiness-independent.test.ts:54:18
+     52|     const docs = readFileSync("docs/VPS-deployment.md", "utf8");
+     53|     expect(docs).toContain("builds Linux app and migration OCI artifac…
+     54|     expect(docs).toContain("does not yet build the deployment image in…
+       |                  ^
+     55|     expect(docs).toContain("builds SHA-tagged images on the VPS");
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 120 passed | 8 skipped (129)
+      Tests  1 failed | 1607 passed | 22 skipped (1630)
+   Start at  23:34:18
+   Duration  15.41s (transform 2.95s, setup 0ms, collect 10.89s, tests 52.85s, environment 31ms, prepare 8.77s)
+
