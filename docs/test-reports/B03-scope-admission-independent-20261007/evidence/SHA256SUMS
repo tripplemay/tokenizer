@@ -1,0 +1,4 @@
+7df20bf598c994355a6aa0c3255ddbd331e2add50508f0a10cc293c0dad473c6  docs/test-reports/B03-scope-admission-independent-20261007/evidence/baseline-negative.json
+b300635fd1f832c045ec09acf792ed2b02e92e24f185da76190a2a0d74c7df0e  docs/test-reports/B03-scope-admission-independent-20261007/evidence/candidate-admission.json
+b02eb644f2dbba60541ca0c478d9295e777df70f98df8586a156e7219725eb07  scripts/test/b03-scope-admission-independent.mjs
+91255dfe953cdf76c20273fa695145aecfe9835e00ef09cf6b02a865a488bb2e  tests/evaluator/b03-scope-admission-independent.test.ts

@@ -1,0 +1,29 @@
+{
+  "expectation": "baseline",
+  "initialIds": [
+    "claude-jsonl:msg-old-admitted:old-admitted"
+  ],
+  "afterConfigureIds": [
+    "claude-jsonl:msg-old-admitted:old-admitted"
+  ],
+  "afterRuleChangeIds": [
+    "claude-jsonl:msg-previously-excluded:previously-excluded",
+    "claude-jsonl:msg-fresh-new:fresh-new"
+  ],
+  "cursorCreatedByCollect": false,
+  "cursorUnchangedByConfigure": true,
+  "requestsAfterConfigure": 0,
+  "statusDisclosesBacklog": false,
+  "wireIds": [
+    "claude-jsonl:msg-fresh-new:fresh-new",
+    "claude-jsonl:msg-previously-excluded:previously-excluded"
+  ],
+  "wireContainsFingerprint": false,
+  "failedSyncCode": 1,
+  "failedSyncQueuePreserved": false,
+  "pausedCollectCode": 0,
+  "pausedOutputDisclosesPause": false,
+  "pausedQueueUnchanged": false,
+  "pausedCursorUnchanged": true,
+  "replayUnavailable": true
+}

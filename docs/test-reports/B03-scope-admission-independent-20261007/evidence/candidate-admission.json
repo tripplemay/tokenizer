@@ -1,0 +1,29 @@
+{
+  "expectation": "candidate",
+  "initialIds": [
+    "claude-jsonl:msg-old-admitted:old-admitted"
+  ],
+  "afterConfigureIds": [
+    "claude-jsonl:msg-old-admitted:old-admitted"
+  ],
+  "afterRuleChangeIds": [
+    "claude-jsonl:msg-old-admitted:old-admitted",
+    "claude-jsonl:msg-fresh-new:fresh-new"
+  ],
+  "cursorCreatedByCollect": true,
+  "cursorUnchangedByConfigure": true,
+  "requestsAfterConfigure": 0,
+  "statusDisclosesBacklog": true,
+  "wireIds": [
+    "claude-jsonl:msg-fresh-new:fresh-new",
+    "claude-jsonl:msg-old-admitted:old-admitted"
+  ],
+  "wireContainsFingerprint": false,
+  "failedSyncCode": 1,
+  "failedSyncQueuePreserved": true,
+  "pausedCollectCode": 0,
+  "pausedOutputDisclosesPause": true,
+  "pausedQueueUnchanged": true,
+  "pausedCursorUnchanged": true,
+  "replayUnavailable": true
+}
