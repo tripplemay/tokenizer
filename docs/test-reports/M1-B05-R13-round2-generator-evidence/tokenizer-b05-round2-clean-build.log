@@ -1,0 +1,80 @@
+
+> tokenizer@0.1.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 777ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+   ▲ Next.js 15.5.18
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 19.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/6) ...
+   Generating static pages (1/6) 
+   Generating static pages (2/6) 
+   Generating static pages (4/6) 
+ ✓ Generating static pages (6/6)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    5.57 kB         132 kB
+├ ƒ /_not-found                            998 B         103 kB
+├ ƒ /admin/login                           209 B         103 kB
+├ ƒ /admin/pricing                       1.54 kB         107 kB
+├ ƒ /admin/setup                           209 B         103 kB
+├ ƒ /api/admin/cleanup-claude-legacy       209 B         103 kB
+├ ƒ /api/admin/enrollment-tokens           209 B         103 kB
+├ ƒ /api/admin/enrollment-tokens/[id]      209 B         103 kB
+├ ƒ /api/admin/login                       209 B         103 kB
+├ ƒ /api/admin/logout                      209 B         103 kB
+├ ƒ /api/admin/pricing/review              209 B         103 kB
+├ ƒ /api/admin/pricing/scan                209 B         103 kB
+├ ƒ /api/auth/[...nextauth]                209 B         103 kB
+├ ƒ /api/devices                           209 B         103 kB
+├ ƒ /api/devices/enroll                    209 B         103 kB
+├ ƒ /api/devices/heartbeat                 209 B         103 kB
+├ ƒ /api/events                            209 B         103 kB
+├ ƒ /api/harness/decisions                 209 B         103 kB
+├ ƒ /api/harness/gates                     209 B         103 kB
+├ ƒ /api/harness/gates/pending-count       209 B         103 kB
+├ ƒ /api/harness/mode-intents              209 B         103 kB
+├ ƒ /api/harness/mode-intents/relay        209 B         103 kB
+├ ƒ /api/harness/report                    209 B         103 kB
+├ ƒ /api/health                            209 B         103 kB
+├ ƒ /api/health/capabilities               209 B         103 kB
+├ ƒ /api/health/live                       209 B         103 kB
+├ ƒ /api/me/timezone                       209 B         103 kB
+├ ƒ /api/projects                          209 B         103 kB
+├ ƒ /api/quota/latest                      209 B         103 kB
+├ ƒ /api/quota/snapshots/batch             209 B         103 kB
+├ ƒ /api/summary                           209 B         103 kB
+├ ƒ /api/summary/daily                     209 B         103 kB
+├ ƒ /api/summary/projects                  209 B         103 kB
+├ ƒ /api/usage/events/batch                209 B         103 kB
+├ ƒ /devices                             4.99 kB         132 kB
+├ ƒ /devices/[id]                         1.6 kB         128 kB
+├ ƒ /events                                170 B         106 kB
+├ ƒ /harness                              1.8 kB         126 kB
+├ ƒ /harness/[id]                        11.7 kB         136 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ƒ /login                               1.29 kB         106 kB
+├ ƒ /login/verify                          471 B         103 kB
+├ ƒ /models/[model]                      2.17 kB         129 kB
+└ ƒ /projects/[id]                         170 B         106 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1255-b28ea36bf0cdbd65.js      46.2 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js  54.2 kB
+  └ other shared chunks (total)          2.03 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

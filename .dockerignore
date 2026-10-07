@@ -11,5 +11,7 @@ README.md
 docs
 coverage
 .tokenizer
+.baseline
+.releases
 tests
 vitest.config.ts

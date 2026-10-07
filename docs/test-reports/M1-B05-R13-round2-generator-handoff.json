@@ -1,0 +1,63 @@
+{
+  "schema": "tokenizer-generator-handoff/1",
+  "batch_id": "M1-B05-R13",
+  "round": 2,
+  "created_at": "2026-10-07T14:38:09Z",
+  "role": "generator",
+  "baseline_commit": "118cd09b9491a1bed0dbcaffef1ac2613937e3b6",
+  "implementation_commit": "see accompanying commit",
+  "evaluator_findings_addressed_in_code": [
+    {
+      "id": "B05-EVAL-001",
+      "changes": "CI-produced OCI digest references replace VPS rebuilds. Main artifacts carry GitHub-signed provenance; source SHA/repo/signer workflow are verified by artifact and deploy jobs. VPS checks portable digest references and revision labels, retains previous digest config, and rejects same-SHA digest drift. Linux artifact/recovery job is a deploy prerequisite."
+    },
+    {
+      "id": "B05-EVAL-002",
+      "changes": "Reproducible Docker synthetic and live-snapshot rehearsal added: custom dump/checksum -> isolated PG16 restore -> critical inventory -> exact migrations -> observed non-root app UID -> real enroll/ingest/session summary canary -> actual old-digest/new-schema canary -> cleanup including anonymous volumes. Same-SHA retries preserve prior backups. The VPS must run this before live migrations. Supplemental native PG16/Next execution is recorded, but Linux Docker/OCI path still needs execution."
+    },
+    {
+      "id": "B05-EVAL-003",
+      "changes": "An EXIT trap stops a failed new app before recovery. Only the freshly rehearsed actual previous digest permits app-only automatic rollback; exact old SHA/healthy response is required or the old app is stopped again. No production DB restore or implicit schema compatibility waiver."
+    }
+  ],
+  "regression_checks": {
+    "focused": "49 passed across release-image, release-rehearsal, deploy-secrets, health; synthetic command/fault traces only for Docker paths",
+    "full_suite": "1495 passed, 20 skipped after clean Node22 npm ci; see execution logs",
+    "typecheck": "npm run verify exit 0",
+    "lint": "npm run lint exit 0, no warnings/errors",
+    "build": "npm run build exit 0 with placeholder DB; no production secrets",
+    "actionlint": "exit 0",
+    "shellcheck": "exit 0 for three release/rehearsal/image scripts",
+    "bash_syntax": "exit 0",
+    "compose_interpolation": "release overlay config --quiet exit 0 with synthetic OCI digests"
+  },
+  "native_supplemental_execution": {
+    "platform": "macOS native PostgreSQL 16 and Node22 Next production server, not Linux OCI",
+    "scratch_cluster": "/tmp/tokenizer-b05-round2-pg.cjABgw/data",
+    "postgres_port": 55491,
+    "source_database": "tokenizer_b05_rehearsal",
+    "restore_database": "tokenizer_b05_restore",
+    "next_ports": [3317, 3318],
+    "initial_migrations": "28 checked-in migrations applied successfully",
+    "http_canary_source": "enroll -> device bearer ingest -> DB-session summary: 1 event, 23 tokens",
+    "dump_restore": "pg_dump -Fc --no-owner, SHA256 recorded, pg_restore --exit-on-error --no-owner exit 0",
+    "inventory_before_after_restore": "2 users | 2 devices | 1 project | 1 event | 23 tokens; diff exit 0",
+    "restored_exact_migration": "No pending migrations; exit 0",
+    "http_canary_restore": "1 new synthetic event, 23 tokens; synthetic tenant cascade-cleaned; inventory unchanged",
+    "cleanup": "Both own Next listeners terminated; own scratch PostgreSQL cluster stopped; synthetic dump/cluster retained for replay; no production data touched"
+  },
+  "preliminary_execution_failures": [
+    "Initial copied node_modules were built for Node24 ABI141; Node22 ABI127 caused six SQLite tests to fail. One existing SIGTERM lifecycle test also failed. Clean Node22 npm ci fixed native artifact mismatch; final full suite passed. This does not establish elimination of the existing SIGTERM flake.",
+    "Initial local build overlapped dependency replacement and reported ENOENT for a Next polyfill. After npm ci finished, the isolated rebuild passed."
+  ],
+  "unexecuted_release_gates": [
+    "Docker daemon unavailable locally; no Linux image build/runtime/UID or Docker recovery orchestration actually executed by this generator.",
+    "New real GitHub Actions jobs, GHCR publish/pull, OIDC signed attestations, provenance verification, and actual previous-image rollback not run.",
+    "Legacy VPS local-build -> retained digest bootstrap cutover must be separately rehearsed and observed; deployment refuses a fabricated/missing old digest ledger.",
+    "B01 full PostgreSQL/contract/Playwright needs must be retained when resolving integration workflow conflicts; this candidate is based on original B05, not combined B01/B02.",
+    "B02 Next16 dependency migration/auth hardening remains a separate integration gate. This candidate does not upgrade dependencies or accept prior audit risks.",
+    "No production credentials, live migration/restore, mail delivery, login/browser freshness, production canary, RPO/RTO claim, deployment, or push."
+  ],
+  "evidence_directory": "docs/test-reports/M1-B05-R13-round2-generator-evidence/",
+  "independence": "Implementation and execution notes only. No readiness verdict or self-evaluation. Fresh evaluator owns acceptance. No progress/features/pending_gate modifications."
+}

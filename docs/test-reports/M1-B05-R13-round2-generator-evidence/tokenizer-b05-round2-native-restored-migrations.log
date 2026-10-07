@@ -1,0 +1,7 @@
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "tokenizer_b05_restore", schema "public" at "127.0.0.1:55491"
+
+28 migrations found in prisma/migrations
+
+
+No pending migrations to apply.

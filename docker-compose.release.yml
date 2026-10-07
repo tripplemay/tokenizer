@@ -1,0 +1,7 @@
+services:
+  migrate:
+    image: ${MIGRATE_IMAGE:?digest-pinned MIGRATE_IMAGE required}
+    build: !reset null
+  app:
+    image: ${APP_IMAGE:?digest-pinned APP_IMAGE required}
+    build: !reset null
