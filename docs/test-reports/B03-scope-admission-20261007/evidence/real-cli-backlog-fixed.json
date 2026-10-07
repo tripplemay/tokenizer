@@ -1,0 +1,17 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "project": "/Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007",
+  "sourcesEnabled": 0,
+  "mode": "local-only",
+  "initialBacklog": 1,
+  "finalBacklog": 1,
+  "finalIds": [
+    "synthetic-admitted-before-scope-edit"
+  ],
+  "preserved": true,
+  "cliExit": 0,
+  "cliSignal": null,
+  "stdout": "Collected 0 events; queue holds 1 unique events at /var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/tokenizer-admission-negative-NrBRfu/.tokenizer/queue.jsonl\nBacklog: 1 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n",
+  "stderr": ""
+}

@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007
+
+ ✓ tests/cli/privacy.test.ts (5 tests) 3ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 7ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 32ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  22:08:46
+   Duration  611ms (transform 188ms, setup 0ms, collect 305ms, tests 43ms, environment 0ms, prepare 144ms)
+

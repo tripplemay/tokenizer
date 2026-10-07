@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-07T15:24:12.318Z",
+  "role": "Generator self-test; not independent acceptance",
+  "node": "v22.22.0",
+  "nodeExecutable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "npm": "10.9.4",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007",
+  "branch": "codex/b03-privacy-semantics-20261007",
+  "base": "ecdd3546a1f03044bf4c96087e3e9e6174fdf709",
+  "next": "16.4.0",
+  "vitest": "2.1.9",
+  "tsx": "4.22.0",
+  "prisma": "5.22.0",
+  "baselineProbeBase": "ecdd3546a1f03044bf4c96087e3e9e6174fdf709",
+  "baselineProbeWorktreeClean": true
+}

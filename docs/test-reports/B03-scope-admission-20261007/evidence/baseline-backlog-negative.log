@@ -1,0 +1,115 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007
+
+ ❯ tests/cli/agent-sync-checkpoint.test.ts (7 tests | 1 failed | 6 skipped) 6ms
+   × runOnce durable sync checkpoint > retains previously admitted local-only backlog after path rules change 6ms
+     → expected "spy" to be called with arguments: [ [ { source: 'codex', …(5) }, …(1) ] ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Array [
+      Object {
+        "inputTokens": 1,
+-       "occurredAt": "2026-08-21T15:00:00.000Z",
+-       "outputTokens": 1,
+-       "source": "codex",
+-       "sourceEventId": "admitted-before-change",
+-       "workspacePath": "/work/old",
+-     },
+-     Object {
+-       "inputTokens": 1,
+        "occurredAt": "2026-08-22T15:00:00.000Z",
+        "outputTokens": 1,
+        "source": "codex",
+        "sourceEventId": "fresh",
+        "workspacePath": "/work/new",
+      },
+    ],
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/cli/sync-retry.test.ts (10 tests | 1 failed | 9 skipped) 17ms
+   × syncEvents batch retry > uploads already-admitted backlog without applying changed collection path rules 16ms
+     → expected [] to deeply equal [ { source: 'claude-code', …(5) } ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/agent-sync-checkpoint.test.ts > runOnce durable sync checkpoint > retains previously admitted local-only backlog after path rules change
+AssertionError: expected "spy" to be called with arguments: [ [ { source: 'codex', …(5) }, …(1) ] ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Array [
+      Object {
+        "inputTokens": 1,
+-       "occurredAt": "2026-08-21T15:00:00.000Z",
+-       "outputTokens": 1,
+-       "source": "codex",
+-       "sourceEventId": "admitted-before-change",
+-       "workspacePath": "/work/old",
+-     },
+-     Object {
+-       "inputTokens": 1,
+        "occurredAt": "2026-08-22T15:00:00.000Z",
+        "outputTokens": 1,
+        "source": "codex",
+        "sourceEventId": "fresh",
+        "workspacePath": "/work/new",
+      },
+    ],
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/cli/agent-sync-checkpoint.test.ts:115:30
+    113|     await runOnce();
+    114| 
+    115|     expect(mocks.writeQueue).toHaveBeenCalledWith([backlog, fresh]);
+       |                              ^
+    116|     expect(mocks.syncEvents).not.toHaveBeenCalled();
+    117|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/cli/sync-retry.test.ts > syncEvents batch retry > uploads already-admitted backlog without applying changed collection path rules
+AssertionError: expected [] to deeply equal [ { source: 'claude-code', …(5) } ]
+
+- Expected
++ Received
+
+- Array [
+-   Object {
+-     "inputTokens": 1,
+-     "occurredAt": "2026-07-03T00:00:00.000Z",
+-     "outputTokens": 1,
+-     "source": "claude-code",
+-     "sourceEventId": "evt-1",
+-     "workspacePath": "/work/previously-included",
+-   },
+- ]
++ Array []
+
+ ❯ tests/cli/sync-retry.test.ts:74:64
+     72|     await syncEvents(changed, readQueue(), { onBatchSynced });
+     73| 
+     74|     expect(JSON.parse(fetchMock.mock.calls[0][1].body).events).toEqual…
+       |                                                                ^
+     75|     expect(onBatchSynced).toHaveBeenCalledWith({ synced: 1, total: 1, …
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 15 skipped (17)
+   Start at  22:05:53
+   Duration  567ms (transform 137ms, setup 0ms, collect 177ms, tests 23ms, environment 0ms, prepare 92ms)
+

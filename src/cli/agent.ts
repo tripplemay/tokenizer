@@ -9,7 +9,7 @@ import { runQuotaRefresh } from "@/quota/run";
 import { runHarnessSync, type HarnessSyncResult } from "./harness";
 import { HARNESS_BASE_MS, initialHarnessBackoff, nextHarnessBackoff } from "./harness-backoff";
 import { acquireAgentLock } from "./agent-lock";
-import { effectivePrivacy, filterUsageEvents } from "./privacy";
+import { collectionScopeFingerprint, effectivePrivacy } from "./privacy";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -62,7 +62,9 @@ export async function runOnce() {
   const cursor = readCursor();
   const collected = collectEvents(config, cursor);
   const queued = readQueue();
-  const events = dedupeBySourceEventId(filterUsageEvents([...queued, ...collected.events], privacy));
+  // Queued events were admitted under their collection-time scope. Rule changes
+  // only affect collectEvents, never erase a previously admitted backlog.
+  const events = dedupeBySourceEventId([...queued, ...collected.events]);
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
@@ -73,6 +75,7 @@ export async function runOnce() {
   // Queue-before-cursor ordering also makes a crash between these writes safe;
   // at worst the old cursor re-parses events and server dedup handles them.
   writeCursor(cursor);
+  updateState({ lastCollectionScopeFingerprint: collectionScopeFingerprint(privacy) });
   if (privacy.mode === "local-only") {
     updateState({ lastRunAt: startedAt, lastCollectionMode: "local-only", lastCollectedEvents: collected.events.length });
     return { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };

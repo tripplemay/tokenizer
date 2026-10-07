@@ -99,6 +99,41 @@ describe("runOnce durable sync checkpoint", () => {
     expect(mocks.syncEvents).not.toHaveBeenCalled();
   });
 
+  it("retains previously admitted local-only backlog after path rules change", async () => {
+    mocks.readConfig.mockReturnValue({
+      serverUrl: "https://example.test",
+      privacy: { mode: "local-only", includePaths: ["/work/new"], excludePaths: ["/work/old"] }
+    });
+    const backlog = { ...event("admitted-before-change", "2026-08-21T15:00:00.000Z"), workspacePath: "/work/old" };
+    const fresh = { ...event("fresh", "2026-08-22T15:00:00.000Z"), workspacePath: "/work/new" };
+    mocks.readCursor.mockReturnValue({ files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 });
+    mocks.readQueue.mockReturnValue([backlog]);
+    mocks.collectEvents.mockReturnValue({ events: [fresh], warnings: [] });
+
+    await runOnce();
+
+    expect(mocks.writeQueue).toHaveBeenCalledWith([backlog, fresh]);
+    expect(mocks.syncEvents).not.toHaveBeenCalled();
+  });
+
+  it("uploads admitted backlog on the next sync-mode agent cycle despite new path rules", async () => {
+    const config = {
+      serverUrl: "https://example.test",
+      privacy: { mode: "sync", includePaths: ["/work/new"], excludePaths: ["/work/old"] }
+    };
+    const backlog = { ...event("local-only-backlog", "2026-08-21T15:00:00.000Z"), workspacePath: "/work/old" };
+    mocks.readConfig.mockReturnValue(config);
+    mocks.readCursor.mockReturnValue({ files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 });
+    mocks.readQueue.mockReturnValue([backlog]);
+    mocks.collectEvents.mockReturnValue({ events: [], warnings: [] });
+    mocks.syncEvents.mockResolvedValue({ inserted: 1, duplicates: 0, received: 1 });
+
+    await runOnce();
+
+    expect(mocks.syncEvents).toHaveBeenCalledWith(config, [backlog], expect.objectContaining({ onBatchSynced: expect.any(Function) }));
+    expect(mocks.clearQueue).toHaveBeenCalledOnce();
+  });
+
   it("persists the cursor after queueing and retains only the unsent tail on failure", async () => {
     const newest = event("newest", "2026-08-22T15:00:00.000Z");
     const older = event("older", "2026-08-22T14:00:00.000Z");

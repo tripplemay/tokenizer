@@ -59,6 +59,32 @@ describe("syncEvents batch retry", () => {
     vi.useRealTimers();
   });
 
+  it("uploads already-admitted backlog without applying changed collection path rules", async () => {
+    const backlog = { ...event(1), workspacePath: "/work/previously-included" };
+    writeQueue([backlog]);
+    const changed = {
+      ...config,
+      privacy: { mode: "sync" as const, includePaths: ["/work/new"], excludePaths: ["/work/previously-included"] }
+    };
+    const onBatchSynced = vi.fn();
+    fetchMock.mockResolvedValueOnce(okResponse(1));
+
+    await syncEvents(changed, readQueue(), { onBatchSynced });
+
+    const uploaded = JSON.parse(fetchMock.mock.calls[0][1].body).events;
+    expect(uploaded).toHaveLength(1);
+    expect(uploaded).toMatchObject([backlog]);
+    expect(onBatchSynced).toHaveBeenCalledWith({ synced: 1, total: 1, remaining: [] });
+  });
+
+  it.each(["local-only", "paused"] as const)("does not upload admitted backlog while %s", async (mode) => {
+    writeQueue([event(1)]);
+    await expect(syncEvents({ ...config, privacy: { mode, includePaths: [], excludePaths: [] } }, readQueue()))
+      .rejects.toThrow(`Usage sync disabled by privacy mode: ${mode}`);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(readQueue()).toHaveLength(1);
+  });
+
   it("keeps a source content canary out of the queue and HTTP body", async () => {
     const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
     const homeDir = mkdtempSync(join(tmpdir(), "tokenizer-private-source-"));

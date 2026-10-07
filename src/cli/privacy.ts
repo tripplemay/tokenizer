@@ -1,5 +1,6 @@
 import { isAbsolute } from "node:path";
-import { isPathUnder, isWindowsPath } from "@/shared/path";
+import { createHash } from "node:crypto";
+import { isPathUnder, isWindowsPath, pathCacheKey } from "@/shared/path";
 import type { UsageEventInput } from "@/shared/usage";
 import type { TokenizerConfig } from "./config";
 
@@ -35,4 +36,19 @@ export function mayCollectEvent(event: UsageEventInput, privacy: PrivacyConfig):
 
 export function filterUsageEvents(events: UsageEventInput[], privacy: PrivacyConfig): UsageEventInput[] {
   return events.filter((event) => mayCollectEvent(event, privacy));
+}
+
+// A local collection-rule label only: never a cursor reset, event ID, or wire field.
+export function collectionScopeFingerprint(privacy: PrivacyConfig): string {
+  const canonical = (paths: string[]) => [...new Set(paths.map((path) => pathCacheKey(path)))].sort();
+  return `scope-v1:${createHash("sha256").update(JSON.stringify({
+    includePaths: canonical(privacy.includePaths),
+    excludePaths: canonical(privacy.excludePaths)
+  })).digest("hex")}`;
+}
+
+export function describePrivacyBacklog(mode: PrivacyMode, count: number): string {
+  const prefix = `Backlog: ${count} previously admitted events`;
+  if (mode === "sync") return `${prefix}; automatic upload on the next Agent/run/sync cycle.`;
+  return `${prefix}; retained locally while ${mode}. Switching to sync automatically uploads them on the next Agent/run/sync cycle.`;
 }

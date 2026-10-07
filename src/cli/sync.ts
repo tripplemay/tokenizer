@@ -9,7 +9,7 @@ import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
 import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 import { sanitizeUsageEventGit } from "@/shared/git-remote";
-import { effectivePrivacy, filterUsageEvents } from "./privacy";
+import { effectivePrivacy } from "./privacy";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -98,13 +98,15 @@ async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
   return response.json() as Promise<{ inserted: number; updated?: number; duplicates: number; received: number; deviceId?: string }>;
 }
 
+// Inputs are already admitted by collection or durable queue persistence.
+// Collection path rules are not a retroactive deletion policy for that backlog.
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[], options: SyncEventsOptions = {}) {
   const privacy = effectivePrivacy(config);
   if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
   // A large historical retry must not keep today's data behind thousands of
   // old duplicates. Server queries order by occurredAt, so wire order has no
   // presentation semantics; newest-first restores dashboard freshness early.
-  const ordered = newestFirst(filterUsageEvents(events, privacy).map(minimizeUsageEvent));
+  const ordered = newestFirst(events.map(minimizeUsageEvent));
   const total = { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
   // Preserve the empty POST: it advances the server-side lastSyncAt even when
   // no local source produced an event during this run.

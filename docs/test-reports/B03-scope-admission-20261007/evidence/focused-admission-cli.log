@@ -1,0 +1,16 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007
+
+ ✓ tests/cli/replay-contract.test.ts (37 tests) 16ms
+ ✓ tests/cli/privacy.test.ts (5 tests) 8ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 13ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 146ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (2 tests) 8260ms
+   ✓ privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 6603ms
+   ✓ privacy admission CLI lifecycle > keeps paused collection and the unavailable replay CLI from changing queue or cursor 1655ms
+
+ Test Files  5 passed (5)
+      Tests  64 passed (64)
+   Start at  22:11:36
+   Duration  9.60s (transform 1.23s, setup 0ms, collect 1.97s, tests 8.44s, environment 1ms, prepare 1.24s)
+

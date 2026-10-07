@@ -1,0 +1,15 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "project": "/Volumes/ORICO/project/.worktrees/tokenizer-b03-admission-baseline-probe-20261007",
+  "sourcesEnabled": 0,
+  "mode": "local-only",
+  "initialBacklog": 1,
+  "finalBacklog": 0,
+  "finalIds": [],
+  "preserved": false,
+  "cliExit": 0,
+  "cliSignal": null,
+  "stdout": "Collected 0 events; queue holds 0 unique events at /var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/tokenizer-admission-negative-2PVJeg/.tokenizer/queue.jsonl\n",
+  "stderr": ""
+}

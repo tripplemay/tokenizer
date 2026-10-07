@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectivePrivacy, filterUsageEvents } from "@/cli/privacy";
+import { collectionScopeFingerprint, describePrivacyBacklog, effectivePrivacy, filterUsageEvents } from "@/cli/privacy";
 import type { TokenizerConfig } from "@/cli/config";
 import type { UsageEventInput } from "@/shared/usage";
 
@@ -29,5 +29,18 @@ describe("privacy controls", () => {
   it("fails closed on malformed privacy settings", () => {
     expect(() => effectivePrivacy({ ...base, privacy: { mode: "unknown", includePaths: [], excludePaths: [] } } as unknown as TokenizerConfig)).toThrow("Invalid privacy mode");
     expect(() => effectivePrivacy({ ...base, privacy: { mode: "sync", includePaths: ["relative"], excludePaths: [] } })).toThrow("absolute");
+  });
+
+  it("labels collection rules independently of upload mode or rule ordering", () => {
+    const original = { mode: "local-only" as const, includePaths: ["/work/a", "/work/b"], excludePaths: [] };
+    expect(collectionScopeFingerprint(original)).toBe(collectionScopeFingerprint({ ...original, mode: "sync", includePaths: ["/work/b", "/work/a", "/work/a"] }));
+    expect(collectionScopeFingerprint(original)).not.toBe(collectionScopeFingerprint({ ...original, excludePaths: ["/work/private"] }));
+    expect(JSON.stringify(original)).not.toContain("scope-v1:");
+  });
+
+  it("discloses admitted backlog and next-cycle automatic upload rather than promising an immediate upload", () => {
+    expect(describePrivacyBacklog("sync", 7)).toContain("7 previously admitted events; automatic upload on the next Agent/run/sync cycle");
+    expect(describePrivacyBacklog("local-only", 7)).toContain("Switching to sync automatically uploads them on the next Agent/run/sync cycle");
+    expect(describePrivacyBacklog("paused", 7)).toContain("retained locally while paused");
   });
 });

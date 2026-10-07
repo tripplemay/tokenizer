@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath } from "./config";
+import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath, updateState } from "./config";
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
@@ -10,7 +10,8 @@ import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
 import { runHarnessCommand } from "./harness-command";
 import { installService, serviceStatus, uninstallService } from "./service";
-import { effectivePrivacy, filterUsageEvents } from "./privacy";
+import { collectionScopeFingerprint, describePrivacyBacklog, effectivePrivacy } from "./privacy";
+import { readCursor, writeCursor } from "./cursor";
 
 const program = new Command();
 
@@ -27,8 +28,8 @@ program.command("configure").description("Update local tokenizer configuration")
   .option("--server-url <url>", "Tokenizer server URL")
   .option("--project-root <path>", "Project root directory (workspace inference, not a privacy allowlist)")
   .option("--privacy-mode <mode>", "sync, local-only, or paused")
-  .option("--include-path <path...>", "Replace collection include paths")
-  .option("--exclude-path <path...>", "Replace collection exclude paths")
+  .option("--include-path <path...>", "Replace include paths for future incremental collection only")
+  .option("--exclude-path <path...>", "Replace exclude paths for future incremental collection only")
   .option("--clear-include-paths", "Clear collection include paths")
   .option("--clear-exclude-paths", "Clear collection exclude paths")
   .action((options: { serverUrl?: string; projectRoot?: string; privacyMode?: "sync" | "local-only" | "paused"; includePath?: string[]; excludePath?: string[]; clearIncludePaths?: boolean; clearExcludePaths?: boolean }) => {
@@ -41,7 +42,10 @@ program.command("configure").description("Update local tokenizer configuration")
   });
   console.log(`Config updated: ${configPath}`);
   console.log(`Server: ${config.serverUrl}`);
-  console.log(`Privacy: ${effectivePrivacy(config).mode}`);
+  const privacy = effectivePrivacy(config);
+  console.log(`Privacy: ${privacy.mode}`);
+  console.log(describePrivacyBacklog(privacy.mode, readQueue().length));
+  console.log("Path-rule changes apply to future incremental collection only; queued events and parser cursors are not reset.");
 });
 
 program.command("preview").description("Preview local usage events without enrollment, queue writes, or network calls")
@@ -71,11 +75,20 @@ program.command("harness")
 
 program.command("collect").description("Collect local usage events into queue").action(() => {
   const config = readConfig();
-  const { events, warnings } = collectEvents(config);
+  const privacy = effectivePrivacy(config);
+  if (privacy.mode === "paused") {
+    console.log("Collection paused; queue and parser cursors are unchanged.");
+    return;
+  }
+  const cursor = readCursor();
+  const { events, warnings } = collectEvents(config, cursor);
   const queued = readQueue();
-  const merged = dedupeBySourceEventId(filterUsageEvents([...queued, ...events], effectivePrivacy(config)));
+  const merged = dedupeBySourceEventId([...queued, ...events]);
   writeQueue(merged);
+  writeCursor(cursor);
+  updateState({ lastCollectionScopeFingerprint: collectionScopeFingerprint(privacy) });
   console.log(`Collected ${events.length} events; queue holds ${merged.length} unique events at ${queuePath}`);
+  console.log(describePrivacyBacklog(privacy.mode, merged.length));
   for (const warning of warnings) console.warn(`Warning: ${warning}`);
 });
 
@@ -83,7 +96,8 @@ program.command("sync").description("Sync queued events to server").action(async
   const config = readConfig();
   const privacy = effectivePrivacy(config);
   if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
-  const events = filterUsageEvents(readQueue(), privacy);
+  const events = readQueue();
+  console.log(describePrivacyBacklog(privacy.mode, events.length));
   writeQueue(events);
   const result = await syncEvents(config, events, {
     onBatchSynced: ({ remaining }) => writeQueue(remaining)
@@ -119,11 +133,18 @@ program.command("service-status").description("Show tokenizer service status").a
 });
 
 program.command("status").description("Show local configuration and queue status").action(() => {
+  const backlogCount = readQueue().length;
   console.log(`Config: ${existsSync(configPath) ? configPath : "missing"}`);
   console.log(`Device: ${existsSync(devicePath) ? `${devicePath} (${readDevice().name}, ${readDevice().id})` : "missing"}`);
   console.log(`Credentials: ${existsSync(credentialsPath) ? credentialsPath : "missing"}`);
-  console.log(`Queue: ${existsSync(queuePath) ? `${queuePath} (${readQueue().length} events)` : "empty"}`);
+  console.log(`Queue: ${existsSync(queuePath) ? `${queuePath} (${backlogCount} events)` : "empty"}`);
   console.log(`State: ${existsSync(statePath) ? statePath : "missing"}`);
+  if (existsSync(configPath)) {
+    const privacy = effectivePrivacy(readConfig());
+    console.log(`Privacy: ${privacy.mode}`);
+    console.log(describePrivacyBacklog(privacy.mode, backlogCount));
+    console.log(`Collection scope: ${collectionScopeFingerprint(privacy)} (local label; does not reset cursors)`);
+  }
 });
 
 program.command("diagnose [source]").description("Diagnose parser source availability").action((source?: string) => {

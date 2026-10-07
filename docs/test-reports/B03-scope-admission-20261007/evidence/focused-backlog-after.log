@@ -1,0 +1,45 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-privacy-semantics-20261007
+
+ ✓ tests/cli/privacy.test.ts (3 tests) 3ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (7 tests) 8ms
+ ❯ tests/cli/sync-retry.test.ts (10 tests | 1 failed) 48ms
+   × syncEvents batch retry > uploads already-admitted backlog without applying changed collection path rules 37ms
+     → expected [ { source: 'claude-code', …(7) } ] to deeply equal [ { source: 'claude-code', …(5) } ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/sync-retry.test.ts > syncEvents batch retry > uploads already-admitted backlog without applying changed collection path rules
+AssertionError: expected [ { source: 'claude-code', …(7) } ] to deeply equal [ { source: 'claude-code', …(5) } ]
+
+- Expected
++ Received
+
+  Array [
+    Object {
++     "gitRemote": null,
+      "inputTokens": 1,
+      "occurredAt": "2026-07-03T00:00:00.000Z",
+      "outputTokens": 1,
++     "repoKey": null,
+      "source": "claude-code",
+      "sourceEventId": "evt-1",
+      "workspacePath": "/work/previously-included",
+    },
+  ]
+
+ ❯ tests/cli/sync-retry.test.ts:74:64
+     72|     await syncEvents(changed, readQueue(), { onBatchSynced });
+     73| 
+     74|     expect(JSON.parse(fetchMock.mock.calls[0][1].body).events).toEqual…
+       |                                                                ^
+     75|     expect(onBatchSynced).toHaveBeenCalledWith({ synced: 1, total: 1, …
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 19 passed (20)
+   Start at  22:07:24
+   Duration  456ms (transform 200ms, setup 0ms, collect 303ms, tests 59ms, environment 0ms, prepare 194ms)
+
