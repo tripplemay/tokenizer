@@ -23,6 +23,10 @@
 
 用户已在 2026-10-07 明确选择继续修复 B02 的 Next 内嵌 PostCSS High 与 next-intl Moderate 后再发布，**不接受本轮残留依赖风险作为放行理由**。因此 B02 独立 verdict 的 `release_ready=false` 必须保持，直到修复版依赖树、功能回归与独立复验有实物证据。
 
+B02 修复版候选现位于独立树 `tokenizer-b02-next16-20261007`，提交 `305201e`：Generator 的 Node 22 生产依赖审计为 0 Critical/High/Moderate，verify、lint、build 和 scratch PG 双租户认证通过；全量仍有 SIGTERM 锁测试失败，且包含 dev 依赖的审计不是零漏洞。独立 Evaluator 与组合 SHA 回归仍在进行，**未回流本树、未放行**。
+
 用户已确认 B03 隐私行为：`local-only` 切回 `sync` 后自动上传本机积压事件；include/exclude 规则修改只对后续采集生效，历史事件仅通过单独有界回扫。后续 UI/CLI 需显式呈现积压数量及回扫入口，不得把 `projectRoots` 当作采集白名单。
 
 当前没有生产部署或发布验收。B01 的真实 GitHub Actions Windows/PG/契约/浏览器、B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。B04 首轮独立 verdict 为 `BLOCK/NOT_READY`（未回流），并发安装、native Windows、平台服务故障与最终 release pin 均待处理。用户已指定本主会话兼任发布编排者；子 agent 仍不得推送。主会话也只会在所有发布闸门满足后考虑回流和 push-main，不会因本隔离树 commit 自动发布。
+
+B04 补丁候选 `c8c79cf` 已修复安装锁、路径包含与 enroll 错误脱敏，待二轮独立评估及 native 平台门禁。B05 首轮独立 verdict 为 `FAIL/NOT_READY`，主要阻断是缺 OCI digest 制品、Linux 容器与真实 PG restore/rollback/canary 演练，以及 readiness 失败后新 app 仍运行；已派发二轮修复。B05 与本树的单独组合探针位于 `tokenizer-b05-combined-probe-20261007`，合并提交 `c8b7d89`；保留 B02 的空 `ADMIN_TOKEN`/`AUTH_SECRET` 默认值和强校验。Node 22 clean install、verify、lint、B05 focused 43/43、build 通过；全量 1544 pass/1 fail/22 skip，失败仍为 `tests/cli/agent-lifecycle.test.ts:155` SIGTERM 锁未释放。该组合探针**不是** B05 放行或主集成候选，B01 SIGTERM 根因仍待修复。
