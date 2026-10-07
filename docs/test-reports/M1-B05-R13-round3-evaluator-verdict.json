@@ -1,0 +1,168 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "M1-B05-R13",
+  "feature_id": "R13-SLICE1-ROUND3",
+  "candidate_commit": "428bc9b18195cc408752709297f66777ed114533",
+  "next16_probe_commit": "47ebe6d1b40bc47422027291374a454745aa92db",
+  "full_composition_commit": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+  "baseline_commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "created_at": "2026-10-07T15:47:00Z",
+  "evaluator": "codex/evaluator-independent-round3",
+  "result": "PASS_WITH_LIMITATIONS",
+  "release_ready": false,
+  "release_readiness": "NOT_READY",
+  "safe_branch_ci_readiness": "READY_FOR_NON_PRODUCTION_CI",
+  "summary": "Round 3 closes the five round-2 implementation blockers in the inspected B05 slice and its required B01/B02/Next16 composition. The Next16 standalone is 80 MiB, passes the denylist gate, and contains only .next, node_modules, package.json, prisma, and server.js at its root; no docs, state files, source roots, reports, or harness files were found. A real Next16 standalone process against Docker PostgreSQL 16 returned readiness 200, returned schema_not_ready/503 when the migration directory was hidden, and returned 200 after restoration. Both runner and builder images built from the historical 2074991 Dockerfile accepted an externally supplied OCI revision label and passed exact-label verification. Predecessor selection rejects same-SHA, nonexistent, malformed, and push-bootstrap cases, while explicit workflow-dispatch bootstrap is non-deploying. The composed 3ade5d1 tree retains all four B01 prerequisites, has zero production npm audit findings, and independently passed Node 22 verification, lint, build, 1588 tests with 22 skips, and the focused release suite. No open code blocker was found, so this composition is suitable for a non-main safe-branch CI run. It is not ready for main or production: the observed safe-branch run had four prerequisite jobs green but its ubuntu/amd64 OCI/recovery job was still running; branch CI does not exercise GHCR publication or GitHub attestation verification; the actual retained production old digest/bootstrap baseline and production live restore/rehearsal/deploy were not executed. Candidate 428bc9b alone also lacks B01/B02 integration and has two known B01 lifecycle failures, so it must not be merged standalone.",
+  "findings": [
+    {
+      "id": "B05-R3-EVAL-001",
+      "severity": "MEDIUM",
+      "scope": "operator documentation",
+      "title": "VPS deployment guide still describes the superseded VPS-build workflow",
+      "evidence": "docs/VPS-deployment.md:238 says the workflow builds images on the VPS and is not a CI-produced immutable digest deployment, while the inspected workflow builds and publishes digest-pinned artifacts in release-artifact and the B05 runbook describes that new flow. The manual upgrade section also remains source-build oriented.",
+      "impact": "An operator following the general VPS guide instead of the B05 runbook can misunderstand artifact provenance and the mandatory baseline/bootstrap sequence. This does not invalidate the executable safe-branch CI gate, but it is documentation drift that should be closed before production handoff.",
+      "required_action": "Update docs/VPS-deployment.md to make the digest/GHCR workflow and the separately authorized legacy baseline cutover canonical, or clearly mark the old source-build commands as emergency/legacy-only."
+    }
+  ],
+  "release_blockers": [
+    {
+      "id": "B05-R3-GATE-001",
+      "title": "ubuntu/amd64 OCI and distinct-predecessor recovery job has not reached a terminal result",
+      "evidence": "At 2026-10-07T15:45:40Z, safe-branch workflow run 37645682850 on 3ade5d1 had Linux, Windows, PostgreSQL 16, and authenticated-browser jobs successful; Linux OCI and recovery rehearsal remained in_progress.",
+      "closure": "Require the exact run's Linux OCI and recovery job to succeed and retain its recovery artifacts before integration or any main push."
+    },
+    {
+      "id": "B05-R3-GATE-002",
+      "title": "GHCR publication and GitHub attestation verification remain unexecuted",
+      "evidence": "The workflow correctly grants deploy attestations:read and contains positive, wrong-source-SHA, and wrong-workflow verification. These steps are main-only and therefore do not run in the safe-branch workflow. No real GHCR digest or signed attestation was inspected in this evaluation.",
+      "closure": "Use an authorized non-production repository/environment equivalent or the controlled main release gate to retain successful app and migration attestation verification plus both negative controls."
+    },
+    {
+      "id": "B05-R3-GATE-003",
+      "title": "Production still lacks an observed retained old-digest/bootstrap baseline",
+      "evidence": "The code intentionally refuses replacement when the running application cannot be matched to a retained digest-pinned previous environment. This evaluation built a synthetic image from the historical source, not the image actually serving production, and did not perform the authorized baseline cutover.",
+      "closure": "Build and attest the exact current production source, rehearse it against an isolated restored production backup, perform and observe the authorized old-digest baseline cutover, and retain SHA, digest, image ID, configuration, health, and rollback evidence."
+    }
+  ],
+  "round2_blocker_resolution": [
+    {
+      "round2_id": "B05-R2-EVAL-001",
+      "result": "RESOLVED",
+      "evidence": "The workflow supplies org.opencontainers.image.revision as an external build label for both historical runner and builder targets. Independent Linux/arm64 builds from baseline 2074991 used the unchanged historical Dockerfile, emitted the expected label despite its ignored SOURCE_COMMIT build argument, and both passed verify-release-image.sh."
+    },
+    {
+      "round2_id": "B05-R2-EVAL-002",
+      "result": "RESOLVED",
+      "evidence": "The migration path is now statically rooted at process.cwd()/prisma/migrations and outputFileTracingIncludes is route-scoped. Independent Next16 build/gate reported clean at 80 MiB; root contents were exactly .next, node_modules, package.json, prisma, server.js, and targeted scans found no docs/state/source/report/harness paths."
+    },
+    {
+      "round2_id": "B05-R2-EVAL-003",
+      "result": "RESOLVED_IN_COMPOSITION",
+      "evidence": "Full composition 3ade5d1 retains verify, verify-windows, verify-db, and verify-browser as release-artifact prerequisites and retains all four plus release-artifact for deploy. Node 22 full suite passed 1588 tests with 22 skips; production npm audit reported zero vulnerabilities. The direct Next16 probe and full composition have identical B05 runtime/predecessor blobs."
+    },
+    {
+      "round2_id": "B05-R2-EVAL-004",
+      "result": "RESOLVED_IN_CODE_PENDING_LIVE_EXECUTION",
+      "evidence": "Deploy permissions contain contents:read, packages:read, and attestations:read. The artifact job requires exact source SHA and exact signer workflow, and explicitly fails if either wrong-SHA or wrong-workflow verification succeeds. actionlint passed. No real GHCR attestation was available on the non-main run."
+    },
+    {
+      "round2_id": "B05-R2-EVAL-005",
+      "result": "OPEN_EXTERNAL_RELEASE_GATE",
+      "evidence": "Same-SHA selection fails except for explicit workflow_dispatch bootstrap, and bootstrap disables deploy. The actual production baseline cutover remains deliberately outside this candidate and was not executed."
+    }
+  ],
+  "verified_controls": [
+    {
+      "control": "Next16 standalone content boundary",
+      "result": "PASS",
+      "evidence": "80 MiB; clean verifier; only five allowed root entries; no docs, tests, src, app, scripts, framework, state, report, or harness artifacts found outside dependency/build roots."
+    },
+    {
+      "control": "Migration readiness positive and negative boundary",
+      "result": "PASS",
+      "evidence": "Next16 standalone plus real Docker PostgreSQL 16 and all 28 migrations returned 200/ready, then 503/schema_not_ready without the migration directory, then 200/ready after restoration."
+    },
+    {
+      "control": "Historical Dockerfile revision labels",
+      "result": "PASS",
+      "evidence": "Actual Linux/arm64 runner and builder builds from 2074991 used external labels and produced exact expected revision labels; verify-release-image.sh accepted both. This proves the prior-Dockerfile compatibility fix, not an actual production image identity."
+    },
+    {
+      "control": "Predecessor fail-closed and bootstrap mode",
+      "result": "PASS",
+      "evidence": "Distinct explicit predecessor selected; same-candidate, nonexistent SHA, malformed SHA, and bootstrap-on-push rejected; same-SHA bootstrap only accepted for workflow_dispatch, whose deploy condition excludes bootstrap_rehearsal."
+    },
+    {
+      "control": "Attestation permissions and negative-control wiring",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "attestations:read exists in deploy; exact source/workflow constraints and wrong-source/wrong-workflow fail-closed branches exist; actionlint passed. Real GitHub attestation execution was not run on the safe branch."
+    },
+    {
+      "control": "B01/B02/B05 composed regression floor",
+      "result": "PASS_WITH_LIMITATIONS",
+      "evidence": "Node 22: focused 46/46, full 1588 passed/22 skipped, verify/lint/build passed, Next16 standalone clean, production npm audit 0. Safe-branch CI independently completed all four prerequisite jobs successfully; its OCI/recovery job was still running at the observation boundary."
+    }
+  ],
+  "test_results": {
+    "candidate_node22_npm_ci": "PASS; Node v22.22.0; 637 packages",
+    "candidate_focused": "PASS; 5 files, 44 tests",
+    "candidate_full_suite": "EXPECTED_COMPOSITION_FAILURE; 109 files passed, 7 skipped, 2 B01 lifecycle tests failed; candidate must not merge alone",
+    "candidate_verify_lint_build": "PASS; Next 15.5.18 standalone clean at 85 MiB",
+    "composition_node22_npm_ci": "PASS; Node v22.22.0; 671 packages",
+    "composition_focused": "PASS; 6 files, 46 tests",
+    "composition_full_suite": "PASS; 119 files passed, 8 skipped; 1588 tests passed, 22 skipped",
+    "composition_verify_lint_build": "PASS; Next 16.4.0 standalone clean at 80 MiB",
+    "composition_production_audit": "PASS; 0 production vulnerabilities",
+    "actionlint_shellcheck_bash_syntax": "PASS",
+    "compose_release_config": "PASS; app and migrate resolve only digest images and contain no build directives",
+    "docker_postgres_next16_runtime": "PASS; local Linux/arm64 Docker PG16 plus host Next16 standalone; readiness 200 -> missing migrations 503 -> restored 200",
+    "historical_dockerfile_label": "PASS; actual Linux/arm64 baseline runner and builder images accepted the trusted external revision label",
+    "local_current_image_build": "INCONCLUSIVE_ENVIRONMENT; Colima/containerd failed with storage input/output errors after earlier Docker tests; no product conclusion drawn",
+    "safe_branch_ci": "IN_PROGRESS_AT_CUTOFF; run 37645682850 on 3ade5d1; Linux, Windows, PG16, browser PASS; OCI/recovery in progress",
+    "ghcr_attestation": "NOT_RUN; main-only path",
+    "ubuntu_amd64_oci_recovery": "PENDING in safe-branch CI at cutoff",
+    "actual_production_old_image": "NOT_RUN/NOT_PROVEN",
+    "production": "NOT_RUN"
+  },
+  "safe_branch_ci": {
+    "ready": true,
+    "integration_candidate": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+    "trigger": "workflow_dispatch or pull_request from a non-main branch",
+    "deploy_expected": "SKIPPED",
+    "observed_run_id": 37645682850,
+    "observed_status": "in_progress",
+    "required_before_integration": "Linux OCI and recovery rehearsal must finish successfully; retain its artifacts and exact run URL."
+  },
+  "evidence_paths": [
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/npm-ci-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/focused-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/full-tests-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/verify-lint-build-standalone-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/static-ci.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/old-dockerfile-external-label-linux-arm64.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/safe-branch-ci-observation.json",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/npm-ci-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/focused-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/full-tests-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/verify-lint-build-standalone-node22.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/next16-standalone-content-audit.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/docker-pg-next16-health.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/npm-audit-production.json",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/workflow-attestation-gates-audit.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/predecessor-negative-controls.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/compose-release-config.log",
+    "docs/test-reports/M1-B05-R13-round3-evaluator-evidence/combined/composition-blob-identity.log"
+  ],
+  "external_sources": [
+    "https://cli.github.com/manual/gh_attestation_verify",
+    "https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/increase-security-rating"
+  ],
+  "scope_boundaries": [
+    "No candidate product, original repository, progress.json, features.json, pending_gate, or human decision was modified.",
+    "No branch was pushed and no production or GHCR publication was performed by this evaluator.",
+    "The local Docker runtime was Linux/arm64, not the workflow's ubuntu/amd64 environment.",
+    "The historical images were reproducible builds from source commit 2074991, not the image currently or previously serving production.",
+    "The Docker PG test ran the Next16 standalone process on the macOS host against PostgreSQL 16 in Linux Docker; it was not a full OCI app rehearsal.",
+    "No production backup, restore, traffic switch, email delivery, real login, RPO/RTO, or rollback claim is made."
+  ]
+}
