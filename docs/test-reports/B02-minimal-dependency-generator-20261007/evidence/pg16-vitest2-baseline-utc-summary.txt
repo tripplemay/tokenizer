@@ -1,0 +1,1 @@
+vitest2_baseline_utc_exit=0

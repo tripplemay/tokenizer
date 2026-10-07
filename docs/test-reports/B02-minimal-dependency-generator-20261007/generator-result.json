@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "work_package": "B02",
+  "role": "generator",
+  "base_sha": "5d8aeae6bb1c42fc2b115ef8fb04844efc001e68",
+  "release_verdict": null,
+  "release_acceptance_granted": false,
+  "changes": {
+    "vitest": "4.1.11",
+    "vite": "6.4.4",
+    "postcss_selector_parser_override": "7.1.6",
+    "brace_expansion_lock": "1.1.21",
+    "browserslist_lock": "4.29.3",
+    "next": "16.4.0 unchanged",
+    "tailwindcss": "3.4.19 unchanged",
+    "braces": "3.0.3 unchanged"
+  },
+  "audit": {
+    "all": {"critical": 0, "high": 7, "moderate": 0, "total": 7},
+    "production": {"critical": 0, "high": 0, "moderate": 0, "total": 0},
+    "audit_zero_claimed": false,
+    "residual": "GHSA-vfj7-8cjw-p6xm via braces@3.0.3"
+  },
+  "validation": {
+    "node": "v22.22.0",
+    "npm": "10.9.4",
+    "npm_ci": "PASS",
+    "verify": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "full_test_final": "PASS_3_CONSECUTIVE_1602_PASSED_23_SKIPPED",
+    "full_test_cold_observation": "ONE_5_SECOND_TIMEOUT_THEN_RETRY_PASS_NO_GATE_CHANGE",
+    "css_vs_base": "TWO_CHUNKS_BYTE_IDENTICAL",
+    "postgres": "16.13_LOCAL_UTC_48_OF_48_PASS_ZERO_SKIP",
+    "browser": "3_OF_3_AUTHENTICATED_JOURNEYS_PASS"
+  },
+  "boundaries": [
+    "safe-branch CI not run by Generator",
+    "Windows OCI recovery and production not verified",
+    "human visual acceptance not performed",
+    "seven braces-derived High audit entries remain",
+    "local non-UTC PG failure preserved; UTC matches Ubuntu CI contract"
+  ],
+  "third_party_braces_fork_added": false,
+  "test_or_gate_weakened": false,
+  "production_config_changed": false,
+  "state_or_human_gate_changed": false,
+  "push_performed": false
+}

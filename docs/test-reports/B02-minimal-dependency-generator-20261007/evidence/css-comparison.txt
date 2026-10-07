@@ -1,0 +1,8 @@
+baseline=/tmp/tokenizer-b02-css-baseline-YQJSkI
+IDENTICAL .next/static/chunks/0721-9xv87gao.css
+IDENTICAL .next/static/chunks/0ogneuwxfzjvm.css
+PRESENT dark\:divide-white\/10:is(.dark *)
+PRESENT @media (min-width:768px)
+PRESENT .w-full
+PRESENT .hover\:cursor-pointer:hover
+PRESENT --tw-ring-offset-shadow

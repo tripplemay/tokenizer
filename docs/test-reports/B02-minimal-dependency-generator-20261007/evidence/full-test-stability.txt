@@ -1,0 +1,26 @@
+run=1 exit=0 wall_seconds=22
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-minimal-upgrade-20261007
+
+
+ Test Files  121 passed | 9 skipped (130)
+      Tests  1602 passed | 23 skipped (1625)
+   Start at  00:04:46
+   Duration  20.84s (transform 5.58s, setup 0ms, import 19.63s, tests 76.42s, environment 21ms)
+
+run=2 exit=0 wall_seconds=18
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-minimal-upgrade-20261007
+
+
+ Test Files  121 passed | 9 skipped (130)
+      Tests  1602 passed | 23 skipped (1625)
+   Start at  00:05:08
+   Duration  17.83s (transform 5.36s, setup 0ms, import 15.41s, tests 66.32s, environment 18ms)
+
+run=3 exit=0 wall_seconds=19
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-minimal-upgrade-20261007
+
+
+ Test Files  121 passed | 9 skipped (130)
+      Tests  1602 passed | 23 skipped (1625)
+   Start at  00:05:26
+   Duration  17.81s (transform 5.36s, setup 0ms, import 15.54s, tests 66.72s, environment 18ms)
