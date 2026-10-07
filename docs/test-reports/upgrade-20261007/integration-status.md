@@ -23,4 +23,6 @@
 
 用户已在 2026-10-07 明确选择继续修复 B02 的 Next 内嵌 PostCSS High 与 next-intl Moderate 后再发布，**不接受本轮残留依赖风险作为放行理由**。因此 B02 独立 verdict 的 `release_ready=false` 必须保持，直到修复版依赖树、功能回归与独立复验有实物证据。
 
+用户已确认 B03 隐私行为：`local-only` 切回 `sync` 后自动上传本机积压事件；include/exclude 规则修改只对后续采集生效，历史事件仅通过单独有界回扫。后续 UI/CLI 需显式呈现积压数量及回扫入口，不得把 `projectRoots` 当作采集白名单。
+
 当前没有生产部署或发布验收。B01 的真实 GitHub Actions Windows/PG/契约/浏览器、B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。B04 首轮独立 verdict 为 `BLOCK/NOT_READY`（未回流），并发安装、native Windows、平台服务故障与最终 release pin 均待处理。用户已指定本主会话兼任发布编排者；子 agent 仍不得推送。主会话也只会在所有发布闸门满足后考虑回流和 push-main，不会因本隔离树 commit 自动发布。
