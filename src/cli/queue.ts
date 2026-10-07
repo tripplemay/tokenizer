@@ -1,16 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
 import type { UsageEventInput } from "@/shared/usage";
-import { minimizeUsageEvent } from "@/shared/usage-privacy";
-import { sanitizeUsageEventGit } from "@/shared/git-remote";
 import { queuePath } from "./config";
+import { normalizeQueueEvent, queueEventVersion } from "./queue-event-version";
 import { quarantineUsageEvents } from "./rejected-events";
 
-const SECURE_QUEUE_WRITE = { mode: 0o600, directoryMode: 0o700, restrictToOwner: true } as const;
+export { queueEventVersion } from "./queue-event-version";
 
-function normalizeQueueEvent(event: UsageEventInput): UsageEventInput {
-  return minimizeUsageEvent(sanitizeUsageEventGit(event));
-}
+const SECURE_QUEUE_WRITE = { mode: 0o600, directoryMode: 0o700, restrictToOwner: true } as const;
 
 function parseQueue(text: string): UsageEventInput[] {
   return text.split(/\r?\n/).filter(Boolean)
@@ -19,10 +16,6 @@ function parseQueue(text: string): UsageEventInput[] {
 
 function serializeQueue(events: UsageEventInput[]): string {
   return events.length ? events.map((event) => JSON.stringify(normalizeQueueEvent(event))).join("\n") + "\n" : "";
-}
-
-export function queueEventVersion(event: UsageEventInput): string {
-  return JSON.stringify(normalizeQueueEvent(event));
 }
 
 function readQueueUnlocked(): UsageEventInput[] {

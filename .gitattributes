@@ -1,0 +1,3 @@
+/tests/cli/b06-batch-failure-queue.test.ts -text
+/tests/cli/b06-partial-ack.test.ts -text
+/tests/ci/b06-obsolete-queue-test-archive.test.ts -text

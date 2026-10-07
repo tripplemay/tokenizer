@@ -1,9 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
-import { sanitizeUsageEventGit } from "@/shared/git-remote";
 import type { UsageEventInput } from "@/shared/usage";
-import { minimizeUsageEvent } from "@/shared/usage-privacy";
 import { rejectedUsagePath } from "./config";
+import { normalizeQueueEvent, queueEventVersion } from "./queue-event-version";
 
 export type RejectedUsageEvent = {
   version: 1;
@@ -37,14 +36,14 @@ export function quarantineUsageEvents(
     // A corrupt quarantine must never be overwritten: retaining the active
     // queue is safer than losing either the old rejects or the new ones.
     const existing = existsSync(path) ? parseRejected(readFileSync(path, "utf8")) : [];
-    const byIdentity = new Map(
-      existing.map((row) => [`${row.event.source}\u0000${row.event.sourceEventId}`, row])
+    const byVersion = new Map(
+      existing.map((row) => [queueEventVersion(row.event), row])
     );
     for (const item of rejected) {
-      const event = minimizeUsageEvent(sanitizeUsageEventGit(item.event));
-      const key = `${event.source}\u0000${event.sourceEventId}`;
-      if (!byIdentity.has(key)) {
-        byIdentity.set(key, {
+      const event = normalizeQueueEvent(item.event);
+      const key = queueEventVersion(event);
+      if (!byVersion.has(key)) {
+        byVersion.set(key, {
           version: 1,
           rejectedAt: new Date().toISOString(),
           code: item.code,
@@ -54,7 +53,7 @@ export function quarantineUsageEvents(
     }
     writeFileAtomic(
       path,
-      [...byIdentity.values()].map((row) => JSON.stringify(row)).join("\n") + "\n",
+      [...byVersion.values()].map((row) => JSON.stringify(row)).join("\n") + "\n",
       { mode: 0o600, directoryMode: 0o700, restrictToOwner: true }
     );
   });
