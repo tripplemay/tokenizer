@@ -1,0 +1,101 @@
+{
+  "total_count": 8,
+  "artifacts": [
+    {
+      "id": 11501990351,
+      "name": "tripplemay~tokenizer~0SL9NS.dockerbuild",
+      "size_in_bytes": 43741,
+      "expired": false,
+      "created_at": "2026-10-07T17:45:39Z",
+      "expires_at": "2027-01-05T17:36:33Z",
+      "workflow_run": {
+        "id": 11501990351,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11501905526,
+      "name": "tripplemay~tokenizer~EHW6Q4.dockerbuild",
+      "size_in_bytes": 34321,
+      "expired": false,
+      "created_at": "2026-10-07T17:45:41Z",
+      "expires_at": "2027-01-05T17:36:33Z",
+      "workflow_run": {
+        "id": 11501905526,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11501755681,
+      "name": "tripplemay~tokenizer~Z7YP8K.dockerbuild",
+      "size_in_bytes": 32224,
+      "expired": false,
+      "created_at": "2026-10-07T17:45:37Z",
+      "expires_at": "2027-01-05T17:36:33Z",
+      "workflow_run": {
+        "id": 11501755681,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11501715741,
+      "name": "release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1",
+      "size_in_bytes": 14465,
+      "expired": false,
+      "created_at": "2026-10-07T17:45:35Z",
+      "expires_at": "2026-10-21T17:45:33Z",
+      "workflow_run": {
+        "id": 11501715741,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11501485998,
+      "name": "tripplemay~tokenizer~EYLRMQ.dockerbuild",
+      "size_in_bytes": 72612,
+      "expired": false,
+      "created_at": "2026-10-07T17:45:43Z",
+      "expires_at": "2027-01-05T17:36:33Z",
+      "workflow_run": {
+        "id": 11501485998,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11500735717,
+      "name": "tokenizer-browser-e2e",
+      "size_in_bytes": 445,
+      "expired": false,
+      "created_at": "2026-10-07T17:40:01Z",
+      "expires_at": "2026-10-14T17:40:00Z",
+      "workflow_run": {
+        "id": 11500735717,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11500705698,
+      "name": "windows-pinned-installer",
+      "size_in_bytes": 623,
+      "expired": false,
+      "created_at": "2026-10-07T17:39:00Z",
+      "expires_at": "2026-10-14T17:39:00Z",
+      "workflow_run": {
+        "id": 11500705698,
+        "head_sha": null
+      }
+    },
+    {
+      "id": 11500418010,
+      "name": "windows-agent-owner",
+      "size_in_bytes": 890,
+      "expired": false,
+      "created_at": "2026-10-07T17:40:11Z",
+      "expires_at": "2026-10-14T17:40:10Z",
+      "workflow_run": {
+        "id": 11500418010,
+        "head_sha": null
+      }
+    }
+  ]
+}

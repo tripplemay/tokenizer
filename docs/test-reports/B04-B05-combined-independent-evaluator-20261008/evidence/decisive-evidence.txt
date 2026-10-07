@@ -1,0 +1,65 @@
+=== decisive safe-branch facts ===
+run=37659301770 status=completed conclusion=failure headSha=3cce52e360b81715c3c54752b77575b445cd46f2 branch=codex/b04-b05-integration-ci-20261008
+Verify=success
+Verify (PostgreSQL 16)=success
+Verify (authenticated browser)=success
+Verify (Windows)=failure
+Linux OCI and recovery rehearsal=skipped
+Deploy=skipped
+=== failure ===
+195:Verify (Windows)	Run unit tests	2026-10-07T17:31:13.9343011Z [31m   [31m×[31m B05 retained recovery evidence round 2[2m > [22mkeeps all nine immutable historical evidence entries byte-identical[90m 12[2mms[22m[31m[39m
+279:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.3889168Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+281:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.3891873Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-evidence-retention-round2.test.ts[2m > [22mB05 retained recovery evidence round 2[2m > [22mkeeps all nine immutable historical evidence entries byte-identical
+282:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.3894028Z [31m[1mAssertionError[22m: expected null not to be null[39m
+283:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.3895846Z [36m [2m❯[22m tests/evaluator/b05-evidence-retention-round2.test.ts:[2m30:25[22m[39m
+290:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.4187217Z [90m [2m❯[22m tests/evaluator/b05-evidence-retention-round2.test.ts:[2m28:81[22m[39m
+294:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.4195408Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m126 passed[39m[22m[2m | [22m[33m11 skipped[39m[90m (138)[39m
+295:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.4201634Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1655 passed[39m[22m[2m | [22m[33m61 skipped[39m[90m (1717)[39m
+300:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.4304556Z ##[error]AssertionError: expected null not to be null
+301:Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-evidence-retention-round2.test.ts:30:25
+302:Verify (Windows)	Run unit tests	 ❯ tests/evaluator/b05-evidence-retention-round2.test.ts:28:81
+305:Verify (Windows)	Run unit tests	2026-10-07T17:31:27.6098351Z ##[error]Process completed with exit code 1.
+=== workflow gates ===
+122:  verify-windows:
+143:      - name: Verify native Windows pinned installer
+149:          node scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json
+312:  release-artifact:
+315:    needs: [verify, verify-windows, verify-db, verify-browser]
+316:    permissions:
+364:        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+418:        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+425:        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+432:        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+440:          wrong_source=0000000000000000000000000000000000000000
+447:              --source-digest "$wrong_source" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" >/dev/null 2>&1; then
+454:            printf 'wrong_source=rejected\nwrong_workflow=rejected\n' > ".releases/$GITHUB_SHA.$kind.provenance-negative-controls"
+469:          bash scripts/test/rehearse-release.sh
+492:  deploy:
+497:    permissions:
+500:      attestations: read
+501:    needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]
+502:    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.bootstrap_rehearsal != true
+=== candidate integration-only delta ===
+commit=3cce52e360b81715c3c54752b77575b445cd46f2
+parents=474c3cfdbded8da06ea42f8db83d786ffa20ebe6
+subject=test: compose B04 and B05 release gates
+
+ docs/test-reports/upgrade-20261007/b04-b05-integration-20261008.md | 7 +++++++
+ tests/server/release-rehearsal.test.ts                             | 2 +-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+diff --git a/tests/server/release-rehearsal.test.ts b/tests/server/release-rehearsal.test.ts
+index 6b24ae4..5a6f388 100644
+--- a/tests/server/release-rehearsal.test.ts
++++ b/tests/server/release-rehearsal.test.ts
+@@ -122,7 +122,7 @@ fi
+
+   it("requires Linux artifact/recovery job before production deployment", () => {
+     const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf8");
+-    expect(workflow).toContain("needs: [verify, verify-windows, release-artifact]");
++    expect(workflow).toContain("needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]");
+     expect(workflow).toContain("provenance: mode=max");
+     expect(workflow).toContain("@${{ steps.app.outputs.digest }}");
+     expect(workflow).toContain("bash scripts/test/rehearse-release.sh");
+=== Docker availability ===
+29.3.1
+failed to connect to the docker API at unix:///Users/yixingzhou/.colima/tokenizer-b05-scratch/docker.sock; check if the path is correct and if the daemon is running: dial unix /Users/yixingzhou/.colima/tokenizer-b05-scratch/docker.sock: connect: no such file or directory

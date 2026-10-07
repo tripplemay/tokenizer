@@ -1,0 +1,11 @@
+=== Native Windows pinned installer ===
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:29:47.5663604Z [36;1mnpx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:29:49.3239206Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:30:14.8535268Z [90mstdout[2m | tests/cli/agent-release-installer-windows.test.ts[2m > [22m[2mnative Windows pinned installer fixture[2m > [22m[2minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:30:14.8545042Z  [32m✓[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 24865[2mms[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:30:14.8711631Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:30:14.8713251Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T17:30:14.8717541Z [2m   Duration [22m 25.55s[2m (transform 67ms, setup 0ms, collect 92ms, tests 24.87s, environment 0ms, prepare 271ms)[22m
+=== Gate sequence after full-test failure ===
+Verify (Windows)	Run unit tests	2026-10-07T17:31:27.3891873Z [31m[1m[7m FAIL [27m[22m[39m tests/evaluator/b05-evidence-retention-round2.test.ts[2m > [22mB05 retained recovery evidence round 2[2m > [22mkeeps all nine immutable historical evidence entries byte-identical
+Verify (Windows)	Run unit tests	2026-10-07T17:31:27.6098351Z ##[error]Process completed with exit code 1.

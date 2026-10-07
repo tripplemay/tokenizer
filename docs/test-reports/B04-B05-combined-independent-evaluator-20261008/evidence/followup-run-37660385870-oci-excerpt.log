@@ -1,0 +1,161 @@
+=== recovery and retained evidence ===
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:34.8401192Z Finished uploading artifact content to blob storage!
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:34.8403057Z SHA256 digest of uploaded artifact zip is 4883e760b18208c959f50d0eff242ecba45e04bae9f6e8c7cdc52fbc34ca93c0
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:34.8404900Z Finalizing artifact upload
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:35.1437505Z Artifact release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1.zip successfully finalized. Artifact ID 11501715741
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:35.1441089Z Artifact release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1 has been successfully uploaded! Final size is 14465 bytes. Artifact ID is 11501715741
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:45:35.1446357Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37660385870/artifacts/11501715741
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	﻿2026-10-07T17:45:35.1589194Z ##[group]Run actions/download-artifact@v4
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1589514Z with:
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1589809Z   name: release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1590209Z   path: release-recovery-downloaded
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1590485Z   merge-multiple: false
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1590726Z   repository: tripplemay/tokenizer
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1590977Z   run-id: 37660385870
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.1591191Z ##[endgroup]
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.3118684Z Downloading single artifact
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.3271452Z (node:20113) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.3272394Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.6410752Z Preparing to download the following artifacts:
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.6412688Z - release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1 (ID: 11501715741, Size: 14465, Expected Digest: sha256:4883e760b18208c959f50d0eff242ecba45e04bae9f6e8c7cdc52fbc34ca93c0)
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.9174225Z Redirecting to blob download url: https://productionresultssa1.blob.core.windows.net/actions-results/bb8fdd0b-19fa-400d-8be2-0b2e8e592bd2/workflow-job-run-1d293b1d-042a-5c0b-8aca-71b8c95fca2c/artifacts/bb157ae8c83db25c21ce0a670edc8d7cd5c7ad5911427c1f940d06b706ffcac9.zip
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:35.9177169Z Starting download of artifact to: /home/runner/work/tokenizer/tokenizer/release-recovery-downloaded
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:36.2011570Z (node:20113) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:36.2085097Z SHA256 digest of downloaded artifact is 4883e760b18208c959f50d0eff242ecba45e04bae9f6e8c7cdc52fbc34ca93c0
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:36.2086121Z Artifact download completed successfully.
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:36.2086589Z Total of 1 artifact(s) downloaded
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:45:36.2090451Z Download artifact has finished successfully
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	﻿2026-10-07T17:45:36.2220586Z ##[group]Run node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2221547Z [36;1mnode scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"[0m
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2284998Z shell: /usr/bin/bash -e {0}
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2285280Z env:
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2285484Z   REQUIRE_PROVENANCE: false
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2285732Z ##[endgroup]
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:45:36.2688221Z {"recoveryEvidence":"verify","revision":"8877a592d21305f03cdaea5d874d58a581e910a1","provenanceRequired":false}
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	﻿2026-10-07T17:45:36.2814059Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.5225464Z ##[group]Generating build summary
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.5230893Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-wNxP6m/export
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.5243036Z (node:20133) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.5243954Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.7076266Z [command]/usr/bin/docker buildx history export --builder builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4 --output /home/runner/work/_temp/docker-actions-toolkit-wNxP6m/export/tripplemay~tokenizer~Z7YP8K.dockerbuild z7yp8k5nflacb6t8an73naqy7 --finalize
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.8899357Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-wNxP6m/export/tripplemay~tokenizer~Z7YP8K.dockerbuild (31.47 KB)
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:36.8930446Z Uploading tripplemay~tokenizer~Z7YP8K.dockerbuild to blob storage
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.2738980Z Beginning upload of artifact content to blob storage
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.2827867Z (node:20133) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.2837294Z Uploaded bytes 32224
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.6304348Z Finished uploading artifact content to blob storage!
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.6309340Z SHA256 hash of uploaded artifact is d7db9c17a45d5062e0c094fa5c607ff7152dab122f873ec1835488cd6ca8d4a7
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:37.6310651Z Finalizing artifact upload
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0476676Z Artifact successfully finalized (11501755681)
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0478088Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37660385870/artifacts/11501755681
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0505106Z Writing summary
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0518637Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0519532Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-bqfElE
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0535169Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0535868Z ##[group]Post cache
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0537654Z State not set
+Linux OCI and recovery rehearsal	Post Build previous source migration artifact	2026-10-07T17:45:38.0538249Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	﻿2026-10-07T17:45:38.0718075Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.3053090Z ##[group]Generating build summary
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.3058234Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-fYivjn/export
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.3071190Z (node:20283) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.3072402Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.4873914Z [command]/usr/bin/docker buildx history export --builder builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4 --output /home/runner/work/_temp/docker-actions-toolkit-fYivjn/export/tripplemay~tokenizer~0SL9NS.dockerbuild 0sl9nsdna8pd4k163cpd8kc95 --finalize
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.6810513Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-fYivjn/export/tripplemay~tokenizer~0SL9NS.dockerbuild (42.72 KB)
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:38.6838517Z Uploading tripplemay~tokenizer~0SL9NS.dockerbuild to blob storage
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.0820698Z Beginning upload of artifact content to blob storage
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.0910275Z (node:20283) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.0919695Z Uploaded bytes 43741
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.4988318Z Finished uploading artifact content to blob storage!
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.4993323Z SHA256 hash of uploaded artifact is 27f5c81764e5f862550eba5922b85a9bc96cc6b0099e4cf8d9f8cd08a4d12e3b
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.4995108Z Finalizing artifact upload
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9394425Z Artifact successfully finalized (11501990351)
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9396734Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37660385870/artifacts/11501990351
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9423046Z Writing summary
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9435184Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9436435Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-m8EVi7
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9440897Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9441619Z ##[group]Post cache
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9442772Z State not set
+Linux OCI and recovery rehearsal	Post Build previous source app for compatibility rehearsal	2026-10-07T17:45:39.9443500Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	﻿2026-10-07T17:45:39.9626409Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.1962277Z ##[group]Generating build summary
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.1968641Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-Z1fPOk/export
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.1982473Z (node:20422) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.1983696Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.3735363Z [command]/usr/bin/docker buildx history export --builder builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4 --output /home/runner/work/_temp/docker-actions-toolkit-Z1fPOk/export/tripplemay~tokenizer~EHW6Q4.dockerbuild ehw6q4y4a1nfe9cr0o6z44kew --finalize
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.5622783Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-Z1fPOk/export/tripplemay~tokenizer~EHW6Q4.dockerbuild (33.52 KB)
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.5646726Z Uploading tripplemay~tokenizer~EHW6Q4.dockerbuild to blob storage
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.9588498Z Beginning upload of artifact content to blob storage
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.9674045Z (node:20422) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:40.9683946Z Uploaded bytes 34321
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.3273303Z Finished uploading artifact content to blob storage!
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.3278468Z SHA256 hash of uploaded artifact is 080608f274bbdb7057edc45de7c9984842a2b55eedd2b3557d00f7628fb3f7f4
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.3279682Z Finalizing artifact upload
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7713291Z Artifact successfully finalized (11501905526)
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7715395Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37660385870/artifacts/11501905526
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7742721Z Writing summary
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7755588Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7756693Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-eYjfrm
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7760622Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7761435Z ##[group]Post cache
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7762477Z State not set
+Linux OCI and recovery rehearsal	Post Build exact migration artifact	2026-10-07T17:45:41.7763344Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build candidate app once	﻿2026-10-07T17:45:41.7953838Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.0315478Z ##[group]Generating build summary
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.0321222Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-CYdev3/export
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.0334196Z (node:20561) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.0335657Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.2143397Z [command]/usr/bin/docker buildx history export --builder builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4 --output /home/runner/work/_temp/docker-actions-toolkit-CYdev3/export/tripplemay~tokenizer~EYLRMQ.dockerbuild eylrmqldsx9gtadsi41gqqcvd --finalize
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.4257751Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-CYdev3/export/tripplemay~tokenizer~EYLRMQ.dockerbuild (70.91 KB)
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.4287529Z Uploading tripplemay~tokenizer~EYLRMQ.dockerbuild to blob storage
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.8198461Z Beginning upload of artifact content to blob storage
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.8285175Z (node:20561) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.8293760Z Uploaded bytes 65536
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:42.8296199Z Uploaded bytes 72612
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.2419531Z Finished uploading artifact content to blob storage!
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.2424206Z SHA256 hash of uploaded artifact is 56674e427a12d80dddda4c7db36004ff8f1d68e32aef795ce8bea570148e94dd
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.2426098Z Finalizing artifact upload
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6826554Z Artifact successfully finalized (11501485998)
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6828532Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37660385870/artifacts/11501485998
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6853669Z Writing summary
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6866677Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6867633Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-nFRdGo
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6871604Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6872348Z ##[group]Post cache
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6873577Z State not set
+Linux OCI and recovery rehearsal	Post Build candidate app once	2026-10-07T17:45:43.6874357Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	﻿2026-10-07T17:45:43.7037123Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:43.9554441Z ##[group]Removing builder
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:43.9563156Z (node:20701) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:43.9576345Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:44.0604110Z [command]/usr/bin/docker buildx rm builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9448889Z builder-1e1d52b3-1a88-4d50-af47-a959b3c0c6a4 removed
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9485828Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9486586Z ##[group]Cleaning up certificates
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9495926Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9496559Z ##[group]Post cache
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9496889Z State not set
+Linux OCI and recovery rehearsal	Post Run docker/setup-buildx-action@v3	2026-10-07T17:45:57.9497335Z ##[endgroup]
+Linux OCI and recovery rehearsal	Post Run actions/setup-node@v4	﻿2026-10-07T17:45:57.9659669Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Run actions/setup-node@v4	2026-10-07T17:45:58.0900491Z (node:20820) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Linux OCI and recovery rehearsal	Post Run actions/setup-node@v4	2026-10-07T17:45:58.0901975Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	﻿2026-10-07T17:45:58.1075274Z Post job cleanup.
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.1952997Z [command]/usr/bin/git version
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.1998030Z git version 2.55.0
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2039451Z Temporarily overriding HOME='/home/runner/work/_temp/0dd3f0a4-46be-4b37-b9d5-b459d7fd4ba3' before making global git config changes
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2041450Z Adding repository directory to the temporary git global config as a safe directory
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2045614Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tokenizer/tokenizer
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2097435Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2154317Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2445627Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2465424Z http.https://github.com/.extraheader
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2470447Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2506555Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2775956Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Linux OCI and recovery rehearsal	Post Run actions/checkout@v4	2026-10-07T17:45:58.2812620Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Linux OCI and recovery rehearsal	Complete job	﻿2026-10-07T17:45:58.3220023Z Evaluate and set job outputs
+Linux OCI and recovery rehearsal	Complete job	2026-10-07T17:45:58.3225980Z Set output 'app-image'
+Linux OCI and recovery rehearsal	Complete job	2026-10-07T17:45:58.3228383Z Set output 'migrate-image'
+Linux OCI and recovery rehearsal	Complete job	2026-10-07T17:45:58.3229484Z Cleaning up orphan processes
+Linux OCI and recovery rehearsal	Complete job	2026-10-07T17:45:58.3668433Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@v4, actions/setup-node@v4, actions/upload-artifact@v4, docker/build-push-action@v6, docker/setup-buildx-action@v3. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

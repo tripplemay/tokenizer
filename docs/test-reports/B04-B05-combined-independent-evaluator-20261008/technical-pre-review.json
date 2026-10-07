@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "artifact_type": "technical_pre_review",
+  "authoritative_evaluator_verdict": false,
+  "reason_non_authoritative": "Harness v1.1 model_family classifies both this reviewer and the B05 generator as codex; an external Claude/Kimi family review is required.",
+  "candidate_sha": "3cce52e360b81715c3c54752b77575b445cd46f2",
+  "base_sha": "55a58cb",
+  "observed_run": {
+    "id": 37659301770,
+    "head_sha": "3cce52e360b81715c3c54752b77575b445cd46f2",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": {
+      "Verify": "success",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Verify (Windows)": "failure",
+      "Linux OCI and recovery rehearsal": "skipped",
+      "Deploy": "skipped"
+    }
+  },
+  "technical_pre_review_outcome": "BLOCK",
+  "safe_branch_ci_readiness": "BLOCK",
+  "production_readiness": "NOT_READY",
+  "gate_weakening_found": false,
+  "blockers": [
+    {
+      "id": "B04-B05-WINDOWS-IMMUTABLE-BYTES",
+      "severity": "P1",
+      "summary": "Windows CRLF checkout breaks the strict historical manifest and byte-identical hashes.",
+      "required_fix": [
+        "Add path-scoped -text for the historical evidence tree.",
+        "Add path-scoped -text for scripts/test/b05-tcp-readiness-independent.mjs.",
+        "Add path-scoped -text for tests/evaluator/b05-tcp-readiness-independent.test.ts.",
+        "Rerun the full Windows and dependent OCI/recovery jobs on one exact SHA."
+      ]
+    }
+  ],
+  "fix_analysis": {
+    "preferred": "path-scoped gitattributes -text",
+    "test_normalization_rejected": true,
+    "simulation": {
+      "without_attributes": {
+        "strict_manifest_rows": "1/9",
+        "matching_hashes": "0/9",
+        "historical_test_sha": "mismatch"
+      },
+      "with_complete_three_path_rules": {
+        "strict_manifest_rows": "9/9",
+        "matching_hashes": "9/9",
+        "historical_test_sha": "match"
+      },
+      "followup_8546afa_two_rule_patch": {
+        "matching_hashes": "8/9",
+        "missing_path": "scripts/test/b05-tcp-readiness-independent.mjs",
+        "accepted_as_fix": false
+      }
+    }
+  },
+  "local_checks": {
+    "node": "v22.22.0",
+    "actionlint": "pass",
+    "shell_syntax": "pass",
+    "verify": "pass",
+    "lint": "pass",
+    "focused": "113 passed, 0 failed",
+    "full_clean": "1694 passed, 23 skipped, 0 failed",
+    "standalone_build": "pass",
+    "standalone_boundary": "pass",
+    "docker_rehearsal": "not_run_daemon_unavailable"
+  },
+  "unverified_release_boundaries": [
+    "ubuntu-amd64 OCI and recovery on the combined exact SHA",
+    "real GHCR push and digest retention",
+    "GitHub attestation issuance and verification including negative controls",
+    "real predecessor image compatibility",
+    "production deploy and post-deploy health"
+  ],
+  "formal_next_step": "Assign a different model family to independently evaluate exact SHA 8877a592d21305f03cdaea5d874d58a581e910a1; keep production NOT_READY until main-only and production gates complete.",
+  "followup_correction_observation": {
+    "candidate_sha": "8877a592d21305f03cdaea5d874d58a581e910a1",
+    "run_id": 37660385870,
+    "status": "completed",
+    "conclusion": "success",
+    "technical_safe_branch_ci_readiness": "READY_FOR_FORMAL_EXTERNAL_REVIEW",
+    "jobs": {
+      "Verify": "success",
+      "Verify (Windows)": "success",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Linux OCI and recovery rehearsal": "success",
+      "Deploy": "skipped"
+    },
+    "main_only_steps": {
+      "ghcr_login": "skipped",
+      "attest_app": "skipped",
+      "attest_migrate": "skipped",
+      "verify_provenance_and_negative_controls": "skipped"
+    },
+    "recovery_artifact": {
+      "name": "release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1",
+      "artifact_id": 11501715741,
+      "uploaded_zip_sha256": "4883e760b18208c959f50d0eff242ecba45e04bae9f6e8c7cdc52fbc34ca93c0",
+      "ci_download_sha256_match": true,
+      "independent_manifest_and_file_verification": "pass",
+      "manifest_entry_count": 4,
+      "rehearsal": {
+        "mode": "synthetic",
+        "restore_inventory": "2|2|1|1|23",
+        "runtime_uid": 1000,
+        "rollback": "passed"
+      }
+    },
+    "production_readiness": "NOT_READY",
+    "authoritative_evaluator_verdict": false
+  }
+}

@@ -1,0 +1,459 @@
+{
+  "databaseId": 37660385870,
+  "headBranch": "codex/b04-b05-integration-ci-20261008",
+  "headSha": "8877a592d21305f03cdaea5d874d58a581e910a1",
+  "status": "completed",
+  "conclusion": "success",
+  "event": "workflow_dispatch",
+  "workflowName": "Deploy VPS",
+  "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870",
+  "jobs": [
+    {
+      "name": "Verify",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112926444315",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Lint",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run unit tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Detect contract changes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Checkout pinned framework fixtures",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pinned bidirectional contract tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Next.js build smoke check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Verify (Windows)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112926444846",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify native Windows pinned installer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload native Windows installer evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run unit tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify Windows agent owner force termination",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload Windows agent owner evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate install.ps1 syntax",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Verify (authenticated browser)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112926444856",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Initialize containers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Apply all database migrations",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build production server",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install Chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run authenticated critical journeys",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Keep browser failure screenshots and traces",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Stop containers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Verify (PostgreSQL 16)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112926444989",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Initialize containers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Apply all database migrations",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run database integration probes without skips",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Stop containers",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Linux OCI and recovery rehearsal",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112927749962",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Start isolated CI registry",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker/setup-buildx-action@v3",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set immutable artifact references",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker/login-action@v3",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Build candidate app once",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build exact migration artifact",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build previous source app for compatibility rehearsal",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build previous source migration artifact",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Attest app digest from this workflow",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Attest migration digest from this workflow",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Verify signed provenance and exact source revision",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Backup restore migration and old-image business rehearsal",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Stage allowlisted synthetic recovery evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain synthetic recovery evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Download retained synthetic recovery evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify downloaded recovery evidence manifest and hashes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Build previous source migration artifact",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Build previous source app for compatibility rehearsal",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Build exact migration artifact",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Build candidate app once",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run docker/setup-buildx-action@v3",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Deploy",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/tripplemay/tokenizer/actions/runs/37660385870/job/112930248625",
+      "steps": []
+    }
+  ]
+}

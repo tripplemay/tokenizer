@@ -1,0 +1,328 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008
+
+ ✓ tests/server/harness-mode-intent-api.test.ts (107 tests) 35ms
+ ✓ tests/shared/harness-detail.test.ts (18 tests) 32ms
+ ✓ tests/server/harness-mode-intents-route.test.ts (20 tests) 39ms
+ ✓ tests/parsers/claude.test.ts (20 tests) 49ms
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests | 3 skipped) 15ms
+ ✓ tests/server/harness-report-mode-intent.test.ts (69 tests) 88ms
+ ✓ tests/cli/harness-tool-catalog.test.ts (77 tests) 282ms
+ ✓ tests/evaluator/bl-native-subagent-bridges-f004.test.ts (13 tests) 51ms
+ ✓ tests/shared/harness-mode-intent.test.ts (81 tests) 23ms
+ ✓ tests/cli/harness-modes.test.ts (22 tests) 244ms
+ ✓ tests/server/harness-cost.test.ts (19 tests) 18ms
+ ✓ tests/server/harness-mode-intents-relay-route.test.ts (28 tests) 47ms
+ ✓ tests/server/heartbeat-harness.test.ts (31 tests) 71ms
+ ✓ tests/evaluator/bl-agent-release-acceptance.test.ts (17 tests) 93ms
+ ✓ tests/shared/subscription-card.test.ts (36 tests) 385ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 105ms
+ ✓ tests/shared/harness-mode-drilldown.test.ts (7 tests) 114ms
+ ✓ tests/server/harness-dispatch-usage.test.ts (14 tests) 38ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts (5 tests) 143ms
+ ❯ tests/evaluator/bl-homepage-freshness-f004.test.ts (8 tests | 1 failed) 89ms
+   × BL-HOMEPAGE-FRESHNESS F004 evaluator probes > preserves the OpenCode SQLite high-water cursor behavior 41ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+ ↓ tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/server/ingest-project.test.ts (16 tests) 33ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts (4 tests) 195ms
+ ✓ tests/cli/service-windows.test.ts (24 tests | 4 skipped) 10ms
+ ↓ tests/server/harness-cost-range-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 37ms
+ ↓ tests/cli/agent-release-installer-windows.test.ts (1 test | 1 skipped)
+stderr | tests/server/ingest-upsert.test.ts > ingestUsageEvents conflict correction > corrects a stale row in place when the re-parsed event differs
+usage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+
+ ✓ tests/server/ingest-upsert.test.ts (9 tests) 23ms
+ ✓ tests/evaluator/bl-homepage-freshness-f002-f003.test.ts (5 tests) 2777ms
+   ✓ F003 real CLI/daemon parity > checkpoints the same remaining tail between real sync and run subprocess batches 2730ms
+ ✓ tests/parsers/codex.test.ts (11 tests) 48ms
+ ✓ tests/evaluator/bl-transition-log-f003-timeline-view.test.ts (4 tests) 49ms
+ ✓ tests/server/harness-batch-archive.test.ts (4 tests) 25ms
+ ✓ tests/server/harness-sign.test.ts (14 tests) 494ms
+ ✓ tests/server/harness-report-transitions.test.ts (6 tests) 27ms
+ ✓ tests/shared/model-pricing.test.ts (16 tests) 8ms
+ ✓ tests/cli/atomic-file.test.ts (19 tests) 413ms
+ ✓ tests/cli/agent-lifecycle.test.ts (8 tests | 1 skipped) 4070ms
+   ✓ agent command parsing > rejects `tokenizer agent status` before it can start a daemon 950ms
+   ✓ agent single-instance lock > releases the lock when the running agent receives SIGTERM 932ms
+   ✓ tokenizer wrapper lifecycle > handles SIGTERM delivered before spawn returns without orphaning its child 1088ms
+   ✓ tokenizer wrapper lifecycle > forwards SIGTERM to its async child and waits for that child to exit 1084ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 1993ms
+   ✓ allowlisted recovery evidence transport > detects downloaded file tampering, missing files, extra files and wrong revision 405ms
+ ✓ tests/shared/path.test.ts (33 tests) 12ms
+ ↓ tests/contract/fixture-ingest.contract.test.ts (2 tests | 2 skipped)
+ ✓ tests/parsers/kimicode.test.ts (10 tests) 61ms
+ ✓ tests/cli/git.test.ts (21 tests) 247ms
+ ✓ tests/evaluator/bl-codex-quota-window-f001-f002.test.ts (19 tests) 113ms
+ ✓ tests/shared/framework-version.test.ts (16 tests) 11ms
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 65ms
+ ❯ tests/parsers/opencode.test.ts (10 tests | 5 failed) 46ms
+   × parseOpenCodeUsage > inputTokens is raw input + cache write + cache read (new total-input semantic) 15ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+   × parseOpenCodeUsage > inputTokens still includes cache reads when cache.write is zero 4ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+   × parseOpenCodeUsage > uses opencode:<message_id> as a stable sourceEventId 4ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+   × parseOpenCodeUsage > skips messages whose role is not assistant 10ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+   × parseOpenCodeUsage > skips assistant messages whose total token count is zero 5ms
+     → The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+ ✓ tests/server/release-image.test.ts (10 tests) 2931ms
+   ✓ release image gate and fault rehearsal > refuses a changed digest for an already recorded commit 338ms
+   ✓ release image gate and fault rehearsal > does not mark a release active when health returns a different SHA 786ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 708ms
+ ✓ tests/server/model-detect.test.ts (11 tests) 20ms
+ ✓ tests/server/harness-decisions-route.test.ts (6 tests) 24ms
+ ✓ tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts (8 tests) 26ms
+ ✓ tests/server/agent-version.test.ts (14 tests) 14ms
+ ✓ tests/server/pricing-sources.test.ts (16 tests) 12ms
+ ✓ tests/evaluator/bl-homepage-codex-quota-probes.test.ts (8 tests) 72ms
+ ✓ tests/shared/harness-health.test.ts (21 tests) 44ms
+ ✓ tests/server/device-enroll.test.ts (8 tests) 28ms
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 509ms
+ ✓ tests/shared/harness-transitions.test.ts (7 tests) 12ms
+ ✓ tests/shared/home-first-use.test.ts (4 tests) 101ms
+ ✓ tests/cli/agent-release-installer.test.ts (4 tests) 5891ms
+   ✓ pinned POSIX Agent installer > keeps the old release and data on manifest, fetch, or npm failure; upgrades and rolls back 5884ms
+ ✓ tests/server/harness-gates-route.test.ts (7 tests) 24ms
+ ✓ tests/shared/quota-window-label.test.ts (34 tests) 239ms
+ ✓ tests/evaluator/b05-evidence-retention-round2.test.ts (4 tests) 226ms
+ ✓ tests/server/quota.test.ts (3 tests) 9ms
+ ✓ tests/server/enrollment-tokens-route.test.ts (5 tests) 22ms
+ ↓ tests/contract/sign-verify.contract.test.ts (3 tests | 3 skipped)
+ ✓ tests/server/harness-gate-notify.test.ts (7 tests) 12ms
+ ✓ tests/parsers/aider.test.ts (8 tests) 19ms
+ ↓ tests/server/quota-account-db.probe.test.ts (2 tests | 2 skipped)
+ ✓ tests/shared/agent-release-version.test.ts (6 tests) 8ms
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: '3f2a304b-da2b-447e-a41a-0519e2da9ae6',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 20ms
+ ✓ tests/server/cleanup.test.ts (7 tests) 7ms
+ ✓ tests/cli/harness-dispatch.test.ts (23 tests) 9309ms
+   ✓ dispatch run summary collection > uses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing 311ms
+   ✓ dispatch run summary collection > supports a2a while reducing absolute artifacts and raw failures to safe fixed summaries 343ms
+   ✓ dispatch run summary collection > keeps a2a cancellation as a known terminal outcome with a fixed safe summary 416ms
+   ✓ dispatch run summary collection > keeps runs of other batches (usage must survive batch switch) but rejects foreign refs 388ms
+   ✓ dispatch run summary collection > rejects symlinked run-meta and never hashes a symlinked artifact 336ms
+   ✓ dispatch run summary collection > derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) 360ms
+   ✓ dispatch run summary collection > scans at most the newest 50 bounded regular JSON files 2074ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on negative tokens but keeps the run (bypass, not a gate) 301ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate) 319ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) 317ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on zero turns but keeps the run (bypass, not a gate) 341ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) 333ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) 318ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) 309ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on non-string model but keeps the run (bypass, not a gate) 321ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on oversized model name but keeps the run (bypass, not a gate) 323ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on array instead of object but keeps the run (bypass, not a gate) 322ms
+   ✓ run-meta usage uplink (F002) > drops the whole usage block on string instead of object but keeps the run (bypass, not a gate) 345ms
+   ✓ run-meta usage uplink (F002) > nulls an unknown capture mode while keeping a valid usage block 344ms
+ ✓ tests/server/time-buckets.test.ts (13 tests) 34ms
+ ✓ tests/shared/quota-presentation.test.ts (71 tests) 20ms
+ ✓ tests/cli/cursor.test.ts (9 tests) 16ms
+ ↓ tests/server/harness-gates-route-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/server/harness-gate-notify-evaluator-probes.test.ts (4 tests) 11ms
+ ✓ tests/server/usage-batch-input.test.ts (2 tests) 25ms
+ ✓ tests/server/harness-dispatch-usage-evaluator-probes.test.ts (14 tests) 11ms
+ ✓ tests/cli/install-agent-lifecycle.test.ts (2 tests) 1393ms
+   ✓ POSIX installer Agent lifecycle > stops this install's wrapper and child without touching another install 1390ms
+ ✓ tests/shared/auto-refresh.test.ts (3 tests) 9ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 7015ms
+   ✓ isolated release recovery rehearsal faults > backs up, restores, applies exact migration, and rehearses old-image canary before approving rollback 394ms
+   ✓ isolated release recovery rehearsal faults > does not approve rollback after restore fault and cleans scratch volumes 337ms
+   ✓ isolated release recovery rehearsal faults > does not approve rollback after inventory fault and cleans scratch volumes 344ms
+   ✓ isolated release recovery rehearsal faults > does not approve rollback after uid fault and cleans scratch volumes 354ms
+   ✓ isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 755ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 1153ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never) 1238ms
+   ✓ isolated release recovery rehearsal faults > never touches the production DB in synthetic mode 670ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 1291ms
+ ✓ tests/server/harness-gate-notify-timeout-probe.test.ts (3 tests) 16ms
+ ✓ tests/shared/device-status.test.ts (11 tests) 8ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (2 tests) 6586ms
+   ✓ privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 4421ms
+   ✓ privacy admission CLI lifecycle > keeps paused collection and the unavailable replay CLI from changing queue or cursor 2164ms
+ ✓ tests/shared/mode-badges.test.ts (5 tests) 23ms
+ ✓ tests/quota/registry.test.ts (4 tests) 23ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 915ms
+ ✓ tests/cli/harness-mode-intents.test.ts (20 tests) 11713ms
+   ✓ mode intent relay bounds > accepts only the exact bounded relay envelope 305ms
+   ✓ signed mode intent staging > stages and reads v2 bindings through the data-only catalog, without agent ids 819ms
+   ✓ signed mode intent staging > stages and reports legal v2 fast null bindings without a tool catalog 889ms
+   ✓ signed mode intent staging > rejects v2 staging when the data-only registry validation fails 484ms
+   ✓ signed mode intent staging > validates, atomically stages, and commits only harness.json 771ms
+   ✓ signed mode intent staging > commits only harness.json while preserving an unrelated staged file 706ms
+   ✓ signed mode intent staging > rejects a tampered signature without changing the target 317ms
+   ✓ signed mode intent staging > rejects a full HEAD drift immediately before first staging 506ms
+   ✓ signed mode intent staging > rejects invalid time window expired_intent 321ms
+   ✓ signed mode intent staging > requires harness.json to be clean 352ms
+   ✓ signed mode intent staging > retries the exact staged intent without comparing its old HEAD or creating a commit 969ms
+   ✓ signed mode intent staging > does not report failure after commit success and completes the next exact retry idempotently 773ms
+   ✓ signed mode intent staging > recognizes a commit that succeeded immediately before the runner threw 647ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage write failure 554ms
+   ✓ signed mode intent staging > restores the original harness after a first-stage readback failure 607ms
+   ✓ signed mode intent staging > restores after git add failure without disturbing an unrelated staged file 558ms
+   ✓ signed mode intent staging > does not report defaults copied into a repository with a different normalized identity 841ms
+   ✓ signed mode intent staging > rolls back a commit failure and never stages an unrelated file 744ms
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 9ms
+ ↓ tests/server/git-privacy-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/server/summary-metrics.test.ts (8 tests) 6ms
+ ✓ tests/shared/usage.test.ts (23 tests) 6ms
+ ✓ tests/cli/harness-vm-provider-ceiling.test.ts (3 tests) 8ms
+ ✓ tests/server/model-prices.test.ts (5 tests) 8ms
+ ✓ tests/server/pricing-review.test.ts (9 tests) 7ms
+ ✓ tests/cli/privacy.test.ts (5 tests) 8ms
+ ✓ tests/shared/agent-release-i18n.test.ts (2 tests) 8ms
+ ✓ tests/cli/agent-release-installer-windows-fixture.test.ts (3 tests) 235ms
+ ✓ tests/server/summary-cache-tags.test.ts (4 tests) 8ms
+ ✓ tests/cli/harness-command.test.ts (4 tests) 2734ms
+   ✓ harness CLI output contracts > wires Commander options without treating the Command object as injected dependencies 2727ms
+ ✓ tests/cli/replay-contract.test.ts (37 tests) 47ms
+ ✓ tests/server/pricing-mapping.test.ts (7 tests) 19ms
+ ✓ tests/shared/url.test.ts (25 tests) 8ms
+ ✓ tests/shared/upgrade-banner.test.ts (4 tests) 72ms
+ ✓ tests/cli/file-permissions.test.ts (5 tests) 11ms
+ ✓ tests/server/usage-cost-cache-invalidation.test.ts (3 tests) 15ms
+ ✓ tests/quota/auth-file.test.ts (4 tests) 21ms
+ ✓ tests/cli/service-cron.test.ts (7 tests) 6ms
+ ✓ tests/server/auth-secret.test.ts (13 tests) 8ms
+ ✓ tests/cli/harness-heartbeat.test.ts (3 tests) 13ms
+ ✓ tests/cli/proxy-env.test.ts (9 tests) 11ms
+ ✓ tests/ci/windows-installer-gate.test.ts (8 tests) 625ms
+ ✓ tests/shared/usage-privacy.test.ts (5 tests) 11ms
+ ✓ tests/server/pricing-scan-cache.test.ts (3 tests) 12ms
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 606ms
+ ✓ tests/cli/harness-backoff.test.ts (5 tests) 7ms
+ ✓ tests/evaluator/b03-scope-admission-independent.test.ts (13 tests) 11ms
+ ✓ tests/server/events-cursor.test.ts (5 tests) 8ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 15ms
+ ✓ tests/shared/chart-type.test.ts (8 tests) 6ms
+ ✓ tests/server/daily-range.test.ts (6 tests) 30ms
+ ✓ tests/cli/enroll.test.ts (2 tests) 10ms
+ ✓ tests/cli/collect.test.ts (4 tests) 5ms
+ ✓ tests/server/timezone.test.ts (6 tests) 28ms
+ ✓ tests/server/dependency-security-floor.test.ts (2 tests) 4ms
+ ✓ tests/server/harness-detail.test.ts (2 tests) 6ms
+ ✓ tests/shared/repo-link.test.ts (5 tests) 10ms
+ ✓ tests/shared/harness-evidence.test.ts (3 tests) 5ms
+ ✓ tests/shared/input-sanitization.test.ts (3 tests) 5ms
+ ✓ tests/shared/enrollment-status.test.ts (3 tests) 4ms
+ ✓ tests/server/harness-gates-pending-count.test.ts (2 tests) 8ms
+ ↓ tests/contract/canonical-json.contract.test.ts (1 test | 1 skipped)
+ ✓ tests/server/agent-releases-route.test.ts (1 test) 13ms
+ ✓ tests/shared/pending-gates-badge.test.ts (2 tests) 4ms
+ ✓ tests/shared/html-escape.test.ts (2 tests) 2ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 2844ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 633ms
+   ✓ deterministic release predecessor > uses the explicit PR base/push-before SHA when available 484ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 729ms
+   ✓ deterministic release predecessor > does not silently replace malformed or nonexistent explicit predecessors 560ms
+   ✓ deterministic release predecessor > uses origin/main for the zero before SHA and fails if the fetched ref is absent 435ms
+ ✓ tests/cli/harness.test.ts (27 tests) 19242ms
+   ✓ discoverHarnessRepos > 同时有 progress.json 与 harness-rules.md 才算 harness 项目 380ms
+   ✓ discoverHarnessRepos > uses a stable opaque key for local-only repos without leaking the root into the report 1143ms
+   ✓ buildReport > 从 features.json 统计完成度，并带上待批闸门 452ms
+   ✓ buildReport > 待批闸门只上报 API 白名单字段 435ms
+   ✓ buildReport > 已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 493ms
+   ✓ mode intent report ACK > sends the running Agent identity on every device-driven Harness relay request 853ms
+   ✓ mode intent report ACK > reports progress.mode_intent as applied and sends the identical applied ACK 430ms
+   ✓ applyHarnessDecisions > 签名有效时写入并提交 556ms
+   ✓ applyHarnessDecisions > does not route an unbound legacy gate relay onto the current repository 364ms
+   ✓ applyHarnessDecisions > fails closed when the signed decision wrapper matches multiple local repositories 681ms
+   ✓ applyHarnessDecisions > 🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 442ms
+   ✓ applyHarnessDecisions > 仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） 452ms
+   ✓ applyHarnessDecisions > 陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） 581ms
+   ✓ applyHarnessDecisions > progress.json 有未提交改动时本轮不写，避免与状态机打架 492ms
+   ✓ applyHarnessDecisions > 某个项目上报失败不中断其余项目 900ms
+   ✓ applyHarnessDecisions > 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 828ms
+   ✓ applyHarnessDecisions > report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit 1099ms
+   ✓ applyHarnessDecisions > mode relay 失败不阻塞另外两步 753ms
+   ✓ applyHarnessDecisions > gate relay 失败不阻塞另外两步 1037ms
+   ✓ applyHarnessDecisions > 本机闸门已有决策时不覆盖 609ms
+   ✓ structured Harness sync health > applies the exact HTTP retryability matrix 1639ms
+   ✓ structured Harness sync health > caps structured issues at 20 while retaining the full failed-project count 3354ms
+   ✓ structured Harness sync health > writes idle, success, degraded, and failed snapshots from actual outcomes 354ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/bl-homepage-freshness-f004.test.ts > BL-HOMEPAGE-FRESHNESS F004 evaluator probes > preserves the OpenCode SQLite high-water cursor behavior
+Error: The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+ ❯ bindings node_modules/bindings/bindings.js:112:48
+ ❯ new Database node_modules/better-sqlite3/lib/database.js:48:64
+ ❯ createOpenCodeDb tests/evaluator/bl-homepage-freshness-f004.test.ts:106:14
+    104|   const dbPath = join(homeDir, ".local", "share", "opencode", "opencod…
+    105|   mkdirSync(dirname(dbPath), { recursive: true });
+    106|   const db = new Database(dbPath);
+       |              ^
+    107|   db.exec(`
+    108|     CREATE TABLE session (
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/parsers/opencode.test.ts > parseOpenCodeUsage > inputTokens is raw input + cache write + cache read (new total-input semantic)
+ FAIL  tests/parsers/opencode.test.ts > parseOpenCodeUsage > inputTokens still includes cache reads when cache.write is zero
+ FAIL  tests/parsers/opencode.test.ts > parseOpenCodeUsage > uses opencode:<message_id> as a stable sourceEventId
+ FAIL  tests/parsers/opencode.test.ts > parseOpenCodeUsage > skips messages whose role is not assistant
+ FAIL  tests/parsers/opencode.test.ts > parseOpenCodeUsage > skips assistant messages whose total token count is zero
+Error: The module '/Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 141. This version of Node.js requires
+NODE_MODULE_VERSION 127. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+ ❯ bindings node_modules/bindings/bindings.js:112:48
+ ❯ new Database node_modules/better-sqlite3/lib/database.js:48:64
+ ❯ setupOpenCodeDb tests/parsers/opencode.test.ts:28:14
+     26|   mkdirSync(dir, { recursive: true });
+     27|   const dbPath = join(dir, "opencode.db");
+     28|   const db = new Database(dbPath);
+       |              ^
+     29|   db.exec(`
+     30|     CREATE TABLE session (
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ Test Files  2 failed | 127 passed | 9 skipped (138)
+      Tests  6 failed | 1688 passed | 23 skipped (1717)
+   Start at  00:32:02
+   Duration  20.27s (transform 3.72s, setup 0ms, collect 14.13s, tests 86.90s, environment 42ms, prepare 12.43s)
+

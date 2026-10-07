@@ -1,0 +1,46 @@
+{
+  "expectation": "candidate",
+  "revision": "3cce52e360b81715c3c54752b77575b445cd46f2",
+  "normal": {
+    "failure": "none",
+    "status": 0,
+    "stderr": "",
+    "tcpProbeCount": 4,
+    "socketProbeCount": 0,
+    "dumped": true,
+    "restored": true,
+    "backupFileCount": 1,
+    "checksumFileCount": 1,
+    "rollbackGate": true,
+    "removedContainers": true,
+    "removedNetwork": true
+  },
+  "sourceNever": {
+    "failure": "source-tcp-never",
+    "status": 1,
+    "stderr": "scratch PostgreSQL did not start",
+    "tcpProbeCount": 30,
+    "socketProbeCount": 0,
+    "dumped": false,
+    "restored": false,
+    "backupFileCount": 0,
+    "checksumFileCount": 0,
+    "rollbackGate": false,
+    "removedContainers": true,
+    "removedNetwork": true
+  },
+  "restoreNever": {
+    "failure": "restore-tcp-never",
+    "status": 1,
+    "stderr": "scratch PostgreSQL did not start",
+    "tcpProbeCount": 32,
+    "socketProbeCount": 0,
+    "dumped": true,
+    "restored": false,
+    "backupFileCount": 1,
+    "checksumFileCount": 1,
+    "rollbackGate": false,
+    "removedContainers": true,
+    "removedNetwork": true
+  }
+}

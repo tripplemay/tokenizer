@@ -1,0 +1,63 @@
+{
+  "candidate": "3cce52e360b81715c3c54752b77575b445cd46f2",
+  "attributesFrom": "8546afa68f563057bea9aefa3ebf099eeb37345b",
+  "matchingHistoricalHashes": 8,
+  "results": [
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/baseline-negative.json",
+      "match": true,
+      "expected": "23b93eb626eca6ceeade49a978bdcdd3416fa66145f5350e5d66dfbbdee366c0",
+      "actual": "23b93eb626eca6ceeade49a978bdcdd3416fa66145f5350e5d66dfbbdee366c0"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/candidate-tcp-readiness.json",
+      "match": true,
+      "expected": "24439cf31e666d3b1fab40a7e1518714b1ab35eaf3e646ab9bceac65b321fbf8",
+      "actual": "24439cf31e666d3b1fab40a7e1518714b1ab35eaf3e646ab9bceac65b321fbf8"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-final.json",
+      "match": true,
+      "expected": "23ceff51fa9d93c572a6522586be0f1dff40c68e639ae599617499c77be279c7",
+      "actual": "23ceff51fa9d93c572a6522586be0f1dff40c68e639ae599617499c77be279c7"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-artifacts.json",
+      "match": true,
+      "expected": "5ab588897f8c489eea01f62cefbabacdf54b9cf30fdcc34b2da3aa2e5f8f48fd",
+      "actual": "5ab588897f8c489eea01f62cefbabacdf54b9cf30fdcc34b2da3aa2e5f8f48fd"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/native-run-37650581332-recovery-excerpt.txt",
+      "match": true,
+      "expected": "bad86abb2e36dd80c2759a10b6963d1573e2d1b248d5d04bd5234536f96f1ef1",
+      "actual": "bad86abb2e36dd80c2759a10b6963d1573e2d1b248d5d04bd5234536f96f1ef1"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/supplement-integrity.txt",
+      "match": true,
+      "expected": "d5fc8d0c35ae95fb30f1022b4ec5f9d3b4808d4ebab432bde5862cb99f6a6bcc",
+      "actual": "d5fc8d0c35ae95fb30f1022b4ec5f9d3b4808d4ebab432bde5862cb99f6a6bcc"
+    },
+    {
+      "path": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/vps-doc-contradiction.txt",
+      "match": true,
+      "expected": "15d05b3ade3eb9df8d65136df072e95f252e6554ea0b1c78fa18bdd4444cee7b",
+      "actual": "15d05b3ade3eb9df8d65136df072e95f252e6554ea0b1c78fa18bdd4444cee7b"
+    },
+    {
+      "path": "scripts/test/b05-tcp-readiness-independent.mjs",
+      "match": false,
+      "expected": "b48610073e327ab60d074a7b7f28d27ad3eb98367ea8dde1c8223b66151a954d",
+      "actual": "d70156a1bf5432ba960871c172b295dad4acb5f64d299ee930b83ebcfd20b86d"
+    },
+    {
+      "path": "tests/evaluator/b05-tcp-readiness-independent.test.ts",
+      "match": true,
+      "expected": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0",
+      "actual": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0"
+    }
+  ],
+  "historicalTestMatch": true,
+  "historicalTestActual": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0"
+}

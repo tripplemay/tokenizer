@@ -1,0 +1,53 @@
+run=37660385870
+head_sha=8877a592d21305f03cdaea5d874d58a581e910a1
+artifact=release-recovery-8877a592d21305f03cdaea5d874d58a581e910a1
+files:
+8877a592d21305f03cdaea5d874d58a581e910a1.rehearsal
+8877a592d21305f03cdaea5d874d58a581e910a1.rollback-approved
+8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump
+8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump.sha256
+manifest.json
+sha256:
+f78c5d7a5897970eb646d995235c6763f23c065e69ed58adf5ee094f56b16ce9  8877a592d21305f03cdaea5d874d58a581e910a1.rehearsal
+68ac012ca8afa3c9d98bd98bd6ff7abbbf0f6c91143281979cfc5aa19209d2d3  8877a592d21305f03cdaea5d874d58a581e910a1.rollback-approved
+7e5ad14bdbf670d2bcbd9f9ecf39d4b972ade066537353bc2bbe2b8e9f26fbf4  8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump
+39da2569282552679d29abb302c8301015eb01f0346c1e94bc52d49a21534a7a  8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump.sha256
+48c0dc2276763535885af77c1bbe49ba45b285de9444fe8d151d7323a24a618a  manifest.json
+verification:
+{"recoveryEvidence":"verify","revision":"8877a592d21305f03cdaea5d874d58a581e910a1","provenanceRequired":false}
+rehearsal-ledger:
+commit=8877a592d21305f03cdaea5d874d58a581e910a1
+mode=synthetic
+backup_file=.releases/8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump
+restore_inventory=2|2|1|1|23
+runtime_uid=1000
+rollback=passed
+elapsed_seconds=40
+manifest-summary:
+{
+  "revision": "8877a592d21305f03cdaea5d874d58a581e910a1",
+  "provenanceRequired": false,
+  "entry_count": 4,
+  "entries": [
+    {
+      "file": "8877a592d21305f03cdaea5d874d58a581e910a1.rehearsal",
+      "bytes": 251,
+      "sha256": "f78c5d7a5897970eb646d995235c6763f23c065e69ed58adf5ee094f56b16ce9"
+    },
+    {
+      "file": "8877a592d21305f03cdaea5d874d58a581e910a1.rollback-approved",
+      "bytes": 164,
+      "sha256": "68ac012ca8afa3c9d98bd98bd6ff7abbbf0f6c91143281979cfc5aa19209d2d3"
+    },
+    {
+      "file": "8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump",
+      "bytes": 65943,
+      "sha256": "7e5ad14bdbf670d2bcbd9f9ecf39d4b972ade066537353bc2bbe2b8e9f26fbf4"
+    },
+    {
+      "file": "8877a592d21305f03cdaea5d874d58a581e910a1.tokenizer-rehearsal-17733-11428.backup.dump.sha256",
+      "bytes": 161,
+      "sha256": "39da2569282552679d29abb302c8301015eb01f0346c1e94bc52d49a21534a7a"
+    }
+  ]
+}

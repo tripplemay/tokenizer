@@ -1,0 +1,18 @@
+candidate=3cce52e360b81715c3c54752b77575b445cd46f2
+core.autocrlf=true
+before_attrs=docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/SHA256SUMS: text: unspecified
+{
+  "phase": "autocrlf-no-attrs",
+  "lineCount": 9,
+  "strictManifestRows": 1,
+  "matchingHistoricalHashes": 0,
+  "historicalTestHash": "dcd66760a0ed5f66b246c3f77d772cc07337901d2cd73193059e71013a450fb4"
+}
+after_attrs=docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/SHA256SUMS: text: unset
+{
+  "phase": "autocrlf-path-scoped-minus-text",
+  "lineCount": 9,
+  "strictManifestRows": 9,
+  "matchingHistoricalHashes": 9,
+  "historicalTestHash": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0"
+}

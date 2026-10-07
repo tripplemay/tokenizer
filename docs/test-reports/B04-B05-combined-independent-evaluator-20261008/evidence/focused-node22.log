@@ -1,0 +1,43 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b04-b05-combined-eval-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 11ms
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'd9fa5703-7472-4e0f-b4d1-342071da2270',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 19ms
+ ✓ tests/cli/agent-release-installer-windows-fixture.test.ts (3 tests) 259ms
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 419ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 844ms
+ ✓ tests/ci/windows-installer-gate.test.ts (8 tests) 545ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 1995ms
+   ✓ allowlisted recovery evidence transport > detects downloaded file tampering, missing files, extra files and wrong revision 398ms
+   ✓ allowlisted recovery evidence transport > rejects symlink files and symlink directories 319ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 2315ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 500ms
+   ✓ deterministic release predecessor > uses the explicit PR base/push-before SHA when available 397ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 600ms
+   ✓ deterministic release predecessor > does not silently replace malformed or nonexistent explicit predecessors 388ms
+   ✓ deterministic release predecessor > uses origin/main for the zero before SHA and fails if the fetched ref is absent 429ms
+ ✓ tests/server/release-image.test.ts (10 tests) 2444ms
+   ✓ release image gate and fault rehearsal > refuses a changed digest for an already recorded commit 406ms
+   ✓ release image gate and fault rehearsal > does not mark a release active when health returns a different SHA 527ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 484ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 4874ms
+   ✓ isolated release recovery rehearsal faults > backs up, restores, applies exact migration, and rehearses old-image canary before approving rollback 542ms
+   ✓ isolated release recovery rehearsal faults > waits for the final TCP server instead of accepting the temporary initialization socket 423ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (source-tcp-never) 744ms
+   ✓ isolated release recovery rehearsal faults > fails closed when only the temporary socket accepts (restore-tcp-never) 1117ms
+   ✓ isolated release recovery rehearsal faults > never touches the production DB in synthetic mode 305ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 521ms
+
+ Test Files  10 passed (10)
+      Tests  113 passed (113)
+   Start at  00:31:10
+   Duration  5.63s (transform 733ms, setup 0ms, collect 1.20s, tests 13.73s, environment 5ms, prepare 2.45s)
+
