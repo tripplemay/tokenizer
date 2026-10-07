@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b01-sigterm-fix-20261007
+
+ ✓ tests/cli/agent-lifecycle.test.ts (7 tests | 6 skipped) 321ms
+   ✓ agent single-instance lock > reclaims a lock after Windows force-terminates the agent 321ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  21:44:49
+   Duration  550ms (transform 35ms, setup 0ms, collect 31ms, tests 321ms, environment 0ms, prepare 49ms)
+

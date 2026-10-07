@@ -133,6 +133,24 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Verify Windows agent owner force termination
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path .ci -Force | Out-Null
+          npx vitest run tests/cli/agent-lifecycle.test.ts -t "reclaims a lock after Windows force-terminates the agent" --reporter=json --outputFile=.ci/windows-agent-owner.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/ci/assert-windows-agent-owner.mjs .ci/windows-agent-owner.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload Windows agent owner evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-agent-owner
+          path: .ci/windows-agent-owner.json
+          if-no-files-found: warn
+          retention-days: 7
+
       # install.ps1 cannot be parsed anywhere but Windows, so a syntax error
       # would otherwise only surface on a user's machine mid-install.
       - name: Validate install.ps1 syntax
