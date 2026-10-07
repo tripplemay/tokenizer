@@ -1,0 +1,21 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-fix-round2-20261007
+
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: '10d1316c-5604-4bfe-b1bf-04b2b1570ee3',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 6ms
+ ✓ tests/server/deploy-secrets.test.ts (24 tests) 90ms
+ ✓ tests/server/release-image.test.ts (10 tests) 780ms
+ ✓ tests/server/release-rehearsal.test.ts (9 tests) 940ms
+
+ Test Files  4 passed (4)
+      Tests  49 passed (49)
+   Start at  21:38:08
+   Duration  1.16s (transform 97ms, setup 0ms, collect 150ms, tests 1.82s, environment 0ms, prepare 191ms)
+

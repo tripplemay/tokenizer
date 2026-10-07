@@ -299,13 +299,162 @@ jobs:
           path: test-results/e2e/
           if-no-files-found: ignore
           retention-days: 7
-
+  release-artifact:
+    name: Linux OCI and recovery rehearsal
+    runs-on: ubuntu-latest
+    needs: [verify, verify-windows, verify-db, verify-browser]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      app-image: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+      migrate-image: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Start isolated CI registry
+        run: docker run -d --name registry -p 5000:5000 registry:2
+      - uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+          buildkitd-config-inline: |
+            [registry."localhost:5000"]
+              http = true
+      - name: Set immutable artifact references
+        id: refs
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+          PREVIOUS: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+        run: |
+          set -euo pipefail
+          repository="${REPOSITORY,,}"
+          registry=localhost:5000
+          if [[ "$PUBLISH" == true ]]; then registry=ghcr.io; fi
+          [[ "$PREVIOUS" =~ ^[0-9a-f]{40}$ && "$PREVIOUS" != 0000000000000000000000000000000000000000 ]] || PREVIOUS="$REVISION"
+          {
+            echo "app=$registry/$repository-app"
+            echo "migrate=$registry/$repository-migrate"
+            echo "old-app=localhost:5000/rollback-app"
+            echo "old-migrate=localhost:5000/rollback-migrate"
+            echo "previous=$PREVIOUS"
+          } >> "$GITHUB_OUTPUT"
+          mkdir .baseline
+          git archive "$PREVIOUS" | tar -x -C .baseline
+      - uses: docker/login-action@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build candidate app once
+        id: app
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          platforms: linux/amd64
+          push: true
+          provenance: mode=max
+          tags: ${{ steps.refs.outputs.app }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          build-args: SOURCE_COMMIT=${{ github.sha }}
+      - name: Build exact migration artifact
+        id: migrate
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: builder
+          platforms: linux/amd64
+          push: true
+          provenance: mode=max
+          tags: ${{ steps.refs.outputs.migrate }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          build-args: SOURCE_COMMIT=${{ github.sha }}
+      - name: Build previous source app for compatibility rehearsal
+        id: old-app
+        uses: docker/build-push-action@v6
+        with:
+          context: .baseline
+          file: Dockerfile
+          target: runner
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.refs.outputs.old-app }}:${{ steps.refs.outputs.previous }}
+          build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
+      - name: Build previous source migration artifact
+        id: old-migrate
+        uses: docker/build-push-action@v6
+        with:
+          context: .baseline
+          file: Dockerfile
+          target: builder
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.refs.outputs.old-migrate }}:${{ steps.refs.outputs.previous }}
+          build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
+      - name: Attest app digest from this workflow
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.refs.outputs.app }}
+          subject-digest: ${{ steps.app.outputs.digest }}
+          push-to-registry: true
+      - name: Attest migration digest from this workflow
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.refs.outputs.migrate }}
+          subject-digest: ${{ steps.migrate.outputs.digest }}
+          push-to-registry: true
+      - name: Verify signed provenance and exact source revision
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_IMAGE: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+          MIGRATE_IMAGE: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p .releases
+          for kind in app migrate; do
+            if [[ "$kind" == app ]]; then image="$APP_IMAGE"; else image="$MIGRATE_IMAGE"; fi
+            gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" \
+              --format json > ".releases/$GITHUB_SHA.$kind.provenance.json"
+          done
+      - name: Backup restore migration and old-image business rehearsal
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          APP_IMAGE: ${{ steps.refs.outputs.app }}@${{ steps.app.outputs.digest }}
+          MIGRATE_IMAGE: ${{ steps.refs.outputs.migrate }}@${{ steps.migrate.outputs.digest }}
+          PREVIOUS_APP_IMAGE: ${{ steps.refs.outputs.old-app }}@${{ steps.old-app.outputs.digest }}
+          PREVIOUS_MIGRATE_IMAGE: ${{ steps.refs.outputs.old-migrate }}@${{ steps.old-migrate.outputs.digest }}
+          PREVIOUS_SHA: ${{ steps.refs.outputs.previous }}
+        run: |
+          set -euo pipefail
+          docker pull "$APP_IMAGE"
+          docker pull "$MIGRATE_IMAGE"
+          bash scripts/test/rehearse-release.sh
+      - name: Retain synthetic recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-recovery-${{ github.sha }}
+          path: .releases/
+          retention-days: 14
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     # This single main-push workflow deploys a repository that also ships the
     # Windows CLI; a failing native-agent gate must block this release path.
-    needs: [verify, verify-windows, verify-db, verify-browser]
+    permissions:
+      contents: read
+      packages: read
+    needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment: production
     env:
@@ -317,6 +466,10 @@ jobs:
       ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+      APP_IMAGE: ${{ needs.release-artifact.outputs.app-image }}
+      MIGRATE_IMAGE: ${{ needs.release-artifact.outputs.migrate-image }}
+      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REGISTRY_USER: ${{ github.actor }}
       # Auth.js v5 — sign-in / session secrets. AUTH_SECRET and
       # AUTH_RESEND_KEY come from GitHub Actions secrets (set them in repo
       # Settings → Secrets and variables → Actions). AUTH_TRUST_HOST and
@@ -342,6 +495,22 @@ jobs:
       - name: Validate deploy secrets
         run: bash scripts/validate-deploy-secrets.sh
 
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Independently verify artifact provenance before SSH
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          for image in "$APP_IMAGE" "$MIGRATE_IMAGE"; do
+            gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml"
+          done
+
       - name: Prepare SSH
         run: |
           set -eu
@@ -361,6 +530,7 @@ jobs:
             --exclude='.git' \
             --exclude='.env' \
             --exclude='.releases' \
+            --exclude='.baseline' \
             --exclude='.next' \
             --exclude='node_modules' \
             -e "$SSH_CMD" \
@@ -375,7 +545,9 @@ jobs:
 
           umask 077
           ENV_FILE="$(mktemp)"
-          trap 'rm -f "$ENV_FILE"' EXIT
+          trap 'rm -f "$ENV_FILE"; $SSH_CMD "$SSH_TARGET" "docker logout ghcr.io" >/dev/null 2>&1 || true' EXIT
+          # Short-lived CI registry credential through stdin, not argv or .env.
+          printf '%s' "$REGISTRY_TOKEN" | $SSH_CMD "$SSH_TARGET" "docker login ghcr.io -u '$REGISTRY_USER' --password-stdin"
           {
             printf 'ADMIN_TOKEN=%s\n' "$ADMIN_TOKEN"
             printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
@@ -383,6 +555,8 @@ jobs:
             printf 'DATABASE_URL=postgresql://tokenizer:%s@localhost:5432/tokenizer\n' "$POSTGRES_PASSWORD"
             printf 'APP_HOST_PORT=127.0.0.1:3010\n'
             printf 'GIT_COMMIT=%s\n' "${{ github.sha }}"
+            printf 'APP_IMAGE=%s\n' "$APP_IMAGE"
+            printf 'MIGRATE_IMAGE=%s\n' "$MIGRATE_IMAGE"
             # Auth.js v5
             printf 'AUTH_SECRET=%s\n' "${AUTH_SECRET:-}"
             printf 'AUTH_TRUST_HOST=true\n'
