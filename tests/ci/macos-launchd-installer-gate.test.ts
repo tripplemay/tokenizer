@@ -47,10 +47,16 @@ describe("macOS launchd native fixture gate", () => {
   it("makes the exact native fixture an independent prerequisite for artifacts and deploy", () => {
     const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf8");
     const job = workflow.slice(workflow.indexOf("  verify-macos-agent:"), workflow.indexOf("  verify-db:"));
+    const fixture = readFileSync("tests/cli/agent-release-installer-macos.test.ts", "utf8");
     expect(job).toContain("runs-on: macos-latest");
     expect(job).toContain('launchctl print "gui/$(id -u)"');
     expect(job).toContain("tests/cli/agent-release-installer-macos.test.ts");
     expect(job).toContain("node scripts/ci/assert-macos-launchd-installer.mjs");
+    expect(job).toContain('RUNNER_TEMP="$(cd "$RUNNER_TEMP" && pwd -P)"');
+    expect(job).toContain('TMPDIR="$RUNNER_TEMP"');
+    expect(job).toContain("export RUNNER_TEMP TMPDIR");
+    expect(job).toContain('"$TOKENIZER_FIXTURE_ROOT" != "$RUNNER_TEMP"/tokenizer-macos-launchd-*');
+    expect(fixture).toContain('mkdtempSync(join(tmpdir(), "tokenizer-macos-launchd-"))');
     expect(job).toContain("trap cleanup_native_fixture EXIT INT TERM");
     expect(job).toContain('"$TOKENIZER_FIXTURE_LABEL" != cc.tokenizer.agent.ci.*');
     expect(job).toContain("if-no-files-found: error");
