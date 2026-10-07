@@ -14,10 +14,10 @@
 | FR-001/007 首次使用与历史空窗 | `b79c0b0` | Generator `f5f3718`；独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b10-first-use-eval-20261007/docs/test-reports/BL-UPGRADE-FR-FIRST-USE-evaluator-verdict-20261007.json` | 离线恢复、F005 原批次生产验收、B10 剩余认证闭环 |
 | R05/B09 可变成本缓存切片 | `106b7fd` + `0a9308a` + replay 修正 `f225652`/`b0ac3ce` | Generator `1925f7d` + `0ccacd8`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-cost-cache-eval-20261007/docs/test-reports/B09-usage-cost-cache-20261007/evaluator-verdict-round2.json`；组合树真实 PG/Next replay 通过 | B06/B08 前置、生产多实例、外部直接 DB 写入首次请求可能 stale |
 | B01 CI 基础门禁 | `6aeabce` | Generator `e599156`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b01-ci-eval-20261007/docs/test-reports/b01-ci-foundation-20261007/evaluator-verdict-round2.json`；组合树 Node 22 clean install、PG16 迁移和 Playwright 3/3 | GitHub Actions Linux/Windows/DB/浏览器及远程契约 fixture 未在组合 SHA 上运行 |
-| B02 安全依赖与认证配置 | `d8faf07` + 集成修正 `5b3a8be` | Generator `4b67b2e`；组合树 Node 22 clean install、verify/lint/test/build、Playwright 3/3；集成修正为合成浏览器 CI 提供非生产 `AUTH_RESEND_KEY` | B02 独立评估、真实邮件/session/双租户 PG、剩余依赖风险人类处置、Linux Docker |
+| B02 安全依赖与认证配置 | `d8faf07` + 集成修正 `5b3a8be` | Generator `4b67b2e`；独立 verdict `PASS_WITH_LIMITATIONS` 且 `release_ready=false`，见 `tokenizer-b02-evaluator-20261007/docs/test-reports/B02-security-evaluator-20261007/verdict.json`；组合树 Node 22 clean install、verify/lint/test/build、Playwright 3/3 | 真实邮件/session/双租户 PG、剩余依赖风险人类处置、Linux Docker；公共 health 未证明 Auth.js 配置就绪 |
 
-本树 `d8faf07`（B01+B02 合并后）以 Node 22 执行 `npm ci`、verify、lint、build 与全量 `npm run test` 均通过：**1500 通过、22 跳过**；数据库 opt-in 探针和平台专属测试不能因全量绿灯而省略。`5b3a8be` 上本地 PG16 + 生产 Next + 合成认证 Playwright 关键旅程 **3/3 通过**。第一次 B02 组合 E2E 因缺少 `AUTH_RESEND_KEY` 正确失败；补测试专用值后复测通过。B03/R06 与 B04 仍在隔离树，不在本集成树。
+本树 `d8faf07`（B01+B02 合并后）以 Node 22 执行 `npm ci`、verify、lint、build 与全量 `npm run test` 均通过：**1500 通过、22 跳过**。组合树 scratch PG16 的 28 项迁移成功；B01 数据库 opt-in 探针 **48/48、0 skip**，锁定框架 `027c369` 的双向契约 **6/6、0 skip**。`5b3a8be` 上本地 PG16 + 生产 Next + 合成认证 Playwright 关键旅程 **3/3 通过**。第一次 B02 组合 E2E 因缺少 `AUTH_RESEND_KEY` 正确失败；补测试专用值后复测通过。B03/R06 与 B04 仍在隔离树，不在本集成树。Windows 原生 CI 仍未执行。
 
 ## 发布门槛
 
-当前没有生产部署或发布验收。B01 的真实 GitHub Actions Windows/PG/契约/浏览器、B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。用户已指定本主会话兼任发布编排者；子 agent 仍不得推送。主会话也只会在所有发布闸门满足后考虑回流和 push-main，不会因本隔离树 commit 自动发布。
+当前没有生产部署或发布验收。B01 的真实 GitHub Actions Windows/PG/契约/浏览器、B02 安全闭环、M1-M7 余下工作、独立 F005/人闸门、备份恢复与真实生产健康检查均需后续分包完成。B04 首轮独立 verdict 为 `BLOCK/NOT_READY`（未回流），并发安装、native Windows、平台服务故障与最终 release pin 均待处理。用户已指定本主会话兼任发布编排者；子 agent 仍不得推送。主会话也只会在所有发布闸门满足后考虑回流和 push-main，不会因本隔离树 commit 自动发布。
