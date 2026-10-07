@@ -1,0 +1,4 @@
+docs/test-reports/B03-scope-admission-independent-20261007/evidence/baseline-negative.json: OK
+docs/test-reports/B03-scope-admission-independent-20261007/evidence/candidate-admission.json: OK
+scripts/test/b03-scope-admission-independent.mjs: OK
+tests/evaluator/b03-scope-admission-independent.test.ts: OK

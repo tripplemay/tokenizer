@@ -1,0 +1,14 @@
+docs/test-reports/B03-replay-technical-prereview-20261008/REPORT.md: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/candidate-focused.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/historical-generator-hashes-correct-cwd.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/historical-generator-hashes.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/historical-independent-hashes.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/negative-controls-2.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/negative-controls.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/npm-ci.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/operational-replacement-contract.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/product-unchanged.diff: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/evidence/verify.log: OK
+docs/test-reports/B03-replay-technical-prereview-20261008/technical-findings.json: OK
+tests/cli/b03-replay-technical-prereview.test.ts: OK
+tests/fixtures/b03-prereview-fifo.ts: OK
