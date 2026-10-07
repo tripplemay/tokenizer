@@ -1,0 +1,8 @@
+{
+  "node": "v22.22.0",
+  "execPath": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "arch": "arm64",
+  "tsx": "4.22.0",
+  "vitest": "2.1.9"
+}

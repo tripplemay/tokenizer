@@ -128,8 +128,9 @@ describe("agent single-instance lock", () => {
       sources: { claude: false, codex: false, opencode: false, aider: false, kimicode: false }
     }));
 
-    const tsx = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
-    const agent = spawn(process.execPath, [tsx, "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
+    // Run the lock owner directly, not the tsx launcher whose close event can
+    // precede its child's signal-handler cleanup.
+    const agent = spawn(process.execPath, ["--import", "tsx", "src/cli/index.ts", "agent", "--heartbeat-seconds", "3600", "--sync-minutes", "3600"], {
       cwd: process.cwd(),
       env: { ...process.env, HOME: home, USERPROFILE: home },
       stdio: "ignore"
@@ -150,9 +151,16 @@ describe("agent single-instance lock", () => {
         return false;
       }
     }, "agent did not reach running state", 10_000);
-    agent.kill("SIGTERM");
-    await waitForExit(agent);
+    expect(JSON.parse(readFileSync(lockPath, "utf8")).pid).toBe(agent.pid);
+    expect(JSON.parse(readFileSync(statePath, "utf8")).agent.pid).toBe(agent.pid);
+    expect(agent.kill("SIGTERM")).toBe(true);
+    expect(await waitForExit(agent)).toEqual({ code: 0, signal: null });
     expect(existsSync(lockPath)).toBe(false);
+    expect(JSON.parse(readFileSync(statePath, "utf8")).agent).toMatchObject({
+      status: "stopped",
+      pid: agent.pid,
+      stoppedAt: expect.any(String)
+    });
   }, 15_000);
 
   it.skipIf(process.platform !== "win32")("reclaims a lock after Windows force-terminates the agent", async () => {
