@@ -1,0 +1,108 @@
+Verify (Windows)	Verify native Windows pinned installer	﻿2026-10-07T15:56:49.6069837Z ##[group]Run New-Item -ItemType Directory -Path .ci -Force | Out-Null
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6070578Z [36;1mNew-Item -ItemType Directory -Path .ci -Force | Out-Null[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6071623Z [36;1mnpx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6072385Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6072862Z [36;1mnode scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6073333Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6146893Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:49.6147263Z ##[endgroup]
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:51.2669526Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:51.2673491Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:51.2674496Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:52.0483886Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1213876Z  [31m❯[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 5205[2mms[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1217054Z [31m   [31m×[31m native Windows pinned installer fixture[2m > [22minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens[33m 5204[2mms[22m[31m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1218699Z [31m     → From C:\Users\RUNNER~1\AppData\Local\Temp\tokenizer win-release-Eib6Oo\repo
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1219272Z  * branch            4d1c1f4287708e668900d64392d526abb45849e9 -> FETCH_HEAD
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1219678Z HEAD is now at 4d1c1f4 first
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1220199Z node:internal/modules/cjs/loader:1433
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1220463Z   throw err;
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1220639Z   ^
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1220735Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1221203Z Error: Cannot find module 'C:UsersRUNNER~1AppDataLocalTemptokenizer win-release-Eib6Oofake binnode-preload.cjs'
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1221756Z Require stack:
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1221960Z - internal/preload
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1222351Z     at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1222856Z     at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1223344Z     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1224048Z     at Function._load (node:internal/modules/cjs/loader:1216:25)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1224494Z     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1224918Z     at Module.require (node:internal/modules/cjs/loader:1527:12)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1225289Z     at node:internal/modules/cjs/loader:2071:12
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1225692Z     at loadPreloadModules (node:internal/process/pre_execution:756:5)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1226160Z     at setupUserModules (node:internal/process/pre_execution:231:5)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1226639Z     at prepareExecution (node:internal/process/pre_execution:159:5) {
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1226996Z   code: 'MODULE_NOT_FOUND',
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1227261Z   requireStack: [ 'internal/preload' ]
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1227505Z }
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1227599Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1227676Z Node.js v22.23.3
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1227922Z Command failed with exit code 1: node
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1228466Z At C:\Users\runneradmin\AppData\Local\Temp\tokenizer win-release-Eib6Oo\install.ps1:72 char:5
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1229060Z +     throw "Command failed with exit code ${exitCode}: $Exe"
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1229453Z +     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1230027Z     + CategoryInfo          : OperationStopped: (Command failed with exit code 1: node:String) [], RuntimeException
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1230643Z     + FullyQualifiedErrorId : Command failed with exit code 1: node
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1230980Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1231325Z : expected 1 to be +0 // Object.is equality[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1408992Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1421180Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1422215Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1425180Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/agent-release-installer-windows.test.ts[2m > [22mnative Windows pinned installer fixture[2m > [22minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1462089Z [31m[1mAssertionError[22m: From C:\Users\RUNNER~1\AppData\Local\Temp\tokenizer win-release-Eib6Oo\repo
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1463106Z  * branch            4d1c1f4287708e668900d64392d526abb45849e9 -> FETCH_HEAD
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1463504Z HEAD is now at 4d1c1f4 first
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1463990Z node:internal/modules/cjs/loader:1433
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1464412Z   throw err;
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1464695Z   ^
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1464848Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1465502Z Error: Cannot find module 'C:UsersRUNNER~1AppDataLocalTemptokenizer win-release-Eib6Oofake binnode-preload.cjs'
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1466068Z Require stack:
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1466292Z - internal/preload
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1466653Z     at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1467162Z     at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1467646Z     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1468114Z     at Function._load (node:internal/modules/cjs/loader:1216:25)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1468588Z     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1469032Z     at Module.require (node:internal/modules/cjs/loader:1527:12)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1469415Z     at node:internal/modules/cjs/loader:2071:12
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1469831Z     at loadPreloadModules (node:internal/process/pre_execution:756:5)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1470294Z     at setupUserModules (node:internal/process/pre_execution:231:5)
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1470771Z     at prepareExecution (node:internal/process/pre_execution:159:5) {
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1471125Z   code: 'MODULE_NOT_FOUND',
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1471414Z   requireStack: [ 'internal/preload' ]
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1471663Z }
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1471756Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1471836Z Node.js v22.23.3
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1472093Z Command failed with exit code 1: node
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1472638Z At C:\Users\runneradmin\AppData\Local\Temp\tokenizer win-release-Eib6Oo\install.ps1:72 char:5
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1473204Z +     throw "Command failed with exit code ${exitCode}: $Exe"
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1473593Z +     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1474153Z     + CategoryInfo          : OperationStopped: (Command failed with exit code 1: node:String) [], RuntimeException
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1474762Z     + FullyQualifiedErrorId : Command failed with exit code 1: node
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1475095Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1475446Z : expected 1 to be +0 // Object.is equality[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1475645Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1475775Z [32m- Expected[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1476019Z [31m+ Received[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1476143Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1476238Z [32m- 0[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1476434Z [31m+ 1[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1476539Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1477213Z [36m [2m❯[22m tests/cli/agent-release-installer-windows.test.ts:[2m114:38[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1753330Z     [90m112| [39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1755346Z     [90m113| [39m    [35mconst[39m fresh [33m=[39m [35mawait[39m [34minvoke[39m(script[33m,[39m home[33m,[39m fakeBin[33m,[39m url[33m,[39m [[32m"-EnrollTo[39m…
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1757324Z     [90m114| [39m    [34mexpect[39m(fresh[33m.[39mcode[33m,[39m fresh[33m.[39moutput)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1758282Z     [90m   | [39m                                     [31m^[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1759111Z     [90m115| [39m    [34mexpect[39m([34mgit[39m(active[33m,[39m [32m"rev-parse"[39m[33m,[39m [32m"HEAD"[39m))[33m.[39m[34mtoBe[39m(first)[33m;[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1761928Z     [90m116| [39m    [34mwriteFileSync[39m([34mjoin[39m(dataDir[33m,[39m [32m"credentials.json"[39m)[33m,[39m [32m"credential-canar[39m…
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1762584Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1763061Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1763391Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1766322Z [2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1767354Z [2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1768024Z [2m   Start at [22m 15:56:51
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1771924Z [2m   Duration [22m 5.87s[2m (transform 57ms, setup 0ms, collect 60ms, tests 5.20s, environment 0ms, prepare 315ms)[22m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1772620Z
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.1790882Z JSON report written to D:/a/tokenizer/tokenizer/.ci/windows-installer.json
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T15:56:57.2920249Z ##[error]Process completed with exit code 1.

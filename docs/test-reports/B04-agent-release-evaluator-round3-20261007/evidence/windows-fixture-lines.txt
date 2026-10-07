@@ -1,0 +1,151 @@
+    20	}
+    21
+    22	function startInstaller(script: string, home: string, fakeBin: string, serverUrl: string, args: string[] = [], extraEnv: Record<string, string> = {}, withService = false) {
+    23	  let finish!: (result: { code: number | string; output: string }) => void;
+    24	  const result = new Promise<{ code: number | string; output: string }>((resolve) => { finish = resolve; });
+    25	  const env: NodeJS.ProcessEnv = {
+    26	    ...process.env, ...extraEnv,
+    27	    NODE_OPTIONS: `--require="${join(fakeBin, "node-preload.cjs")}"`,
+    28	    TEST_CLI_TRACE: join(home, "cli-trace.jsonl"),
+    29	    TEST_TASK_TRACE: join(home, "task-trace.txt")
+    30	  };
+    31	  for (const key of Object.keys(env)) {
+    32	    if (key.toLowerCase() === "path") delete env[key];
+    33	  }
+    34	  env.Path = `${fakeBin};${process.env.Path ?? process.env.PATH}`;
+    35	  const child = execFile("powershell.exe", [
+    36	    "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", script,
+    37	    "-ServerUrl", serverUrl, "-ProjectRoot", home, ...(withService ? [] : ["-NoService"]), ...args
+    38	  ], {
+    39	    env,
+    40	    timeout: 90_000,
+    41	    maxBuffer: 2 * 1024 * 1024
+    42	  }, (error, stdout, stderr) => {
+    43	    finish({ code: error ? (error.code ?? 1) : 0, output: stdout + stderr });
+    44	  });
+    45	  return { child, result };
+    46	}
+    57	describe.skipIf(process.platform !== "win32")("native Windows pinned installer fixture", () => {
+    58	  it("installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens", async () => {
+    59	    const root = mkdtempSync(join(tmpdir(), "tokenizer win-release-"));
+    60	    roots.push(root);
+    61	    const home = join(root, "home");
+    62	    const repo = join(root, "repo");
+    63	    const fakeBin = join(root, "fake bin");
+    64	    const dataDir = join(home, ".tokenizer");
+    65	    mkdirSync(dataDir, { recursive: true });
+    66	    mkdirSync(join(repo, "src", "cli"), { recursive: true });
+    67	    mkdirSync(fakeBin);
+    68	    git(repo, "init", "-q");
+    69	    writeFileSync(join(repo, "src", "cli", "index.ts"), "// fixture\n");
+    70	    const first = commitFixture(repo, "first");
+    71	    const holdScript = join(root, "hold.js");
+    72	    writeFileSync(holdScript, "const fs=require('node:fs');const p=process.env.TEST_NPM_HOLD;fs.writeFileSync(p+'.ready','');const t=setInterval(()=>{if(!fs.existsSync(p)){clearInterval(t);process.exit(0)}},50);\n");
+    73	    // The installed .cmd shim launches node.exe in production. A nested
+    74	    // node.cmd mock changes batch control/exit semantics and cannot model it.
+    75	    copyFileSync(process.execPath, join(fakeBin, "node.exe"));
+    76	    copyFileSync("tests/fixtures/agent-release-node-preload.cjs", join(fakeBin, "node-preload.cjs"));
+    77	    writeFileSync(join(fakeBin, "npm.cmd"), [
+    78	      "@echo off",
+    79	      'if "%TEST_NPM_FAIL%"=="1" exit /b 33',
+    80	      `if not "%TEST_NPM_HOLD%"=="" "${process.execPath}" "${holdScript}"`,
+    81	      "exit /b 0",
+    82	      ""
+    83	    ].join("\r\n"));
+    84	    writeFileSync(join(fakeBin, "schtasks.cmd"), '@echo off\r\necho %*>> "%TEST_TASK_TRACE%"\r\nexit /b 0\r\n');
+    85
+    86	    const source = readFileSync("public/install.ps1", "utf8");
+    87	    const script = join(root, "install.ps1");
+    88	    const fixtureSource = source
+    89	      .replaceAll("https://github.com/tripplemay/tokenizer.git", repo)
+    90	      .replace('Join-Path $HOME ".tokenizer"', `Join-Path '${home.replaceAll("'", "''")}' ".tokenizer"`)
+    91	      .replace("Add-ToUserPath -Directory $BinDir", 'Write-Log "Fixture: user PATH unchanged"');
+    92	    writeFileSync(script, fixtureSource);
+    93	    writeFileSync(join(dataDir, "queue.jsonl"), "queue-canary");
+    94	    let status = 200;
+    95	    let pin = first;
+    96	    const server = createServer((_request, response) => {
+    97	      response.writeHead(status, { "Content-Type": "application/json" });
+    98	      response.end(JSON.stringify({ schema_version: 1, release: { version: "1.4.0", commit: pin, repository: repo } }));
+    99	    });
+   100	    servers.push(server);
+   101	    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+   102	    const address = server.address();
+   103	    if (!address || typeof address === "string") throw new Error("missing test server port");
+   104	    const url = `http://127.0.0.1:${address.port}`;
+   105	    const active = join(dataDir, "app");
+   106	    const trace = () => readFileSync(join(home, "cli-trace.jsonl"), "utf8").trim().split(/\r?\n/).map((line) => JSON.parse(line));
+   107	    const assertOldData = () => {
+   108	      expect(git(active, "rev-parse", "HEAD")).toBe(first);
+   109	      expect(readFileSync(join(dataDir, "credentials.json"), "utf8")).toBe("credential-canary");
+   110	      expect(readFileSync(join(dataDir, "queue.jsonl"), "utf8")).toBe("queue-canary");
+   111	    };
+   112
+   113	    const fresh = await invoke(script, home, fakeBin, url, ["-EnrollToken", "fresh-token"]);
+   114	    expect(fresh.code, fresh.output).toBe(0);
+   115	    expect(git(active, "rev-parse", "HEAD")).toBe(first);
+   116	    writeFileSync(join(dataDir, "credentials.json"), "credential-canary");
+   117	    const second = commitFixture(repo, "second");
+   118	    pin = second;
+   119
+   120	    status = 503;
+   121	    expect((await invoke(script, home, fakeBin, url)).code).not.toBe(0);
+   122	    assertOldData();
+   123	    status = 200;
+   124	    pin = "0".repeat(40);
+   125	    expect((await invoke(script, home, fakeBin, url)).code).not.toBe(0);
+   126	    assertOldData();
+   127	    pin = second;
+   128	    expect((await invoke(script, home, fakeBin, url, [], { TEST_NPM_FAIL: "1" })).code).not.toBe(0);
+   129	    assertOldData();
+   130	    const failedConfig = await invoke(script, home, fakeBin, url, [], { TEST_CONFIGURE_FAIL: "1" });
+   131	    expect(failedConfig.code, failedConfig.output).not.toBe(0);
+   132	    expect(trace().at(-1)).toEqual({ command: "configure", exitCode: 42, revision: "second" });
+   133	    assertOldData();
+   134	    const failedServiceConfig = await invoke(script, home, fakeBin, url, [], { TEST_CONFIGURE_FAIL: "1" }, true);
+   135	    expect(failedServiceConfig.code, failedServiceConfig.output).not.toBe(0);
+   136	    expect(trace().slice(-2)).toEqual([
+   137	      { command: "configure", exitCode: 42, revision: "second" },
+   138	      { command: "install-service", exitCode: 0, revision: "first" }
+   139	    ]);
+   140	    assertOldData();
+   141	    const sensitive = await invoke(script, home, fakeBin, url, ["-ForceEnroll", "-EnrollToken", "enroll-secret-canary"], { TEST_ENROLL_FAIL: "1" });
+   142	    expect(sensitive.code).not.toBe(0);
+   143	    expect(sensitive.output).not.toContain("enroll-secret-canary");
+   144	    expect(trace().at(-1)).toEqual({ command: "enroll", exitCode: 55, revision: "second" });
+   145	    assertOldData();
+   146
+   147	    const hold = join(root, "hold-npm");
+   148	    writeFileSync(hold, "hold");
+   149	    const held = startInstaller(script, home, fakeBin, url, [], { TEST_NPM_HOLD: hold });
+   150	    try {
+   151	      for (let attempt = 0; attempt < 200 && !existsSync(`${hold}.ready`); attempt += 1) {
+   152	        await new Promise((resolve) => setTimeout(resolve, 50));
+   153	      }
+   154	      expect(existsSync(`${hold}.ready`)).toBe(true);
+   155	      const concurrent = await invoke(script, home, fakeBin, url);
+   156	      expect(concurrent.code).not.toBe(0);
+   157	      expect(concurrent.output).toContain("Another Tokenizer installation is running");
+   158	    } finally {
+   159	      if (existsSync(hold)) unlinkSync(hold);
+   160	    }
+   161	    const completed = await held.result;
+   162	    expect(completed.code, completed.output).toBe(0);
+   163	    expect(git(active, "rev-parse", "HEAD")).toBe(second);
+   164
+   165	    status = 503;
+   166	    const rollback = await invoke(script, home, fakeBin, url, ["-Rollback"]);
+   167	    expect(rollback.code, rollback.output).toBe(0);
+   168	    expect(git(active, "rev-parse", "HEAD")).toBe(first);
+   169	    expect(readFileSync(join(dataDir, "credentials.json"), "utf8")).toBe("credential-canary");
+   170	    expect(readFileSync(join(dataDir, "queue.jsonl"), "utf8")).toBe("queue-canary");
+   171	    expect(existsSync(join(dataDir, ".install.lock"))).toBe(true);
+   172	    console.info("B04_NATIVE_FIXTURE_OBSERVATIONS", JSON.stringify({
+   173	      platform: process.platform, node: process.version,
+   174	      configFailureExit: failedConfig.code, serviceConfigFailureExit: failedServiceConfig.code,
+   175	      enrollmentFailureExit: sensitive.code, completedUpgradeExit: completed.code,
+   176	      offlineRollbackExit: rollback.code, activeCommitAfterRollback: git(active, "rev-parse", "HEAD"),
+   177	      expectedOldCommit: first, queueCanaryRetained: true, credentialCanaryRetained: true
+   178	    }));
+   179	  }, 180_000);
+   180	});

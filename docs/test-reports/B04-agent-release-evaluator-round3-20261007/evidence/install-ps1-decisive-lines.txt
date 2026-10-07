@@ -1,0 +1,188 @@
+    48	# $ErrorActionPreference = "Stop" only covers PowerShell's own terminating
+    49	# errors — a native executable exiting non-zero sails straight past it. Without
+    50	# this wrapper a failed `npm ci` would keep going and still report success,
+    51	# which is the behaviour `set -euo pipefail` gives install.sh for free.
+    52	function Invoke-Checked {
+    53	  param([Parameter(Mandatory)][string] $Exe, [Parameter(ValueFromRemainingArguments)][string[]] $Arguments)
+    54	  if ($Arguments -contains "--enroll-token") {
+    55	    # Native diagnostics may echo argv. Suppress all streams for enrollment;
+    56	    # neither exceptions nor the console may repeat the one-time token.
+    57	    $previousPreference = $ErrorActionPreference
+    58	    $ErrorActionPreference = "Continue"
+    59	    try {
+    60	      & $Exe @Arguments *> $null
+    61	      $exitCode = $LASTEXITCODE
+    62	    } catch {
+    63	      throw "Sensitive command failed to start: $Exe"
+    64	    } finally {
+    65	      $ErrorActionPreference = $previousPreference
+    66	    }
+    67	  } else {
+    68	    & $Exe @Arguments
+    69	    $exitCode = $LASTEXITCODE
+    70	  }
+    71	  if ($exitCode -ne 0) {
+    72	    throw "Command failed with exit code ${exitCode}: $Exe"
+    73	  }
+    74	}
+   135	function New-CmdShim {
+   136	  # pushd/popd because tsx is resolved relative to the working directory —
+   137	  # the same constraint that makes bin/tokenizer set cwd on POSIX.
+   138	  # The install path is deliberately NOT interpolated here. It contains the
+   139	  # username, which on Windows may be non-ASCII (CJK, Cyrillic, accented
+   140	  # Latin); writing it into a .cmd would corrupt it under any single-byte
+   141	  # encoding. %~dp0 resolves relative to the shim at runtime instead, so the
+   142	  # file stays pure ASCII whatever the user is called.
+   143	  $shim = @'
+   144	@echo off
+   145	pushd "%~dp0..\app"
+   146	node --import tsx "src\cli\index.ts" %*
+   147	set TOKENIZER_EXIT=%ERRORLEVEL%
+   148	popd
+   149	exit /b %TOKENIZER_EXIT%
+   150	'@
+   151	  Set-Content -Path (Join-Path $BinDir "tokenizer.cmd") -Value $shim -Encoding ASCII
+   152	}
+   163	Assert-Command -Name "node" -WingetId "OpenJS.NodeJS.LTS"
+   164	Assert-Command -Name "git"  -WingetId "Git.Git"
+   165	Assert-NodeVersion
+   166
+   167	New-Item -ItemType Directory -Force -Path $TokenizerHome | Out-Null
+   168	$lockFile = Join-Path $TokenizerHome ".install.lock"
+   169	try {
+   170	  # FileShare.None is a kernel-held, cross-process lock. A stale lock file is
+   171	  # harmless: the OS releases its handle on crash and the next open recovers.
+   172	  $lockStream = [IO.File]::Open($lockFile, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+   173	} catch [IO.IOException] {
+   174	  throw "Another Tokenizer installation is running; existing installation was not changed."
+   175	}
+   176	try {
+   177	  $owner = [Text.Encoding]::UTF8.GetBytes("$PID|$([DateTime]::UtcNow.ToString('o'))")
+   178	  $lockStream.SetLength(0)
+   179	  $lockStream.Write($owner, 0, $owner.Length)
+   180	  $lockStream.Flush()
+   181	} catch {
+   182	  $lockStream.Dispose()
+   183	  throw
+   184	}
+   196	try {
+   197	  if ($Rollback -and $ForceEnroll) { throw "-Rollback and -ForceEnroll cannot be combined." }
+   198	  $needEnroll = $ForceEnroll -or -not (Test-Path $CredentialsFile)
+   199	  if (-not $Rollback -and $needEnroll -and -not $EnrollToken) {
+   200	    throw "An enrollment token is required for a first install. Pass -EnrollToken <token>."
+   201	  }
+   202	  New-Item -ItemType Directory -Force -Path $ReleasesDir, $BinDir, (Join-Path $TokenizerHome "logs") | Out-Null
+   203	  if ($Rollback) {
+   204	    if (-not (Test-Path $InstallDir) -or -not (Test-Path $PreviousFile)) {
+   205	      throw "No previous release available for rollback."
+   206	    }
+   207	    $candidateDir = [IO.Path]::GetFullPath((Get-Content -Raw $PreviousFile).Trim())
+   208	    $releasePrefix = [IO.Path]::GetFullPath($ReleasesDir).TrimEnd('\') + '\'
+   209	    if (-not $candidateDir.StartsWith($releasePrefix, [StringComparison]::OrdinalIgnoreCase) -or
+   210	        -not (Test-Path (Join-Path $candidateDir ".git"))) {
+   211	      throw "Previous release path is invalid."
+   212	    }
+   213	  } else {
+   214	    # Old servers, offline hosts, and malformed manifests fail before touching
+   215	    # the current checkout or Task Scheduler. There is no origin/main fallback.
+   216	    $serverUri = [Uri]$ServerUrl
+   217	    if ($serverUri.UserInfo -or
+   218	        ($serverUri.Scheme -ne "https" -and -not ($serverUri.Scheme -eq "http" -and $serverUri.IsLoopback))) {
+   219	      throw "Agent release manifest requires HTTPS (except loopback testing)."
+   220	    }
+   221	    $manifest = Invoke-RestMethod -Uri "$($ServerUrl.TrimEnd('/'))/api/agent/releases" -TimeoutSec 15
+   222	    $release = $manifest.release
+   223	    if ($manifest.schema_version -ne 1 -or
+   224	        $release.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' -or
+   225	        $release.commit -cnotmatch '^[0-9a-f]{40}$' -or
+   226	        $release.repository -cne $RepoUrl) {
+   227	      throw "Invalid pinned Agent release manifest."
+   228	    }
+   229	    Assert-Command -Name "git" -WingetId "Git.Git"
+   230	    $stageDir = Join-Path $TokenizerHome (".stage-" + [guid]::NewGuid().ToString("N"))
+   231	    New-Item -ItemType Directory -Path $stageDir | Out-Null
+   232	    Invoke-Checked git -C $stageDir init -q
+   233	    Invoke-Checked git -C $stageDir remote add origin $RepoUrl
+   234	    Invoke-Checked git -C $stageDir fetch --no-tags --depth=1 origin $release.commit
+   235	    Invoke-Checked git -C $stageDir checkout --detach --force $release.commit
+   236	    $actualCommit = (& git -C $stageDir rev-parse --verify HEAD).Trim()
+   237	    if ($LASTEXITCODE -ne 0 -or $actualCommit -cne $release.commit) {
+   238	      throw "Agent commit digest mismatch."
+   239	    }
+   240	    Push-Location $stageDir
+   241	    try {
+   242	      Invoke-Checked npm ci
+   243	      Invoke-Checked node --import tsx "src\cli\index.ts" --help
+   244	    } finally {
+   245	      Pop-Location
+   246	    }
+   247	    $candidateDir = Join-Path $ReleasesDir ("$($release.commit)-" + [guid]::NewGuid().ToString("N"))
+   248	    Move-Item -LiteralPath $stageDir -Destination $candidateDir
+   249	    $stageDir = $null
+   250	  }
+   251
+   252	  if ((Test-Path $InstallDir) -and -not (Test-Path (Join-Path $InstallDir ".git"))) {
+   253	    throw "Existing app path is not a Git checkout; refusing to replace it."
+   254	  }
+   255	  Push-Location $candidateDir
+   256	  try { Invoke-Checked node --import tsx "src\cli\index.ts" --help } finally { Pop-Location }
+   257
+   258	  $hadExistingApp = Test-Path $InstallDir
+   259	  if ($hadExistingApp) {
+   260	    $oldDir = Join-Path $ReleasesDir ("previous-" + [guid]::NewGuid().ToString("N"))
+   261	  }
+   262	  $stopAttempted = $true
+   263	  Stop-RunningAgent
+   264	  if ($oldDir) {
+   265	    Move-Item -LiteralPath $InstallDir -Destination $oldDir
+   266	    $oldMoved = $true
+   267	  }
+   268	  Move-Item -LiteralPath $candidateDir -Destination $InstallDir
+   269	  $newMoved = $true
+   270
+   271	  New-CmdShim
+   272	  $env:Path = "$BinDir;$env:Path"
+   273	  if (-not $Rollback) {
+   274	    if ($DeviceName) { Invoke-Checked $tokenizer init --device-name $DeviceName } else { Invoke-Checked $tokenizer init }
+   275	    Invoke-Checked $tokenizer configure --server-url $ServerUrl --project-root $ProjectRoot
+   276	    if ($needEnroll) {
+   277	      $enrollArgs = @("enroll", "--enroll-token", $EnrollToken, "--server-url", $ServerUrl)
+   278	      if ($DeviceName) { $enrollArgs += @("--device-name", $DeviceName) }
+   279	      if ($Yes) { $enrollArgs += "--yes" }
+   280	      Invoke-Checked $tokenizer @enrollArgs
+   281	    } else {
+   282	      Write-Log "Re-using existing credentials at $CredentialsFile."
+   283	    }
+   284	  }
+   285	  if (-not $NoService) {
+   286	    Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes
+   287	    try { & schtasks /Run /TN "Tokenizer Agent" | Out-Null } catch {
+   288	      Write-Log "Could not start the scheduled task immediately; it will start within 15 minutes."
+   289	    }
+   290	  }
+   291	  if ($oldDir) { Set-Content -Path $PreviousFile -Value $oldDir -Encoding ASCII }
+   292	  Add-ToUserPath -Directory $BinDir
+   293	  if (-not $Rollback) { & $tokenizer run }
+   294	  Write-Log "Tokenizer installed. Run: tokenizer status"
+   295	} catch {
+   296	  if ($newMoved -and (Test-Path $InstallDir)) {
+   297	    Move-Item -LiteralPath $InstallDir -Destination $candidateDir
+   298	  }
+   299	  if ($oldMoved -and (Test-Path $oldDir)) {
+   300	    Move-Item -LiteralPath $oldDir -Destination $InstallDir
+   301	  }
+   302	  if (-not $hadExistingApp -and (Test-Path $tokenizer)) {
+   303	    Remove-Item -LiteralPath $tokenizer -Force
+   304	  }
+   305	  if ($stopAttempted -and $hadExistingApp -and -not $NoService -and (Test-Path $tokenizer)) {
+   306	    try { Invoke-Checked $tokenizer install-service --heartbeat-seconds $HeartbeatSeconds --sync-minutes $SyncMinutes }
+   307	    catch { Write-Warning "Previous Agent restored, but service restart failed. Run tokenizer install-service manually." }
+   308	  }
+   309	  throw
+   310	} finally {
+   311	  try {
+   312	    if ($stageDir -and (Test-Path $stageDir)) { Remove-Item -Recurse -Force $stageDir }
+   313	  } finally {
+   314	    $lockStream.Dispose()
+   315	  }
+   316	}

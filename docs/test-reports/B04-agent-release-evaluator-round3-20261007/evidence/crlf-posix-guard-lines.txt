@@ -1,0 +1,38 @@
+   140	    symlinkSync(firstPath, previous);
+   141	    status = 503;
+   142	    expect((await invoke(script, home, fakeBin, url, ["--rollback"])).code).toBe(0);
+   143	    expect(git(active, "rev-parse", "HEAD")).toBe(first);
+   144	    expect(readFileSync(join(dataDir, "credentials.json"), "utf8")).toBe("credential-canary");
+   145	    expect(readFileSync(join(dataDir, "queue.jsonl"), "utf8")).toBe("queue-canary");
+   146	  }, 90_000);
+   147	});
+   148
+   149	describe("Windows installer release boundary", () => {
+   150	  function assertStagedBeforeStop(source: string) {
+   151	    const stage = source.search(/^\s+Invoke-Checked npm ci\r?$/m);
+   152	    const stop = source.search(/^\s+Stop-RunningAgent\r?$/m);
+   153	    expect(stage).toBeGreaterThanOrEqual(0);
+   154	    expect(stop).toBeGreaterThan(stage);
+   155	  }
+   156
+   157	  it.each(["LF", "CRLF"])("does not chase main and stages before stopping the running task (%s)", (newline) => {
+   158	    const original = readFileSync("public/install.ps1", "utf8").replace(/\r\n/g, "\n");
+   159	    const source = newline === "CRLF" ? original.replace(/\n/g, "\r\n") : original;
+   160	    expect(source).toContain('/api/agent/releases');
+   161	    expect(source).toContain("Agent commit digest mismatch");
+   162	    expect(source).toContain("Invoke-Checked npm ci");
+   163	    expect(source).toContain("[IO.FileShare]::None");
+   164	    expect(source).toContain("$Arguments -contains \"--enroll-token\"");
+   165	    expect(source).toContain("& $Exe @Arguments *> $null");
+   166	    expect(source).not.toContain("$($Arguments -join ' ')");
+   167	    expect(source).not.toContain('"origin/$Branch"');
+   168	    assertStagedBeforeStop(source);
+   169	  });
+   170
+   171	  it("rejects a missing or premature stop boundary instead of passing absent indexes", () => {
+   172	    const source = readFileSync("public/install.ps1", "utf8").replace(/\r\n/g, "\n");
+   173	    const noStop = source.replace(/^\s+Stop-RunningAgent$/m, "");
+   174	    expect(() => assertStagedBeforeStop(noStop)).toThrow();
+   175	    expect(() => assertStagedBeforeStop(`  Stop-RunningAgent\n${noStop}`)).toThrow();
+   176	  });
+   177	});
