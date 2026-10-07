@@ -225,6 +225,7 @@ jobs:
       DATABASE_URL: postgresql://tokenizer_e2e:tokenizer_e2e@localhost:5432/tokenizer_e2e
       E2E_DATABASE_URL: postgresql://tokenizer_e2e:tokenizer_e2e@localhost:5432/tokenizer_e2e
       AUTH_SECRET: ci-e2e-synthetic-auth-secret-not-for-production
+      AUTH_RESEND_KEY: ci-e2e-synthetic-resend-key-not-for-production
       AUTH_TRUST_HOST: "true"
       AUTH_URL: http://127.0.0.1:3781
       NEXT_PUBLIC_APP_URL: http://127.0.0.1:3781
