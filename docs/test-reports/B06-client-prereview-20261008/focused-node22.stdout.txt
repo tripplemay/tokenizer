@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b06-client-prereview-20261008
+
+ ✓ tests/cli/privacy.test.ts (5 tests) 15ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 60ms
+ ✓ tests/server/b06-partial-ack.test.ts (4 tests) 147ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 179ms
+ ✓ tests/cli/b06-partial-ack.test.ts (7 tests) 266ms
+ ✓ tests/cli/b06-rejected-events-concurrency.test.ts (1 test) 1243ms
+   ✓ B06 rejected usage concurrency > serializes two native processes without losing either rejected event 1242ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (2 tests) 6785ms
+   ✓ privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 4827ms
+   ✓ privacy admission CLI lifecycle > keeps paused collection and the unavailable replay CLI from changing queue or cursor 1957ms
+
+ Test Files  7 passed (7)
+      Tests  39 passed (39)
+   Start at  01:32:23
+   Duration  8.80s (transform 3.20s, setup 0ms, collect 6.57s, tests 8.70s, environment 1ms, prepare 5.33s)
+

@@ -1,0 +1,18 @@
+{
+  "priorResponse": {
+    "error": "invalid batch request",
+    "code": "invalid_json"
+  },
+  "currentResponse": {
+    "error": "invalid batch request",
+    "code": "invalid_json",
+    "row": 1
+  },
+  "error": "Sync failed: 400 invalid_json",
+  "requests": 1,
+  "queueIds": [
+    "good",
+    "poison"
+  ],
+  "rejectedIds": []
+}

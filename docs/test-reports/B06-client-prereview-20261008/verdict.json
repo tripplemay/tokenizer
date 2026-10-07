@@ -1,0 +1,42 @@
+{
+  "role": "same-family technical prereview",
+  "formalEvaluator": false,
+  "candidateSha": "694ff3c7f61664754e88d50f3161fc5d06ac6607",
+  "baseSha": "029f6c53ea7193989643a1f2e4d23108ba0c9af5",
+  "outcome": "BLOCK combined B06 client release until cross-process queue loss and quarantine permissions are fixed; prior-B06 compatibility is conditional on server-first rollout",
+  "findings": [
+    {
+      "id": "B06-PRE-01",
+      "severity": "blocker",
+      "scope": "B06 client integrated with concurrent collect/run/sync (B07 boundary)",
+      "result": "A new event written by a second process while the first awaits a valid partial ACK is overwritten by the first process's whole-queue checkpoint. The event was neither sent nor quarantined."
+    },
+    {
+      "id": "B06-PRE-02",
+      "severity": "blocker",
+      "scope": "new long-lived rejected-usage.jsonl privacy surface",
+      "result": "With umask 022, the .tokenizer directory is 0755 and rejected-usage.jsonl is 0644; retained workspace paths and source event IDs are readable by other local users when the home directory is traversable."
+    },
+    {
+      "id": "B06-PRE-03",
+      "severity": "conditional blocker",
+      "scope": "new Agent against immediately preceding bounded B06 server",
+      "result": "The preceding server returns 400 invalid_json without row for a malformed event string; the new Agent cannot quarantine it, so the good neighbor remains pinned. A strict server-first rollout avoids this compatibility path."
+    }
+  ],
+  "positiveEvidence": {
+    "postgresVersion": "16.13",
+    "postgresTimezone": "UTC",
+    "migrationsApplied": 28,
+    "candidateDbProbes": "4 passed",
+    "focusedPortableTests": "39 passed",
+    "realTcpHttpToRouteAndPgProbe": "passed: 2 accepted, 1 rejected, duplicate replay, reject-only no write"
+  },
+  "limitations": [
+    "This is not an independent different-model-family Evaluator verdict or release approval.",
+    "The TCP/HTTP probe invokes the real route function, authentication and PostgreSQL, but not the full Next.js middleware/deployment stack.",
+    "The two-process loss probe uses a contract-valid synthetic server ACK; the race is wholly on the local queue and does not depend on PostgreSQL.",
+    "The local Node 22 run reuses the main checkout's node_modules rather than a fresh npm ci.",
+    "Native Windows, exact-SHA CI, production and power-loss fsync durability were not tested."
+  ]
+}

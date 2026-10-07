@@ -1,0 +1,21 @@
+{
+  "result": {
+    "inserted": 1,
+    "updated": 0,
+    "duplicates": 0,
+    "received": 1,
+    "deviceId": "device-a",
+    "rejected": 1
+  },
+  "requests": [
+    [
+      "good",
+      "poison"
+    ]
+  ],
+  "finalIds": [],
+  "quarantinedIds": [
+    "poison"
+  ],
+  "queueRaw": ""
+}

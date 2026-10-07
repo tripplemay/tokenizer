@@ -1,0 +1,60 @@
+Failed to invalidate usage-cost cache Error: Invariant: static generation store missing in revalidateTag usage-cost:81ce23bb9083398259d80a2859947a1dd53f26311c18d5d42746cb759a600377
+    at revalidate (/Volumes/ORICO/project/tokenizer/node_modules/next/src/server/web/spec-extension/revalidate.ts:89:11)
+    at revalidateTag (/Volumes/ORICO/project/tokenizer/node_modules/next/src/server/web/spec-extension/revalidate.ts:21:10)
+    at invalidateUsageCostCache (/Volumes/ORICO/project/.worktrees/tokenizer-b06-client-prereview-20261008/src/server/usage-cost-cache.ts:10:5)
+    at POST (/Volumes/ORICO/project/.worktrees/tokenizer-b06-client-prereview-20261008/app/api/usage/events/batch/route.ts:46:5)
+    at async Server.<anonymous> (/Volumes/ORICO/project/.worktrees/tokenizer-b06-client-prereview-20261008/docs/test-reports/B06-client-prereview-20261008/pg16-http-roundtrip.probe.ts:54:22)
+{
+  "version": "16.13 (Homebrew)",
+  "timezone": "UTC",
+  "statuses": [
+    200,
+    200,
+    200
+  ],
+  "first": {
+    "inserted": 2,
+    "updated": 0,
+    "duplicates": 0,
+    "received": 2,
+    "deviceId": "b06-prereview-device-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa",
+    "rejected": 1
+  },
+  "replay": {
+    "inserted": 0,
+    "updated": 0,
+    "duplicates": 2,
+    "received": 2,
+    "deviceId": "b06-prereview-device-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa",
+    "rejected": 1
+  },
+  "rejectedOnly": {
+    "inserted": 0,
+    "updated": 0,
+    "duplicates": 0,
+    "received": 0,
+    "deviceId": "b06-prereview-device-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa",
+    "newModelKeys": [],
+    "protocol": "usage-partial-v1",
+    "accepted": [],
+    "rejected": [
+      {
+        "row": 0,
+        "code": "invalid_event"
+      }
+    ]
+  },
+  "rejectOnlyWriteFree": true,
+  "rows": [
+    {
+      "sourceEventId": "good-a-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa"
+    },
+    {
+      "sourceEventId": "good-b-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa"
+    }
+  ],
+  "queueIds": [],
+  "rejectedIds": [
+    "poison-8c087b0e-b09c-4e51-b3b1-6cc1faeb2faa"
+  ]
+}
