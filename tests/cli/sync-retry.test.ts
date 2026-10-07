@@ -61,6 +61,26 @@ describe("syncEvents batch retry", () => {
     expect(result.received).toBe(0);
   });
 
+  it("scrubs a legacy queued remote before sending it over HTTP", async () => {
+    const legacyEvent = {
+      ...event(1),
+      repoKey: "reader:FAKE_TOKEN@git.example/Team/Repo",
+      gitRemote: "https://reader:FAKE_TOKEN@git.example/Team/Repo.git?key=FAKE_QUERY"
+    };
+    fetchMock.mockResolvedValueOnce(okResponse(1));
+
+    await syncEvents(config, [legacyEvent]);
+
+    const bodyText = fetchMock.mock.calls[0][1].body as string;
+    const body = JSON.parse(bodyText);
+    expect(body.events[0]).toMatchObject({
+      repoKey: "git.example/Team/Repo",
+      gitRemote: "https://git.example/Team/Repo.git"
+    });
+    expect(bodyText).not.toMatch(/FAKE_TOKEN|FAKE_QUERY/);
+    expect(legacyEvent.gitRemote).toContain("FAKE_TOKEN");
+  });
+
   it("retries a transiently failing batch instead of aborting the whole run", async () => {
     // 25+ events -> two batches. The second batch fails once at the network
     // level (proxy blip), then succeeds; the run must complete without

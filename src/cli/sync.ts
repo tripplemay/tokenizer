@@ -7,6 +7,7 @@ import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
 import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
+import { sanitizeUsageEventGit } from "@/shared/git-remote";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
@@ -74,7 +75,11 @@ function newestFirst(events: UsageEventInput[]): UsageEventInput[] {
 async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
   // Diagnostics carry agentFeatureVersion: the server only trusts in-place
   // row corrections (parser v2 re-parses) from agents that declare it.
-  const body: BatchUsageRequest = { device: deviceWithDiagnostics(), events, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  const body: BatchUsageRequest = {
+    device: deviceWithDiagnostics(),
+    events: events.map(sanitizeUsageEventGit),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  };
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/usage/events/batch`, {
     method: "POST",

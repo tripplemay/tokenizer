@@ -1,0 +1,22 @@
+{
+  "role": "generator",
+  "baseline_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "finding": "R02",
+  "implementation_status": "ready_for_independent_evaluation",
+  "evaluation_verdict": null,
+  "checks": {
+    "focused_tests": "42 passed",
+    "isolated_postgres_probe": "1 passed; PostgreSQL 16.13; 28 migrations",
+    "lint": "passed",
+    "verify": "passed",
+    "build": "passed",
+    "full_unit_tests_final_rerun": "1462 passed; 21 skipped",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "No historical database or queued-file rewrite",
+    "No independent Evaluator, production, Windows, or real Agent upgrade verification",
+    "Harness signed repo identity and raw parser payload privacy remain separate work",
+    "One transient full-suite failure preceded a passing isolated file and full rerun"
+  ]
+}

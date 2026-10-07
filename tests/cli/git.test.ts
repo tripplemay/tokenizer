@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import { enrichEventsWithGit, normalizeGitRemote } from "@/cli/git";
 
 describe("normalizeGitRemote", () => {
@@ -30,8 +34,11 @@ describe("normalizeGitRemote", () => {
     expect([...normalized][0]).toBe("github.com/tripplemay/aigcgateway");
   });
 
-  it("lowercases mixed-case host and owner", () => {
-    expect(normalizeGitRemote("https://GitHub.com/TrippleMay/AigcGateway.git")).toBe("github.com/tripplemay/aigcgateway");
+  it("lowercases the host but preserves case-sensitive repository paths", () => {
+    expect(normalizeGitRemote("https://GitHub.com/TrippleMay/AigcGateway.git")).toBe("github.com/TrippleMay/AigcGateway");
+    expect(normalizeGitRemote("https://git.example/Team/Repo.git")).not.toBe(
+      normalizeGitRemote("https://git.example/team/repo.git")
+    );
   });
 
   it("handles http (non-tls) protocol", () => {
@@ -60,6 +67,57 @@ describe("normalizeGitRemote", () => {
 
   it("returns null for whitespace-only string", () => {
     expect(normalizeGitRemote("   ")).toBeNull();
+  });
+
+  it("removes userinfo, query, and fragment without changing repository identity", () => {
+    const remotes = [
+      "https://user:FAKE_TOKEN_A@GitHub.com/Team/Repo.git?token=FAKE_QUERY#FAKE_FRAGMENT",
+      "ssh://deploy:FAKE_TOKEN_B@github.com/Team/Repo.git?token=FAKE_QUERY",
+      "deploy@github.com:Team/Repo.git#FAKE_FRAGMENT",
+      "github.com/Team/Repo"
+    ];
+    expect(remotes.map(normalizeGitRemote)).toEqual(Array(4).fill("github.com/Team/Repo"));
+  });
+
+  it("normalizes default ports and retains non-default ports", () => {
+    expect(normalizeGitRemote("https://user:pass@GIT.example:443/Team/Repo.git")).toBe("git.example/Team/Repo");
+    expect(normalizeGitRemote("ssh://git@GIT.example:22/Team/Repo.git")).toBe("git.example/Team/Repo");
+    expect(normalizeGitRemote("https://git.example:8443/Team/Repo.git")).toBe("git.example:8443/Team/Repo");
+    expect(normalizeGitRemote("ssh://git@git.example:2222/Team/Repo.git")).toBe("git.example:2222/Team/Repo");
+    expect(normalizeGitRemote("git.example:8443/Team/Repo")).toBe("git.example:8443/Team/Repo");
+  });
+
+  it("fails closed for local, unsupported, and malformed remotes", () => {
+    expect(normalizeGitRemote("file:///private/repo.git")).toBeNull();
+    expect(normalizeGitRemote("/private/repo.git")).toBeNull();
+    expect(normalizeGitRemote("ftp://user:FAKE_TOKEN@git.example/repo.git")).toBeNull();
+    expect(normalizeGitRemote("https://user:FAKE_TOKEN@git.example")).toBeNull();
+    expect(normalizeGitRemote("git@git.example:FAKE_TOKEN@git.example/repo.git")).toBeNull();
+  });
+});
+
+describe("enrichEventsWithGit credential boundary", () => {
+  const roots: string[] = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  it("keeps synthetic remote credentials out of the event payload", () => {
+    const root = mkdtempSync(join(tmpdir(), "tokenizer-git-privacy-"));
+    roots.push(root);
+    execFileSync("git", ["init", "--quiet", root]);
+    execFileSync("git", ["-C", root, "remote", "add", "origin", "https://reader:FAKE_TOKEN@git.example/Team/Repo.git?key=FAKE_QUERY#FAKE_FRAGMENT"]);
+
+    const [enriched] = enrichEventsWithGit([{
+      source: "claude-code",
+      sourceEventId: "evt-1",
+      occurredAt: "2026-01-01T00:00:00.000Z",
+      workspacePath: root
+    }]);
+
+    expect(enriched.repoKey).toBe("git.example/Team/Repo");
+    expect(enriched.gitRemote).toBe("https://git.example/Team/Repo.git");
+    expect(JSON.stringify(enriched)).not.toMatch(/FAKE_TOKEN|FAKE_QUERY|FAKE_FRAGMENT/);
   });
 });
 

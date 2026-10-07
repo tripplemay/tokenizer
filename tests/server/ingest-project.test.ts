@@ -60,6 +60,95 @@ describe("ingestUsageEvents project resolution", () => {
     expect(rows[0].projectId).toBe("proj-1");
   });
 
+  it("scrubs legacy Git credentials before project lookup and event persistence", async () => {
+    prismaMock.project.upsert.mockResolvedValue({ id: "proj-safe" });
+
+    await ingestUsageEvents(
+      [event({
+        repoKey: "reader:FAKE_TOKEN@git.example/old/repo",
+        gitRemote: "https://reader:FAKE_TOKEN@git.example/Team/Repo.git?key=FAKE_QUERY#FAKE_FRAGMENT",
+        workspacePath: "/work/repo"
+      })],
+      device,
+      "tok-1",
+      "user-1"
+    );
+
+    const projectCall = prismaMock.project.upsert.mock.calls[0][0];
+    const row = prismaMock.usageEvent.createMany.mock.calls[0][0].data[0];
+    expect(projectCall).toMatchObject({
+      where: { userId_repoKey: { userId: "user-1", repoKey: "git.example/Team/Repo" } },
+      create: { userId: "user-1", repoKey: "git.example/Team/Repo", repoRemote: "https://git.example/Team/Repo.git" },
+      update: { repoRemote: "https://git.example/Team/Repo.git" }
+    });
+    expect(row).toMatchObject({ repoKey: "git.example/Team/Repo", gitRemote: "https://git.example/Team/Repo.git" });
+    expect(JSON.stringify({ projectCall, row })).not.toMatch(/FAKE_TOKEN|FAKE_QUERY|FAKE_FRAGMENT/);
+  });
+
+  it("retains the user boundary when two users report the same repo with different credentials", async () => {
+    prismaMock.project.upsert.mockResolvedValueOnce({ id: "proj-user-1" }).mockResolvedValueOnce({ id: "proj-user-2" });
+
+    for (const [userId, token] of [["user-1", "FAKE_TOKEN_A"], ["user-2", "FAKE_TOKEN_B"]]) {
+      await ingestUsageEvents(
+        [event({ gitRemote: `https://reader:${token}@git.example/Team/Repo.git`, workspacePath: "/work/repo" })],
+        device,
+        "tok-1",
+        userId
+      );
+    }
+
+    const calls = prismaMock.project.upsert.mock.calls.map(([args]) => args);
+    expect(calls.map((call) => call.where.userId_repoKey)).toEqual([
+      { userId: "user-1", repoKey: "git.example/Team/Repo" },
+      { userId: "user-2", repoKey: "git.example/Team/Repo" }
+    ]);
+    expect(calls.map((call) => call.create.userId)).toEqual(["user-1", "user-2"]);
+    expect(prismaMock.usageEvent.createMany.mock.calls.map(([args]) => args.data[0].projectId)).toEqual([
+      "proj-user-1", "proj-user-2"
+    ]);
+  });
+
+  it("drops unsupported remotes and does not persist untrusted repo identity", async () => {
+    prismaMock.project.upsert.mockResolvedValue({ id: "proj-local" });
+
+    await ingestUsageEvents(
+      [event({
+        repoKey: "ftp://reader:FAKE_TOKEN@git.example/Team/Repo.git",
+        gitRemote: "file:///private/FAKE_TOKEN/Repo.git",
+        workspacePath: "/work/repo"
+      })],
+      device,
+      "tok-1",
+      "user-1"
+    );
+
+    expect(prismaMock.project.upsert.mock.calls[0][0].where).toEqual({
+      userId_workspacePath: { userId: "user-1", workspacePath: "/work/repo" }
+    });
+    const row = prismaMock.usageEvent.createMany.mock.calls[0][0].data[0];
+    expect(row).toMatchObject({ repoKey: null, gitRemote: null, projectId: "proj-local" });
+    expect(JSON.stringify(row)).not.toContain("FAKE_TOKEN");
+  });
+
+  it("canonicalizes a standalone repoKey with a non-default port", async () => {
+    prismaMock.project.upsert.mockResolvedValue({ id: "proj-port" });
+
+    await ingestUsageEvents(
+      [event({ repoKey: "git.example:8443/Team/Repo", workspacePath: "/work/repo" })],
+      device,
+      "tok-1",
+      "user-1"
+    );
+
+    expect(prismaMock.project.upsert.mock.calls[0][0].where).toEqual({
+      userId_repoKey: { userId: "user-1", repoKey: "git.example:8443/Team/Repo" }
+    });
+    expect(prismaMock.usageEvent.createMany.mock.calls[0][0].data[0]).toMatchObject({
+      repoKey: "git.example:8443/Team/Repo",
+      gitRemote: null
+    });
+  });
+
   it("adopts the existing repoKey-less row when a non-git project gains a git remote", async () => {
     prismaMock.project.upsert.mockRejectedValue(uniqueConstraintError(["workspacePath"]));
     prismaMock.project.findUnique.mockResolvedValue({ id: "proj-legacy" });

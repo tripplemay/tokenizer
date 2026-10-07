@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { PARSER_CORRECTION_FEATURE_VERSION } from "@/shared/agent-feature-version";
 import { codexCanonicalSourceEventId } from "@/shared/codex-usage";
 import { computeTotalTokens, DeviceInput, normalizeTokenCount, UsageEventInput } from "@/shared/usage";
+import { sanitizeUsageEventGit } from "@/shared/git-remote";
 import { pathSegments } from "@/shared/path";
 import { sanitizeDeviceForIngest, sanitizeUsageEventForIngest } from "@/shared/input-sanitization";
 import { prisma } from "./db";
@@ -136,7 +137,7 @@ async function ensureDevice(device: DeviceInput, lastSyncAt: Date, userId: strin
 
 export async function ingestUsageEvents(events: UsageEventInput[], deviceInput: DeviceInput, deviceTokenId: string, userId: string) {
   const safeDevice = sanitizeDeviceForIngest(deviceInput);
-  const safeEvents = events.map(sanitizeUsageEventForIngest);
+  const safeEvents = events.map((event) => sanitizeUsageEventGit(sanitizeUsageEventForIngest(event)));
   const now = new Date();
   const device = await ensureDevice(safeDevice, now, userId);
   await prisma.deviceToken.update({ where: { id: deviceTokenId }, data: { lastUsedAt: now } });
