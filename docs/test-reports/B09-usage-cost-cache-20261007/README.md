@@ -1,6 +1,6 @@
 # B09 可变成本缓存修复候选（Generator handoff，非最终验收）
 
-- 基线：`2074991717abaf3cb34d9aad894bcd4357fefbc3`；仅本 detached worktree 的 diff，未合并、提交、推送或部署。
+- 基线：`2074991717abaf3cb34d9aad894bcd4357fefbc3`；实现提交 `1925f7d` 留在 detached worktree，未合并、推送或部署。
 - 范围：R05 的 closed batch 永久缓存、首页/项目/设备/模型汇总的租户定向失效，以及入库、修正、Harness dispatch materialization、legacy cleanup 的缓存失效。未声称覆盖 B09 全部前置依赖 B06/B08。
 
 ## 实现

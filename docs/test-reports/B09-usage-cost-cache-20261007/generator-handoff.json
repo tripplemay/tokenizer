@@ -3,6 +3,7 @@
   "package": "B09",
   "finding": "R05",
   "base_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "implementation_commit": "1925f7d",
   "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-cost-cache-fix-20261007",
   "status": "candidate_not_accepted",
   "tests": {
