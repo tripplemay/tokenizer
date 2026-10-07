@@ -1,0 +1,10 @@
+af744346514fec56c07a4748313df13682a49a6d2cd728d8f52695f48b07fd8c  docs/test-reports/B07-queue-prereview-20261008/evidence/ci-windows.log
+329711b2b73395a481de0fce3c8d7535e9418338e22a47366cb91d0a669be45d  docs/test-reports/B07-queue-prereview-20261008/evidence/focused.log
+110b2ff4ea3e06e8e1e02009145f352d32b3e821d4e22ad01285d05d88305d15  docs/test-reports/B07-queue-prereview-20261008/evidence/process-negative-and-control.log
+8ca9f08722ce19f74f75aae7468c7df4ce2eb065a12c9d2d1e4eca5d802c3cf5  docs/test-reports/B07-queue-prereview-20261008/evidence/typecheck.log
+9f3d5de2fcc27a6abe677e67cb64427bcf5727e84ea981c1e1f57ae12648182d  docs/test-reports/B07-queue-prereview-20261008/evidence/version-and-rowless-negative.log
+90a3dbb70db8890935d9e44605b952dc06be5804b64a72ce319630887a4ff151  docs/test-reports/B07-queue-prereview-20261008/evidence/version-negative.log
+d32966806fd776e4af599d8dab8e37fb32b0d37300e627e0fd3a0a2e3765a341  docs/test-reports/B07-queue-prereview-20261008/evidence/archive-line-ending-probe.json
+475cc993db23976b35a57ce9b11b3e3a975b07cc5e35a21179c7b6de9b1d0f3e  docs/test-reports/B07-queue-prereview-20261008/evidence/ci-run-latest.json
+88e0c725e4e3f1ef9a1c9e331949b8ead58e1a32418a1ebbcb1cf87a2f610bbd  docs/test-reports/B07-queue-prereview-20261008/evidence/ci-run.json
+6e480fec7d10b086f42bf1818a8e402274ac6ed411ad1aa5e9e6acbf9921cafd  docs/test-reports/B07-queue-prereview-20261008/evidence/local-runtime.json
