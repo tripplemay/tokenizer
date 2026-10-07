@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { collectionScopeFingerprint } from "@/cli/privacy";
 import { planBoundedReplay } from "@/cli/replay-contract";
+import { collectionScopeFingerprint } from "@/cli/privacy";
 
 const base = {
   source: "claude-code" as const,
@@ -11,16 +11,25 @@ const base = {
   maxEvents: 100
 };
 
-describe("B03 independent replay admission boundary", () => {
-  it("accepts exact hard limits while freezing a one-file dry-run plan", () => {
-    const plan = planBoundedReplay({
+describe("R07 operational replay contract", () => {
+  it("preserves the exact one-file limits and dry-run default", () => {
+    const planned = planBoundedReplay({
       ...base,
       to: "2026-11-01T00:00:00.000Z",
       maxBytes: 16 * 1024 * 1024,
       maxEvents: 5_000
     });
-    expect(plan).toEqual(expect.objectContaining({ maxFiles: 1, dryRun: true }));
-    expect(Object.isFrozen(plan)).toBe(true);
+    expect(planned).toEqual(expect.objectContaining({ maxFiles: 1, dryRun: true }));
+    expect(Object.isFrozen(planned)).toBe(true);
+  });
+
+  it("represents execution only through an explicit false dryRun phase", () => {
+    expect(planBoundedReplay({ ...base, dryRun: false })).toEqual({
+      ...base,
+      maxFiles: 1,
+      dryRun: false
+    });
+    expect(() => planBoundedReplay({ ...base, dryRun: "false" })).toThrow("dryRun must be boolean");
   });
 
   it("rejects one-unit range and budget overruns", () => {
@@ -33,9 +42,9 @@ describe("B03 independent replay admission boundary", () => {
     { execute: true },
     { recursive: true },
     { maxFiles: 1 },
-    { dryRun: false }
-  ])("rejects execution or caller-controlled widening: %j", (extra) => {
-    expect(() => planBoundedReplay({ ...base, ...extra })).toThrow();
+    { homeDir: "/" }
+  ])("rejects CLI-only or caller-controlled widening: %j", (extra) => {
+    expect(() => planBoundedReplay({ ...base, ...extra })).toThrow("Unknown replay");
   });
 
   it.each([
@@ -45,11 +54,11 @@ describe("B03 independent replay admission boundary", () => {
     { file: "/selected/*.jsonl" },
     { file: "relative.jsonl" },
     { from: "2026-10-01T08:00:00.000+08:00" }
-  ])("rejects unsupported or broad replay scope: %j", (change) => {
+  ])("retains the historical unsupported/broad scope negatives: %j", (change) => {
     expect(() => planBoundedReplay({ ...base, ...change })).toThrow();
   });
 
-  it("keeps the local collection label independent of upload mode and list order", () => {
+  it("keeps collection scope independent of upload mode and list order", () => {
     const local = collectionScopeFingerprint({
       mode: "local-only",
       includePaths: ["/work/b", "/work/a", "/work/a"],
