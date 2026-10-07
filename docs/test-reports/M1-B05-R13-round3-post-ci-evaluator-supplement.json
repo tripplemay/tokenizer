@@ -1,0 +1,114 @@
+{
+  "schema": "tokenizer-evaluator-supplement/1",
+  "batch_id": "M1-B05-R13",
+  "feature_id": "R13-SLICE1-ROUND3-POST-CI",
+  "created_at": "2026-10-07T15:52:23Z",
+  "evaluator": "codex/evaluator-independent-round3",
+  "supplements": {
+    "path": "docs/test-reports/M1-B05-R13-round3-evaluator-verdict.json",
+    "commit": "df3660ebb563ae68a0d32254c5d8ccce8374a9e8",
+    "sha256": "726d879d2ab8813dfde45e80579e3fbe8d0efa77be66089820f8a86bcfcc68ec",
+    "preservation": "The original PASS_WITH_LIMITATIONS verdict is unchanged. This immutable supplement records later terminal CI evidence and operationally supersedes only its safe-branch readiness conclusion."
+  },
+  "candidate_commit": "428bc9b18195cc408752709297f66777ed114533",
+  "full_composition_commit": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+  "result": "CI_BLOCKED",
+  "release_ready": false,
+  "release_readiness": "NOT_READY",
+  "safe_branch_ci_readiness": "BLOCKED_PENDING_FIX_AND_GREEN_RERUN",
+  "summary": "Safe-branch workflow run 37645682850 finished FAILURE on the exact composition SHA. Verify, Windows, PostgreSQL 16, and authenticated-browser jobs passed, and all four candidate/prior OCI image builds in the release job passed. The sole failed functional step was the recovery rehearsal. The failure is the official postgres first-initialization readiness race: start_db accepts pg_isready over the default Unix socket, so it can return while the official image's socket-only temporary initialization server is accepting connections; the entrypoint then stops that server before execing the final server. The immediately following pg_restore hit that stop window and received FATAL: the database system is shutting down. The safe-branch gate is therefore blocked until readiness targets the final TCP server and the exact workflow reruns green.",
+  "ci_run": {
+    "repository": "tripplemay/tokenizer",
+    "workflow": "Deploy VPS",
+    "run_id": 37645682850,
+    "run_url": "https://github.com/tripplemay/tokenizer/actions/runs/37645682850",
+    "event": "workflow_dispatch",
+    "head_sha": "3ade5d1e45ac0f53f0f7a122711e6e219b7dac09",
+    "status": "completed",
+    "conclusion": "failure",
+    "release_job_id": 112876984305,
+    "release_job_url": "https://github.com/tripplemay/tokenizer/actions/runs/37645682850/job/112876984305",
+    "postgres_image": "postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "jobs": {
+      "Verify": "success",
+      "Verify (Windows)": "success",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Linux OCI and recovery rehearsal": "failure",
+      "Deploy": "skipped"
+    }
+  },
+  "blocker": {
+    "id": "B05-R3-POSTCI-001",
+    "severity": "BLOCKER",
+    "scope": "safe-branch release/recovery CI harness",
+    "title": "Recovery rehearsal can mistake the official PostgreSQL initialization server for final readiness",
+    "classification": "CONFIRMED_POSTGRES_FIRST_INIT_UNIX_SOCKET_READINESS_RACE",
+    "confidence": "HIGH; the live failure, checked-in caller, and official entrypoint state transition align exactly. The failed job did not retain container stdout, so this conclusion does not claim a captured server-side transition trace.",
+    "live_evidence": [
+      "At 2026-10-07T15:47:14.3131199Z the old-image business canary succeeded with {stage: enroll-ingest-summary, ok: true, eventCount: 1, totalTokens: 23} after all prior migrations were applied.",
+      "At 2026-10-07T15:47:15.9871264Z pg_restore failed on /var/run/postgresql/.s.PGSQL.5432 with FATAL: the database system is shutting down; the step exited 1.",
+      "scripts/test/rehearse-release.sh:43-49 starts a fresh postgres:16-alpine container and polls `docker exec <container> pg_isready -U tokenizer -d tokenizer` without `-h`; line 98 immediately invokes pg_restore after the poll returns.",
+      "The candidate and composition use the same rehearse-release.sh blob 017abe5d5a1e847444c2b70d4fe68d0b6f6c91f3."
+    ],
+    "causal_chain": [
+      "A fresh empty postgres:16-alpine data directory enters the official image's first-initialization path.",
+      "The official entrypoint starts a temporary PostgreSQL server with listen_addresses='' and therefore Unix-socket-only service, then creates the requested database and runs init files.",
+      "pg_isready without `-h` runs inside the container and can return success against that temporary Unix socket server.",
+      "start_db returns before the entrypoint finishes initialization. The entrypoint next executes `pg_ctl ... -m fast -w stop` on the temporary server and only afterward execs the final PostgreSQL process.",
+      "The caller's immediate socket-based pg_restore races that shutdown and receives the exact observed FATAL response. The first scratch database avoided the timing window; the second restore target hit it, which is consistent with a nondeterministic readiness race."
+    ],
+    "excluded_primary_causes": [
+      "Not an OCI build failure: candidate app, candidate migration, previous app, and previous migration build steps all succeeded.",
+      "Not a prior-image compatibility or migration failure: all previous migrations applied and the old-image canary completed successfully before the restore target was started.",
+      "Not evidence of a corrupt dump or restore-format incompatibility: the server rejected the connection during shutdown before pg_restore could exercise dump contents.",
+      "Not a GHCR or attestation failure: those main-only steps were skipped by design in this safe-branch run."
+    ],
+    "required_action": [
+      "Change final readiness to discriminate against the socket-only initialization server, minimally `docker exec \"$1\" pg_isready -h 127.0.0.1 -U tokenizer -d tokenizer`; a subsequent TCP SQL probe such as `psql -h 127.0.0.1 ... -c 'SELECT 1'` may further strengthen readiness.",
+      "Add a regression that starts a fresh official postgres image and proves the helper never returns during the temporary-server phase.",
+      "Rerun the full safe-branch workflow on the exact fixed composition and require Linux OCI and recovery rehearsal to succeed with retained recovery evidence before integration or any main push."
+    ]
+  },
+  "decision": {
+    "integrate_current_composition": false,
+    "main_push": false,
+    "production_release": false,
+    "reason": "The mandatory safe-branch OCI/recovery job is red. Passing prerequisite jobs and local tests do not override a failed recovery rehearsal."
+  },
+  "remaining_boundaries": [
+    "This safe-branch run used an isolated local registry; it did not publish to or verify real GHCR digests.",
+    "The main-only GitHub attestation positive check and wrong-source-SHA/wrong-workflow negative checks did not execute.",
+    "No actual retained production old image, production backup/restore, traffic switch, rollback, or production deployment was verified.",
+    "This supplement diagnoses and gates the observed CI failure; it does not modify or validate a product-code fix."
+  ],
+  "official_sources": [
+    {
+      "url": "https://github.com/docker-library/postgres/blob/d588a44673ea9d123c1acb1a6924de10a27fc315/docker-entrypoint.sh#L286-L313",
+      "evidence": "The official entrypoint labels the temporary server socket-only, starts it with listen_addresses='', and stops it with fast/wait semantics."
+    },
+    {
+      "url": "https://github.com/docker-library/postgres/blob/d588a44673ea9d123c1acb1a6924de10a27fc315/docker-entrypoint.sh#L350-L384",
+      "evidence": "On an empty data directory, the entrypoint starts the temporary server, initializes, stops it, announces completion, and then execs the final server."
+    },
+    {
+      "url": "https://github.com/docker-library/docs/blob/402ab9c6dda475cfd89e6896c781e7ee3430d0ef/postgres/README.md#initialization-scripts",
+      "evidence": "Official image documentation states that the initialization daemon listens only on the Unix socket."
+    },
+    {
+      "url": "https://www.postgresql.org/docs/16/app-pg-isready.html",
+      "evidence": "PostgreSQL documents pg_isready host/socket selection and exit status; the no-host example resolves to a local socket."
+    }
+  ],
+  "evidence_paths": [
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-metadata.json",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-job-112876984305.log.gz",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/run-37645682850-decisive-excerpt.log",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/rehearse-release-lines-35-110.txt",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-entrypoint-d588a446.sh.gz",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-entrypoint-decisive-excerpt.txt",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-postgres-readme-402ab9c6.md.gz",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/docker-library-readme-decisive-excerpt.txt",
+    "docs/test-reports/M1-B05-R13-round3-post-ci-evaluator-evidence/SHA256SUMS"
+  ]
+}

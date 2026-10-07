@@ -1,0 +1,66 @@
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.6317767Z 31ab23263665: Waiting
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.6549004Z c64327121502: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.6550003Z c64327121502: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.9033450Z 514dc545e7f5: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.9034631Z 514dc545e7f5: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.9481769Z 31ab23263665: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:49.9483013Z 31ab23263665: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:50.2130354Z 37edd96b6fb4: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:50.2130922Z 37edd96b6fb4: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:46:53.6479383Z 514dc545e7f5: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:06.3516749Z 37edd96b6fb4: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:06.5627046Z c64327121502: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:09.8454695Z 31ab23263665: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:09.8488966Z Digest: sha256:60305355989dc698d57f4e7d56581e47bafbff6ad0c366fe73489bbdff8064e3
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:09.8495353Z Status: Downloaded newer image for localhost:5000/rollback-migrate@sha256:60305355989dc698d57f4e7d56581e47bafbff6ad0c366fe73489bbdff8064e3
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.3616847Z Prisma schema loaded from prisma/schema.prisma
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.3667959Z Datasource "db": PostgreSQL database "tokenizer", schema "public" at "tokenizer-rehearsal-17805-90-source:5432"
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.4506588Z
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.4507742Z 28 migrations found in prisma/migrations
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.4508130Z
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.5068170Z Applying migration `20260515000000_init`
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8016714Z   └─ 20260810000000_add_dispatch_usage/
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8017451Z     └─ migration.sql
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8017941Z   └─ 20260810000001_add_harness_gate_notified_at/
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8018473Z     └─ migration.sql
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8018940Z   └─ 20260810120000_align_fk_referential_actions/
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8019489Z     └─ migration.sql
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8019917Z   └─ 20260810130000_add_quota_account_index/
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8020389Z     └─ migration.sql
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8020705Z
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.8021064Z All migrations have been successfully applied.
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9293067Z Unable to find image 'localhost:5000/rollback-app@sha256:1df5a3993532f618dda5d89c315f641b0d996ec2d238fe591d4ef7a593562397' locally
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9464163Z localhost:5000/rollback-app@sha256:1df5a3993532f618dda5d89c315f641b0d996ec2d238fe591d4ef7a593562397: Pulling from rollback-app
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9521570Z 7fd1ebe418b5: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9531981Z f0400f4b55b0: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9542600Z d22c69a95cf4: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9553934Z 2cfab517365c: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9565405Z a8de9fa05220: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9576077Z af2d87b41a0c: Already exists
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9586598Z bf848b9251ef: Pulling fs layer
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9587073Z afbc140580bc: Pulling fs layer
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9587508Z 6eca11317ea0: Pulling fs layer
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9587828Z 44a9403c7e44: Pulling fs layer
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9588070Z 1e86fa92183b: Pulling fs layer
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9588344Z 44a9403c7e44: Waiting
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9588678Z 1e86fa92183b: Waiting
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9667057Z 6eca11317ea0: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9674946Z 6eca11317ea0: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9742091Z 44a9403c7e44: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9745241Z 44a9403c7e44: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9758325Z bf848b9251ef: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9760121Z bf848b9251ef: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9838137Z 1e86fa92183b: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:10.9839304Z 1e86fa92183b: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:11.0353643Z afbc140580bc: Verifying Checksum
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:11.0354482Z afbc140580bc: Download complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:11.1462580Z bf848b9251ef: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.1400125Z afbc140580bc: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.1798104Z 6eca11317ea0: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.1930749Z 44a9403c7e44: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.2153162Z 1e86fa92183b: Pull complete
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.2182705Z Digest: sha256:1df5a3993532f618dda5d89c315f641b0d996ec2d238fe591d4ef7a593562397
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:12.2190229Z Status: Downloaded newer image for localhost:5000/rollback-app@sha256:1df5a3993532f618dda5d89c315f641b0d996ec2d238fe591d4ef7a593562397
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:14.3131199Z {"stage":"enroll-ingest-summary","ok":true,"eventCount":1,"totalTokens":23}
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:15.9871264Z pg_restore: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  the database system is shutting down
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T15:47:16.3759302Z ##[error]Process completed with exit code 1.
