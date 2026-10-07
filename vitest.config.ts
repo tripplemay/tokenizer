@@ -1,6 +1,13 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
+const b05HistoricalAudit = {
+  exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
+};
+const b06HistoricalQueue = {
+  exclude: ["tests/cli/b06-batch-failure-queue.test.ts"]
+};
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -15,10 +22,9 @@ export default defineConfig({
     // intentionally supersedes its "dryRun:false is unsupported" assertion;
     // keep the original bytes hashable, but run the candidate-owned successor.
     exclude: [
-      ...configDefaults.exclude,
-      "tests/evaluator/b05-tcp-readiness-independent.test.ts",
+      ...b05HistoricalAudit.exclude,
+      ...b06HistoricalQueue.exclude,
       "tests/evaluator/b03-scope-admission-independent.test.ts",
-      "tests/cli/b06-batch-failure-queue.test.ts",
       "tests/cli/b06-partial-ack.test.ts",
       "tests/ci/b06-obsolete-queue-test-archive.test.ts"
     ],

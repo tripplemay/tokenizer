@@ -72,6 +72,7 @@ function retryable(error: unknown): boolean {
 export type SyncBatchProgress = {
   synced: number;
   total: number;
+  acknowledged: UsageEventInput[];
   remaining: UsageEventInput[];
 };
 
@@ -219,6 +220,7 @@ export async function syncEvents(
           await options.onBatchSynced?.({
             synced: ordered.length - remaining.length,
             total: ordered.length,
+            acknowledged: [batch[0]],
             remaining: [...remaining]
           });
           continue;
@@ -236,6 +238,7 @@ export async function syncEvents(
       await options.onBatchSynced?.({
         synced: ordered.length - remaining.length,
         total: ordered.length,
+        acknowledged: [batch[error.row]],
         remaining: [...remaining]
       });
       continue;
@@ -253,6 +256,7 @@ export async function syncEvents(
     await options.onBatchSynced?.({
       synced: ordered.length - remaining.length,
       total: ordered.length,
+      acknowledged: batch,
       remaining: [...remaining]
     });
   }

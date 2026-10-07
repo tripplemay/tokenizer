@@ -276,8 +276,8 @@ describe("F003 durable failure states", () => {
     mocks.readCursor.mockReturnValue(cursor);
     mocks.dedupeBySourceEventId.mockImplementation((rows: UsageEventInput[]) => rows);
     mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
-      durable = structuredClone([old, ...next]);
-      return durable;
+      durable = structuredClone(next);
+      return next;
     });
     mocks.writeCursor.mockImplementationOnce(() => {
       throw new Error("cursor write failed");
