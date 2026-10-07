@@ -225,6 +225,28 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .ci
+          cleanup_native_fixture() {
+            set +e
+            if [[ ! -f .ci/macos-launchd-cleanup.env ]]; then return; fi
+            source .ci/macos-launchd-cleanup.env
+            if [[ "$TOKENIZER_FIXTURE_LABEL" != cc.tokenizer.agent.ci.* ||
+                  "$TOKENIZER_FIXTURE_ROOT" != "$RUNNER_TEMP"/tokenizer-macos-launchd-* ||
+                  "$TOKENIZER_FIXTURE_PLIST" != "$TOKENIZER_FIXTURE_ROOT"/* ]]; then
+              echo "Refusing an out-of-scope launchd fixture cleanup record" >&2
+              return
+            fi
+            launchctl unload "$TOKENIZER_FIXTURE_PLIST" >/dev/null 2>&1 || true
+            ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '
+              index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }
+            ' | xargs kill -TERM 2>/dev/null || true
+            sleep 1
+            ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '
+              index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }
+            ' | xargs kill -KILL 2>/dev/null || true
+            node -e 'require("node:fs").rmSync(process.argv[1], { recursive: true, force: true })' "$TOKENIZER_FIXTURE_ROOT"
+            rm -f .ci/macos-launchd-cleanup.env
+          }
+          trap cleanup_native_fixture EXIT INT TERM
           npx vitest run tests/cli/agent-release-installer-macos.test.ts --reporter=default --reporter=json --outputFile=.ci/macos-launchd-installer.json
           node scripts/ci/assert-macos-launchd-installer.mjs .ci/macos-launchd-installer.json
 

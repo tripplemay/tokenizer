@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-type Fixture = { root: string; home: string; label: string; plist: string };
+type Fixture = { root: string; home: string; label: string; plist: string; cleanupRecord: string };
 
 const fixtures: Fixture[] = [];
 const servers: Server[] = [];
@@ -82,6 +82,7 @@ async function stopFixture(fixture: Fixture): Promise<void> {
     await waitFor(() => scopedAgentProcesses(fixture.root).length === 0, "forced isolated Agent cleanup", 5_000);
   }
   rmSync(fixture.root, { recursive: true, force: true });
+  rmSync(fixture.cleanupRecord, { force: true });
 }
 
 function invoke(
@@ -162,8 +163,16 @@ describe.skipIf(process.platform !== "darwin")("native macOS launchd pinned inst
     const fakeBin = join(root, "fake-bin");
     const label = `cc.tokenizer.agent.ci.${process.pid}.${Date.now()}`;
     const plist = join(home, "Library", "LaunchAgents", `${label}.plist`);
-    const fixture = { root, home, label, plist };
+    const cleanupRecord = join(process.cwd(), ".ci", "macos-launchd-cleanup.env");
+    const fixture = { root, home, label, plist, cleanupRecord };
     fixtures.push(fixture);
+    mkdirSync(dirname(cleanupRecord), { recursive: true });
+    writeFileSync(cleanupRecord, [
+      `TOKENIZER_FIXTURE_ROOT=${root}`,
+      `TOKENIZER_FIXTURE_PLIST=${plist}`,
+      `TOKENIZER_FIXTURE_LABEL=${label}`,
+      ""
+    ].join("\n"));
     mkdirSync(home, { recursive: true });
     mkdirSync(repo);
     mkdirSync(fakeBin);
