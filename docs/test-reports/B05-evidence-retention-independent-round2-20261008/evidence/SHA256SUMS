@@ -1,0 +1,17 @@
+966bc320d9693f7eaacd22c79dc36f9cae577e3f242c0b656918a31a018214be  docs/test-reports/B05-evidence-retention-independent-round2-20261008/REPORT.md
+1c77fb198ff5e4d4d3a10434630f56b78dc0871499c61b09e51575767dd06490  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/candidate-inspection.txt
+a44e57188ac5f49f7511e77c179b51ff7195f8f11841d230063d11dc1a7ae280  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-artifact-sha256.txt
+55597ab0ce666abdf7bf57a1d7c9ee5d52eb2663b7509aa3618b77eaad4e2119  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-artifact-verify.log
+e644d873531ea52cefeb54975fe8a5c885fee88e1730d100a9c28760412d59c8  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-manifest.json
+82874abc08734b707bf29f6a1cf2af22857f95525d2bba246d99adf649613c55  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/evaluator-round2-test.log
+07d5cb9f418044e402e6285cdbbca23090285e28f97e5e7c7fb2e37119c590f0  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/focused-regression.log
+6d3d251f82d347b0d6036f08666ed500a82040d00e6913d12b1efdbc25a9c284  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/full-test-node22.log
+48f71ff605ff2e20de34227b3669057e519ccbe05ce531dc0d17e52e0aa71df0  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/legacy-sha256sums-check.log
+8f922cd6c0ccfc5b3de9accf0b6b2a13b0823030705f394936ee3131808d0ec6  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-artifacts.json
+43e91ac2afe1fd3adb25321a333a4beb6346b6be7bc9eb894eb12f6e2b670003  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-final.json
+fd6d79f451744333ca561fa2c1c8db5ba1e1149fd9af8781da48bdd357d0e71f  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-oci-job.log
+561907a0e4c67428bba577ba5cec6d4d7acadf1b2d2d15763ec7202043b29063  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/negative-run-37650581332-artifacts.json
+c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/static-checks.log
+3fffac34fbf598277da6033281db1ed21b8bf48fc3879ba238270ba6407a9f53  docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/verify-node22.log
+952e081d176d69e64284bc8834cda53af48019a69513616f00b6f740365b5b8c  docs/test-reports/B05-evidence-retention-independent-round2-20261008/verdict.json
+3813312cea5f983a032d4e71886887aafc103e16317b704b5530da9f33b4f060  tests/evaluator/b05-evidence-retention-round2.test.ts

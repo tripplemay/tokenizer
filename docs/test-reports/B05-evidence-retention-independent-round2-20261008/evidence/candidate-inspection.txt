@@ -1,0 +1,68 @@
+6164b4e29922dbce685d01bf2c4c9d41428c9a08
+6164b4e (HEAD, origin/codex/b05-portable-retention-ci-20261008) docs: retain B05 portability cleanroom evidence and handoff
+8d646d8 fix(test): preserve historical B05 evidence with portable regressions
+ec3348e (origin/codex/b05-retained-evidence-ci-20261007) fix(ci): retain and verify allowlisted recovery artifacts
+d18c4ff test(B05): independently verify TCP recovery
+fff9d37 (origin/codex/b05-tcp-readiness-ci-20261007) fix(deploy): wait for final TCP PostgreSQL before recovery
+5f6c006 test(evaluator): transport B05 original evidence metadata unchanged
+5164a63 test(evaluator): transport original B05 round3 verdict unchanged
+2faad2c test(evaluator): record B05 post-CI recovery blocker
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/SHA256SUMS
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/actionlint.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/baseline-manifest-failure.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/build.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-checkouts.json
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-fetch.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-focused.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-manifest.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-npm-ci.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-old-object-negative.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-full-suite.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-shallow-crlf-focused.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-shallow-fetch.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-shallow-npm-ci.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/cleanroom-shallow-old-object-negative.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/focused-final.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/lint.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/native-ci-failed-run.json
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/native-ci-failure.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/npm-ci.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/portable-mutation-tests.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/restored-manifest.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/runtime.json
+A	docs/test-reports/B05-portable-regression-fix-20261008/evidence/verify.log
+A	docs/test-reports/B05-portable-regression-fix-20261008/generator-handoff.md
+A	tests/ci/b05-recovery-source.test.ts
+M	tests/evaluator/b05-tcp-readiness-independent.test.ts
+A	tests/helpers/b05-source-invariants.ts
+M	vitest.config.ts
+ .../evidence/SHA256SUMS                            |  23 +
+ .../evidence/actionlint.log                        |   0
+ .../evidence/baseline-manifest-failure.log         |  10 +
+ .../evidence/build.log                             |  87 ++++
+ .../evidence/cleanroom-checkouts.json              |  20 +
+ .../evidence/cleanroom-full-fetch.log              |   2 +
+ .../evidence/cleanroom-full-focused.log            |  12 +
+ .../evidence/cleanroom-full-manifest.log           |   9 +
+ .../evidence/cleanroom-full-npm-ci.log             |  17 +
+ .../cleanroom-full-old-object-negative.log         |   1 +
+ .../evidence/cleanroom-full-suite.log              | 208 ++++++++
+ .../evidence/cleanroom-shallow-crlf-focused.log    |  11 +
+ .../evidence/cleanroom-shallow-fetch.log           |   2 +
+ .../evidence/cleanroom-shallow-npm-ci.log          |  17 +
+ .../cleanroom-shallow-old-object-negative.log      |   1 +
+ .../evidence/focused-final.log                     |  12 +
+ .../evidence/lint.log                              |   4 +
+ .../evidence/native-ci-failed-run.json             |   1 +
+ .../evidence/native-ci-failure.log                 | 557 +++++++++++++++++++++
+ .../evidence/npm-ci.log                            |  17 +
+ .../evidence/portable-mutation-tests.log           |  19 +
+ .../evidence/restored-manifest.log                 |   9 +
+ .../evidence/runtime.json                          |  16 +
+ .../evidence/verify.log                            |  12 +
+ .../generator-handoff.md                           |  68 +++
+ tests/ci/b05-recovery-source.test.ts               |  47 ++
+ .../b05-tcp-readiness-independent.test.ts          |   6 +-
+ tests/helpers/b05-source-invariants.ts             |  43 ++
+ vitest.config.ts                                   |   5 +-
+ 29 files changed, 1232 insertions(+), 4 deletions(-)

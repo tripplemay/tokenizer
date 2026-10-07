@@ -1,0 +1,9 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-eval-r2-20261008
+
+ ✓ tests/evaluator/b05-evidence-retention-round2.test.ts (4 tests) 74ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  00:17:16
+   Duration  259ms (transform 20ms, setup 0ms, collect 15ms, tests 74ms, environment 0ms, prepare 49ms)

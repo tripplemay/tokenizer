@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-evidence-retention-eval-r2-20261008
+
+ ✓ tests/ci/b05-recovery-source.test.ts (10 tests) 6ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 846ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 952ms
+ ✓ tests/server/release-image.test.ts (10 tests) 986ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 1739ms
+
+ Test Files  5 passed (5)
+      Tests  51 passed (51)
+   Start at  00:17:24
+   Duration  1.96s (transform 87ms, setup 0ms, collect 138ms, tests 4.53s, environment 0ms, prepare 208ms)

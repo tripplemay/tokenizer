@@ -1,0 +1,105 @@
+{
+  "schema": "tokenizer-evaluator-verdict/1",
+  "batch_id": "M1-B05-RECOVERY-EVIDENCE-RETENTION-R2",
+  "created_at": "2026-10-07T17:18:44Z",
+  "role": "independent_evaluator",
+  "candidate_commit": "6164b4e29922dbce685d01bf2c4c9d41428c9a08",
+  "retention_base_commit": "ec3348ecae2669c68187b7ca35dc6707a20267a8",
+  "portable_regression_commit": "8d646d8",
+  "result": "PASS_WITH_PRODUCTION_RELEASE_GATES",
+  "evidence_retention_fix": "PASS",
+  "portable_regression": "PASS",
+  "immutable_historical_evidence": "PASS",
+  "exact_sha_native_ci": "PASS",
+  "artifact_round_trip": "PASS",
+  "safe_branch_ci_readiness": "PASS",
+  "full_b05_release_readiness": "NOT_READY",
+  "b04_boundary": "OUT_OF_SCOPE_UNRELATED",
+  "summary": "The exact candidate passed the complete non-main workflow, including native Windows and Linux OCI recovery. The named release-recovery artifact exists in the GitHub API, was independently downloaded, matches the API ZIP digest, contains only the four non-main allowlisted files, and passes downloaded manifest/hash verification. The portable regression replacement preserves the historical source invariants while the old nine-entry evidence manifest remains byte-valid. Full B05 production release remains gated on main-only GHCR provenance and real production baseline/restore/deploy evidence.",
+  "findings": [],
+  "historical_integrity": {
+    "manifest": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/SHA256SUMS",
+    "entries": 9,
+    "result": "9/9 PASS",
+    "historical_test_sha256": "cd29a182483084db6135c97f8c0a6644758a4e86c6a37d7d776243f8c81d5ba0",
+    "old_report_verdict_evidence_modified": false,
+    "active_exclusion": "exact historical evaluator test only",
+    "portable_replacement_uses_git_objects": false
+  },
+  "github_run": {
+    "run_id": 37656417182,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37656417182",
+    "event": "workflow_dispatch",
+    "head_sha": "6164b4e29922dbce685d01bf2c4c9d41428c9a08",
+    "head_branch": "codex/b05-portable-retention-ci-20261008",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": {
+      "Verify": "completed/success",
+      "Verify (Windows)": "completed/success",
+      "Verify (PostgreSQL 16)": "completed/success",
+      "Verify (authenticated browser)": "completed/success",
+      "Linux OCI and recovery rehearsal": "completed/success",
+      "Deploy": "completed/skipped"
+    },
+    "main_only_steps": {
+      "GHCR login": "completed/skipped",
+      "app attestation": "completed/skipped",
+      "migration attestation": "completed/skipped",
+      "signed provenance verification": "completed/skipped"
+    }
+  },
+  "recovery_artifact": {
+    "id": 11498713000,
+    "name": "release-recovery-6164b4e29922dbce685d01bf2c4c9d41428c9a08",
+    "size_bytes": 14473,
+    "expired": false,
+    "expires_at": "2026-10-21T17:13:56Z",
+    "api_digest": "sha256:c0274b4509562f35880985d145aa0da69f2159445782629d51ef9f93245de709",
+    "downloaded_zip_sha256": "c0274b4509562f35880985d145aa0da69f2159445782629d51ef9f93245de709",
+    "downloaded_verify": "PASS",
+    "manifest_revision": "6164b4e29922dbce685d01bf2c4c9d41428c9a08",
+    "manifest_provenance_required": false,
+    "manifest_entry_count": 4,
+    "allowlist_only": true,
+    "prior_run_37650581332_recovery_artifact_count": 0
+  },
+  "local_verification": {
+    "runtime": "Node.js v22.22.0 on macOS 26.6.2 arm64",
+    "verify": "PASS",
+    "focused": "5 files passed; 51 tests passed",
+    "evaluator": "1 file passed; 4 tests passed",
+    "full": "122 files passed, 8 skipped; 1619 tests passed, 22 skipped",
+    "node_check": "PASS",
+    "actionlint": "PASS"
+  },
+  "remaining_hard_gates": [
+    "Publish immutable app and migration digests to GHCR on an authorized main release path.",
+    "Generate and verify signed exact-source/workflow attestations, including wrong-SHA and wrong-workflow negative controls.",
+    "Establish and verify the actual production retained predecessor digest/configuration or authorized bootstrap baseline.",
+    "Restore an actual production backup in isolation and execute the migration/business/old-image rehearsal against it.",
+    "Execute an authorized production deploy, health/business canary, and auditable rollback; Deploy was skipped in this run."
+  ],
+  "scope_boundaries": [
+    "No candidate product code, original repository, progress.json, status, gate, or human decision was modified.",
+    "No branch was pushed and no production operation was performed.",
+    "B04 blockers are unrelated and excluded from this B05 verdict."
+  ],
+  "evidence_paths": [
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/SHA256SUMS",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-final.json",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-artifacts.json",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/native-run-37656417182-oci-job.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/negative-run-37650581332-artifacts.json",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-artifact-sha256.txt",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-artifact-verify.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/downloaded-manifest.json",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/legacy-sha256sums-check.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/evaluator-round2-test.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/focused-regression.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/full-test-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/verify-node22.log",
+    "docs/test-reports/B05-evidence-retention-independent-round2-20261008/evidence/static-checks.log",
+    "tests/evaluator/b05-evidence-retention-round2.test.ts"
+  ]
+}

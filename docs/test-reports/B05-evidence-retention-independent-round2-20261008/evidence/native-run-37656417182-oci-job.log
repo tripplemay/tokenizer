@@ -1,0 +1,14 @@
+Linux OCI and recovery rehearsal	Build candidate app once	2026-10-07T17:10:17.0255903Z #21 exporting attestation manifest sha256:bffbff7d2af602cafa1cbd7151e2c44768c8155a660af44883d49e6e87028409 done
+Linux OCI and recovery rehearsal	Build exact migration artifact	2026-10-07T17:10:48.6661000Z #15 exporting attestation manifest sha256:a9a49bb345b5cc15815753380e181dcd354505f90f698176dd8bbf123262b51b done
+Linux OCI and recovery rehearsal	Build previous source app for compatibility rehearsal	2026-10-07T17:12:19.9052986Z #18 exporting attestation manifest sha256:fad9680f19ad66d3e6f97c48ed753fe86bfb86346e180ab1bedf37648d63ea0f done
+Linux OCI and recovery rehearsal	Build previous source migration artifact	2026-10-07T17:12:49.7551430Z #13 exporting attestation manifest sha256:32cc9b101c8c8173ce5e96e1583e10bc2be9c8686b7df05057280bd3c22cbe5c done
+Linux OCI and recovery rehearsal	Backup restore migration and old-image business rehearsal	2026-10-07T17:13:43.9870857Z All migrations have been successfully applied.
+Linux OCI and recovery rehearsal	Stage allowlisted synthetic recovery evidence	2026-10-07T17:13:56.7191930Z {"recoveryEvidence":"stage","revision":"6164b4e29922dbce685d01bf2c4c9d41428c9a08","provenanceRequired":false}
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:13:57.8513090Z Artifact release-recovery-6164b4e29922dbce685d01bf2c4c9d41428c9a08.zip successfully finalized. Artifact ID 11498713000
+Linux OCI and recovery rehearsal	Retain synthetic recovery evidence	2026-10-07T17:13:57.8514852Z Artifact release-recovery-6164b4e29922dbce685d01bf2c4c9d41428c9a08 has been successfully uploaded! Final size is 14473 bytes. Artifact ID is 11498713000
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:13:58.7390778Z Artifact download completed successfully.
+Linux OCI and recovery rehearsal	Download retained synthetic recovery evidence	2026-10-07T17:13:58.7395257Z Download artifact has finished successfully
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:13:58.7518726Z ##[group]Run node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:13:58.7519680Z node scripts/ci/recovery-evidence.mjs verify release-recovery-downloaded "$GITHUB_SHA" "$REQUIRE_PROVENANCE"
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:13:58.7583875Z   REQUIRE_PROVENANCE: false
+Linux OCI and recovery rehearsal	Verify downloaded recovery evidence manifest and hashes	2026-10-07T17:13:58.7994834Z {"recoveryEvidence":"verify","revision":"6164b4e29922dbce685d01bf2c4c9d41428c9a08","provenanceRequired":false}
