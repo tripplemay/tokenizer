@@ -5,9 +5,10 @@ import { resolveLaunchdIdentity } from "@/cli/service";
 
 describe("launchd service identity", () => {
   it("uses the production label unless an isolated test identity is explicitly enabled", () => {
-    expect(resolveLaunchdIdentity("/Users/example", {})).toEqual({
+    const home = join(tmpdir(), "tokenizer-production-home");
+    expect(resolveLaunchdIdentity(home, {})).toEqual({
       label: "cc.tokenizer.agent",
-      plist: "/Users/example/Library/LaunchAgents/cc.tokenizer.agent.plist"
+      plist: join(home, "Library", "LaunchAgents", "cc.tokenizer.agent.plist")
     });
   });
 
