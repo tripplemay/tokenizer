@@ -12,7 +12,9 @@ type GitInfo = {
 };
 
 const cache = new Map<string, GitInfo | null>();
-const DEADLINE_TERMINATION_MARGIN_MS = 1_000;
+// Leave time for child termination and replay refusal propagation inside the
+// operation-wide deadline rather than using the full budget in execFileSync.
+const DEADLINE_TERMINATION_MARGIN_MS = 2_000;
 
 export type GitEnrichmentOptions = { deadlineMs?: number };
 
