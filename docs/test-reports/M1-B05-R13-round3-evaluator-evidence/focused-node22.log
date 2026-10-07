@@ -1,0 +1,37 @@
+
+ RUN  v2.1.9 /Users/yixingzhou/tokenizer-b05-round3-eval-20261007
+
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'c3be44f1-9608-4a89-80d5-9640f823a1b5',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 21ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 979ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 2507ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 552ms
+   ✓ deterministic release predecessor > uses the explicit PR base/push-before SHA when available 459ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 616ms
+   ✓ deterministic release predecessor > does not silently replace malformed or nonexistent explicit predecessors 412ms
+   ✓ deterministic release predecessor > uses origin/main for the zero before SHA and fails if the fetched ref is absent 466ms
+ ✓ tests/server/release-image.test.ts (10 tests) 2970ms
+   ✓ release image gate and fault rehearsal > deploys CI digests without rebuild and activates only exact readiness SHA 366ms
+   ✓ release image gate and fault rehearsal > refuses a changed digest for an already recorded commit 424ms
+   ✓ release image gate and fault rehearsal > keeps the previous image reference and never starts app after migration failure 313ms
+   ✓ release image gate and fault rehearsal > does not mark a release active when health returns a different SHA 622ms
+   ✓ release image gate and fault rehearsal > contains then restores the retained digest only after compatibility rehearsal 726ms
+ ✓ tests/server/release-rehearsal.test.ts (9 tests) 3579ms
+   ✓ isolated release recovery rehearsal faults > backs up, restores, applies exact migration, and rehearses old-image canary before approving rollback 606ms
+   ✓ isolated release recovery rehearsal faults > does not approve rollback after inventory fault and cleans scratch volumes 340ms
+   ✓ isolated release recovery rehearsal faults > does not approve rollback after migrate fault and cleans scratch volumes 347ms
+   ✓ isolated release recovery rehearsal faults > never touches the production DB in synthetic mode 503ms
+   ✓ isolated release recovery rehearsal faults > never overwrites an earlier same-SHA backup on a retry 1093ms
+
+ Test Files  5 passed (5)
+      Tests  44 passed (44)
+   Start at  22:19:14
+   Duration  4.35s (transform 536ms, setup 0ms, collect 999ms, tests 10.06s, environment 1ms, prepare 527ms)
+

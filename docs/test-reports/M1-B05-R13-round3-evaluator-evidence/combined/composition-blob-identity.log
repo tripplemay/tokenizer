@@ -1,0 +1,8 @@
+Dockerfile SAME 2369c8c4ec1468fb67a30962c2f15a738bf6c0e8
+next.config.mjs SAME f4867ce71aab0e0c44306cf512e3c5518212b99d
+scripts/verify-standalone.mjs SAME 99afb6c8995230cf8930a85104f737e4fad5295b
+scripts/select-release-predecessor.sh SAME 15dba6b4a0d155ced536fb3f376a6e84af7e2d20
+src/server/health.ts SAME 6ec32aa4a00ee9fc43631860a9cadf0f8ccf6115
+tests/server/standalone-artifact.test.ts SAME e3c0f8c450aaebc940b33422ae9ac712d4050d36
+tests/server/release-predecessor.test.ts SAME 0ccc138e4c1e3bb943db22df3eb9ab5ac4dd49b9
+B05 Next16 runtime/predecessor blobs identical in direct and full composition: PASS

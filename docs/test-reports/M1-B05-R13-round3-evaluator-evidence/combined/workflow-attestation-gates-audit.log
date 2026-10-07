@@ -1,0 +1,9 @@
+297:    needs: [verify, verify-windows, verify-db, verify-browser]
+419:          wrong_source=0000000000000000000000000000000000000000
+423:              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" \
+426:              --source-digest "$wrong_source" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" >/dev/null 2>&1; then
+430:              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/not-release.yml" >/dev/null 2>&1; then
+433:            printf 'wrong_source=rejected\nwrong_workflow=rejected\n' > ".releases/$GITHUB_SHA.$kind.provenance-negative-controls"
+463:      attestations: read
+518:              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml"
+workflow release gates and negative controls: PASS
