@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "role": "evaluator",
+  "evaluator_family": "kimi",
+  "is_evaluator_verdict": true,
+  "evaluated_at": "2026-10-08",
+  "succession": {
+    "supersedes_nothing": true,
+    "prior_kimi_verdict_preserved": "B04-macos-kimi-evaluator-20261008 (candidate d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f, evaluator HEAD 133fe59e9bdd619abe835829069b10f832645fbd) left untouched as historical"
+  },
+  "candidate": {
+    "head_sha": "5980a6e131b1b4c234100feb820c05b4617081af",
+    "head_sha_verified_locally": true,
+    "detached_head": true,
+    "git_remote_present": false,
+    "base_sha": "d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f",
+    "commits": ["5980a6e131b1b4c234100feb820c05b4617081af"],
+    "files_changed": [
+      ".github/workflows/deploy-vps.yml",
+      "tests/ci/macos-launchd-cleanup-trap.test.ts",
+      "tests/ci/macos-launchd-installer-gate.test.ts",
+      "docs/test-reports/B04-macos-launchd-trap-path-generator-20261008/REPORT.md",
+      "docs/test-reports/B04-macos-launchd-trap-path-generator-20261008/results.json"
+    ],
+    "product_files_changed": [],
+    "base_step_differs_only_by_four_binding_lines": true
+  },
+  "questions": {
+    "binds_trusted_runner_temp_and_node_tmpdir_same_canonical_root": {
+      "result": "PASS",
+      "evidence": "deploy-vps.yml:227-230 requires RUNNER_TEMP, canonicalizes via pwd -P, sets TMPDIR to the canonical path, exports both; fixture mkdtempSync(join(tmpdir(), ...)) at tests/cli/agent-release-installer-macos.test.ts:160; service HOME guard src/cli/service.ts:37-41 resolve(tmpdir()) prefix check; trap allowlist compares against the same canonical $RUNNER_TEMP; fake-npx exit-66 assertion pins os.tmpdir()==RUNNER_TEMP inside the real step"
+    },
+    "cleanup_runs_on_abnormal_termination": {
+      "result": "PASS",
+      "evidence": "actual extracted workflow step executed with divergent TMPDIR/RUNNER_TEMP; fake npx writes real record and exits 42; EXIT trap fired, launchctl unload called, root and record removed (test 1, green locally and in CI Verify job)",
+      "boundary": "trap real-fire proven synthetically with faked npx/launchctl/ps/xargs against genuine step text; on real runners the fixture afterEach deletes the record first so the trap is an unfired backstop; INT/TERM share the same handler and are not separately exercised"
+    },
+    "out_of_scope_records_rejected": {
+      "result": "PASS",
+      "evidence": "label/root/plist allowlist mismatch refuses cleanup, prints refusal, deletes nothing, calls no launchctl (test 2); [[ ]] glob quoting treats path metacharacters literally — fail-closed"
+    },
+    "old_negative_fails_new_positive_passes_on_macos": {
+      "result": "PASS",
+      "evidence": "negative control strips exactly the 4-line binding from the real step (throws if absent) and reproduces base-SHA orphan; positive test cleans; 12/12 green on macOS 26.6.2 arm64 Node v22.22.0 and in CI Verify job at exact SHA (3+9 tests)"
+    },
+    "shell_quoting_path_symlink_audit": {
+      "result": "PASS",
+      "evidence": "pwd -P canonicalization load-bearing on macOS (/var->/private/var) and exercised via realpathSync assertion; source/awk/xargs/set -u behavior in trap body pre-existing from base SHA and fail-closed; no new defect in the 4 added lines"
+    }
+  },
+  "github_runs": {
+    "37670505412": {
+      "head_sha": "5980a6e131b1b4c234100feb820c05b4617081af",
+      "sha_matches_local_head_exactly": true,
+      "branch": "codex/b04-macos-trap-path-ci-20261008",
+      "event": "workflow_dispatch",
+      "waited_until_terminal": true,
+      "terminal_status": "completed",
+      "conclusion": "success",
+      "jobs": {
+        "verify": { "id": 112960752290, "conclusion": "success", "unit": "1712 passed, 24 skipped", "contract": "6 passed", "new_test_files_ran": ["tests/ci/macos-launchd-cleanup-trap.test.ts (3)", "tests/ci/macos-launchd-installer-gate.test.ts (9)"] },
+        "verify_windows": { "conclusion": "success" },
+        "verify_macos_launchd": { "id": 112960752714, "conclusion": "success", "all_8_steps_success": true },
+        "verify_browser": { "conclusion": "success" },
+        "verify_db": { "conclusion": "success" },
+        "release_artifact_linux_oci_recovery": { "conclusion": "success", "needs_all_five_verify_jobs": true },
+        "deploy": { "conclusion": "skipped", "steps_executed": 0, "skip_reason": "if-condition requires refs/heads/main; non-main workflow_dispatch branch, structurally excluded" }
+      },
+      "artifacts": {
+        "macos-launchd-pinned-installer": {
+          "id": 11505196524,
+          "independently_downloaded": true,
+          "zip_sha256": "feee97d0cab43fd4a61c2132f27aa135ea2a53ae33bd5971b6d6fd7cdaef75e8",
+          "zip_sha256_matches_job_log_digest": true,
+          "success": true,
+          "numPassedTests": 1,
+          "numFailedTests": 0,
+          "exact_fixture_fullname_passed_once": true,
+          "gate_script_revalidated_locally_exit0": true
+        }
+      },
+      "macos_job_log_observations": {
+        "binding_lines_executed": true,
+        "refusing_occurrences": "1, script echo only, no refusal event",
+        "gui_domain": "gui/501",
+        "distinct_commits": 4,
+        "distinct_agent_pids": [2480, 2985, 3463, 3769],
+        "credential_canary_retained": true,
+        "queue_canary_retained": true,
+        "scoped_processes_after_unload": 0,
+        "default_label_absent_on_ephemeral_runner_expected": true
+      }
+    }
+  },
+  "local_reproduction": {
+    "host": "macOS 26.6.2 arm64 (Darwin 25.6.0)",
+    "node": "v22.22.0",
+    "npm_ci": "pass, 671 packages",
+    "focused_tests": { "passed": 12, "failed": 0, "files": ["tests/ci/macos-launchd-cleanup-trap.test.ts", "tests/ci/macos-launchd-installer-gate.test.ts"] },
+    "native_fixture_with_bound_temps": {
+      "result": "1/1 passed in 25.7s",
+      "gui_domain": "gui/501",
+      "distinct_commits": 4,
+      "distinct_agent_pids": [94771, 95505, 95870, 96097],
+      "credential_canary_retained": true,
+      "queue_canary_retained": true,
+      "host_default_label_present_before_and_after": true,
+      "scoped_processes_after_unload": 0,
+      "leftover_fixture_roots": 0,
+      "leftover_ci_labels": 0
+    },
+    "lint": "exit 0",
+    "verify": "exit 0",
+    "actionlint": "pass",
+    "diff_check": "pass",
+    "full_suite_local": "not re-run locally; CI Verify job at exact SHA ran it: 1712 passed, 24 skipped"
+  },
+  "gates": {
+    "temp_binding_canonical_root": "PASS",
+    "cleanup_on_abnormal_termination": "PASS",
+    "out_of_scope_record_rejection": "PASS",
+    "negative_control_old_behavior_orphans": "PASS",
+    "positive_path_and_macos_execution": "PASS",
+    "shell_quoting_symlink_audit": "PASS",
+    "github_run_terminal_sha_jobs_deploy_artifact": "PASS",
+    "release_boundary_honesty": "PASS"
+  },
+  "open_boundaries": [
+    "trap real-fire path proven synthetically against extracted step text, not by a deliberately failing native run",
+    "INT/TERM signal delivery shares the EXIT handler and is not separately exercised",
+    "real release endpoint and manifest/tag publication unchanged by this slice",
+    "packaging, signing, notarization",
+    "destructive fault matrix (SIGKILL/power loss mid-cutover, disk full, corrupt plist, failed launchctl load, sleep/wake)",
+    "real Windows Task Scheduler execution (fixture stubs schtasks)",
+    "live enrollment, token rotation/revocation, heartbeat delivery, upload acknowledgement",
+    "headless/no-GUI-domain runner strategy",
+    "macos-latest image not version-pinned"
+  ],
+  "ci_fixture_acceptance_not_signed_agent_release": true,
+  "slice_verdict": "PASS",
+  "release_ready": false,
+  "notes": "Generator reports were read for context only; every conclusion rests on independently gathered evidence (gh API run/job/artifact queries, downloaded artifact with digest match, gate-script revalidation, local re-execution on macOS with Node 22). No commit, no push, no modification of product code, tests, state files, gates, or prior evaluator reports."
+}

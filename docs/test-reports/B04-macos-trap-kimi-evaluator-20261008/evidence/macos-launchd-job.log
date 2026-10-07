@@ -1,0 +1,269 @@
+Verify (macOS launchd)	Set up job	﻿2026-10-07T18:55:23.2455610Z Current runner version: '2.337.0'
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2471670Z ##[group]Runner Image Provisioner
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2472200Z Hosted Compute Agent
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2472630Z Version: 20260828.587
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2473020Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2473710Z Build Date: 2026-08-28T16:44:25Z
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2474160Z Worker ID: {d81885b7-e88f-41f2-b8b0-9034802e3fa2}
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2474620Z Azure Region: westus
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2475050Z ##[endgroup]
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2475880Z ##[group]Operating System
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2476270Z macOS
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2476590Z 26.6.2
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2476910Z 25G83
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2477220Z ##[endgroup]
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2477560Z ##[group]Runner Image
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2477930Z Image: macos-26-arm64
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2478290Z Version: 20260907.0351.1
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2479020Z Included Software: https://github.com/actions/runner-images/blob/macos-26-arm64/20260907.0351/images/macos/macos-26-arm64-Readme.md
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2480120Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26-arm64%2F20260907.0351
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2480780Z ##[endgroup]
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2481540Z ##[group]GITHUB_TOKEN Permissions
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2482530Z Contents: read
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2482890Z Metadata: read
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2483240Z Packages: read
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2483610Z ##[endgroup]
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2484920Z Secret source: Actions
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2485550Z Cache mode: write
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2485990Z Prepare workflow directory
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2713990Z Prepare all required actions
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.2762540Z Getting action download info
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.6854910Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:23.8752890Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:24.0270820Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Verify (macOS launchd)	Set up job	2026-10-07T18:55:24.2151660Z Complete job name: Verify (macOS launchd)
+Verify (macOS launchd)	Checkout	﻿2026-10-07T18:55:24.2595280Z ##[group]Run actions/checkout@v4
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2595960Z with:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2596290Z   repository: tripplemay/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2599690Z   token: ***
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2600020Z   ssh-strict: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2600340Z   ssh-user: git
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2600660Z   persist-credentials: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2601010Z   clean: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2601330Z   sparse-checkout-cone-mode: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2601760Z   fetch-depth: 1
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2602080Z   fetch-tags: false
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2602400Z   show-progress: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2602730Z   lfs: false
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2603030Z   submodules: false
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2603370Z   set-safe-directory: true
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2603780Z   allow-unsafe-pr-checkout: false
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.2604350Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5297960Z Syncing repository: tripplemay/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5300030Z ##[group]Getting Git version info
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5300740Z Working directory is '/Users/runner/work/tokenizer/tokenizer'
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5301870Z [command]/opt/homebrew/bin/git version
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5859760Z git version 2.55.0
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5872170Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5882990Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/128b0eeb-cbf4-4d57-9ab5-8bbb51896f28/.gitconfig'
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5886570Z Temporarily overriding HOME='/Users/runner/work/_temp/128b0eeb-cbf4-4d57-9ab5-8bbb51896f28' before making global git config changes
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5887860Z Adding repository directory to the temporary git global config as a safe directory
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.5890300Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/tokenizer/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6001440Z Deleting the contents of '/Users/runner/work/tokenizer/tokenizer'
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6003470Z ##[group]Initializing the repository
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6005790Z [command]/opt/homebrew/bin/git init /Users/runner/work/tokenizer/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6224290Z hint: Using 'master' as the name for the initial branch. This default branch name
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6226030Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6227030Z hint: to use in all of your new repositories, which will suppress this warning,
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6227780Z hint: call:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6228170Z hint:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6228610Z hint: 	git config --global init.defaultBranch <name>
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6229110Z hint:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6229580Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6230410Z hint: 'development'. The just-created branch can be renamed via this command:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6231120Z hint:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6231490Z hint: 	git branch -m <name>
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6231960Z hint:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6232500Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6233410Z Initialized empty Git repository in /Users/runner/work/tokenizer/tokenizer/.git/
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6235080Z [command]/opt/homebrew/bin/git remote add origin https://github.com/tripplemay/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6312070Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6312860Z ##[group]Disabling automatic garbage collection
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6315910Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6383750Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6384490Z ##[group]Setting up auth
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6387820Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.6453090Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.8176240Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.8241490Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.9021520Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:24.9084680Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.0423760Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.0502120Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.0512940Z ##[group]Fetching the repository
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.0539550Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5980a6e131b1b4c234100feb820c05b4617081af:refs/remotes/origin/codex/b04-macos-trap-path-ci-20261008
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8216870Z From https://github.com/tripplemay/tokenizer
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8221060Z  * [new ref]         5980a6e131b1b4c234100feb820c05b4617081af -> origin/codex/b04-macos-trap-path-ci-20261008
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8228240Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8230820Z ##[group]Determining the checkout info
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8233770Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8235600Z [command]/opt/homebrew/bin/git sparse-checkout disable
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8321140Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8412810Z ##[group]Checking out the ref
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:25.8418970Z [command]/opt/homebrew/bin/git checkout --progress --force -B codex/b04-macos-trap-path-ci-20261008 refs/remotes/origin/codex/b04-macos-trap-path-ci-20261008
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:26.0462760Z Switched to a new branch 'codex/b04-macos-trap-path-ci-20261008'
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:26.0468860Z branch 'codex/b04-macos-trap-path-ci-20261008' set up to track 'origin/codex/b04-macos-trap-path-ci-20261008'.
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:26.0473950Z ##[endgroup]
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:26.0603910Z [command]/opt/homebrew/bin/git log -1 --format=%H
+Verify (macOS launchd)	Checkout	2026-10-07T18:55:26.0684400Z 5980a6e131b1b4c234100feb820c05b4617081af
+Verify (macOS launchd)	Setup Node.js	﻿2026-10-07T18:55:26.1008390Z ##[group]Run actions/setup-node@v4
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1009300Z with:
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1024110Z   node-version: 22
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1024750Z   cache: npm
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1025340Z   always-auth: false
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1026040Z   check-latest: false
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1033570Z   token: ***
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.1034320Z ##[endgroup]
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.2699780Z Found in cache @ /Users/runner/hostedtoolcache/node/22.23.2/arm64
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.2701850Z (node:1181) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.2703950Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.2705760Z ##[group]Environment details
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.9086130Z node: v22.23.2
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.9128310Z npm: 10.9.8
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.9130130Z yarn: 1.22.22
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.9132320Z ##[endgroup]
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:26.9133760Z [command]/Users/runner/hostedtoolcache/node/22.23.2/arm64/bin/npm config get cache
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:27.1097650Z /Users/runner/.npm
+Verify (macOS launchd)	Setup Node.js	2026-10-07T18:55:27.4003050Z npm cache is not found
+Verify (macOS launchd)	Install dependencies	﻿2026-10-07T18:55:27.4105580Z ##[group]Run npm ci
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:27.4105850Z [36;1mnpm ci[0m
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:27.4149330Z shell: /bin/bash -e {0}
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:27.4149570Z ##[endgroup]
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:30.5652260Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:42.0115120Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.8152970Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.8165480Z added 671 packages, and audited 672 packages in 25s
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.8171060Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.8171900Z 186 packages are looking for funding
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.8173310Z   run `npm fund` for details
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9104730Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9209500Z 16 vulnerabilities (4 moderate, 10 high, 2 critical)
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9310930Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9412850Z To address issues that do not require attention, run:
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9515380Z   npm audit fix
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9547100Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9549380Z To address all issues (including breaking changes), run:
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9552130Z   npm audit fix --force
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9552830Z 
+Verify (macOS launchd)	Install dependencies	2026-10-07T18:55:52.9553180Z Run `npm audit` for details.
+Verify (macOS launchd)	Typecheck	﻿2026-10-07T18:55:53.1375550Z ##[group]Run npm run verify
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.1375970Z [36;1mnpm run verify[0m
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.1475490Z shell: /bin/bash -e {0}
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.1475760Z ##[endgroup]
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.4869950Z 
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.4870890Z > tokenizer@0.1.0 verify
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.4872190Z > prisma generate && tsc --noEmit
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.4872620Z 
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:53.9686600Z Prisma schema loaded from prisma/schema.prisma
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6609300Z 
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6613280Z ✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 286ms
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6614510Z 
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6616350Z Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6617730Z 
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6619380Z Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+Verify (macOS launchd)	Typecheck	2026-10-07T18:55:54.6689800Z 
+Verify (macOS launchd)	Require a usable native launchd GUI domain	﻿2026-10-07T18:56:09.9052140Z ##[group]Run set -euo pipefail
+Verify (macOS launchd)	Require a usable native launchd GUI domain	2026-10-07T18:56:09.9052590Z [36;1mset -euo pipefail[0m
+Verify (macOS launchd)	Require a usable native launchd GUI domain	2026-10-07T18:56:09.9053010Z [36;1mlaunchctl print "gui/$(id -u)" >/dev/null[0m
+Verify (macOS launchd)	Require a usable native launchd GUI domain	2026-10-07T18:56:09.9111350Z shell: /bin/bash -e {0}
+Verify (macOS launchd)	Require a usable native launchd GUI domain	2026-10-07T18:56:09.9112170Z ##[endgroup]
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	﻿2026-10-07T18:56:10.0194250Z ##[group]Run set -euo pipefail
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0206850Z [36;1mset -euo pipefail[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0207750Z [36;1m: "${RUNNER_TEMP:?RUNNER_TEMP is required for native fixture cleanup}"[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0208900Z [36;1mRUNNER_TEMP="$(cd "$RUNNER_TEMP" && pwd -P)"[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0209660Z [36;1mTMPDIR="$RUNNER_TEMP"[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0210440Z [36;1mexport RUNNER_TEMP TMPDIR[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0211300Z [36;1mmkdir -p .ci[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0211910Z [36;1mcleanup_native_fixture() {[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0212640Z [36;1m  set +e[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0213380Z [36;1m  if [[ ! -f .ci/macos-launchd-cleanup.env ]]; then return; fi[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0214490Z [36;1m  source .ci/macos-launchd-cleanup.env[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0215550Z [36;1m  if [[ "$TOKENIZER_FIXTURE_LABEL" != cc.tokenizer.agent.ci.* ||[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0216730Z [36;1m        "$TOKENIZER_FIXTURE_ROOT" != "$RUNNER_TEMP"/tokenizer-macos-launchd-* ||[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0218100Z [36;1m        "$TOKENIZER_FIXTURE_PLIST" != "$TOKENIZER_FIXTURE_ROOT"/* ]]; then[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0219500Z [36;1m    echo "Refusing an out-of-scope launchd fixture cleanup record" >&2[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0220600Z [36;1m    return[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0221210Z [36;1m  fi[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0222120Z [36;1m  launchctl unload "$TOKENIZER_FIXTURE_PLIST" >/dev/null 2>&1 || true[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0223350Z [36;1m  ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0225190Z [36;1m    index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0226410Z [36;1m  ' | xargs kill -TERM 2>/dev/null || true[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0227130Z [36;1m  sleep 1[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0228240Z [36;1m  ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0229350Z [36;1m    index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0230450Z [36;1m  ' | xargs kill -KILL 2>/dev/null || true[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0231810Z [36;1m  node -e 'require("node:fs").rmSync(process.argv[1], { recursive: true, force: true })' "$TOKENIZER_FIXTURE_ROOT"[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0233220Z [36;1m  rm -f .ci/macos-launchd-cleanup.env[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0234120Z [36;1m}[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0234720Z [36;1mtrap cleanup_native_fixture EXIT INT TERM[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0236470Z [36;1mnpx vitest run tests/cli/agent-release-installer-macos.test.ts --reporter=default --reporter=json --outputFile=.ci/macos-launchd-installer.json[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0238420Z [36;1mnode scripts/ci/assert-macos-launchd-installer.mjs .ci/macos-launchd-installer.json[0m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0322750Z shell: /bin/bash -e {0}
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:10.0323620Z ##[endgroup]
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:11.4787480Z 
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:11.4789470Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90m/Users/runner/work/tokenizer/tokenizer[39m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:11.4794680Z 
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4357980Z [90mstdout[2m | tests/cli/agent-release-installer-macos.test.ts[2m > [22m[2mnative macOS launchd pinned installer fixture[2m > [22m[2minstalls and upgrades a live isolated service, restores it after failure, and rolls back offline without touching the default label
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4384450Z [22m[39mB04_MACOS_LAUNCHD_FIXTURE_OBSERVATIONS {"platform":"darwin","node":"v22.23.2","guiDomain":"gui/501","label":"cc.tokenizer.agent.ci.1940.1791399372281","freshCommit":"ab7b36b4840434f7167a96e46497ed034fff7c63","upgradedCommit":"f06a8770b8ef72a465665ace3b24b0472154d89c","failedCommit":"e0389f8b5fd913dbb7b0415a8864d30e589e480c","restoredCommit":"f06a8770b8ef72a465665ace3b24b0472154d89c","offlineRollbackCommit":"ab7b36b4840434f7167a96e46497ed034fff7c63","firstPid":2480,"secondPid":2985,"restoredPid":3463,"rolledBackPid":3769,"credentialCanaryRetained":true,"queueCanaryRetained":true,"defaultLabelPresentBeforeAndAfter":false,"scopedProcessesAfterUnload":0}
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4387300Z 
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4393750Z  [32m✓[39m tests/cli/agent-release-installer-macos.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 39153[2mms[22m[39m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4396150Z    [33m[2m✓[22m[39m native macOS launchd pinned installer fixture[2m > [22minstalls and upgrades a live isolated service, restores it after failure, and rolls back offline without touching the default label [33m39152[2mms[22m[39m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4633260Z 
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4736990Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4839240Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4875590Z [2m   Start at [22m 18:56:11
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4878320Z [2m   Duration [22m 39.98s[2m (transform 43ms, setup 0ms, collect 47ms, tests 39.15s, environment 0ms, prepare 62ms)[22m
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4879270Z 
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.4880260Z JSON report written to /Users/runner/work/tokenizer/tokenizer/.ci/macos-launchd-installer.json
+Verify (macOS launchd)	Verify native macOS launchd pinned installer	2026-10-07T18:56:51.6683740Z Verified native macOS launchd install, upgrade, failure restore, offline rollback and isolated cleanup fixture
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	﻿2026-10-07T18:56:51.6840470Z ##[group]Run actions/upload-artifact@v4
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6841330Z with:
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6841730Z   name: macos-launchd-pinned-installer
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6842060Z   path: .ci/macos-launchd-installer.json
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6842450Z   if-no-files-found: error
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6842720Z   retention-days: 7
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6843100Z   compression-level: 6
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6843350Z   overwrite: false
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6844180Z   include-hidden-files: false
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:51.6844490Z ##[endgroup]
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.1706700Z (node:4045) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.1708170Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.1758250Z With the provided path, there will be 1 file uploaded
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.1762050Z Artifact name is valid!
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.1763280Z Root directory input is valid!
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.6255020Z Beginning upload of artifact content to blob storage
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:52.6872820Z (node:4045) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.0846900Z Uploaded bytes 666
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.1619100Z Finished uploading artifact content to blob storage!
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.1620210Z SHA256 digest of uploaded artifact zip is feee97d0cab43fd4a61c2132f27aa135ea2a53ae33bd5971b6d6fd7cdaef75e8
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.1622330Z Finalizing artifact upload
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.4393070Z Artifact macos-launchd-pinned-installer.zip successfully finalized. Artifact ID 11505196524
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.4394240Z Artifact macos-launchd-pinned-installer has been successfully uploaded! Final size is 666 bytes. Artifact ID is 11505196524
+Verify (macOS launchd)	Upload native macOS launchd installer evidence	2026-10-07T18:56:53.4547870Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37670505412/artifacts/11505196524
+Verify (macOS launchd)	Post Setup Node.js	﻿2026-10-07T18:56:53.4756320Z Post job cleanup.
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:56:54.0716460Z (node:4060) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:56:54.0717870Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:56:54.4594500Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/tokenizer/tokenizer --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:56:58.1337780Z (node:4060) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:56:59.1252940Z Sent 0 of 182371100 (0.0%), 0.0 MBs/sec
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:57:00.1271280Z Sent 0 of 182371100 (0.0%), 0.0 MBs/sec
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:57:01.1426160Z Sent 115262236 of 182371100 (63.2%), 36.4 MBs/sec
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:57:01.2833780Z Sent 182371100 of 182371100 (100.0%), 55.1 MBs/sec
+Verify (macOS launchd)	Post Setup Node.js	2026-10-07T18:57:01.5680360Z Cache saved with the key: node-cache-macOS-arm64-npm-4168e6fc4abafa19cb712e6fbf85fe960cd1c3ddafdc2444551d98d3fe823579
+Verify (macOS launchd)	Post Checkout	﻿2026-10-07T18:57:01.5971110Z Post job cleanup.
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7539970Z [command]/opt/homebrew/bin/git version
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7626840Z git version 2.55.0
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7647370Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/efdb204e-5ca0-410f-ab09-444b44bd21ee/.gitconfig'
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7664030Z Temporarily overriding HOME='/Users/runner/work/_temp/efdb204e-5ca0-410f-ab09-444b44bd21ee' before making global git config changes
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7665240Z Adding repository directory to the temporary git global config as a safe directory
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7670260Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/tokenizer/tokenizer
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7877870Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.7981460Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.9343240Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.9408220Z http.https://github.com/.extraheader
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.9418490Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:01.9494500Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:02.0449160Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (macOS launchd)	Post Checkout	2026-10-07T18:57:02.0520580Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Verify (macOS launchd)	Complete job	﻿2026-10-07T18:57:02.2112840Z Cleaning up orphan processes
+Verify (macOS launchd)	Complete job	2026-10-07T18:57:02.8770900Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
