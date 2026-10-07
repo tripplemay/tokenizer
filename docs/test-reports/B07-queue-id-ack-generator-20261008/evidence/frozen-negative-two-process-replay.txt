@@ -1,0 +1,47 @@
+{
+  "result": {
+    "inserted": 1,
+    "updated": 0,
+    "duplicates": 0,
+    "received": 1,
+    "deviceId": "device-a",
+    "rejected": 1
+  },
+  "requests": [
+    [
+      "good",
+      "poison"
+    ]
+  ],
+  "finalIds": [
+    "newly-collected"
+  ],
+  "quarantinedIds": [
+    "poison"
+  ],
+  "queueRaw": "{\"source\":\"aider\",\"sourceEventId\":\"newly-collected\",\"occurredAt\":\"2026-10-08T00:00:00.000Z\",\"repoKey\":null,\"gitRemote\":null,\"inputTokens\":1}\n"
+}
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'newly-collected'
++ ]
+- []
+
+    at main (/private/tmp/tokenizer-b07-replay.f7WuQK/docs/test-reports/B06-client-prereview-20261008/two-process-queue-loss.probe.ts:87:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async <anonymous> (/private/tmp/tokenizer-b07-replay.f7WuQK/docs/test-reports/B06-client-prereview-20261008/two-process-queue-loss.probe.ts:95:1) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [ 'newly-collected' ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

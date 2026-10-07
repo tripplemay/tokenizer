@@ -1,0 +1,37 @@
+{
+  "role": "Generator",
+  "formalVerdict": false,
+  "baseSha": "694ff3c7f61664754e88d50f3161fc5d06ac6607",
+  "productSha": "8bb0b88fe6ac8e084acb8cd705dec930370354b1",
+  "readyForSafeBranchCI": true,
+  "releaseReady": false,
+  "fixed": [
+    "current-disk lock-held queue merge",
+    "exact normalized event-version ACK and quarantine deletion",
+    "two-process stale checkpoint data loss",
+    "same-identity newer-version retention",
+    "owner-only queue and quarantine atomic replacement",
+    "bounded fail-closed previous-B06 rowless invalid_json isolation"
+  ],
+  "verification": {
+    "node": "v22.22.0",
+    "verify": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "fullVitest": "1675 passed, 27 environment-bound skipped, 0 failed",
+    "nativePg16": "53 passed, 0 skipped, 0 failed; B07 probe 1/1",
+    "nativeTwoProcessHttp": "pass on macOS",
+    "nativeWindows": "pending exact-SHA safe-branch CI"
+  },
+  "requiredNext": [
+    "exact-SHA safe-branch CI including Windows and PG16 jobs",
+    "different-model-family independent evaluation",
+    "retain server-first B06 rollout ordering"
+  ],
+  "knownLimits": [
+    "no file or directory fsync power-loss proof",
+    "no queue/quarantine retention or total-size cap",
+    "no complete parser cursor CAS transaction",
+    "no production or deployed Next middleware validation"
+  ]
+}

@@ -1,0 +1,7 @@
+product_sha=8bb0b88fe6ac8e084acb8cd705dec930370354b1
+base_sha=694ff3c7f61664754e88d50f3161fc5d06ac6607
+v22.22.0
+10.9.4
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
