@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { afterEach, expect, it } from "vitest";
@@ -16,11 +16,23 @@ it("captures the Agent SHA once at module load and keeps it frozen", () => {
   const bin = join(root, "bin");
   const marker = join(root, "calls");
   mkdirSync(bin);
-  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
-  const shim = process.platform === "win32"
-    ? "@echo off\r\necho called>>\"%AGENT_VERSION_MARKER%\"\r\necho abcdef123456\r\n"
-    : "#!/bin/sh\nprintf 'called\\n' >> \"$AGENT_VERSION_MARKER\"\nprintf 'abcdef123456\\n'\n";
-  writeFileSync(gitShim, shim, { mode: 0o700 });
+  let shimEnv: Record<string, string> = {};
+  if (process.platform === "win32") {
+    const preload = join(bin, "git-version-preload.cjs");
+    copyFileSync(process.execPath, join(bin, "git.exe"));
+    writeFileSync(preload, [
+      "const { appendFileSync } = require('node:fs');",
+      "const { basename } = require('node:path');",
+      "if (basename(process.execPath).toLowerCase() === 'git.exe') {",
+      "  appendFileSync(process.env.AGENT_VERSION_MARKER, 'called\\n');",
+      "  process.stdout.write('abcdef123456\\n');",
+      "  process.exit(0);",
+      "}"
+    ].join("\n"));
+    shimEnv = { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require \"${preload}\"`.trim() };
+  } else {
+    writeFileSync(join(bin, "git"), "#!/bin/sh\nprintf 'called\\n' >> \"$AGENT_VERSION_MARKER\"\nprintf 'abcdef123456\\n'\n", { mode: 0o700 });
+  }
   const moduleUrl = new URL("../../src/cli/agent-version.ts", import.meta.url).href;
   const child = spawnSync(process.execPath, [
     "--import", "tsx", "--input-type=module", "-e",
@@ -30,6 +42,7 @@ it("captures the Agent SHA once at module load and keeps it frozen", () => {
     encoding: "utf8",
     env: {
       ...process.env,
+      ...shimEnv,
       PATH: `${bin}${delimiter}${process.env.PATH}`,
       AGENT_VERSION_MARKER: marker
     }

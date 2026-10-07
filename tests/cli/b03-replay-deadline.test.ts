@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { afterEach, expect, it, vi } from "vitest";
@@ -35,22 +35,37 @@ function fixture() {
   return { dir, file, request, config };
 }
 
+function installStalledGit(bin: string): Record<string, string> {
+  if (process.platform !== "win32") {
+    writeFileSync(join(bin, "git"), "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n", { mode: 0o700 });
+    return {};
+  }
+  const preload = join(bin, "git-stall-preload.cjs");
+  copyFileSync(process.execPath, join(bin, "git.exe"));
+  writeFileSync(preload, [
+    "const { appendFileSync } = require('node:fs');",
+    "const { basename } = require('node:path');",
+    "if (basename(process.execPath).toLowerCase() === 'git.exe') {",
+    "  appendFileSync(process.env.B03_GIT_MARKER, 'entered\\n');",
+    "  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 30000);",
+    "  process.exit(1);",
+    "}"
+  ].join("\n"));
+  return { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --require \"${preload}\"`.trim() };
+}
+
 it("interrupts a real stalled Git process within the replay deadline", () => {
   const { dir, file, request } = fixture();
   const bin = join(dir, "bin");
   mkdirSync(bin);
   const marker = join(dir, "git-entered");
-  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
-  const shim = process.platform === "win32"
-    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
-    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
-  writeFileSync(gitShim, shim, { mode: 0o700 });
+  const shimEnv = installStalledGit(bin);
   const started = Date.now();
   const child = spawnSync(process.execPath, [
     "--import", "tsx", join(process.cwd(), "tests/fixtures/b03-replay-git-deadline.ts"), file, dir
   ], {
     encoding: "utf8",
-    env: { ...process.env, PATH: `${bin}${delimiter}${process.env.PATH}`, B03_GIT_MARKER: marker },
+    env: { ...process.env, ...shimEnv, PATH: `${bin}${delimiter}${process.env.PATH}`, B03_GIT_MARKER: marker },
     timeout: 11_000,
     killSignal: "SIGKILL"
   });
@@ -72,11 +87,7 @@ it("bounds both startup version detection and replay Git enrichment in the real 
   mkdirSync(state, { recursive: true });
   writeFileSync(join(state, "config.json"), `${JSON.stringify(config)}\n`);
   const marker = join(dir, "git-entered-cli");
-  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
-  const shim = process.platform === "win32"
-    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
-    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
-  writeFileSync(gitShim, shim, { mode: 0o700 });
+  const shimEnv = installStalledGit(bin);
   const queue = join(state, "queue.jsonl");
   const queueBytes = `{ "source": "claude-code", "sourceEventId": "retained", "occurredAt": "2026-10-01T00:00:00.000Z" }\r\n`;
   writeFileSync(queue, queueBytes);
@@ -92,6 +103,7 @@ it("bounds both startup version detection and replay Git enrichment in the real 
       encoding: "utf8",
       env: {
         ...process.env,
+        ...shimEnv,
         HOME: home,
         USERPROFILE: home,
         PATH: `${bin}${delimiter}${process.env.PATH}`,
@@ -115,11 +127,7 @@ it("does not let startup version detection pin non-replay CLI help", () => {
   const bin = join(dir, "bin");
   mkdirSync(bin);
   const marker = join(dir, "git-entered-help");
-  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
-  const shim = process.platform === "win32"
-    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
-    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
-  writeFileSync(gitShim, shim, { mode: 0o700 });
+  const shimEnv = installStalledGit(bin);
   const started = Date.now();
   const child = spawnSync(process.execPath, [
     "--import", "tsx", join(process.cwd(), "src/cli/index.ts"), "--help"
@@ -127,6 +135,7 @@ it("does not let startup version detection pin non-replay CLI help", () => {
     encoding: "utf8",
     env: {
       ...process.env,
+      ...shimEnv,
       PATH: `${bin}${delimiter}${process.env.PATH}`,
       B03_GIT_MARKER: marker
     },
