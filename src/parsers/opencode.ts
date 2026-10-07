@@ -156,28 +156,7 @@ export function parseOpenCodeUsage(config: ParserConfig): ParserResult {
           reasoningOutputTokens,
           totalTokens,
           costUsd: typeof message.cost === "number" ? message.cost : null,
-          occurredAt: timestampMsToIso(message.time?.completed ?? message.time?.created, row.time_created),
-          rawJson: {
-            messageId: row.message_id,
-            providerID: message.providerID ?? sessionModel?.providerID ?? null,
-            cacheWriteTokens,
-            agent: message.agent ?? row.agent ?? null,
-            databasePath: dbPath,
-            message,
-            session: {
-              id: row.session_id,
-              directory: row.directory,
-              path: row.path,
-              projectId: row.project_id,
-              agent: row.agent,
-              model: sessionModel
-            },
-            project: {
-              id: row.project_id,
-              name: row.project_name,
-              worktree: row.worktree
-            }
-          }
+          occurredAt: timestampMsToIso(message.time?.completed ?? message.time?.created, row.time_created)
         });
       } catch (error) {
         warnings.push(`Failed to parse OpenCode message ${row.message_id}: ${(error as Error).message}`);

@@ -1,4 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { UsageEventInput } from "@/shared/usage";
 
 const fetchMock = vi.hoisted(() => vi.fn());
@@ -21,7 +24,9 @@ vi.mock("@/cli/config", () => ({
 }));
 vi.mock("@/cli/agent-version", () => ({ getAgentVersion: () => "test" }));
 
-import { syncEvents } from "@/cli/sync";
+import { readDiagnostics, readQueue, syncEvents } from "@/cli/sync";
+import { writeQueue } from "@/cli/collect";
+import { parseClaudeUsage } from "@/parsers/claude";
 
 const config = { serverUrl: "https://example.test" } as Parameters<typeof syncEvents>[0];
 
@@ -46,6 +51,70 @@ describe("syncEvents batch retry", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    rmSync(tmp.queuePath, { force: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp.queuePath, { force: true });
+    vi.useRealTimers();
+  });
+
+  it("keeps a source content canary out of the queue and HTTP body", async () => {
+    const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
+    const homeDir = mkdtempSync(join(tmpdir(), "tokenizer-private-source-"));
+    try {
+      const dir = join(homeDir, ".claude", "projects", "proj");
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, "session.jsonl"), JSON.stringify({
+        type: "assistant",
+        uuid: "uuid-1",
+        cwd: "/tmp/proj",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        sessionId: "sess-1",
+        message: {
+          role: "assistant",
+          id: "msg-1",
+          model: "claude-3-5-sonnet",
+          usage: { input_tokens: 10, output_tokens: 5 },
+          content: [{ type: "text", text: canary }, { type: "tool_use", input: { content: canary } }]
+        }
+      }) + "\n");
+      const sourceEvents = parseClaudeUsage({ homeDir, projectRoots: [] }).events;
+      expect(sourceEvents).toHaveLength(1);
+      expect(JSON.stringify(sourceEvents)).not.toContain(canary);
+      writeQueue(sourceEvents);
+      expect(readFileSync(tmp.queuePath, "utf8")).not.toContain(canary);
+      fetchMock.mockResolvedValueOnce(okResponse(1));
+      await syncEvents(config, readQueue());
+      const body = fetchMock.mock.calls[0][1].body as string;
+      expect(body).not.toContain(canary);
+      expect(JSON.parse(body).events[0]).toMatchObject({ sourceEventId: "claude-jsonl:msg-1:uuid-1", inputTokens: 10, outputTokens: 5 });
+    } finally {
+      rmSync(homeDir, { recursive: true, force: true });
+    }
+  });
+
+  it("minimizes a legacy queue on read and blocks raw content from HTTP", async () => {
+    const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
+    writeFileSync(tmp.queuePath, JSON.stringify({ ...event(1), rawJson: { message: { content: canary } }, extraBody: canary }) + "\n");
+    const pending = readQueue();
+    expect(readFileSync(tmp.queuePath, "utf8")).not.toContain(canary);
+    fetchMock.mockResolvedValueOnce(okResponse(1));
+    await syncEvents(config, pending);
+    expect(fetchMock.mock.calls[0][1].body).not.toContain(canary);
+  });
+
+  it("keeps local exception details out of default device diagnostics", () => {
+    const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
+    writeFileSync(tmp.statePath, JSON.stringify({ lastError: `invalid JSON: ${canary}`, lastSyncStatus: "failed" }));
+    try {
+      const diagnostics = readDiagnostics();
+      expect(diagnostics.lastError).toBeNull();
+      expect(diagnostics.lastSyncStatus).toBe("failed");
+      expect(JSON.stringify(diagnostics)).not.toContain(canary);
+    } finally {
+      rmSync(tmp.statePath, { force: true });
+    }
   });
 
   it("still posts an empty batch so the server can advance lastSyncAt", async () => {

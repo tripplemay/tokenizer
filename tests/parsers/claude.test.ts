@@ -118,6 +118,23 @@ function rawAssistantRow(opts: {
 }
 
 describe("parseClaudeUsage", () => {
+  it("never emits assistant text, code, or tool input in usage events", () => {
+    const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
+    writeJsonl("proj-private", [rawAssistantRow({
+      messageId: "msg-private",
+      uuid: "uuid-private",
+      usage: { input_tokens: 10, output_tokens: 5 },
+      content: [
+        { type: "text", text: canary },
+        { type: "tool_use", name: "Write", input: { file_path: "secret.txt", content: canary } }
+      ]
+    })]);
+    const result = parseClaudeUsage({ homeDir, projectRoots: [] });
+    expect(result.events).toHaveLength(1);
+    expect(result.events[0].rawJson).toBeUndefined();
+    expect(JSON.stringify(result.events)).not.toContain(canary);
+  });
+
   it("emits a stable sourceEventId across legacy file mtime/content changes", () => {
     const file = writeLegacy("sess-1", {
       cwd: "/tmp/proj",

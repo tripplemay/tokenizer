@@ -128,8 +128,7 @@ function parseHistoryFile(file: string, config: ParserConfig, events: UsageEvent
       cacheWriteTokens: tokens.cacheWrite,
       totalTokens: inputTokens + tokens.received,
       costUsd: tokens.cost,
-      occurredAt: sessionTimestamp ?? fileMtime,
-      rawJson: { line, file, model: currentModel }
+      occurredAt: sessionTimestamp ?? fileMtime
     });
   });
 }

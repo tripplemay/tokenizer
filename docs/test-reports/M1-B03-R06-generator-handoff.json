@@ -1,0 +1,41 @@
+{
+  "batch_id": "M1-B03-R06",
+  "created_at": "2026-10-07T13:39:51Z",
+  "features": [
+    {
+      "feature_id": "R06-SLICE1",
+      "commits": [],
+      "files_touched": [
+        "docs/test-reports/M1-B03-R06-generator-handoff.json",
+        "docs/test-reports/M1-B03-R06-generator-notes-20261007.md",
+        "src/cli/agent.ts",
+        "src/cli/collect.ts",
+        "src/cli/config.ts",
+        "src/cli/index.ts",
+        "src/cli/privacy.ts",
+        "src/cli/sync.ts",
+        "src/parsers/aider.ts",
+        "src/parsers/claude.ts",
+        "src/parsers/codex.ts",
+        "src/parsers/kimicode.ts",
+        "src/parsers/opencode.ts",
+        "src/shared/input-sanitization.ts",
+        "src/shared/usage-privacy.ts",
+        "tests/cli/agent-sync-checkpoint.test.ts",
+        "tests/cli/privacy.test.ts",
+        "tests/cli/sync-retry.test.ts",
+        "tests/parsers/claude.test.ts",
+        "tests/server/ingest-upsert.test.ts",
+        "tests/shared/usage-privacy.test.ts"
+      ],
+      "notes": "R06 first slice only. The report records synthetic canary boundaries, R02 integration dependency, deferred diagnostic opt-in and historical cleanup, and local-only backlog semantics. Independent evaluation and live PostgreSQL/UI verification remain required."
+    }
+  ],
+  "l1_ran": {
+    "lint": "npm run lint (exit 0)",
+    "typecheck": "npm run verify (exit 0)",
+    "test": "npm test (exit 0; 1468 passed, 20 skipped); npm run build (exit 0)"
+  },
+  "waiting": null,
+  "waiting_detail": ""
+}

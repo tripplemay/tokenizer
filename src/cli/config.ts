@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { updateFileAtomic, writeFileAtomic } from "@/cli/atomic-file";
 import { restrictToCurrentUser } from "@/cli/file-permissions";
 import { DeviceInput } from "@/shared/usage";
+import { effectivePrivacy, type PrivacyConfig, type PrivacyMode } from "./privacy";
 
 export type TokenizerConfig = {
   serverUrl: string;
@@ -16,6 +17,7 @@ export type TokenizerConfig = {
     aider: boolean;
     kimicode: boolean;
   };
+  privacy?: PrivacyConfig;
 };
 
 export type TokenizerCredentials = {
@@ -32,7 +34,8 @@ export function defaultConfig(): TokenizerConfig {
   return {
     serverUrl: "http://localhost:3000",
     projectRoots: [join(homedir(), "project")],
-    sources: { claude: true, codex: true, opencode: true, aider: true, kimicode: true }
+    sources: { claude: true, codex: true, opencode: true, aider: true, kimicode: true },
+    privacy: { mode: "sync", includePaths: [], excludePaths: [] }
   };
 }
 
@@ -55,6 +58,7 @@ export function readConfig(): TokenizerConfig {
   // instead of needing a manual `tokenizer configure` to flip the flag.
   const defaults = defaultConfig();
   stored.sources = { ...defaults.sources, ...stored.sources };
+  stored.privacy = { ...defaults.privacy!, ...stored.privacy };
   return stored;
 }
 
@@ -62,15 +66,30 @@ export function writeConfig(config: TokenizerConfig) {
   writeFileAtomic(configPath, `${JSON.stringify(config, null, 2)}\n`);
 }
 
-export function configure(options: { serverUrl?: string; projectRoot?: string; sources?: Partial<TokenizerConfig["sources"]> }) {
+export function configure(options: {
+  serverUrl?: string;
+  projectRoot?: string;
+  sources?: Partial<TokenizerConfig["sources"]>;
+  privacyMode?: PrivacyMode;
+  includePaths?: string[];
+  excludePaths?: string[];
+}) {
   const current = existsSync(configPath) ? readConfig() : defaultConfig();
   const projectRoots = options.projectRoot ? [options.projectRoot] : current.projectRoots;
   const config = {
     ...current,
     serverUrl: options.serverUrl ?? current.serverUrl,
     projectRoots,
-    sources: { ...current.sources, ...options.sources }
+    sources: { ...current.sources, ...options.sources },
+    privacy: {
+      ...defaultConfig().privacy!,
+      ...current.privacy,
+      ...(options.privacyMode ? { mode: options.privacyMode } : {}),
+      ...(options.includePaths ? { includePaths: options.includePaths } : {}),
+      ...(options.excludePaths ? { excludePaths: options.excludePaths } : {})
+    }
   };
+  effectivePrivacy(config);
   writeConfig(config);
   return config;
 }

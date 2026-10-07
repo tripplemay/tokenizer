@@ -110,8 +110,7 @@ export function parseKimiCodeUsage(config: ParserConfig): ParserResult {
           cachedInputTokens,
           cacheWriteTokens,
           totalTokens,
-          occurredAt,
-          rawJson: row
+          occurredAt
         });
       } catch (error) {
         warnings.push(`Failed to parse Kimi Code ${file}:${lineNumber}: ${(error as Error).message}`);

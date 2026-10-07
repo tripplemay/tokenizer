@@ -1,4 +1,5 @@
 import type { DeviceInput, UsageEventInput, UsageSource } from "./usage";
+import { minimizeUsageEvent } from "./usage-privacy";
 
 // These are display/transport bounds, not database limits. The hot paths
 // clean values to these bounds so one malformed event cannot pin an agent's
@@ -32,5 +33,5 @@ export function sanitizeDeviceForIngest(device: DeviceInput): DeviceInput {
 
 export function sanitizeUsageEventForIngest(event: UsageEventInput): UsageEventInput {
   const source = typeof event.source === "string" ? sanitizeBoundedString(event.source, MAX_SOURCE_LENGTH) : "";
-  return { ...event, source: source as UsageSource };
+  return minimizeUsageEvent({ ...event, source: source as UsageSource });
 }

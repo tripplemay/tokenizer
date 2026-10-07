@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { UsageEventInput } from "@/shared/usage";
+import { minimalCodexRawJson } from "@/shared/usage-privacy";
 import {
   CodexUsageCounters,
   codexCanonicalSourceEventId,
@@ -107,7 +108,7 @@ export function parseCodexUsage(config: ParserConfig): ParserResult {
           reasoningOutputTokens: usage.reasoningOutputTokens,
           totalTokens,
           occurredAt: row.timestamp ?? fallbackTime,
-          rawJson: row
+          rawJson: minimalCodexRawJson(row)
         });
       } catch (error) {
         warnings.push(`Failed to parse Codex ${file}:${lineNumber}: ${(error as Error).message}`);

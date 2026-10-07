@@ -77,8 +77,7 @@ function parseLegacySessionMeta(dir: string, config: ParserConfig, events: Usage
         inputTokens,
         outputTokens,
         totalTokens: inputTokens + outputTokens,
-        occurredAt: typeof json.updated_at === "string" ? json.updated_at : mtime,
-        rawJson: json
+        occurredAt: typeof json.updated_at === "string" ? json.updated_at : mtime
       });
     } catch (error) {
       warnings.push(`Failed to parse Claude file ${file}: ${(error as Error).message}`);
@@ -268,8 +267,7 @@ function emitGroupEvents(group: MessageGroup, config: ParserConfig, events: Usag
         ...segNumbers,
         cacheEphemeral5mInputTokens: normalizeTokenCount(segCacheDetail.ephemeral_5m_input_tokens),
         cacheEphemeral1hInputTokens: normalizeTokenCount(segCacheDetail.ephemeral_1h_input_tokens),
-        fallbackToModel: segModel !== nextModel ? nextModel : null,
-        rawJson: { messageId: group.messageId, iteration: i, ...iteration }
+        fallbackToModel: segModel !== nextModel ? nextModel : null
       });
     }
     const previousModel = iterations[iterations.length - 2]?.model;
@@ -289,7 +287,6 @@ function emitGroupEvents(group: MessageGroup, config: ParserConfig, events: Usag
     cacheEphemeral1hInputTokens: normalizeTokenCount(cacheCreationDetail.ephemeral_1h_input_tokens),
     webSearchRequests: normalizeTokenCount(serverToolUse.web_search_requests),
     webFetchRequests: normalizeTokenCount(serverToolUse.web_fetch_requests),
-    fallbackFromModel,
-    rawJson: lastRow
+    fallbackFromModel
   });
 }

@@ -30,6 +30,7 @@ vi.mock("@/cli/sync", () => ({
 }));
 vi.mock("@/cli/config", () => ({
   readConfig: mocks.readConfig,
+  readDevice: () => ({ id: "dev-1", name: "Test Device" }),
   readState: vi.fn(() => ({})),
   updateState: mocks.updateState
 }));
@@ -68,6 +69,34 @@ describe("runOnce durable sync checkpoint", () => {
     mocks.heartbeat.mockResolvedValue({ ok: true });
     mocks.readQueue.mockReturnValue([]);
     mocks.dedupeBySourceEventId.mockImplementation((events: UsageEventInput[]) => events);
+  });
+
+  it("keeps local-only events queued without heartbeat, usage sync, quota, or harness traffic", async () => {
+    mocks.readConfig.mockReturnValue({ serverUrl: "https://example.test", privacy: { mode: "local-only", includePaths: [], excludePaths: [] } });
+    const cursor = { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 };
+    const local = event("local", "2026-08-22T15:00:00.000Z");
+    mocks.readCursor.mockReturnValue(cursor);
+    mocks.collectEvents.mockReturnValue({ events: [local], warnings: [] });
+
+    const result = await runOnce();
+
+    expect(result.received).toBe(0);
+    expect(mocks.writeQueue).toHaveBeenCalledWith([local]);
+    expect(mocks.writeCursor).toHaveBeenCalledWith(cursor);
+    expect(mocks.heartbeat).not.toHaveBeenCalled();
+    expect(mocks.syncEvents).not.toHaveBeenCalled();
+    expect(mocks.runQuotaRefresh).not.toHaveBeenCalled();
+    expect(mocks.runHarnessSync).not.toHaveBeenCalled();
+  });
+
+  it("pauses collection before touching cursors or network", async () => {
+    mocks.readConfig.mockReturnValue({ serverUrl: "https://example.test", privacy: { mode: "paused", includePaths: [], excludePaths: [] } });
+    const result = await runOnce();
+    expect(result.received).toBe(0);
+    expect(mocks.readCursor).not.toHaveBeenCalled();
+    expect(mocks.collectEvents).not.toHaveBeenCalled();
+    expect(mocks.heartbeat).not.toHaveBeenCalled();
+    expect(mocks.syncEvents).not.toHaveBeenCalled();
   });
 
   it("persists the cursor after queueing and retains only the unsent tail on failure", async () => {

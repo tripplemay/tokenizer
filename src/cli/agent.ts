@@ -3,12 +3,13 @@ import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
-import { readConfig, readState, updateState } from "./config";
+import { readConfig, readDevice, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
 import { runHarnessSync, type HarnessSyncResult } from "./harness";
 import { HARNESS_BASE_MS, initialHarnessBackoff, nextHarnessBackoff } from "./harness-backoff";
 import { acquireAgentLock } from "./agent-lock";
+import { effectivePrivacy, filterUsageEvents } from "./privacy";
 
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
 
@@ -38,15 +39,22 @@ function logHarness(h: HarnessSyncResult) {
 
 export async function runOnce() {
   const config = readConfig();
+  const privacy = effectivePrivacy(config);
   const startedAt = new Date().toISOString();
+  if (privacy.mode === "paused") {
+    updateState({ lastRunAt: startedAt, lastCollectionMode: "paused" });
+    return { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
+  }
   // Refresh the server-side lastSeenAt at the start of every cron-triggered
   // run so the dashboard reflects "device is alive" right after sync, not just
   // when an explicit `tokenizer agent` loop is running. Heartbeat failures are
   // non-fatal — sync will surface real connectivity errors separately.
-  try {
-    await heartbeat(config);
-  } catch {
-    /* ignore */
+  if (privacy.mode === "sync") {
+    try {
+      await heartbeat(config);
+    } catch {
+      /* ignore */
+    }
   }
   // Read cursor and pass to parsers. Parsers mutate the cursor in-place to
   // record per-file fingerprints and the OpenCode time_created high-water
@@ -54,7 +62,7 @@ export async function runOnce() {
   const cursor = readCursor();
   const collected = collectEvents(config, cursor);
   const queued = readQueue();
-  const events = dedupeBySourceEventId([...queued, ...collected.events]);
+  const events = dedupeBySourceEventId(filterUsageEvents([...queued, ...collected.events], privacy));
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
@@ -65,6 +73,10 @@ export async function runOnce() {
   // Queue-before-cursor ordering also makes a crash between these writes safe;
   // at worst the old cursor re-parses events and server dedup handles them.
   writeCursor(cursor);
+  if (privacy.mode === "local-only") {
+    updateState({ lastRunAt: startedAt, lastCollectionMode: "local-only", lastCollectedEvents: collected.events.length });
+    return { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
+  }
   try {
     const result = await syncEvents(config, events, {
       onBatchSynced: ({ remaining }) => writeQueue(remaining)
@@ -113,6 +125,8 @@ export async function runOnce() {
 
 export async function runHeartbeat() {
   const config = readConfig();
+  const mode = effectivePrivacy(config).mode;
+  if (mode !== "sync") throw new Error(`Heartbeat disabled by privacy mode: ${mode}`);
   try {
     const result = await heartbeat(config);
     // Clear lastError on success so a transient heartbeat failure (e.g. a
@@ -225,7 +239,7 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
         void sync();
       }
       // 单飞：一次 harness 同步要遍历多个仓库并可能写盘 + commit，慢于 tick 时不叠加
-      if (!harnessInFlight && now - lastHarnessAt >= harnessDelayMs) {
+      if (effectivePrivacy(readConfig()).mode === "sync" && !harnessInFlight && now - lastHarnessAt >= harnessDelayMs) {
         lastHarnessAt = now;
         harnessInFlight = true;
         void runHarnessSync(config)
@@ -246,7 +260,7 @@ export async function runAgent(options: { heartbeatSeconds: number; syncMinutes:
       const isActive = lastActivityAt > 0 && (now - lastActivityAt) < ACTIVITY_WINDOW_MS;
       const quotaThreshold = isActive ? QUOTA_ACTIVE_MS : QUOTA_IDLE_MS;
       const lastQuotaAt = state.lastQuotaRefreshAt ? new Date(state.lastQuotaRefreshAt).getTime() : 0;
-      if (now - lastQuotaAt >= quotaThreshold) {
+      if (effectivePrivacy(readConfig()).mode === "sync" && now - lastQuotaAt >= quotaThreshold) {
         void runQuotaRefresh(config).catch((err) => {
           log(`quota refresh failed: ${err instanceof Error ? err.message : String(err)}`);
         });

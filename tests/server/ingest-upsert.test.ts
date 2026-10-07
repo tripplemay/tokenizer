@@ -138,6 +138,33 @@ describe("ingestUsageEvents conflict correction", () => {
 
     const rows = prismaMock.usageEvent.createMany.mock.calls[0][0].data;
     expect(rows[0].sourceEventId).toBe("codex:v2:sess-1:100:30:7:20:5:120");
+    expect(rows[0].rawJson).toEqual({ payload: { info: { total_token_usage: {
+      input_tokens: 100,
+      cached_input_tokens: 30,
+      cache_write_input_tokens: 7,
+      output_tokens: 20,
+      reasoning_output_tokens: 5,
+      total_tokens: 120
+    } } } });
+  });
+
+  it("drops old-agent raw content before DB insert and logs no content canary", async () => {
+    const canary = "PRIVATE_BODY_TOOL_URL_TOKEN_CANARY";
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    prismaMock.usageEvent.createMany.mockResolvedValue({ count: 1 });
+    prismaMock.project.upsert.mockResolvedValue({ id: "proj-x" });
+    try {
+      await ingestUsageEvents([event({
+        workspacePath: "/tmp/proj",
+        rawJson: { message: { content: [{ text: canary }, { input: { content: canary } }] } }
+      })], device, "tok-1", "user-1");
+      const row = prismaMock.usageEvent.createMany.mock.calls[0][0].data[0];
+      expect(row.rawJson).toEqual(expect.anything());
+      expect(JSON.stringify(row)).not.toContain(canary);
+      expect(JSON.stringify(log.mock.calls)).not.toContain(canary);
+    } finally {
+      log.mockRestore();
+    }
   });
 
   it("keeps a legacy Codex ID when session or cumulative usage is unavailable", async () => {

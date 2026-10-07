@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
-import { writeFileAtomic } from "@/cli/atomic-file";
+import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
 import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
+import { minimizeUsageEvent } from "@/shared/usage-privacy";
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
 import { getAgentVersion } from "./agent-version";
 import { AGENT_FEATURE_VERSION } from "@/shared/agent-feature-version";
@@ -8,23 +9,26 @@ import { CURRENT_AGENT_RELEASE_VERSION } from "@/shared/agent-release-version";
 import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 import { sanitizeUsageEventGit } from "@/shared/git-remote";
+import { effectivePrivacy, filterUsageEvents } from "./privacy";
 
 export function readQueue(): UsageEventInput[] {
   if (!existsSync(queuePath)) return [];
-  return readFileSync(queuePath, "utf8")
-    .split(/\r?\n/)
-    .filter(Boolean)
-    .map((line) => JSON.parse(line) as UsageEventInput);
+  return withFileLock(queuePath, () => {
+    if (!existsSync(queuePath)) return [];
+    const original = readFileSync(queuePath, "utf8");
+    const events = original.split(/\r?\n/).filter(Boolean)
+      .map((line) => minimizeUsageEvent(sanitizeUsageEventGit(JSON.parse(line) as UsageEventInput)));
+    const minimized = events.length ? events.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
+    if (minimized !== original) writeFileAtomic(queuePath, minimized);
+    return events;
+  });
 }
 
 export function clearQueue() {
-  writeFileAtomic(queuePath, "");
+  withFileLock(queuePath, () => writeFileAtomic(queuePath, ""));
 }
 
-// Batches are intentionally small. Each event includes the raw API response
-// in rawJson, which for Claude messages with tool use can be 5-15 KB. Keeping
-// a batch at 25 both fits nginx's common 1 MB default and stays below the 60s
-// request timeout when the ingest database is under load.
+// Batches remain small so a retry is bounded under slow ingest/database load.
 const BATCH_SIZE = 25;
 // Generous per-request timeout. After the macOS-sleep / wake fix, an
 // in-flight fetch that was active when the host suspended often becomes
@@ -77,7 +81,7 @@ async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
   // row corrections (parser v2 re-parses) from agents that declare it.
   const body: BatchUsageRequest = {
     device: deviceWithDiagnostics(),
-    events: events.map(sanitizeUsageEventGit),
+    events: events.map((event) => minimizeUsageEvent(sanitizeUsageEventGit(event))),
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   };
   const credentials = readCredentials();
@@ -95,10 +99,12 @@ async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
 }
 
 export async function syncEvents(config: TokenizerConfig, events: UsageEventInput[], options: SyncEventsOptions = {}) {
+  const privacy = effectivePrivacy(config);
+  if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
   // A large historical retry must not keep today's data behind thousands of
   // old duplicates. Server queries order by occurredAt, so wire order has no
   // presentation semantics; newest-first restores dashboard freshness early.
-  const ordered = newestFirst(events);
+  const ordered = newestFirst(filterUsageEvents(events, privacy).map(minimizeUsageEvent));
   const total = { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
   // Preserve the empty POST: it advances the server-side lastSyncAt even when
   // no local source produced an event during this run.
@@ -135,14 +141,11 @@ export function readDiagnostics(
   } catch {
     /* leave at 0 — diagnostics are best-effort */
   }
-  let lastError: string | null = null;
   let lastSyncStatus: DeviceDiagnostics["lastSyncStatus"] = null;
   let harness: DeviceDiagnostics["harness"];
   try {
     if (existsSync(stateFile)) {
       const state = JSON.parse(readFileSync(stateFile, "utf8")) as Record<string, unknown>;
-      const err = state.lastError;
-      lastError = typeof err === "string" && err.length ? err.slice(0, 500) : null;
       const status = state.lastSyncStatus;
       if (status === "success" || status === "failed") lastSyncStatus = status;
       harness = parseHarnessSyncSnapshot(state.harness) ?? undefined;
@@ -155,7 +158,9 @@ export function readDiagnostics(
     agentReleaseVersion: CURRENT_AGENT_RELEASE_VERSION,
     agentFeatureVersion: AGENT_FEATURE_VERSION,
     queueDepth,
-    lastError,
+    // Detailed errors stay in local state/logs; exception messages can embed
+    // parser input or server response text and are not safe default telemetry.
+    lastError: null,
     lastSyncStatus,
     ...(harness ? { harness } : {})
   };
@@ -166,6 +171,8 @@ function deviceWithDiagnostics(): DeviceInput {
 }
 
 export async function heartbeat(config: TokenizerConfig) {
+  const mode = effectivePrivacy(config).mode;
+  if (mode !== "sync") throw new Error(`Heartbeat disabled by privacy mode: ${mode}`);
   const credentials = readCredentials();
   const response = await agentFetch(`${config.serverUrl.replace(/\/+$/, "")}/api/devices/heartbeat`, {
     method: "POST",

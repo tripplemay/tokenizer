@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { configPath, configure, credentialsPath, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath } from "./config";
+import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, statePath } from "./config";
 import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
 import { clearQueue, readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
@@ -10,6 +10,7 @@ import { enrollDevice } from "./enroll";
 import { runAgent, runHeartbeat, runOnce } from "./agent";
 import { runHarnessCommand } from "./harness-command";
 import { installService, serviceStatus, uninstallService } from "./service";
+import { effectivePrivacy, filterUsageEvents } from "./privacy";
 
 const program = new Command();
 
@@ -22,11 +23,37 @@ program.command("init").description("Create ~/.tokenizer/config.json and device.
   console.log(`Device ready: ${devicePath} (${device.name}, ${device.id})`);
 });
 
-program.command("configure").description("Update local tokenizer configuration").option("--server-url <url>", "Tokenizer server URL").option("--project-root <path>", "Project root directory").action((options: { serverUrl?: string; projectRoot?: string }) => {
-  const config = configure({ serverUrl: options.serverUrl, projectRoot: options.projectRoot });
+program.command("configure").description("Update local tokenizer configuration")
+  .option("--server-url <url>", "Tokenizer server URL")
+  .option("--project-root <path>", "Project root directory (workspace inference, not a privacy allowlist)")
+  .option("--privacy-mode <mode>", "sync, local-only, or paused")
+  .option("--include-path <path...>", "Replace collection include paths")
+  .option("--exclude-path <path...>", "Replace collection exclude paths")
+  .option("--clear-include-paths", "Clear collection include paths")
+  .option("--clear-exclude-paths", "Clear collection exclude paths")
+  .action((options: { serverUrl?: string; projectRoot?: string; privacyMode?: "sync" | "local-only" | "paused"; includePath?: string[]; excludePath?: string[]; clearIncludePaths?: boolean; clearExcludePaths?: boolean }) => {
+  const config = configure({
+    serverUrl: options.serverUrl,
+    projectRoot: options.projectRoot,
+    privacyMode: options.privacyMode,
+    includePaths: options.clearIncludePaths ? [] : options.includePath,
+    excludePaths: options.clearExcludePaths ? [] : options.excludePath
+  });
   console.log(`Config updated: ${configPath}`);
   console.log(`Server: ${config.serverUrl}`);
+  console.log(`Privacy: ${effectivePrivacy(config).mode}`);
 });
+
+program.command("preview").description("Preview local usage events without enrollment, queue writes, or network calls")
+  .option("--limit <count>", "Number of minimized events to show", "5")
+  .action((options: { limit: string }) => {
+    const limit = Number(options.limit);
+    if (!Number.isInteger(limit) || limit < 0 || limit > 100) throw new Error("Preview limit must be between 0 and 100");
+    const config = existsSync(configPath) ? readConfig() : defaultConfig();
+    const privacy = effectivePrivacy(config);
+    const { events, warnings } = collectEvents(config);
+    console.log(JSON.stringify({ mode: privacy.mode, includePaths: privacy.includePaths, excludePaths: privacy.excludePaths, count: events.length, sample: events.slice(0, limit), warnings }, null, 2));
+  });
 
 program.command("enroll").description("Enroll this device with a one-time enrollment token").requiredOption("--enroll-token <token>", "Enrollment token").option("--server-url <url>", "Tokenizer server URL").option("--device-name <name>", "Human-readable device name").option("--yes", "Use detected device name without prompting").action(async (options: { enrollToken: string; serverUrl?: string; deviceName?: string; yes?: boolean }) => {
   const { device } = await enrollDevice(options);
@@ -46,7 +73,7 @@ program.command("collect").description("Collect local usage events into queue").
   const config = readConfig();
   const { events, warnings } = collectEvents(config);
   const queued = readQueue();
-  const merged = dedupeBySourceEventId([...queued, ...events]);
+  const merged = dedupeBySourceEventId(filterUsageEvents([...queued, ...events], effectivePrivacy(config)));
   writeQueue(merged);
   console.log(`Collected ${events.length} events; queue holds ${merged.length} unique events at ${queuePath}`);
   for (const warning of warnings) console.warn(`Warning: ${warning}`);
@@ -54,7 +81,10 @@ program.command("collect").description("Collect local usage events into queue").
 
 program.command("sync").description("Sync queued events to server").action(async () => {
   const config = readConfig();
-  const events = readQueue();
+  const privacy = effectivePrivacy(config);
+  if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
+  const events = filterUsageEvents(readQueue(), privacy);
+  writeQueue(events);
   const result = await syncEvents(config, events, {
     onBatchSynced: ({ remaining }) => writeQueue(remaining)
   });
