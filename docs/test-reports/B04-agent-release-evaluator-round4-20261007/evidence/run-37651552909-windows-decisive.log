@@ -1,0 +1,10 @@
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T16:24:37.0000358Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"bc70265a879ebddfb89db0de803c373403e9630d","expectedOldCommit":"bc70265a879ebddfb89db0de803c373403e9630d","queueCanaryRetained":true,"credentialCanaryRetained":true}
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T16:24:37.0126394Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T16:24:37.0127020Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-07T16:24:37.0920959Z Verified native Windows installer failure, restore, lock and offline rollback fixture
+Verify (Windows)	Run unit tests	2026-10-07T16:25:06.8637059Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"8e20157a0ef45a17a34a14e6bc302c0fc49818f3","expectedOldCommit":"8e20157a0ef45a17a34a14e6bc302c0fc49818f3","queueCanaryRetained":true,"credentialCanaryRetained":true}
+Verify (Windows)	Run unit tests	2026-10-07T16:25:14.0341673Z [2m Test Files [22m [1m[32m119 passed[39m[22m[2m | [22m[33m8 skipped[39m[90m (127)[39m
+Verify (Windows)	Run unit tests	2026-10-07T16:25:14.0381618Z [2m      Tests [22m [1m[32m1533 passed[39m[22m[2m | [22m[33m33 skipped[39m[90m (1566)[39m
+Verify (Windows)	Verify Windows agent owner force termination	2026-10-07T16:25:16.0239129Z Verified native Windows direct-owner force termination and stale-lock recovery
+Verify (Windows)	Validate install.ps1 syntax	2026-10-07T16:25:17.0739174Z [36;1mWrite-Host "install.ps1 parsed cleanly"[0m
+Verify (Windows)	Validate install.ps1 syntax	2026-10-07T16:25:17.3136422Z install.ps1 parsed cleanly
