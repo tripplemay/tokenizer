@@ -1,0 +1,42 @@
+{
+  "schema": "tokenizer-b03-r07-generator-handoff-v1",
+  "baseCommit": "c721a774c635c2ce06632d0306643fda700c53e3",
+  "productCommit": "d39c79677be619b32476ddeafa603c6f5d761c4a",
+  "outcome": "READY_FOR_INDEPENDENT_EVALUATION",
+  "fullB03Complete": false,
+  "runtime": {
+    "node": "v22.22.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "verification": {
+    "verify": "PASS",
+    "lint": "PASS",
+    "unit": {
+      "result": "PASS",
+      "filesPassed": 124,
+      "filesSkipped": 9,
+      "testsPassed": 1613,
+      "testsSkipped": 23
+    },
+    "build": "PASS",
+    "windowsNative": "NOT_RUN"
+  },
+  "safety": {
+    "historicalDataChanged": false,
+    "normalCursorReset": false,
+    "immediateReplayUpload": false,
+    "progressOrGateChanged": false,
+    "pushed": false,
+    "published": false,
+    "deployed": false
+  },
+  "remaining": [
+    "independent evaluator verdict",
+    "native Windows reparse and concurrency validation",
+    "non-Claude replay adapters",
+    "raw diagnostic opt-in with expiry",
+    "versioned path identity migration",
+    "production cleanup and live canary/fleet release evidence"
+  ]
+}
