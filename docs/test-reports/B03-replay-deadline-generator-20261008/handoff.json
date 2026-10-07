@@ -1,0 +1,25 @@
+{
+  "artifactType": "generator_handoff",
+  "date": "2026-10-08",
+  "baseSha": "d20da68391b4cde73e4b29a5385c7dc3fbbeddef",
+  "productCandidateSha": "ade94c914fadb6efb5aea7e3b74c1bea4efa5fd3",
+  "prereviewEvidenceCommit": "3220837",
+  "outcome": "implemented_requires_independent_evaluation",
+  "safeBranchCiReadiness": "ready_with_native_windows_required",
+  "tests": {
+    "newDeadlineSuite": "4 passed",
+    "frozenPrereviewNegatives": "2 passed",
+    "fullNode22": "1639 passed, 26 skipped, 0 failed",
+    "verify": "passed",
+    "lint": "passed",
+    "build": "passed"
+  },
+  "remainingHardGates": [
+    "fresh exact-SHA safe-branch CI",
+    "native Windows job proves repaired source refusal tests",
+    "Deploy remains skipped on safe branch",
+    "fresh independent evaluator acceptance",
+    "broader B03 release prerequisites"
+  ],
+  "knownBoundary": "Synchronous filesystem syscalls are deadline-checked between stages but are not individually preemptible."
+}
