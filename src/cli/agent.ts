@@ -1,8 +1,8 @@
 import { mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
-import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
-import { clearQueue, readQueue, syncEvents, heartbeat } from "./sync";
+import { collectEvents, dedupeBySourceEventId, mergeQueueEvents } from "./collect";
+import { readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, readDevice, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
@@ -68,7 +68,7 @@ export async function runOnce() {
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
-  writeQueue(events);
+  const durableEvents = mergeQueueEvents(events);
   // The queue is the durable write-ahead buffer. Once it contains every event
   // covered by this cursor, advancing the cursor is safe even if upload fails:
   // successful batches are removed incrementally and the unsent tail remains.
@@ -81,17 +81,14 @@ export async function runOnce() {
     return { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
   }
   try {
-    const result = await syncEvents(config, events, {
-      onBatchSynced: ({ remaining }) => writeQueue(remaining)
-    });
-    clearQueue();
+    const result = await syncEvents(config, durableEvents);
     updateState({
       lastRunAt: startedAt,
       lastSyncAt: new Date().toISOString(),
       lastSyncStatus: "success",
       lastError: null,
       lastCollectedEvents: collected.events.length,
-      lastSentEvents: events.length,
+      lastSentEvents: durableEvents.length,
       lastRejectedEvents: result.rejected ?? 0,
       lastInserted: result.inserted,
       lastDuplicates: result.duplicates

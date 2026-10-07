@@ -52,6 +52,10 @@ export function quarantineUsageEvents(
         });
       }
     }
-    writeFileAtomic(path, [...byIdentity.values()].map((row) => JSON.stringify(row)).join("\n") + "\n");
+    writeFileAtomic(
+      path,
+      [...byIdentity.values()].map((row) => JSON.stringify(row)).join("\n") + "\n",
+      { mode: 0o600, directoryMode: 0o700, restrictToOwner: true }
+    );
   });
 }

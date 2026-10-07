@@ -53,7 +53,7 @@ vi.mock("@/cli/config", () => ({
 vi.mock("@/cli/collect", () => ({
   collectEvents: mocks.collectEvents,
   dedupeBySourceEventId: mocks.dedupeBySourceEventId,
-  writeQueue: mocks.writeQueue
+  mergeQueueEvents: mocks.writeQueue
 }));
 vi.mock("@/cli/cursor", () => ({
   readCursor: mocks.readCursor,
@@ -120,6 +120,7 @@ beforeEach(() => {
     for (const row of events) byId.set(`${row.source}:${row.sourceEventId}`, row);
     return [...byId.values()];
   });
+  mocks.writeQueue.mockImplementation((events: UsageEventInput[]) => events);
   mocks.runQuotaRefresh.mockResolvedValue(undefined);
   mocks.runHarnessSync.mockResolvedValue({
     snapshot: { status: "clean" },
@@ -211,7 +212,7 @@ describe("F002 adversarial upload contract", () => {
 });
 
 describe("F003 durable failure states", () => {
-  it("orders queue before cursor and retains the acknowledged batch tail when a later batch fails", async () => {
+  it("orders queue before cursor and never performs a stale whole-file checkpoint", async () => {
     vi.useFakeTimers();
     const rows = Array.from({ length: 31 }, (_, index) =>
       event(`durable-${index}`, new Date(Date.UTC(2026, 7, 23, 0, 0, index)).toISOString())
@@ -224,6 +225,7 @@ describe("F003 durable failure states", () => {
     mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
       durable = structuredClone(next);
       operations.push(`queue:${next.length}`);
+      return next;
     });
     mocks.writeCursor.mockImplementation(() => operations.push("cursor"));
     mocks.agentFetch.mockImplementation(async (...args: unknown[]) => {
@@ -238,20 +240,14 @@ describe("F003 durable failure states", () => {
     const outcome = await pending;
 
     expect(outcome).toBeInstanceOf(TypeError);
-    expect(operations.slice(0, 4)).toEqual(["queue:31", "cursor", "post:25", "queue:6"]);
+    expect(operations.slice(0, 3)).toEqual(["queue:31", "cursor", "post:25"]);
     expect(operations.filter((entry) => entry === "post:6")).toHaveLength(3);
-    expect(durable.map((row) => row.sourceEventId)).toEqual([
-      "durable-5",
-      "durable-4",
-      "durable-3",
-      "durable-2",
-      "durable-1",
-      "durable-0"
-    ]);
+    expect(operations.filter((entry) => entry.startsWith("queue:"))).toEqual(["queue:31"]);
+    expect(durable).toHaveLength(31);
     expect(mocks.clearQueue).not.toHaveBeenCalled();
   });
 
-  it("preserves a replay source or full queue across initial queue, cursor, and checkpoint write failures", async () => {
+  it("preserves a replay source or full queue across initial queue, cursor, and request failures", async () => {
     const old = event("old", "2026-08-23T00:00:00.000Z");
     const fresh = event("fresh", "2026-08-23T01:00:00.000Z");
     const cursor = { files: {}, opencodeLastTimeCreated: 0, claudeParserVersion: 2 };
@@ -277,6 +273,7 @@ describe("F003 durable failure states", () => {
     mocks.dedupeBySourceEventId.mockImplementation((rows: UsageEventInput[]) => rows);
     mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
       durable = structuredClone(next);
+      return next;
     });
     mocks.writeCursor.mockImplementationOnce(() => {
       throw new Error("cursor write failed");
@@ -295,16 +292,18 @@ describe("F003 durable failure states", () => {
     mocks.collectEvents.mockReturnValue({ events: many, warnings: [] });
     mocks.readCursor.mockReturnValue(cursor);
     mocks.dedupeBySourceEventId.mockImplementation((rows: UsageEventInput[]) => rows);
-    let writes = 0;
     mocks.writeQueue.mockImplementation((next: UsageEventInput[]) => {
-      writes += 1;
-      if (writes === 2) throw new Error("checkpoint write failed");
       durable = structuredClone(next);
+      return next;
     });
-    mocks.agentFetch.mockImplementation(async (...args: unknown[]) => okResponse(bodyEvents(args).length));
-    await expect(runOnce()).rejects.toThrow("checkpoint write failed");
+    mocks.agentFetch.mockRejectedValue(new TypeError("request failed"));
+    vi.useFakeTimers();
+    const pending = runOnce().catch((error: Error) => error);
+    await vi.runAllTimersAsync();
+    expect(await pending).toMatchObject({ message: "request failed" });
     expect(durable).toHaveLength(26);
-    expect(mocks.agentFetch).toHaveBeenCalledOnce();
+    expect(mocks.writeQueue).toHaveBeenCalledOnce();
+    expect(mocks.agentFetch).toHaveBeenCalledTimes(3);
     expect(mocks.clearQueue).not.toHaveBeenCalled();
   });
 });
@@ -422,7 +421,7 @@ describe("F003 real CLI/daemon parity", () => {
       expect(observation.batches[0]).toEqual(Array.from({ length: 25 }, (_, index) => `cli-${29 - index}`));
       expect(observation.batches[1]).toEqual(["cli-4", "cli-3", "cli-2", "cli-1", "cli-0"]);
       expect(observation.queueAtRequest[0]).toHaveLength(30);
-      expect(observation.queueAtRequest[1]).toEqual(observation.batches[1]);
+      expect([...observation.queueAtRequest[1]].sort()).toEqual([...observation.batches[1]].sort());
     }
     expect(observations.find(({ command }) => command === "sync")?.cursorAtRequest).toEqual([false, false]);
     expect(observations.find(({ command }) => command === "run")?.cursorAtRequest).toEqual([true, true]);

@@ -1,5 +1,4 @@
 import { homedir } from "node:os";
-import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
 import { parseClaudeUsage } from "@/parsers/claude";
 import { parseCodexUsage } from "@/parsers/codex";
 import { parseOpenCodeUsage } from "@/parsers/opencode";
@@ -7,11 +6,11 @@ import { parseAiderUsage } from "@/parsers/aider";
 import { parseKimiCodeUsage } from "@/parsers/kimicode";
 import { UsageEventInput } from "@/shared/usage";
 import { minimizeUsageEvent } from "@/shared/usage-privacy";
-import { sanitizeUsageEventGit } from "@/shared/git-remote";
-import { queuePath, TokenizerConfig } from "./config";
+import { TokenizerConfig } from "./config";
 import { ParserCursor } from "./cursor";
 import { enrichEventsWithGit } from "./git";
 import { effectivePrivacy, filterUsageEvents } from "./privacy";
+export { mergeQueueEvents, queueEventVersion, readQueue, resolveQueueEvents, writeQueue } from "./queue";
 
 // `cursor` is optional. When supplied, parsers will skip files whose fingerprint
 // is unchanged and (for OpenCode) restrict the SQL query to rows newer than
@@ -51,14 +50,6 @@ export function collectEvents(config: TokenizerConfig, cursor?: ParserCursor) {
   }
 
   return { events: enrichEventsWithGit(filterUsageEvents(events, privacy)).map(minimizeUsageEvent), warnings };
-}
-
-// Truncating write: callers are expected to pass the full deduped set they want
-// persisted. The previous append-based implementation grew the queue unboundedly
-// when sync repeatedly failed because each retry appended the same events again.
-export function writeQueue(events: UsageEventInput[]) {
-  const content = events.length ? events.map((event) => JSON.stringify(minimizeUsageEvent(sanitizeUsageEventGit(event)))).join("\n") + "\n" : "";
-  withFileLock(queuePath, () => writeFileAtomic(queuePath, content));
 }
 
 export function dedupeBySourceEventId(events: UsageEventInput[]): UsageEventInput[] {

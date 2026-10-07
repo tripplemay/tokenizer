@@ -2,8 +2,8 @@ import { Command } from "commander";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { configPath, configure, credentialsPath, defaultConfig, devicePath, ensureConfig, queuePath, readConfig, readDevice, rejectedUsagePath, statePath, updateState } from "./config";
-import { collectEvents, dedupeBySourceEventId, writeQueue } from "./collect";
-import { clearQueue, readQueue, syncEvents } from "./sync";
+import { collectEvents, mergeQueueEvents } from "./collect";
+import { readQueue, syncEvents } from "./sync";
 import { diagnoseOpenCode } from "@/parsers/opencode";
 import { diagnoseKimiCode } from "@/parsers/kimicode";
 import { enrollDevice } from "./enroll";
@@ -83,9 +83,7 @@ program.command("collect").description("Collect local usage events into queue").
   }
   const cursor = readCursor();
   const { events, warnings } = collectEvents(config, cursor);
-  const queued = readQueue();
-  const merged = dedupeBySourceEventId([...queued, ...events]);
-  writeQueue(merged);
+  const merged = mergeQueueEvents(events);
   writeCursor(cursor);
   updateState({ lastCollectionScopeFingerprint: collectionScopeFingerprint(privacy) });
   console.log(`Collected ${events.length} events; queue holds ${merged.length} unique events at ${queuePath}`);
@@ -99,11 +97,7 @@ program.command("sync").description("Sync queued events to server").action(async
   if (privacy.mode !== "sync") throw new Error(`Usage sync disabled by privacy mode: ${privacy.mode}`);
   const events = readQueue();
   console.log(describePrivacyBacklog(privacy.mode, events.length));
-  writeQueue(events);
-  const result = await syncEvents(config, events, {
-    onBatchSynced: ({ remaining }) => writeQueue(remaining)
-  });
-  clearQueue();
+  const result = await syncEvents(config, events);
   console.log(`Synced ${result.received} events: inserted=${result.inserted}, duplicates=${result.duplicates}, rejected=${result.rejected ?? 0}`);
 });
 

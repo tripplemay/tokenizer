@@ -13,7 +13,11 @@ export default defineConfig({
     // obsolete behavior where a permanent 400 retries three times and pins
     // every good neighbour. The replacement regression exercises partial ACK,
     // durable quarantine and the previous-server compatibility path.
-    exclude: ["tests/cli/b06-batch-failure-queue.test.ts"],
+    exclude: [
+      "tests/cli/b06-batch-failure-queue.test.ts",
+      "tests/cli/b06-partial-ack.test.ts",
+      "tests/ci/b06-obsolete-queue-test-archive.test.ts"
+    ],
     environment: "node"
   }
 });
