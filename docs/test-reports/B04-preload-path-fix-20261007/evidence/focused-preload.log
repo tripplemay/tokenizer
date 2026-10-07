@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b04-preload-path-fix-20261007
+
+ ✓ tests/cli/agent-release-installer-windows-fixture.test.ts (3 tests) 78ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  23:17:15
+   Duration  395ms (transform 20ms, setup 0ms, collect 16ms, tests 78ms, environment 0ms, prepare 29ms)
+

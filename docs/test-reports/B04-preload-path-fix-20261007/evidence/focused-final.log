@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b04-preload-path-fix-20261007
+
+ ↓ tests/cli/agent-release-installer-windows.test.ts (1 test | 1 skipped)
+ ✓ tests/shared/agent-release-i18n.test.ts (2 tests) 4ms
+ ✓ tests/server/agent-releases-route.test.ts (1 test) 5ms
+ ✓ tests/shared/agent-release-version.test.ts (6 tests) 5ms
+ ✓ tests/cli/agent-release-installer-windows-fixture.test.ts (3 tests) 117ms
+ ✓ tests/ci/windows-installer-gate.test.ts (8 tests) 261ms
+ ✓ tests/cli/install-agent-lifecycle.test.ts (2 tests) 1198ms
+   ✓ POSIX installer Agent lifecycle > stops this install's wrapper and child without touching another install 1197ms
+ ✓ tests/cli/agent-release-installer.test.ts (4 tests) 1916ms
+   ✓ pinned POSIX Agent installer > keeps the old release and data on manifest, fetch, or npm failure; upgrades and rolls back 1914ms
+
+ Test Files  7 passed | 1 skipped (8)
+      Tests  26 passed | 1 skipped (27)
+   Start at  23:17:47
+   Duration  2.16s (transform 169ms, setup 0ms, collect 334ms, tests 3.51s, environment 1ms, prepare 464ms)
+

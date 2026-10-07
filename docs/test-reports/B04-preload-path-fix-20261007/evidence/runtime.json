@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-07T16:19:10.087Z",
+  "role": "Generator self-test; not independent acceptance",
+  "node": "v22.22.0",
+  "nodeExecutable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "arch": "arm64",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b04-preload-path-fix-20261007",
+  "base": "62dba5a77333816d614dcf5f61476f2bf2cc4dd4",
+  "independentSource": "8acf5ba28739cb647abccb2344c37361f54bedc9",
+  "independentTransport": "3c05399",
+  "tempDir": "/Volumes/ORICO/project/.b04preloadtmp",
+  "baselineNativeRun": "https://github.com/tripplemay/tokenizer/actions/runs/37647920920",
+  "baselineNativeResult": "FAIL before production cutover; fixture-only NODE_OPTIONS path escaping",
+  "candidateNativeWindows": "NOT_RUN; exact-SHA full Windows job and independent evaluator still required",
+  "productionChanges": false
+}
