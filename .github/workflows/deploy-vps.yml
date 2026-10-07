@@ -196,6 +196,47 @@ jobs:
       # No Next.js build here: the server only ever runs on Linux. This job
       # exists to guard the CLI collector, which is what users install natively.
 
+  verify-macos-agent:
+    name: Verify (macOS launchd)
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run verify
+
+      - name: Require a usable native launchd GUI domain
+        run: |
+          set -euo pipefail
+          launchctl print "gui/$(id -u)" >/dev/null
+
+      - name: Verify native macOS launchd pinned installer
+        run: |
+          set -euo pipefail
+          mkdir -p .ci
+          npx vitest run tests/cli/agent-release-installer-macos.test.ts --reporter=default --reporter=json --outputFile=.ci/macos-launchd-installer.json
+          node scripts/ci/assert-macos-launchd-installer.mjs .ci/macos-launchd-installer.json
+
+      - name: Upload native macOS launchd installer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-launchd-pinned-installer
+          path: .ci/macos-launchd-installer.json
+          if-no-files-found: error
+          retention-days: 7
+
   verify-db:
     name: Verify (PostgreSQL 16)
     runs-on: ubuntu-latest
@@ -312,7 +353,7 @@ jobs:
   release-artifact:
     name: Linux OCI and recovery rehearsal
     runs-on: ubuntu-latest
-    needs: [verify, verify-windows, verify-db, verify-browser]
+    needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser]
     permissions:
       contents: read
       packages: write
@@ -498,7 +539,7 @@ jobs:
       contents: read
       packages: read
       attestations: read
-    needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]
+    needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser, release-artifact]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.bootstrap_rehearsal != true
     environment: production
     env:

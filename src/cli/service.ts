@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, rmSync, appendFileSync, readFileSync } from "node:fs";
-import { homedir, platform, release } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { homedir, platform, release, tmpdir } from "node:os";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { installWindowsService, uninstallWindowsService, windowsServiceStatus } from "@/cli/service-windows";
 import { buildCronInstall, buildCronUninstall } from "@/cli/service-cron";
@@ -15,6 +15,32 @@ function installRoot(): string {
 
 const binPath = join(homedir(), ".local", "bin", "tokenizer");
 const logPath = join(homedir(), ".tokenizer", "logs", "agent.log");
+
+type LaunchdIdentity = { label: string; plist: string };
+
+export function resolveLaunchdIdentity(
+  home = homedir(),
+  env: Readonly<Record<string, string | undefined>> = process.env
+): LaunchdIdentity {
+  const defaultLabel = "cc.tokenizer.agent";
+  const requested = env.TOKENIZER_LAUNCHD_TEST_LABEL;
+  if (!requested) {
+    return { label: defaultLabel, plist: join(home, "Library", "LaunchAgents", `${defaultLabel}.plist`) };
+  }
+
+  if (env.TOKENIZER_LAUNCHD_TEST_MODE !== "1") {
+    throw new Error("TOKENIZER_LAUNCHD_TEST_LABEL requires TOKENIZER_LAUNCHD_TEST_MODE=1");
+  }
+  if (!/^cc\.tokenizer\.agent\.ci\.[A-Za-z0-9.-]{1,96}$/.test(requested)) {
+    throw new Error("Invalid isolated launchd test label");
+  }
+  const resolvedHome = resolve(home);
+  const resolvedTmp = resolve(tmpdir());
+  if (resolvedHome !== resolvedTmp && !resolvedHome.startsWith(`${resolvedTmp}${sep}`)) {
+    throw new Error("Isolated launchd test HOME must be inside the OS temporary directory");
+  }
+  return { label: requested, plist: join(home, "Library", "LaunchAgents", `${requested}.plist`) };
+}
 
 function isWsl() {
   return release().toLowerCase().includes("microsoft") || existsSync("/proc/sys/fs/binfmt_misc/WSLInterop");
@@ -90,7 +116,7 @@ function collectProxyEnv(): Array<[string, string]> {
 }
 
 function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number }) {
-  const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
+  const { label, plist } = resolveLaunchdIdentity();
   mkdirSync(dirname(plist), { recursive: true });
   const path = resolveLaunchdPath();
   const proxyEntries = collectProxyEnv();
@@ -104,7 +130,7 @@ function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number
     `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-  <key>Label</key><string>cc.tokenizer.agent</string>
+  <key>Label</key><string>${escapeXml(label)}</string>
   <key>ProgramArguments</key><array><string>${binPath}</string><string>agent</string><string>--heartbeat-seconds</string><string>${options.heartbeatSeconds}</string><string>--sync-minutes</string><string>${options.syncMinutes}</string></array>
   <key>EnvironmentVariables</key><dict>
     ${envLines}
@@ -117,7 +143,7 @@ function installLaunchd(options: { heartbeatSeconds: number; syncMinutes: number
 </dict></plist>
 `
   );
-  execFileSync("launchctl", ["unload", plist], { stdio: "ignore" });
+  try { execFileSync("launchctl", ["unload", plist], { stdio: "ignore" }); } catch {}
   execFileSync("launchctl", ["load", plist], { stdio: "inherit" });
   const proxyLine = proxyEntries.length ? `\nproxy env: ${proxyEntries.map(([k]) => k).join(", ")}` : "";
   return `Installed launchd agent: ${plist}\nPATH: ${path}${proxyLine}`;
@@ -172,7 +198,7 @@ export function uninstallService() {
   if (platform() === "win32") {
     return uninstallWindowsService() ?? "No tokenizer service found";
   }
-  const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
+  const { plist } = resolveLaunchdIdentity();
   if (existsSync(plist)) {
     try { execFileSync("launchctl", ["unload", plist], { stdio: "ignore" }); } catch {}
     rmSync(plist);
@@ -196,7 +222,7 @@ export function serviceStatus() {
   if (platform() === "win32") {
     return windowsServiceStatus() ?? "No tokenizer service detected";
   }
-  const plist = join(homedir(), "Library", "LaunchAgents", "cc.tokenizer.agent.plist");
+  const { plist } = resolveLaunchdIdentity();
   if (existsSync(plist)) lines.push(`launchd: ${plist}`);
   if (hasSystemdUser()) {
     try { lines.push(execFileSync("systemctl", ["--user", "is-active", "tokenizer-agent.service"], { encoding: "utf8" }).trim()); } catch { lines.push("systemd: inactive"); }
