@@ -1,0 +1,66 @@
+node=v22.22.0 npm=10.9.4
+
+### ci
+$ npm ci
+exit=0
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 670 packages, and audited 671 packages in 6s
+
+186 packages are looking for funding
+  run `npm fund` for details
+
+7 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+### verify
+$ npm run verify
+exit=0
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 104ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+
+### lint
+$ npm run lint
+exit=0
+
+> tokenizer@0.1.0 lint
+> eslint app src --max-warnings=0
+
+
+### test
+$ npm test
+exit=1
+
+ FAIL  tests/cli/harness.test.ts > structured Harness sync health > caps structured issues at 20 while retaining the full failed-project count
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/cli/harness.test.ts:577:3
+    575|   });
+    576|
+    577|   it("caps structured issues at 20 while retaining the full failed-pro…
+       |   ^
+    578|     for (let index = 0; index < 22; index += 1) makeSecondRepo(`other-…
+    579|     fetchMock.mockImplementation(async (url: unknown) => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 120 passed | 9 skipped (130)
+      Tests  1 failed | 1601 passed | 23 skipped (1625)
+   Start at  23:55:18
+   Duration  23.83s (transform 8.77s, setup 0ms, import 24.62s, tests 70.42s, environment 14ms)

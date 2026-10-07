@@ -1,0 +1,194 @@
+{
+  "version": "0.1.0",
+  "name": "tokenizer",
+  "dependencies": {
+    "autoprefixer": {
+      "version": "10.5.0",
+      "resolved": "https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.5.0.tgz",
+      "overridden": false,
+      "dependencies": {
+        "browserslist": {
+          "version": "4.29.3",
+          "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-4.29.3.tgz",
+          "overridden": false,
+          "dependencies": {
+            "update-browserslist-db": {
+              "version": "1.3.3",
+              "resolved": "https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.3.3.tgz",
+              "overridden": false,
+              "dependencies": {
+                "browserslist": {
+                  "version": "4.29.3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "eslint-config-next": {
+      "version": "16.4.0",
+      "resolved": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-16.4.0.tgz",
+      "overridden": false,
+      "dependencies": {
+        "eslint-plugin-react-hooks": {
+          "version": "7.1.1",
+          "resolved": "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-7.1.1.tgz",
+          "overridden": false,
+          "dependencies": {
+            "@babel/core": {
+              "version": "7.29.7",
+              "resolved": "https://registry.npmjs.org/@babel/core/-/core-7.29.7.tgz",
+              "overridden": false,
+              "dependencies": {
+                "@babel/helper-compilation-targets": {
+                  "version": "7.29.7",
+                  "resolved": "https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-7.29.7.tgz",
+                  "overridden": false,
+                  "dependencies": {
+                    "browserslist": {
+                      "version": "4.29.3"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "typescript-eslint": {
+          "version": "8.71.1",
+          "resolved": "https://registry.npmjs.org/typescript-eslint/-/typescript-eslint-8.71.1.tgz",
+          "overridden": false,
+          "dependencies": {
+            "@typescript-eslint/typescript-estree": {
+              "version": "8.71.1",
+              "resolved": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.71.1.tgz",
+              "overridden": false,
+              "dependencies": {
+                "minimatch": {
+                  "version": "10.2.6",
+                  "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-10.2.6.tgz",
+                  "overridden": false,
+                  "dependencies": {
+                    "brace-expansion": {
+                      "version": "5.0.12",
+                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.12.tgz",
+                      "overridden": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "eslint": {
+      "version": "9.39.5",
+      "resolved": "https://registry.npmjs.org/eslint/-/eslint-9.39.5.tgz",
+      "overridden": false,
+      "dependencies": {
+        "minimatch": {
+          "version": "3.1.5",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.1.5.tgz",
+          "overridden": false,
+          "dependencies": {
+            "brace-expansion": {
+              "version": "1.1.21",
+              "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.21.tgz",
+              "overridden": false
+            }
+          }
+        }
+      }
+    },
+    "tailwindcss": {
+      "version": "3.4.19",
+      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.4.19.tgz",
+      "overridden": false,
+      "dependencies": {
+        "chokidar": {
+          "version": "3.6.0",
+          "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-3.6.0.tgz",
+          "overridden": false,
+          "dependencies": {
+            "braces": {
+              "version": "3.0.3",
+              "resolved": "https://registry.npmjs.org/braces/-/braces-3.0.3.tgz",
+              "overridden": false
+            }
+          }
+        },
+        "micromatch": {
+          "version": "4.0.8",
+          "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz",
+          "overridden": false,
+          "dependencies": {
+            "braces": {
+              "version": "3.0.3"
+            }
+          }
+        },
+        "postcss-nested": {
+          "version": "6.2.0",
+          "resolved": "https://registry.npmjs.org/postcss-nested/-/postcss-nested-6.2.0.tgz",
+          "overridden": false,
+          "dependencies": {
+            "postcss-selector-parser": {
+              "version": "7.1.6"
+            }
+          }
+        },
+        "postcss-selector-parser": {
+          "version": "7.1.6",
+          "resolved": "https://registry.npmjs.org/postcss-selector-parser/-/postcss-selector-parser-7.1.6.tgz",
+          "overridden": true
+        }
+      }
+    },
+    "tsx": {
+      "version": "4.22.0",
+      "resolved": "https://registry.npmjs.org/tsx/-/tsx-4.22.0.tgz",
+      "overridden": false,
+      "dependencies": {
+        "esbuild": {
+          "version": "0.28.2",
+          "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
+          "overridden": false
+        }
+      }
+    },
+    "vite": {
+      "version": "6.4.4",
+      "resolved": "https://registry.npmjs.org/vite/-/vite-6.4.4.tgz",
+      "overridden": false,
+      "dependencies": {
+        "esbuild": {
+          "version": "0.25.12",
+          "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz",
+          "overridden": false
+        }
+      }
+    },
+    "vitest": {
+      "version": "4.1.11",
+      "resolved": "https://registry.npmjs.org/vitest/-/vitest-4.1.11.tgz",
+      "overridden": false,
+      "dependencies": {
+        "@vitest/mocker": {
+          "version": "4.1.11",
+          "resolved": "https://registry.npmjs.org/@vitest/mocker/-/mocker-4.1.11.tgz",
+          "overridden": false,
+          "dependencies": {
+            "vite": {
+              "version": "6.4.4"
+            }
+          }
+        },
+        "vite": {
+          "version": "6.4.4"
+        }
+      }
+    }
+  }
+}
