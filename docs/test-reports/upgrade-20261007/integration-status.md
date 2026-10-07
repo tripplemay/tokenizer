@@ -60,3 +60,9 @@ B02 最小依赖升级候选 `17b47a8` 的非 main run `37656814992` 已终态 f
 - B08 CAS/身份模型规格在独立规划树 `0de8bb1` 完成，建议首切片为 nullable revision、R07 conditional adoption guard、显式 revision 原子 CAS 与真实 PG16 并发探针；这是设计产物，不是已实现功能。B03 用户决策保持：规则更改不隐式回扫历史，旧排除数据只通过独立有界 replay；`local-only` 切回 `sync` 后排队事件在下次同步自动上传。
 
 本树仍未推送 `main`、未触发生产部署、未做 F005 登录态浏览器签收或人类发布闸门。当前 B02/B05 的 safe-branch 合成恢复证据不得替代生产镜像 provenance、真实备份恢复与业务验收。
+
+## 2026-10-08 后续独立复核与阻断
+
+- B05 异家族 Kimi 报告已回流于 `fe6fae0`：`docs/test-reports/B05-kimi-evaluator-20261008/verdict.json` 对 exact `8877a59` 的 safe-branch CI、下载 artifact 与六类篡改负控给出 `PASS_SAFE_BRANCH_CI_ONLY`，`release_ready=false`。合成恢复、旧镜像/候选镜像 canary 和非 root UID 有实跑证据；前驱与候选之间**没有新增 migration**，本次 `migrate deploy` 是 no-op，不能声称验证了 schema-delta 升级/回退。main-only 签名 provenance、真实生产备份恢复、RPO/RTO 与生产部署仍未运行。
+- B03 replay 修复第一版 `c69ef68` 虽关闭原父级 symlink、FIFO 和 `projectRoots` digest 三项技术预审问题，新的独立同家族负控 `ac6994a` 又确认两项隐私 BLOCK：含 `..` 的 cwd 绕过 include/exclude，及 symlink cwd 经 Git enrichment 后把 excluded 物理路径写入 durable queue；**普通 collect 与 replay 均受影响**。Generator 正在以物理路径准入、enrichment 后复核及最终 payload/物理 scope 确认摘要修正；原失败探针与旧报告保持独立不可改。当前 B03 replay 不回流。
+- B06 client partial-ACK 候选 `694ff3c` 的真实 PG16/HTTP 正控已在隔离树执行，但同家族技术预审 `41c6821` 确认组合发布 BLOCK：在途 partial ACK 与另一进程 collect 交错时，旧快照整表 checkpoint 永久覆盖未上传新事件；新 quarantine 文件常见 umask 下为 `0644`、父目录为 `0755`；旧 B06 server 的 rowless `invalid_json` 400 可持续 pin 好行。B07 原子队列/权限/兼容修复在独立 Generator 树开发；不得将 39 项 focused 或单进程 PG 通过说成多进程安全。B06 server 基础及 PG 门 `029f6c5` 的异家族独立评估另在进行。
