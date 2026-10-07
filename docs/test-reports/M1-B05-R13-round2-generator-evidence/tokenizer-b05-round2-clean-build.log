@@ -17,9 +17,9 @@ Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you en
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/6) ...
-   Generating static pages (1/6) 
-   Generating static pages (2/6) 
-   Generating static pages (4/6) 
+   Generating static pages (1/6)
+   Generating static pages (2/6)
+   Generating static pages (4/6)
  ✓ Generating static pages (6/6)
    Finalizing page optimization ...
    Collecting build traces ...
@@ -77,4 +77,3 @@ Route (app)                                 Size  First Load JS
 
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand
-

@@ -9,4 +9,3 @@ Prisma schema loaded from prisma/schema.prisma
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
 Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
-
