@@ -18,9 +18,9 @@ export default defineConfig({
       ...configDefaults.exclude,
       "tests/evaluator/b05-tcp-readiness-independent.test.ts",
       "tests/evaluator/b03-scope-admission-independent.test.ts",
-      // Immutable B06 server-slice evidence locks the deliberately obsolete
-      // retry-and-pin behavior; the partial ACK suite is its replacement.
-      "tests/cli/b06-batch-failure-queue.test.ts"
+      "tests/cli/b06-batch-failure-queue.test.ts",
+      "tests/cli/b06-partial-ack.test.ts",
+      "tests/ci/b06-obsolete-queue-test-archive.test.ts"
     ],
     environment: "node"
   }

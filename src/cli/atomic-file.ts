@@ -14,6 +14,7 @@
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync } from "node:fs";
 import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
+import { restrictToCurrentUser } from "@/cli/file-permissions";
 
 // Windows hands out transient EPERM/EBUSY when an antivirus scanner or the
 // search indexer has the file open for a few milliseconds. Retrying briefly
@@ -46,17 +47,29 @@ function isTransient(error: unknown): boolean {
  * rename is only atomic within a filesystem, and on Windows a cross-volume
  * rename fails outright.
  */
-export function writeFileAtomic(path: string, content: string): void {
+export type AtomicWriteOptions = {
+  mode?: number;
+  directoryMode?: number;
+  restrictToOwner?: boolean;
+};
+
+export function writeFileAtomic(path: string, content: string, options: AtomicWriteOptions = {}): void {
   const dir = dirname(path);
-  mkdirSync(dir, { recursive: true });
+  mkdirSync(dir, { recursive: true, mode: options.directoryMode });
 
   const temp = `${path}.${process.pid}.${tempCounter++}.tmp`;
   try {
-    const handle = openSync(temp, "w");
+    const handle = openSync(temp, "wx", options.mode);
     try {
       writeSync(handle, content);
     } finally {
       closeSync(handle);
+    }
+    if (options.restrictToOwner) {
+      const restricted = restrictToCurrentUser(temp);
+      if (!restricted.ok) {
+        throw new Error(`Could not restrict atomic file (${restricted.method}): ${restricted.error}`);
+      }
     }
   } catch (error) {
     // Without this, a failed write (ENOSPC, EIO) leaks its temp file forever:
@@ -145,7 +158,9 @@ export function withFileLock<T>(
   const timeoutMs = options?.timeoutMs ?? DEFAULT_LOCK_TIMEOUT_MS;
   const staleMs = options?.staleMs ?? DEFAULT_LOCK_STALE_MS;
   const lock = lockPathFor(path);
-  mkdirSync(dirname(path), { recursive: true });
+  // New state directories must not inherit the process's usual 0755 default.
+  // Existing directories are intentionally not chmodded as a side effect.
+  mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 
   // Identifies this specific acquisition, so release can tell our own lock
   // from a successor's. The pid alone is not enough — it is reused.

@@ -18,8 +18,12 @@ describe("B06 native PostgreSQL 16 workflow gate", () => {
     expect(verifyDb).toContain(
       "EVAL_B06_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch"
     );
+    expect(verifyDb).toContain(
+      "EVAL_B07_DB_URL: postgresql://tokenizer_ci:tokenizer_ci@localhost:5432/tokenizer_ci_scratch"
+    );
     expect(verifyDb.match(/tests\/server\/b06-batch-db\.probe\.test\.ts/g)).toHaveLength(1);
     expect(verifyDb.match(/tests\/server\/b06-partial-ack-db\.probe\.test\.ts/g)).toHaveLength(1);
+    expect(verifyDb.match(/tests\/server\/b07-queue-id-ack-db\.probe\.test\.ts/g)).toHaveLength(1);
   });
 
   it("retains the historical probes and includes all four B06 PG cases in the no-skip floor", () => {
@@ -33,7 +37,7 @@ describe("B06 native PostgreSQL 16 workflow gate", () => {
       expect(verifyDb).toContain(path);
     }
     expect(verifyDb).toContain(
-      "node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 14"
+      "node scripts/ci/assert-vitest-results.mjs .ci/db-probes.json 15"
     );
   });
 });

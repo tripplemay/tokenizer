@@ -1,8 +1,8 @@
 import { mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
-import { acknowledgeQueuedEvents, collectEvents, mergeQueue } from "./collect";
-import { syncEvents, heartbeat } from "./sync";
+import { collectEvents, dedupeBySourceEventId, mergeQueueEvents } from "./collect";
+import { readQueue, syncEvents, heartbeat } from "./sync";
 import { readConfig, readDevice, readState, updateState } from "./config";
 import { readCursor, writeCursor } from "./cursor";
 import { runQuotaRefresh } from "@/quota/run";
@@ -61,9 +61,11 @@ export async function runOnce() {
   // mark.
   const cursor = readCursor();
   const collected = collectEvents(config, cursor);
+  const queued = readQueue();
   // Queued events were admitted under their collection-time scope. Rule changes
   // only affect collectEvents, never erase a previously admitted backlog.
-  const events = mergeQueue(collected.events).events;
+  const events = dedupeBySourceEventId([...queued, ...collected.events]);
+  const durableEvents = mergeQueueEvents(events);
   // Persist the deduped set up front so a sync failure (or process kill mid-sync)
   // doesn't lose the freshly collected events and so the queue cannot grow
   // unboundedly across repeated failures.
@@ -79,16 +81,14 @@ export async function runOnce() {
     return { inserted: 0, updated: 0, duplicates: 0, received: 0, deviceId: readDevice().id };
   }
   try {
-    const result = await syncEvents(config, events, {
-      onBatchSynced: ({ acknowledged }) => { acknowledgeQueuedEvents(acknowledged); }
-    });
+    const result = await syncEvents(config, durableEvents);
     updateState({
       lastRunAt: startedAt,
       lastSyncAt: new Date().toISOString(),
       lastSyncStatus: "success",
       lastError: null,
       lastCollectedEvents: collected.events.length,
-      lastSentEvents: events.length,
+      lastSentEvents: durableEvents.length,
       lastRejectedEvents: result.rejected ?? 0,
       lastInserted: result.inserted,
       lastDuplicates: result.duplicates
