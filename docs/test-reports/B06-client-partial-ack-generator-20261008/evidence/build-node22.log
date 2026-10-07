@@ -1,0 +1,75 @@
+
+> tokenizer@0.1.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 195ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+▲ Next.js 16.4.0 (Turbopack)
+✓ Running next.config.mjs took 91ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.5s
+  Running TypeScript ...
+  Finished TypeScript in 2.8s ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/5) ...
+  Generating static pages using 9 workers (1/5) 
+  Generating static pages using 9 workers (2/5) 
+  Generating static pages using 9 workers (3/5) 
+✓ Generating static pages using 9 workers (5/5) in 147ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /admin/login
+├ ƒ /admin/pricing
+├ ƒ /admin/setup
+├ ƒ /api/admin/cleanup-claude-legacy
+├ ƒ /api/admin/enrollment-tokens
+├ ƒ /api/admin/enrollment-tokens/[id]
+├ ƒ /api/admin/login
+├ ƒ /api/admin/logout
+├ ƒ /api/admin/pricing/review
+├ ƒ /api/admin/pricing/scan
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/devices
+├ ƒ /api/devices/enroll
+├ ƒ /api/devices/heartbeat
+├ ƒ /api/events
+├ ƒ /api/harness/decisions
+├ ƒ /api/harness/gates
+├ ƒ /api/harness/gates/pending-count
+├ ƒ /api/harness/mode-intents
+├ ƒ /api/harness/mode-intents/relay
+├ ƒ /api/harness/report
+├ ƒ /api/health
+├ ƒ /api/me/timezone
+├ ƒ /api/projects
+├ ƒ /api/quota/latest
+├ ƒ /api/quota/snapshots/batch
+├ ƒ /api/summary
+├ ƒ /api/summary/daily
+├ ƒ /api/summary/projects
+├ ƒ /api/usage/events/batch
+├ ƒ /devices
+├ ƒ /devices/[id]
+├ ƒ /events
+├ ƒ /harness
+├ ƒ /harness/[id]
+├ ○ /icon.svg
+├ ƒ /login
+├ ƒ /login/verify
+├ ƒ /models/[model]
+└ ƒ /projects/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

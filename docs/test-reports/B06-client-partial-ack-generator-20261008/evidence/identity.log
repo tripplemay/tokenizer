@@ -1,0 +1,5 @@
+base=029f6c53ea7193989643a1f2e4d23108ba0c9af5
+candidate=ecc19c59e1b2a395891339e0fe0d8feffa28e867
+branch=codex/b06-client-partial-ack-20261008
+node=v22.22.0
+historical_test_sha256=fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca
