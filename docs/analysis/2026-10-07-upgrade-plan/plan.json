@@ -1,0 +1,1518 @@
+{
+  "schema": "tokenizer-upgrade-plan/1",
+  "date": "2026-10-07",
+  "status": "proposed",
+  "baseline_commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "artifact_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-plan-20261007",
+  "source_worktree": "/Volumes/ORICO/project/tokenizer",
+  "scope": {
+    "implementation_authorized": false,
+    "is_batch_signoff": false,
+    "is_release_acceptance": false,
+    "product_source_modified": false,
+    "state_files_modified": false,
+    "backlog_modified": false,
+    "framework_modified": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "production_modified": false,
+    "product_tests_run_during_planning": false
+  },
+  "current_batch": {
+    "id": "BL-HOMEPAGE-FRESHNESS",
+    "status": "verifying",
+    "pending_feature": "F005",
+    "pending_feature_status": "pending",
+    "preserved": true
+  },
+  "source_reports": [
+    {
+      "kind": "engineering",
+      "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-review-20261007",
+      "report": "docs/test-reports/review-20261007/README.md",
+      "verdict": "docs/test-reports/review-20261007/verdict.json",
+      "findings": 14,
+      "grade": "C",
+      "weighted_score": 54
+    },
+    {
+      "kind": "frontend",
+      "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-frontend-review-20261007",
+      "report": "docs/test-reports/frontend-review-20261007/README.md",
+      "verdict": "docs/test-reports/frontend-review-20261007/verdict.json",
+      "findings": 17,
+      "grade": "C",
+      "weighted_score": 51
+    }
+  ],
+  "input_fingerprints": [
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-review-20261007/docs/test-reports/review-20261007/README.md",
+      "sha256": "7db4db24fbe8b6eea332698775d475b46046226c42c3957deaa9416a6023f552"
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-review-20261007/docs/test-reports/review-20261007/verdict.json",
+      "sha256": "349e790bf942ba727c1836be4aa2fa907baa75d7893c27b9cad694fbe6a767d5"
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-frontend-review-20261007/docs/test-reports/frontend-review-20261007/README.md",
+      "sha256": "a5e43d106cea2b3b5cf3231960e3e2d3c66debf19d52acbcea17ec3df92c9c81"
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-frontend-review-20261007/docs/test-reports/frontend-review-20261007/verdict.json",
+      "sha256": "035e60450f48b2921bbb00f08aedd5c1e41c2247147e07896ac1b8f189e077cd"
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-frontend-review-20261007/docs/test-reports/frontend-review-20261007/roadmap.md",
+      "sha256": "6a10fee09a197afc636f19bf171f111e8bc180cda6672a199fd9977004df3bb9"
+    },
+    {
+      "path": "/Volumes/ORICO/project/tokenizer/progress.json",
+      "sha256": "e6031b3e335df7c97b4a04764aea9ebc76f960d4c9f4f8eab7ffce3be189cf2d"
+    },
+    {
+      "path": "/Volumes/ORICO/project/tokenizer/features.json",
+      "sha256": "e4406f75c5b4c7691af57529b7827f7b441fc6383ba63dbbff264e01e8e9f184"
+    },
+    {
+      "path": "/Volumes/ORICO/project/tokenizer/backlog.json",
+      "sha256": "4f124ede856fb52ea575471d1e46a086fb197deb4f8fecd583744318361f2442"
+    },
+    {
+      "path": "/Volumes/ORICO/project/tokenizer/.github/workflows/deploy-vps.yml",
+      "sha256": "ca66e8a9d4402500041237094141ca9deb78f04357d4d99a01f77459a02bac71"
+    }
+  ],
+  "original_worktree": {
+    "mode_only_tracked_changes": 856,
+    "content_lines_added": 0,
+    "content_lines_deleted": 0,
+    "preserved": true
+  },
+  "assumptions": {
+    "implementation_streams": 1,
+    "independent_evaluator_required": true,
+    "generator_evaluator_model_families_must_differ": true,
+    "source_repo_and_framework_repo_remain_separate": true,
+    "production_and_historical_repairs_require_separate_authorization": true
+  },
+  "estimate": {
+    "unit": "implementation_person_day",
+    "core_M0_to_M3": [
+      31,
+      52
+    ],
+    "M0_to_M6": [
+      61,
+      102
+    ],
+    "independent_verification_and_fix_reserve_ratio": [
+      0.2,
+      0.3
+    ],
+    "rough_estimate_variance_ratio": 0.5,
+    "calendar_commitment": false,
+    "excludes": [
+      "authorization wait",
+      "real mail and platform access",
+      "provider implementation after probe",
+      "M7 conditional implementation"
+    ],
+    "reestimate_after": "B00"
+  },
+  "phases": [
+    {
+      "id": "M0",
+      "name": "接管与门禁",
+      "packages": [
+        "B00",
+        "B01"
+      ],
+      "implementation_person_days": [
+        2,
+        4
+      ],
+      "scope": "core"
+    },
+    {
+      "id": "M1",
+      "name": "安全与可恢复交付",
+      "packages": [
+        "B02",
+        "B03",
+        "B04",
+        "B05"
+      ],
+      "implementation_person_days": [
+        12,
+        20
+      ],
+      "scope": "core"
+    },
+    {
+      "id": "M2",
+      "name": "数据正确性",
+      "packages": [
+        "B06",
+        "B07",
+        "B08",
+        "B09"
+      ],
+      "implementation_person_days": [
+        10,
+        16
+      ],
+      "scope": "core"
+    },
+    {
+      "id": "M3",
+      "name": "现有前端稳定",
+      "packages": [
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "implementation_person_days": [
+        7,
+        12
+      ],
+      "scope": "core"
+    },
+    {
+      "id": "M4",
+      "name": "查询与预算工作台",
+      "packages": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "implementation_person_days": [
+        10,
+        16
+      ],
+      "scope": "product_increment"
+    },
+    {
+      "id": "M5",
+      "name": "可行动运维",
+      "packages": [
+        "B18",
+        "B19",
+        "B20"
+      ],
+      "implementation_person_days": [
+        8,
+        14
+      ],
+      "scope": "product_increment",
+      "excluded_estimate_scope": "provider implementation after probe"
+    },
+    {
+      "id": "M6",
+      "name": "可扩展分析",
+      "packages": [
+        "B21",
+        "B22",
+        "B23"
+      ],
+      "implementation_person_days": [
+        12,
+        20
+      ],
+      "scope": "product_increment"
+    },
+    {
+      "id": "M7",
+      "name": "有条件的高级能力",
+      "packages": [
+        "B24",
+        "B25",
+        "B26",
+        "B27",
+        "B28",
+        "B29"
+      ],
+      "implementation_person_days": null,
+      "scope": "conditional"
+    }
+  ],
+  "work_packages": [
+    {
+      "id": "B00",
+      "title": "基线、F005 与整改登记",
+      "phase": "M0",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "coordinator",
+        "planner",
+        "evaluator"
+      ],
+      "depends_on": [],
+      "likely_paths": [
+        "progress.json",
+        "features.json",
+        "docs/test-reports/"
+      ],
+      "acceptance": "独立 F005 结论，或明确保留 pending 的独立热修复编排决议；不得由本计划签收旧批次。",
+      "conditional": false
+    },
+    {
+      "id": "B01",
+      "title": "CI、真实 DB 与浏览器门禁",
+      "phase": "M0",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B00"
+      ],
+      "likely_paths": [
+        ".github/workflows/deploy-vps.yml",
+        ".github/workflows/contract-conformance.yml",
+        "tests/",
+        "scripts/test/"
+      ],
+      "acceptance": "干净 Node 22、锁文件、真实 PG、受影响平台和 pinned 双向契约执行；关键旅程失败阻断；应执行项不得 silent skip。",
+      "conditional": false
+    },
+    {
+      "id": "B02",
+      "title": "依赖、认证与配置安全",
+      "phase": "M1",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        "package.json",
+        "package-lock.json",
+        "src/auth.ts",
+        "scripts/validate-deploy-secrets.sh"
+      ],
+      "acceptance": "实施当天 audit/公告与可达性处置；构建、认证/邮件/session/admin/tenant 回归；高风险例外须人类审批、责任人与期限。",
+      "conditional": false
+    },
+    {
+      "id": "B03",
+      "title": "隐私最小化与 Git 身份",
+      "phase": "M1",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        "src/parsers/",
+        "src/cli/git.ts",
+        "src/cli/project.ts",
+        "src/cli/sync.ts",
+        "src/server/ingest.ts"
+      ],
+      "acceptance": "合成正文/凭据 canary 全链路不保留非必要内容；scope、白名单 correction metadata 与 remote 规范化兼容。",
+      "conditional": false
+    },
+    {
+      "id": "B04",
+      "title": "固定 Agent 发布与安全升级",
+      "phase": "M1",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        "public/install.sh",
+        "public/install.ps1",
+        "src/cli/service.ts",
+        "src/cli/service-windows.ts",
+        "src/shared/agent-releases.json"
+      ],
+      "acceptance": "已验证版本 staging/切换/失败恢复；各平台安装升级回退及故障注入；清单失败不默认追 main。",
+      "conditional": false
+    },
+    {
+      "id": "B05",
+      "title": "不可变部署、健康、备份与恢复",
+      "phase": "M1",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        ".github/workflows/deploy-vps.yml",
+        "Dockerfile",
+        "docker-compose.yml",
+        "app/api/health/route.ts",
+        ".env.example",
+        "docs/VPS-deployment.md"
+      ],
+      "acceptance": "digest/SHA、配置/readiness/capability、真实备份 restore、兼容迁移与镜像回退、受控 canary 可重放。",
+      "conditional": false
+    },
+    {
+      "id": "B06",
+      "title": "Usage 与 quota bounded schema",
+      "phase": "M2",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01",
+        "B03"
+      ],
+      "likely_paths": [
+        "app/api/usage/events/batch/route.ts",
+        "app/api/quota/snapshots/batch/route.ts",
+        "src/server/ingest.ts",
+        "src/server/quota.ts",
+        "src/cli/sync.ts"
+      ],
+      "acceptance": "HTTP/PG 边界校验先于副作用；永久错误不无限重试；坏行隔离/确认契约与旧 Agent 兼容。",
+      "conditional": false
+    },
+    {
+      "id": "B07",
+      "title": "可变源游标与跨进程 durable outbox",
+      "phase": "M2",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B04",
+        "B06",
+        "B08"
+      ],
+      "likely_paths": [
+        "src/parsers/opencode.ts",
+        "src/cli/agent.ts",
+        "src/cli/index.ts",
+        "src/cli/sync.ts"
+      ],
+      "acceptance": "真实 SQLite 后更新及两真实进程/kill/restart/部分 ACK，去重后事件守恒；旧游标有授权回扫。",
+      "conditional": false
+    },
+    {
+      "id": "B08",
+      "title": "Event revision 与 Project 身份 CAS",
+      "phase": "M2",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B06"
+      ],
+      "likely_paths": [
+        "src/server/ingest.ts",
+        "prisma/schema.prisma",
+        "src/shared/",
+        "src/parsers/"
+      ],
+      "acceptance": "真实 PG 乱序/并发/合法修正下降与项目身份冲突；旧 snapshot 不回退新数据，不自动合并不同 repo。",
+      "conditional": false
+    },
+    {
+      "id": "B09",
+      "title": "成本与汇总缓存的可变账本契约",
+      "phase": "M2",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B06",
+        "B08"
+      ],
+      "likely_paths": [
+        "src/server/harness-cost.ts",
+        "src/server/ingest.ts",
+        "src/server/summaries.ts"
+      ],
+      "acceptance": "真实 Next + PG 补报/更新/删除/dispatch/价格变动两页同口径刷新；有界 cache 与租户隔离。",
+      "conditional": false
+    },
+    {
+      "id": "B10",
+      "title": "首次使用与认证闭环",
+      "phase": "M3",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01",
+        "B02"
+      ],
+      "likely_paths": [
+        "app/page.tsx",
+        "app/_components/onboarding-card.tsx",
+        "app/_components/enroll-flow-card.tsx",
+        "app/login/",
+        "src/server/auth-session.ts"
+      ],
+      "acceptance": "首次 enroll/upload 两配置刷新周期内可见；历史空窗保留筛选；安全深链/ICU/provider 错误；不替代生产 F005。",
+      "conditional": false
+    },
+    {
+      "id": "B11",
+      "title": "日期、时区与 Git 排名",
+      "phase": "M3",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01",
+        "B08"
+      ],
+      "likely_paths": [
+        "app/models/[model]/model-range-picker.tsx",
+        "app/_components/timezone-reporter.tsx",
+        "src/server/timezone.ts",
+        "src/server/summaries.ts",
+        "messages/"
+      ],
+      "acceptance": "URL/draft/back-forward 一致，时区/UTC/DST/to-exclusive 正确；40+ 无关项目不遮蔽 Git 匹配。",
+      "conditional": false
+    },
+    {
+      "id": "B12",
+      "title": "局部恢复与移动操作",
+      "phase": "M3",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        "app/admin/pricing/pricing-actions.tsx",
+        "src/components/sidebar/",
+        "src/components/navbar/",
+        "app/admin-shell.tsx",
+        "app/devices/[id]/page.tsx",
+        "app/projects/[id]/page.tsx"
+      ],
+      "acceptance": "网络/HTTP 故障不全页崩；隐藏导航不可聚焦，关闭/焦点返回；四档宽度无 document 溢出；Cancel 语义明确。",
+      "conditional": false
+    },
+    {
+      "id": "B13",
+      "title": "可访问性、语言、主题与展示细节",
+      "phase": "M3",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B12"
+      ],
+      "likely_paths": [
+        "tailwind.config.cjs",
+        "app/_components/",
+        "src/components/",
+        "app/events/page.tsx",
+        "app/harness/[id]/page.tsx",
+        "messages/"
+      ],
+      "acceptance": "共享 a11y/中英/首次暗色与历史文案回归，人工键盘/VoiceOver/视觉；图表替代；水合异常另留诊断结论。",
+      "conditional": false
+    },
+    {
+      "id": "B14",
+      "title": "现有 quota 状态表达",
+      "phase": "M3",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01",
+        "B06"
+      ],
+      "likely_paths": [
+        "app/_components/subscription-card.tsx",
+        "src/shared/quota-presentation.ts",
+        "src/quota/"
+      ],
+      "acceptance": "无 snapshot 不误报 CLI 未安装；多账号/实际周期不回归；失败/陈旧/unknown 安全且可解释。",
+      "conditional": false
+    },
+    {
+      "id": "B15",
+      "title": "统一查询工作台",
+      "phase": "M4",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B08",
+        "B11",
+        "B12",
+        "B13"
+      ],
+      "likely_paths": [
+        "app/events/",
+        "app/projects/",
+        "app/devices/",
+        "app/models/",
+        "src/server/summaries.ts",
+        "app/api/events/route.ts"
+      ],
+      "acceptance": "全页范围/URL/drilldown/cursor 契约；明细和聚合对账；非 top-N 可发现；有界导出、CSV 转义、设置和租户鉴权。",
+      "conditional": false
+    },
+    {
+      "id": "B16",
+      "title": "可解释且版本化的成本",
+      "phase": "M4",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B09",
+        "B15"
+      ],
+      "likely_paths": [
+        "src/shared/model-pricing.ts",
+        "src/server/model-prices.ts",
+        "src/server/pricing/review.ts",
+        "app/admin/pricing/",
+        "app/_components/"
+      ],
+      "acceptance": "估算/未知/实际来源分开、价格版本可审计；覆盖/未定价不混为免费；独立复算与跨页同口径。",
+      "conditional": false
+    },
+    {
+      "id": "B17",
+      "title": "预算与提醒",
+      "phase": "M4",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B07",
+        "B08",
+        "B09",
+        "B11",
+        "B16"
+      ],
+      "likely_paths": [
+        "prisma/schema.prisma",
+        "src/server/summaries.ts",
+        "app/budgets/",
+        "app/api/",
+        "app/_components/"
+      ],
+      "acceptance": "用户时区自然月、75/90 阈值、幂等/冷却/修正、未定价与通知失败可解释；仅告警不熔断。",
+      "conditional": false
+    },
+    {
+      "id": "B18",
+      "title": "设备与数据健康修复台",
+      "phase": "M5",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B06",
+        "B10"
+      ],
+      "likely_paths": [
+        "app/devices/",
+        "src/cli/",
+        "app/api/devices/",
+        "src/server/summaries.ts"
+      ],
+      "acceptance": "诊断到 SOP/生命周期闭环；撤销旧 token 401，回扫 dry-run/幂等，项目治理可审计撤销且不读任意文件。",
+      "conditional": false
+    },
+    {
+      "id": "B19",
+      "title": "可行动 Gate Inbox 与 mode intent 恢复",
+      "phase": "M5",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B04",
+        "B05",
+        "B12",
+        "B13"
+      ],
+      "likely_paths": [
+        "app/harness/",
+        "app/_components/pending-gates-badge.tsx",
+        "src/cli/harness-mode-intents.ts",
+        "src/cli/harness.ts",
+        "app/api/harness/"
+      ],
+      "acceptance": "签发/中继/消费真实状态；HEAD 有界重试而不绕校验；失败持久化通知；sig 回显只在契约同步后改。",
+      "conditional": false
+    },
+    {
+      "id": "B20",
+      "title": "额度 provider 授权调研与条件实现",
+      "phase": "M5",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "evaluator",
+        "generator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B14",
+        "B18"
+      ],
+      "likely_paths": [
+        "src/quota/",
+        "app/_components/subscription-card.tsx",
+        "docs/test-reports/"
+      ],
+      "acceptance": "限定授权 probe 后 go/no-go；no-go 合格；条件实现仅本地查询、安全 snapshot，厂商凭据不出本机。",
+      "conditional": true
+    },
+    {
+      "id": "B21",
+      "title": "留存、真实性能与渐进整理",
+      "phase": "M6",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B07",
+        "B08",
+        "B09",
+        "B15"
+      ],
+      "likely_paths": [
+        "src/server/summaries.ts",
+        "src/server/quota.ts",
+        "app/api/harness/report/route.ts",
+        "app/_components/",
+        "src/Fonts.tsx",
+        "prisma/"
+      ],
+      "acceptance": "授权留存、10万/100万代表性档位和真实手机/硬件量测；重算守恒，轮询/列表/资源优化按基线验证。",
+      "conditional": false
+    },
+    {
+      "id": "B22",
+      "title": "batch-feature-task 归因协议 v2",
+      "phase": "M6",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B07",
+        "B08"
+      ],
+      "likely_paths": [
+        "framework/",
+        "src/shared/",
+        "src/cli/",
+        "src/server/harness-cost.ts",
+        "prisma/schema.prisma"
+      ],
+      "acceptance": "上游先行 additive provenance/owner 契约，精确/相关/时间窗估算区分；并行任务/双源/离线/旧 Agent 归因覆盖可量化。",
+      "conditional": false
+    },
+    {
+      "id": "B23",
+      "title": "成本 x 质量分析",
+      "phase": "M6",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B16",
+        "B21",
+        "B22"
+      ],
+      "likely_paths": [
+        "app/harness/analytics/",
+        "src/server/harness-cost.ts",
+        "src/server/harness-detail.ts",
+        "app/api/harness/report/route.ts",
+        "src/shared/harness-transitions.ts"
+      ],
+      "acceptance": "分母和成本独立复算、evaluator-only/superseded 处理正确；样本与混杂因素披露，不宣称因果排名。",
+      "conditional": false
+    },
+    {
+      "id": "B24",
+      "title": "Device-Harness 兼容解耦",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B05",
+        "B18"
+      ],
+      "likely_paths": [
+        "prisma/",
+        "app/api/devices/heartbeat/route.ts",
+        "src/server/summaries.ts",
+        "app/devices/",
+        "app/harness/"
+      ],
+      "acceptance": "expand/回填/双写切读/观察/contract；新旧混跑与回退、守恒、输出形状；不能靠一次 push 抵消删列不兼容。",
+      "conditional": true
+    },
+    {
+      "id": "B25",
+      "title": "白名单证据上传与内联",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B19",
+        "B24"
+      ],
+      "likely_paths": [
+        "framework/",
+        "src/cli/",
+        "app/api/harness/",
+        "app/harness/"
+      ],
+      "acceptance": "限定上传范围、类型/体积/hash/到期/租户、symlink 与 HTML 隔离；不构成任意本机文件读取。",
+      "conditional": true
+    },
+    {
+      "id": "B26",
+      "title": "结构化 live session",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B21",
+        "B24"
+      ],
+      "likely_paths": [
+        "framework/",
+        "src/cli/",
+        "app/api/harness/",
+        "app/harness/",
+        "prisma/"
+      ],
+      "acceptance": "默认关闭 opt-in 白名单事件、限量/限流/保留与关闭；不 tail 任意日志，隐私/注入/离线状态独立审计。",
+      "conditional": true
+    },
+    {
+      "id": "B27",
+      "title": "签名 steering",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B03",
+        "B04",
+        "B05",
+        "B19"
+      ],
+      "likely_paths": [
+        "framework/",
+        "src/cli/",
+        "app/api/harness/",
+        "app/harness/",
+        "prisma/"
+      ],
+      "acceptance": "上游/双向契约与签名到期/CAS/防重放/阶段边界验收；非直接 progress 写入或机器批准人闸门。",
+      "conditional": true
+    },
+    {
+      "id": "B28",
+      "title": "自动凭据轮换可行性",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B04",
+        "B18"
+      ],
+      "likely_paths": [
+        "docs/",
+        "app/api/devices/"
+      ],
+      "acceptance": "stolen-token 自锁、owner/grace/audit/recovery 威胁模型过闸门才另行实施，不默认开端点。",
+      "conditional": true
+    },
+    {
+      "id": "B29",
+      "title": "框架维护窗口",
+      "phase": "M7",
+      "status": "proposed",
+      "formal_harness_batch_started": false,
+      "roles": [
+        "planner",
+        "generator",
+        "evaluator"
+      ],
+      "depends_on": [
+        "B01"
+      ],
+      "likely_paths": [
+        "framework/",
+        "harness.json",
+        "harness.lock",
+        ".agents-registry.json"
+      ],
+      "acceptance": "上游受限错误/覆盖语义/惰性字段分别核对并独立验收，发布后锁版本同步，不在镜像造第二真源。",
+      "conditional": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "R01",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B02",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R02",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B03",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R03",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B07",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R04",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B07",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R05",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B09",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R06",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B03",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R07",
+      "report": "engineering",
+      "report_priority": "P2",
+      "primary_package": "B08",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R08",
+      "report": "engineering",
+      "report_priority": "P2",
+      "primary_package": "B08",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R09",
+      "report": "engineering",
+      "report_priority": "P2",
+      "primary_package": "B06",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R10",
+      "report": "engineering",
+      "report_priority": "P2",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R11",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B04",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R12",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B01",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R13",
+      "report": "engineering",
+      "report_priority": "P1",
+      "primary_package": "B05",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "R14",
+      "report": "engineering",
+      "report_priority": "P2",
+      "primary_package": "B21",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-001",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-002",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B11",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-003",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B12",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-004",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B12",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-005",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B12",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-006",
+      "report": "frontend",
+      "report_priority": "P1",
+      "primary_package": "B11",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-007",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-008",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-009",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B11",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-010",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-011",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B10",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-012",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B13",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-013",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B13",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-014",
+      "report": "frontend",
+      "report_priority": "P3",
+      "primary_package": "B12",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-015",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B14",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-016",
+      "report": "frontend",
+      "report_priority": "P3",
+      "primary_package": "B13",
+      "status": "unremediated_in_this_planning_task"
+    },
+    {
+      "id": "FR-017",
+      "report": "frontend",
+      "report_priority": "P2",
+      "primary_package": "B13",
+      "status": "unremediated_in_this_planning_task"
+    }
+  ],
+  "deduplicated_clusters": [
+    {
+      "primary_package": "B10",
+      "finding_ids": [
+        "R10",
+        "FR-001",
+        "FR-007"
+      ],
+      "note": "same onboarding/window-empty domain; keep separate source IDs but one primary remediation owner"
+    }
+  ],
+  "backlog_dispositions": [
+    {
+      "id": "BL-BUDGET",
+      "packages": [
+        "B17"
+      ],
+      "disposition": "retain; add accounting/time/pricing preconditions",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-DEVICE-DECOUPLE",
+      "packages": [
+        "B24"
+      ],
+      "disposition": "retain; replace destructive single-push default with expand-contract",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-AGENT-SUPPLY-CHAIN",
+      "packages": [
+        "B04"
+      ],
+      "disposition": "promote; remove default main fallback and add safe upgrade recovery",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-QUOTA-PROVIDERS",
+      "packages": [
+        "B20"
+      ],
+      "disposition": "retain; explicit scoped authorization then probe go/no-go",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-LIVE-SESSION",
+      "packages": [
+        "B26"
+      ],
+      "disposition": "conditional; structured opt-in, no arbitrary log tail",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-STEERING-V1",
+      "packages": [
+        "B27"
+      ],
+      "disposition": "conditional; upstream signed boundary first",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-PERF-ANALYTICS",
+      "packages": [
+        "B23"
+      ],
+      "disposition": "retain; trustworthy cost and attribution first",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-GATE-EVIDENCE-UPLOAD",
+      "packages": [
+        "B25"
+      ],
+      "disposition": "conditional; privacy, upload boundary and decoupling first",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-CRED-ROTATE-API",
+      "packages": [
+        "B28"
+      ],
+      "disposition": "defer implementation until threat model approval",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-REGISTRY-LAZY-FIELD-CLEANUP",
+      "packages": [
+        "B29"
+      ],
+      "disposition": "upstream maintenance",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-BRIDGE-GUEST-FAILURE-TAXONOMY",
+      "packages": [
+        "B29"
+      ],
+      "disposition": "upstream maintenance",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-BRIDGE-D8-D9-OVERWRITE-ALIGNMENT",
+      "packages": [
+        "B29"
+      ],
+      "disposition": "upstream maintenance",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-COST-PERF",
+      "packages": [
+        "B21"
+      ],
+      "disposition": "retain performance scope; close-cache correctness belongs to B09",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-FRONTEND-REVIEW-REMAINDER",
+      "packages": [
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "disposition": "reconcile with current FR evidence; do not repeat already-fixed findings",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-MODE-INTENT-DELIVERY",
+      "packages": [
+        "B19"
+      ],
+      "disposition": "retain; bounded retry, persistent failure and existing notification channel",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-CI-SIGTERM-FLAKE",
+      "packages": [
+        "B01",
+        "B04"
+      ],
+      "disposition": "promote; handler-ready correctness, not unbounded retry",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-GATE-SIG-ECHO-REVIEW",
+      "packages": [
+        "B19"
+      ],
+      "disposition": "retain; contract and DB assertions reviewed together",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-DEAD-FONTS-COMPONENT",
+      "packages": [
+        "B21"
+      ],
+      "disposition": "retain small maintenance cleanup after measurement",
+      "backlog_modified": false
+    },
+    {
+      "id": "BL-ENROLL-SUCCESS-PREDICATE",
+      "packages": [
+        "B10"
+      ],
+      "disposition": "retain; first-use flow and false-positive assertion cleanup",
+      "backlog_modified": false
+    }
+  ],
+  "gates": [
+    {
+      "id": "G0",
+      "title": "批次可实施",
+      "requires": [
+        "explicit scope/resource/authorization",
+        "locked spec/acceptance",
+        "active batch coordination"
+      ],
+      "passed_in_planning": false
+    },
+    {
+      "id": "G1",
+      "title": "稳态底座可验收",
+      "requires_phases": [
+        "M0",
+        "M1",
+        "M2",
+        "M3"
+      ],
+      "required_disposition_finding_ids": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-016",
+        "FR-017"
+      ],
+      "pending_batch_signoff_not_overridden": true,
+      "passed_in_planning": false
+    },
+    {
+      "id": "G2",
+      "title": "产品增量可发布",
+      "depends_on": [
+        "G1"
+      ],
+      "requires_phases": [
+        "M4",
+        "M5"
+      ],
+      "provider_implementation_requires_go_decision": true,
+      "passed_in_planning": false
+    },
+    {
+      "id": "G3",
+      "title": "规模与所选高级能力可开放",
+      "depends_on": [
+        "G1"
+      ],
+      "requires_phases": [
+        "M6"
+      ],
+      "conditional_phase": "M7",
+      "required_disposition_finding_ids": [
+        "R14"
+      ],
+      "all_optional_features_required": false,
+      "passed_in_planning": false
+    }
+  ],
+  "policy_replacements": [
+    {
+      "id": "closed-batch-cache",
+      "old": "permanent immutable cache assumption",
+      "proposed": "bounded TTL plus usage/price revision or targeted invalidation"
+    },
+    {
+      "id": "manifest-unreachable",
+      "old": "WARN then fallback to main",
+      "proposed": "keep verified old version or refuse upgrade; development escape explicit only"
+    },
+    {
+      "id": "device-decouple",
+      "old": "single destructive drop-column rollout",
+      "proposed": "expand, backfill, dual-write/read cutover, observe, then contract"
+    },
+    {
+      "id": "windows-tests",
+      "old": "skip platform issue without equivalent capability proof",
+      "proposed": "platform-specific test scope with real Windows release gating"
+    },
+    {
+      "id": "unpriced-budget",
+      "old": "unpriced arithmetic zero interpreted as no risk",
+      "proposed": "priced subtotal with coverage and explicit unknown cost risk"
+    },
+    {
+      "id": "agent-version-placeholders",
+      "old": "copy old roadmap feature/release numbers",
+      "proposed": "resolve against live ledger and CLAUDE at formal batch boundary"
+    }
+  ],
+  "release_policy": {
+    "external_agents_never_push": true,
+    "coordinator_only_integration": true,
+    "current_non_exempt_main_push_deploys_production": true,
+    "staging_and_scope_approval_before_main": true,
+    "immutable_app_and_agent_artifacts": true,
+    "expected_sha_verified": true,
+    "restore_rehearsal_before_risky_migration": true,
+    "expand_contract_default": true,
+    "historical_cleanup_dry_run_backup_and_explicit_approval": true,
+    "never_machine_approve_human_gate": true
+  },
+  "open_questions": [
+    "implementation streams and independent verification resources",
+    "scoped production/mail/platform and historical-repair authorization",
+    "first increment defaults to Explorer, cost explanation and budget; choose optional M7 scope later"
+  ],
+  "report": "README.md",
+  "validation_report": "validation.json"
+}

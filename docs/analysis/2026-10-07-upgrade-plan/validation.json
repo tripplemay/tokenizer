@@ -1,0 +1,206 @@
+{
+  "schema": "tokenizer-plan-artifact-validation/1",
+  "date": "2026-10-07",
+  "scope": "planning artifact consistency, traceability, dependency graph and input preservation only",
+  "status": "passed",
+  "product_tests_run": false,
+  "is_product_acceptance": false,
+  "is_release_acceptance": false,
+  "baseline_commit": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "checks": [
+    {
+      "name": "unique_work_packages",
+      "status": "passed",
+      "details": {
+        "count": 30
+      }
+    },
+    {
+      "name": "all_work_packages_are_proposals",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "dependency_references_exist",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "dependency_graph_is_acyclic",
+      "status": "passed",
+      "details": {
+        "topological_order": [
+          "B00",
+          "B01",
+          "B02",
+          "B03",
+          "B04",
+          "B05",
+          "B06",
+          "B08",
+          "B07",
+          "B09",
+          "B10",
+          "B11",
+          "B12",
+          "B13",
+          "B14",
+          "B15",
+          "B16",
+          "B17",
+          "B18",
+          "B19",
+          "B20",
+          "B21",
+          "B22",
+          "B23",
+          "B24",
+          "B25",
+          "B26",
+          "B27",
+          "B28",
+          "B29"
+        ]
+      }
+    },
+    {
+      "name": "phase_membership_complete_once",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "package_phase_matches",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "markdown_describes_every_work_package",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "person_day_totals_match",
+      "status": "passed",
+      "details": {
+        "M0_to_M6": [
+          61,
+          102
+        ],
+        "M0_to_M3": [
+          31,
+          52
+        ],
+        "calendar_commitment": false
+      }
+    },
+    {
+      "name": "report_baseline_engineering",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "report_finding_count_engineering",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "report_grade_engineering",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "report_baseline_frontend",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "report_finding_count_frontend",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "report_grade_frontend",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "all_report_findings_mapped_once",
+      "status": "passed",
+      "details": {
+        "report_ids": 31,
+        "engineering": 14,
+        "frontend": 17,
+        "overlapping_domain_ids_not_independent_defect_count": true
+      }
+    },
+    {
+      "name": "all_existing_backlog_items_mapped_once",
+      "status": "passed",
+      "details": {
+        "count": 19
+      }
+    },
+    {
+      "name": "all_inputs_unchanged",
+      "status": "passed",
+      "details": {
+        "verified_count": 9
+      }
+    },
+    {
+      "name": "active_batch_and_F005_preserved",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "original_mode_only_changes_preserved",
+      "status": "passed",
+      "details": {
+        "files": 856,
+        "added": 0,
+        "deleted": 0,
+        "binary_stat_rows": 8,
+        "patch_has_content_hunks_or_binary_changes": false
+      }
+    },
+    {
+      "name": "artifact_worktree_same_baseline",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "no_tracked_source_or_state_edits",
+      "status": "passed",
+      "details": null
+    },
+    {
+      "name": "only_plan_artifacts_added",
+      "status": "passed",
+      "details": {
+        "paths": [
+          "docs/analysis/2026-10-07-upgrade-plan/README.md",
+          "docs/analysis/2026-10-07-upgrade-plan/plan.json"
+        ],
+        "validation_json_added_after_this_check": true
+      }
+    },
+    {
+      "name": "no_execution_or_signoff_claim",
+      "status": "passed",
+      "details": null
+    }
+  ],
+  "artifact_fingerprints": [
+    {
+      "path": "README.md",
+      "sha256": "f6eff1904a4b3cbc733e617bb5b0a6ea34c5bb9c2ddc9e5d4d3e74c545b9ff78"
+    },
+    {
+      "path": "plan.json",
+      "sha256": "9a45b5c1b46be3b5119b7b2fa77f455c43c874e25e1a39a14b26ce8856daaba9"
+    }
+  ],
+  "validator_adjustments": [
+    "Initial validation treated git numstat binary '-' fields as numbers and failed; corrected using numeric fields plus mode-only full-patch verification. Eight binary mode-only rows are not product changes."
+  ]
+}
