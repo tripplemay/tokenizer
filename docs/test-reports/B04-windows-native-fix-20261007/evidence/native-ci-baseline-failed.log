@@ -1,0 +1,1439 @@
+Verify (Windows)	Run unit tests	﻿2026-10-07T15:34:04.2853953Z ##[group]Run npm run test
+Verify (Windows)	Run unit tests	2026-10-07T15:34:04.2854335Z [36;1mnpm run test[0m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:04.2921985Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Run unit tests	2026-10-07T15:34:04.2922360Z ##[endgroup]
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.0812599Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.0813277Z > tokenizer@0.1.0 test
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.0813599Z > vitest run
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.0813725Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.6573558Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.6576552Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:05.6577246Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:34:07.0620404Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[90m 104[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:07.1554515Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[90m 142[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:07.7802448Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[90m 63[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:08.2511290Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 1309[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:08.2513471Z    [33m[2m✓[22m[39m data-only dispatch tool catalog[2m > [22mfails closed when an ACP bridge command differs from its verified adapter declaration [33m471[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:08.4482377Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 149[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:08.9169177Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:09.4066867Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 109[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:09.6015756Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 72[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:10.1033261Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[90m 36[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:10.4197273Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 558[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:10.4206416Z    [33m[2m✓[22m[39m 独立性与沙箱[2m > [22m上报 registry capabilities 与有界待生效 defaults 摘要 [33m336[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:13.6604715Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 3020[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:13.6606302Z    [33m[2m✓[22m[39m F003 real CLI/daemon parity[2m > [22mcheckpoints the same remaining tail between real sync and run subprocess batches [33m2947[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:14.2429767Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[90m 73[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:14.7940271Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[90m 58[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:15.6185217Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[90m 169[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:16.2124977Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 112[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:16.7216249Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m18 tests[22m[2m)[22m[90m 22[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:17.3448531Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:17.8733214Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:18.3878035Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:18.9045641Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:19.4673976Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:19.9257549Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:20.4105865Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:23.0732188Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:23.5943906Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:24.0432026Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:24.4627766Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:24.9635513Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:25.4315084Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:25.9051794Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:26.3537689Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:26.8853988Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:27.3694364Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:27.8754778Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:28.3081012Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:28.7834302Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.2573207Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.6752930Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8753971Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 18976[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8757010Z    [33m[2m✓[22m[39m mode intent relay bounds[2m > [22maccepts only the exact bounded relay envelope [33m714[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8759842Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reads v2 bindings through the data-only catalog, without agent ids [33m1457[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8765994Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reports legal v2 fast null bindings without a tool catalog [33m1224[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8806373Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects v2 staging when the data-only registry validation fails [33m949[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8835367Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mvalidates, atomically stages, and commits only harness.json [33m1068[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8855527Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mcommits only harness.json while preserving an unrelated staged file [33m1272[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8903698Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a tampered signature without changing the target [33m566[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8919902Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires relay, signed, and discovered repo keys to agree [33m600[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8935846Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a full HEAD drift immediately before first staging [33m922[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.8947380Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window expired_intent [33m590[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9025239Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window intent_not_yet_valid [33m630[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9155660Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires harness.json to be clean [33m570[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9174358Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mretries the exact staged intent without comparing its old HEAD or creating a commit [33m1445[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9177432Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report failure after commit success and completes the next exact retry idempotently [33m1190[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9185336Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrecognizes a commit that succeeded immediately before the runner threw [33m1105[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9191290Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage write failure [33m769[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9282442Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage readback failure [33m781[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9303993Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores after git add failure without disturbing an unrelated staged file [33m861[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9321219Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report defaults copied into a repository with a different normalized identity [33m1221[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:29.9369895Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrolls back a commit failure and never stages an unrelated file [33m1038[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.1875501Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5020532Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 13370[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5045331Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22muses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing [33m493[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5058063Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22msupports a2a while reducing absolute artifacts and raw failures to safe fixed summaries [33m553[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5085988Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps a2a cancellation as a known terminal outcome with a fixed safe summary [33m513[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5108375Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps runs of other batches (usage must survive batch switch) but rejects foreign refs [33m545[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5119962Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mrejects symlinked run-meta and never hashes a symlinked artifact [33m491[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5129779Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mderives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) [33m439[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5132505Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mscans at most the newest 50 bounded regular JSON files [33m2665[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5134577Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mcarries a valid usage block and capture mode intact into the summary [33m512[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5136785Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mkeeps legacy run-meta without usage summarized with explicit nulls (regression) [33m492[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5139239Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on unknown field but keeps the run (bypass, not a gate) [33m436[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5141367Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on negative tokens but keeps the run (bypass, not a gate) [33m462[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5143652Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate) [33m470[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5145875Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) [33m484[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5148291Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on zero turns but keeps the run (bypass, not a gate) [33m445[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5151236Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) [33m528[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5153722Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) [33m457[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5156113Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) [33m477[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5158445Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-string model but keeps the run (bypass, not a gate) [33m517[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5177755Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on oversized model name but keeps the run (bypass, not a gate) [33m451[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5301213Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on array instead of object but keeps the run (bypass, not a gate) [33m458[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5310886Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on string instead of object but keeps the run (bypass, not a gate) [33m446[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5318280Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mnulls an unknown capture mode while keeping a valid usage block [33m448[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.5327635Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22maccepts attribution_only with a null usage block (kimi shape) [33m584[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:30.8162726Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 103[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:31.5258335Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 102[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:31.6128168Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 100[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:32.1001873Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:32.4492631Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 482[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:32.4499434Z    [33m[2m✓[22m[39m BL-HOMEPAGE-FRESHNESS F004 evaluator probes[2m > [22mpreserves the OpenCode SQLite high-water cursor behavior [33m394[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:32.5578748Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 34[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:32.9810462Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:33.1065333Z SUCCESS: The scheduled task "Tokenizer Agent Test" has successfully been created.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:33.7081497Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 80[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.1784294Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 70[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.5607034Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1626[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.5631435Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mparses under WSH, waits for the agent, and propagates a failure exit code [33m821[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.5638381Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mpropagates a clean exit [33m548[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.7133342Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.7135384Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.7138535Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+Verify (Windows)	Run unit tests	2026-10-07T15:34:34.7141207Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:34:35.1106789Z  [31m❯[39m tests/cli/agent-release-installer.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:35.1109648Z [31m   [31m×[31m Windows installer release boundary[2m > [22mdoes not chase main and stages before stopping the running task[90m 10[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:35.1110982Z [31m     → expected 10920 to be less than -1[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:35.5073537Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:35.9271178Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:39.6142630Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T15:34:40.4938226Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 5551[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:40.4939204Z    [33m[2m✓[22m[39m canonicalJson[2m > [22mcase 1 与机器侧 Python 规范化逐字节一致 [33m4276[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:40.7857975Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:41.7192605Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 648[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:42.0359119Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:42.3658910Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:47.6348841Z  [31m❯[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 11375[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:47.6351475Z [31m   [31m×[31m native Windows pinned installer fixture[2m > [22minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens[33m 11374[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:47.6379005Z [31m     → expected +0 not to be +0 // Object.is equality[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.0634503Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 115[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.6179979Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 90[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.7999789Z  [31m❯[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 6053[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.8014770Z    [33m[2m✓[22m[39m agent command parsing[2m > [22mrejects `tokenizer agent status` before it can start a daemon [33m1020[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.8017813Z [31m   [31m×[31m agent single-instance lock[2m > [22mreleases the lock when the running agent receives SIGTERM[33m 5016[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.8019960Z [31m     → Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.8021560Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:48.9885569Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:49.3263987Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m12 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:49.4920288Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 73[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:49.9714203Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:50.3041164Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:50.7256655Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:50.8884405Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1131[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:51.0613344Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:51.4466147Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:51.5182089Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 72[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:51.8654139Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:51.9644261Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:52.2083903Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:52.3675902Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:52.6087339Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 49[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:52.7469861Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.2551061Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3284018Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 45000[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3286562Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22m同时有 progress.json 与 harness-rules.md 才算 harness 项目 [33m905[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3288776Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22muses a stable opaque key for local-only repos without leaking the root into the report [33m1883[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3290531Z    [33m[2m✓[22m[39m buildReport[2m > [22m从 features.json 统计完成度，并带上待批闸门 [33m716[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3292131Z    [33m[2m✓[22m[39m buildReport[2m > [22m待批闸门只上报 API 白名单字段 [33m771[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3293232Z    [33m[2m✓[22m[39m buildReport[2m > [22m已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 [33m709[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3294807Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22msends the running Agent identity on every device-driven Harness relay request [33m1543[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3296690Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22mreports progress.mode_intent as applied and sends the identical applied ACK [33m818[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3298597Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m签名有效时写入并提交 [33m1254[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3300234Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mdoes not route an unbound legacy gate relay onto the current repository [33m680[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3302231Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mfails closed when the signed decision wrapper matches multiple local repositories [33m1166[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3304210Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 [33m756[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3305770Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） [33m691[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3307133Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） [33m945[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3308514Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mprogress.json 有未提交改动时本轮不写，避免与状态机打架 [33m785[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3311070Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m某个项目上报失败不中断其余项目 [33m1348[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3312457Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 [33m1212[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3314392Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mreport、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit [33m1614[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3316009Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mmode relay 失败不阻塞另外两步 [33m1123[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3317221Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mgate relay 失败不阻塞另外两步 [33m1294[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3318740Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m本机闸门已有决策时不覆盖 [33m871[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3320170Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mapplies the exact HTTP retryability matrix [33m2231[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3322045Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies safe server codes and never retains response bodies in the snapshot [33m938[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3324413Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mfalls back to http status when a response code is not normalized [33m944[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3326393Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies timeouts for all independent subchains without short-circuiting [33m775[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3328458Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m16375[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3330469Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mwrites idle, success, degraded, and failed snapshots from actual outcomes [33m1524[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.3332362Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mdeduplicates unchanged issue details and logs recovery [33m1125[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.4132699Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[90m 216[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.6183726Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.6952766Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:53.8396880Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.0060685Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.1478352Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.4206924Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.5620015Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.5620734Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.6294661Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.6295895Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.6787417Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.6787992Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.7238688Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.7239490Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.7746042Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.7746554Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.8155020Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.8313894Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.8314726Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.8890427Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.8891030Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.9378552Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.9379386Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.9992752Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:54.9998283Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.0514812Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.0515628Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1074556Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1075166Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1522213Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1522788Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1629786Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1990089Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.1990651Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.2475239Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.2476051Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.2975083Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.2975945Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.3459746Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.3460330Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.3934517Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.3935475Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.4412938Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.4413504Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.4943309Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.4943933Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.5240173Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 37[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.5401173Z ps: unknown option -- o
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.5401731Z Try `ps --help' for more information.
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.6480539Z  [31m❯[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 1113[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.6553739Z [31m   [31m×[31m POSIX installer Agent lifecycle[2m > [22mstops this install's wrapper and child without touching another install[33m 1083[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.6591597Z [31m     → agent fixture process 3544 did not become visible[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.6647614Z [31m   [31m×[31m POSIX installer Agent lifecycle[2m > [22muses directory-scoped matching instead of broad tokenizer-agent process search[90m 28[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.6666974Z [31m     → expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:55.9035163Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:56.0771503Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:56.3787756Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:56.4381673Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:56.7686443Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:56.8390037Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.1114254Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.2344595Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.5899414Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.6565539Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.9785405Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.9951290Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3557[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:57.9953441Z    [33m[2m✓[22m[39m harness CLI output contracts[2m > [22mwires Commander options without treating the Command object as injected dependencies [33m3547[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.0871834Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m1 test[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.3405360Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.3808586Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.4634196Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.7022762Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:58.7572882Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.0240540Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.1227956Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.1702874Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.4043779Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.5029997Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.7372551Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.7658259Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:34:59.8912380Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 22[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.1137907Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.1891524Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.5078247Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 37[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.5563250Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.7645074Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 299[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.8776642Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:00.9639240Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.2962739Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 39[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.2997826Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.3111454Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.6669582Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.6679179Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:01.6721511Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.0382782Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.0531713Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.0640005Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.4217209Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.4296791Z  [32m✓[39m tests/server/agent-releases-route.test.ts [2m([22m[2m1 test[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.4902939Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5149084Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 5 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5149687Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5192669Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5248838Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/agent-lifecycle.test.ts[2m > [22magent single-instance lock[2m > [22mreleases the lock when the running agent receives SIGTERM
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5315438Z [31m[1mError[22m: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5318274Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5338156Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5339835Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5344942Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/agent-release-installer-windows.test.ts[2m > [22mnative Windows pinned installer fixture[2m > [22minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5350826Z [31m[1mAssertionError[22m: expected +0 not to be +0 // Object.is equality[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5514570Z [36m [2m❯[22m tests/cli/agent-release-installer-windows.test.ts:[2m126:99[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5929222Z     [90m124| [39m    pin [33m=[39m second[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.5989041Z     [90m125| [39m    [34mexpect[39m(([35mawait[39m [34minvoke[39m(script[33m,[39m home[33m,[39m fakeBin[33m,[39m url[33m,[39m [][33m,[39m { [33mTEST_NPM_FA[39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6039941Z     [90m126| [39m    [34mexpect[39m(([35mawait[39m [34minvoke[39m(script[33m,[39m home[33m,[39m fakeBin[33m,[39m url[33m,[39m [][33m,[39m { [33mTEST_CONFIG[39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6106154Z     [90m   | [39m                                                                                                  [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6115211Z     [90m127| [39m    [35mconst[39m sensitive [33m=[39m [35mawait[39m [34minvoke[39m(script[33m,[39m home[33m,[39m fakeBin[33m,[39m url[33m,[39m [[32m"-Forc[39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6117260Z     [90m128| [39m    [34mexpect[39m(sensitive[33m.[39mcode)[33m.[39mnot[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6119613Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6120184Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6120674Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6122619Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/agent-release-installer.test.ts[2m > [22mWindows installer release boundary[2m > [22mdoes not chase main and stages before stopping the running task
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6124469Z [31m[1mAssertionError[22m: expected 10920 to be less than -1[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6125672Z [36m [2m❯[22m tests/cli/agent-release-installer.test.ts:[2m160:53[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6127178Z     [90m158| [39m    [34mexpect[39m(source)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m"$($Arguments -join ' ')"[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6128912Z     [90m159| [39m    [34mexpect[39m(source)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'"origin/$Branch"'[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6131162Z     [90m160| [39m    [34mexpect[39m(source[33m.[39m[34mindexOf[39m([32m"Invoke-Checked npm ci"[39m))[33m.[39m[34mtoBeLessThan[39m(sourc…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6132603Z     [90m   | [39m                                                    [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6133388Z     [90m161| [39m  })[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6134021Z     [90m162| [39m})[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6134428Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6134946Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6135423Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6137059Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/install-agent-lifecycle.test.ts[2m > [22mPOSIX installer Agent lifecycle[2m > [22mstops this install's wrapper and child without touching another install
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6139045Z [31m[1mError[22m: agent fixture process 3544 did not become visible[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6140445Z [36m [2m❯[22m waitForProcessCommand tests/cli/install-agent-lifecycle.test.ts:[2m38:9[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6143190Z     [90m 36| [39m    [33mAtomics[39m[33m.[39m[34mwait[39m([35mnew[39m [33mInt32Array[39m([35mnew[39m [33mSharedArrayBuffer[39m([34m4[39m))[33m,[39m [34m0[39m[33m,[39m [34m0[39m[33m,[39m [34m25[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6145233Z     [90m 37| [39m  }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6147160Z     [90m 38| [39m  [35mthrow[39m [35mnew[39m [33mError[39m([32m`agent fixture process [39m[36m${[39mpid[36m}[39m[32m did not become visible[39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6148460Z     [90m   | [39m        [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6149063Z     [90m 39| [39m}
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6149638Z     [90m 40| [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6150525Z [90m [2m❯[22m tests/cli/install-agent-lifecycle.test.ts:[2m83:7[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6151153Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6151604Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6152067Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6153785Z [31m[1m[7m FAIL [27m[22m[39m tests/cli/install-agent-lifecycle.test.ts[2m > [22mPOSIX installer Agent lifecycle[2m > [22muses directory-scoped matching instead of broad tokenizer-agent process search
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6156323Z [31m[1mAssertionError[22m: expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6157350Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6157718Z [32m- Expected[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6158257Z [31m+ Received[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6158590Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6158994Z [32m- stop_existing_service[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6159653Z [32m- stop_existing_agents[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6160246Z [31m+ #!/usr/bin/env bash
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6160772Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6161618Z [31m+ set -euo pipefail
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6162239Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6162748Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6163189Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6163974Z [31m+ SERVER_URL="${TOKENIZER_SERVER_URL:-https://token.vpanel.cc}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6164770Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6165375Z [31m+ ENROLL_TOKEN="${TOKENIZER_ENROLL_TOKEN:-}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6166026Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6166657Z [31m+ DEVICE_NAME="${TOKENIZER_DEVICE_NAME:-}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6167265Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6167940Z [31m+ PROJECT_ROOT="${TOKENIZER_PROJECT_ROOT:-$HOME/project}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6168625Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6169341Z [31m+ HEARTBEAT_SECONDS="${TOKENIZER_HEARTBEAT_SECONDS:-60}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6170015Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6170616Z [31m+ SYNC_MINUTES="${TOKENIZER_SYNC_MINUTES:-15}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6171221Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6171744Z [31m+ INSTALL_SERVICE="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6172243Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6172656Z [31m+ YES="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6173086Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6173543Z [31m+ FORCE_ENROLL="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6174024Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6174477Z [31m+ ROLLBACK="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6174926Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6175625Z [31m+ REPO_URL="https://github.com/tripplemay/tokenizer.git"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6176581Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6177143Z [31m+ TOKENIZER_HOME="$HOME/.tokenizer"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6177723Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6178260Z [31m+ INSTALL_DIR="$TOKENIZER_HOME/app"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6178812Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6179407Z [31m+ RELEASES_DIR="$TOKENIZER_HOME/releases"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6180014Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6180601Z [31m+ PREVIOUS_LINK="$TOKENIZER_HOME/previous"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6181230Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6182148Z [31m+ BIN_DIR="$HOME/.local/bin"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6182739Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6183408Z [31m+ CREDENTIALS_FILE="$TOKENIZER_HOME/credentials.json"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6184096Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6184531Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6184940Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6185439Z [31m+ while [ "$#" -gt 0 ]; do
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6185934Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6186394Z [31m+   case "$1" in
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6186856Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6187474Z [31m+     --server-url) SERVER_URL="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6188123Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6188770Z [31m+     --enroll-token) ENROLL_TOKEN="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6189822Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6190468Z [31m+     --device-name) DEVICE_NAME="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6191120Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6191776Z [31m+     --project-root) PROJECT_ROOT="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6192416Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6193156Z [31m+     --heartbeat-seconds) HEARTBEAT_SECONDS="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6193847Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6194458Z [31m+     --sync-minutes) SYNC_MINUTES="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6195065Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6195738Z [31m+     --no-service) INSTALL_SERVICE="0"; shift ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6212466Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6213991Z [31m+     --force-enroll) FORCE_ENROLL="1"; shift ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6252973Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6253663Z [31m+     --rollback) ROLLBACK="1"; shift ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6264438Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6319223Z [31m+     --yes) YES="1"; shift ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6400691Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6404665Z [31m+     -h|--help)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6405077Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6405414Z [31m+       cat <<'USAGE'
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6405784Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6406170Z [31m+ Usage: install.sh [options]
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6406590Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6406871Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6407141Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6407422Z [31m+ Options:
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6407724Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6412239Z [31m+   --server-url <url>          Tokenizer server (default: https://token.vpanel.cc)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6413289Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6414082Z [31m+   --enroll-token <token>      One-time enrollment token. Required for first install;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6414784Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6415443Z [31m+                               ignored on re-install unless --force-enroll is set.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6416053Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6416605Z [31m+   --device-name <name>        Human-readable device name
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6417138Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6417868Z [31m+   --project-root <path>       Project root directory (default: $HOME/project)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6418523Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6419179Z [31m+   --heartbeat-seconds <n>     Agent heartbeat interval (default: 60)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6420136Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6420802Z [31m+   --sync-minutes <n>          Agent collect/sync interval (default: 15)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6421413Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6422035Z [31m+   --no-service                Skip installing the background service
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6422609Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6423258Z [31m+   --force-enroll              Re-enroll even if credentials already exist
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6424156Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6424760Z [31m+                               (rotates deviceToken and revokes the previous
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6425707Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6426209Z [31m+                               token for this device)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6426685Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6427289Z [31m+   --rollback                  Restore the previous installed release
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6427883Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6428509Z [31m+   --yes                       Use the detected device name without prompting
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6429090Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6429559Z [31m+   -h, --help                  Show this help
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6430021Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6430310Z [31m+ USAGE
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6430611Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6430925Z [31m+       exit 0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6431243Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6431528Z [31m+       ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6431842Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6432330Z [31m+     *) echo "Unknown argument: $1" >&2; exit 1 ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6432815Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6433105Z [31m+   esac
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6433397Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6433686Z [31m+ done
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6433985Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6434264Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6435704Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6436253Z [31m+ log() { printf '[tokenizer] %s\n' "$*"; }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6437077Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6437376Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6437665Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6438817Z [31m+ # The CLI wrapper and its Node child have different command lines. Match both
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6439516Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6440189Z [31m+ # forms against this install's directories so an upgrade never kills an
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6440839Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6441427Z [31m+ # unrelated command that merely happens to contain "agent".
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6441990Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6442394Z [31m+ agent_command_matches() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6442788Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6443123Z [31m+   local command="$1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6443497Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6450023Z [31m+   local release_dir="${INSTALL_DIR%/app}/releases"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6451037Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6451691Z [31m+   [[ "$command" =~ (^|[[:space:]])agent([[:space:]]|$) ]] || return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6452308Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6494788Z [31m+   [[ "$command" == *"$INSTALL_DIR/src/cli/index.ts"* ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6495457Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6507720Z [31m+      "$command" == *"$INSTALL_DIR/bin/tokenizer"* ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6511637Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6512242Z [31m+      "$command" == *"$release_dir/"*"/src/cli/index.ts"* ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6512792Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6513317Z [31m+      "$command" == *"$release_dir/"*"/bin/tokenizer"* ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6513843Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6514295Z [31m+      "$command" == *"$BIN_DIR/tokenizer"* ]]
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6514733Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6515394Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6515695Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6515961Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6516239Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6516559Z [31m+ agent_pids() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6516906Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6517615Z [31m+   # BSD ps truncates command lines to the terminal width unless -ww is given.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6518315Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6518986Z [31m+   # The Agent argument is after a long absolute install path on macOS.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6519631Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6520871Z [31m+   ps -axww -o pid= -o command= 2>/dev/null | awk -v install_dir="$INSTALL_DIR" -v release_dir="${INSTALL_DIR%/app}/releases/" -v bin_dir="$BIN_DIR" '
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6521917Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6522220Z [31m+     {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6522529Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6522870Z [31m+       command = $0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6523218Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6523793Z [31m+       is_agent = command ~ /(^|[[:space:]])agent([[:space:]]|$)/
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6524377Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6525847Z [31m+       is_own_wrapper = index(command, install_dir "/bin/tokenizer") || index(command, bin_dir "/tokenizer") || (index(command, release_dir) && index(command, "/bin/tokenizer"))
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6528485Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6529691Z [31m+       is_own_child = index(command, install_dir "/src/cli/index.ts") || (index(command, release_dir) && index(command, "/src/cli/index.ts"))
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6530658Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6531275Z [31m+       if (is_agent && (is_own_wrapper || is_own_child)) print $1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6531792Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6532088Z [31m+     }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6532394Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6532682Z [31m+   '
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6532972Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6533266Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6533552Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6533849Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6534134Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6534494Z [31m+ agent_pid_matches() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6534952Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6535703Z [31m+   local pid="$1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6536060Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6536454Z [31m+   [ "$pid" != "$$" ] || return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6536881Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6537202Z [31m+   local command
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6537542Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6538166Z [31m+   command="$(ps -ww -p "$pid" -o command= 2>/dev/null || true)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6539033Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6539470Z [31m+   agent_command_matches "$command"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6539908Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6540196Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6540494Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6540779Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6541058Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6541455Z [31m+ stop_existing_service() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6541849Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6542563Z [31m+   # Disable the service before stopping children. launchd/systemd may restart
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6543217Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6543920Z [31m+   # a just-killed old wrapper otherwise, recreating the version race while the
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6544552Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6545195Z [31m+   # checkout is being updated.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6657670Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6667687Z [31m+   if [ -x "$BIN_DIR/tokenizer" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6723968Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6803426Z [31m+     "$BIN_DIR/tokenizer" uninstall-service >/dev/null 2>&1 || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6806288Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6811620Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6813522Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6820694Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6838905Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6842385Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6843004Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6843672Z [31m+ stop_existing_agents() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6844383Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6844974Z [31m+   local pids pid attempts
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6845592Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6846186Z [31m+   pids="$(agent_pids || true)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6846791Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6847361Z [31m+   [ -n "$pids" ] || return 0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6847983Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6859774Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6860369Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6860755Z [31m+   for pid in $pids; do
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6861181Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6861611Z [31m+     if agent_pid_matches "$pid"; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6862063Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6862530Z [31m+       log "Stopping existing agent (pid $pid)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6863101Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6863541Z [31m+       kill -TERM "$pid" 2>/dev/null || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6864002Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6864298Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6864599Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6865510Z [31m+   done
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6865843Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6866083Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6866318Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6866614Z [31m+   attempts=0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6866901Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6867298Z [31m+   while [ "$attempts" -lt 10 ]; do
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6867702Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6868072Z [31m+     pids="$(agent_pids || true)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6868464Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6868809Z [31m+     [ -z "$pids" ] && return
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6869169Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6869530Z [31m+     attempts=$((attempts + 1))
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6870269Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6870565Z [31m+     sleep 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6870852Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6871126Z [31m+   done
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6871400Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6871626Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6871857Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6872506Z [31m+   # A pre-signal-forwarding wrapper can die while leaving its child orphaned.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6873131Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6873737Z [31m+   # Re-check every PID immediately before the bounded last-resort kill so PID
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6874676Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6875528Z [31m+   # reuse cannot target a process outside this install.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6876078Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6876397Z [31m+   for pid in $pids; do
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6876714Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6877085Z [31m+     if agent_pid_matches "$pid"; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6877486Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6878176Z [31m+       log "Force-stopping unresponsive agent (pid $pid)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6878707Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6879145Z [31m+       kill -KILL "$pid" 2>/dev/null || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6879593Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6880160Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6880445Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6880718Z [31m+   done
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6881000Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6881271Z [31m+   sleep 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6881561Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6881940Z [31m+   pids="$(agent_pids || true)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6882341Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6882706Z [31m+   if [ -n "$pids" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6883084Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6883669Z [31m+     echo "Could not stop the existing Tokenizer agent: $pids" >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6884233Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6885116Z [31m+     exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6885452Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6885725Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6886004Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6886282Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6886552Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6886835Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6887096Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6888144Z [31m+ LOCK_DIR="${INSTALL_DIR%/app}/.install.lock"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6888645Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6892689Z [31m+ LOCK_RECOVERY_DIR="${INSTALL_DIR%/app}/.install.lock.recover"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6893448Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6893794Z [31m+ LOCK_OWNED="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6894148Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6894816Z [31m+ LOCK_OWNER="$$|$(LC_ALL=C ps -p "$$" -o lstart= | tr -s ' ' | sed 's/^ //;s/ $//')"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6895832Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6896231Z [31m+ if [ "$LOCK_OWNER" = "$$|" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6896886Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6897461Z [31m+   echo "Cannot identify the installer process for locking." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6898040Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6898322Z [31m+   exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6898618Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6898902Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6899159Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6899437Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6899703Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6900046Z [31m+ lock_is_active() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6900395Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6900927Z [31m+   local directory="$1" pid started observed modified now
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6901467Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6906201Z [31m+   if [ -f "$directory/owner" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6906829Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6907397Z [31m+     IFS='|' read -r pid started < "$directory/owner" || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6907912Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6908414Z [31m+     if [[ "$pid" =~ ^[0-9]+$ ]] && [ -n "$started" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6908891Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6909702Z [31m+       observed="$(LC_ALL=C ps -p "$pid" -o lstart= 2>/dev/null | tr -s ' ' | sed 's/^ //;s/ $//')"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6910433Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6910893Z [31m+       [ "$observed" = "$started" ] && return 0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6911355Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6911646Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6911928Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6912244Z [31m+     return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6912840Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6913831Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6914136Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6914785Z [31m+   # A newly created lock may not have its owner file yet. Never steal it.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6915449Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6920200Z [31m+   modified="$(stat -f %m "$directory" 2>/dev/null || stat -c %Y "$directory" 2>/dev/null || true)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6921431Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6921785Z [31m+   now="$(date +%s)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6922150Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6922644Z [31m+   [ -z "$modified" ] || [ "$((now - modified))" -lt 30 ]
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6923127Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6923419Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6923707Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6923979Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6924250Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6924619Z [31m+ release_install_lock() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6925002Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6925538Z [31m+   if [ "$LOCK_OWNED" = "1" ] && [ -f "$LOCK_DIR/owner" ] &&
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6926104Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6926639Z [31m+      [ "$(cat "$LOCK_DIR/owner")" = "$LOCK_OWNER" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6927158Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6927542Z [31m+     rm -f "$LOCK_DIR/owner"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6928158Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6928535Z [31m+     rmdir "$LOCK_DIR" 2>/dev/null || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6928994Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6929272Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6929580Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6931213Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6931578Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6931884Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6932180Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6932574Z [31m+ acquire_install_lock() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6932981Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6933329Z [31m+   local stale
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6934017Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6934502Z [31m+   if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6934967Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6935395Z [31m+     if lock_is_active "$LOCK_DIR"; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6935854Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6936761Z [31m+       echo "Another Tokenizer installation is running; existing installation was not changed." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6937588Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6937914Z [31m+       return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6938241Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6938528Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6938824Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6939348Z [31m+     if ! mkdir "$LOCK_RECOVERY_DIR" 2>/dev/null; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6939858Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6940560Z [31m+       echo "Installer lock recovery is already in progress; retry later." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6941224Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6942084Z [31m+       return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6942442Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6942730Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6943448Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6944061Z [31m+     printf '%s\n' "$LOCK_OWNER" > "$LOCK_RECOVERY_DIR/owner"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6944609Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6946199Z [31m+     if [ -d "$LOCK_DIR" ] && ! lock_is_active "$LOCK_DIR"; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6947461Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6948043Z [31m+       stale="$LOCK_DIR.stale.$$"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6948517Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6948922Z [31m+       mv "$LOCK_DIR" "$stale"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6949336Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6949683Z [31m+       rm -rf "$stale"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6950059Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6950351Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6950653Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6951088Z [31m+     rm -f "$LOCK_RECOVERY_DIR/owner"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6951530Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6951928Z [31m+     rmdir "$LOCK_RECOVERY_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6952341Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6952798Z [31m+     if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6953243Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6954058Z [31m+       echo "Another Tokenizer installation acquired the lock; retry later." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6954918Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6955319Z [31m+       return 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6955885Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6956296Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6957004Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6957418Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6957793Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6958500Z [31m+   printf '%s\n' "$LOCK_OWNER" > "$LOCK_DIR/owner.new.$$"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6959573Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6960270Z [31m+   mv "$LOCK_DIR/owner.new.$$" "$LOCK_DIR/owner"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6960890Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6976782Z [31m+   LOCK_OWNED="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6977309Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6977626Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6977927Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6978223Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6978514Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6979328Z [31m+ mkdir -p "${INSTALL_DIR%/app}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6979809Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6980162Z [31m+ acquire_install_lock
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6980539Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6980937Z [31m+ trap release_install_lock EXIT
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6981350Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6981624Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6981907Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6982640Z [31m+ # Decide whether enrollment is needed BEFORE doing any installation work so we
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6983361Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6984003Z [31m+ # fail fast if the caller asked for a fresh install without a token.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6986044Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6986394Z [31m+ NEED_ENROLL="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6986736Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6987132Z [31m+ if [ "$FORCE_ENROLL" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6987557Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6987892Z [31m+   NEED_ENROLL="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6988248Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6988658Z [31m+   if [ -f "$CREDENTIALS_FILE" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6989119Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6989938Z [31m+     log "--force-enroll set; existing credentials at $CREDENTIALS_FILE will be replaced."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6990709Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6991011Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6991307Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6991773Z [31m+ elif [ ! -f "$CREDENTIALS_FILE" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6992241Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6992650Z [31m+   NEED_ENROLL="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6993025Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6993314Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6993598Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6993887Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6994186Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6994739Z [31m+ if [ "$ROLLBACK" = "1" ] && [ "$FORCE_ENROLL" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6995293Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6995886Z [31m+   echo "--rollback and --force-enroll cannot be combined." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6996453Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6996803Z [31m+   exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6997117Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6997386Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6997672Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6997952Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6998224Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6998891Z [31m+ if [ "$ROLLBACK" = "0" ] && [ "$NEED_ENROLL" = "1" ] && [ -z "$ENROLL_TOKEN" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.6999916Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7000372Z [31m+   if [ -f "$CREDENTIALS_FILE" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7000833Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7001496Z [31m+     echo "--force-enroll requested but no --enroll-token supplied." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7002137Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7002417Z [31m+   else
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7002704Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7003607Z [31m+     echo "Missing enrollment token. Use --enroll-token <token> (generate one in the dashboard)." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7004419Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7004720Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7004985Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7005263Z [31m+   exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7005563Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7005837Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7006121Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7006399Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7006680Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7007345Z [31m+ if [ "$ROLLBACK" = "0" ] && [ "$NEED_ENROLL" = "0" ] && [ -n "$ENROLL_TOKEN" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7007985Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7008956Z [31m+   log "Existing credentials detected; ignoring --enroll-token. Pass --force-enroll to rotate the deviceToken."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7009861Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7010473Z [31m+   ENROLL_TOKEN=""
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7010850Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7013708Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7014076Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7014728Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7015028Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7015916Z [31m+ is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7016520Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7016817Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7017072Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7017397Z [31m+ install_homebrew() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7017743Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7018200Z [31m+   if command -v brew >/dev/null 2>&1; then return; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7018699Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7019520Z [31m+   log "Installing Homebrew..."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7020546Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7021892Z [31m+   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7023312Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7025020Z [31m+   if [ -x /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7026322Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7026888Z [31m+   if [ -x /usr/local/bin/brew ]; then eval "$(/usr/local/bin/brew shellenv)"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7027929Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7028575Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7029048Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7029352Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7029911Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7030294Z [31m+ ensure_node() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7030970Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7033160Z [31m+   if command -v node >/dev/null 2>&1; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7033761Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7110155Z [31m+     major="$(node -v | sed 's/^v//' | cut -d. -f1)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7113602Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7114653Z [31m+     if [ "$major" -ge 22 ]; then return; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7115773Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7118326Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7120641Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7120903Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7121195Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7122455Z [31m+   case "$(uname -s)" in
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7122940Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7123977Z [31m+     Darwin)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7124834Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7125165Z [31m+       install_homebrew
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7125488Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7126827Z [31m+       log "Installing Node.js with Homebrew..."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7127876Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7128451Z [31m+       brew install node@22 || brew install node
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7129688Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7132102Z [31m+       if [ -d /opt/homebrew/opt/node@22/bin ]; then export PATH="/opt/homebrew/opt/node@22/bin:$PATH"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7133796Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7134988Z [31m+       if [ -d /usr/local/opt/node@22/bin ]; then export PATH="/usr/local/opt/node@22/bin:$PATH"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7137149Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7137891Z [31m+       ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7138318Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7139315Z [31m+     Linux)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7139556Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7141731Z [31m+       log "Installing Node.js 22 with NodeSource..."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7142428Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7143859Z [31m+       curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7144531Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7145829Z [31m+       sudo apt-get install -y nodejs git
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7146800Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7147207Z [31m+       ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7147540Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7148653Z [31m+     *)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7148972Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7149898Z [31m+       echo "Unsupported OS: $(uname -s)" >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7150409Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7151622Z [31m+       exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7153653Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7153894Z [31m+       ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7154109Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7154373Z [31m+   esac
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7155140Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7155383Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7155673Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7156371Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7156582Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7157868Z [31m+ ensure_git() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7158969Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7159404Z [31m+   if command -v git >/dev/null 2>&1; then return; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7161079Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7161894Z [31m+   case "$(uname -s)" in
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7162353Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7162876Z [31m+     Darwin) install_homebrew; brew install git ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7164489Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7165004Z [31m+     Linux) sudo apt-get update && sudo apt-get install -y git ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7165375Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7165614Z [31m+   esac
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7166216Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7166542Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7166830Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7169208Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7169587Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7170974Z [31m+ # better-sqlite3 ships prebuilds for many Node/platform combos, but on WSL2 the
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7172399Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7174098Z [31m+ # libc detection can come back empty and prebuild-install falls back to
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7175247Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7176995Z [31m+ # node-gyp build-from-source. That needs make/g++/python3 on the box. macOS
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7178276Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7178994Z [31m+ # users already have these through Xcode CLT (a brew install requirement).
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7179508Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7180581Z [31m+ ensure_build_tools() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7180880Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7181217Z [31m+   case "$(uname -s)" in
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7182195Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7183989Z [31m+     Linux)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7184820Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7187026Z [31m+       if command -v make >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then return; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7189228Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7189904Z [31m+       log "Installing build tools (build-essential, python3) for native npm modules..."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7190949Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7191317Z [31m+       sudo apt-get update
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7192380Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7192828Z [31m+       sudo apt-get install -y build-essential python3
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7194059Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7194974Z [31m+       ;;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7195432Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7196577Z [31m+   esac
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7196994Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7197290Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7197991Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7198422Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7198704Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7199397Z [31m+ atomic_link() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7199761Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7200295Z [31m+   local target="$1" link="$2" temporary="${2}.new.$$"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7201829Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7203300Z [31m+   ln -s "$target" "$temporary"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7204306Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7205473Z [31m+   # rename(2) replaces a symlink atomically on macOS and Linux. `mv` can
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7206022Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7206511Z [31m+   # follow a symlink to a directory, so it cannot be used for this switch.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7207528Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7209815Z [31m+   node -e 'require("node:fs").renameSync(process.argv[1], process.argv[2])' "$temporary" "$link"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7211199Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7211535Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7212372Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7212681Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7213783Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7214171Z [31m+ release_realpath() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7215159Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7215623Z [31m+   # shellcheck disable=SC2016
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7216771Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7217462Z [31m+   node -e '
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7217733Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7218662Z [31m+     const fs = require("node:fs");
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7219398Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7220619Z [31m+     const path = require("node:path");
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7221402Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7222599Z [31m+     const root = fs.realpathSync(process.argv[1]);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7223746Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7225244Z [31m+     const target = fs.realpathSync(process.argv[2]);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7225931Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7226419Z [31m+     const relative = path.relative(root, target);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7226778Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7227564Z [31m+     if (!relative || relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7228742Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7229746Z [31m+       throw new Error("rollback target is outside the Agent releases directory");
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7230678Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7230985Z [31m+     }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7233097Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7233586Z [31m+     process.stdout.write(target);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7233946Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7235051Z [31m+   ' "$RELEASES_DIR" "$1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7235323Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7235598Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7236362Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7237212Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7238794Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7239199Z [31m+ STAGE_DIR=""
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7239524Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7240575Z [31m+ OLD_TARGET=""
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7241838Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7243687Z [31m+ HAD_OLD="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7244095Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7245103Z [31m+ CUTOVER_STARTED="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7245871Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7246119Z [31m+ COMMITTED="0"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7246343Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7246559Z [31m+ cleanup() {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7246890Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7247223Z [31m+   local status="$?"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7248956Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7249778Z [31m+   trap - EXIT
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7250027Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7250335Z [31m+   set +e
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7251884Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7252535Z [31m+   if [ "$CUTOVER_STARTED" = "1" ] && [ "$COMMITTED" != "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7253824Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7256419Z [31m+     log "Upgrade failed; restoring the previous Agent. Credentials and queue were not deleted."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7257474Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7258057Z [31m+     if [ -L "$INSTALL_DIR" ]; then rm -f "$INSTALL_DIR"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7258628Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7260272Z [31m+     if [ "$HAD_OLD" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7260658Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7261025Z [31m+       if [ -d "$OLD_TARGET" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7262535Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7263862Z [31m+         if [ "$OLD_TARGET" = "$INSTALL_DIR" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7265218Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7266317Z [31m+           log "Previous checkout is already in place."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7266952Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7268072Z [31m+         elif [[ "$OLD_TARGET" == "$RELEASES_DIR"/legacy-* ]]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7268452Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7269278Z [31m+           mv "$OLD_TARGET" "$INSTALL_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7269680Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7270591Z [31m+         else
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7271060Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7272493Z [31m+           atomic_link "$OLD_TARGET" "$INSTALL_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7274087Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7275578Z [31m+         fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7276067Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7276384Z [31m+       elif [ -d "$INSTALL_DIR/.git" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7277253Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7278147Z [31m+         log "Previous physical checkout is still in place."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7279419Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7279928Z [31m+       else
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7281160Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7282388Z [31m+         log "Previous checkout missing at $OLD_TARGET; manual recovery required."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7283946Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7284642Z [31m+       fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7284997Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7286387Z [31m+       if [ "$INSTALL_SERVICE" = "1" ] && [ -x "$BIN_DIR/tokenizer" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7289328Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7292007Z [31m+         "$BIN_DIR/tokenizer" install-service --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES" || log "Old service restart failed; run tokenizer install-service manually."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7295336Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7296320Z [31m+       fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7297817Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7298107Z [31m+     fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7298317Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7298506Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7298693Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7300037Z [31m+   if [ -n "$STAGE_DIR" ] && [ -d "$STAGE_DIR" ]; then rm -rf "$STAGE_DIR"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7300520Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7301714Z [31m+   release_install_lock
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7302012Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7302250Z [31m+   exit "$status"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7302932Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7303242Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7303534Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7304207Z [31m+ trap cleanup EXIT
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7304486Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7304707Z [31m+ trap 'exit 130' INT
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7304991Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7305831Z [31m+ trap 'exit 143' TERM
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7307774Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7308249Z [31m+ trap 'exit 129' HUP
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7309612Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7309876Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7310062Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7311074Z [31m+ ensure_node
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7311560Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7313613Z [31m+ mkdir -p "$TOKENIZER_HOME" "$RELEASES_DIR" "$BIN_DIR" "$TOKENIZER_HOME/logs"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7315002Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7316213Z [31m+ export PATH="$BIN_DIR:$PATH"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7316547Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7316842Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7318117Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7319290Z [31m+ if [ "$ROLLBACK" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7320063Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7322016Z [31m+   if [ ! -L "$INSTALL_DIR" ] || [ ! -L "$PREVIOUS_LINK" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7322573Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7323832Z [31m+     echo "No previous release available for rollback." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7324383Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7324701Z [31m+     exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7325009Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7325303Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7326214Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7326749Z [31m+   OLD_TARGET="$(release_realpath "$INSTALL_DIR")"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7327800Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7328374Z [31m+   ROLLBACK_TARGET="$(release_realpath "$PREVIOUS_LINK")"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7329482Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7331436Z [31m+   [ -d "$ROLLBACK_TARGET/.git" ] || { echo "Previous release is not a Git checkout." >&2; exit 1; }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7332920Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7334357Z [31m+   (cd "$ROLLBACK_TARGET" && node --import tsx src/cli/index.ts --help >/dev/null)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7335638Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7336013Z [31m+   HAD_OLD="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7336970Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7337223Z [31m+   CUTOVER_STARTED="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7337468Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7337803Z [31m+   stop_existing_service
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7338646Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7338975Z [31m+   stop_existing_agents
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7340510Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7341374Z [31m+   atomic_link "$ROLLBACK_TARGET" "$INSTALL_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7341749Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7342817Z [31m+   if [ "$INSTALL_SERVICE" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7343270Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7345358Z [31m+     "$BIN_DIR/tokenizer" install-service --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7346125Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7346323Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7346519Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7347238Z [31m+   atomic_link "$OLD_TARGET" "$PREVIOUS_LINK"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7348141Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7348403Z [31m+   COMMITTED="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7349893Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7352714Z [31m+   log "Rolled back to $(git -C "$INSTALL_DIR" rev-parse HEAD)."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7353392Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7353675Z [31m+   exit 0
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7354651Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7354953Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7355679Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7356017Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7357000Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7357369Z [31m+ ensure_git
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7358139Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7359214Z [31m+ ensure_build_tools
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7359633Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7359829Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7360012Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7361068Z [31m+ # An old server, offline host, or invalid manifest must not fall back to main.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7362139Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7362650Z [31m+ # Fetch and verify everything while the old service is still running.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7363615Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7364354Z [31m+ SERVER_URL="${SERVER_URL%/}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7364782Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7365076Z [31m+ node -e '
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7365709Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7366186Z [31m+   const url = new URL(process.argv[1]);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7366658Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7368085Z [31m+   if (url.username || url.password ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7369303Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7371829Z [31m+       (url.protocol !== "https:" && !(url.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)))) {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7374548Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7376504Z [31m+     throw new Error("Agent release manifest requires HTTPS (except loopback testing)");
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7379132Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7379541Z [31m+   }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7379797Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7380524Z [31m+ ' "$SERVER_URL"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7380792Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7382795Z [31m+ manifest="$(curl -fsSL --max-time 15 "$SERVER_URL/api/agent/releases")" || {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7384302Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7384921Z [31m+   echo "Cannot obtain the pinned Agent release; existing installation was not changed." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7386014Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7386315Z [31m+   exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7386622Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7386816Z [31m+ }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7387086Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7388978Z [31m+ # shellcheck disable=SC2016
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7389336Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7390932Z [31m+ pin="$(printf '%s' "$manifest" | node -e '
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7392173Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7392432Z [31m+   let input = "";
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7393484Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7393990Z [31m+   process.stdin.on("data", chunk => input += chunk);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7395308Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7397151Z [31m+   process.stdin.on("end", () => {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7397675Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7397963Z [31m+     const body = JSON.parse(input);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7398311Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7399544Z [31m+     const release = body?.release;
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7400403Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7401205Z [31m+     if (body?.schema_version !== 1 || !release ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7401845Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7402804Z [31m+         !/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/.test(release.version) ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7403746Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7404270Z [31m+         !/^[0-9a-f]{40}$/.test(release.commit) ||
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7405749Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7406666Z [31m+         release.repository !== "https://github.com/tripplemay/tokenizer.git") {
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7407290Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7408086Z [31m+       throw new Error("invalid Agent release manifest");
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7408509Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7408716Z [31m+     }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7409089Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7409583Z [31m+     process.stdout.write(`${release.version} ${release.commit}`);
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7410230Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7410493Z [31m+   });
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7410679Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7411204Z [31m+ ')" || { echo "Invalid Agent release manifest; existing installation was not changed." >&2; exit 1; }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7411678Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7411975Z [31m+ read -r PIN_VERSION PIN_COMMIT <<< "$pin"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7412465Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7412821Z [31m+ log "Preparing Agent $PIN_VERSION ($PIN_COMMIT) in staging"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7413159Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7413523Z [31m+ STAGE_DIR="$(mktemp -d "$TOKENIZER_HOME/.stage.XXXXXXXX")"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7413864Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7414105Z [31m+ git -C "$STAGE_DIR" init -q
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7414351Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7414661Z [31m+ git -C "$STAGE_DIR" remote add origin "$REPO_URL"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7414971Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7415352Z [31m+ git -C "$STAGE_DIR" fetch --no-tags --depth=1 origin "$PIN_COMMIT"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7415712Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7416046Z [31m+ git -C "$STAGE_DIR" checkout --detach --force "$PIN_COMMIT"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7416363Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7416728Z [31m+ ACTUAL_COMMIT="$(git -C "$STAGE_DIR" rev-parse --verify HEAD)"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7417067Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7417357Z [31m+ if [ "$ACTUAL_COMMIT" != "$PIN_COMMIT" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7417649Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7418108Z [31m+   echo "Agent commit digest mismatch; existing installation was not changed." >&2
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7418630Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7418818Z [31m+   exit 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7419015Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7419193Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7419376Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7419828Z [31m+ (cd "$STAGE_DIR" && npm ci && node --import tsx src/cli/index.ts --help >/dev/null)
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7420225Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7420487Z [31m+ chmod +x "$STAGE_DIR/bin/tokenizer"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7420752Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7421032Z [31m+ RELEASE_DIR="$RELEASES_DIR/$PIN_COMMIT-$$"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7421322Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7421565Z [31m+ mv "$STAGE_DIR" "$RELEASE_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7421821Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7422021Z [31m+ STAGE_DIR=""
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7422224Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7422401Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7422577Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7422819Z [31m+ if [ -L "$INSTALL_DIR" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7423068Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7423663Z [31m+   OLD_TARGET="$(node -e 'process.stdout.write(require("node:fs").realpathSync(process.argv[1]))' "$INSTALL_DIR")"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7424179Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7424381Z [31m+   HAD_OLD="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7424591Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7424841Z [31m+ elif [ -e "$INSTALL_DIR" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7425100Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7425687Z [31m+   [ -d "$INSTALL_DIR/.git" ] || { echo "Existing app path is not a Git checkout; refusing to replace it." >&2; exit 1; }
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7426176Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7426486Z [31m+   OLD_TARGET="$RELEASES_DIR/legacy-$(date +%s)-$$"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7426784Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7426978Z [31m+   HAD_OLD="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7427180Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7427355Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7427534Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7427709Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7427886Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7428092Z [31m+ CUTOVER_STARTED="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7428315Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7428536Z [31m+ stop_existing_service
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7428770Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7428978Z [31m+ stop_existing_agents
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7429202Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7429516Z [31m+ if [ "$HAD_OLD" = "1" ] && [ ! -L "$INSTALL_DIR" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7429815Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7430247Z [31m+   mv "$INSTALL_DIR" "$OLD_TARGET"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7430651Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7430835Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7431010Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7431285Z [31m+ atomic_link "$RELEASE_DIR" "$INSTALL_DIR"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7431566Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7431895Z [31m+ ln -sfn "$INSTALL_DIR/bin/tokenizer" "$BIN_DIR/tokenizer"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7432219Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7432393Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7432563Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7432987Z [31m+ # Shared config, credentials, queue, and cursor live outside releases. Do not
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7433498Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7433925Z [31m+ # re-enroll on an ordinary upgrade; --force-enroll remains an explicit action.
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7434327Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7434561Z [31m+ if [ -n "$DEVICE_NAME" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7434807Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7435097Z [31m+   tokenizer init --device-name "$DEVICE_NAME"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7435376Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7435553Z [31m+ else
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7435737Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7435944Z [31m+   tokenizer init
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7436152Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7436325Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7436504Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7436929Z [31m+ tokenizer configure --server-url "$SERVER_URL" --project-root "$PROJECT_ROOT"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7437347Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7437596Z [31m+ if [ "$NEED_ENROLL" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7437853Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7438253Z [31m+   enroll_args=(--enroll-token "$ENROLL_TOKEN" --server-url "$SERVER_URL")
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7438675Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7439089Z [31m+   if [ -n "$DEVICE_NAME" ]; then enroll_args+=(--device-name "$DEVICE_NAME"); fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7439572Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7439881Z [31m+   if [ "$YES" = "1" ]; then enroll_args+=(--yes); fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7440192Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7440453Z [31m+   tokenizer enroll "${enroll_args[@]}"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7440721Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7440894Z [31m+ else
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7441080Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7441418Z [31m+   log "Re-using existing credentials at $CREDENTIALS_FILE."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7441757Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7441929Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7442109Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7442362Z [31m+ 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7442535Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7442785Z [31m+ if [ "$INSTALL_SERVICE" = "1" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7443046Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7443595Z [31m+   tokenizer install-service --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7444072Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7444257Z [31m+   sleep 1
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7444449Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7444717Z [31m+   if [ -z "$(agent_pids || true)" ]; then
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7444992Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7445399Z [31m+     log "Daemon not detected after install-service; starting via nohup..."
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7445774Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7446470Z [31m+     nohup tokenizer agent --heartbeat-seconds "$HEARTBEAT_SECONDS" --sync-minutes "$SYNC_MINUTES" >"$TOKENIZER_HOME/logs/agent.log" 2>&1 &
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7447040Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7447276Z [31m+     disown 2>/dev/null || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7447525Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7447714Z [31m+   fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7447895Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7448073Z [31m+ fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7448250Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7448644Z [31m+ if [ "$HAD_OLD" = "1" ]; then atomic_link "$OLD_TARGET" "$PREVIOUS_LINK"; fi
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7449000Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7449204Z [31m+ COMMITTED="1"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7449425Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7449644Z [31m+ tokenizer run || true
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7449883Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7450676Z [31m+ log "Tokenizer Agent $PIN_VERSION installed at $PIN_COMMIT. Run: tokenizer status"
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7451113Z [39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7451294Z [31m+[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7451397Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7451777Z [36m [2m❯[22m tests/cli/install-agent-lifecycle.test.ts:[2m112:20[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7452557Z     [90m110| [39m  [34mit[39m([32m"uses directory-scoped matching instead of broad tokenizer-agent [39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7453461Z     [90m111| [39m    [35mconst[39m source [33m=[39m [34mreadFileSync[39m([32m"public/install.sh"[39m[33m,[39m [32m"utf8"[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7453920Z     [90m112| [39m    [34mexpect[39m(source)[33m.[39m[34mtoContain[39m([32m"stop_existing_service\nstop_existing_age[39m…
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7454215Z     [90m   | [39m                   [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7454683Z     [90m113| [39m    [34mexpect[39m(source)[33m.[39m[34mtoContain[39m([32m'"$BIN_DIR/tokenizer" uninstall-service'[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7455133Z     [90m114| [39m    [34mexpect[39m(source)[33m.[39m[34mtoContain[39m([32m"ps -axww -o pid= -o command="[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7455143Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7455362Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7455371Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7455915Z [2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m104 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (115)[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7456437Z [2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m1443 passed[39m[22m[2m | [22m[33m29 skipped[39m[90m (1477)[39m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7456605Z [2m   Start at [22m 15:34:05
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7457132Z [2m   Duration [22m 56.85s[2m (transform 3.76s, setup 0ms, collect 12.13s, tests 117.30s, environment 33ms, prepare 14.53s)[22m
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7457161Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7457167Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7478185Z ##[error]AssertionError: expected +0 not to be +0 // Object.is equality
+Verify (Windows)	Run unit tests	 ❯ tests/cli/agent-release-installer-windows.test.ts:126:99
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7484191Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7485570Z ##[error]AssertionError: expected 10920 to be less than -1
+Verify (Windows)	Run unit tests	 ❯ tests/cli/agent-release-installer.test.ts:160:53
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7486033Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7487644Z ##[error]Error: agent fixture process 3544 did not become visible
+Verify (Windows)	Run unit tests	 ❯ waitForProcessCommand tests/cli/install-agent-lifecycle.test.ts:38:9
+Verify (Windows)	Run unit tests	 ❯ tests/cli/install-agent-lifecycle.test.ts:83:7
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7488052Z 
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.7562782Z ##[error]AssertionError: expected '#!/usr/bin/env bash\r\nset -euo pipef…' to contain 'stop_existing_service\nstop_existing_…'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- Expected
+Verify (Windows)	Run unit tests	+ Received
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- stop_existing_service
+Verify (Windows)	Run unit tests	- stop_existing_agents
+Verify (Windows)	Run unit tests	+ #!/usr/bin/env bash
+Verify (Windows)	Run unit tests	+ set -euo pipefail
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ SERVER_URL="${TOKENIZER_SERVER_URL:-https://token.vpanel.cc}"
+Verify (Windows)	Run unit tests	+ ENROLL_TOKEN="${TOKENIZER_ENROLL_TOKEN:-}"
+Verify (Windows)	Run unit tests	+ DEVICE_NAME="${TOKENIZER_DEVICE_NAME:-}"
+Verify (Windows)	Run unit tests	+ PROJECT_ROOT="${TOKENIZER_PROJECT_ROOT:-$HOME/project}"
+Verify (Windows)	Run unit tests	+ HEARTBEAT_SECONDS="${TOKENIZER_HEARTBEAT_SECONDS:-60}"
+Verify (Windows)	Run unit tests	+ SYNC_MINUTES="${TOKENIZER_SYNC_MINUTES:-15}"
+Verify (Windows)	Run unit tests	+ INSTALL_SERVICE="1"
+Verify (Windows)	Run unit tests	+ YES="0"
+Verify (Windows)	Run unit tests	+ FORCE_ENROLL="0"
+Verify (Windows)	Run unit tests	+ ROLLBACK="0"
+Verify (Windows)	Run unit tests	+ REPO_URL="https://github.com/tripplemay/tokenizer.git"
+Verify (Windows)	Run unit tests	+ TOKENIZER_HOME="$HOME/.tokenizer"
+Verify (Windows)	Run unit tests	+ INSTALL_DIR="$TOKENIZER_HOME/app"
+Verify (Windows)	Run unit tests	+ RELEASES_DIR="$TOKENIZER_HOME/releases"
+Verify (Windows)	Run unit tests	+ PREVIOUS_LINK="$TOKENIZER_HOME/previous"
+Verify (Windows)	Run unit tests	+ BIN_DIR="$HOME/.local/bin"
+Verify (Windows)	Run unit tests	+ CREDENTIALS_FILE="$TOKENIZER_HOME/credentials.json"
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ while [ "$#" -gt 0 ]; do
+Verify (Windows)	Run unit tests	+   case "$1" in
+Verify (Windows)	Run unit tests	+     --server-url) SERVER_URL="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --enroll-token) ENROLL_TOKEN="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --device-name) DEVICE_NAME="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --project-root) PROJECT_ROOT="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --heartbeat-seconds) HEARTBEAT_SECONDS="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --sync-minutes) SYNC_MINUTES="$2"; shift 2 ;;
+Verify (Windows)	Run unit tests	+     --no-service) INSTALL_SERVICE="0"; shift ;;
+Verify (Windows)	Run unit tests	+     --force-enroll) FORCE_ENROLL="1"; shift ;;
+Verify (Windows)	Run unit tests	+     --rollback) ROLLBACK="1"; shift ;;
+Verify (Windows)	Run unit tests	+     --yes) YES="1"; shift ;;
+Verify (Windows)	Run unit tests	+     -h|--help)
+Verify (Windows)	Run unit tests	+       cat <<'USAGE'
+Verify (Windows)	Run unit tests	+ Usage: install.sh [options]
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ Options:
+Verify (Windows)	Run unit tests	+   --server-url <url>          Tokenizer server (default: https://token.vpanel.cc)
+Verify (Windows)	Run unit tests	+   --enroll-token <token>      One-time enrollment token. Required for first install;
+Verify (Windows)	Run unit tests	+                               ignored on re-install unless --force-enroll is set.
+Verify (Windows)	Run unit tests	+   --device-name <name>        Human-readable device name
+Verify (Windows)	Run unit tests	+   --project-root <path>       Project root directory (default: $HOME/project)
+Verify (Windows)	Run unit tests	+   --heartbeat-seconds <n>     Agent heartbeat interval (default: 60)
+Verify (Windows)	Run unit tests	+   --sync-minutes <n>          Agent collect/sync interval (default: 15)
+Verify (Windows)	Run unit tests	+   --no-service                Skip installing the background service
+Verify (Windows)	Run unit tests	+   --force-enroll              Re-enroll even if credentials already exist
+Verify (Windows)	Run unit tests	+                               (rotates deviceToken and revokes the previous
+Verify (Windows)	Run unit tests	+                               token for this device)
+Verify (Windows)	Run unit tests	+   --rollback                  Restore the previous installed release
+Verify (Windows)	Run unit tests	+   --yes                       Use the detected device name without prompting
+Verify (Windows)	Run unit tests	+   -h, --help                  Show this help
+Verify (Windows)	Run unit tests	+ USAGE
+Verify (Windows)	Run unit tests	+       exit 0
+Verify (Windows)	Run unit tests	+       ;;
+Verify (Windows)	Run unit tests	+     *) echo "Unknown argument: $1" >&2; exit 1 ;;
+Verify (Windows)	Run unit tests	+   esac
+Verify (Windows)	Run unit tests	+ done
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ log() { printf '[tokenizer] %s\n' "$*"; }
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ # The CLI wrapper and its Node child have different command lines. Match both
+Verify (Windows)	Run unit tests	+ # forms against this install's directories so an upgrade never kills an
+Verify (Windows)	Run unit tests	+ # unrelated command that merely happens to contain "agent".
+Verify (Windows)	Run unit tests	+ agent_command_matches() {
+Verify (Windows)	Run unit tests	+   local command="$1"
+Verify (Windows)	Run unit tests	+   local release_dir="${INSTALL_DIR%/app}/releases"
+Verify (Windows)	Run unit tests	+   [[ "$command" =~ (^|[[:space:]])agent([[:space:]]|$) ]] || return 1
+Verify (Windows)	Run unit tests	+   [[ "$command" == *"$INSTALL_DIR/src/cli/index.ts"* ||
+Verify (Windows)	Run unit tests	+      "$command" == *"$INSTALL_DIR/bin/tokenizer"* ||
+Verify (Windows)	Run unit tests	+      "$command" == *"$release_dir/"*"/src/cli/index.ts"* ||
+Verify (Windows)	Run unit tests	+      "$command" == *"$release_dir/"*"/bin/tokenizer"* ||
+Verify (Windows)	Run unit tests	+      "$command" == *"$BIN_DIR/tokenizer"* ]]
+Verify (Windows)	Run unit tests	+ }
+Verify (Windows)	Run unit tests	+ 
+Verify (Windows)	Run unit tests	+ agent_pids() {
+Verify (Windows)	Run unit tests	+   # BSD ps truncates command lines to the terminal width unless -ww is given.
+Verify (Windows)	Run unit tests	+   # The Agent argument is after a long absolute install path on macOS.
+Verify (Windows)	Run unit tests	+   ps -axww -o pid= -o command= 2>/dev/null | awk -v install_dir="$INSTALL_DIR" -v release_dir="${INSTALL_DIR%/app}/releases/" -v bin_dir="$BIN_DIR" '
+Verify (Windows)	Run unit tests	+     {
+Verify (Windows)	Run unit tests	+       command = $0
+Verify (Windows)	Run unit tests	+       is_agent = command ~ /(^|[[:space:]])agent([[:space:]]|$)/
+Verify (Windows)	Run unit tests	+       is_own_wrapper = index(command, install_dir "/bin/tokenizer") || index(command, bin_dir "/tokenizer") || (index(command, release_dir) && index(command, "/bin/tokenizer"))
+Verify (Windows)	Run unit tests	+       is_own_child = index(command, in
+Verify (Windows)	Run unit tests	2026-10-07T15:35:02.8449808Z ##[error]Process completed with exit code 1.

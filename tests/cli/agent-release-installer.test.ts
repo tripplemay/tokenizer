@@ -147,8 +147,16 @@ describe.skipIf(process.platform === "win32")("pinned POSIX Agent installer", ()
 });
 
 describe("Windows installer release boundary", () => {
-  it("does not chase main and stages before stopping the running task", () => {
-    const source = readFileSync("public/install.ps1", "utf8");
+  function assertStagedBeforeStop(source: string) {
+    const stage = source.search(/^\s+Invoke-Checked npm ci\r?$/m);
+    const stop = source.search(/^\s+Stop-RunningAgent\r?$/m);
+    expect(stage).toBeGreaterThanOrEqual(0);
+    expect(stop).toBeGreaterThan(stage);
+  }
+
+  it.each(["LF", "CRLF"])("does not chase main and stages before stopping the running task (%s)", (newline) => {
+    const original = readFileSync("public/install.ps1", "utf8").replace(/\r\n/g, "\n");
+    const source = newline === "CRLF" ? original.replace(/\n/g, "\r\n") : original;
     expect(source).toContain('/api/agent/releases');
     expect(source).toContain("Agent commit digest mismatch");
     expect(source).toContain("Invoke-Checked npm ci");
@@ -157,6 +165,13 @@ describe("Windows installer release boundary", () => {
     expect(source).toContain("& $Exe @Arguments *> $null");
     expect(source).not.toContain("$($Arguments -join ' ')");
     expect(source).not.toContain('"origin/$Branch"');
-    expect(source.indexOf("Invoke-Checked npm ci")).toBeLessThan(source.indexOf("Stop-RunningAgent\n"));
+    assertStagedBeforeStop(source);
+  });
+
+  it("rejects a missing or premature stop boundary instead of passing absent indexes", () => {
+    const source = readFileSync("public/install.ps1", "utf8").replace(/\r\n/g, "\n");
+    const noStop = source.replace(/^\s+Stop-RunningAgent$/m, "");
+    expect(() => assertStagedBeforeStop(noStop)).toThrow();
+    expect(() => assertStagedBeforeStop(`  Stop-RunningAgent\n${noStop}`)).toThrow();
   });
 });

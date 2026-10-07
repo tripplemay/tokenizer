@@ -1,0 +1,24 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "rows": [
+    {
+      "newline": "LF",
+      "oldStage": 10679,
+      "oldStop": 11474,
+      "oldAssertionSucceeds": true,
+      "newStage": 10673,
+      "newStop": 11472,
+      "newAssertionSucceeds": true
+    },
+    {
+      "newline": "CRLF",
+      "oldStage": 10920,
+      "oldStop": -1,
+      "oldAssertionSucceeds": false,
+      "newStage": 10913,
+      "newStop": 11733,
+      "newAssertionSucceeds": true
+    }
+  ]
+}

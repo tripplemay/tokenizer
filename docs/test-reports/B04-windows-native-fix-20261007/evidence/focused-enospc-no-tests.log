@@ -1,0 +1,65 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b04-windows-native-fix-20261007
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 7 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: ENOSPC: no space left on device, mkdir '/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T/UhqrPl2QUrnQhBbB10SDA'
+ ❯ mkdir node:internal/fs/promises:855:10
+ ❯ Proxy.fetch node_modules/vitest/dist/chunks/resolveConfig.rBxzbVsl.js:6636:9
+ ❯ EventEmitter.onMessage node_modules/vitest/dist/chunks/index.68735LiX.js:91:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ Test Files  no tests
+      Tests  no tests
+     Errors  7 errors
+   Start at  22:44:12
+   Duration  468ms (transform 14ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 0ms)
+

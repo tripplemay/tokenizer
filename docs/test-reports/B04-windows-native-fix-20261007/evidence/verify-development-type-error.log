@@ -1,0 +1,13 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 104ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+tests/cli/agent-release-installer-windows.test.ts(34,7): error TS2339: Property 'Path' does not exist on type '{ NODE_OPTIONS: string; TEST_CLI_TRACE: string; TEST_TASK_TRACE: string; NODE_ENV: "development" | "production" | "test"; }'.
