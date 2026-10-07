@@ -71,7 +71,7 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-  ]; // eslint-disable-next-line
+  ];
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
     data,

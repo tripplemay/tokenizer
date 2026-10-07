@@ -85,7 +85,7 @@ export default function ComplexTable(props: { tableData: any }) {
         </div>
       ),
     }),
-  ]; // eslint-disable-next-line
+  ];
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
     data,

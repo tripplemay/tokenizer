@@ -1,0 +1,3 @@
+tenant 0: authenticated events, summary and page isolated
+tenant 1: authenticated events, summary and page isolated
+Next 16/Auth.js/next-intl scratch two-tenant and revocation smoke PASS

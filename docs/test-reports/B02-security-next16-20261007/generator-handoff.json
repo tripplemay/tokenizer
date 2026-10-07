@@ -1,0 +1,34 @@
+{
+  "batch_id": "B02-security-next16-20261007",
+  "role": "generator",
+  "base_commit": "4b67b2ec33157b70149d708aebea21d3bd5dbbff",
+  "created_at": "2026-10-07T14:17:01Z",
+  "outcome": "CANDIDATE_ONLY",
+  "production_audit": {
+    "critical": 0,
+    "high": 0,
+    "moderate": 0,
+    "total": 0,
+    "evidence": "evidence/npm-audit-production.json"
+  },
+  "verification": {
+    "node": "22.22.0",
+    "npm_ci": "PASS",
+    "verify": "PASS",
+    "lint": "PASS; 0 warnings with --max-warnings=0",
+    "targeted": "PASS; 32 tests",
+    "build": "PASS; Turbopack normal and standalone",
+    "full_test": "FAIL; 1474 passed, 1 failed, 20 skipped; tests/cli/agent-lifecycle.test.ts:152 SIGTERM lock remains",
+    "scratch_auth_tenant": "PASS; two real Prisma sessions, tenant isolation and revocation; no real mail"
+  },
+  "unverified": [
+    "Independent Evaluator replay",
+    "B01 Playwright against combined Next 16 tree",
+    "real Resend magic-link delivery and callback",
+    "Linux Docker image startup",
+    "Windows CI",
+    "production secrets and rotation"
+  ],
+  "release_ready": false,
+  "details": "README.md"
+}

@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b02-next16-20261007
+
+ ✓ tests/server/dependency-security-floor.test.ts (2 tests) 3ms
+ ✓ tests/server/auth-secret.test.ts (13 tests) 4ms
+ ✓ tests/server/pricing-review.test.ts (9 tests) 4ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 5ms
+
+ Test Files  4 passed (4)
+      Tests  32 passed (32)
+   Start at  21:16:00
+   Duration  401ms (transform 81ms, setup 0ms, collect 169ms, tests 15ms, environment 0ms, prepare 532ms)
+

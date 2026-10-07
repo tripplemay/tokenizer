@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
