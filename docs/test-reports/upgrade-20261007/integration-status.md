@@ -4,6 +4,7 @@
 
 - 原仓 `main` 仍为 `2074991717abaf3cb34d9aad894bcd4357fefbc3`。原 worktree 预存大量 mode-only 工作区变更，本集成树未读取/覆盖这些改动。编排者仅推送了 B04/B05 非 main 验证分支；没有 push main 或生产部署。
 - 2026-10-07 16:54 UTC 对 `https://token.vpanel.cc/api/health` 的只读请求返回 `ok=true`、`commit=92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1`；它比远端 main 少一个仅文档 commit `2074991`。这只确认公开 health 与当前 source revision，**不**证明真实登录业务、生产 image digest、恢复点或 F005 验收。
+- 与该生产 commit 对应的旧 GitHub push run `35017447796` 整体为 failure（Windows Verify failed），但旧 Deploy job 为 success；这证明以往部署门槛未等待 Windows 成功，不能把既有生产状态当成本次 B01/B04 验收依据。
 - `progress.json.status=verifying`、`current_sprint=BL-HOMEPAGE-FRESHNESS`；`features.json` F005 仍 `pending`，`pending_gate=null`。当前升级修复采用独立 hotfix 候选树，**不冒充旧批次 F005 签收**，不写 `pending_gate.decision`。
 - 2026-10-07 工程审查 verdict SHA-256：`349e790bf942ba727c1836be4aa2fa907baa75d7893c27b9cad694fbe6a767d5`；前端审查 verdict SHA-256：`035e60450f48b2921bbb00f08aedd5c1e41c2247147e07896ac1b8f189e077cd`。两份原始报告各留在独立审查 worktree，未改写。
 
