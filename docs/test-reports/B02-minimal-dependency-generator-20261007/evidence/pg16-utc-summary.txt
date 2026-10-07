@@ -1,0 +1,8 @@
+{
+  success: true,
+  numTotalTestSuites: 14,
+  numPassedTestSuites: 14,
+  numTotalTests: 48,
+  numPassedTests: 48,
+  numPendingTests: 0
+}

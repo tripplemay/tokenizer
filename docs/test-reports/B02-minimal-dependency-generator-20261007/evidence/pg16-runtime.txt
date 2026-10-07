@@ -1,0 +1,3 @@
+pgdata=/tmp/tokenizer-b02-pg16-8aENOE
+port=55439
+postgres_version=postgres (PostgreSQL) 16.13 (Homebrew)
