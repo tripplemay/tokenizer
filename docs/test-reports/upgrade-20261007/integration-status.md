@@ -16,6 +16,7 @@
 | B01 CI 基础门禁 | `6aeabce` | Generator `e599156`；二轮独立 verdict `PASS_WITH_LIMITATIONS`，见 `tokenizer-b01-ci-eval-20261007/docs/test-reports/b01-ci-foundation-20261007/evaluator-verdict-round2.json`；组合树 Node 22 clean install、PG16 迁移和 Playwright 3/3 | GitHub Actions Linux/Windows/DB/浏览器及远程契约 fixture 未在组合 SHA 上运行 |
 | B02 安全依赖与认证配置 | `d8faf07` + 集成修正 `5b3a8be` | Generator `4b67b2e`；独立 verdict `PASS_WITH_LIMITATIONS` 且 `release_ready=false`，见 `tokenizer-b02-evaluator-20261007/docs/test-reports/B02-security-evaluator-20261007/verdict.json`；组合树 Node 22 clean install、verify/lint/test/build、Playwright 3/3 | 真实邮件/session/双租户 PG、剩余依赖风险人类处置、Linux Docker；公共 health 未证明 Auth.js 配置就绪 |
 | B03/R06 默认采集最小化 | `0517260` + 组合 canary `dd1eb90` | Generator `1967242`；独立 round2 verdict `PASS_WITH_LIMITATIONS`，见 `/private/tmp/tokenizer-b03-eval.vFpv2h/docs/test-reports/M1-B03-R06-evaluator-round2-verdict.json`；组合树真实 Claude 源→队列→HTTP→PG→认证 API/UI 双租户 canary 通过，DB/日志敏感 canary 0 命中；全量 1515/22 skip、verify/lint/build PASS | 历史数据审批清理、限时 diagnostic opt-in、旧 Agent wire 暴露与路径型 ID 迁移；local-only backlog/scope cursor 产品语义 |
+| B02 Next 16 安全依赖闭环 | `217b9de` + Evaluator 产物 `f358a3b`/`f92a884` | Generator `305201e`；独立 verdict `PASS_WITH_RELEASE_BLOCKERS`，见 `docs/test-reports/B02-security-next16-evaluator-20261007/verdict.json`；组合树 Node 22 clean install、verify/lint/build、全量 1518/22 skip、PG16 Playwright 3/3 及 B09 双租户真实 Next/PG 可变成本 replay 通过 | 全依赖 dev/build/test 审计仍 2 Critical/10 High/4 Moderate；GitHub Actions Windows/Linux、真实邮件/生产密钥及后续业务包未完成 |
 
 本树 `d8faf07`（B01+B02 合并后）以 Node 22 执行 `npm ci`、verify、lint、build 与全量 `npm run test` 均通过：**1500 通过、22 跳过**。组合树 scratch PG16 的 28 项迁移成功；B01 数据库 opt-in 探针 **48/48、0 skip**，锁定框架 `027c369` 的双向契约 **6/6、0 skip**。`5b3a8be` 上本地 PG16 + 生产 Next + 合成认证 Playwright 关键旅程 **3/3 通过**。第一次 B02 组合 E2E 因缺少 `AUTH_RESEND_KEY` 正确失败；补测试专用值后复测通过。B03/R06 合并后 Node 22 全量 **1515 通过、22 跳过**，verify/lint/build 通过；B04 仍在隔离树。Windows 原生 CI 仍未执行。
 
@@ -23,7 +24,7 @@
 
 用户已在 2026-10-07 明确选择继续修复 B02 的 Next 内嵌 PostCSS High 与 next-intl Moderate 后再发布，**不接受本轮残留依赖风险作为放行理由**。因此 B02 独立 verdict 的 `release_ready=false` 必须保持，直到修复版依赖树、功能回归与独立复验有实物证据。
 
-B02 修复版候选现位于独立树 `tokenizer-b02-next16-20261007`，提交 `305201e`：Generator 的 Node 22 生产依赖审计为 0 Critical/High/Moderate，verify、lint、build 和 scratch PG 双租户认证通过；全量仍有 SIGTERM 锁测试失败，且包含 dev 依赖的审计不是零漏洞。独立 Evaluator 与组合 SHA 回归仍在进行，**未回流本树、未放行**。
+B02 修复版已回流候选树：独立 Evaluator 在原候选验证生产依赖审计 0 Critical/High/Moderate、PG16 双租户 Auth.js/magic-link、Chromium 渲染及 Node 22 三次全量通过；含 dev 依赖的审计仍是 2 Critical/10 High/4 Moderate，属于构建/CI 风险，不能称整体零漏洞。本树集成时保持 B09 的 `invalidateModelPricesCache()` 包装，按 Next 16 的第二参数契约更新 model-price 和 usage-cost tag invalidation。组合树验证 Node 22 全量 1518/22 skip、PG16 迁移 28 项/Playwright 3/3。B09 replay 首次失败是 scratch PostgreSQL 数据库会话 `Asia/Jakarta` 与项目 UTC 约束冲突；仅将隔离 `tokenizer_b09_cache` 数据库设为 UTC，并将测试专用 `ADMIN_TOKEN`/`AUTH_RESEND_KEY` 更新为 B02 强配置要求后重跑通过，覆盖 $2.50→$5.00→$7.50→$15.00→删除 $10.00→legacy 清理 $20.00、双租户 404。该结果不代替生产或 GitHub CI。
 
 用户已确认 B03 隐私行为：`local-only` 切回 `sync` 后自动上传本机积压事件；include/exclude 规则修改只对后续采集生效，历史事件仅通过单独有界回扫。后续 UI/CLI 需显式呈现积压数量及回扫入口，不得把 `projectRoots` 当作采集白名单。
 

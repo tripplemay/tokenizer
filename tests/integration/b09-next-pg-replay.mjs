@@ -10,7 +10,7 @@ if (process.env.B09_REAL_REPLAY !== "1" || !/^postgresql:\/\/[^/]+@127\.0\.0\.1:
 
 const prisma = new PrismaClient();
 const baseUrl = "http://127.0.0.1:3783";
-const adminToken = "b09-real-replay-admin-only";
+const adminToken = "b09-real-replay-admin-token-at-least-32-characters";
 const deviceToken = "b09-real-replay-device-only";
 const now = Date.now();
 const at = (minutesAgo) => new Date(now - minutesAgo * 60_000);
@@ -197,7 +197,8 @@ async function run() {
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, AUTH_SECRET: "b09-replay-synthetic-secret-at-least-32-chars", AUTH_URL: baseUrl,
       AUTH_TRUST_HOST: "true", NEXT_PUBLIC_APP_URL: baseUrl, ADMIN_TOKEN: adminToken,
-      AUTH_RESEND_KEY: "", RESEND_API_KEY: "", PRICING_AUTO_ENABLED: "false", TZ: "UTC" }
+      AUTH_RESEND_KEY: "re_synthetic_b09_replay", AUTH_EMAIL_FROM: "b09@example.invalid",
+      RESEND_API_KEY: "", PRICING_AUTO_ENABLED: "false", TZ: "UTC" }
   });
   const serverLogs = [];
   for (const stream of [child.stdout, child.stderr]) stream.on("data", (chunk) => serverLogs.push(String(chunk)));
