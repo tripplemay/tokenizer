@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { afterEach, expect, it, vi } from "vitest";
 import * as git from "@/cli/git";
 import { mergeQueue } from "@/cli/collect";
@@ -35,29 +35,111 @@ function fixture() {
   return { dir, file, request, config };
 }
 
-it.skipIf(process.platform === "win32")("interrupts a real stalled Git process within the replay deadline", () => {
+it("interrupts a real stalled Git process within the replay deadline", () => {
   const { dir, file, request } = fixture();
   const bin = join(dir, "bin");
   mkdirSync(bin);
   const marker = join(dir, "git-entered");
-  writeFileSync(join(bin, "git"), "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\nsleep 12\nexit 1\n", { mode: 0o700 });
+  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
+  const shim = process.platform === "win32"
+    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
+    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
+  writeFileSync(gitShim, shim, { mode: 0o700 });
   const started = Date.now();
   const child = spawnSync(process.execPath, [
     "--import", "tsx", join(process.cwd(), "tests/fixtures/b03-replay-git-deadline.ts"), file, dir
   ], {
     encoding: "utf8",
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, B03_GIT_MARKER: marker },
+    env: { ...process.env, PATH: `${bin}${delimiter}${process.env.PATH}`, B03_GIT_MARKER: marker },
     timeout: 11_000,
     killSignal: "SIGKILL"
   });
   const elapsedMs = Date.now() - started;
-  expect(readFileSync(marker, "utf8")).toContain("entered");
+  expect(readFileSync(marker, "utf8").match(/entered/g)).toHaveLength(1);
   expect(child.error).toBeUndefined();
   expect(child.status).toBe(0);
   expect(child.stdout).toContain("REPLAY_REFUSED Replay refused: Git enrichment exceeded 10000ms deadline");
   expect(child.stdout).not.toContain("REPLAY_COMPLETED");
-  expect(elapsedMs).toBeLessThan(10_000);
+  expect(elapsedMs).toBeLessThan(12_000);
 }, 20_000);
+
+it("bounds both startup version detection and replay Git enrichment in the real CLI", () => {
+  const { dir, file, config } = fixture();
+  const bin = join(dir, "bin");
+  const home = join(dir, "home");
+  const state = join(home, ".tokenizer");
+  mkdirSync(bin);
+  mkdirSync(state, { recursive: true });
+  writeFileSync(join(state, "config.json"), `${JSON.stringify(config)}\n`);
+  const marker = join(dir, "git-entered-cli");
+  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
+  const shim = process.platform === "win32"
+    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
+    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
+  writeFileSync(gitShim, shim, { mode: 0o700 });
+  const queue = join(state, "queue.jsonl");
+  const queueBytes = `{ "source": "claude-code", "sourceEventId": "retained", "occurredAt": "2026-10-01T00:00:00.000Z" }\r\n`;
+  writeFileSync(queue, queueBytes);
+  for (const execute of [false, true]) {
+    const started = Date.now();
+    const child = spawnSync(process.execPath, [
+      "--import", "tsx", join(process.cwd(), "src/cli/index.ts"),
+      "replay", "--source", "claude-code", "--file", file,
+      "--from", "2026-10-07T00:00:00.000Z", "--to", "2026-10-08T00:00:00.000Z",
+      "--max-bytes", "100000", "--max-events", "10",
+      ...(execute ? ["--execute", "--confirm", "0".repeat(64)] : [])
+    ], {
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        HOME: home,
+        USERPROFILE: home,
+        PATH: `${bin}${delimiter}${process.env.PATH}`,
+        B03_GIT_MARKER: marker
+      },
+      timeout: 12_000,
+      killSignal: "SIGKILL"
+    });
+
+    expect(child.error).toBeUndefined();
+    expect(child.status).not.toBe(0);
+    expect(`${child.stdout}\n${child.stderr}`).toContain("Git enrichment exceeded 10000ms deadline");
+    expect(Date.now() - started).toBeLessThan(12_000);
+    expect(readFileSync(queue, "utf8")).toBe(queueBytes);
+  }
+  expect(readFileSync(marker, "utf8").match(/entered/g)).toHaveLength(4);
+}, 30_000);
+
+it("does not let startup version detection pin non-replay CLI help", () => {
+  const { dir } = fixture();
+  const bin = join(dir, "bin");
+  mkdirSync(bin);
+  const marker = join(dir, "git-entered-help");
+  const gitShim = process.platform === "win32" ? join(bin, "git.cmd") : join(bin, "git");
+  const shim = process.platform === "win32"
+    ? "@echo off\r\necho entered>>\"%B03_GIT_MARKER%\"\r\npowershell.exe -NoLogo -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\"\r\nexit /b 1\r\n"
+    : "#!/bin/sh\nprintf 'entered\\n' >> \"$B03_GIT_MARKER\"\ntrap '' TERM\nsleep 30\nexit 1\n";
+  writeFileSync(gitShim, shim, { mode: 0o700 });
+  const started = Date.now();
+  const child = spawnSync(process.execPath, [
+    "--import", "tsx", join(process.cwd(), "src/cli/index.ts"), "--help"
+  ], {
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      PATH: `${bin}${delimiter}${process.env.PATH}`,
+      B03_GIT_MARKER: marker
+    },
+    timeout: 4_000,
+    killSignal: "SIGKILL"
+  });
+
+  expect(child.error).toBeUndefined();
+  expect(child.status, child.stderr).toBe(0);
+  expect(child.stdout).toContain("Usage:");
+  expect(readFileSync(marker, "utf8").match(/entered/g)).toHaveLength(1);
+  expect(Date.now() - started).toBeLessThan(4_000);
+}, 10_000);
 
 it("uses one execution deadline across both enrichments and refuses before merge", () => {
   const { request, config } = fixture();

@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
 import { closeSync, constants, fstatSync, lstatSync, openSync, readSync } from "node:fs";
 import { dirname, isAbsolute, parse } from "node:path";
 import type { BigIntStats } from "node:fs";
@@ -8,6 +7,11 @@ import type { UsageEventInput } from "@/shared/usage";
 import { minimizeUsageEvent } from "@/shared/usage-privacy";
 import { enrichEventsWithGit } from "./git";
 import { mergeQueue } from "./collect";
+import {
+  BoundedSubprocessOutputError,
+  BoundedSubprocessTimeoutError,
+  runBoundedSubprocess
+} from "./bounded-subprocess";
 import { readConfig, type TokenizerConfig } from "./config";
 import { collectionAdmissionFingerprint, collectionScopeFingerprint, effectivePrivacy, filterUsageEvents, type PrivacyConfig } from "./privacy";
 import type { BoundedReplayPlan } from "./replay-contract";
@@ -150,12 +154,26 @@ function checkSourcePath(file: string, deadlineMs: number, nativeAttributes = tr
     const script = "$ErrorActionPreference='Stop'; foreach($p in (ConvertFrom-Json $env:TOKENIZER_REPLAY_PATHS)) { if(([IO.File]::GetAttributes($p) -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'reparse point' } }; 'TOKENIZER_REPLAY_NO_REPARSE_V1'";
     const remaining = deadlineMs - Date.now();
     if (remaining <= 0) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
-    const result = execFileSync("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script], {
-      env: { ...process.env, TOKENIZER_REPLAY_PATHS: JSON.stringify([...parents, file]) },
-      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], windowsHide: true,
-      timeout: remaining, maxBuffer: 16 * 1024
-    });
-    if (result.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") fail("source reparse-point check failed");
+    let result;
+    try {
+      result = runBoundedSubprocess(
+        "powershell.exe",
+        ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script],
+        {
+          env: { ...process.env, TOKENIZER_REPLAY_PATHS: JSON.stringify([...parents, file]) },
+          windowsHide: true,
+          timeoutMs: remaining,
+          maxOutputBytes: 16 * 1024
+        }
+      );
+    } catch (error) {
+      if (error instanceof BoundedSubprocessTimeoutError) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
+      if (error instanceof BoundedSubprocessOutputError) fail("source reparse-point check output exceeded 16384 bytes");
+      throw error;
+    }
+    if (result.status !== 0 || result.signal !== null || result.stdout.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") {
+      fail("source reparse-point check failed");
+    }
   }
   assertWithinDeadline(deadlineMs, "source inspection");
   return identities;

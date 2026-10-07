@@ -1,6 +1,6 @@
-import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runBoundedSubprocess } from "./bounded-subprocess";
 
 // Resolves to the install dir (~/.tokenizer/app), which is a clone of the
 // upstream repo. `git rev-parse` gives us the commit the agent is actually
@@ -17,11 +17,14 @@ function installRoot(): string {
 // pull but before the daemon is actually restarted.
 const cached: string | null = (() => {
   try {
-    const sha = execFileSync("git", ["rev-parse", "--short=12", "HEAD"], {
+    const result = runBoundedSubprocess("git", ["rev-parse", "--short=12", "HEAD"], {
       cwd: installRoot(),
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
+      timeoutMs: 1_000,
+      maxOutputBytes: 128,
+      windowsHide: true
+    });
+    if (result.status !== 0 || result.signal !== null) return null;
+    const sha = result.stdout.trim();
     return sha || null;
   } catch {
     return null;

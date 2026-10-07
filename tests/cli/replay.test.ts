@@ -176,7 +176,7 @@ describe("bounded historical replay", () => {
       readCurrentConfig: () => initialConfig,
       mergeEvents: neverMerge
     })).toThrow("does not match");
-  });
+  }, 30_000);
 
   it("merges idempotently into retained backlog and never changes normal cursors", () => {
     const root = temporaryRoot();

@@ -1,4 +1,9 @@
 import { execFileSync } from "node:child_process";
+import {
+  BoundedSubprocessOutputError,
+  BoundedSubprocessTimeoutError,
+  runBoundedSubprocess
+} from "@/cli/bounded-subprocess";
 import { parseGitRemote } from "@/shared/git-remote";
 import { UsageEventInput } from "@/shared/usage";
 import { normalizeWorkspacePath, pathCacheKey } from "@/shared/path";
@@ -15,6 +20,7 @@ const cache = new Map<string, GitInfo | null>();
 // Leave time for child termination and replay refusal propagation inside the
 // operation-wide deadline rather than using the full budget in execFileSync.
 const DEADLINE_TERMINATION_MARGIN_MS = 2_000;
+const MAX_REPLAY_GIT_OUTPUT_BYTES = 64 * 1024;
 
 export type GitEnrichmentOptions = { deadlineMs?: number };
 
@@ -28,20 +34,40 @@ function remainingTimeout(options: GitEnrichmentOptions): number | undefined {
 function git(args: string[], cwd: string, options: GitEnrichmentOptions): string | null {
   try {
     const timeout = remainingTimeout(options);
+    if (timeout !== undefined) return replayGit(args, cwd, timeout);
     return execFileSync("git", args, {
       cwd,
       encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      ...(timeout === undefined ? {} : { timeout })
+      stdio: ["ignore", "pipe", "ignore"]
     }).trim() || null;
   } catch (error) {
     const processError = error as NodeJS.ErrnoException & { killed?: boolean; signal?: string | null };
+    if (processError.message.startsWith("Replay Git enrichment")) throw processError;
     if (options.deadlineMs !== undefined &&
         (processError.code === "ETIMEDOUT" || processError.killed === true || typeof processError.signal === "string" ||
          Date.now() >= options.deadlineMs)) {
       throw new Error("Replay Git enrichment deadline exceeded");
     }
     return null;
+  }
+}
+
+function replayGit(args: string[], cwd: string, timeout: number): string | null {
+  try {
+    const result = runBoundedSubprocess("git", args, {
+      cwd,
+      timeoutMs: timeout,
+      maxOutputBytes: MAX_REPLAY_GIT_OUTPUT_BYTES,
+      windowsHide: true
+    });
+    if (result.signal !== null) throw new BoundedSubprocessTimeoutError("Git terminated before the deadline");
+    return result.status === 0 ? result.stdout.trim() || null : null;
+  } catch (error) {
+    if (error instanceof BoundedSubprocessTimeoutError) throw new Error("Replay Git enrichment deadline exceeded");
+    if (error instanceof BoundedSubprocessOutputError) {
+      throw new Error(`Replay Git enrichment output exceeded ${MAX_REPLAY_GIT_OUTPUT_BYTES} bytes`);
+    }
+    throw error;
   }
 }
 
