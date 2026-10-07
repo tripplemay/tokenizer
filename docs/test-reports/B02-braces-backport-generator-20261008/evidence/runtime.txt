@@ -1,0 +1,4 @@
+node=v22.22.0
+npm=10.9.4
+platform=darwin-arm64
+base=17b47a8e9128eef1f982afa2f5a3257ec72737d3

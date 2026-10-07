@@ -1,0 +1,59 @@
+{
+  "schema": "tokenizer-vendored-backport/1",
+  "package": {
+    "name": "braces",
+    "version": "3.0.3",
+    "license": "MIT",
+    "sourceUrl": "https://registry.npmjs.org/braces/-/braces-3.0.3.tgz",
+    "npmIntegrity": "sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==",
+    "npmShasum": "490332f40919452272d55a8480adc0c441358789",
+    "tarballSha256": "1cd18e862c8640b4568b1425a7df4ee030ff201d45b2da8f9f222d2987494ffc",
+    "tarballSha512": "c906d780efce499543d88b222e5ae8fbb1dfe90d7c109aca484b1da0ccca78f29772dde0bc3f282dc390748cc6ba9af9163f840def203bf9717350737cca71bc"
+  },
+  "upstreamReference": {
+    "url": "https://github.com/micromatch/braces/pull/78",
+    "stateAtCapture": "open",
+    "mergedAtCapture": false,
+    "headSha": "97308a01d091b211cf015314a2d0696da28a5392",
+    "baseSha": "e53730e6f935498326c72d768889ac194eedc0e0",
+    "capturedDiffSha256": "62f69e3265f2643bc56c5c597a84a7e4b4b320b88198e367e31b488537bf2823"
+  },
+  "localPatch": {
+    "status": "internal-unofficial-candidate",
+    "maxContainerDepth": 100,
+    "errorName": "SyntaxError",
+    "errorCode": "ERR_BRACES_MAX_DEPTH",
+    "patchSha256": "c869abad619e5428422136751634b425786425131a6694130254fd482cd2a303",
+    "modifiedFiles": {
+      "lib/compile.js": {
+        "pristineSha256": "dc98f22eee3d511785d92a00758d5f0d48efed5f5813bdecc2de430c529b5c9f",
+        "patchedSha256": "4cbe77e7c8524e8f9e22da0d18fe74de5bb27fe79df65d86091de68e1cb8bc5a"
+      },
+      "lib/constants.js": {
+        "pristineSha256": "c18ac5adb57308f1ce42a28552da3a31f5d83709743ebd9a636336813a744d4b",
+        "patchedSha256": "8d0bfdb50bb1e5267facef720ba09179634761165e3d6e13ad512ed10d6c180c"
+      },
+      "lib/expand.js": {
+        "pristineSha256": "41ccc196ebfa7b7781a634e721eb744e4e7bcb54cba427a7e3d6806a1b9e58f7",
+        "patchedSha256": "52b24562f623cb001cf4ffbba19634ab18dc1f12731004fbe54b2bf848090031"
+      },
+      "lib/parse.js": {
+        "pristineSha256": "e572166565f15fa6ad9865ae49d678218e32aabfd1b3720f6d0d43d39800d310",
+        "patchedSha256": "7efb28a66017d64eb8f5e294912a419cfb256a0b6a62fce8c2a138c36d9116cb"
+      },
+      "lib/stringify.js": {
+        "pristineSha256": "379f22d77bfa1478341ccd49c5e4267464aabcbba03558bab332aac23fc6f23a",
+        "patchedSha256": "ed9e51c800917eadf765ad2813341b3971725ccc9311abb597e5a603c2543c18"
+      },
+      "lib/utils.js": {
+        "pristineSha256": "b5a7596aa67730412b3c029ef09e84e6b67b8e445cffd35d1d295549c89066c7",
+        "patchedSha256": "bee434526678796192f57fc13b2c7547c9ae69b21b200ac1dccf8eccc3e16623"
+      },
+      "package.json": {
+        "pristineSha256": "56f08b888a4f30dc7cf8a7dbb36ffe92b737912ba36abe9d069d32167c957ac7",
+        "patchedSha256": "50c1f7dbca9fd2a3ef90239ac5a22177cb9aa48807e5efbbaafd609f7f372f05"
+      }
+    },
+    "unchangedLicenseSha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2"
+  }
+}

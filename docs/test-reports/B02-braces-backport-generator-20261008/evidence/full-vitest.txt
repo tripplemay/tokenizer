@@ -1,0 +1,13 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-braces-backport-20261008
+
+
+ Test Files  122 passed | 9 skipped (131)
+      Tests  1612 passed | 23 skipped (1635)
+   Start at  00:20:47
+   Duration  12.57s (transform 4.06s, setup 0ms, import 10.41s, tests 45.80s, environment 15ms)
+

@@ -1,0 +1,25 @@
+
+> tokenizer@0.1.0 test:e2e
+> playwright test -c playwright.config.ts
+
+[WebServer] 
+[WebServer] > tokenizer@0.1.0 start
+[WebServer] > next start -p 3781 -H 127.0.0.1
+[WebServer] 
+[WebServer] (node:21072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ▲ Next.js 16.4.0
+[WebServer] - Local:         http://127.0.0.1:3781
+[WebServer] - Network:       http://127.0.0.1:3781
+[WebServer] ✓ Ready in 112ms
+[WebServer] ✓ Running next.config.mjs took 58ms
+
+Running 3 tests using 1 worker
+
+(node:21450) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/e2e/critical-journeys.spec.ts:104:1 › anonymous visitor is redirected to login (1.8s)
+  ✓  2 tests/e2e/critical-journeys.spec.ts:110:1 › historical tenant keeps range controls and can return to all-time events (1.5s)
+  ✓  3 tests/e2e/critical-journeys.spec.ts:122:1 › first enroll and upload reaches the dashboard without a manual reload (30.9s)
+
+  3 passed (35.9s)
