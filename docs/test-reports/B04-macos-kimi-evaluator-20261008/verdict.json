@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "role": "evaluator",
+  "evaluator_family": "kimi",
+  "is_evaluator_verdict": true,
+  "evaluated_at": "2026-10-08",
+  "candidate": {
+    "head_sha": "d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f",
+    "head_sha_verified_locally": true,
+    "base_sha": "8877a592d21305f03cdaea5d874d58a581e910a1",
+    "commits": ["cea6f5e21330c70aefd4eb534cb53f05d08e152b", "9e18e41823579fa1915adfdd4acde05dbd896ad7", "c178b45107dc8b3b6053a775caf9d6564b262298", "18ee2697bd7fae569a26549ce55c2e23b520fbed", "d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f"],
+    "product_files_changed": ["src/cli/service.ts"],
+    "release_surface_unchanged": ["public/", "package.json", "prisma/", "src/shared/agent-feature-version.ts"]
+  },
+  "github_runs": {
+    "37666960517": {
+      "head_sha": "d1d4bb10b80b7a8a61a82e5a3032f26ddddfd37f",
+      "sha_matches_local_head": true,
+      "branch": "codex/b04-macos-launchd-round2-ci-20261008",
+      "event": "workflow_dispatch",
+      "terminal_status": "completed",
+      "conclusion": "success",
+      "jobs": {
+        "verify": { "id": 112949917506, "conclusion": "success" },
+        "verify_windows": { "id": 112949917564, "conclusion": "success" },
+        "verify_macos_launchd": { "id": 112949917812, "conclusion": "success" },
+        "verify_db": { "id": 112949917841, "conclusion": "success" },
+        "verify_browser": { "id": 112949917353, "conclusion": "success" },
+        "release_artifact": { "id": 112951048908, "conclusion": "success" },
+        "deploy": { "id": 112953584675, "conclusion": "skipped", "skip_reason": "non-main branch if-condition, expected" }
+      },
+      "artifacts": {
+        "macos-launchd-pinned-installer": {
+          "id": 11502379434,
+          "independently_downloaded": true,
+          "success": true,
+          "numPassedTests": 1,
+          "numFailedTests": 0,
+          "exact_fixture_fullname_passed_once": true,
+          "gate_script_revalidated_locally_exit0": true
+        }
+      },
+      "macos_job_observations": {
+        "gui_domain": "gui/501",
+        "distinct_commits": 4,
+        "distinct_agent_pids": [2450, 2907, 3471, 3779],
+        "credential_canary_retained": true,
+        "queue_canary_retained": true,
+        "default_label_untouched": true,
+        "scoped_processes_after_unload": 0
+      },
+      "windows_job_observations": {
+        "service_launchd_test": "6/6 passed",
+        "gate_test": "9/9 passed",
+        "suite": "1671 passed, 62 skipped"
+      }
+    },
+    "37665390447": {
+      "head_sha": "c178b45107dc8b3b6053a775caf9d6564b262298",
+      "branch": "codex/b04-macos-launchd-ci-20261008",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "failure_cause_verified_in_log": "tests/cli/service-launchd.test.ts:8 hard-coded POSIX path assertion on Windows (job 112943180113)",
+      "macos_launchd_job": { "id": 112943179666, "conclusion": "success", "artifact_id": 11502323294, "artifact_revalidated_locally_exit0": true },
+      "downstream_blocked_fail_closed": { "release_artifact_job": 112949914724, "deploy_job": 112949914315, "both": "skipped" },
+      "fixed_by": "18ee2697bd7fae569a26549ce55c2e23b520fbed (test-only)"
+    }
+  },
+  "local_reproduction": {
+    "host": "macOS arm64",
+    "node": "v25.7.0",
+    "npm_ci": "pass",
+    "verify": "pass",
+    "actionlint": "pass",
+    "diff_check": "pass",
+    "focused_tests": { "passed": 15, "failed": 0 },
+    "full_suite": { "files_passed": 132, "files_skipped": 9, "tests_passed": 1710, "tests_skipped": 23, "failed": 0 },
+    "native_fixture_ran_on_host_gui_domain": true,
+    "default_label_present_and_untouched_on_host": true,
+    "leftover_launchd_jobs": 0,
+    "leftover_fixture_roots": 0
+  },
+  "gates": {
+    "launchd_test_identity_isolation": "PASS",
+    "native_fresh_install_upgrade_configure_failure_restore_unavailable_manifest_rollback": "PASS",
+    "credential_queue_retention": "PASS",
+    "cleanup_fail_closed": "PASS",
+    "macos_latest_job_and_needs_edges": "PASS",
+    "windows_test_only_portability_fix": "PASS",
+    "release_boundary_honesty": "PASS"
+  },
+  "open_boundaries": [
+    "real release endpoint and manifest/tag publication (manifest/tag unchanged by this slice)",
+    "real Windows Task Scheduler execution (fixture stubs schtasks)",
+    "destructive fault matrix (SIGKILL/power loss mid-cutover, disk full, corrupt plist, failed launchctl load, sleep/wake)",
+    "packaging, signing, notarization",
+    "live enrollment, token rotation/revocation, heartbeat delivery, upload acknowledgement",
+    "headless/no-GUI-domain runner strategy",
+    "macos-latest image not version-pinned"
+  ],
+  "slice_verdict": "PASS",
+  "release_ready": false,
+  "notes": "Generator reports were read for context only; all verdicts rest on independently gathered evidence (gh API, downloaded artifacts, local re-execution)."
+}
