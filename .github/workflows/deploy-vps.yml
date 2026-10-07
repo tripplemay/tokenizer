@@ -30,6 +30,16 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      predecessor_sha:
+        description: Optional distinct prior source SHA; defaults to fetched origin/main
+        required: false
+        type: string
+      bootstrap_rehearsal:
+        description: Explicit first-baseline same-SHA rehearsal only; disables production deployment
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-vps
@@ -310,14 +320,16 @@ jobs:
         env:
           REPOSITORY: ${{ github.repository }}
           REVISION: ${{ github.sha }}
-          PREVIOUS: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          PREVIOUS_HINT: ${{ github.event.pull_request.base.sha || github.event.before || inputs.predecessor_sha }}
+          BOOTSTRAP_REHEARSAL: ${{ inputs.bootstrap_rehearsal || false }}
+          RELEASE_EVENT: ${{ github.event_name }}
           PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
         run: |
           set -euo pipefail
           repository="${REPOSITORY,,}"
           registry=localhost:5000
           if [[ "$PUBLISH" == true ]]; then registry=ghcr.io; fi
-          [[ "$PREVIOUS" =~ ^[0-9a-f]{40}$ && "$PREVIOUS" != 0000000000000000000000000000000000000000 ]] || PREVIOUS="$REVISION"
+          PREVIOUS="$(bash scripts/select-release-predecessor.sh)"
           {
             echo "app=$registry/$repository-app"
             echo "migrate=$registry/$repository-migrate"
@@ -362,22 +374,24 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .baseline
-          file: Dockerfile
+          file: .baseline/Dockerfile
           target: runner
           platforms: linux/amd64
           push: true
           tags: ${{ steps.refs.outputs.old-app }}:${{ steps.refs.outputs.previous }}
+          labels: org.opencontainers.image.revision=${{ steps.refs.outputs.previous }}
           build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
       - name: Build previous source migration artifact
         id: old-migrate
         uses: docker/build-push-action@v6
         with:
           context: .baseline
-          file: Dockerfile
+          file: .baseline/Dockerfile
           target: builder
           platforms: linux/amd64
           push: true
           tags: ${{ steps.refs.outputs.old-migrate }}:${{ steps.refs.outputs.previous }}
+          labels: org.opencontainers.image.revision=${{ steps.refs.outputs.previous }}
           build-args: SOURCE_COMMIT=${{ steps.refs.outputs.previous }}
       - name: Attest app digest from this workflow
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
@@ -402,11 +416,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .releases
+          wrong_source=0000000000000000000000000000000000000000
           for kind in app migrate; do
             if [[ "$kind" == app ]]; then image="$APP_IMAGE"; else image="$MIGRATE_IMAGE"; fi
             gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
               --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" \
               --format json > ".releases/$GITHUB_SHA.$kind.provenance.json"
+            if gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+              --source-digest "$wrong_source" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/deploy-vps.yml" >/dev/null 2>&1; then
+              echo "wrong source SHA unexpectedly passed attestation verification" >&2; exit 1
+            fi
+            if gh attestation verify "oci://$image" --repo "$GITHUB_REPOSITORY" \
+              --source-digest "$GITHUB_SHA" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/not-release.yml" >/dev/null 2>&1; then
+              echo "wrong signer workflow unexpectedly passed attestation verification" >&2; exit 1
+            fi
+            printf 'wrong_source=rejected\nwrong_workflow=rejected\n' > ".releases/$GITHUB_SHA.$kind.provenance-negative-controls"
           done
       - name: Backup restore migration and old-image business rehearsal
         env:
@@ -436,8 +460,9 @@ jobs:
     permissions:
       contents: read
       packages: read
+      attestations: read
     needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.bootstrap_rehearsal != true
     environment: production
     env:
       VPS_HOST: ${{ secrets.VPS_HOST }}

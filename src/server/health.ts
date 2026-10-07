@@ -6,9 +6,9 @@ import { deployedCommit, healthCapabilities } from "@/server/health-core";
 
 type HealthCode = "ready" | "config_not_ready" | "database_unavailable" | "schema_not_ready";
 
-export function latestMigrationName(migrationsPath = join(process.cwd(), "prisma", "migrations")): string | null {
+export function latestMigrationName(): string | null {
   try {
-    return readdirSync(migrationsPath, { withFileTypes: true })
+    return readdirSync(join(process.cwd(), "prisma", "migrations"), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort()

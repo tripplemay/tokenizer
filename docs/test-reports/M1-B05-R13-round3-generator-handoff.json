@@ -1,0 +1,58 @@
+{
+  "schema": "tokenizer-generator-handoff/1",
+  "batch_id": "M1-B05-R13",
+  "round": 3,
+  "created_at": "2026-10-07T15:05:25Z",
+  "role": "generator",
+  "baseline_commit": "6c3937b6a9a3702a3a1eeb006797b8d3e8db4a01",
+  "implementation_commit": "see accompanying commit",
+  "scope": "Narrow standalone tracing/packaging repair. Round2 candidate/evaluator verdict, original repository, main integration tree, progress/features/gate remain untouched.",
+  "changes": [
+    "latestMigrationName no longer accepts a dynamic path argument. readdirSync directly uses the fixed cwd/prisma/migrations expression; no turbopackIgnore bypass.",
+    "Only /api/health explicitly includes prisma/migrations files via outputFileTracingIncludes. Docker runner's explicit Prisma COPY is retained.",
+    "The actual Docker builder output must pass scripts/verify-standalone.mjs before the runner stage. The gate requires server.js and migration markers, denies unrelated docs/state/source/secrets/symlinks outside vendor dependencies and compiled Next files, and uses bounded runtime root names.",
+    "Exactly two imported runtime catalogs are allowed on Next15: src/shared/agent-releases.json and framework/harness/framework-releases.json, with their ancestor directories only. Next16 inlines those catalogs. All other files in those source trees remain rejected.",
+    "The two historical-source rehearsal builds use .baseline/Dockerfile and an explicit old SHA revision label. They do not use the new candidate Dockerfile requiring a verifier absent from historical sources. Candidate artifact builds still enforce the new gate.",
+    "Deploy grants attestations:read. Its token permission regression includes a removed-permission negative control. Main's artifact job requires wrong-source and wrong-signer signed-provenance checks to be rejected; those real GitHub controls are not executed locally.",
+    "Predecessor selection resolves explicit PR-base/push-before/operator SHA or fetched origin/main, verifies the commit exists, and refuses same-candidate rehearsal. Only an explicit workflow_dispatch bootstrap_rehearsal input permits same SHA, and that mode disables production deploy and does not prove old-version compatibility."
+  ],
+  "tests": {
+    "targeted_source": "25 passed: health 6, standalone boundary/permissions 14, deterministic predecessor 5",
+    "targeted_next16_probe": "25 passed",
+    "source_verify": "npm run verify exit 0",
+    "source_lint": "npm run lint exit 0",
+    "next16_lint": "npm run lint exit 0",
+    "actionlint": "exit 0",
+    "predecessor_shellcheck": "exit 0",
+    "source_standalone_build": "Next15.5.18 npm run build with NEXT_OUTPUT=standalone exit 0; actual artifact gate exit 0",
+    "next16_standalone_build": "Next16.4.0 Turbopack with NEXT_OUTPUT=standalone exit 0. No warning/whole-project/unintentional-trace/readdir warning matched in the build log; actual artifact gate exit 0",
+    "source_full_initial": "1505 passed, 1 failed, 20 skipped before adding two catalog tests; only existing SIGTERM lifecycle lock case at tests/cli/agent-lifecycle.test.ts:152 failed. This narrow repair does not claim to fix that flake.",
+    "source_full_final": "1513 passed, 1 failed, 20 skipped; only existing SIGTERM lifecycle lock case at tests/cli/agent-lifecycle.test.ts:152 failed. No full-green claim. An intermediate 1508-pass run before final permission/predecessor regressions did not eliminate this flake."
+  },
+  "artifact_observation": {
+    "next16_probe_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b05-round3-next16-probe-20261007",
+    "next16_probe_commit": "47ebe6d1b40bc47422027291374a454745aa92db",
+    "next16_dependency_source": "305201e Next16 package graph and migration changes; full package.json/package-lock resolved to that exact dependency candidate in the probe",
+    "next16_standalone_size": "80M via du -sh; platform-specific observation, not a portable size budget",
+    "next16_root_entries": [".next", "node_modules", "package.json", "prisma", "server.js"],
+    "next16_gate": { "filesOutsideDependenciesAndNext": 31, "bytesOutsideDependenciesAndNext": 47825 },
+    "source_next15_gate": { "filesOutsideDependenciesAndNext": 33, "bytesOutsideDependenciesAndNext": 54165 },
+    "source_next15_catalog_exception": "Initial strict gate rejected framework/src; focused inspection identified only the two imported runtime release JSON catalogs, so an exact-file exception plus rejection regressions was added. No whole-source exception."
+  },
+  "native_runtime_observation": {
+    "environment": "Actual generated Next16 standalone/server.js on macOS Node22, own native PG16 scratch DB tokenizer_b05_restore, ports 3319/55491",
+    "with_shipped_markers": "GET /api/health HTTP 200 ready, exact synthetic SHA",
+    "generated_marker_directory_temporarily_hidden": "HTTP 503 schema_not_ready",
+    "generated_marker_directory_restored": "HTTP 200 ready",
+    "cleanup": "Generated marker directory restored; own Node PID 88351 terminated; own native PG16 scratch cluster stopped. No production action."
+  },
+  "evidence_directory": "docs/test-reports/M1-B05-R13-round3-generator-evidence/",
+  "evidence_format": "Generated logs normalize carriage returns, trailing spaces, and excess terminal blank lines only; outcomes retained.",
+  "remaining_gates": [
+    "Fresh independent acceptance owns the conclusion.",
+    "Round3 Linux OCI/Docker build and real GHCR signed-attestation negative controls remain unexecuted by this generator; the default Docker daemon is unavailable. The immutable round2 evaluator now independently records Linux/arm64 same-image recovery mechanics, but that does not prove round3 linux/amd64 or distinct historical-image compatibility. Native standalone checks do not replace those gates.",
+    "The candidate is still based on B05 original dependencies; release integration must retain B02 Next16 dependency/auth hardening and B01 CI gates.",
+    "No branch push, production deployment, self-signoff, or status/gate edits."
+  ],
+  "reference": "https://nextjs.org/docs/app/api-reference/config/next-config-js/output"
+}

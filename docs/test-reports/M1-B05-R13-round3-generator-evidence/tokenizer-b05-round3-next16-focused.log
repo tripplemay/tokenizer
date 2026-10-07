@@ -1,0 +1,22 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b05-round3-next16-probe-20261007
+
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'e4d7dc86-b1d3-432d-ae08-46e81dcdd70b',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 12ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 491ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 1714ms
+   ✓ deterministic release predecessor > uses fetched origin/main for a non-main workflow_dispatch without event predecessor 316ms
+   ✓ deterministic release predecessor > refuses same candidate unless an explicit non-deploying bootstrap was chosen 420ms
+   ✓ deterministic release predecessor > uses origin/main for the zero before SHA and fails if the fetched ref is absent 459ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  22:11:25
+   Duration  2.34s (transform 132ms, setup 0ms, collect 179ms, tests 2.22s, environment 0ms, prepare 186ms)

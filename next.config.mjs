@@ -4,7 +4,10 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: process.env.NEXT_OUTPUT ?? undefined
+  output: process.env.NEXT_OUTPUT ?? undefined,
+  outputFileTracingIncludes: {
+    "/api/health": ["./prisma/migrations/**/*"]
+  }
 };
 
 export default withNextIntl(nextConfig);
