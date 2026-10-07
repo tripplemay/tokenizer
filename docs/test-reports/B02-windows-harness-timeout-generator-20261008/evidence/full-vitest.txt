@@ -1,0 +1,13 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-b02-windows-harness-timeout-20261008
+
+
+ Test Files  121 passed | 9 skipped (130)
+      Tests  1602 passed | 23 skipped (1625)
+   Start at  00:26:04
+   Duration  15.64s (transform 4.34s, setup 0ms, import 13.01s, tests 61.02s, environment 18ms)
+

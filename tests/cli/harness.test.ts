@@ -574,6 +574,8 @@ describe("structured Harness sync health", () => {
     expect(JSON.stringify(result.snapshot)).not.toContain("/absolute/path");
   });
 
+  // This integration-cost case creates and scans 23 real Git repositories.
+  // Windows safe CI measured about 15s, so keep the allowance local to this test.
   it("caps structured issues at 20 while retaining the full failed-project count", async () => {
     for (let index = 0; index < 22; index += 1) makeSecondRepo(`other-${index}`);
     fetchMock.mockImplementation(async (url: unknown) => {
@@ -589,7 +591,7 @@ describe("structured Harness sync health", () => {
     expect(result.failed).toBe(23);
     expect(result.issues).toHaveLength(20);
     expect(result.snapshot.issues).toHaveLength(20);
-  });
+  }, 30_000);
 
   it("writes idle, success, degraded, and failed snapshots from actual outcomes", async () => {
     fetchMock.mockImplementation(async (url: unknown) => {
