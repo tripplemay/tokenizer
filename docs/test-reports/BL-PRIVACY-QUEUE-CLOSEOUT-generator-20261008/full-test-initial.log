@@ -1,0 +1,120 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ❯ tests/evaluator/b05-evidence-retention-round2.test.ts (4 tests | 1 failed) 356ms
+     × archives only the obsolete local-object test and retains an active portable replacement 20ms
+ ❯ tests/ci/b05-recovery-source.test.ts (10 tests | 1 failed) 56ms
+     × excludes only the immutable historical local-object audit, with an active portable replacement 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > excludes only the immutable historical local-object audit, with an active portable replacement
+AssertionError: expected 'import { configDefaults, defineConfig…' to contain 'exclude: [...configDefaults.exclude, …'
+
+- Expected
++ Received
+
+- exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
++ import { configDefaults, defineConfig } from "vitest/config";
++ import { fileURLToPath } from "node:url";
++
++ export default defineConfig({
++   resolve: {
++     alias: {
++       "@": fileURLToPath(new URL("./src", import.meta.url))
++     }
++   },
++   test: {
++     include: ["tests/**/*.test.ts"],
++     // Immutable historical audit uses local-only git objects and asserts a
++     // former defect. Its portable replacement is b05-recovery-source.test.ts.
++     // Immutable evidence for the pre-R07 evaluator contract. Operational R07
++     // intentionally supersedes its "dryRun:false is unsupported" assertion;
++     // keep the original bytes hashable, but run the candidate-owned successor.
++     exclude: [
++       ...configDefaults.exclude,
++       "tests/evaluator/b05-tcp-readiness-independent.test.ts",
++       "tests/evaluator/b03-scope-admission-independent.test.ts",
++       // Immutable B06 server-slice evidence locks the deliberately obsolete
++       // retry-and-pin behavior; the partial ACK suite is its replacement.
++       "tests/cli/b06-batch-failure-queue.test.ts",
++       // Resolution moved inside sync, before the optional observer callback.
++       // B07 queue/versioned-quarantine suites inject durable-write failures.
++       "tests/cli/b06-partial-ack.test.ts",
++       "tests/ci/b06-obsolete-queue-test-archive.test.ts"
++     ],
++     environment: "node"
++   }
++ });
++
+
+ ❯ tests/ci/b05-recovery-source.test.ts:38:20
+     36|   it("excludes only the immutable historical local-object audit, with …
+     37|     const config = readFileSync("vitest.config.ts", "utf8");
+     38|     expect(config).toContain(`exclude: [...configDefaults.exclude, "${…
+       |                    ^
+     39|     expect(config).not.toContain('"tests/evaluator/**"');
+     40|     const original = readFileSync(historical, "utf8").replace(/\r\n/g,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/evaluator/b05-evidence-retention-round2.test.ts > B05 retained recovery evidence round 2 > archives only the obsolete local-object test and retains an active portable replacement
+AssertionError: expected 'import { configDefaults, defineConfig…' to contain 'exclude: [...configDefaults.exclude, …'
+
+- Expected
++ Received
+
+- exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
++ import { configDefaults, defineConfig } from "vitest/config";
++ import { fileURLToPath } from "node:url";
++
++ export default defineConfig({
++   resolve: {
++     alias: {
++       "@": fileURLToPath(new URL("./src", import.meta.url))
++     }
++   },
++   test: {
++     include: ["tests/**/*.test.ts"],
++     // Immutable historical audit uses local-only git objects and asserts a
++     // former defect. Its portable replacement is b05-recovery-source.test.ts.
++     // Immutable evidence for the pre-R07 evaluator contract. Operational R07
++     // intentionally supersedes its "dryRun:false is unsupported" assertion;
++     // keep the original bytes hashable, but run the candidate-owned successor.
++     exclude: [
++       ...configDefaults.exclude,
++       "tests/evaluator/b05-tcp-readiness-independent.test.ts",
++       "tests/evaluator/b03-scope-admission-independent.test.ts",
++       // Immutable B06 server-slice evidence locks the deliberately obsolete
++       // retry-and-pin behavior; the partial ACK suite is its replacement.
++       "tests/cli/b06-batch-failure-queue.test.ts",
++       // Resolution moved inside sync, before the optional observer callback.
++       // B07 queue/versioned-quarantine suites inject durable-write failures.
++       "tests/cli/b06-partial-ack.test.ts",
++       "tests/ci/b06-obsolete-queue-test-archive.test.ts"
++     ],
++     environment: "node"
++   }
++ });
++
+
+ ❯ tests/evaluator/b05-evidence-retention-round2.test.ts:45:20
+     43|   it("archives only the obsolete local-object test and retains an acti…
+     44|     const config = readFileSync("vitest.config.ts", "utf8");
+     45|     expect(config).toContain(`exclude: [...configDefaults.exclude, "${…
+       |                    ^
+     46|     expect(config).not.toMatch(/exclude:[^\n]+tests\/evaluator\/\*\*/);
+     47|     const replacement = readFileSync("tests/ci/b05-recovery-source.tes…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 155 passed | 12 skipped (169)
+      Tests  2 failed | 1877 passed | 31 skipped (1910)
+   Start at  02:26:03
+   Duration  28.63s (transform 7.56s, setup 0ms, import 25.84s, tests 135.66s, environment 40ms)
+

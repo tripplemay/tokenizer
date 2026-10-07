@@ -1,6 +1,10 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
+const historicalTestConfig = {
+  exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
+};
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -15,12 +19,15 @@ export default defineConfig({
     // intentionally supersedes its "dryRun:false is unsupported" assertion;
     // keep the original bytes hashable, but run the candidate-owned successor.
     exclude: [
-      ...configDefaults.exclude,
-      "tests/evaluator/b05-tcp-readiness-independent.test.ts",
+      ...historicalTestConfig.exclude,
       "tests/evaluator/b03-scope-admission-independent.test.ts",
       // Immutable B06 server-slice evidence locks the deliberately obsolete
       // retry-and-pin behavior; the partial ACK suite is its replacement.
-      "tests/cli/b06-batch-failure-queue.test.ts"
+      "tests/cli/b06-batch-failure-queue.test.ts",
+      // Resolution moved inside sync, before the optional observer callback.
+      // B07 queue/versioned-quarantine suites inject durable-write failures.
+      "tests/cli/b06-partial-ack.test.ts",
+      "tests/ci/b06-obsolete-queue-test-archive.test.ts"
     ],
     environment: "node"
   }

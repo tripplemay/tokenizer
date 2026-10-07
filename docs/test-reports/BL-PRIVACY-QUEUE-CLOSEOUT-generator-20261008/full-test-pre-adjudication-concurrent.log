@@ -1,0 +1,499 @@
+
+> tokenizer@0.1.0 test
+> vitest run --reporter=default --reporter=json --outputFile=docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-generator-20261008/full-test.json
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ❯ tests/ci/b05-recovery-source.test.ts (10 tests | 1 failed) 78ms
+     ✓ preserves the exact readiness-only source delta and immutable supplement with LF checkout 7ms
+     ✓ preserves the exact readiness-only source delta and immutable supplement with CRLF checkout 17ms
+     ✓ rejects a temporary socket readiness mutation 10ms
+     ✓ rejects a stale approval removal mutation 0ms
+     ✓ rejects a backup checksum gate mutation 1ms
+     ✓ rejects a restore fail-closed mutation 0ms
+     ✓ rejects a rollback ledger mutation 0ms
+     ✓ rejects a backup cleanup mutation 0ms
+     ✓ rejects changed supplement evidence and reintroduced deployment-doc drift 4ms
+     × excludes only the immutable historical local-object audit, with an active portable replacement 34ms
+ ❯ tests/evaluator/b05-evidence-retention-round2.test.ts (4 tests | 1 failed) 475ms
+     ✓ keeps all nine immutable historical evidence entries byte-identical 28ms
+     × archives only the obsolete local-object test and retains an active portable replacement 23ms
+     ✓ orders allowlist staging, fail-closed upload, download, and downloaded hash verification 3ms
+     ✓ round-trips only four non-main allowlisted files and rejects downloaded tampering  412ms
+stdout | tests/cli/b03-round2-elapsed-negative.test.ts > bounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget
+GIT_ELAPSED_NEGATIVE {"elapsedMs":8698,"status":0,"stdout":"REPLAY_STARTED\nREPLAY_REFUSED Replay refused: Git enrichment exceeded 10000ms deadline\n"}
+
+ ✓ tests/cli/b03-round2-elapsed-negative.test.ts (1 test) 8715ms
+   ✓ bounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget  8712ms
+ ✓ tests/cli/b03-replay-deadline.test.ts (4 tests) 8904ms
+   ✓ interrupts a real stalled Git process within the replay deadline  8871ms
+ ✓ tests/cli/agent-release-installer.test.ts (4 tests) 12669ms
+     ✓ keeps the old release and data on manifest, fetch, or npm failure; upgrades and rolls back  12658ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 14305ms
+     ✓ backs up, restores, applies exact migration, and rehearses old-image canary before approving rollback  1374ms
+     ✓ does not approve rollback after restore fault and cleans scratch volumes  514ms
+     ✓ does not approve rollback after inventory fault and cleans scratch volumes  664ms
+     ✓ does not approve rollback after migrate fault and cleans scratch volumes  751ms
+     ✓ does not approve rollback after uid fault and cleans scratch volumes  884ms
+     ✓ does not approve rollback after canary fault and cleans scratch volumes  355ms
+     ✓ waits for the final TCP server instead of accepting the temporary initialization socket  1024ms
+     ✓ fails closed when only the temporary socket accepts (source-tcp-never)  2576ms
+     ✓ fails closed when only the temporary socket accepts (restore-tcp-never)  2042ms
+     ✓ never touches the production DB in synthetic mode  1224ms
+     ✓ never overwrites an earlier same-SHA backup on a retry  2888ms
+ ✓ tests/cli/b07-queue-multiwriter.test.ts (1 test) 15547ms
+     ✓ preserves concurrent collection, newer versions and crash retries over real HTTP  15543ms
+stdout | tests/cli/b07-prereview-process.test.ts > separate native processes must not lose rejected correction after old same-ID quarantine
+MULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-07T19:32:39.576Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:41.795Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/cli/harness-dispatch.test.ts (23 tests) 18484ms
+     ✓ uses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing  667ms
+     ✓ supports a2a while reducing absolute artifacts and raw failures to safe fixed summaries  568ms
+     ✓ keeps a2a cancellation as a known terminal outcome with a fixed safe summary  529ms
+     ✓ keeps runs of other batches (usage must survive batch switch) but rejects foreign refs  671ms
+     ✓ rejects symlinked run-meta and never hashes a symlinked artifact  775ms
+     ✓ derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival)  782ms
+     ✓ scans at most the newest 50 bounded regular JSON files  4417ms
+     ✓ carries a valid usage block and capture mode intact into the summary  714ms
+     ✓ keeps legacy run-meta without usage summarized with explicit nulls (regression)  491ms
+     ✓ drops the whole usage block on unknown field but keeps the run (bypass, not a gate)  614ms
+     ✓ drops the whole usage block on negative tokens but keeps the run (bypass, not a gate)  633ms
+     ✓ drops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate)  516ms
+     ✓ drops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate)  770ms
+     ✓ drops the whole usage block on zero turns but keeps the run (bypass, not a gate)  691ms
+     ✓ drops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate)  525ms
+     ✓ drops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate)  755ms
+     ✓ drops the whole usage block on missing extraction source but keeps the run (bypass, not a gate)  522ms
+     ✓ drops the whole usage block on non-string model but keeps the run (bypass, not a gate)  675ms
+     ✓ drops the whole usage block on oversized model name but keeps the run (bypass, not a gate)  736ms
+     ✓ drops the whole usage block on array instead of object but keeps the run (bypass, not a gate)  623ms
+     ✓ drops the whole usage block on string instead of object but keeps the run (bypass, not a gate)  753ms
+     ✓ nulls an unknown capture mode while keeping a valid usage block  610ms
+     ✓ accepts attribution_only with a null usage block (kimi shape)  438ms
+ ✓ tests/cli/agent-lifecycle.test.ts (8 tests | 1 skipped) 10485ms
+     ✓ rejects `tokenizer agent status` before it can start a daemon  4511ms
+     ✓ releases the lock when the running agent receives SIGTERM  3667ms
+     ✓ handles SIGTERM delivered before spawn returns without orphaning its child  1147ms
+     ✓ forwards SIGTERM to its async child and waits for that child to exit  1105ms
+ ✓ tests/server/release-image.test.ts (10 tests) 6064ms
+     ✓ deploys CI digests without rebuild and activates only exact readiness SHA  701ms
+     ✓ rejects an image revision mismatch before migration  632ms
+     ✓ refuses a changed digest for an already recorded commit  993ms
+     ✓ keeps the previous image reference and never starts app after migration failure  797ms
+     ✓ does not mark a release active when health returns a different SHA  1219ms
+     ✓ refuses rehearsal failure before live migration and replacement  426ms
+     ✓ contains then restores the retained digest only after compatibility rehearsal  1093ms
+stdout | tests/cli/b07-prereview-process.test.ts > eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+MULTIPROCESS_CONTROL {"beforeCount":8,"afterAckCount":7}
+
+ ✓ tests/cli/b07-prereview-process.test.ts (2 tests) 9767ms
+   ✓ separate native processes must not lose rejected correction after old same-ID quarantine  5613ms
+   ✓ eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files  4151ms
+ ✓ tests/cli/harness-mode-intents.test.ts (20 tests) 21971ms
+     ✓ accepts only the exact bounded relay envelope  744ms
+     ✓ stages and reads v2 bindings through the data-only catalog, without agent ids  1623ms
+     ✓ stages and reports legal v2 fast null bindings without a tool catalog  1707ms
+     ✓ rejects v2 staging when the data-only registry validation fails  666ms
+     ✓ validates, atomically stages, and commits only harness.json  1450ms
+     ✓ commits only harness.json while preserving an unrelated staged file  1874ms
+     ✓ rejects a tampered signature without changing the target  540ms
+     ✓ requires relay, signed, and discovered repo keys to agree  621ms
+     ✓ rejects a full HEAD drift immediately before first staging  1082ms
+     ✓ rejects invalid time window expired_intent  659ms
+     ✓ rejects invalid time window intent_not_yet_valid  702ms
+     ✓ requires harness.json to be clean  793ms
+     ✓ retries the exact staged intent without comparing its old HEAD or creating a commit  1905ms
+     ✓ does not report failure after commit success and completes the next exact retry idempotently  1660ms
+     ✓ recognizes a commit that succeeded immediately before the runner threw  1501ms
+     ✓ restores the original harness after a first-stage write failure  775ms
+     ✓ restores the original harness after a first-stage readback failure  746ms
+     ✓ restores after git add failure without disturbing an unrelated staged file  800ms
+     ✓ does not report defaults copied into a repository with a different normalized identity  1118ms
+     ✓ rolls back a commit failure and never stages an unrelated file  1001ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 3564ms
+     ✓ uses fetched origin/main for a non-main workflow_dispatch without event predecessor  811ms
+     ✓ uses the explicit PR base/push-before SHA when available  505ms
+     ✓ refuses same candidate unless an explicit non-deploying bootstrap was chosen  833ms
+     ✓ does not silently replace malformed or nonexistent explicit predecessors  695ms
+     ✓ uses origin/main for the zero before SHA and fails if the fetched ref is absent  716ms
+stdout | tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via dot
+NORMAL_COLLECT_NEGATIVE {"kind":"dot","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tokenizer-closeout-20261008-5CSdLv/tmp/b03-collect-negative-cO6SYm/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+ ✓ tests/evaluator/bl-homepage-freshness-f002-f003.test.ts (5 tests) 8013ms
+     ✓ checkpoints the same remaining tail between real sync and run subprocess batches  7752ms
+ ✓ tests/cli/replay-help.test.ts (1 test) 2409ms
+     ✓ documents the explicit file, budgets, dry-run default, and digest confirmation  2403ms
+ ✓ tests/ci/recovery-evidence.test.ts (14 tests) 3736ms
+     ✓ retains only expected exact-SHA synthetic files and verifies a downloaded copy  426ms
+     ✓ detects downloaded file tampering, missing files, extra files and wrong revision  748ms
+     ✓ rejects manifest traversal paths and forged manifest hashes  434ms
+     ✓ rejects symlink files and symlink directories  593ms
+     ✓ requires main provenance files separately and forbids main/non-main manifest downgrade  470ms
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer
+INDEPENDENT_FIFO {"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/install-agent-lifecycle.test.ts (2 tests) 1797ms
+     ✓ stops this install's wrapper and child without touching another install  1789ms
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: dot alias for excluded real workspace must not be admitted
+DOT_PRIVACY {"dryRun":true,"planDigest":"4d9417b9641fa5dafae8a2c2fc560c2df00b050b12bbab03e6af5fdb61cb5e4e","bytes":307,"records":1,"parsed":1,"selected":1,"filtered":1,"wouldAdmit":0,"warningCount":0,"sample":[]}
+
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue
+GIT_ALIAS_PRIVACY {"result":{"dryRun":false,"planDigest":"9c51e9eeaeb773f2ac4b6ebe94426b50d1b66a0b180f02668b13c9d31b222f0c","selected":1,"filtered":1,"admitted":0,"duplicates":0,"backlog":0,"warningCount":0,"upload":"Backlog remains local until sync mode; it then uploads on the next Agent/run/sync cycle."},"queue":""}
+
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts (9 tests) 1318ms
+   ✓ FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer  889ms
+ ✓ tests/cli/queue-merge.test.ts (3 tests) 1242ms
+     ✓ serializes concurrent replay/collection writers without losing retained backlog  1230ms
+ ✓ tests/server/standalone-artifact.test.ts (14 tests) 1455ms
+stdout | tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via git-symlink
+NORMAL_COLLECT_NEGATIVE {"kind":"git-symlink","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tokenizer-closeout-20261008-5CSdLv/tmp/b03-collect-negative-qtPSyW/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+ ✓ tests/cli/b03-fixed-collect-privacy-negative.test.ts (2 tests) 4633ms
+   ✓ normal CLI collect independently rejects excluded workspace via dot  2148ms
+   ✓ normal CLI collect independently rejects excluded workspace via git-symlink  2482ms
+ ❯ tests/cli/harness-command.test.ts (4 tests | 1 failed) 8311ms
+     ✓ --status reads only local state and emits the latest snapshot 8ms
+     × wires Commander options without treating the Command object as injected dependencies 8298ms
+     ✓ --json runs one sync and writes one parseable object without list or raw failure text 1ms
+     ✓ keeps default human output and appends only normalized issue fields 1ms
+ ✓ tests/server/harness-sign.test.ts (14 tests) 816ms
+ ✓ tests/ci/windows-installer-gate.test.ts (8 tests) 931ms
+ ✓ tests/cli/b06-rejected-events-concurrency.test.ts (1 test) 1581ms
+     ✓ serializes two native processes without losing either rejected event  1579ms
+ ✓ tests/ci/windows-agent-owner-gate.test.ts (8 tests) 880ms
+ ✓ tests/cli/privacy-scope-safety.test.ts (13 tests) 777ms
+stdout | tests/cli/replay-safety-regression.test.ts > R2 safely refuses regular-file to FIFO swap without waiting for a writer
+FIFO_FIXED {"elapsedMs":929,"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/replay-safety-regression.test.ts (11 tests | 3 skipped) 1194ms
+   ✓ R2 safely refuses regular-file to FIFO swap without waiting for a writer  937ms
+ ✓ tests/cli/atomic-file.test.ts (19 tests) 806ms
+     ✓ never leaves a partially written target  473ms
+ ✓ tests/server/deploy-secrets.test.ts (31 tests) 670ms
+ ✓ tests/cli/agent-release-installer-windows-fixture.test.ts (3 tests) 301ms
+ ✓ tests/server/batch-schema.test.ts (65 tests) 1165ms
+     ✓ rejects an explicit different device without writes  311ms
+     ✓ accepts raw JSON depth/byte limits and exact row limits  363ms
+ ✓ tests/cli/harness-tool-catalog.test.ts (77 tests) 1388ms
+ ✓ tests/shared/subscription-card.test.ts (36 tests) 898ms
+ ✓ tests/cli/git.test.ts (21 tests) 664ms
+     ✓ keeps synthetic remote credentials out of the event payload  439ms
+ ✓ tests/shared/quota-window-label.test.ts (34 tests) 1042ms
+     ✓ renders a weekly-only primary from the observed 604800-second payload  345ms
+ ✓ tests/cli/harness-modes.test.ts (22 tests) 728ms
+     ✓ 上报 registry capabilities 与有界待生效 defaults 摘要  446ms
+ ✓ tests/ci/b07-combination-frozen-inputs.test.ts (1 test) 595ms
+   ✓ retains baseline evaluator bytes and transports frozen B03/B07 evidence without rewriting hashes  592ms
+ ✓ tests/cli/b03-round2-independent.test.ts (12 tests) 482ms
+ ✓ tests/server/harness-mode-intents-relay-route.test.ts (28 tests) 453ms
+ ✓ tests/shared/harness-mode-drilldown.test.ts (7 tests) 301ms
+ ✓ tests/cli/sync-retry.test.ts (12 tests) 410ms
+ ✓ tests/server/harness-mode-intents-route.test.ts (20 tests) 243ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts (4 tests) 427ms
+ ✓ tests/cli/replay.test.ts (6 tests) 360ms
+ ✓ tests/cli/b07-replay-combination.test.ts (6 tests) 355ms
+ ✓ tests/evaluator/bl-homepage-freshness-f004.test.ts (8 tests) 99ms
+ ✓ tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts (5 tests) 150ms
+ ✓ tests/server/heartbeat-harness.test.ts (31 tests) 160ms
+ ✓ tests/server/batch-wire-compatibility.test.ts (2 tests) 288ms
+ ✓ tests/evaluator/bl-agent-release-acceptance.test.ts (17 tests) 451ms
+ ✓ tests/ci/b07-obsolete-queue-eol-policy.test.ts (1 test) 436ms
+     ✓ disables checkout newline conversion for each byte-pinned B06 test  434ms
+stdout | tests/cli/b07-prereview-version-negative.test.ts > same ID corrected rejection must remain recoverable after older version was already quarantined
+QUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T19:32:59.276Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:59.298Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > two same-ID versions rejected in one response must both remain recoverable
+QUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T19:32:59.316Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:59.316Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+SYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T19:32:59.323Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:59.530Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > commit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+CRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T19:32:59.560Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:59.569Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/server/harness-dispatch-usage.test.ts (14 tests) 357ms
+stdout | tests/cli/b07-prereview-version-negative.test.ts > old-server rowless fallback must not discard corrected poison when old version was quarantined
+ROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-07T19:32:59.617Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-07T19:32:59.627Z","code":"invalid_json","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/cli/b07-prereview-version-negative.test.ts (9 tests) 399ms
+ ✓ tests/evaluator/bl-native-subagent-bridges-f004.test.ts (13 tests) 260ms
+ ✓ tests/server/pricing-scan-cache.test.ts (3 tests) 19ms
+ ✓ tests/server/harness-report-mode-intent.test.ts (69 tests) 492ms
+ ✓ tests/shared/upgrade-banner.test.ts (4 tests) 38ms
+ ✓ tests/evaluator/bl-codex-quota-window-f001-f002.test.ts (19 tests) 404ms
+ ✓ tests/server/b06-partial-ack.test.ts (4 tests) 343ms
+ ✓ tests/server/harness-gate-notify.test.ts (7 tests) 29ms
+ ✓ tests/server/device-enroll.test.ts (8 tests) 104ms
+ ✓ tests/server/usage-batch-input.test.ts (3 tests) 95ms
+ ✓ tests/server/harness-decisions-route.test.ts (6 tests) 147ms
+ ✓ tests/cli/b07-queue-resolution.test.ts (10 tests) 384ms
+ ✓ tests/parsers/claude.test.ts (20 tests) 169ms
+ ✓ tests/server/summary-cache-tags.test.ts (4 tests) 38ms
+ ✓ tests/evaluator/bl-homepage-codex-quota-probes.test.ts (8 tests) 163ms
+ ✓ tests/ci/tsconfig-report-boundary.test.ts (1 test) 256ms
+ ✓ tests/shared/harness-health.test.ts (21 tests) 38ms
+ ✓ tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts (8 tests) 32ms
+ ✓ tests/parsers/kimicode.test.ts (10 tests) 137ms
+stderr | tests/server/health.test.ts > health layers > fails closed on missing login configuration before touching the database
+readiness failed {
+  requestId: 'f7889c1c-009e-4a88-80fe-35c4c499d740',
+  stage: 'runtime_config',
+  code: 'config_not_ready',
+  errorCode: undefined
+}
+
+ ✓ tests/server/health.test.ts (6 tests) 87ms
+ ✓ tests/server/harness-mode-intent-api.test.ts (107 tests) 210ms
+ ✓ tests/shared/device-status.test.ts (11 tests) 12ms
+ ✓ tests/cli/agent-sync-checkpoint.test.ts (8 tests) 31ms
+ ✓ tests/server/usage-cost-cache-invalidation.test.ts (3 tests) 112ms
+ ✓ tests/vendor/braces-backport.test.ts (10 tests) 20ms
+ ✓ tests/parsers/opencode.test.ts (10 tests) 97ms
+ ✓ tests/server/harness-gates-route.test.ts (7 tests) 132ms
+ ✓ tests/cli/privacy-admission-cli.test.ts (3 tests) 37574ms
+     ✓ previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync  16718ms
+     ✓ preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync  15339ms
+     ✓ keeps paused collection and replay execution from changing queue or cursor  5507ms
+ ✓ tests/server/time-buckets.test.ts (13 tests) 111ms
+ ✓ tests/shared/home-first-use.test.ts (4 tests) 162ms
+ ✓ tests/parsers/aider.test.ts (8 tests) 23ms
+ ✓ tests/parsers/codex.test.ts (11 tests) 124ms
+ ✓ tests/server/harness-gates-pending-count.test.ts (2 tests) 86ms
+ ✓ tests/shared/harness-detail.test.ts (18 tests) 157ms
+ ✓ tests/server/harness-batch-archive.test.ts (4 tests) 71ms
+ ✓ tests/quota/codex-chatgpt.test.ts (8 tests) 89ms
+ ✓ tests/cli/b07-versioned-quarantine.test.ts (3 tests) 30ms
+ ✓ tests/evaluator/bl-transition-log-f003-timeline-view.test.ts (4 tests) 130ms
+ ✓ tests/server/agent-version.test.ts (14 tests) 16ms
+ ✓ tests/server/daily-range.test.ts (6 tests) 92ms
+ ✓ tests/server/harness-gate-notify-timeout-probe.test.ts (3 tests) 22ms
+ ✓ tests/server/agent-releases-route.test.ts (1 test) 84ms
+ ✓ tests/cli/privacy.test.ts (5 tests) 15ms
+ ✓ tests/server/enrollment-tokens-route.test.ts (5 tests) 34ms
+ ✓ tests/server/harness-report-transitions.test.ts (6 tests) 204ms
+ ✓ tests/server/harness-cost.test.ts (19 tests) 33ms
+ ✓ tests/cli/proxy-env.test.ts (9 tests) 13ms
+ ✓ tests/server/timezone.test.ts (6 tests) 67ms
+ ✓ tests/shared/harness-mode-intent.test.ts (81 tests) 105ms
+ ✓ tests/server/harness-dispatch-usage-evaluator-probes.test.ts (14 tests) 17ms
+ ✓ tests/cli/cursor.test.ts (9 tests) 21ms
+ ✓ tests/server/model-detect.test.ts (11 tests) 19ms
+ ✓ tests/server/ingest-project.test.ts (16 tests) 39ms
+ ✓ tests/cli/b07-private-queue-files.test.ts (2 tests) 30ms
+ ✓ tests/shared/quota-presentation.test.ts (71 tests) 95ms
+stderr | tests/server/ingest-upsert.test.ts > ingestUsageEvents conflict correction > corrects a stale row in place when the re-parsed event differs
+usage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+
+ ✓ tests/server/ingest-upsert.test.ts (9 tests) 25ms
+ ✓ tests/quota/auth-file.test.ts (4 tests) 184ms
+ ✓ tests/shared/mode-badges.test.ts (5 tests) 34ms
+ ✓ tests/server/events-cursor.test.ts (5 tests) 11ms
+ ✓ tests/cli/replay-contract.test.ts (37 tests) 93ms
+ ✓ tests/quota/registry.test.ts (4 tests) 23ms
+ ✓ tests/server/cleanup.test.ts (7 tests) 11ms
+ ✓ tests/server/admin-token.test.ts (8 tests) 23ms
+ ✓ tests/cli/collect.test.ts (4 tests) 8ms
+ ✓ tests/cli/b03-round2-final-deadline-negative.test.ts (1 test) 39ms
+ ✓ tests/shared/path.test.ts (33 tests) 27ms
+ ✓ tests/cli/replay-operational-contract.test.ts (14 tests) 373ms
+ ✓ tests/cli/harness-backoff.test.ts (5 tests) 77ms
+ ✓ tests/server/pricing-sources.test.ts (16 tests) 72ms
+ ✓ tests/shared/framework-version.test.ts (16 tests) 24ms
+ ✓ tests/cli/file-permissions.test.ts (5 tests) 79ms
+ ✓ tests/server/harness-gate-notify-evaluator-probes.test.ts (4 tests) 47ms
+ ✓ tests/shared/auto-refresh.test.ts (3 tests) 49ms
+ ✓ tests/shared/agent-release-version.test.ts (6 tests) 28ms
+ ✓ tests/cli/harness-heartbeat.test.ts (3 tests) 17ms
+ ✓ tests/cli/service-windows.test.ts (24 tests | 4 skipped) 31ms
+ ✓ tests/server/pricing-review.test.ts (9 tests) 14ms
+ ✓ tests/shared/model-pricing.test.ts (16 tests) 111ms
+ ✓ tests/evaluator/bl-security-p1-f008-probes.test.ts (41 tests | 3 skipped) 46ms
+ ✓ tests/server/quota.test.ts (3 tests) 14ms
+ ✓ tests/cli/b07-private-atomic-creation.test.ts (2 tests) 17ms
+ ✓ tests/ci/b07-obsolete-queue-test-archive.test.ts (2 tests) 12ms
+ ✓ tests/cli/enroll.test.ts (2 tests) 39ms
+ ✓ tests/server/model-prices.test.ts (5 tests) 14ms
+ ✓ tests/shared/agent-release-i18n.test.ts (2 tests) 11ms
+ ✓ tests/shared/harness-transitions.test.ts (7 tests) 8ms
+ ✓ tests/shared/usage-privacy.test.ts (5 tests) 28ms
+ ✓ tests/shared/url.test.ts (25 tests) 9ms
+ ✓ tests/server/pricing-mapping.test.ts (7 tests) 8ms
+ ✓ tests/server/auth-secret.test.ts (13 tests) 9ms
+ ✓ tests/server/summary-metrics.test.ts (8 tests) 15ms
+ ✓ tests/shared/usage.test.ts (23 tests) 14ms
+ ✓ tests/cli/harness-vm-provider-ceiling.test.ts (3 tests) 10ms
+ ✓ tests/shared/enrollment-status.test.ts (3 tests) 53ms
+ ✓ tests/cli/service-cron.test.ts (7 tests) 13ms
+ ✓ tests/server/harness-detail.test.ts (2 tests) 10ms
+ ✓ tests/shared/harness-evidence.test.ts (3 tests) 8ms
+ ✓ tests/ci/b06-pg16-workflow-gate.test.ts (2 tests) 8ms
+ ✓ tests/shared/repo-link.test.ts (5 tests) 97ms
+ ✓ tests/shared/input-sanitization.test.ts (3 tests) 92ms
+ ✓ tests/shared/chart-type.test.ts (8 tests) 10ms
+ ✓ tests/shared/html-escape.test.ts (2 tests) 5ms
+ ✓ tests/server/dependency-security-floor.test.ts (2 tests) 7ms
+ ↓ tests/contract/fixture-ingest.contract.test.ts (2 tests | 2 skipped)
+ ↓ tests/contract/sign-verify.contract.test.ts (3 tests | 3 skipped)
+ ✓ tests/shared/pending-gates-badge.test.ts (2 tests) 7ms
+ ↓ tests/contract/canonical-json.contract.test.ts (1 test | 1 skipped)
+ ↓ tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts (2 tests | 2 skipped)
+ ↓ tests/cli/agent-release-installer-windows.test.ts (1 test | 1 skipped)
+ ↓ tests/server/harness-cost-range-db.probe.test.ts (2 tests | 2 skipped)
+ ↓ tests/server/b06-batch-db.probe.test.ts (3 tests | 3 skipped)
+ ↓ tests/server/harness-gates-route-db.probe.test.ts (1 test | 1 skipped)
+ ↓ tests/server/quota-account-db.probe.test.ts (2 tests | 2 skipped)
+ ↓ tests/server/git-privacy-db.probe.test.ts (1 test | 1 skipped)
+ ↓ tests/server/b06-partial-ack-db.probe.test.ts (1 test | 1 skipped)
+ ↓ tests/server/b07-queue-id-ack-db.probe.test.ts (1 test | 1 skipped)
+ ✓ tests/cli/harness.test.ts (27 tests) 43463ms
+     ✓ 同时有 progress.json 与 harness-rules.md 才算 harness 项目  673ms
+     ✓ uses a stable opaque key for local-only repos without leaking the root into the report  2251ms
+     ✓ 从 features.json 统计完成度，并带上待批闸门  719ms
+     ✓ 待批闸门只上报 API 白名单字段  663ms
+     ✓ 已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖  911ms
+     ✓ sends the running Agent identity on every device-driven Harness relay request  2302ms
+     ✓ reports progress.mode_intent as applied and sends the identical applied ACK  843ms
+     ✓ 签名有效时写入并提交  1325ms
+     ✓ does not route an unbound legacy gate relay onto the current repository  644ms
+     ✓ fails closed when the signed decision wrapper matches multiple local repositories  1668ms
+     ✓ 🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准  1022ms
+     ✓ 仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住）  834ms
+     ✓ 陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过）  1261ms
+     ✓ progress.json 有未提交改动时本轮不写，避免与状态机打架  1219ms
+     ✓ 某个项目上报失败不中断其余项目  1481ms
+     ✓ 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到  1137ms
+     ✓ report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit  1536ms
+     ✓ mode relay 失败不阻塞另外两步  1013ms
+     ✓ gate relay 失败不阻塞另外两步  1179ms
+     ✓ 本机闸门已有决策时不覆盖  749ms
+     ✓ applies the exact HTTP retryability matrix  2176ms
+     ✓ classifies safe server codes and never retains response bodies in the snapshot  606ms
+     ✓ falls back to http status when a response code is not normalized  529ms
+     ✓ classifies timeouts for all independent subchains without short-circuiting  521ms
+     ✓ caps structured issues at 20 while retaining the full failed-project count  13615ms
+     ✓ writes idle, success, degraded, and failed snapshots from actual outcomes  1398ms
+     ✓ deduplicates unchanged issue details and logs recovery  1183ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/b05-recovery-source.test.ts > portable B05 recovery source and evidence invariants > excludes only the immutable historical local-object audit, with an active portable replacement
+AssertionError: expected 'import { configDefaults, defineConfig…' to contain 'exclude: [...configDefaults.exclude, …'
+
+- Expected
++ Received
+
+- exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
++ import { configDefaults, defineConfig } from "vitest/config";
++ import { fileURLToPath } from "node:url";
++
++ export default defineConfig({
++   resolve: {
++     alias: {
++       "@": fileURLToPath(new URL("./src", import.meta.url))
++     }
++   },
++   test: {
++     include: ["tests/**/*.test.ts"],
++     // Immutable historical audit uses local-only git objects and asserts a
++     // former defect. Its portable replacement is b05-recovery-source.test.ts.
++     // Immutable evidence for the pre-R07 evaluator contract. Operational R07
++     // intentionally supersedes its "dryRun:false is unsupported" assertion;
++     // keep the original bytes hashable, but run the candidate-owned successor.
++     exclude: [
++       ...configDefaults.exclude,
++       "tests/evaluator/b05-tcp-readiness-independent.test.ts",
++       "tests/evaluator/b03-scope-admission-independent.test.ts",
++       // Immutable B06 server-slice evidence locks the deliberately obsolete
++       // retry-and-pin behavior; the partial ACK suite is its replacement.
++       "tests/cli/b06-batch-failure-queue.test.ts",
++       // Resolution moved inside sync, before the optional observer callback.
++       // B07 queue/versioned-quarantine suites inject durable-write failures.
++       "tests/cli/b06-partial-ack.test.ts",
++       "tests/ci/b06-obsolete-queue-test-archive.test.ts"
++     ],
++     environment: "node"
++   }
++ });
++
+
+ ❯ tests/ci/b05-recovery-source.test.ts:38:20
+     36|   it("excludes only the immutable historical local-object audit, with …
+     37|     const config = readFileSync("vitest.config.ts", "utf8");
+     38|     expect(config).toContain(`exclude: [...configDefaults.exclude, "${…
+       |                    ^
+     39|     expect(config).not.toContain('"tests/evaluator/**"');
+     40|     const original = readFileSync(historical, "utf8").replace(/\r\n/g,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/evaluator/b05-evidence-retention-round2.test.ts > B05 retained recovery evidence round 2 > archives only the obsolete local-object test and retains an active portable replacement
+AssertionError: expected 'import { configDefaults, defineConfig…' to contain 'exclude: [...configDefaults.exclude, …'
+
+- Expected
++ Received
+
+- exclude: [...configDefaults.exclude, "tests/evaluator/b05-tcp-readiness-independent.test.ts"]
++ import { configDefaults, defineConfig } from "vitest/config";
++ import { fileURLToPath } from "node:url";
++
++ export default defineConfig({
++   resolve: {
++     alias: {
++       "@": fileURLToPath(new URL("./src", import.meta.url))
++     }
++   },
++   test: {
++     include: ["tests/**/*.test.ts"],
++     // Immutable historical audit uses local-only git objects and asserts a
++     // former defect. Its portable replacement is b05-recovery-source.test.ts.
++     // Immutable evidence for the pre-R07 evaluator contract. Operational R07
++     // intentionally supersedes its "dryRun:false is unsupported" assertion;
++     // keep the original bytes hashable, but run the candidate-owned successor.
++     exclude: [
++       ...configDefaults.exclude,
++       "tests/evaluator/b05-tcp-readiness-independent.test.ts",
++       "tests/evaluator/b03-scope-admission-independent.test.ts",
++       // Immutable B06 server-slice evidence locks the deliberately obsolete
++       // retry-and-pin behavior; the partial ACK suite is its replacement.
++       "tests/cli/b06-batch-failure-queue.test.ts",
++       // Resolution moved inside sync, before the optional observer callback.
++       // B07 queue/versioned-quarantine suites inject durable-write failures.
++       "tests/cli/b06-partial-ack.test.ts",
++       "tests/ci/b06-obsolete-queue-test-archive.test.ts"
++     ],
++     environment: "node"
++   }
++ });
++
+
+ ❯ tests/evaluator/b05-evidence-retention-round2.test.ts:45:20
+     43|   it("archives only the obsolete local-object test and retains an acti…
+     44|     const config = readFileSync("vitest.config.ts", "utf8");
+     45|     expect(config).toContain(`exclude: [...configDefaults.exclude, "${…
+       |                    ^
+     46|     expect(config).not.toMatch(/exclude:[^\n]+tests\/evaluator\/\*\*/);
+     47|     const replacement = readFileSync("tests/ci/b05-recovery-source.tes…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/cli/harness-command.test.ts > harness CLI output contracts > wires Commander options without treating the Command object as injected dependencies
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/cli/harness-command.test.ts:76:3
+     74|   });
+     75|
+     76|   it("wires Commander options without treating the Command object as i…
+       |   ^
+     77|     const home = mkdtempSync(join(tmpdir(), "tokenizer-harness-command…
+     78|     tempHomes.push(home);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 155 passed | 12 skipped (170)
+      Tests  3 failed | 1878 passed | 31 skipped (1912)
+   Start at  02:32:24
+   Duration  45.47s (transform 12.73s, setup 0ms, import 52.31s, tests 272.49s, environment 47ms)
+
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008/docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-generator-20261008/full-test.json

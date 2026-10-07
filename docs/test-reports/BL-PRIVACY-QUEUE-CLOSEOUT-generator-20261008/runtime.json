@@ -1,0 +1,16 @@
+{
+  "node": "v22.22.0",
+  "execPath": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "arch": "arm64",
+  "baseline": "f8449e80fcdf78f689dcc924dd50fb78c83a1acc",
+  "nodeModules": {
+    "path": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008/node_modules",
+    "symlink": false
+  },
+  "lockSha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+  "syntheticRoot": "/private/tmp/tokenizer-closeout-20261008-5CSdLv",
+  "productionDatabaseUsed": false,
+  "nativeWindowsRun": false,
+  "nativeLinuxRun": false
+}

@@ -1,0 +1,242 @@
+{
+  "report": "short-root-full-controlled.json",
+  "total": 31,
+  "records": [
+    {
+      "path": "tests/cli/agent-lifecycle.test.ts",
+      "category": "native-windows",
+      "reason": "Native Windows cases skipped on darwin",
+      "tests": [
+        {
+          "title": "agent single-instance lock reclaims a lock after Windows force-terminates the agent",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/cli/agent-release-installer-windows.test.ts",
+      "category": "native-windows",
+      "reason": "Native Windows cases skipped on darwin",
+      "tests": [
+        {
+          "title": "native Windows pinned installer fixture installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/cli/replay-safety-regression.test.ts",
+      "category": "native-windows",
+      "reason": "Native Windows cases skipped on darwin",
+      "tests": [
+        {
+          "title": "Windows refuses unsupported UNC source before opening",
+          "status": "skipped"
+        },
+        {
+          "title": "Windows refuses unsupported device source before opening",
+          "status": "skipped"
+        },
+        {
+          "title": "Windows refuses unsupported alternate stream source before opening",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/cli/service-windows.test.ts",
+      "category": "native-windows",
+      "reason": "Native Windows cases skipped on darwin",
+      "tests": [
+        {
+          "title": "schtasks registration (real) is accepted by schtasks and can be queried and deleted",
+          "status": "skipped"
+        },
+        {
+          "title": "schtasks registration (real) uses a task name that does not collide with the real one",
+          "status": "skipped"
+        },
+        {
+          "title": "vbs launcher (real) parses under WSH, waits for the agent, and propagates a failure exit code",
+          "status": "skipped"
+        },
+        {
+          "title": "vbs launcher (real) propagates a clean exit",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/contract/canonical-json.contract.test.ts",
+      "category": "external-contract-fixtures",
+      "reason": "CONTRACT_FIXTURES_DIR not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "contract fixtures: canonical JSON matches every framework vector byte for byte",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/contract/fixture-ingest.contract.test.ts",
+      "category": "external-contract-fixtures",
+      "reason": "CONTRACT_FIXTURES_DIR not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "contract fixtures: framework payload ingestion accepts every valid pending gate and rejects every invalid pending gate",
+          "status": "skipped"
+        },
+        {
+          "title": "contract fixtures: framework payload ingestion accepts every valid mode intent and rejects every invalid mode intent",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/contract/sign-verify.contract.test.ts",
+      "category": "external-contract-fixtures",
+      "reason": "CONTRACT_FIXTURES_DIR not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "contract fixtures: Node signing to framework verification accepts a tokenizer-issued decision for 'CF-NODE-verifying-done-w1'",
+          "status": "skipped"
+        },
+        {
+          "title": "contract fixtures: Node signing to framework verification accepts a tokenizer-issued decision for 'CF-NODE-verifying-done-w2'",
+          "status": "skipped"
+        },
+        {
+          "title": "contract fixtures: Node signing to framework verification rejects a one-byte mutation of a signed field",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_F003_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "probe: F003 cache-key identity across both pages (real Prisma, scratch DB) both pages' queries serialize into byte-identical getBatchCost argument tuples",
+          "status": "skipped"
+        },
+        {
+          "title": "probe: F003 cache-key identity across both pages (real Prisma, scratch DB) the shared export computes deep-equal, hand-checkable values for both pages' inputs",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/evaluator/bl-security-p1-f008-probes.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "DB-backed adversarial probes (scratch PostgreSQL) F004: two genuinely concurrent approvals → exactly one 200, one 409, single stored sig",
+          "status": "skipped"
+        },
+        {
+          "title": "DB-backed adversarial probes (scratch PostgreSQL) B06 F003 e2e: poison batch returns 400 before device, token or event writes",
+          "status": "skipped"
+        },
+        {
+          "title": "DB-backed adversarial probes (scratch PostgreSQL) F007: independent recompute of the audit fixture + exactly one aggregate query",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/b06-batch-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_B06_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "B06 pre-write admission against an isolated real PG16 rejects mixed rows, malformed counts/dates and foreign devices without changing any persisted state",
+          "status": "skipped"
+        },
+        {
+          "title": "B06 pre-write admission against an isolated real PG16 persists valid old wire payloads with Prisma Int/Decimal/BigInt types, minimizing usage content and binding tenants",
+          "status": "skipped"
+        },
+        {
+          "title": "B06 pre-write admission against an isolated real PG16 leaves accepted state unchanged for a revoked or unknown credential",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/b06-partial-ack-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_B06_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "B06 client partial ACK against isolated real PG16 persists good neighbours once, quarantines poison durably and drains the active queue",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/b07-queue-id-ack-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_B07_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "B07 exact queue ACK against isolated real PG16 retains a concurrent writer while committing good rows and quarantining poison",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/git-privacy-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_R02_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "Git privacy against isolated PostgreSQL stores one project per tenant and no synthetic remote credentials",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/harness-cost-range-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_F007_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "F007 single-query range join (real Postgres) matches the locked fixture and performs exactly one usage aggregation query",
+          "status": "skipped"
+        },
+        {
+          "title": "F007 single-query range join (real Postgres) replays the BL-COST-BATCH-V1 F004 audit fixture without attribution drift",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/harness-gates-route-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_F004_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "probe: gate decision CAS against real Postgres commits exactly one of two concurrent approvals and returns its stored signature",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "path": "tests/server/quota-account-db.probe.test.ts",
+      "category": "scratch-database",
+      "reason": "EVAL_F005_DB_URL not configured in the synthetic local runner",
+      "tests": [
+        {
+          "title": "probe: quota accounts against real Postgres keeps windows and capture metadata inside their provider account",
+          "status": "skipped"
+        },
+        {
+          "title": "probe: quota accounts against real Postgres finds the additive account-aware index created by migrate deploy",
+          "status": "skipped"
+        }
+      ]
+    }
+  ]
+}

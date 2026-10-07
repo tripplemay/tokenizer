@@ -1,0 +1,56 @@
+{
+  "schema": "b03-technical-prereview-v1",
+  "round": 2,
+  "date": "2026-10-08",
+  "candidate_sha": "d20da68391b4cde73e4b29a5385c7dc3fbbeddef",
+  "immutable_round1_artifact_sha": "ac6994ace04e0614b17f41261a704ff8b883f823",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-b03-round2-prereview-20261008",
+  "review_kind": "same-family technical prereview",
+  "formal_cross_family_acceptance": false,
+  "verdict": "BLOCK",
+  "round1_privacy_controls": "PASS",
+  "requested_confirmation_drift_controls": "PASS",
+  "default_macos_tmpdir": "PASS",
+  "native_windows_independent_round2_tests": "NOT_RUN",
+  "state_modified": false,
+  "product_modified": false,
+  "pushed": false,
+  "production": "NOT_TESTED",
+  "local_typecheck": "ENVIRONMENT_FAILURE: missing Playwright and reused Next cache API signatures; no added-test errors",
+  "findings": [
+    {
+      "id": "R2-01",
+      "severity": "P1",
+      "decision": "BLOCK",
+      "title": "Replay elapsed budget does not bound Git enrichment or final admission",
+      "actual_wall_clock": "dry-run child killed by 11010 ms outer watchdog, ETIMEDOUT; no replay refusal",
+      "virtual_clock_control": "11000 ms advance during final enrichment still merges and admits 1",
+      "evidence": ["evidence/elapsed-negative.log", "evidence/final-deadline-negative.log"]
+    },
+    {
+      "id": "R2-02",
+      "severity": "acceptance gate",
+      "decision": "BLOCK_CI",
+      "title": "Exact candidate Windows CI fails two refusal-message assertions",
+      "product_unsafe_admission_observed": false,
+      "race_mutation_stage_proven": false,
+      "evidence": ["evidence/ci-run-latest.json", "evidence/ci-windows.log"]
+    }
+  ],
+  "test_runs": {
+    "frozen_controls_and_default_focused": { "passed": 88, "failed": 0, "skipped": 1 },
+    "independent_confirmation_and_candidate_scope": { "passed": 25, "failed": 0, "skipped": 0 },
+    "real_elapsed_negative": { "passed": 0, "failed": 1, "skipped": 0 },
+    "virtual_final_deadline_negative": { "passed": 0, "failed": 1, "skipped": 0 }
+  },
+  "ci": {
+    "run_id": 37668575390,
+    "exact_head_sha_verified": true,
+    "conclusion": "failure",
+    "windows_job": 112954122753,
+    "windows_unit": { "passed": 1623, "failed": 2, "skipped": 34 },
+    "windows_installer_fixture": "PASS",
+    "deploy": "skipped"
+  },
+  "report": "REPORT.md"
+}

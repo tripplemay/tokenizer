@@ -1,0 +1,51 @@
+{
+  "platform": "darwin",
+  "node": "v22.22.0",
+  "short": {
+    "paths": [
+      "/private/tmp/tk-socket-5MXgSb/short/shared-prefix-one.sock",
+      "/private/tmp/tk-socket-5MXgSb/short/shared-prefix-two.sock"
+    ],
+    "bytes": [
+      58,
+      58
+    ],
+    "outcomes": [
+      {
+        "listening": true,
+        "code": null
+      },
+      {
+        "listening": true,
+        "code": null
+      }
+    ],
+    "actualNames": [
+      "shared-prefix-one.sock",
+      "shared-prefix-two.sock"
+    ]
+  },
+  "long": {
+    "paths": [
+      "/private/tmp/tk-socket-5MXgSb/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/shared-prefix-one.sock",
+      "/private/tmp/tk-socket-5MXgSb/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/shared-prefix-two.sock"
+    ],
+    "bytes": [
+      117,
+      117
+    ],
+    "outcomes": [
+      {
+        "listening": true,
+        "code": null
+      },
+      {
+        "listening": false,
+        "code": "EADDRINUSE"
+      }
+    ],
+    "actualNames": [
+      "shared-pr"
+    ]
+  }
+}

@@ -44,14 +44,16 @@ batches keep the established lastSyncAt heartbeat behavior.
 ## Durable ordering
 
 Rejected rows are privacy-minimized and git-credential-sanitized into
-`~/.tokenizer/rejected-usage.jsonl`, keyed by source plus sourceEventId. The
+`~/.tokenizer/rejected-usage.jsonl`, keyed by the exact normalized event version
+(superseding identity-only keys in BL-PRIVACY-QUEUE-CLOSEOUT). Distinct corrected
+versions sharing source plus sourceEventId are retained independently. The
 quarantine uses the same cross-process lock and atomic rename mechanism as
 other Agent state.
 
 For a partial response the Agent performs:
 
 1. atomically merge rejected rows into quarantine;
-2. checkpoint the active queue with all resolved accepted/rejected IDs removed;
+2. checkpoint the active queue with only exact resolved accepted/rejected versions removed;
 3. continue with the next live batch.
 
 If step 1 fails, the active queue is unchanged. If the process stops between

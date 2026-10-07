@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b03-round2-prereview-20261008
+
+ ✓ tests/cli/b03-round2-independent.test.ts (12 tests) 82ms
+ ✓ tests/cli/privacy-scope-safety.test.ts (13 tests) 128ms
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  01:41:32
+   Duration  506ms (transform 116ms, setup 0ms, collect 211ms, tests 209ms, environment 0ms, prepare 136ms)
+

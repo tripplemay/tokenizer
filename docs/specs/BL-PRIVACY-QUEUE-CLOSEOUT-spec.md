@@ -90,6 +90,19 @@ Separate environment-gated skips, native Windows/Linux and PG16 from local
 macOS checks. Do not execute native service installers against the user's
 running Agent.
 
+## Approved configuration compatibility adjudication
+
+The fixed baseline `f8449e8` already uses a multi-line exclusion array while
+two active B05 tests assert the earlier exact single-line configuration text.
+Coordinator/Planner approved a real `historicalTestConfig` object composition
+on 2026-10-08: preserve the exact effective exclusion set, retain both B05 tests
+unchanged and active, and do not satisfy them with unused strings or comments.
+A new combination control must import the actual exported Vitest configuration,
+assert its precise inclusion/exclusion scope, and reject any broader custom
+wildcard exclusion. Retain initial full-run failures as baseline evidence;
+rerun both B05 tests, configuration control, full suite and type verification.
+This is configuration compatibility inside F001, not additional product scope.
+
 ## F002 independent acceptance
 
 Use a fresh evaluator from a different model family than Codex. Evaluator may

@@ -1,0 +1,5 @@
+{
+  "baseline": "f8449e8",
+  "historicalExactAssertion": "exclude: [...configDefaults.exclude, \"tests/evaluator/b05-tcp-readiness-independent.test.ts\"]",
+  "alreadyAbsentAtBaseline": true
+}

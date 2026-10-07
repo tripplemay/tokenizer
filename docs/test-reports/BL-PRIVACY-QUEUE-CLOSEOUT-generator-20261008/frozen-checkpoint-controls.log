@@ -1,0 +1,20 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ✓ tests/ci/b07-combination-frozen-inputs.test.ts > retains baseline evaluator bytes and transports frozen B03/B07 evidence without rewriting hashes 285ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > partial ACK removes only exact versions and preserves a concurrent correction 50ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > fails closed on an incomplete or forged partial ACK 3ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > retains the active queue when durable quarantine is corrupt 3ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > retains accepted and rejected queue bytes when the internal partial ACK checkpoint fails, then retries idempotently 10ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > supports a row-addressed previous-server rejection without retrying poison 4ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > isolates rowless previous-server invalid_json with bounded binary narrowing 7ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > fails closed on a global rowless invalid_json when the empty probe also fails 2ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > does not retry a permanent auth failure or expose its body 2ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > keeps bounded transient retry and exact-ACKs after recovery 5ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > quarantines before deleting so a quarantine failure cannot lose poison 2ms
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  02:28:12
+   Duration  757ms (transform 268ms, setup 0ms, import 360ms, tests 376ms, environment 0ms)
+

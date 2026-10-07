@@ -1,0 +1,40 @@
+
+ RUN  v2.1.9 /Volumes/ORICO/project/.worktrees/tokenizer-b07-prereview-20261008
+
+stdout | tests/cli/b07-prereview-process.test.ts > separate native processes must not lose rejected correction after old same-ID quarantine
+MULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-07T18:57:20.366Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}}]}
+
+stdout | tests/cli/b07-prereview-process.test.ts > eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+MULTIPROCESS_CONTROL {"beforeCount":8,"afterAckCount":7}
+
+ ❯ tests/cli/b07-prereview-process.test.ts (2 tests | 1 failed) 3585ms
+   × separate native processes must not lose rejected correction after old same-ID quarantine 2102ms
+     → expected false to be true // Object.is equality
+   ✓ eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files 1482ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/b07-prereview-process.test.ts > separate native processes must not lose rejected correction after old same-ID quarantine
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/cli/b07-prereview-process.test.ts:18:189
+     16|   try {
+     17|     command(home, "merge", [event(1)]); command(home, "reject", [event…
+     18|     console.log("MULTIPROCESS_QUARANTINE_NEGATIVE", JSON.stringify(sta…
+       |                                                                                                                                                                                             ^
+     19|   } finally { rmSync(home, { recursive: true, force: true }); }
+     20| }, 15_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  01:57:18
+   Duration  4.59s (transform 57ms, setup 0ms, collect 38ms, tests 3.58s, environment 0ms, prepare 129ms)
+

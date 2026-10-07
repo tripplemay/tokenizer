@@ -1,0 +1,50 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ❯ tests/cli/queue-merge.test.ts (3 tests | 1 failed) 1283ms
+     × acknowledges only sent bytes and preserves concurrent additions or corrections 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/queue-merge.test.ts > durable queue merge > acknowledges only sent bytes and preserves concurrent additions or corrections
+AssertionError: expected [ …(2) ] to deeply equal [ [ 'sent', 12 ], …(1) ]
+
+- Expected
++ Received
+
+  [
+    [
+-     "sent",
+-     12,
+-   ],
+-   [
+      "concurrent-replay",
+      undefined,
++   ],
++   [
++     "sent",
++     12,
+    ],
+  ]
+
+ ❯ tests/cli/queue-merge.test.ts:85:80
+     83|
+     84|     const remaining = acknowledgeQueuedEvents([sent], queue);
+     85|     expect(remaining.map((event) => [event.sourceEventId, event.totalT…
+       |                                                                                ^
+     86|       ["sent", 12],
+     87|       ["concurrent-replay", undefined]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 23 passed (24)
+      Tests  1 failed | 147 passed | 3 skipped (151)
+   Start at  02:24:24
+   Duration  11.35s (transform 2.68s, setup 0ms, import 5.29s, tests 37.12s, environment 4ms)
+
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

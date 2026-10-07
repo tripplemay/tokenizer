@@ -1,0 +1,483 @@
+Verify (Windows)	Set up job	﻿2026-10-07T18:51:06.3696127Z Current runner version: '2.337.0'
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3739399Z ##[group]Runner Image Provisioner
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3740392Z Hosted Compute Agent
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3740926Z Version: 20260901.588
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3741395Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3741962Z Build Date: 2026-09-01T19:56:44Z
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3742473Z Worker ID: {2f516241-d703-444f-a9cb-871d85f8e386}
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3742997Z Azure Region: westus3
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3743433Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3744548Z ##[group]Operating System
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3745046Z Microsoft Windows Server 2025
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3745504Z 10.0.26100
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3745882Z Datacenter
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3746338Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3746767Z ##[group]Runner Image
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3747217Z Image: windows-2025-vs2026
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3747665Z Version: 20260925.250.1
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3748539Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3750153Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3750919Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3751815Z ##[group]GITHUB_TOKEN Permissions
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3753583Z Contents: read
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3754292Z Metadata: read
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3754825Z Packages: read
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3755301Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3757163Z Secret source: Actions
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3757894Z Cache mode: write
+Verify (Windows)	Set up job	2026-10-07T18:51:06.3758560Z Prepare workflow directory
+Verify (Windows)	Set up job	2026-10-07T18:51:06.4065703Z Prepare all required actions
+Verify (Windows)	Set up job	2026-10-07T18:51:06.4112281Z Getting action download info
+Verify (Windows)	Set up job	2026-10-07T18:51:06.6997336Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Verify (Windows)	Set up job	2026-10-07T18:51:07.1089952Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Verify (Windows)	Set up job	2026-10-07T18:51:07.3217562Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Verify (Windows)	Set up job	2026-10-07T18:51:08.3025832Z Complete job name: Verify (Windows)
+Verify (Windows)	Checkout	﻿2026-10-07T18:51:08.8940112Z ##[group]Run actions/checkout@v4
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8940942Z with:
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8941187Z   repository: tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8943513Z   token: ***
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8943712Z   ssh-strict: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8943897Z   ssh-user: git
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8944101Z   persist-credentials: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8944311Z   clean: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8944508Z   sparse-checkout-cone-mode: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8944741Z   fetch-depth: 1
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8944937Z   fetch-tags: false
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8945134Z   show-progress: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8945319Z   lfs: false
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8945511Z   submodules: false
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8945711Z   set-safe-directory: true
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8945932Z   allow-unsafe-pr-checkout: false
+Verify (Windows)	Checkout	2026-10-07T18:51:08.8946382Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:09.0076273Z Syncing repository: tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:09.0077409Z ##[group]Getting Git version info
+Verify (Windows)	Checkout	2026-10-07T18:51:09.0077711Z Working directory is 'D:\a\tokenizer\tokenizer'
+Verify (Windows)	Checkout	2026-10-07T18:51:09.0675559Z [command]"C:\Program Files\Git\bin\git.exe" version
+Verify (Windows)	Checkout	2026-10-07T18:51:09.4647599Z git version 2.55.0.windows.5
+Verify (Windows)	Checkout	2026-10-07T18:51:09.4687300Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:09.4702913Z Temporarily overriding HOME='D:\a\_temp\dd4aa5d1-3f04-4ba2-8594-d69ae5b0a34b' before making global git config changes
+Verify (Windows)	Checkout	2026-10-07T18:51:09.4703527Z Adding repository directory to the temporary git global config as a safe directory
+Verify (Windows)	Checkout	2026-10-07T18:51:09.4711354Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:09.5324664Z Deleting the contents of 'D:\a\tokenizer\tokenizer'
+Verify (Windows)	Checkout	2026-10-07T18:51:09.5331716Z ##[group]Initializing the repository
+Verify (Windows)	Checkout	2026-10-07T18:51:09.5338064Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\tokenizer\tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:09.6220953Z Initialized empty Git repository in D:/a/tokenizer/tokenizer/.git/
+Verify (Windows)	Checkout	2026-10-07T18:51:09.6260095Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8305985Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8306665Z ##[group]Disabling automatic garbage collection
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8315014Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8551232Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8551593Z ##[group]Setting up auth
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8565775Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Verify (Windows)	Checkout	2026-10-07T18:51:09.8804776Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Verify (Windows)	Checkout	2026-10-07T18:51:11.5627273Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (Windows)	Checkout	2026-10-07T18:51:11.5899836Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Verify (Windows)	Checkout	2026-10-07T18:51:12.0123728Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (Windows)	Checkout	2026-10-07T18:51:12.0363690Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Verify (Windows)	Checkout	2026-10-07T18:51:12.4688775Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Verify (Windows)	Checkout	2026-10-07T18:51:12.4929836Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:12.4939745Z ##[group]Fetching the repository
+Verify (Windows)	Checkout	2026-10-07T18:51:12.4940578Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +4979042e3cf8d2c5f06ed5de13372e49d0bab855:refs/remotes/origin/codex/b07-queue-id-ack-20261008
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5698538Z From https://github.com/tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5699326Z  * [new ref]         4979042e3cf8d2c5f06ed5de13372e49d0bab855 -> origin/codex/b07-queue-id-ack-20261008
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5737628Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5738068Z ##[group]Determining the checkout info
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5739860Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:14.5747495Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Verify (Windows)	Checkout	2026-10-07T18:51:14.6144594Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Verify (Windows)	Checkout	2026-10-07T18:51:14.6407011Z ##[group]Checking out the ref
+Verify (Windows)	Checkout	2026-10-07T18:51:14.6414749Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/b07-queue-id-ack-20261008 refs/remotes/origin/codex/b07-queue-id-ack-20261008
+Verify (Windows)	Checkout	2026-10-07T18:51:15.0166983Z Switched to a new branch 'codex/b07-queue-id-ack-20261008'
+Verify (Windows)	Checkout	2026-10-07T18:51:15.0230883Z branch 'codex/b07-queue-id-ack-20261008' set up to track 'origin/codex/b07-queue-id-ack-20261008'.
+Verify (Windows)	Checkout	2026-10-07T18:51:15.0277957Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-07T18:51:15.0646215Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Verify (Windows)	Checkout	2026-10-07T18:51:15.0869603Z 4979042e3cf8d2c5f06ed5de13372e49d0bab855
+Verify (Windows)	Setup Node.js	﻿2026-10-07T18:51:15.1329916Z ##[group]Run actions/setup-node@v4
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1330284Z with:
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1330442Z   node-version: 22
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1330593Z   cache: npm
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1330742Z   always-auth: false
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1330919Z   check-latest: false
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1333078Z   token: ***
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.1333457Z ##[endgroup]
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.4223726Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.4230250Z (node:1996) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.4232007Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:15.4232876Z ##[group]Environment details
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.1578102Z node: v22.23.3
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.1578356Z npm: 10.9.9
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.1578510Z yarn: 1.22.22
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.1579259Z ##[endgroup]
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.2013629Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:24.7893576Z C:\npm\cache
+Verify (Windows)	Setup Node.js	2026-10-07T18:51:25.1255532Z npm cache is not found
+Verify (Windows)	Install dependencies	﻿2026-10-07T18:51:25.1488084Z ##[group]Run npm ci
+Verify (Windows)	Install dependencies	2026-10-07T18:51:25.1488364Z [36;1mnpm ci[0m
+Verify (Windows)	Install dependencies	2026-10-07T18:51:25.2598768Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Install dependencies	2026-10-07T18:51:25.2599084Z ##[endgroup]
+Verify (Windows)	Install dependencies	2026-10-07T18:51:40.7964356Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+Verify (Windows)	Install dependencies	2026-10-07T18:51:53.5039541Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.3712364Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.3713145Z added 670 packages, and audited 671 packages in 41s
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.3713425Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.3713595Z 185 packages are looking for funding
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.3713896Z   run `npm fund` for details
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4481669Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4482976Z 16 vulnerabilities (4 moderate, 10 high, 2 critical)
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4483330Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4483590Z To address issues that do not require attention, run:
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4484066Z   npm audit fix
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4484200Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4484401Z To address all issues (including breaking changes), run:
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4484761Z   npm audit fix --force
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4484916Z 
+Verify (Windows)	Install dependencies	2026-10-07T18:52:07.4485024Z Run `npm audit` for details.
+Verify (Windows)	Typecheck	﻿2026-10-07T18:52:11.4305797Z ##[group]Run npm run verify
+Verify (Windows)	Typecheck	2026-10-07T18:52:11.4306093Z [36;1mnpm run verify[0m
+Verify (Windows)	Typecheck	2026-10-07T18:52:11.4362072Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Typecheck	2026-10-07T18:52:11.4362367Z ##[endgroup]
+Verify (Windows)	Typecheck	2026-10-07T18:52:12.0140838Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:12.0141465Z > tokenizer@0.1.0 verify
+Verify (Windows)	Typecheck	2026-10-07T18:52:12.0142101Z > prisma generate && tsc --noEmit
+Verify (Windows)	Typecheck	2026-10-07T18:52:12.0142336Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:12.4175298Z Prisma schema loaded from prisma\schema.prisma
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0058282Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0059306Z ✔ Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 246ms
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0059595Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0060094Z Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0060440Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0060949Z Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0061434Z 
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0378068Z ┌─────────────────────────────────────────────────────────┐
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0378973Z │  Update available 5.22.0 -> 8.0.0-rc.21                 │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0379536Z │                                                         │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0380097Z │  This is a major update - please follow the guide at    │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0380718Z │  https://pris.ly/d/major-version-upgrade                │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0381280Z │                                                         │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0381806Z │  Run the following to update                            │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0382384Z │    npm i --save-dev prisma@latest                       │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0382945Z │    npm i @prisma/client@latest                          │
+Verify (Windows)	Typecheck	2026-10-07T18:52:13.0383660Z └─────────────────────────────────────────────────────────┘
+Verify (Windows)	Run unit tests	﻿2026-10-07T18:52:22.6485429Z ##[group]Run npm run test
+Verify (Windows)	Run unit tests	2026-10-07T18:52:22.6485713Z [36;1mnpm run test[0m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:22.6541646Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Run unit tests	2026-10-07T18:52:22.6542122Z ##[endgroup]
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.2168486Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.2168985Z > tokenizer@0.1.0 test
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.2169236Z > vitest run
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.2169339Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.6326288Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.6328496Z [1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:23.6328883Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:52:24.5635770Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[90m 62[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:24.7117921Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[90m 99[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:25.0593858Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 561[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:25.1431035Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[90m 42[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:25.9150265Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 550[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:25.9152552Z    [33m[2m✓[22m[39m parseClaudeUsage[2m > [22mparses jsonl events when only the projects directory exists [33m375[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:25.9520247Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:26.3506207Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[90m 44[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:26.4826126Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 60[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:26.7846069Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:27.3179368Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 665[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:29.4223670Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2328[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:29.4225304Z    [33m[2m✓[22m[39m F003 real CLI/daemon parity[2m > [22mcheckpoints the same remaining tail between real sync and run subprocess batches [33m2207[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:29.7784460Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[90m 42[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:30.1060910Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:30.4725612Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[90m 42[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:31.0259844Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[90m 117[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:31.4639076Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[90m 99[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:31.9839716Z  [32m✓[39m tests/server/batch-schema.test.ts [2m([22m[2m65 tests[22m[2m)[22m[90m 181[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:33.7273692Z  [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 1468[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:33.7275110Z    [33m[2m✓[22m[39m agent command parsing[2m > [22mrejects `tokenizer agent status` before it can start a daemon [33m759[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:33.7276255Z    [33m[2m✓[22m[39m agent single-instance lock[2m > [22mreclaims a lock after Windows force-terminates the agent [33m694[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:34.3465797Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:34.8955334Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:35.2136047Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:35.6970904Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:36.1204660Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:36.4830327Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:36.8488252Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:38.6802821Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:39.0033240Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:39.4109334Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:39.7772248Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:40.0785308Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:40.3905203Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:40.7144087Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.0663032Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4545330Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 13867[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4546603Z    [33m[2m✓[22m[39m mode intent relay bounds[2m > [22maccepts only the exact bounded relay envelope [33m653[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4547950Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reads v2 bindings through the data-only catalog, without agent ids [33m1009[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4549348Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mstages and reports legal v2 fast null bindings without a tool catalog [33m847[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4550601Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects v2 staging when the data-only registry validation fails [33m526[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4551854Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mvalidates, atomically stages, and commits only harness.json [33m798[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4553096Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mcommits only harness.json while preserving an unrelated staged file [33m832[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4554509Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a tampered signature without changing the target [33m386[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4555885Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires relay, signed, and discovered repo keys to agree [33m570[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4557059Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects a full HEAD drift immediately before first staging [33m590[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4558277Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window expired_intent [33m616[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4559402Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrejects invalid time window intent_not_yet_valid [33m721[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4560429Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrequires harness.json to be clean [33m565[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4562602Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mretries the exact staged intent without comparing its old HEAD or creating a commit [33m1084[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4564611Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report failure after commit success and completes the next exact retry idempotently [33m740[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4565980Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrecognizes a commit that succeeded immediately before the runner threw [33m637[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4567201Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage write failure [33m533[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4568427Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores the original harness after a first-stage readback failure [33m520[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4569722Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrestores after git add failure without disturbing an unrelated staged file [33m628[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4571073Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mdoes not report defaults copied into a repository with a different normalized identity [33m861[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.4572347Z    [33m[2m✓[22m[39m signed mode intent staging[2m > [22mrolls back a commit failure and never stages an unrelated file [33m748[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.6762778Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:41.9546741Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 56[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:42.2080066Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:42.5380262Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:42.6026457Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 61[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:42.8886064Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:43.1860804Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m12 tests[22m[2m)[22m[90m 265[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:43.2058571Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:43.5169524Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 31[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:43.5797462Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.0135244Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.0137624Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 51[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.5212954Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.6605111Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 382[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.6607410Z    [33m[2m✓[22m[39m BL-HOMEPAGE-FRESHNESS F004 evaluator probes[2m > [22mpreserves the OpenCode SQLite high-water cursor behavior [33m331[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7023042Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 10716[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7025600Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22muses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing [33m536[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7028032Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22msupports a2a while reducing absolute artifacts and raw failures to safe fixed summaries [33m543[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7030630Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps a2a cancellation as a known terminal outcome with a fixed safe summary [33m457[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7032741Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mkeeps runs of other batches (usage must survive batch switch) but rejects foreign refs [33m451[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7035780Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mrejects symlinked run-meta and never hashes a symlinked artifact [33m301[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7037607Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mderives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) [33m406[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7039125Z    [33m[2m✓[22m[39m dispatch run summary collection[2m > [22mscans at most the newest 50 bounded regular JSON files [33m1851[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7040467Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mcarries a valid usage block and capture mode intact into the summary [33m316[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7041885Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mkeeps legacy run-meta without usage summarized with explicit nulls (regression) [33m339[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7043456Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on unknown field but keeps the run (bypass, not a gate) [33m403[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7045058Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on negative tokens but keeps the run (bypass, not a gate) [33m353[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7046670Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) [33m326[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7048237Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on zero turns but keeps the run (bypass, not a gate) [33m309[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7050118Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) [33m436[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7051887Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) [33m734[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7053755Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) [33m324[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7055414Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on non-string model but keeps the run (bypass, not a gate) [33m361[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7057073Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on oversized model name but keeps the run (bypass, not a gate) [33m323[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7058562Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on array instead of object but keeps the run (bypass, not a gate) [33m360[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7060070Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mdrops the whole usage block on string instead of object but keeps the run (bypass, not a gate) [33m334[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7061751Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22mnulls an unknown capture mode while keeping a valid usage block [33m575[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.7063556Z    [33m[2m✓[22m[39m run-meta usage uplink (F002)[2m > [22maccepts attribution_only with a null usage block (kimi shape) [33m377[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:44.9751264Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.1662151Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.3586895Z SUCCESS: The scheduled task "Tokenizer Agent Test" has successfully been created.
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.5548357Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.5549419Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.5550630Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.5551422Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:52:45.8156836Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.1262880Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.3750637Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1103[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.3752157Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mparses under WSH, waits for the agent, and propagates a failure exit code [33m604[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.3753482Z    [33m[2m✓[22m[39m vbs launcher (real)[2m > [22mpropagates a clean exit [33m357[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.6796309Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 34[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:46.8383614Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 172[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:47.4404967Z  [32m✓[39m tests/cli/b07-queue-resolution.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 337[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:47.7826688Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:48.1205281Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:48.4205642Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:49.4753261Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 822[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:49.4755081Z    [33m[2m✓[22m[39m writeFileAtomic failure cleanup[2m > [22mleaves no temp file behind when the write target is unwritable [33m352[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:49.7134986Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:50.5163650Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 3588[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:50.5195896Z    [33m[2m✓[22m[39m canonicalJson[2m > [22mcase 1 与机器侧 Python 规范化逐字节一致 [33m1690[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:50.8535241Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:51.2843275Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 141[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:51.8332227Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 278[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:52.3038146Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:52.5990653Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:52.9120761Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 53[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:53.9285464Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 723[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:54.2564623Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:54.6230679Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:55.0294301Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:55.3459790Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:55.8338251Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 61[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:56.1608736Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:56.5113643Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[90m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:56.6364547Z  [32m✓[39m tests/cli/privacy-admission-cli.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 6714[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:56.6366209Z    [33m[2m✓[22m[39m privacy admission CLI lifecycle[2m > [22mpreserves admitted backlog and cursors, collects only later appends, then uploads on the next sync [33m4421[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:56.6368366Z    [33m[2m✓[22m[39m privacy admission CLI lifecycle[2m > [22mkeeps paused collection and the unavailable replay CLI from changing queue or cursor [33m2292[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:57.0085629Z  [2m[90m↓[39m[22m tests/server/b06-batch-db.probe.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:57.4067568Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:57.5417420Z  [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 56[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:57.6807569Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:57.8496107Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:58.2299245Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:58.2589744Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[90m 174[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:58.6332258Z  [32m✓[39m tests/server/b06-partial-ack.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 44[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:58.6944909Z  [2m[90m↓[39m[22m tests/server/b06-partial-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:58.9086795Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:59.0212385Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:59.2148626Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:59.3101034Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:59.4970085Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:52:59.7729331Z  [2m[90m↓[39m[22m tests/server/b07-queue-id-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.0894226Z  [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1373309Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 34781[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1375390Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22m同时有 progress.json 与 harness-rules.md 才算 harness 项目 [33m1032[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1377028Z    [33m[2m✓[22m[39m discoverHarnessRepos[2m > [22muses a stable opaque key for local-only repos without leaking the root into the report [33m1939[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1378624Z    [33m[2m✓[22m[39m buildReport[2m > [22m从 features.json 统计完成度，并带上待批闸门 [33m589[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1379194Z    [33m[2m✓[22m[39m buildReport[2m > [22m待批闸门只上报 API 白名单字段 [33m409[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1379700Z    [33m[2m✓[22m[39m buildReport[2m > [22m已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 [33m529[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1380394Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22msends the running Agent identity on every device-driven Harness relay request [33m923[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1381260Z    [33m[2m✓[22m[39m mode intent report ACK[2m > [22mreports progress.mode_intent as applied and sends the identical applied ACK [33m583[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1381924Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m签名有效时写入并提交 [33m692[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1382786Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mdoes not route an unbound legacy gate relay onto the current repository [33m417[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1383678Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mfails closed when the signed decision wrapper matches multiple local repositories [33m1024[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1384649Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 [33m460[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1385286Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） [33m686[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1385886Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） [33m972[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1386648Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mprogress.json 有未提交改动时本轮不写，避免与状态机打架 [33m578[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1387329Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m某个项目上报失败不中断其余项目 [33m956[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1388266Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 [33m709[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1389466Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mreport、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit [33m1059[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1390943Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mmode relay 失败不阻塞另外两步 [33m803[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1391760Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22mgate relay 失败不阻塞另外两步 [33m873[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1392532Z    [33m[2m✓[22m[39m applyHarnessDecisions[2m > [22m本机闸门已有决策时不覆盖 [33m562[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1396031Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mapplies the exact HTTP retryability matrix [33m1916[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1398007Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies safe server codes and never retains response bodies in the snapshot [33m513[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1399760Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mfalls back to http status when a response code is not normalized [33m628[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1401298Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mclassifies timeouts for all independent subchains without short-circuiting [33m572[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1403006Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mcaps structured issues at 20 while retaining the full failed-project count [33m12863[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1405376Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mwrites idle, success, degraded, and failed snapshots from actual outcomes [33m1364[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.1409526Z    [33m[2m✓[22m[39m structured Harness sync health[2m > [22mdeduplicates unchanged issue details and logs recovery [33m1129[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.3809228Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.5317465Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.7120583Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:00.8478367Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 36[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.0113103Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.2304177Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 66[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.3232873Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.5552014Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.6430812Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.8551425Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:01.9237585Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.2406777Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.5682298Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.8014992Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 2823[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.8017853Z    [33m[2m✓[22m[39m harness CLI output contracts[2m > [22mwires Commander options without treating the Command object as injected dependencies [33m2815[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.8765400Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 743[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:02.9827004Z  [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.2385957Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.2409311Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.2428561Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.5202872Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.5543620Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.6606584Z  [32m✓[39m tests/cli/b07-private-queue-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.7923011Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.8611126Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:03.9669330Z  [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.2394748Z  [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.2396337Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.3231866Z  [32m✓[39m tests/cli/replay-contract.test.ts [2m([22m[2m37 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.5355850Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.5553115Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.8493462Z  [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:04.8587139Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.1467252Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 21[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.2153405Z  [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 590[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.3352001Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.4370583Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.5136357Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.6594760Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.8124886Z  [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.8363834Z  [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:05.9839671Z  [32m✓[39m tests/evaluator/b03-scope-admission-independent.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.1344348Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.1345874Z  [32m✓[39m tests/server/batch-wire-compatibility.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.4222944Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.4399638Z  [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.6239910Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.7217399Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.7218146Z  [32m✓[39m tests/ci/b06-pg16-workflow-gate.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:06.9238842Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.0427285Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.1022762Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 24[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.3421914Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.3932070Z  [31m❯[39m tests/ci/b07-obsolete-queue-test-archive.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[90m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.3934001Z [31m   [31m×[31m B07 immutable B06 regression archive[2m > [22mkeeps every historical evaluator-owned test byte-identical and explicitly excluded[90m 11[2mms[22m[31m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.3935697Z [31m     → expected '8e1833440daac3151366f1257505f942724a6…' to be 'fb406333cef1b6c8f035c8750a3a7a914da49…' // Object.is equality[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:07.7264754Z  [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.1004318Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.4493339Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.5222205Z  [32m✓[39m tests/cli/b06-rejected-events-concurrency.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 869[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.5223684Z    [33m[2m✓[22m[39m B06 rejected usage concurrency[2m > [22mserializes two native processes without losing either rejected event [33m867[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.7629831Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:08.8382609Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:09.0563917Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:09.1059916Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:09.3883794Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:09.4082706Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8473146Z  [32m✓[39m tests/cli/b07-queue-multiwriter.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 3608[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8474113Z    [33m[2m✓[22m[39m B07 native two-process queue liveness[2m > [22mpreserves concurrent collection, newer versions and crash retries over real HTTP [33m3607[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8603862Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8634621Z [31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8635273Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8636778Z [31m[1m[7m FAIL [27m[22m[39m tests/ci/b07-obsolete-queue-test-archive.test.ts[2m > [22mB07 immutable B06 regression archive[2m > [22mkeeps every historical evaluator-owned test byte-identical and explicitly excluded
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8646172Z [31m[1mAssertionError[22m: expected '8e1833440daac3151366f1257505f942724a6…' to be 'fb406333cef1b6c8f035c8750a3a7a914da49…' // Object.is equality[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8647098Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8647835Z Expected: [32m"fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca"[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8648815Z Received: [31m"8e1833440daac3151366f1257505f942724a6446861478cb4170c98ef73c0255"[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8649319Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8649902Z [36m [2m❯[22m tests/ci/b07-obsolete-queue-test-archive.test.ts:[2m15:77[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8816879Z     [90m 13| [39m    [35mconst[39m config [33m=[39m [34mreadFileSync[39m([32m"vitest.config.ts"[39m[33m,[39m [32m"utf8"[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8818460Z     [90m 14| [39m    [35mfor[39m ([35mconst[39m [path[33m,[39m hash] [35mof[39m immutable) {
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8819692Z     [90m 15| [39m      [34mexpect[39m([34mcreateHash[39m([32m"sha256"[39m)[33m.[39m[34mupdate[39m([34mreadFileSync[39m(path))[33m.[39m[34mdigest[39m([32m"h[39m…
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8820599Z     [90m   | [39m                                                                            [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8821418Z     [90m 16| [39m      [34mexpect[39m(config)[33m.[39m[34mtoContain[39m([32m`"[39m[36m${[39mpath[36m}[39m[32m"`[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8822037Z     [90m 17| [39m    }
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8822188Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8822461Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8822684Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8827935Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m125 passed[39m[22m[2m | [22m[33m11 skipped[39m[90m (137)[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8832346Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1664 passed[39m[22m[2m | [22m[33m37 skipped[39m[90m (1702)[39m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8833243Z [2m   Start at [22m 18:52:23
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8836492Z [2m   Duration [22m 47.23s[2m (transform 3.04s, setup 0ms, collect 11.83s, tests 90.74s, environment 32ms, prepare 12.81s)[22m
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8837069Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8863867Z 
+Verify (Windows)	Run unit tests	2026-10-07T18:53:10.8900139Z ##[error]AssertionError: expected '8e1833440daac3151366f1257505f942724a6…' to be 'fb406333cef1b6c8f035c8750a3a7a914da49…' // Object.is equality
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	Expected: "fb406333cef1b6c8f035c8750a3a7a914da494c0670e2ee7329ff120216b6eca"
+Verify (Windows)	Run unit tests	Received: "8e1833440daac3151366f1257505f942724a6446861478cb4170c98ef73c0255"
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ tests/ci/b07-obsolete-queue-test-archive.test.ts:15:77
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-07T18:53:11.0029118Z ##[error]Process completed with exit code 1.
+Verify (Windows)	Upload Windows agent owner evidence	﻿2026-10-07T18:53:11.0180865Z ##[group]Run actions/upload-artifact@v4
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0181159Z with:
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0181319Z   name: windows-agent-owner
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0181519Z   path: .ci/windows-agent-owner.json
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0181747Z   if-no-files-found: warn
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0181921Z   retention-days: 7
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0182076Z   compression-level: 6
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0182234Z   overwrite: false
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0182391Z   include-hidden-files: false
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.0182573Z ##[endgroup]
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.1731999Z (node:6380) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.1732784Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-07T18:53:11.1768306Z ##[warning]No files were found with the provided path: .ci/windows-agent-owner.json. No artifacts will be uploaded.
+Verify (Windows)	Post Checkout	﻿2026-10-07T18:53:11.2058951Z Post job cleanup.
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.3416689Z [command]"C:\Program Files\Git\bin\git.exe" version
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.3667471Z git version 2.55.0.windows.5
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.3728300Z Temporarily overriding HOME='D:\a\_temp\04813e38-16d0-4fb1-b46d-cb4f819f4786' before making global git config changes
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.3729621Z Adding repository directory to the temporary git global config as a safe directory
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.3738144Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.4059942Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.4359252Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.8801810Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.9013519Z http.https://github.com/.extraheader
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.9052303Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Verify (Windows)	Post Checkout	2026-10-07T18:53:11.9301857Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Verify (Windows)	Post Checkout	2026-10-07T18:53:12.3728618Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (Windows)	Post Checkout	2026-10-07T18:53:12.3977027Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Verify (Windows)	Complete job	﻿2026-10-07T18:53:12.8437690Z Cleaning up orphan processes
+Verify (Windows)	Complete job	2026-10-07T18:53:12.8599028Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

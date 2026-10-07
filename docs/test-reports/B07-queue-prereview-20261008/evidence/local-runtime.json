@@ -1,0 +1,8 @@
+{
+  "node": "v25.7.0",
+  "platform": "darwin",
+  "tmpdir": "/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T",
+  "physicalTmp": "/private/var/folders/rq/8682y70j5ys5w899ft_9mddw0000gn/T",
+  "next": "15.5.18",
+  "playwrightInstalled": false
+}

@@ -7,7 +7,7 @@
       "title": "Compose bounded replay with exact-version durable queue and quarantine",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "One shared lock-held queue primitive preserves B03 physical-scope/final-payload confirmation and elapsed guard, exact-version merge/ACK/quarantine and private atomic writes. Frozen upstream evidence remains byte-identical. Regression controls and Node22 clean install/lint/verify/test/build are recorded; no claim of native CI or release acceptance."
     },
     {

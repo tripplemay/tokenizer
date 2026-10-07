@@ -1,5 +1,4 @@
 import { existsSync, readFileSync } from "node:fs";
-import { withFileLock, writeFileAtomic } from "@/cli/atomic-file";
 import { BatchUsageRequest, DeviceDiagnostics, DeviceInput, UsageEventInput } from "@/shared/usage";
 import { minimizeUsageEvent } from "@/shared/usage-privacy";
 import { queuePath, readCredentials, readDevice, statePath, TokenizerConfig } from "./config";
@@ -10,8 +9,8 @@ import { agentFetch } from "./fetch";
 import { parseHarnessSyncSnapshot } from "@/shared/harness-health";
 import { sanitizeUsageEventGit } from "@/shared/git-remote";
 import { effectivePrivacy } from "./privacy";
-import { quarantineUsageEvents } from "./rejected-events";
 import { USAGE_PARTIAL_ACK_PROTOCOL } from "@/shared/usage-batch-protocol";
+import { readQueue as readDurableQueue, resolveQueueEvents } from "./queue";
 
 const ROW_REJECTION_CODES = new Set(["invalid_event", "invalid_raw_json", "invalid_json"]);
 
@@ -32,21 +31,10 @@ class BatchHttpError extends Error {
   }
 }
 
-export function readQueue(): UsageEventInput[] {
-  if (!existsSync(queuePath)) return [];
-  return withFileLock(queuePath, () => {
-    if (!existsSync(queuePath)) return [];
-    const original = readFileSync(queuePath, "utf8");
-    const events = original.split(/\r?\n/).filter(Boolean)
-      .map((line) => minimizeUsageEvent(sanitizeUsageEventGit(JSON.parse(line) as UsageEventInput)));
-    const minimized = events.length ? events.map((event) => JSON.stringify(event)).join("\n") + "\n" : "";
-    if (minimized !== original) writeFileAtomic(queuePath, minimized);
-    return events;
-  });
-}
+export const readQueue = readDurableQueue;
 
-export function clearQueue() {
-  withFileLock(queuePath, () => writeFileAtomic(queuePath, ""));
+export function clearQueue(expected: UsageEventInput[] = readDurableQueue()) {
+  resolveQueueEvents({ accepted: expected, rejected: [] });
 }
 
 // Batches remain small so a retry is bounded under slow ingest/database load.
@@ -143,13 +131,19 @@ async function postBatch(config: TokenizerConfig, events: UsageEventInput[]) {
   return response.json() as Promise<BatchResult>;
 }
 
-function partialResolution(batch: UsageEventInput[], result: BatchResult): Array<{ event: UsageEventInput; code: string }> | null {
+type BatchResolution = {
+  accepted: UsageEventInput[];
+  rejected: Array<{ event: UsageEventInput; code: string }>;
+};
+
+function partialResolution(batch: UsageEventInput[], result: BatchResult): BatchResolution | null {
   const hasPartialFields = result.protocol !== undefined || result.accepted !== undefined || result.rejected !== undefined;
   if (!hasPartialFields) return null;
   if (result.protocol !== USAGE_PARTIAL_ACK_PROTOCOL || !Array.isArray(result.accepted) || !Array.isArray(result.rejected)) {
     throw new Error("Invalid partial ACK response");
   }
   const resolved = new Set<number>();
+  const acceptedEvents: UsageEventInput[] = [];
   for (const accepted of result.accepted) {
     if (!Number.isInteger(accepted.row) || accepted.row < 0 || accepted.row >= batch.length || resolved.has(accepted.row)) {
       throw new Error("Invalid partial ACK response");
@@ -159,6 +153,7 @@ function partialResolution(batch: UsageEventInput[], result: BatchResult): Array
       throw new Error("Invalid partial ACK response");
     }
     resolved.add(accepted.row);
+    acceptedEvents.push(event);
   }
   const rejected: Array<{ event: UsageEventInput; code: string }> = [];
   for (const item of result.rejected) {
@@ -172,7 +167,7 @@ function partialResolution(batch: UsageEventInput[], result: BatchResult): Array
   if (resolved.size !== batch.length || result.received !== result.accepted.length) {
     throw new Error("Invalid partial ACK response");
   }
-  return rejected;
+  return { accepted: acceptedEvents, rejected };
 }
 
 // Inputs are already admitted by collection or durable queue persistence.
@@ -192,43 +187,72 @@ export async function syncEvents(
   let rejectedCount = 0;
   let remaining = [...ordered];
   let sentEmpty = ordered.length > 0;
+  let batchLimit = BATCH_SIZE;
   while (remaining.length > 0 || !sentEmpty) {
-    const batch = remaining.slice(0, BATCH_SIZE);
+    const batch = remaining.slice(0, batchLimit);
     if (batch.length === 0) sentEmpty = true;
     let result: BatchResult;
     try {
       result = await syncBatchWithRetry(config, batch);
     } catch (error) {
+      if (error instanceof BatchHttpError && error.status === 400 && error.code === "invalid_json" && error.row === undefined) {
+        if (batch.length > 1) {
+          // A previous B06 server cannot identify structural JSON poison.
+          // Narrow it without dropping rows; successful halves are ACKed
+          // normally and only a proven singleton can be quarantined.
+          batchLimit = Math.ceil(batch.length / 2);
+          continue;
+        }
+        if (batch.length === 1) {
+          try {
+            const probe = await syncBatchWithRetry(config, []);
+            partialResolution([], probe);
+          } catch {
+            // The same envelope/device fails without an event, so the row is
+            // not proven bad. Keep it active and surface the original error.
+            throw error;
+          }
+          const rejected = [{ event: batch[0], code: error.code }];
+          resolveQueueEvents({ accepted: [], rejected });
+          remaining.shift();
+          rejectedCount += 1;
+          batchLimit = BATCH_SIZE;
+          await options.onBatchSynced?.({
+            synced: ordered.length - remaining.length,
+            total: ordered.length,
+            acknowledged: batch,
+            remaining: [...remaining]
+          });
+          continue;
+        }
+      }
       if (!(error instanceof BatchHttpError) || error.status !== 400 || error.row === undefined ||
           !error.code || !ROW_REJECTION_CODES.has(error.code) || error.row >= batch.length) throw error;
       // Compatibility fallback for the previous B06 server: it rejects the
       // whole batch but identifies one permanent row. Quarantine it first,
       // checkpoint the still-live good rows, then retry without backoff.
-      const rejectedEvent = batch[error.row];
-      quarantineUsageEvents([{ event: rejectedEvent, code: error.code }]);
+      resolveQueueEvents({ accepted: [], rejected: [{ event: batch[error.row], code: error.code }] });
       remaining.splice(error.row, 1);
       rejectedCount += 1;
+      batchLimit = BATCH_SIZE;
       await options.onBatchSynced?.({
         synced: ordered.length - remaining.length,
         total: ordered.length,
-        acknowledged: [rejectedEvent],
+        acknowledged: [batch[error.row]],
         remaining: [...remaining]
       });
       continue;
     }
-    const rejected = partialResolution(batch, result);
-    if (rejected) {
-      // The server has already accepted the good subset. Persist rejected
-      // rows before removing anything from the active queue.
-      quarantineUsageEvents(rejected);
-      rejectedCount += rejected.length;
-    }
+    const resolution = partialResolution(batch, result) ?? { accepted: batch, rejected: [] };
+    resolveQueueEvents(resolution);
+    rejectedCount += resolution.rejected.length;
     total.inserted += result.inserted;
     total.updated += result.updated ?? 0;
     total.duplicates += result.duplicates;
     total.received += result.received;
     total.deviceId = result.deviceId ?? total.deviceId;
     remaining.splice(0, batch.length);
+    batchLimit = BATCH_SIZE;
     await options.onBatchSynced?.({
       synced: ordered.length - remaining.length,
       total: ordered.length,

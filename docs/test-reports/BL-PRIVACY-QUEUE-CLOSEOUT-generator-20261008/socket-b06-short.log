@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  02:44:29
+   Duration  398ms (transform 45ms, setup 0ms, import 60ms, tests 192ms, environment 0ms)
+

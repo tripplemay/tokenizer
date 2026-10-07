@@ -1,0 +1,27 @@
+{
+  "node": "v22.22.0",
+  "execPath": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "syntheticRoot": "/private/tmp/tk-closeout-beJWeF",
+  "sequential": true,
+  "results": [
+    {
+      "name": "full-controlled",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-generator-20261008/short-root-full-controlled.json"
+      ],
+      "startedAt": "2026-10-07T19:44:30.318Z",
+      "durationMs": 36801,
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-generator-20261008/short-root-full-controlled.log"
+    }
+  ]
+}
