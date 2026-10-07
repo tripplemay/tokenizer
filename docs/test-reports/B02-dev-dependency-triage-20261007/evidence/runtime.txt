@@ -1,0 +1,5 @@
+node=v22.22.0
+npm=10.9.4
+audit_all_exit=1
+audit_production_exit=0
+created_at=2026-10-07T16:16:41Z

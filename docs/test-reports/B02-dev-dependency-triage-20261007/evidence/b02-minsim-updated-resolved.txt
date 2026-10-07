@@ -1,0 +1,6 @@
+node_modules/brace-expansion 1.1.21
+node_modules/browserslist 4.29.3
+node_modules/postcss-selector-parser 7.1.6
+node_modules/vitest 4.1.11
+node_modules/vite 6.4.4
+node_modules/braces 3.0.3

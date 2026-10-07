@@ -1,0 +1,83 @@
+node=v22.22.0 npm=10.9.4
+
+### ci
+$ npm ci
+exit=0
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 670 packages, and audited 671 packages in 6s
+
+186 packages are looking for funding
+  run `npm fund` for details
+
+7 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+### verify
+$ npm run verify
+exit=0
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 126ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+
+### lint
+$ npm run lint
+exit=0
+
+> tokenizer@0.1.0 lint
+> eslint app src --max-warnings=0
+
+
+### test
+$ npm test
+exit=0
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /private/tmp/tokenizer-b02-minsim-hAWGix
+
+
+ Test Files  117 passed | 8 skipped (125)
+      Tests  1586 passed | 22 skipped (1608)
+   Start at  23:23:27
+   Duration  13.29s (transform 4.64s, setup 0ms, import 12.06s, tests 46.02s, environment 15ms)
+
+
+### build
+$ npm run build
+exit=0
+├ ƒ /api/quota/snapshots/batch
+├ ƒ /api/summary
+├ ƒ /api/summary/daily
+├ ƒ /api/summary/projects
+├ ƒ /api/usage/events/batch
+├ ƒ /devices
+├ ƒ /devices/[id]
+├ ƒ /events
+├ ƒ /harness
+├ ƒ /harness/[id]
+├ ○ /icon.svg
+├ ƒ /login
+├ ƒ /login/verify
+├ ƒ /models/[model]
+└ ƒ /projects/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

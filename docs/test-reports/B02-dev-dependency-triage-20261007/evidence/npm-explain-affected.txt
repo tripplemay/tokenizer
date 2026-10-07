@@ -1,0 +1,197 @@
+
+===== npm explain vitest =====
+vitest@2.1.9 dev
+node_modules/vitest
+  dev vitest@"^2.1.9" from the root project
+
+===== npm explain tinypool =====
+tinypool@1.1.1 dev
+node_modules/tinypool
+  tinypool@"^1.0.1" from vitest@2.1.9
+  node_modules/vitest
+    dev vitest@"^2.1.9" from the root project
+
+===== npm explain vite =====
+vite@5.4.21 dev
+node_modules/vite
+  vite@"^5.0.0" from vite-node@2.1.9
+  node_modules/vite-node
+    vite-node@"2.1.9" from vitest@2.1.9
+    node_modules/vitest
+      dev vitest@"^2.1.9" from the root project
+  vite@"^5.0.0" from vitest@2.1.9
+  node_modules/vitest
+    dev vitest@"^2.1.9" from the root project
+
+===== npm explain vite-node =====
+vite-node@2.1.9 dev
+node_modules/vite-node
+  vite-node@"2.1.9" from vitest@2.1.9
+  node_modules/vitest
+    dev vitest@"^2.1.9" from the root project
+
+===== npm explain @vitest/mocker =====
+@vitest/mocker@2.1.9 dev
+node_modules/@vitest/mocker
+  @vitest/mocker@"2.1.9" from vitest@2.1.9
+  node_modules/vitest
+    dev vitest@"^2.1.9" from the root project
+
+===== npm explain esbuild =====
+esbuild@0.28.2 dev
+node_modules/esbuild
+  esbuild@"~0.28.0" from tsx@4.22.0
+  node_modules/tsx
+    dev tsx@"^4.19.2" from the root project
+
+esbuild@0.21.5 dev
+node_modules/vite/node_modules/esbuild
+  esbuild@"^0.21.3" from vite@5.4.21
+  node_modules/vite
+    vite@"^5.0.0" from vite-node@2.1.9
+    node_modules/vite-node
+      vite-node@"2.1.9" from vitest@2.1.9
+      node_modules/vitest
+        dev vitest@"^2.1.9" from the root project
+    vite@"^5.0.0" from vitest@2.1.9
+    node_modules/vitest
+      dev vitest@"^2.1.9" from the root project
+
+===== npm explain postcss-selector-parser =====
+postcss-selector-parser@6.1.2 dev
+node_modules/postcss-selector-parser
+  postcss-selector-parser@"^6.1.1" from postcss-nested@6.2.0
+  node_modules/postcss-nested
+    postcss-nested@"^6.2.0" from tailwindcss@3.4.19
+    node_modules/tailwindcss
+      dev tailwindcss@"^3.4.17" from the root project
+  postcss-selector-parser@"^6.1.2" from tailwindcss@3.4.19
+  node_modules/tailwindcss
+    dev tailwindcss@"^3.4.17" from the root project
+
+===== npm explain browserslist =====
+browserslist@4.28.2 dev
+node_modules/browserslist
+  browserslist@"^4.24.0" from @babel/helper-compilation-targets@7.29.7
+  node_modules/@babel/helper-compilation-targets
+    @babel/helper-compilation-targets@"^7.29.7" from @babel/core@7.29.7
+    node_modules/@babel/core
+      @babel/core@"^7.24.4" from eslint-plugin-react-hooks@7.1.1
+      node_modules/eslint-plugin-react-hooks
+        eslint-plugin-react-hooks@"^7.1.0" from eslint-config-next@16.4.0
+        node_modules/eslint-config-next
+          dev eslint-config-next@"16.4.0" from the root project
+  browserslist@"^4.28.2" from autoprefixer@10.5.0
+  node_modules/autoprefixer
+    dev autoprefixer@"^10.4.20" from the root project
+
+===== npm explain brace-expansion =====
+brace-expansion@5.0.12 dev
+node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion
+  brace-expansion@"^5.0.8" from minimatch@10.2.6
+  node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch
+    minimatch@"^10.2.2" from @typescript-eslint/typescript-estree@8.71.1
+    node_modules/@typescript-eslint/typescript-estree
+      @typescript-eslint/typescript-estree@"8.71.1" from @typescript-eslint/parser@8.71.1
+      node_modules/@typescript-eslint/parser
+        @typescript-eslint/parser@"8.71.1" from typescript-eslint@8.71.1
+        node_modules/typescript-eslint
+          typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+          node_modules/eslint-config-next
+            dev eslint-config-next@"16.4.0" from the root project
+      @typescript-eslint/typescript-estree@"8.71.1" from @typescript-eslint/type-utils@8.71.1
+      node_modules/@typescript-eslint/type-utils
+        @typescript-eslint/type-utils@"8.71.1" from @typescript-eslint/eslint-plugin@8.71.1
+        node_modules/@typescript-eslint/eslint-plugin
+          @typescript-eslint/eslint-plugin@"8.71.1" from typescript-eslint@8.71.1
+          node_modules/typescript-eslint
+            typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+            node_modules/eslint-config-next
+              dev eslint-config-next@"16.4.0" from the root project
+      @typescript-eslint/typescript-estree@"8.71.1" from @typescript-eslint/utils@8.71.1
+      node_modules/@typescript-eslint/utils
+        @typescript-eslint/utils@"8.71.1" from @typescript-eslint/eslint-plugin@8.71.1
+        node_modules/@typescript-eslint/eslint-plugin
+          @typescript-eslint/eslint-plugin@"8.71.1" from typescript-eslint@8.71.1
+          node_modules/typescript-eslint
+            typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+            node_modules/eslint-config-next
+              dev eslint-config-next@"16.4.0" from the root project
+        @typescript-eslint/utils@"8.71.1" from @typescript-eslint/type-utils@8.71.1
+        node_modules/@typescript-eslint/type-utils
+          @typescript-eslint/type-utils@"8.71.1" from @typescript-eslint/eslint-plugin@8.71.1
+          node_modules/@typescript-eslint/eslint-plugin
+            @typescript-eslint/eslint-plugin@"8.71.1" from typescript-eslint@8.71.1
+            node_modules/typescript-eslint
+              typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+              node_modules/eslint-config-next
+                dev eslint-config-next@"16.4.0" from the root project
+        @typescript-eslint/utils@"8.71.1" from typescript-eslint@8.71.1
+        node_modules/typescript-eslint
+          typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+          node_modules/eslint-config-next
+            dev eslint-config-next@"16.4.0" from the root project
+      @typescript-eslint/typescript-estree@"8.71.1" from typescript-eslint@8.71.1
+      node_modules/typescript-eslint
+        typescript-eslint@"^8.56.0" from eslint-config-next@16.4.0
+        node_modules/eslint-config-next
+          dev eslint-config-next@"16.4.0" from the root project
+
+brace-expansion@1.1.14 dev
+node_modules/brace-expansion
+  brace-expansion@"^1.1.7" from minimatch@3.1.5
+  node_modules/minimatch
+    minimatch@"^3.1.5" from @eslint/config-array@0.21.2
+    node_modules/@eslint/config-array
+      @eslint/config-array@"^0.21.2" from eslint@9.39.5
+      node_modules/eslint
+        dev eslint@"9.39.5" from the root project
+    minimatch@"^3.1.5" from @eslint/eslintrc@3.3.7
+    node_modules/@eslint/eslintrc
+      @eslint/eslintrc@"^3.3.6" from eslint@9.39.5
+      node_modules/eslint
+        dev eslint@"9.39.5" from the root project
+    minimatch@"^3.1.5" from eslint@9.39.5
+    node_modules/eslint
+      dev eslint@"9.39.5" from the root project
+    minimatch@"^3.1.2" from eslint-plugin-import@2.32.0
+    node_modules/eslint-plugin-import
+      eslint-plugin-import@"^2.32.0" from eslint-config-next@16.4.0
+      node_modules/eslint-config-next
+        dev eslint-config-next@"16.4.0" from the root project
+    minimatch@"^3.1.2" from eslint-plugin-jsx-a11y@6.10.2
+    node_modules/eslint-plugin-jsx-a11y
+      eslint-plugin-jsx-a11y@"^6.10.0" from eslint-config-next@16.4.0
+      node_modules/eslint-config-next
+        dev eslint-config-next@"16.4.0" from the root project
+    minimatch@"^3.1.2" from eslint-plugin-react@7.37.5
+    node_modules/eslint-plugin-react
+      eslint-plugin-react@"^7.37.0" from eslint-config-next@16.4.0
+      node_modules/eslint-config-next
+        dev eslint-config-next@"16.4.0" from the root project
+
+===== npm explain braces =====
+braces@3.0.3 dev
+node_modules/braces
+  braces@"~3.0.2" from chokidar@3.6.0
+  node_modules/chokidar
+    chokidar@"^3.6.0" from tailwindcss@3.4.19
+    node_modules/tailwindcss
+      dev tailwindcss@"^3.4.17" from the root project
+  braces@"^3.0.3" from micromatch@4.0.8
+  node_modules/micromatch
+    micromatch@"^4.0.4" from fast-glob@3.3.1
+    node_modules/@next/eslint-plugin-next/node_modules/fast-glob
+      fast-glob@"3.3.1" from @next/eslint-plugin-next@16.4.0
+      node_modules/@next/eslint-plugin-next
+        @next/eslint-plugin-next@"16.4.0" from eslint-config-next@16.4.0
+        node_modules/eslint-config-next
+          dev eslint-config-next@"16.4.0" from the root project
+    micromatch@"^4.0.8" from fast-glob@3.3.3
+    node_modules/fast-glob
+      fast-glob@"^3.3.2" from tailwindcss@3.4.19
+      node_modules/tailwindcss
+        dev tailwindcss@"^3.4.17" from the root project
+    micromatch@"^4.0.8" from tailwindcss@3.4.19
+    node_modules/tailwindcss
+      dev tailwindcss@"^3.4.17" from the root project

@@ -1,0 +1,16 @@
+diff --git a/package.json b/tmp/tokenizer-b02-minsim-hAWGix/package.json
+index 1f0f6c4..edcf8f9 100644
+--- a/package.json
++++ b/tmp/tokenizer-b02-minsim-hAWGix/package.json
+@@ -63,6 +63,10 @@
+     "tailwindcss": "^3.4.17",
+     "tsx": "^4.19.2",
+     "typescript": "^5.7.3",
+-    "vitest": "^2.1.9"
++    "vite": "6.4.4",
++    "vitest": "4.1.11"
++  },
++  "overrides": {
++    "postcss-selector-parser": "7.1.6"
+   }
+ }
