@@ -1,0 +1,37 @@
+{
+  "violation": false,
+  "detail": "只读审查 committed 58266af..55cfe23，未运行功能测试或访问 live services。此前 current_sprint 漂移已闭合：恢复 BL-RELEASE-READINESS，feature cursor 仅在 session_notes。F001 七个冻结路径的 blob/mode 完全匹配；F002 deploy shell 完全匹配 bc9，predecessor shell 唯一差异是 8ff63a7/0bbe22a 批准的 has(\"code\") predicate，新增 explicit-null negative，原 health assertions 未改。release-image 相对 bc9 仅增加批准的两条更强 rollback-order assertions；旧测试改动仍仅批准的 release-image/release-rehearsal。F003 路径均属允许范围；静态检查确认固定 tokenizer 项目/服务/network/volume、loopback health、allowlisted 字段和文件 hashes/modes；无 raw .env/Config.Env/DB/credential 输出、无远端写入/registry/build/backup/migration/service mutation，query/SSH 有时间和输出上限，原始失败 stderr 不归档。host-preflight 仅 dispatch inventory job，包括 main；push/PR/release 保留正常 gates，deploy 仍 main-only 且排除 host-preflight。B06/B07/PG16 probes/no-skip floor、其余既有 gates，以及 queue/process/deps/vendor/schema/migrations/旧测试证据/归档均未改。原 F001/F002 失败及 rerun 证据未覆盖，所有 feature tags 可映射。F004/F005 pending、release_ready=false、pending_gate=null；未发现自评或发布闸门绕过。此结论仅关闭代码 scope，不是功能验收、CI 成功、发布批准或 release readiness。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "reviewed_head": "55cfe2353da6d1901e82c60f40a9edc944349b9a",
+  "feature_tags": [
+    "feat(BL-RELEASE-READINESS-F001)",
+    "feat(BL-RELEASE-READINESS-F002)",
+    "feat(BL-RELEASE-READINESS-F003)"
+  ],
+  "actual_nonreport_paths": [
+    ".github/workflows/deploy-vps.yml",
+    "docs/specs/BL-RELEASE-READINESS-spec.md",
+    "features.json",
+    "progress.json",
+    "scripts/ci/assert-macos-launchd-installer.mjs",
+    "scripts/ci/vps-host-preflight.sh",
+    "scripts/deploy-vps-release.sh",
+    "scripts/verify-vps-predecessor.sh",
+    "src/cli/service.ts",
+    "tests/ci/macos-launchd-cleanup-trap.test.ts",
+    "tests/ci/macos-launchd-installer-gate.test.ts",
+    "tests/ci/vps-host-preflight.test.ts",
+    "tests/cli/agent-release-installer-macos.test.ts",
+    "tests/cli/service-launchd.test.ts",
+    "tests/server/release-image.test.ts",
+    "tests/server/release-predecessor-negative.test.ts",
+    "tests/server/release-rehearsal.test.ts"
+  ],
+  "verified_exception": {
+    "path": "scripts/verify-vps-predecessor.sh",
+    "resulting_git_blob": "4751f4a4e7daba733d8a32456818a115af189739",
+    "resulting_sha256": "7ea8747ecd048614c890511d8b9f887986d7701b51d2f3b73e958dbe6a90816b"
+  },
+  "new_report_artifact_directory": "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/"
+}

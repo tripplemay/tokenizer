@@ -1,0 +1,24 @@
+{
+  "task_id": "release-readiness-preflight-76d916b-kimi-r0",
+  "contract_version": "harness/1.1",
+  "batch": "BL-RELEASE-READINESS",
+  "role": "evaluator",
+  "repo": {
+    "url": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008",
+    "ref": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958"
+  },
+  "spec": "docs/specs/BL-RELEASE-READINESS-spec.md",
+  "features": [
+    "F001",
+    "F002",
+    "F003"
+  ],
+  "l2_authorized": false,
+  "deadline_s": 2400,
+  "contract": "Fresh independent Kimi-family supporting preflight Evaluator (not Generator), commissioned directly under harness-rules explicit independent task §1.5 while batch remains building. This is local technical prereview of F001-F003, NOT F005 formal full-composition closure or production signoff. Verify exact repo.ref and read spec including narrow fixture/null-code adjudications, features/progress, evaluator instructions and actual source. Historical/Generator reports are claims only. Derive independent executable synthetic Docker/SSH/health/config fixtures for exact serving predecessor identity, missing/wrong app/project/port/ledger, explicit null code vs absent compatibility, byte-identical state on refusals before manifest/pulls/migrations; read-only host inventory allowlisted output, duplicate/malicious selected env values, no raw Config.Env/secrets/config/failed stderr, timeout handling and no mutation command invocations; transport malicious inputs/unexpected report keys with canaries, strict operation separation including host-preflight on main and preserved six normal release prerequisites and B06/B07 PG16 no-skip floor. Evaluate imported macOS/service cleanup scope truthfully, do not infer native acceptance from mocks. Run fresh Node22 npmci/typecheck/new focused tests; optional local broader regressions if time permits but report truthful skips and initial failures. Independent own probes required beyond merely rerunning Generator tests. Use /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin, own fresh node_modules; short canonical /private/tmp synthetic HOME/USERPROFILE/TMPDIR before imports. Never access production/SSH hosts/real home queues, read credentials, change Secrets/environments, install live services, push/deploy or write human decisions. Never alter product/spec/progress/features/old evidence; write only new tests/reports. Output schema verdict exactly batch_id BL-RELEASE-READINESS for commissioned F001/F002/F003 and original detailed report/raw own probes under docs/test-reports/BL-RELEASE-READINESS-kimi-preflight-20261008/. Deliverable is supporting preflight verdict path, not the formal F005 artifact. Clearly leave F004 native CI/F005 formal release/actual legacy digest+encrypted recovery+POSTGRES_PASSWORD+Agent distribution+original homepage F005 open; release_ready=false. No commit; Coordinator transports unchanged. If ambiguous prerequisites prevent assessment use schema waiting honestly, do not invent PASS.",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-RELEASE-READINESS-preflight-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  }
+}

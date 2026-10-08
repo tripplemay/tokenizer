@@ -157,3 +157,20 @@ Use the same rule in F003 inventory. Add explicit-null negative controls in new
 tests; do not alter any existing health assertion. This narrow F002 source-byte
 exception supersedes exact bc9 transport for that predicate only; retain source
 and resulting hashes, tagged F002 revision commit and raw failed/rerun evidence.
+
+## Live coordination checkpoint - 2026-10-08T16:02:51Z
+
+The user selected SSH alias dmitsvr for encrypted off-host backups. Connectivity
+and available storage have been observed, but no database backup, encryption key
+custody or isolated recovery has been established. It is not a production-source
+identity claim. Production app/DB remain unchanged.
+
+The exact 76d916ba2e3a7147acda5ac9ef15fa70a9cd9958 non-main release run
+37803611472 failed its Windows job with 8 failed / 1887 passed / 144 skipped.
+Ubuntu, macOS, PG16 and authenticated-browser jobs passed; OCI/recovery and Deploy
+were skipped. F004 remains pending. Original failure logs are immutable. A
+supporting synthetic native diagnostic branch may collect errno/timing/owned-PID
+evidence without modifying accepted product code, old tests or this release
+workflow. Any repairs require a new narrow scope, review and exact native rerun.
+Neither supporting diagnosis nor local Kimi preflight closes F005 or authorizes
+main publication.

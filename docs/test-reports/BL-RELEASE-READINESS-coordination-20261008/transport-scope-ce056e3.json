@@ -1,0 +1,47 @@
+{
+  "violation": false,
+  "detail": "只读确认 ce056e3 合入生成者本地回归证据后，产品、tests、workflow 及全部非 docs/progress 文件与 76d916b 完全相同。合入差异仅为生成者报告目录下 18 个文档/证据/工具路径，以及 progress.json 的时间、generator_handoff、generator session_notes；current_sprint 仍为批次名，release_ready=false，未改人类闸门决定。此 transport scope 结论不改写原 55cfe23 verdict，也不是功能验收或发布通过。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "reviewed_root": "ce056e36952300c92362e79da7af64c175ffaaca",
+  "unchanged_code_evidence": {
+    "command": "git diff --exit-code 76d916b ce056e3 -- . ':(exclude)docs/**' ':(exclude)progress.json'",
+    "exit_code": 0,
+    "output": ""
+  },
+  "ci_blocker": {
+    "run_id": 37803611472,
+    "head_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "status": "completed",
+    "conclusion": "failure",
+    "windows": {
+      "conclusion": "failure",
+      "failed_step": "Run unit tests",
+      "test_files_failed": 6,
+      "tests_failed": 8,
+      "tests_passed": 1887,
+      "tests_skipped": 144
+    },
+    "successful_gates": [
+      "Verify",
+      "Verify (macOS launchd)",
+      "Verify (authenticated browser)",
+      "Verify (PostgreSQL 16)"
+    ],
+    "skipped_jobs": [
+      "Read-only tokenizer host inventory",
+      "Linux OCI and recovery rehearsal",
+      "Deploy"
+    ],
+    "evidence_files": [
+      "ci-37803611472-run.json",
+      "ci-37803611472-windows-job.json",
+      "ci-37803611472-windows-original.log"
+    ],
+    "boundary": "上述状态和 8 个失败取自已保留 CI 原始产物，未重跑功能验收。Windows 失败及 skipped OCI/deploy 是真实发布阻塞；scope 通过不能替代这些 gates 或独立 Kimi 验收。"
+  },
+  "release_ready": false,
+  "original_scope_verdict": "spec-lock-final-f001-f003.json",
+  "write_scope": "仅新增本文件和原样持久化的原 scope verdict；未修改 root 状态、其他文件或 commit。"
+}
