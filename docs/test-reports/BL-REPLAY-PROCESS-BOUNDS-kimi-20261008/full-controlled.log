@@ -1,0 +1,301 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0[39m
+
+[90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses preview with a real resistant Git tree and preserves all state
+[22m[39mREPLAY_BOUND {"mode":"preview","elapsedMs":8039,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+
+[90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses execute with a real resistant Git tree and preserves all state
+[22m[39mREPLAY_BOUND {"mode":"execute","elapsedMs":8038,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+
+[90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mdoes not renew the deadline across successive real Git calls
+[22m[39mSHARED_GIT_DEADLINE {"elapsedMs":8045,"gitInvocations":4}
+
+[90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mretains the production before-mutate deadline guard under the queue lock
+[22m[39mQUEUE_LOCK_GUARD {"lockSeen":true,"error":"Replay refused: queue admission exceeded 10000ms deadline","stateUnchanged":true}
+
+ [32m✓[39m tests/cli/process-bounds/replay-process-bounds.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 26213[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses preview with a real resistant Git tree and preserves all state [33m 8193[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses execute with a real resistant Git tree and preserves all state [33m 8356[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses execute output overflow without leaking raw stderr [33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m does not renew the deadline across successive real Git calls [33m 8223[2mms[22m[39m
+   [33m[2m✓[22m[39m retains the production before-mutate deadline guard under the queue lock [33m 338[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event [33m 549[2mms[22m[39m
+ [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 7261[2mms[22m[39m
+     [33m[2m✓[22m[39m applies the exact HTTP retryability matrix [33m 369[2mms[22m[39m
+     [33m[2m✓[22m[39m caps structured issues at 20 while retaining the full failed-project count [33m 2588[2mms[22m[39m
+     [33m[2m✓[22m[39m writes idle, success, degraded, and failed snapshots from actual outcomes [33m 306[2mms[22m[39m
+[90mstdout[2m | tests/cli/b03-round2-elapsed-negative.test.ts[2m > [22m[2mbounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget
+[22m[39mGIT_ELAPSED_NEGATIVE {"elapsedMs":8160,"status":0,"stdout":"REPLAY_STARTED\nREPLAY_REFUSED Replay refused: Git enrichment exceeded 10000ms deadline\n"}
+
+ [32m✓[39m tests/cli/b03-round2-elapsed-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 8166[2mms[22m[39m
+   [33m[2m✓[22m[39m bounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget [33m 8166[2mms[22m[39m
+ [32m✓[39m tests/cli/b03-replay-deadline.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 8160[2mms[22m[39m
+   [33m[2m✓[22m[39m interrupts a real stalled Git process within the replay deadline [33m 8147[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 3068[2mms[22m[39m
+ [32m✓[39m tests/cli/privacy-admission-cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 3005[2mms[22m[39m
+     [33m[2m✓[22m[39m previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync [33m 1146[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync [33m 1250[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps paused collection and replay execution from changing queue or cursor [33m 609[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 2435[2mms[22m[39m
+     [33m[2m✓[22m[39m scans at most the newest 50 bounded regular JSON files [33m 584[2mms[22m[39m
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode stall and returns null
+[22m[39mSTARTUP_BOUND {"mode":"stall","elapsedMs":2049,"version":null}
+
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode overflow and returns null
+[22m[39mSTARTUP_BOUND {"mode":"overflow","elapsedMs":63,"version":null}
+
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode invalid and returns null
+[22m[39mSTARTUP_BOUND {"mode":"invalid","elapsedMs":54,"version":null}
+
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode short and returns null
+[22m[39mSTARTUP_BOUND {"mode":"short","elapsedMs":55,"version":null}
+
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode nonzero and returns null
+[22m[39mSTARTUP_BOUND {"mode":"nonzero","elapsedMs":56,"version":null}
+
+[90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode signal and returns null
+[22m[39mSTARTUP_BOUND {"mode":"signal","elapsedMs":54,"version":null}
+
+ [32m✓[39m tests/cli/process-bounds/agent-version-bounds.test.ts [2m([22m[2m9 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 3364[2mms[22m[39m
+   [33m[2m✓[22m[39m bounds real startup executable mode stall and returns null [33m 2163[2mms[22m[39m
+ [32m✓[39m tests/server/release-rehearsal.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1771[2mms[22m[39m
+     [33m[2m✓[22m[39m never overwrites an earlier same-SHA backup on a retry [33m 318[2mms[22m[39m
+ [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2576[2mms[22m[39m
+     [33m[2m✓[22m[39m handles SIGTERM delivered before spawn returns without orphaning its child [33m 1043[2mms[22m[39m
+     [33m[2m✓[22m[39m forwards SIGTERM to its async child and waits for that child to exit [33m 1070[2mms[22m[39m
+ [32m✓[39m tests/cli/agent-release-installer.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1865[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps the old release and data on manifest, fetch, or npm failure; upgrades and rolls back [33m 1863[2mms[22m[39m
+ [32m✓[39m tests/cli/process-bounds/bounded-subprocess.test.ts [2m([22m[2m22 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2015[2mms[22m[39m
+     [33m[2m✓[22m[39m bounds resistant and reaps owned native processes [33m 538[2mms[22m[39m
+     [33m[2m✓[22m[39m bounds descendant and reaps owned native processes [33m 555[2mms[22m[39m
+     [33m[2m✓[22m[39m bounds inherited-pipes and reaps owned native processes [33m 556[2mms[22m[39m
+ [32m✓[39m tests/server/release-image.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 838[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-queue-multiwriter.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1083[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves concurrent collection, newer versions and crash retries over real HTTP [33m 1083[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 739[2mms[22m[39m
+     [33m[2m✓[22m[39m wires Commander options without treating the Command object as injected dependencies [33m 736[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 627[2mms[22m[39m
+     [33m[2m✓[22m[39m checkpoints the same remaining tail between real sync and run subprocess batches [33m 606[2mms[22m[39m
+[90mstdout[2m | tests/cli/b07-prereview-process.test.ts[2m > [22m[2mseparate native processes must not lose rejected correction after old same-ID quarantine
+[22m[39mMULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-08T03:58:38.236Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:38.403Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+[90mstdout[2m | tests/cli/b07-prereview-process.test.ts[2m > [22m[2meight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+[22m[39mMULTIPROCESS_CONTROL {"beforeCount":8,"afterAckCount":7}
+
+ [32m✓[39m tests/cli/b07-prereview-process.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 879[2mms[22m[39m
+   [33m[2m✓[22m[39m separate native processes must not lose rejected correction after old same-ID quarantine [33m 344[2mms[22m[39m
+   [33m[2m✓[22m[39m eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files [33m 535[2mms[22m[39m
+ [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 1151[2mms[22m[39m
+     [33m[2m✓[22m[39m stops this install's wrapper and child without touching another install [33m 1150[2mms[22m[39m
+ [32m✓[39m tests/server/release-predecessor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 726[2mms[22m[39m
+ [32m✓[39m tests/ci/recovery-evidence.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 670[2mms[22m[39m
+[90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via dot
+[22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"dot","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tk-ev-full-ctl/tmp/b03-collect-negative-kQa5dy/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+[90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via git-symlink
+[22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"git-symlink","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tk-ev-full-ctl/tmp/b03-collect-negative-ADv0Yo/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+ [32m✓[39m tests/cli/b03-fixed-collect-privacy-negative.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 437[2mms[22m[39m
+ [32m✓[39m tests/server/standalone-artifact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 272[2mms[22m[39m
+ [32m✓[39m tests/cli/b06-rejected-events-concurrency.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 211[2mms[22m[39m
+ [32m✓[39m tests/cli/privacy-scope-safety.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 221[2mms[22m[39m
+ [32m✓[39m tests/cli/replay-help.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 204[2mms[22m[39m
+ [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 341[2mms[22m[39m
+ [32m✓[39m tests/cli/queue-merge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+ [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 208[2mms[22m[39m
+[90mstdout[2m | tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22m[2mFIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer
+[22m[39mINDEPENDENT_FIFO {"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+[90mstdout[2m | tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22m[2mprivacy path safety: dot alias for excluded real workspace must not be admitted
+[22m[39mDOT_PRIVACY {"dryRun":true,"planDigest":"7f40648b50c5d4a2556e3eb2d5f2fb9f4159e05400eb5120e60a545f41f84539","bytes":287,"records":1,"parsed":1,"selected":1,"filtered":1,"wouldAdmit":0,"warningCount":0,"sample":[]}
+
+[90mstdout[2m | tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22m[2mprivacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue
+[22m[39mGIT_ALIAS_PRIVACY {"result":{"dryRun":false,"planDigest":"885113f2e1bd11011673be8d5cd11b37b7fe6924e68825c939ed9f32d36287b3","selected":1,"filtered":1,"admitted":0,"duplicates":0,"backlog":0,"warningCount":0,"upload":"Backlog remains local until sync mode; it then uploads on the next Agent/run/sync cycle."},"queue":""}
+
+ [32m✓[39m tests/cli/b03-fixed-prereview-independent.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 203[2mms[22m[39m
+ [32m✓[39m tests/cli/b03-round2-independent.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 180[2mms[22m[39m
+[90mstdout[2m | tests/cli/replay-safety-regression.test.ts[2m > [22m[2mR2 safely refuses regular-file to FIFO swap without waiting for a writer
+[22m[39mFIFO_FIXED {"elapsedMs":95,"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ [32m✓[39m tests/cli/replay-safety-regression.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[32m 173[2mms[22m[39m
+ [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 189[2mms[22m[39m
+ [32m✓[39m tests/ci/windows-installer-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 191[2mms[22m[39m
+ [32m✓[39m tests/ci/b07-combination-frozen-inputs.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 204[2mms[22m[39m
+ [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+ [32m✓[39m tests/server/batch-schema.test.ts [2m([22m[2m65 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m tests/evaluator/b05-evidence-retention-round2.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-replay-combination.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m tests/cli/agent-release-installer-windows-fixture.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-queue-resolution.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m tests/ci/tsconfig-report-boundary.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m tests/cli/replay.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+[90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2msame ID corrected rejection must remain recoverable after older version was already quarantined
+[22m[39mQUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:58:48.726Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:48.729Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+[90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mtwo same-ID versions rejected in one response must both remain recoverable
+[22m[39mQUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:58:48.731Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:48.731Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+[90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mpartial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+[22m[39mSYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:58:48.732Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:48.750Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+[90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mcommit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+[22m[39mCRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:58:48.754Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:48.755Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+[90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mold-server rowless fallback must not discard corrected poison when old version was quarantined
+[22m[39mROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:58:48.758Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:58:48.759Z","code":"invalid_json","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ [32m✓[39m tests/cli/b07-prereview-version-negative.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/server/b06-partial-ack.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/ci/b07-obsolete-queue-eol-policy.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/server/batch-wire-compatibility.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+[90mstderr[2m | tests/server/health.test.ts[2m > [22m[2mhealth layers[2m > [22m[2mfails closed on missing login configuration before touching the database
+[22m[39mreadiness failed {
+  requestId: [32m'7a5dee07-cde5-4257-b9be-d2428b8fbce8'[39m,
+  stage: [32m'runtime_config'[39m,
+  code: [32m'config_not_ready'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [32m✓[39m tests/server/health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/server/agent-releases-route.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-versioned-quarantine.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/cli/b03-round2-final-deadline-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+[22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+
+ [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-private-queue-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/vendor/braces-backport.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/cli/replay-contract.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/ci/b05-recovery-source.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/b07-private-atomic-creation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/replay-operational-contract.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/ci/b07-combination-test-scope.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/ci/b07-obsolete-queue-test-archive.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m tests/ci/b06-pg16-workflow-gate.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [2m[90m↓[39m[22m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/b06-batch-db.probe.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/b06-partial-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/b07-queue-id-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m tests/cli/process-bounds/windows-reparse-bounds.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+
+[2m Test Files [22m [1m[32m162 passed[39m[22m[2m | [22m[33m13 skipped[39m[90m (175)[39m
+[2m      Tests [22m [1m[32m1919 passed[39m[22m[2m | [22m[33m34 skipped[39m[90m (1953)[39m
+[2m   Start at [22m 10:57:23
+[2m   Duration [22m 96.13s[2m (transform 1.20s, setup 0ms, import 4.55s, tests 81.76s, environment 7ms)[22m
+
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

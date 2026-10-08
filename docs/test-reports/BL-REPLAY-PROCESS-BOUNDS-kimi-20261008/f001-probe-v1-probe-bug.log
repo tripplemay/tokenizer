@@ -1,0 +1,20 @@
+EV_F001 {"name":"normal-preserves-argv-cwd-env","pass":true,"detail":{"status":0,"stderr":"ev-stderr-ok"}}
+EV_F001 {"name":"nonzero-vs-launch","pass":true,"detail":{"status":17}}
+EV_F001 {"name":"missing-executable","pass":false,"detail":"no throw"}
+EV_F001 {"name":"target-cwd-enoent","pass":true,"detail":"BoundedSubprocessLaunchError:ENOENT"}
+EV_F001 {"name":"invalid-budgets-rejected-preserving-zero-spawns","pass":false,"detail":{"spawned":3}}
+EV_F001 {"name":"sigterm-resistant-timeout-and-reap","pass":false,"detail":{"error":"BoundedSubprocessTimeoutError","elapsed":535,"tracked":4,"live":0}}
+EV_F001 {"name":"descendant-inherited-pipes-timeout-and-reap","pass":false,"detail":{"error":"BoundedSubprocessTimeoutError","elapsed":544,"tracked":6,"live":0}}
+EV_F001 {"name":"output-overflow-typed-no-canary-reaped","pass":true,"detail":{"error":"BoundedSubprocessOutputError","canary":false,"live":0}}
+EV_F001 {"name":"combined-stream-budget","pass":true,"detail":{"error":"BoundedSubprocessOutputError"}}
+EV_F001 {"name":"worker-death-after-publish-kills-owned-group","pass":true,"detail":{"error":"BoundedSubprocessSupervisionError","canary":false,"tracked":10,"live":0}}
+EV_F001 {"name":"signal-preserved","pass":true,"detail":{"status":null,"signal":"SIGTERM"}}
+EV_F001_SUMMARY {"total":11,"failed":4,"allowance":2000}
+{"watchdog":"clean","status":1,"signal":null,"elapsedMs":4753}
+NOTE (evaluator): the 4 failures above are probe-v1 assertion bugs, NOT product
+failures: (a) missing-executable control mistakenly routed the bogus path through
+the child-fixture wrapper instead of as the command; (b) three controls asserted
+absolute pid-file counts while the pid file legitimately accumulates across
+controls. Product behavior in this v1 run was already correct (typed errors,
+bounded timing, 0 live owned processes everywhere). Corrected to per-control
+deltas in v2; see f001-probe.log for the passing v2 run.

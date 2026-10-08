@@ -1,0 +1,174 @@
+{
+  "kind": "coordination_transport_verification",
+  "created_at": "2026-10-08T04:14:41.168Z",
+  "candidate": "3130cef3bc55528290c49ee35267e1aff33b5c78",
+  "files_identical": 26,
+  "feedback_identical": true,
+  "original_verdict_retained": true,
+  "only_corrected_json_field": "batch_id",
+  "old_batch_id": "BL-REPLAY-PROCESS-BOUNDS-F005",
+  "corrected_batch_id": "BL-REPLAY-PROCESS-BOUNDS",
+  "all_feature_values_unchanged": true,
+  "critic_transport_hash_verified": true,
+  "product_unchanged_since_candidate": true,
+  "evaluator_tracked_files_unchanged": true,
+  "release_ready": false,
+  "manifest": [
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/README.md",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/README.md",
+      "bytes": 10148,
+      "sha256": "79ca7be4e5b89e8e7b5cce24c91baa5e3fb8dad40fa645026c3e744021d17d3c"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/build.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/build.log",
+      "bytes": 2724,
+      "sha256": "add3038ed0554af84dcf8094cb5127b8f84aa52e5c551daec17ae3960be8436b"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f001-probe-v1-probe-bug.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f001-probe-v1-probe-bug.log",
+      "bytes": 1922,
+      "sha256": "e6cc437b6dbd90c35b5ab49ec9848e837723dba9b726b4f1bef17121d8ac5b84"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f001-probe.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f001-probe.log",
+      "bytes": 1415,
+      "sha256": "f3cb6b1fc27b378eeb80c7a32d5c2996ab86d027f8aec9c47b285856bc54ba72"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f002-probe.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f002-probe.log",
+      "bytes": 987,
+      "sha256": "0931c73465dda370e186f3461d1a5d50ed65b065620f53ca3f32e87c3b6e6ca7"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f003-probe-v1-cache-poisoned.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f003-probe-v1-cache-poisoned.log",
+      "bytes": 971,
+      "sha256": "3836d95763128626e60f1fc5b8ea2f64f12d882c6ced6996ec2543991d5b923d"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f003-probe.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f003-probe.log",
+      "bytes": 1119,
+      "sha256": "0fcf851bfe0ac5c4921347f78af2f3abeeea11c6c469a079fe68d62bcea7f27e"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f004-baseline-startup-repro.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/f004-baseline-startup-repro.log",
+      "bytes": 71,
+      "sha256": "b1479c0e2a6c11108e3929cc13c6f66044c43672e8f42937c4a9ab53fc1263a9"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/focused.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/focused.log",
+      "bytes": 1455,
+      "sha256": "b03deca35b4568b1364cc9fb1cb2d6c9ab25f6363d7ce7d5a43f693063f37033"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/full-controlled.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/full-controlled.log",
+      "bytes": 36048,
+      "sha256": "01a07788be5e5d856f8999fcb8433441f601fc1d7cfc43fa8b25f59c92ba1cdd"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/full-default.log",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/full-default.log",
+      "bytes": 40435,
+      "sha256": "63f942cd99c19a9ff8f0d2efd8a98982de742f874e5626c585737051cda00513"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/input-inventory.json",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/input-inventory.json",
+      "bytes": 466822,
+      "sha256": "84eedce471dad901ae1b1128966cf7d96ecbf0100b978771b75c50bb9640d144"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-child.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-child.mjs",
+      "bytes": 1694,
+      "sha256": "11b0ea20001d8e59db1c613acf0c04d4df836196d0e76df15944fa56ea0e5fa4"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-debug-cache.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-debug-cache.mjs",
+      "bytes": 2707,
+      "sha256": "6e1b1d34412533218b496a993f806063b9ed654fc7107d4c0b18d031e2a9ff6e"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-git-shim.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-git-shim.mjs",
+      "bytes": 2021,
+      "sha256": "f4a1914b6b3f6b34bec411e58c04dfcbc5fd38ec262f236c17840199f0f88462"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-replay-probe.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-replay-probe.mjs",
+      "bytes": 1655,
+      "sha256": "1b6bcf2bb4b220899b9a497cccf02a578524257a0b47cc80d8254275eaf97fa5"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-version-probe.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-version-probe.mjs",
+      "bytes": 1148,
+      "sha256": "1400176bf875f8a2fd654fd34ed67027f8c1e0313a561a09233438d9fc9aad73"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-watchdog.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-watchdog.mjs",
+      "bytes": 2079,
+      "sha256": "1f85fc55230959259b597404b74474d6435fe4742af095a1f2d98b4f4638e482"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-worker-killer.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/ev-worker-killer.mjs",
+      "bytes": 445,
+      "sha256": "81b4609c2ba2a70b699145f91f9c85f84d200c6255cd9c10fdf3ac918245b2a8"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f001.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f001.mjs",
+      "bytes": 7848,
+      "sha256": "9db0991f620e1445a3976e2202456bd078f5914b402142f236ab20f5a4884346"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f002.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f002.mjs",
+      "bytes": 4495,
+      "sha256": "79cae0d08fb0c9f57bb5deedbd26aac5f75a9e2e367e3577a83962dda5ebe217"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f003.mjs",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/probes/probe-f003.mjs",
+      "bytes": 10801,
+      "sha256": "42f3da6f5901b6825b2360b62f4ef8a0219407d479439b12d80492ffbb119f06"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-coordination-20261008/original-evaluator-verdict.json",
+      "bytes": 9814,
+      "sha256": "e32cc2a1420c6898440278285eb5e7a7c665c43d37ee7a4444abc0524176900a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-signoff-2026-10-08.md",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-signoff-2026-10-08.md",
+      "bytes": 2474,
+      "sha256": "892537c47549cbd7ee287a9b76549e17a1421aa63fd6dcef908260627a40f05a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-metadata/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+      "bytes": 9809,
+      "sha256": "a72965c39dff747759d164e6c2d9d97d49cac91d9c2835f54b64bb9ddb70a4a4"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-metadata/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-metadata-correction-20261008.md",
+      "path": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-metadata-correction-20261008.md",
+      "bytes": 3975,
+      "sha256": "e821f011c465fbcf0a6d349092c54938dd9b7471087a54497318852c96571c00"
+    }
+  ]
+}

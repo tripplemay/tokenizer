@@ -39,7 +39,7 @@
       "title": "Independent cross-family exact-candidate acceptance",
       "priority": "high",
       "executor": "evaluator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "F005 spec: independent Kimi-family real process/deadline probes, immutable verdict and scoped signoff, explicit native/production and timing limits; no release inference."
     }
   ]

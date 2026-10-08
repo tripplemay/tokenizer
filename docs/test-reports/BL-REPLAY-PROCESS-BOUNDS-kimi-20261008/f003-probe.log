@@ -1,0 +1,8 @@
+EV_F003 {"name":"healthy-preview-absent-git-readonly","pass":true,"detail":{"wouldAdmit":1}}
+EV_F003 {"name":"preview-refused-resistant-tree-state-identical","pass":true,"detail":{"error":"Replay refused: Git enrichment exceeded 10000ms deadline","elapsed":8039,"tracked":2,"live":0}}
+EV_F003 {"name":"execute-refused-resistant-tree-valid-digest-state-identical","pass":true,"detail":{"error":"Replay refused: Git enrichment exceeded 10000ms deadline","elapsed":8037,"tracked":4,"live":0}}
+EV_F003 {"name":"shared-deadline-no-renewal-across-git-calls","pass":true,"detail":{"error":"Replay refused: Git enrichment exceeded 10000ms deadline","elapsed":8043,"gitInvocations":4}}
+EV_F003 {"name":"git-overflow-refused-no-canary","pass":true,"detail":{"error":"Replay refused: Git enrichment could not complete safely"}}
+EV_F003 {"name":"healthy-execute-admits-minimized-event","pass":true,"detail":{"previewUnchanged":true,"admitted":1,"gitCommit":"2ccae88abea8","gitRemote":"https://git.example/team/ev-fixture.git"}}
+EV_F003_SUMMARY {"total":6,"failed":0}
+{"watchdog":"clean","status":0,"signal":null,"elapsedMs":26921}

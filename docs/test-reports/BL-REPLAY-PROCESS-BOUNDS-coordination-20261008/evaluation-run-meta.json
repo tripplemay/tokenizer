@@ -1,0 +1,27 @@
+{
+  "task_id": "replay-process-bounds-3130cef-kimi-r0",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-REPLAY-PROCESS-BOUNDS",
+  "ref": "3130cef3bc55528290c49ee35267e1aff33b5c78",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0",
+  "artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+  "log": "/Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/run-replay-process-bounds-3130cef-kimi-r0.log",
+  "envelope_path": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008/docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-coordination-20261008/evaluation-envelope.json",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 1650,
+  "effective_timeout_s": 2400,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "process_exit",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

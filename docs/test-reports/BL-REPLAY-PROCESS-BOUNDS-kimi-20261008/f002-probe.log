@@ -1,0 +1,9 @@
+EV_F002 {"name":"startup-shim-stall-null-bounded","pass":true,"detail":{"mode":"stall","elapsed":2198,"reported":null}}
+EV_F002 {"name":"startup-shim-overflow-null-bounded","pass":true,"detail":{"mode":"overflow","elapsed":149,"reported":null}}
+EV_F002 {"name":"startup-shim-invalid-null-bounded","pass":true,"detail":{"mode":"invalid","elapsed":121,"reported":null}}
+EV_F002 {"name":"startup-shim-short-null-bounded","pass":true,"detail":{"mode":"short","elapsed":119,"reported":null}}
+EV_F002 {"name":"startup-shim-nonzero-null-bounded","pass":true,"detail":{"mode":"nonzero","elapsed":120,"reported":null}}
+EV_F002 {"name":"startup-shim-signal-null-bounded","pass":true,"detail":{"mode":"signal","elapsed":120,"reported":null}}
+EV_F002 {"name":"healthy-checkout-sha-and-frozen-snapshot","pass":true,"detail":{"expected":"e76833db9dcf","first":"e76833db9dcf","disk":"4f7bfcddaa8c"}}
+EV_F002_SUMMARY {"total":7,"failed":0}
+{"watchdog":"clean","status":0,"signal":null,"elapsedMs":3141}

@@ -1,0 +1,13 @@
+EV_F001 {"name":"normal-preserves-argv-cwd-env","pass":true,"detail":{"status":0,"stderr":"ev-stderr-ok"}}
+EV_F001 {"name":"nonzero-vs-launch","pass":true,"detail":{"status":17}}
+EV_F001 {"name":"missing-executable","pass":true,"detail":"BoundedSubprocessLaunchError"}
+EV_F001 {"name":"target-cwd-enoent","pass":true,"detail":"BoundedSubprocessLaunchError:ENOENT"}
+EV_F001 {"name":"invalid-budgets-rejected-preserving-zero-spawns","pass":true,"detail":{"newSpawns":0}}
+EV_F001 {"name":"sigterm-resistant-timeout-and-reap","pass":true,"detail":{"error":"BoundedSubprocessTimeoutError","elapsed":538,"newTracked":1,"live":0}}
+EV_F001 {"name":"descendant-inherited-pipes-timeout-and-reap","pass":true,"detail":{"error":"BoundedSubprocessTimeoutError","elapsed":559,"newTracked":2,"live":0}}
+EV_F001 {"name":"output-overflow-typed-no-canary-reaped","pass":true,"detail":{"error":"BoundedSubprocessOutputError","canary":false,"live":0}}
+EV_F001 {"name":"combined-stream-budget","pass":true,"detail":{"error":"BoundedSubprocessOutputError"}}
+EV_F001 {"name":"worker-death-after-publish-kills-owned-group","pass":true,"detail":{"error":"BoundedSubprocessSupervisionError","canary":false,"tracked":9,"live":0}}
+EV_F001 {"name":"signal-preserved","pass":true,"detail":{"status":null,"signal":"SIGTERM"}}
+EV_F001_SUMMARY {"total":11,"failed":0,"allowance":2000}
+{"watchdog":"clean","status":0,"signal":null,"elapsedMs":4794}

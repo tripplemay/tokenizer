@@ -1,0 +1,8 @@
+EV_F003 {"name":"healthy-preview-absent-git-readonly","pass":true,"detail":{"wouldAdmit":1}}
+EV_F003 {"name":"preview-refused-resistant-tree-state-identical","pass":false,"detail":{"error":"undefined","elapsed":1,"tracked":0,"live":0}}
+EV_F003 {"name":"execute-refused-resistant-tree-valid-digest-state-identical","pass":false,"detail":{"error":"undefined","elapsed":2,"tracked":0,"live":0}}
+EV_F003 {"name":"shared-deadline-no-renewal-across-git-calls","pass":true,"detail":{"error":"Error: Replay refused: Git enrichment exceeded 10000ms deadline","elapsed":8041,"gitInvocations":4}}
+EV_F003 {"name":"git-overflow-refused-no-canary","pass":true,"detail":{"error":"Error: Replay refused: Git enrichment could not complete safely"}}
+EV_F003 {"name":"healthy-execute-admits-minimized-event","pass":false,"detail":{"previewUnchanged":true,"admitted":1,"gitRemote":null}}
+EV_F003_SUMMARY {"total":6,"failed":3}
+{"watchdog":"clean","status":1,"signal":null,"elapsedMs":9947}

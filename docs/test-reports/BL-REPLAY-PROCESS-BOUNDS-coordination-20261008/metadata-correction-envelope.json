@@ -1,0 +1,20 @@
+{
+  "task_id": "replay-process-bounds-3130cef-kimi-metadata",
+  "contract_version": "harness/1.1",
+  "batch": "BL-REPLAY-PROCESS-BOUNDS",
+  "role": "evaluator",
+  "repo": {
+    "url": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008",
+    "ref": "3130cef3bc55528290c49ee35267e1aff33b5c78"
+  },
+  "spec": "docs/specs/BL-REPLAY-PROCESS-BOUNDS-spec.md",
+  "features": ["F001", "F002", "F003", "F004", "F005"],
+  "l2_authorized": false,
+  "deadline_s": 300,
+  "contract": "Evaluator artifact-metadata correction ONLY; do not rerun product tests or claim new acceptance. A prior registered Kimi evaluator task replay-process-bounds-3130cef-kimi-r0 returned its artifacts at /Volumes/ORICO/project/.worktrees/tokenizer-takeover-evaluations-20261008/BL-REPLAY-PROCESS-BOUNDS-local-cli--kimi--evaluator-replay-process-bounds-3130cef-kimi-r0/docs/test-reports/. Read that original BL-REPLAY-PROCESS-BOUNDS-verdict.json, report directory BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/ and scoped signoff if needed. The original JSON batch_id is BL-REPLAY-PROCESS-BOUNDS-F005, whereas the commissioned envelope and frozen features.json identify the batch as BL-REPLAY-PROCESS-BOUNDS; progress.current_sprint is merely the current feature cursor. Verify this metadata discrepancy from the actual files and exact SHA. Produce a new verdict at the fixed deliverable path by changing ONLY batch_id to the commissioned batch, preserving every other field/value, feature judgment, evidence, steps, timestamp and limitation exactly. Do not alter the prior worktree or its original artifacts. Add docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-metadata-correction-20261008.md describing provenance, old/new batch id and an equality check excluding only batch_id; state that no new product verification occurred and release readiness remains false. If the claimed metadata relationship cannot be verified, return honest waiting/adjudication instead; do not invent results. You may only write the new artifact and addendum in your own sandbox. No product/config/state/spec changes, npm install, real-home/personal data access, source/queue/config reads outside these explicitly named workspaces, commit, push, deploy or human gate decisions. Coordinator will transport the original and corrected artifacts unchanged; this is not permission to soften any finding.",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  }
+}
