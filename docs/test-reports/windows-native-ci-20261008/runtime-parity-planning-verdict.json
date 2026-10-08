@@ -1,0 +1,44 @@
+{
+  "violation": false,
+  "detail": "只读 planning scope review，精确 HEAD592ab1c，代码尚未派发；按 spec 最后 Second diagnostic bounded runtime parity 裁决，而非旧 proposal 的状态文字。锁定的完整 proposal 路径及 blob 已核对，optionalCombinedArm 明确不批准。E0 至 E4 各只相对 E0 改指定单一 key，E1 只从已允许 SystemRoot 派生 drive，E2/E3 仅新 synthetic APPDATA/LOCALAPPDATA，E4 仅 machine-system module paths；不得合并 arms、全继承 runner env 或读取/输出真实用户环境值/凭证/profile。与 preload off/on 交叉，P0 固定 marker 成功才进 P1 固定 synthetic JSON，P1 成功才进 P2 owned native attributes；每种 instrumentation form 最多选择一个明确 P2-success arm 进入 downstream parent hooks 和 confirmation/binding/healthy analog，not-reached 必须如实记录。600s total、40s owned-case、38 smoke/76 total PowerShell launch 上限、10s 原产品 budget、输出/trace caps 及剩余 cleanup/output allowance 都必须在新实现机械执行，不可改旧测试/caps或重试绕过上限。unknown trace health 与 unknown cleanup 独立 fail-closed，不可把 completeness unknown 说成产品 cleanup defect，也不可把 direct-child close 当全树证明。允许范围仅新 parity CLI/新 parity report/check artifacts，加 dedicated diagnostic workflow 的明确 command/对应 label/metadata；其 trigger/job branch 硬锁、权限、immutable SHA、Node22/npmci、12min、noSecrets/noProduction、upload allowlist 必须保持。原32 raw、native-diagnostics、trace-preload、旧报告、产品/旧tests/fixtures/dependencies/状态均冻结。现有 protected-tree diff exit0，original tree unchanged。暂无剩余 planning scope 歧义；这只允许进入隔离 Generator 受限实现，提交后仍须 scope critic，Coordinator 才可另行已授权 non-main publication。不是 native/功能验收或发布 PASS，未关闭 release gates。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "reviewed_head": "592ab1c20707ae428aa2c4c1fae7b32a89b44277",
+  "task_type": "supporting-diagnostic-planning",
+  "failed_product_baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "native_first_run_head": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+  "locked_proposal": {
+    "path": "docs/test-reports/windows-release-diagnosis-20261008/native-findings-r1/runtime-parity-plan.json",
+    "git_blob": "d20424dea07617e7e05c5686802730a2b7fb367b",
+    "sha256": "1c60f78aca558710176cb572f97680e40cbfef3187e6a6d132fffda908f7cbf3",
+    "optional_combined_arm_approved": false
+  },
+  "allowed_changes": [
+    "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+    "New parity report/check artifacts under docs/test-reports/windows-release-diagnosis-20261008/",
+    ".github/workflows/windows-release-diagnostics.yml: parity CLI command and corresponding step label/metadata only"
+  ],
+  "bounds": {
+    "total_diagnostic_deadline_ms": 600000,
+    "owned_case_watchdog_ms": 40000,
+    "original_product_operation_deadline_ms": 10000,
+    "max_smoke_powershell_launches": 38,
+    "max_total_powershell_launches": 76,
+    "combined_output_bytes": 65536,
+    "trace_bytes": 524288,
+    "native_attribute_output_bytes": 16384,
+    "max_downstream_selected_env_arms_per_instrumentation_form": 1
+  },
+  "preservation_evidence": {
+    "original_tree_at_proposal_and_reviewed_head": "fe2529e24933906177d0cf0b5ce4f82e044aea74",
+    "protected_tree_command": "git diff --exit-code f6b89d781a74f7baff4db0d47733e813f04b839c 592ab1c20707ae428aa2c4c1fae7b32a89b44277 -- . ':(exclude)docs/**'",
+    "protected_tree_exit_code": 0,
+    "protected_tree_output": ""
+  },
+  "native_windows_executed_by_scope_critic": false,
+  "functional_acceptance": false,
+  "release_acceptance": false,
+  "release_ready": false,
+  "post_implementation_scope_review_required_before_publication": true,
+  "write_scope": "仅新增本 planning scope artifact；未修改源码、workflow、原证据、状态或 commit。"
+}
