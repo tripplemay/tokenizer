@@ -1,0 +1,37 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+ ❯ tests/server/release-predecessor-negative.test.ts (16 tests | 1 failed) 636ms
+     × accepts the old health shape only with exact activated identity and preserves every byte 57ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/release-predecessor-negative.test.ts > additive predecessor fail-closed controls > accepts the old health shape only with exact activated identity and preserves every byte
+AssertionError: /private/tmp/tkrg.BIlgHB/t/predecessor-2RZxnr/bin/curl: line 2: conditional binary operator expected
+/private/tmp/tkrg.BIlgHB/t/predecessor-2RZxnr/bin/curl: line 2: syntax error near `HEALTH_BODY'
+/private/tmp/tkrg.BIlgHB/t/predecessor-2RZxnr/bin/curl: line 2: `if [[ -v HEALTH_BODY ]]; then printf '%s\n' "$HEALTH_BODY"; else printf '%s\n' '{"ok":true,"code":"ready","commit":"dddddddddddddddddddddddddddddddddddddddd"}'; fi'
+production predecessor preflight: running app readiness is unavailable
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/server/release-predecessor-negative.test.ts:89:42
+     87|     const before = snapshot();
+     88|     const result = run({ HEALTH_BODY: `{"ok":true,"commit":"${oldSha}"…
+     89|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+     90|     expect(snapshot()).toEqual(before);
+     91|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 44 passed (45)
+   Start at  21:53:52
+   Duration  1.97s (transform 81ms, setup 0ms, import 110ms, tests 4.12s, environment 0ms)
+

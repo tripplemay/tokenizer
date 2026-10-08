@@ -3,7 +3,7 @@
   "spec": "docs/specs/BL-RELEASE-READINESS-spec.md",
   "features": [
     {"id":"F001","title":"Compose reviewed macOS native gate with accepted repair slices","priority":"high","executor":"generator","status":"completed","acceptance":"F001 spec: preserve source provenance, B06/B07 gates and accepted process/queue/dependency inputs."},
-    {"id":"F002","title":"Fail closed before production deployment mutations","priority":"high","executor":"generator","status":"pending","acceptance":"F002 spec: serving exact predecessor required before rsync/env/manifest mutations, preserved regressions and additive negatives."},
+    {"id":"F002","title":"Fail closed before production deployment mutations","priority":"high","executor":"generator","status":"completed","acceptance":"F002 spec: serving exact predecessor required before rsync/env/manifest mutations, preserved regressions and additive negatives."},
     {"id":"F003","title":"Read-only allowlisted host inventory through Actions SSH","priority":"high","executor":"generator","status":"pending","acceptance":"F003 spec: strict operation separation, bounded scoped inventory, no mutation or raw secrets, synthetic positive/negative controls."},
     {"id":"F004","title":"Retain local regressions and final exact-SHA native CI results","priority":"high","executor":"generator","status":"pending","acceptance":"F004 spec: fresh Node22 regression plus exact Linux/Windows/macOS/PG16/browser/OCI CI; preserve failures/skips, no local substitution."},
     {"id":"F005","title":"Independent cross-family exact-candidate acceptance","priority":"high","executor":"evaluator","status":"pending","acceptance":"F005 spec: fresh Kimi controls, immutable scoped verdict; unproved native/production gates remain open."}

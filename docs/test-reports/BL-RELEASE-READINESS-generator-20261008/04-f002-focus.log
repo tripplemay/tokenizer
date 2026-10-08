@@ -1,0 +1,33 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+ ❯ tests/server/release-predecessor-negative.test.ts (16 tests | 1 failed) 586ms
+     × accepts the old health shape only with exact activated identity and preserves every byte 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/server/release-predecessor-negative.test.ts > additive predecessor fail-closed controls > accepts the old health shape only with exact activated identity and preserves every byte
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/server/release-predecessor-negative.test.ts:88:77
+     86|   it('accepts the old health shape only with exact activated identity …
+     87|     const before = snapshot();
+     88|     expect(run({ HEALTH_BODY: `{"ok":true,"commit":"${oldSha}"}` }).st…
+       |                                                                             ^
+     89|     expect(snapshot()).toEqual(before);
+     90|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 44 passed (45)
+   Start at  21:53:26
+   Duration  1.90s (transform 78ms, setup 0ms, import 102ms, tests 3.93s, environment 0ms)
+

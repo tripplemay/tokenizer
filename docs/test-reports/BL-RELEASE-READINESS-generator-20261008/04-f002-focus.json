@@ -1,0 +1,20 @@
+{
+  "name": "04-f002-focus",
+  "command": "npx",
+  "args": [
+    "vitest",
+    "run",
+    "tests/server/release-image.test.ts",
+    "tests/server/release-predecessor-negative.test.ts",
+    "tests/server/release-rehearsal.test.ts"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008",
+  "started": "2026-10-08T14:53:25.593Z",
+  "finished": "2026-10-08T14:53:28.225Z",
+  "node": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "home": "/private/tmp/tkrg.BIlgHB/h",
+  "tmpdir": "/private/tmp/tkrg.BIlgHB/t",
+  "status": 1,
+  "signal": null,
+  "error": null
+}

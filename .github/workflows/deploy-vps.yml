@@ -636,13 +636,22 @@ jobs:
           chmod 600 ~/.ssh/tokenizer_vps
           ssh-keyscan -p "${VPS_SSH_PORT:-22}" -H "$VPS_HOST" >> ~/.ssh/known_hosts
 
+      - name: Verify live digest predecessor before remote mutation
+        run: |
+          set -euo pipefail
+          DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
+          SSH_TARGET="$VPS_USER@$VPS_HOST"
+          ssh -i ~/.ssh/tokenizer_vps -p "${VPS_SSH_PORT:-22}" \
+            -o ServerAliveInterval=30 -o ServerAliveCountMax=20 "$SSH_TARGET" \
+            "cd '$DEPLOY_PATH' && bash -s -- live '$GITHUB_SHA' '$APP_IMAGE' '$MIGRATE_IMAGE'" \
+            < scripts/verify-vps-predecessor.sh
+
       - name: Sync files to VPS
         run: |
           set -eu
           DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
           SSH_TARGET="$VPS_USER@$VPS_HOST"
           SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
-          $SSH_CMD "$SSH_TARGET" "mkdir -p '$DEPLOY_PATH'"
           rsync -az --delete \
             --exclude='.git' \
             --exclude='.env' \
@@ -660,11 +669,15 @@ jobs:
           SSH_TARGET="$VPS_USER@$VPS_HOST"
           SSH_CMD="ssh -i ~/.ssh/tokenizer_vps -p ${VPS_SSH_PORT:-22} -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
+          # Recheck after rsync and before replacing .env. This catches an
+          # operator/app change or a candidate Compose project change.
+          $SSH_CMD "$SSH_TARGET" \
+            "cd '$DEPLOY_PATH' && bash -s -- live '$GITHUB_SHA' '$APP_IMAGE' '$MIGRATE_IMAGE'" \
+            < scripts/verify-vps-predecessor.sh
+
           umask 077
           ENV_FILE="$(mktemp)"
           trap 'rm -f "$ENV_FILE"; $SSH_CMD "$SSH_TARGET" "docker logout ghcr.io" >/dev/null 2>&1 || true' EXIT
-          # Short-lived CI registry credential through stdin, not argv or .env.
-          printf '%s' "$REGISTRY_TOKEN" | $SSH_CMD "$SSH_TARGET" "docker login ghcr.io -u '$REGISTRY_USER' --password-stdin"
           {
             printf 'ADMIN_TOKEN=%s\n' "$ADMIN_TOKEN"
             printf 'NEXT_PUBLIC_APP_URL=%s\n' "$NEXT_PUBLIC_APP_URL"
@@ -692,7 +705,9 @@ jobs:
           } > "$ENV_FILE"
           # Preserve the previous runtime configuration for an operator-led
           # rollback. Do not print or overwrite it on a same-SHA retry.
-          $SSH_CMD "$SSH_TARGET" "umask 077; mkdir -p '$DEPLOY_PATH/.releases'; chmod 700 '$DEPLOY_PATH/.releases'; if [ -f '$DEPLOY_PATH/.env' ] && [ ! -e '$DEPLOY_PATH/.releases/${{ github.sha }}.previous-env' ]; then cp '$DEPLOY_PATH/.env' '$DEPLOY_PATH/.releases/${{ github.sha }}.previous-env'; fi"
+          $SSH_CMD "$SSH_TARGET" "umask 077; if [ ! -e '$DEPLOY_PATH/.releases/$GITHUB_SHA.previous-env' ]; then cp '$DEPLOY_PATH/.env' '$DEPLOY_PATH/.releases/$GITHUB_SHA.previous-env'; fi"
           scp -i ~/.ssh/tokenizer_vps -P "${VPS_SSH_PORT:-22}" "$ENV_FILE" "$SSH_TARGET:$DEPLOY_PATH/.env"
 
+          # Short-lived CI registry credential through stdin, not argv or .env.
+          printf '%s' "$REGISTRY_TOKEN" | $SSH_CMD "$SSH_TARGET" "docker login ghcr.io -u '$REGISTRY_USER' --password-stdin"
           $SSH_CMD "$SSH_TARGET" "cd '$DEPLOY_PATH' && chmod 600 .env && EXPECTED_SHA='${{ github.sha }}' bash scripts/deploy-vps-release.sh"
