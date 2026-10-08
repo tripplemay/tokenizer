@@ -41,3 +41,39 @@ new manual-only workflow from being the dependable transport on this branch.
 Do not publish main to register it. The narrowly approved exact-branch push
 trigger above is only for this synthetic diagnostic branch, never a relaxation
 of release gates. Source: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch
+
+## Second diagnostic: bounded runtime parity, not a product repair
+
+Original run37808814119 and all32 raw files are preserved under the committed
+native-findings-r1/original tree. It confirmed privacy and CRLF failures but did
+not reach replay parent hooks or downstream confirmation/admission controls.
+Strict synthetic env timed out the first PowerShell check; do not infer an old
+test's rename or aggregate-timeout cause from those unreachable branches.
+
+Approve the committed native-findings-r1/runtime-parity-plan.json except its
+optionalCombinedArm: no combined env arm in this pass. Generator may add only
+docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs
+and new parity-report/check artifacts under that same directory. Existing
+native-diagnostics, trace-preload, old reports/product/tests remain immutable.
+Second CI invokes the new parity CLI instead of repeating the original seven
+cases; only that explicit command and corresponding step label/metadata may
+change in the dedicated diagnostic workflow. Retain all original scope logs.
+
+E0 stripped env versus E1 SystemDrive from allowed SystemRoot, E2 synthetic
+APPDATA, E3 synthetic LOCALAPPDATA, E4 machine-only PSModulePath. Change exactly
+one key per env arm, never inherit all runner env or personal module paths.
+Cross with preload off/on. Fixed marker then ConvertFrom-Json then owned native
+attribute smoke, previous success required. Only one explicitly selected P2-
+successful arm per instrumentation form may admit downstream parent hooks and
+confirmation/binding/healthy analogs; unreachable stays reported unreachable.
+No raw env values/stderr/content; only allowlisted metadata and canary booleans.
+No production, Secrets, profile, credential or network access. Existing user
+services and unrelated processes are untouched.
+
+Enforce total600s deadline, 40s owned-case watchdog, <=38 smoke / <=76 total
+PowerShell launches, existing 10s product budget and output/trace caps. Do not
+start work that lacks remaining cleanup/output allowance. Unknown cleanup and
+trace health are distinct fail-closed findings, not proof of product cleanup
+failure. Always upload only native-output-* JSON/JSONL and minimum provenance.
+Scope critic must review the committed new script/workflow before the next
+authorized non-main push. Never merge diagnostic workflow into release/main.
