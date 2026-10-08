@@ -1,0 +1,75 @@
+{
+  "kind": "frozen_transport_sources",
+  "F001": {
+    "source": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+    "files": [
+      {
+        "path": "scripts/ci/assert-macos-launchd-installer.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3a1dd5a90a15eaa0a8192b9c2a8395c8841c68f9"
+      },
+      {
+        "path": "src/cli/service.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ac1f918b3726a56ecab35426bccf75c625a764cf"
+      },
+      {
+        "path": "tests/ci/macos-launchd-cleanup-trap.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "f4e2b334bb38f2671aede796444a51d7872380a6"
+      },
+      {
+        "path": "tests/ci/macos-launchd-installer-gate.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "d889a678cce173612e52986023c98e59540b342f"
+      },
+      {
+        "path": "tests/cli/agent-release-installer-macos.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e6a73902a10254620aa9af1a05aeec188c436cf8"
+      },
+      {
+        "path": "tests/cli/service-launchd.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ff96a504995f629137d51f2769032f8767976c6b"
+      },
+      {
+        "path": "tests/server/release-rehearsal.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "7127fb3f1b2a1dc400b50bb1ab8e4fc99619b6c5"
+      }
+    ]
+  },
+  "F002": {
+    "source": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+    "files": [
+      {
+        "path": "scripts/deploy-vps-release.sh",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5"
+      },
+      {
+        "path": "scripts/verify-vps-predecessor.sh",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "815d599d0ed804428dbd27e3ab0f534b92ecc5d7"
+      },
+      {
+        "path": "tests/server/release-image.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3709f446dbf1aa769e1ee396fa9cf957bff9a6ac"
+      }
+    ]
+  },
+  "workflow": "Selective patches only; preserve newer B06/B07 gates",
+  "exceptions": "Only committed spec adjudications may differ from these source bytes"
+}
