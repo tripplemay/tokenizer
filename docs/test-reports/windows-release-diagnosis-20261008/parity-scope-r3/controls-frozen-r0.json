@@ -1,0 +1,651 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-independent-scope-critic-controls",
+  "reviewState": "FROZEN_COMMITTED_SOURCE",
+  "exactSource": "4ea76bcd22360609f0af2fa0da1b99da1b7cd332",
+  "r1Source": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "r2Source": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "scopeBase": "846e8e07614a97dcebd9d2cd2bdb678f971651fd",
+  "scriptSha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+  "sourceUnchangedDuringControls": true,
+  "controlScriptSha256": "285a2324194539f734617af32c4f73de60a8e240d9547183ad26a192be642b0c",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "controls": [
+    {
+      "id": "C01-exact-commit-and-allowed-tree",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "finalGateEligible": true,
+      "changedPaths": [
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/README.md",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/checks.mjs",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/checks.schema.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-r3.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-syntax-failure.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-syntax-failure.mjs",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-frozen-reproduction.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls.mjs",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/handoff.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/local-checks.json",
+        "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/r2-reproduction.mjs"
+      ],
+      "uniqueTree": "b275a9a1f15a72790f77240847ae6dfb460da4f6",
+      "sourceHash": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+    },
+    {
+      "id": "C02-frozen-products-evidence-workflow",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "frozenObjects": [
+        {
+          "path": "src",
+          "base": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d",
+          "candidate": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d"
+        },
+        {
+          "path": "tests",
+          "base": "7e8022a84dc47165b900e2d05f019477e81a2a0d",
+          "candidate": "7e8022a84dc47165b900e2d05f019477e81a2a0d"
+        },
+        {
+          "path": "app",
+          "base": "7b7684136d3a6190690648d8d5128f4e9a4c8cad",
+          "candidate": "7b7684136d3a6190690648d8d5128f4e9a4c8cad"
+        },
+        {
+          "path": "prisma",
+          "base": "2cdefb960496f4318b062933c5dd73a017567eae",
+          "candidate": "2cdefb960496f4318b062933c5dd73a017567eae"
+        },
+        {
+          "path": "package.json",
+          "base": "57b2a59283ca82575dfbc5c8410b4b127aa6c809",
+          "candidate": "57b2a59283ca82575dfbc5c8410b4b127aa6c809"
+        },
+        {
+          "path": "package-lock.json",
+          "base": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8",
+          "candidate": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8"
+        },
+        {
+          "path": "progress.json",
+          "base": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc",
+          "candidate": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc"
+        },
+        {
+          "path": "features.json",
+          "base": "918eb22c3679c2ceab23533c482c48fc38fe6b92",
+          "candidate": "918eb22c3679c2ceab23533c482c48fc38fe6b92"
+        },
+        {
+          "path": "backlog.json",
+          "base": "9d69bd77a7796e58b93d7503fd48ce09057056de",
+          "candidate": "9d69bd77a7796e58b93d7503fd48ce09057056de"
+        },
+        {
+          "path": "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+          "base": "9623f4bd52818f22177048d79a0dd07bfa542c7f",
+          "candidate": "9623f4bd52818f22177048d79a0dd07bfa542c7f"
+        },
+        {
+          "path": ".github/workflows",
+          "base": "6f0e49d61685f13f2fff1eae33e24efd94fc08e2",
+          "candidate": "6f0e49d61685f13f2fff1eae33e24efd94fc08e2"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs",
+          "base": "dd823c6be301ae671223836be3097c9cc36b8c5d",
+          "candidate": "dd823c6be301ae671223836be3097c9cc36b8c5d"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+          "base": "d654d16301fcd9b0367c346ebc46ae383ffb2269",
+          "candidate": "d654d16301fcd9b0367c346ebc46ae383ffb2269"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/native-findings-r1",
+          "base": "44065a123523725894d093eb2c011a3644e352c0",
+          "candidate": "44065a123523725894d093eb2c011a3644e352c0"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1",
+          "base": "b2b024492c4bc798f620a50b802018d1fe32f5ce",
+          "candidate": "b2b024492c4bc798f620a50b802018d1fe32f5ce"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r2",
+          "base": "9d20dd5affb9e76802f9e4814bedcdf47a4dd316",
+          "candidate": "9d20dd5affb9e76802f9e4814bedcdf47a4dd316"
+        }
+      ],
+      "r1EvidenceHashes": {
+        "verdict.json": "106ff610950022b23702207dbcac051a4d9499e6c772f6ba1c30eb05679706ce",
+        "controls.mjs": "b562d74205e75ee0587c8349b44dc35a38af96527a25b529c4c46a486e6983d2",
+        "controls.json": "5289c79db1eb913969d3d96f20169f34b49ea4475d1deb4c4e25003189eb4f92"
+      },
+      "r2EvidenceHashes": {
+        "README.md": "8dd70898960a1c11992b54b1f5fb4abeea432f57968efc465926186004f94f2f",
+        "controls-draft-r0.json": "6ff03e1049c59c7b0642bc334b2e732ceda1d31c363bc098d8613640827e9987",
+        "controls-draft-r0.mjs": "68866b9f9b13d42a911ec262fcc4989ca3ea8d06806ac69ee4ca80db2616aa3d",
+        "controls-frozen-r0.json": "7c8157951d08ee9072bd1af84367fcf633b7a37eaafe434a8a73e4b2a00cc369",
+        "controls-frozen-r0.mjs": "8f13b6fe5890fd22d3d612c25a9605555893701edba7af4ea4a598b887a983ca",
+        "controls-frozen-r1.json": "d7b5b02b59981f4a999ba66a5e835b68dbe277f0ee0b93b07b3626c3c903917f",
+        "controls.mjs": "b59e882f2f66c78a0d3a2671f7659df274303f8440b3b24a4a352d651f328340",
+        "verdict.json": "37fbebef10834033ac26a082433adb80b8c7d86038c2ac1a6797de1d6d47e1ad"
+      },
+      "originalHashesVerified": 32
+    },
+    {
+      "id": "C03-environment-bounds-and-case-admission",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "launchOrder": [
+        "smoke-off-E0",
+        "smoke-off-E1",
+        "smoke-off-E2",
+        "smoke-off-E3",
+        "smoke-off-E4",
+        "smoke-on-E0",
+        "smoke-on-E1",
+        "smoke-on-E2",
+        "smoke-on-E3",
+        "smoke-on-E4",
+        "downstream-off-parent",
+        "downstream-on-parent",
+        "downstream-off-confirmation",
+        "downstream-on-confirmation",
+        "downstream-off-healthy",
+        "downstream-on-healthy"
+      ],
+      "usedPowerShell": {
+        "total": 76,
+        "smoke": 30
+      },
+      "denied": [
+        {
+          "id": "downstream-off-binding",
+          "reached": false,
+          "reason": "total-powershell-budget-insufficient"
+        },
+        {
+          "id": "downstream-on-binding",
+          "reached": false,
+          "reason": "total-powershell-budget-insufficient"
+        }
+      ],
+      "bounds": {
+        "totalMs": 600000,
+        "caseMs": 40000,
+        "cleanupMs": 3000,
+        "operationMs": 10000,
+        "smokeChildMs": 7000,
+        "smokePs": 38,
+        "totalPs": 76,
+        "outputBytes": 65536,
+        "traceBytes": 524288,
+        "attributeBytes": 16384
+      }
+    },
+    {
+      "id": "C04-logger-native-return-exception-errorMonitor",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "modes": [
+        "normal",
+        "logger-stat",
+        "logger-append",
+        "health-failure",
+        "native-throw",
+        "sync-throw"
+      ],
+      "nativeReturnAndThrownIdentityPreserved": true,
+      "ordinaryErrorNotSwallowed": true,
+      "guardStreamObserver": false
+    },
+    {
+      "id": "C05-owned-cleanup-and-common-launchbudget",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "activeHandleKillCalls": 1,
+      "closedHandleKillCalls": 0,
+      "taskkill128NotInterpreted": true,
+      "checks": [
+        "total-powershell-budget-insufficient",
+        "smoke-powershell-budget-insufficient"
+      ],
+      "counterLoggerFailureStopsAdmission": true,
+      "synchronousPowerShellBlocked": true
+    },
+    {
+      "id": "C06-R1-expiry-plus-watchdog-budget-output-notreached",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "evidence": [
+        {
+          "mode": "expiry",
+          "classification": "diagnostic-budget-not-reached",
+          "reached": false,
+          "diagnosticAbortReasons": [
+            "owned-lifetime-expired"
+          ],
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "owned-lifetime-expired"
+          ]
+        },
+        {
+          "mode": "budget",
+          "classification": "diagnostic-budget-not-reached",
+          "reached": false,
+          "diagnosticAbortReasons": [
+            "total-powershell-budget-insufficient"
+          ],
+          "cleanupUnknown": false,
+          "cleanupUnknownBasis": []
+        },
+        {
+          "mode": "watchdog",
+          "classification": "diagnostic-budget-not-reached",
+          "reached": false,
+          "diagnosticAbortReasons": [
+            "owned-case-watchdog-expired"
+          ],
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination"
+          ]
+        },
+        {
+          "mode": "output-limit",
+          "classification": "diagnostic-budget-not-reached",
+          "reached": false,
+          "diagnosticAbortReasons": [
+            "diagnostic-output-limit-exceeded"
+          ],
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination"
+          ]
+        }
+      ],
+      "originalR1C06Reexecuted": true
+    },
+    {
+      "id": "C07-R1-injection-artifact-boundary-all-families",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "evidence": [
+        {
+          "mode": "injected-jsonl",
+          "publishedCanary": false,
+          "diagnosticCompleted": false,
+          "jsonlArtifacts": 1
+        },
+        {
+          "mode": "unsafe-guard-value",
+          "publishedCanary": false,
+          "diagnosticCompleted": false,
+          "jsonlArtifacts": 6
+        },
+        {
+          "mode": "unsafe-trace-value",
+          "publishedCanary": false,
+          "diagnosticCompleted": false,
+          "jsonlArtifacts": 15
+        },
+        {
+          "mode": "counter-injection",
+          "publishedCanary": false,
+          "diagnosticCompleted": false,
+          "jsonlArtifacts": 1
+        },
+        {
+          "mode": "probe-injection",
+          "publishedCanary": false,
+          "diagnosticCompleted": false,
+          "jsonlArtifacts": 16
+        }
+      ],
+      "safeRowsRevalidated": true,
+      "originalR1C07Reexecuted": true,
+      "allEvidenceVirtual": true,
+      "actualHostSecretAccess": false
+    },
+    {
+      "id": "C08-R1-unsafe-error-code-native-behavior",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "nativeErrorIdentityPreserved": true,
+      "rawFixtureLogged": false,
+      "healthFailClosed": true,
+      "originalR1C08Reexecuted": true
+    },
+    {
+      "id": "C09-R1-protocol-completeness-and-P2-selection",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "emptyObservationsRejected": true,
+      "malformedAndOutOfOrderRejected": true,
+      "emptyProbeSelectedArms": {},
+      "downstreamLaunchesAfterEmptyProbe": 0,
+      "originalR1C09Reexecuted": true
+    },
+    {
+      "id": "C10-ownedbinding-loggerunknown-and-no-historical-kill",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "bindingPathsOwnedRootDerived": true,
+      "loggerFailureUnknownNotProductFailure": true,
+      "historicalLivenessOnlySignal0": true,
+      "historicalPidsSignalled": false
+    },
+    {
+      "id": "C11-parent-exported-return-metadata-value-boundary",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "evidence": [
+        {
+          "injectedField": "signalCode",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "exitCode",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": null,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination",
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "pid",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "error.code",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": "UNRECOGNIZED_ERROR_CODE",
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "close event status/signal",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": false,
+          "firstRecordClassification": "diagnostic-observation-complete-not-product-pass",
+          "firstRecordDiagnosticCompleted": true,
+          "cleanupUnknown": false,
+          "cleanupUnknownBasis": []
+        },
+        {
+          "injectedField": "pid throwing getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "exitCode throwing getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": null,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination",
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "signalCode throwing getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "pid initially unsafe getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "exitCode initially unsafe getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "signalCode initially unsafe getter",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "pid unsafe only at finish",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "exitCode unsafe only at finish",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": null,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination",
+            "root-return-metadata-unknown"
+          ]
+        },
+        {
+          "injectedField": "signalCode unsafe only at finish",
+          "canaryPublished": false,
+          "publishedArtifactNames": [],
+          "firstRecordStatus": 0,
+          "firstRecordSignal": null,
+          "firstRecordLaunchCode": null,
+          "rootMetadataUnknown": true,
+          "firstRecordClassification": "diagnostic-incomplete-provenance-unknown",
+          "firstRecordDiagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "root-return-metadata-unknown"
+          ]
+        }
+      ],
+      "allEvidenceVirtual": true,
+      "actualNativeCanaryReachability": "not-tested-unknown",
+      "actualHostSecretAccess": false,
+      "originalR2C11Reexecuted": true,
+      "sourceBoundary": "rootMetadata validates values at launch/finish; unknown metadata blocks completion and remains independent cleanup evidence"
+    },
+    {
+      "id": "C12-static-workflow-and-syntax",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "nodeSyntaxExitCode": 0,
+      "actionlintExitCode": 0,
+      "workflowByteFrozenToR1": true
+    },
+    {
+      "id": "C13-rootmetadata-normal-ranges-and-unknown-cleanup",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "numericRangeChecks": 3,
+      "invalidValueChecks": 23,
+      "nativeObjectsNotMutated": true,
+      "evidence": [
+        {
+          "label": "normal",
+          "status": 0,
+          "signal": null,
+          "rootMetadataUnknown": false,
+          "classification": "diagnostic-observation-complete-not-product-pass",
+          "diagnosticCompleted": true,
+          "cleanupUnknown": false,
+          "cleanupUnknownBasis": []
+        },
+        {
+          "label": "known-signal",
+          "status": 0,
+          "signal": "SIGTERM",
+          "rootMetadataUnknown": false,
+          "classification": "diagnostic-incomplete-provenance-unknown",
+          "diagnosticCompleted": false,
+          "cleanupUnknown": false,
+          "cleanupUnknownBasis": []
+        },
+        {
+          "label": "valid-null-status",
+          "status": null,
+          "signal": null,
+          "rootMetadataUnknown": false,
+          "classification": "diagnostic-incomplete-provenance-unknown",
+          "diagnosticCompleted": false,
+          "cleanupUnknown": true,
+          "cleanupUnknownBasis": [
+            "forced-or-unconfirmed-root-termination"
+          ]
+        },
+        {
+          "label": "known-launch-error",
+          "status": 0,
+          "signal": null,
+          "rootMetadataUnknown": false,
+          "classification": "diagnostic-incomplete-provenance-unknown",
+          "diagnosticCompleted": false,
+          "cleanupUnknown": false,
+          "cleanupUnknownBasis": []
+        }
+      ]
+    }
+  ],
+  "violation": false,
+  "controlExecutionFailure": false,
+  "nativeWindowsExecuted": false,
+  "productRuntimeExecuted": false,
+  "realServicesExecuted": false,
+  "allRuntimeEvidenceVirtual": true,
+  "releaseAcceptance": false,
+  "productAcceptance": false,
+  "nativeAcceptance": false,
+  "releaseReady": false
+}

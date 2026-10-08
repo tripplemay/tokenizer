@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-independent-scope-critic",
+  "reviewType": "committed-source-scope-transport-gate-not-product-evaluation",
+  "exactSource": "4ea76bcd22360609f0af2fa0da1b99da1b7cd332",
+  "exactSourceTree": "b275a9a1f15a72790f77240847ae6dfb460da4f6",
+  "parentSource": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "r1Source": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "originalFreeze": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "productBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "spec": "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+  "specGitObject": "9623f4bd52818f22177048d79a0dd07bfa542c7f",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-runtime-parity-generator-20261008",
+  "sourceScriptSha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+  "controlScriptSha256": "285a2324194539f734617af32c4f73de60a8e240d9547183ad26a192be642b0c",
+  "controlOutputSha256": "a0d77e961f0ba240634d7ac20cf32a746f8057a50fd7a74194933f352b737a18",
+  "violation": false,
+  "scopeTransportAllowed": true,
+  "outcome": "PASS_EXACT_COMMITTED_DIAGNOSTIC_SCOPE_TRANSPORT_ONLY",
+  "summary": "Independently reran all twelve R2 scope controls against exact Git source and added one narrow root-metadata/cleanup control. All thirteen controls pass twice with byte-identical outputs. R2 C11 now suppresses unsafe root status/signal/pid/error metadata, including getter exceptions and unsafe values at either snapshot; unknown metadata blocks completion and P2 selection. Existing R1 closures and all frozen product/test/workflow/evidence boundaries remain intact. This authorizes only scope transport of the reviewed exact diagnostic source, not product/native/release acceptance or any worker push.",
+  "independence": {
+    "basis": "Supporting critic independently read the exact Git diff/source/spec/state and original R1/R2 evidence. The critic did not implement the CLI. Controls are independently owned and execute actual extracted source functions in fresh VM contexts with virtual files/processes/streams. Generator control claims are not used as acceptance evidence.",
+    "supportingTaskSection": "harness-rules.md section 1.5",
+    "stateStatusObserved": "building",
+    "implementationModified": false,
+    "generatorFilesModified": false,
+    "specModified": false,
+    "stateModified": false,
+    "r1R2ReportsModified": false,
+    "commitPushGitHubSshProductionExecuted": false,
+    "humanDecisionWritten": false
+  },
+  "sourceBinding": {
+    "sourceBytesReadFromGit": true,
+    "headMatchesExactSource": true,
+    "parentMatchesR2": true,
+    "entireTrackedWorktreeMatchesExactSource": true,
+    "sourceUnchangedDuringBothControlRuns": true,
+    "evidence": "C01 requires the supplied exact R3 ref and known SHA-256, confirms HEAD, parent, unique tree, entire tracked diff empty, and disk script hash equal to Git source. Both final outputs report sourceUnchangedDuringControls=true.",
+    "changedPathsRelativeToR2": [
+      "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/README.md",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/checks.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/checks.schema.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-r3.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-syntax-failure.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-draft-syntax-failure.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls-frozen-reproduction.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/controls.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/handoff.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/local-checks.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r3/r2-reproduction.mjs"
+    ],
+    "cliDiff": { "addedLines": 25, "removedLines": 5 },
+    "scopeConclusion": "Only the approved new CLI revision and new parity-generator-r3 report/check artifacts changed. The R3 source correction is limited to root return metadata snapshots, safe stop metadata, unknown provenance and completion."
+  },
+  "findings": [],
+  "closedR2Finding": {
+    "id": "SCOPE-R2-F001",
+    "closedForExactSource": true,
+    "evidence": [
+      "native-runtime-parity.mjs:42-54 reconstructs pid/status/signal from explicit numeric ranges and SAFE_SIGNALS, returning only null plus unknown=true for unsafe values or getter exceptions; it does not mutate native child objects.",
+      "native-runtime-parity.mjs:435-455 snapshots at launch and finish, preserves either unknown indication, and propagates unsafe launch error metadata as unknown without raw values.",
+      "native-runtime-parity.mjs:457-463 admits owned-handle stopping only from valid active metadata; 499-509 separates root-return-metadata-unknown cleanup basis and requires null signal/no metadata unknown/no launch error before diagnostic completion.",
+      "C11 reexecutes the original root signalCode, exitCode, pid, error.code and close-event status/signal canaries. None appear in any exported artifact. The previously leaking signal/status properties are rebuilt as null and cannot yield diagnosticCompleted=true.",
+      "C11 additionally executes throwing getters for all three root properties, an unsafe first getter value followed by normal finish, and a safe launch followed by an unsafe finish for each property. All thirteen unsafe-source cases yield rootMetadataUnknown=true, productResultUnknown=true, classification=diagnostic-incomplete-provenance-unknown, diagnosticCompleted=false and separate root-return-metadata-unknown cleanup basis.",
+      "The close-event canary case remains unused and is not exported; valid native root properties retain a complete diagnostic observation in that case. No metadata source is silently relabeled a product failure.",
+      "C13 verifies normal native object identity/content unchanged, three valid numeric/null/signal range shapes and 23 invalid-value shapes. Known signal and known launch error remain incomplete without inventing metadata or cleanup failure; legal null status yields unconfirmed cleanup, not unsafe-metadata provenance."
+    ],
+    "selectionEffect": "Unsafe root metadata makes diagnosticCompleted=false, so the unchanged selection predicate cannot choose its P2 arm.",
+    "limits": "These are virtual artifact-boundary and classification controls. Actual Windows return values, native reachability and real secret leakage were not tested."
+  },
+  "controlEvidence": [
+    {
+      "id": "C01",
+      "topic": "Exact source and allowed tree",
+      "evidence": "Exact R3 HEAD/tree/parent/hash and entire tracked worktree equality; all twelve changed paths are approved CLI/new R3 artifacts only."
+    },
+    {
+      "id": "C02",
+      "topic": "Frozen product, state, workflow and evidence",
+      "evidence": "Git objects for src/tests/app/prisma/packages/state/spec/all workflows/old diagnostics/trace/native-findings-r1/parity-generator-r1/parity-generator-r2 match R2. All 32 original inventory SHA-256 entries are independently checked from Git and disk. All three original R1 critic files and all eight R2 critic files retain their frozen hashes."
+    },
+    {
+      "id": "C03",
+      "topic": "Single-key arms, common guard, budgets and fairness",
+      "evidence": "E0-E4 change exactly their single designated key and cross old trace off/on. Both forms retain the minimum guard. Host env/credentials/profile fixtures do not enter child env. E4 remains the SystemRoot-derived built-in module path; no combined arm. Fixed 600s/40s/3s reserve/10s/38/76 limits and worst-case admission are unchanged; virtual total76/smoke30 denies binding rather than raising budgets, while both parent forms precede fair remaining analog admission."
+    },
+    {
+      "id": "C04/C05",
+      "topic": "Guard semantics and owned cleanup",
+      "evidence": "Normal/logger-stat/logger-append/health-failure/native-throw/sync-throw mocks preserve exact native returns/exceptions and unhandled ordinary error behavior. Common guard has no data observer. Only active owned handles are stopped; closed handles and historical PIDs are not signaled. Guard enforces launch caps, synchronous PowerShell refusal and counter logger fail-closed. taskkill128 is never interpreted as whole-tree or product cleanup proof."
+    },
+    {
+      "id": "C06",
+      "topic": "R1 diagnostic abort provenance",
+      "evidence": "Lifetime expiry, launch-budget abort, watchdog and output-limit independently remain reached=false/diagnostic-budget-not-reached/productResultUnknown=true, with cleanup unknown separately represented and no product failure inference."
+    },
+    {
+      "id": "C07/C08",
+      "topic": "R1 export boundary and native error behavior",
+      "evidence": "Original unknown/raw guard/trace injection and extra unsafe guard/trace/counter/probe cases are suppressed before artifact publication and fail closed. Valid exported JSONL is rebuilt and independently revalidated. Unsafe native error.code logs only the safe sentinel, fails observer health and preserves exact error identity/errorMonitor behavior."
+    },
+    {
+      "id": "C09",
+      "topic": "R1 protocol completeness and P2 selection",
+      "evidence": "Empty/missing/duplicated/reversed/malformed observations cannot pass any case schema. Failed P1 with unreachable P2 cannot claim successful P2. Empty smoke selects no arm and starts no downstream case."
+    },
+    {
+      "id": "C10",
+      "topic": "Owned binding and distinct unknowns",
+      "evidence": "Binding fixtures remain owned-root-derived rather than /allowed/project. Guard logger health failure makes product result/abort provenance unknown without cleanup-product inference. Historical liveness uses only signal0; unknown cleanup is separate. Binding path verification is static, not product execution."
+    },
+    {
+      "id": "C11/C13",
+      "topic": "R2 root metadata closure",
+      "evidence": "The independently repeated original C11 and narrow getter/value/classification controls close the former leak and false-completion paths. Details are recorded in closedR2Finding and the final control output."
+    },
+    {
+      "id": "C12",
+      "topic": "Workflow syntax and isolated transport",
+      "evidence": "Node22 syntax and actionlint exit0. Dedicated workflow is byte-identical to R1; all workflow objects are frozen. Exact non-main branch and job guard, contents read permissions, immutable checkout, npm ci, 12-minute job timeout and explicit native-output JSON/JSONL/minimum-provenance upload paths remain unchanged."
+    }
+  ],
+  "verification": {
+    "firstCommand": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r3/controls.mjs 4ea76bcd22360609f0af2fa0da1b99da1b7cd332 controls-frozen-r0.json",
+    "replayCommand": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r3/controls.mjs 4ea76bcd22360609f0af2fa0da1b99da1b7cd332 controls-frozen-r1.json",
+    "node": "v22.22.0",
+    "hostPlatform": "darwin",
+    "exitCodes": [0, 0],
+    "controlsPerRun": 13,
+    "controlsPassedPerRun": 13,
+    "controlExecutionFailure": false,
+    "outputsByteIdentical": true,
+    "cleanVirtualBaselinePerMock": true,
+    "nativeWindowsExecuted": false,
+    "productRuntimeExecuted": false,
+    "realServicesExecuted": false,
+    "allRuntimeEvidenceVirtual": true,
+    "gitHubSshProductionExecuted": false,
+    "artifactFiles": ["controls.mjs", "controls-frozen-r0.json", "controls-frozen-r1.json", "README.md", "verdict.json"]
+  },
+  "retainedFailures": {
+    "r3IndependentControlFailures": [],
+    "r1Conclusion": "parity-scope-r1/verdict.json remains violation=true for exact R1; its controls and original failed expectations remain untouched.",
+    "r2Conclusion": "parity-scope-r2/verdict.json remains violation=true for exact R2; C11 leakage/false-completion evidence remains untouched.",
+    "r2InitialFailures": "R2 draft and first frozen outputs plus their hash-matching archived control sources remain intact. The initial test-regex/first-logger-reason defects remain documented separately from the true C11 source failure.",
+    "generatorR3History": "The frozen new R3 tree retains its draft/syntax-failure artifacts; they were not rewritten or used as this critic's acceptance evidence."
+  },
+  "unknownBoundaries": [
+    "No native Windows PowerShell smoke, actual selected P2 arm, parent rename/hardlink hook, confirmation/binding/healthy product analog, or real service was executed.",
+    "Real owned process/tree cleanup and whole-tree taskkill128 effects are unknown; VM controls do not substitute for native cleanup acceptance.",
+    "Strict real-time 600s/40s guarantees under OS/syscall/event-loop stalls remain unproved.",
+    "Actual native ability to produce the synthetic unsafe metadata, actual runtime artifact bytes and actual secret leakage remain unknown.",
+    "Old test failures, aggregate-timeout causes, product functionality and release readiness were not evaluated."
+  ],
+  "recommendedNextStep": "Coordinator may transport the reviewed exact R3 diagnostic source and unchanged workflow only through the separately authorized non-main diagnostic path, while preserving this original report and the earlier failed reports. Verify the transported CLI hash and scope again; do not merge the diagnostic workflow into main/release and do not treat this scope gate as native/product/release acceptance. Native findings require separate follow-up adjudication and cross-family product acceptance.",
+  "productAcceptance": false,
+  "nativeAcceptance": false,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}
