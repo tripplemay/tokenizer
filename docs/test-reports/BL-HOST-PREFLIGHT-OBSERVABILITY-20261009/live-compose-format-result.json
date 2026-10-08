@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-08T21:10:19Z",
+  "role": "Coordinator live evidence transport, not feature Evaluator",
+  "run_id": 37844242857,
+  "source_sha": "9966db19906fbe4b9b7aaeb53ba80e827b383aca",
+  "actual_human_review": {"state":"approved","user":"tripplemay","environment":"production"},
+  "conclusion": "failure, valid redacted refusal",
+  "report_timestamp": "2026-10-08T21:08:07Z",
+  "reason": "compose_unavailable",
+  "compose_probe": {"status":"invalid_version","pipeline_exit_status":0,"captured_bytes":27,"home_present":false},
+  "docker_version": "29.1.3",
+  "platform": "Linux/x86_64",
+  "supported": "The bounded capture pipeline succeeded, then the existing strict version-format validation rejected its retained27-byte string. No raw invalid output was disclosed. HOME variable was absent, not evidence of root cause.",
+  "not_supported": ["Compose plugin is absent","command failed or timed out","HOME caused the refusal","any particular vendor prefix, character, version value or wrapper caused the mismatch","actual app/source/database identity"],
+  "raw_format_or_version_value": "unknown, intentionally not emitted",
+  "configuration_app_postgres_checks": "not reached; report files empty and all identities unknown",
+  "normal_verify_oci_deploy_jobs": "skipped",
+  "shared_concurrency_released": true,
+  "coordinator_auto_approved": false,
+  "host_app_database_or_app_config_mutation": false,
+  "main_push": false,
+  "release_ready": false,
+  "original_evidence": "host-preflight-37844242857-* files and completed-original-sha256.txt",
+  "next_adjudication": {
+    "status": "proposal only, not implemented or executed",
+    "earliest_unknown": "Shape of the existing retained Compose version output at the semver-validation branch, not plugin installation or DB identity.",
+    "narrow_observation": "If further host diagnosis is commissioned, derive a fixed allowlisted layout classifier (presence of CR/LF/whitespace/ANSI, whitelisted vendor prefix, suffix character classes) for the same bounded capture. Do not expose raw output, config/home paths, stderr or arbitrary strings. Keep current failure outcome/guard and require independent locked scope before code.",
+    "format_change": "Only evidence-backed explicit narrowly adjudicated version grammar/argv changes after proving exact format; no generic grep/extraction fallback, loosened success, HOME restoration, tool install or host writes.",
+    "new_host_run": "Protected actual human review still required for any subsequent exact-source host job. Previous approvals are completed-run evidence only."
+  }
+}
