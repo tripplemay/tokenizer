@@ -1,0 +1,19 @@
+{
+  "can_admins_bypass": false,
+  "deployment_branch_policy": null,
+  "name": "production",
+  "protection_rules": [
+    {
+      "prevent_self_review": false,
+      "reviewers": [
+        {
+          "id": 72752287,
+          "login": "tripplemay",
+          "type": "User"
+        }
+      ],
+      "type": "required_reviewers"
+    }
+  ],
+  "operation": "Required human reviewer configured; no deployment/reviewer approval issued"
+}
