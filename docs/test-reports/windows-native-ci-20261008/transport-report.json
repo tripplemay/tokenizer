@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "generator_supporting_transport_not_verdict",
+  "diagnostic_only": true,
+  "release_acceptance": false,
+  "native_runtime_executed": false,
+  "worker_pushed": false,
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-diagnostic-ci-20261008",
+  "branch": "codex/windows-native-diagnostic-ci-20261008",
+  "failed_release_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "initial_spec_sha": "ff1dda3313bd3227d52e5e2aaec076d4b7131ca2",
+  "adjudicated_spec_sha": "d6200799c643d41e2d681bd368ef3e8425657e8f",
+  "diagnostician_source_sha": "ec7b439893f4e2c1d0b6de8b1943f1a38860e70b",
+  "transported_source_sha": "e0733ea7855c0814908c9ed5094f3bf1168273db",
+  "owned_paths": [
+    ".github/workflows/windows-release-diagnostics.yml",
+    "docs/test-reports/windows-native-ci-20261008/"
+  ],
+  "initial_attempt": {
+    "workflow_sha256": "021a8054df86f3a9365a2b50d695f0e24cb2443aba241513f8abec2f81267c15",
+    "trigger": "workflow_dispatch only",
+    "actionlint_exit_code": 0,
+    "static_scope_exit_code": 0,
+    "preserved_log": "actionlint-initial.log",
+    "preserved_report": "static-scope.json",
+    "dispatchability_not_proven": true
+  },
+  "adjudicated_rerun": {
+    "workflow_sha256": "1992c555207015aa06f39cd2fd1d5a9f6f0b09da7ff5bd5675450476dca3e202",
+    "trigger": "workflow_dispatch plus push on the exact diagnostic branch only",
+    "actionlint_exit_code": 0,
+    "static_scope_exit_code": 0,
+    "log": "actionlint-adjudication-rerun.log",
+    "report": "static-scope-adjudication-rerun.json"
+  },
+  "source_manifest": [
+    {
+      "path": "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+      "source_sha": "d6200799c643d41e2d681bd368ef3e8425657e8f",
+      "sha256": "6c2d0f08b2370f60f4b337656c7ec7c5be516823fb5582bbe5a162e0450c4f42"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs",
+      "source_sha": "ec7b439893f4e2c1d0b6de8b1943f1a38860e70b",
+      "transport_sha": "e0733ea7855c0814908c9ed5094f3bf1168273db",
+      "sha256": "48c3cddbe9fb4f6da70340cc00f5df721b2dc2945eaa52a1aefd11b3d5bc173f",
+      "node22_syntax_exit_code": 0,
+      "runtime_executed": false
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "source_sha": "ec7b439893f4e2c1d0b6de8b1943f1a38860e70b",
+      "transport_sha": "e0733ea7855c0814908c9ed5094f3bf1168273db",
+      "sha256": "78461c2910989c61ee6eb03a6848b2617bf0181e5413af99918a99667e77c138",
+      "node22_syntax_exit_code": 0,
+      "runtime_executed": false
+    }
+  ],
+  "local_tools": {
+    "actionlint": "1.7.12 Homebrew darwin/arm64",
+    "node_for_syntax_only": "22.22.0",
+    "pwsh_available": false,
+    "windows_native_available": false
+  },
+  "pending": [
+    "Coordinator independent scope review and exact diagnostic branch publication",
+    "Native Windows diagnostic execution and immutable artifact capture",
+    "Any repair requires separately committed scope and independent acceptance"
+  ]
+}

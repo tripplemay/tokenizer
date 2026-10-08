@@ -1,0 +1,8 @@
+1992c555207015aa06f39cd2fd1d5a9f6f0b09da7ff5bd5675450476dca3e202  .github/workflows/windows-release-diagnostics.yml
+8768f04186668f36a122267f567c5c616cc97e22c35525a8ef860472dd9a67b5  docs/test-reports/windows-native-ci-20261008/README.md
+42b0d4f626ff51593a610040d0cc32fb619b4e98504a60aa10dce5e63dcc1a44  docs/test-reports/windows-native-ci-20261008/transport-report.json
+9fa3b6ead7afc298499f30c5b70014c78b6686a8269611537606fa5a7c02b6a2  docs/test-reports/windows-native-ci-20261008/actionlint-initial.log
+e4111443bfa1b5a2d842716441221fa245e8b15e6acb64857812d766298c9614  docs/test-reports/windows-native-ci-20261008/static-scope.json
+9fa3b6ead7afc298499f30c5b70014c78b6686a8269611537606fa5a7c02b6a2  docs/test-reports/windows-native-ci-20261008/actionlint-adjudication-rerun.log
+f2ce0fe7119300f9c44e7f1ca519e02f1dbce6c98100e7eeed5d779d17665232  docs/test-reports/windows-native-ci-20261008/static-scope-adjudication-rerun.json
+bb0b419cc873c8ffa8bdd57e2a2fa5b93a00007a77dbf5e4635ec2ff08cbe46c  docs/test-reports/windows-native-ci-20261008/scope-provenance.json

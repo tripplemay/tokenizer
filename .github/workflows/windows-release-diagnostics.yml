@@ -1,0 +1,99 @@
+name: Windows release diagnostics
+
+'on':
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/windows-native-diagnostic-ci-20261008
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release-diagnostics-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-diagnostics:
+    name: Read-only native Windows diagnosis
+    if: github.ref == 'refs/heads/codex/windows-native-diagnostic-ci-20261008'
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable diagnostic commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Record minimal native provenance
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $head = (& git rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($head -cne $env:GITHUB_SHA) { throw 'Checkout HEAD differs from the dispatched immutable SHA' }
+          $gitVersion = (& git --version).Trim()
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $node = & node -e 'console.log(JSON.stringify({node:process.version,uv:process.versions.uv,platform:process.platform,arch:process.arch})); if(process.platform!=="win32" || !process.version.startsWith("v22.")) process.exit(2)'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $node = $node | ConvertFrom-Json
+          $os = Get-CimInstance -ClassName Win32_OperatingSystem
+          $directory = 'docs/test-reports/windows-native-ci-20261008'
+          New-Item -ItemType Directory -Path $directory -Force | Out-Null
+          [ordered]@{
+            schema_version = 1
+            diagnostic_only = $true
+            release_acceptance = $false
+            failed_release_sha = '76d916ba2e3a7147acda5ac9ef15fa70a9cd9958'
+            head = $head
+            expected_sha = $env:GITHUB_SHA
+            timestamp_utc = [DateTime]::UtcNow.ToString('o')
+            os = [ordered]@{ caption = $os.Caption; version = $os.Version; build_number = $os.BuildNumber }
+            runtime = $node
+            git = $gitVersion
+          } | ConvertTo-Json -Depth 5 | Set-Content -Path "$directory/provenance.json" -Encoding utf8NoBOM
+
+      - name: Fresh locked dependency install
+        shell: pwsh
+        run: |
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run unchanged reviewed native diagnostic CLI
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $false
+          $script = 'docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs'
+          if (!(Test-Path -LiteralPath $script -PathType Leaf)) { throw 'Coordinator must transport the committed diagnostic script unchanged before dispatch' }
+          node $script
+          $diagnosticExit = $LASTEXITCODE
+          [ordered]@{
+            schema_version = 1
+            diagnostic_only = $true
+            release_acceptance = $false
+            head = $env:GITHUB_SHA
+            exit_code = $diagnosticExit
+            timestamp_utc = [DateTime]::UtcNow.ToString('o')
+          } | ConvertTo-Json | Set-Content -Path 'docs/test-reports/windows-native-ci-20261008/diagnostic-result.json' -Encoding utf8NoBOM
+          exit $diagnosticExit
+
+      - name: Retain only scoped native diagnostic JSON evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release-diagnostics-${{ github.sha }}
+          path: |
+            docs/test-reports/windows-native-ci-20261008/provenance.json
+            docs/test-reports/windows-native-ci-20261008/diagnostic-result.json
+            docs/test-reports/windows-release-diagnosis-20261008/native-output-*/*.json
+            docs/test-reports/windows-release-diagnosis-20261008/native-output-*/*.jsonl
+          if-no-files-found: error
+          retention-days: 7

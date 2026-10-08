@@ -1,0 +1,28 @@
+{
+  "kind": "static_transport_checks_not_verdict",
+  "timestamp_utc": "2026-10-08T16:14:03Z",
+  "workflow": ".github/workflows/windows-release-diagnostics.yml",
+  "workflow_sha256": "1992c555207015aa06f39cd2fd1d5a9f6f0b09da7ff5bd5675450476dca3e202",
+  "spec_commit": "d6200799c643d41e2d681bd368ef3e8425657e8f",
+  "diagnostic_transport_commit": "e0733ea7855c0814908c9ed5094f3bf1168273db",
+  "method": "Ruby YAML.safe_load and exact structure/string assertions; this does not execute PowerShell or Windows probes",
+  "checks": {
+    "dispatch_and_exact_branch_push_only": true,
+    "contents_read_only": true,
+    "isolated_concurrency": true,
+    "single_native_windows_job": true,
+    "timeout12": true,
+    "non_main_exact_diagnostic_branch": true,
+    "immutable_checkout": true,
+    "setup_node22": true,
+    "fresh_npm_ci": true,
+    "unchanged_cli_no_args": true,
+    "diagnostic_nonzero_preserved": true,
+    "no_continue_on_error": true,
+    "always_allowlisted_upload": true,
+    "no_environment_or_secret_reference": true,
+    "no_raw_env_or_credentials_dump": true
+  },
+  "native_runtime_executed": false,
+  "pwsh_locally_available": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "implementation_side_path_and_hash_provenance_not_verdict",
+  "timestamp_utc": "2026-10-08T16:16:31Z",
+  "base_sha": "e0733ea7855c0814908c9ed5094f3bf1168273db",
+  "base_tree": "e28c88e074ad4cb4bdb7d3e1fed2bb1fdf95d790",
+  "baseline_tracked_paths_count": 2229,
+  "changed_baseline_tracked_paths": [
+
+  ],
+  "staged_additions_checked": [
+    ".github/workflows/windows-release-diagnostics.yml",
+    "docs/test-reports/windows-native-ci-20261008/README.md",
+    "docs/test-reports/windows-native-ci-20261008/actionlint-adjudication-rerun.log",
+    "docs/test-reports/windows-native-ci-20261008/actionlint-initial.log",
+    "docs/test-reports/windows-native-ci-20261008/static-scope-adjudication-rerun.json",
+    "docs/test-reports/windows-native-ci-20261008/static-scope.json",
+    "docs/test-reports/windows-native-ci-20261008/transport-report.json"
+  ],
+  "additional_generated_reports": [
+    "docs/test-reports/windows-native-ci-20261008/scope-provenance.json",
+    "docs/test-reports/windows-native-ci-20261008/SHA256SUMS"
+  ],
+  "all_staged_paths_within_owned_scope": true,
+  "all_baseline_tracked_files_unchanged": true,
+  "all_changes_are_additions": true,
+  "initial_reports_unchanged_sha256": {
+    "actionlint-initial.log": "9fa3b6ead7afc298499f30c5b70014c78b6686a8269611537606fa5a7c02b6a2",
+    "static-scope.json": "e4111443bfa1b5a2d842716441221fa245e8b15e6acb64857812d766298c9614"
+  },
+  "git_diff_cached_check_exit_code": 0,
+  "native_runtime_executed": false,
+  "pushed": false
+}

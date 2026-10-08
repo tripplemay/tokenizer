@@ -1,0 +1,21 @@
+{
+  "kind": "static_transport_checks_not_verdict",
+  "workflow": ".github/workflows/windows-release-diagnostics.yml",
+  "checks": {
+    "workflow_dispatch_only": true,
+    "contents_read_only": true,
+    "isolated_concurrency": true,
+    "single_native_windows_job": true,
+    "timeout12": true,
+    "non_main_exact_diagnostic_branch": true,
+    "immutable_checkout": true,
+    "setup_node22": true,
+    "fresh_npm_ci": true,
+    "unchanged_cli_no_args": true,
+    "no_continue_on_error": true,
+    "always_allowlisted_upload": true,
+    "no_environment_or_env_dump": true
+  },
+  "native_runtime_executed": false,
+  "pwsh_locally_available": false
+}
