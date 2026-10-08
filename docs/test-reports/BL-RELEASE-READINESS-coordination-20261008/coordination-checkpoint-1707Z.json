@@ -1,0 +1,75 @@
+{
+  "observed_at": "2026-10-08T17:07:05Z",
+  "release_ready": false,
+  "main_remote_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "main_content_worktree_clean": true,
+  "main_push": false,
+  "production_app_or_database_mutation": false,
+  "public_health": {
+    "ok": true,
+    "reported_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "not_image_or_source_provenance": true
+  },
+  "host_preflight": {
+    "run_id": 37812774615,
+    "head_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "status": "waiting",
+    "environment": "production",
+    "environment_id": 15396501399,
+    "human_reviewer": "tripplemay",
+    "approved_by_coordinator": false,
+    "all_release_and_deploy_jobs": "skipped"
+  },
+  "narrow_repair": {
+    "coordinator_worktree": "tokenizer-windows-native-repair-20261008",
+    "source_freeze": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+    "published_ci_sha": "f754423387374afee0671f951730cac43bad7891",
+    "published_ci_branch": "codex/windows-native-repair-ci-20261008",
+    "run_id": 37813254244,
+    "run_status": "pending",
+    "run_has_started_jobs": false,
+    "shared_workflow_concurrency": "deploy-vps; preceding host-preflight is human-held",
+    "F001": "implemented, independent/native acceptance pending",
+    "F002": "pending; worker unchanged; whole-owned-tree cleanup not proved",
+    "F003": "implemented, independent/native acceptance pending",
+    "F004": "pending exact native gates",
+    "F005": "pending formal full acceptance",
+    "independent_support": {
+      "task_id": "windows-repair-f754423-kimi-support-r0",
+      "batch": "BL-WINDOWS-REPAIR-SUPPORT",
+      "ref": "f754423387374afee0671f951730cac43bad7891",
+      "features": ["F001", "F003"],
+      "status": "running",
+      "not_formal_F005": true
+    },
+    "not_integrated_into_parent_or_main": true
+  },
+  "runtime_parity": {
+    "status": "Generator implementing committed narrow diagnostic scope",
+    "second_native_run": null,
+    "final_scope_review_before_push": true,
+    "not_release_acceptance": true
+  },
+  "production_protection": {
+    "required_reviewer": "tripplemay",
+    "administrator_bypass": false,
+    "environment_secret_names": [],
+    "POSTGRES_PASSWORD": "absent; no credential values read or changed"
+  },
+  "backup": {
+    "selected_target": "dmitsvr",
+    "recipient_and_custody": "awaiting user information",
+    "real_backup_or_restore_executed": false,
+    "bootstrap": "proposal only; required real inputs remain unverified"
+  },
+  "open_release_gates": [
+    "unresolved original Windows native failures",
+    "exact final six-gate CI",
+    "fresh cross-family formal full-composition acceptance",
+    "actual predecessor image and source binding",
+    "real encrypted off-host backup and isolated restore",
+    "existing PostgreSQL password authentication proof and protected Secret",
+    "Agent distribution",
+    "original homepage authenticated production-browser F005"
+  ]
+}
