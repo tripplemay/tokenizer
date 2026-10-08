@@ -196,6 +196,73 @@ jobs:
       # No Next.js build here: the server only ever runs on Linux. This job
       # exists to guard the CLI collector, which is what users install natively.
 
+  verify-macos-agent:
+    name: Verify (macOS launchd)
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run verify
+
+      - name: Require a usable native launchd GUI domain
+        run: |
+          set -euo pipefail
+          launchctl print "gui/$(id -u)" >/dev/null
+
+      - name: Verify native macOS launchd pinned installer
+        run: |
+          set -euo pipefail
+          : "${RUNNER_TEMP:?RUNNER_TEMP is required for native fixture cleanup}"
+          RUNNER_TEMP="$(cd "$RUNNER_TEMP" && pwd -P)"
+          TMPDIR="$RUNNER_TEMP"
+          export RUNNER_TEMP TMPDIR
+          mkdir -p .ci
+          cleanup_native_fixture() {
+            set +e
+            if [[ ! -f .ci/macos-launchd-cleanup.env ]]; then return; fi
+            source .ci/macos-launchd-cleanup.env
+            if [[ "$TOKENIZER_FIXTURE_LABEL" != cc.tokenizer.agent.ci.* ||
+                  "$TOKENIZER_FIXTURE_ROOT" != "$RUNNER_TEMP"/tokenizer-macos-launchd-* ||
+                  "$TOKENIZER_FIXTURE_PLIST" != "$TOKENIZER_FIXTURE_ROOT"/* ]]; then
+              echo "Refusing an out-of-scope launchd fixture cleanup record" >&2
+              return
+            fi
+            launchctl unload "$TOKENIZER_FIXTURE_PLIST" >/dev/null 2>&1 || true
+            ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '
+              index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }
+            ' | xargs kill -TERM 2>/dev/null || true
+            sleep 1
+            ps -axww -o pid= -o command= | awk -v root="$TOKENIZER_FIXTURE_ROOT" '
+              index($0, root) && $0 ~ /(^|[[:space:]])agent([[:space:]]|$)/ { print $1 }
+            ' | xargs kill -KILL 2>/dev/null || true
+            node -e 'require("node:fs").rmSync(process.argv[1], { recursive: true, force: true })' "$TOKENIZER_FIXTURE_ROOT"
+            rm -f .ci/macos-launchd-cleanup.env
+          }
+          trap cleanup_native_fixture EXIT INT TERM
+          npx vitest run tests/cli/agent-release-installer-macos.test.ts --reporter=default --reporter=json --outputFile=.ci/macos-launchd-installer.json
+          node scripts/ci/assert-macos-launchd-installer.mjs .ci/macos-launchd-installer.json
+
+      - name: Upload native macOS launchd installer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-launchd-pinned-installer
+          path: .ci/macos-launchd-installer.json
+          if-no-files-found: error
+          retention-days: 7
+
   verify-db:
     name: Verify (PostgreSQL 16)
     runs-on: ubuntu-latest
@@ -318,7 +385,7 @@ jobs:
   release-artifact:
     name: Linux OCI and recovery rehearsal
     runs-on: ubuntu-latest
-    needs: [verify, verify-windows, verify-db, verify-browser]
+    needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser]
     permissions:
       contents: read
       packages: write
@@ -504,7 +571,7 @@ jobs:
       contents: read
       packages: read
       attestations: read
-    needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]
+    needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser, release-artifact]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.bootstrap_rehearsal != true
     environment: production
     env:

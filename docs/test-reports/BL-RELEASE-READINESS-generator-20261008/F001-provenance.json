@@ -1,0 +1,118 @@
+{
+  "kind": "generator_source_path_hash_provenance_not_acceptance",
+  "baseline": "58266afef071a4575cb9a349601f3a7736cdf199",
+  "current_head_before_commit": "58266afef071a4575cb9a349601f3a7736cdf199",
+  "generated_at": "2026-10-08T14:51:52.590Z",
+  "files": [
+    {
+      "feature": "F001",
+      "path": "scripts/ci/assert-macos-launchd-installer.mjs",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "3a1dd5a90a15eaa0a8192b9c2a8395c8841c68f9",
+      "mode": "100644",
+      "source_sha256": "168e0bc92b2ed3bce7e7b40b3aa55ec25cf247a1f2829c23f4954ef461907250",
+      "actual_sha256": "168e0bc92b2ed3bce7e7b40b3aa55ec25cf247a1f2829c23f4954ef461907250",
+      "identical": true,
+      "actual_git_blob": "3a1dd5a90a15eaa0a8192b9c2a8395c8841c68f9"
+    },
+    {
+      "feature": "F001",
+      "path": "src/cli/service.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "ac1f918b3726a56ecab35426bccf75c625a764cf",
+      "mode": "100644",
+      "source_sha256": "84568a283b81c479320fd6093ab95b293c0758cd9d5828347b512f97073aa624",
+      "actual_sha256": "84568a283b81c479320fd6093ab95b293c0758cd9d5828347b512f97073aa624",
+      "identical": true,
+      "actual_git_blob": "ac1f918b3726a56ecab35426bccf75c625a764cf"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/ci/macos-launchd-cleanup-trap.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "f4e2b334bb38f2671aede796444a51d7872380a6",
+      "mode": "100644",
+      "source_sha256": "89b77447e043d48796a2c79ee1d36e5c1636db1542fdd4d52265fd327c65ae00",
+      "actual_sha256": "89b77447e043d48796a2c79ee1d36e5c1636db1542fdd4d52265fd327c65ae00",
+      "identical": true,
+      "actual_git_blob": "f4e2b334bb38f2671aede796444a51d7872380a6"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/ci/macos-launchd-installer-gate.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "d889a678cce173612e52986023c98e59540b342f",
+      "mode": "100644",
+      "source_sha256": "34d69b2c9b4f7749cd39d618b8302a0a53ac82f0c40f78b46ca1f95176a7c2cc",
+      "actual_sha256": "34d69b2c9b4f7749cd39d618b8302a0a53ac82f0c40f78b46ca1f95176a7c2cc",
+      "identical": true,
+      "actual_git_blob": "d889a678cce173612e52986023c98e59540b342f"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/cli/agent-release-installer-macos.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "e6a73902a10254620aa9af1a05aeec188c436cf8",
+      "mode": "100644",
+      "source_sha256": "8c61933772d7690d1d6bee90fae4fcbc6c86dd9fa2c39d353c1c380ad456a5b3",
+      "actual_sha256": "8c61933772d7690d1d6bee90fae4fcbc6c86dd9fa2c39d353c1c380ad456a5b3",
+      "identical": true,
+      "actual_git_blob": "e6a73902a10254620aa9af1a05aeec188c436cf8"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/cli/service-launchd.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "ff96a504995f629137d51f2769032f8767976c6b",
+      "mode": "100644",
+      "source_sha256": "97c4dbfd847510f362c41fb50814fbff06e210a0e7962b95d81a2acbe5c3dd4e",
+      "actual_sha256": "97c4dbfd847510f362c41fb50814fbff06e210a0e7962b95d81a2acbe5c3dd4e",
+      "identical": true,
+      "actual_git_blob": "ff96a504995f629137d51f2769032f8767976c6b"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/server/release-rehearsal.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "7127fb3f1b2a1dc400b50bb1ab8e4fc99619b6c5",
+      "mode": "100644",
+      "source_sha256": "3088738aa027e814eb807c3b5efa2761bf48c10c9afffc30e00e3377a745fdc8",
+      "actual_sha256": "3088738aa027e814eb807c3b5efa2761bf48c10c9afffc30e00e3377a745fdc8",
+      "identical": true,
+      "actual_git_blob": "7127fb3f1b2a1dc400b50bb1ab8e4fc99619b6c5"
+    }
+  ],
+  "preservation": [
+    {
+      "path": "package.json",
+      "baseline_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "actual_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "identical": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "actual_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "identical": true
+    },
+    {
+      "path": "src/cli/queue.ts",
+      "baseline_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "actual_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "identical": true
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "baseline_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "actual_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "identical": true
+    }
+  ],
+  "tracked_changes_from_baseline": [
+    ".github/workflows/deploy-vps.yml",
+    "src/cli/service.ts",
+    "tests/server/release-rehearsal.test.ts"
+  ],
+  "workflow_transport": "Selective macOS job/needs plus predecessor guards; B06/B07 env/probes and floor15 retained.",
+  "limits": "Byte/source provenance and local command records only; no independent acceptance or release readiness."
+}
