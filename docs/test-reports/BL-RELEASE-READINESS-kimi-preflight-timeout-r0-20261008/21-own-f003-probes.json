@@ -1,0 +1,91 @@
+{
+ "suite": "f003-host-preflight-probes",
+ "total": 21,
+ "passed": 21,
+ "results": [
+  {
+   "name": "observed digest_activated baseline, allowlisted output, byte-identical state",
+   "pass": true
+  },
+  {
+   "name": "healthy legacy source-built serving reports legacy_or_unknown, no ledger created",
+   "pass": true
+  },
+  {
+   "name": "explicit null health code refused (backend_unready)",
+   "pass": true
+  },
+  {
+   "name": "absent health code field accepted only with exact SHA (old format)",
+   "pass": true
+  },
+  {
+   "name": "wrong health code refused",
+   "pass": true
+  },
+  {
+   "name": "health commit mismatch refused (wrong_backend_revision)",
+   "pass": true
+  },
+  {
+   "name": "duplicate GIT_COMMIT refused as duplicate_setting, byte-identical",
+   "pass": true
+  },
+  {
+   "name": "malicious APP_IMAGE value refused, never executed",
+   "pass": true
+  },
+  {
+   "name": "symlinked .env refused as unsafe_config_file",
+   "pass": true
+  },
+  {
+   "name": "missing app refused (missing_or_multiple_app)",
+   "pass": true
+  },
+  {
+   "name": "duplicate app refused",
+   "pass": true
+  },
+  {
+   "name": "wrong port binding refused (wrong_backend_binding)",
+   "pass": true
+  },
+  {
+   "name": "unhealthy app refused",
+   "pass": true
+  },
+  {
+   "name": "stopped app refused (wrong_serving_app)",
+   "pass": true
+  },
+  {
+   "name": "raw canary in docker version output fails validation, never emitted",
+   "pass": true
+  },
+  {
+   "name": "hung docker query bounded by timeout, stderr suppressed",
+   "pass": true
+  },
+  {
+   "name": "malicious remote args refused before any query: injection path",
+   "pass": true
+  },
+  {
+   "name": "malicious remote args refused before any query: dotdot path",
+   "pass": true
+  },
+  {
+   "name": "malicious remote args refused before any query: canary sha",
+   "pass": true
+  },
+  {
+   "name": "malicious remote args refused before any query: missing args",
+   "pass": true
+  },
+  {
+   "name": "ambient DOCKER_HOST/proxy overrides are unset inside the script",
+   "pass": true
+  }
+ ]
+}

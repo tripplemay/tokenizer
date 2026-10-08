@@ -1,0 +1,19 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-evaluations-20261008/BL-RELEASE-PREFLIGHT-local-cli--kimi--evaluator-release-readiness-preflight-76d916b-kimi-r0
+
+ ✓ tests/cli/service-launchd.test.ts (6 tests) 2ms
+ ✓ tests/ci/macos-launchd-cleanup-trap.test.ts (3 tests) 141ms
+ ✓ tests/ci/macos-launchd-installer-gate.test.ts (9 tests) 182ms
+stdout | tests/cli/agent-release-installer-macos.test.ts > native macOS launchd pinned installer fixture > installs and upgrades a live isolated service, restores it after failure, and rolls back offline without touching the default label
+B04_MACOS_LAUNCHD_FIXTURE_OBSERVATIONS {"platform":"darwin","node":"v22.22.0","guiDomain":"gui/501","label":"cc.tokenizer.agent.ci.43749.1791476514794","freshCommit":"04e08e1b09d72fe9a241cfaab5233e7b0eec6bec","upgradedCommit":"90011c4649dcccfbf54c653b9d86a60bdfad91f9","failedCommit":"d3d63140629d725e5c908f994209378ec5eafcb8","restoredCommit":"90011c4649dcccfbf54c653b9d86a60bdfad91f9","offlineRollbackCommit":"04e08e1b09d72fe9a241cfaab5233e7b0eec6bec","firstPid":44153,"secondPid":44530,"restoredPid":44934,"rolledBackPid":45175,"credentialCanaryRetained":true,"queueCanaryRetained":true,"defaultLabelPresentBeforeAndAfter":true,"scopedProcessesAfterUnload":0}
+
+ ✓ tests/cli/agent-release-installer-macos.test.ts (1 test) 22971ms
+     ✓ installs and upgrades a live isolated service, restores it after failure, and rolls back offline without touching the default label  22970ms
+
+ Test Files  4 passed (4)
+      Tests  19 passed (19)
+   Start at  23:21:54
+   Duration  23.08s (transform 128ms, setup 0ms, import 178ms, tests 23.30s, environment 0ms)
+
+JSON report written to /private/tmp/kimi-pf/ci/f001-focus.json
+vitest-exit:0

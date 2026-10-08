@@ -1,0 +1,39 @@
+{
+ "suite": "f003-transport-probes",
+ "total": 8,
+ "passed": 8,
+ "results": [
+  {
+   "name": "allowlist filter accepts a well-formed observed report",
+   "pass": true
+  },
+  {
+   "name": "allowlist filter rejects unexpected report key carrying canary (Config.Env)",
+   "pass": true
+  },
+  {
+   "name": "allowlist filter rejects extra nested key under app",
+   "pass": true
+  },
+  {
+   "name": "allowlist filter rejects canary smuggled into a free-form field",
+   "pass": true
+  },
+  {
+   "name": "allowlist filter rejects wrong source_sha",
+   "pass": true
+  },
+  {
+   "name": "allowlist filter rejects malformed SHA / port / uid values",
+   "pass": true
+  },
+  {
+   "name": "host-preflight job cannot reach deploy on any event, release gates preserved",
+   "pass": true
+  },
+  {
+   "name": "deploy job runs the predecessor guard BEFORE rsync and BEFORE env replacement",
+   "pass": true
+  }
+ ]
+}

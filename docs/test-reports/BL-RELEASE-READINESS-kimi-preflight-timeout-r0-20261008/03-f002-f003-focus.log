@@ -1,0 +1,48 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-evaluations-20261008/BL-RELEASE-PREFLIGHT-local-cli--kimi--evaluator-release-readiness-preflight-76d916b-kimi-r0
+
+ ✓ tests/server/release-predecessor-negative.test.ts (17 tests) 1016ms
+ ✓ tests/server/release-predecessor.test.ts (5 tests) 1223ms
+ ✓ tests/server/release-rehearsal.test.ts (12 tests) 2293ms
+     ✓ fails closed when only the temporary socket accepts (source-tcp-never)  308ms
+     ✓ fails closed when only the temporary socket accepts (restore-tcp-never)  359ms
+     ✓ never overwrites an earlier same-SHA backup on a retry  328ms
+ ✓ tests/server/release-image.test.ts (17 tests) 2566ms
+     ✓ rejects a wrong Compose project or backend port before changing the release manifest  384ms
+     ✓ runs a read-only live preflight and refuses an absent, wrong-project, or unready app without changing production files  453ms
+ ✓ tests/ci/vps-host-preflight.test.ts (43 tests) 34664ms
+     ✓ inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations  1821ms
+     ✓ reports a healthy legacy source image and missing ledger as legacy, never creates activation  1164ms
+     ✓ refuses missing-app without writes or disclosure  823ms
+     ✓ refuses duplicate-app without writes or disclosure  825ms
+     ✓ refuses wrong-project without writes or disclosure  859ms
+     ✓ refuses wrong-service without writes or disclosure  880ms
+     ✓ refuses stopped-app without writes or disclosure  863ms
+     ✓ refuses unhealthy-app without writes or disclosure  860ms
+     ✓ refuses wrong-port without writes or disclosure  943ms
+     ✓ refuses wrong-image without writes or disclosure  905ms
+     ✓ refuses wrong-network without writes or disclosure  1033ms
+     ✓ refuses wrong-volume without writes or disclosure  1189ms
+     ✓ refuses unready without writes or disclosure  1304ms
+     ✓ refuses wrong-health-code without writes or disclosure  1292ms
+     ✓ refuses null-health-code without writes or disclosure  1315ms
+     ✓ refuses wrong-health-sha without writes or disclosure  1309ms
+     ✓ refuses health-failure without writes or disclosure  1293ms
+     ✓ refuses raw-user-canary without writes or disclosure  995ms
+     ✓ bounds a hung query to five seconds and suppresses its failed stderr  5167ms
+     ✓ does not execute config content and clears Docker/Compose/proxy environment overrides  1333ms
+     ✓ refuses unsafe selected configuration: duplicate  561ms
+     ✓ refuses unsafe selected configuration: malicious-image  565ms
+     ✓ transports the exact reviewed script on stdin and uploads only validated JSON  1432ms
+     ✓ never retains unallowlisted or failed transport bytes: raw-stdout  1399ms
+     ✓ never retains unallowlisted or failed transport bytes: extra-key  1406ms
+     ✓ never retains unallowlisted or failed transport bytes: failed-transport  1443ms
+     ✓ retains a valid redacted refusal while returning nonzero  945ms
+
+ Test Files  5 passed (5)
+      Tests  94 passed (94)
+   Start at  23:15:11
+   Duration  34.82s (transform 189ms, setup 0ms, import 240ms, tests 41.76s, environment 0ms)
+
+JSON report written to /private/tmp/kimi-pf/ci/f002-f003-focus.json
+vitest-exit:0
