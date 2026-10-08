@@ -1,0 +1,91 @@
+{
+  "kind": "generator_source_path_hash_provenance_not_acceptance",
+  "baseline": "58266afef071a4575cb9a349601f3a7736cdf199",
+  "current_head_before_commit": "652995d147236d4d881489ebd9309ab99631b1e8",
+  "generated_at": "2026-10-08T14:53:52.739Z",
+  "files": [
+    {
+      "feature": "F002",
+      "path": "scripts/deploy-vps-release.sh",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5",
+      "mode": "100644",
+      "source_sha256": "5997249ef4e25ffd2756a73d7b49c28216718be549e4c44e627bdc80f6f17a5d",
+      "actual_sha256": "5997249ef4e25ffd2756a73d7b49c28216718be549e4c44e627bdc80f6f17a5d",
+      "identical": true,
+      "actual_git_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5"
+    },
+    {
+      "feature": "F002",
+      "path": "scripts/verify-vps-predecessor.sh",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "815d599d0ed804428dbd27e3ab0f534b92ecc5d7",
+      "mode": "100644",
+      "source_sha256": "1689a73a02b5eb0d15d5b22291472cedf14cb72d2d43fbb2a8717e72b2ef0d72",
+      "actual_sha256": "1689a73a02b5eb0d15d5b22291472cedf14cb72d2d43fbb2a8717e72b2ef0d72",
+      "identical": true,
+      "actual_git_blob": "815d599d0ed804428dbd27e3ab0f534b92ecc5d7"
+    },
+    {
+      "feature": "F002",
+      "path": "tests/server/release-image.test.ts",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "3709f446dbf1aa769e1ee396fa9cf957bff9a6ac",
+      "mode": "100644",
+      "source_sha256": "19f16240fe576ac319ba8d1b72b17ec9c1d707dd1f231c2291fc1dd99dcb866e",
+      "actual_sha256": "dee8d0bbc78ac3351cb0492a8b85c0bcd5bf3db088e900d94f139eefe6b6dd5f",
+      "identical": false,
+      "actual_git_blob": "880480a870c5888fd67bbe7dbf1c50448a099f38"
+    }
+  ],
+  "preservation": [
+    {
+      "path": "package.json",
+      "baseline_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "actual_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "identical": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "actual_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "identical": true
+    },
+    {
+      "path": "src/cli/queue.ts",
+      "baseline_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "actual_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "identical": true
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "baseline_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "actual_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "identical": true
+    }
+  ],
+  "tracked_changes_from_baseline": [
+    ".github/workflows/deploy-vps.yml",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/01-npm-ci.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/02-f001-focus.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/02-f001-focus.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/03-f001-verify.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/03-f001-verify.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/F001-provenance.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/capture-provenance.mjs",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/run-local.mjs",
+    "features.json",
+    "progress.json",
+    "scripts/ci/assert-macos-launchd-installer.mjs",
+    "scripts/deploy-vps-release.sh",
+    "src/cli/service.ts",
+    "tests/ci/macos-launchd-cleanup-trap.test.ts",
+    "tests/ci/macos-launchd-installer-gate.test.ts",
+    "tests/cli/agent-release-installer-macos.test.ts",
+    "tests/cli/service-launchd.test.ts",
+    "tests/server/release-image.test.ts",
+    "tests/server/release-rehearsal.test.ts"
+  ],
+  "workflow_transport": "Selective macOS job/needs plus predecessor guards; B06/B07 env/probes and floor15 retained.",
+  "limits": "Byte/source provenance and local command records only; no independent acceptance or release readiness."
+}

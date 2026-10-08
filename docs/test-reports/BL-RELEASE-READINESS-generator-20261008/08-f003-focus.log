@@ -1,0 +1,71 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+ ❯ tests/ci/vps-host-preflight.test.ts (42 tests | 3 failed) 36557ms
+     × rejects malicious/missing remote args before queries 3 1353ms
+     × transports the exact reviewed script on stdin and uploads only validated JSON 1489ms
+     × retains a valid redacted refusal while returning nonzero 977ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > rejects malicious/missing remote args before queries 3
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ tests/ci/vps-host-preflight.test.ts:213:31
+    211|   ])('rejects malicious/missing remote args before queries %#', (args)…
+    212|     const result = run({}, args);
+    213|     expect(result.status).not.toBe(0);
+       |                               ^
+    214|     expect(report(result).reason).toBe('invalid_input');
+    215|     expect(calls()).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > transports the exact reviewed script on stdin and uploads only validated JSON
+AssertionError: Host inventory returned no valid allowlisted report
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:221:42
+    219|     const remote = run(); expect(remote.status).toBe(0);
+    220|     const before = snapshot(), { result, artifact } = runWorkflow(remo…
+    221|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+    222|     expect(JSON.parse(artifact).source_sha).toBe(sha);
+    223|     expect(`${artifact}${result.stdout}${result.stderr}`).not.toContai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > retains a valid redacted refusal while returning nonzero
+AssertionError: expected { schema_version: 1, …(5) } to match object { outcome: 'refused', …(1) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "outcome": "refused",
+-   "reason": "missing_or_multiple_app",
++   "reason": "transport_failed",
+  }
+
+ ❯ tests/ci/vps-host-preflight.test.ts:255:34
+    253|     const { result, artifact } = runWorkflow(remote.stdout, { SSH_STAT…
+    254|     expect(result.status).not.toBe(0);
+    255|     expect(JSON.parse(artifact)).toMatchObject({ outcome: 'refused', r…
+       |                                  ^
+    256|     expect(`${artifact}${result.stderr}`).not.toContain(canary);
+    257|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  3 failed | 77 passed (80)
+   Start at  22:04:59
+   Duration  36.72s (transform 163ms, setup 0ms, import 204ms, tests 41.06s, environment 0ms)
+

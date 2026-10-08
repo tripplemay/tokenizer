@@ -122,7 +122,7 @@ fi
 
   it("requires Linux artifact/recovery job before production deployment", () => {
     const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf8");
-    expect(workflow).toContain("needs: [verify, verify-windows, verify-db, verify-browser, release-artifact]");
+    expect(workflow).toContain("needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser, release-artifact]");
     expect(workflow).toContain("provenance: mode=max");
     expect(workflow).toContain("@${{ steps.app.outputs.digest }}");
     expect(workflow).toContain("bash scripts/test/rehearse-release.sh");

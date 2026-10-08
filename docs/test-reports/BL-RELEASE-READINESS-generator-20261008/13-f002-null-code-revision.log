@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+
+ Test Files  2 passed (2)
+      Tests  34 passed (34)
+   Start at  22:09:39
+   Duration  1.94s (transform 47ms, setup 0ms, import 63ms, tests 2.38s, environment 0ms)
+

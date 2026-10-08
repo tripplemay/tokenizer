@@ -18,11 +18,14 @@ app_image="$(read_setting APP_IMAGE .env)"
 migrate_image="$(read_setting MIGRATE_IMAGE .env)"
 if ! valid_image "$app_image" || ! valid_image "$migrate_image"; then echo "OCI digest-pinned images required" >&2; exit 1; fi
 unset GIT_COMMIT POSTGRES_PASSWORD ADMIN_TOKEN NEXT_PUBLIC_APP_URL APP_HOST_PORT APP_IMAGE MIGRATE_IMAGE \
+  COMPOSE_PROJECT_NAME COMPOSE_FILE COMPOSE_PROFILES DOCKER_HOST DOCKER_CONTEXT \
   AUTH_SECRET AUTH_TRUST_HOST AUTH_URL AUTH_RESEND_KEY AUTH_EMAIL_FROM \
   HARNESS_CONSOLE_SIGNING_KEY PRICING_AUTO_ENABLED LITELLM_PRICES_URL \
   OPENROUTER_MODELS_URL PRICING_LLM_BASE_URL PRICING_LLM_KEY PRICING_LLM_MODEL
 compose=(docker compose -f docker-compose.yml -f docker-compose.release.yml)
 "${compose[@]}" config --quiet
+bash scripts/verify-vps-predecessor.sh retained "$expected" "$app_image" "$migrate_image"
+previous=".releases/$expected.previous-env"
 mkdir -p .releases
 chmod 700 .releases
 umask 077
@@ -32,18 +35,6 @@ if [[ -e "$manifest" && "$(cat "$manifest")" != "$record" ]]; then
   echo "immutable release digest changed for existing commit" >&2; exit 1
 fi
 printf '%s\n' "$record" > "$manifest"
-previous=".releases/$expected.previous-env"
-previous_container="$("${compose[@]}" ps -q app)"
-if [[ -n "$previous_container" ]]; then
-  if [[ ! -f "$previous" ]] || ! valid_image "$(read_setting APP_IMAGE "$previous")" || ! valid_image "$(read_setting MIGRATE_IMAGE "$previous")"; then
-    echo "previous digest-pinned release configuration required before replacement" >&2; exit 1
-  fi
-  previous_ref="$(read_setting APP_IMAGE "$previous")"
-  old_id="$(docker image inspect --format '{{.Id}}' "$previous_ref")"
-  [[ "$(docker inspect --format '{{.Image}}' "$previous_container")" == "$old_id" ]] || {
-    echo "previous running image does not match retained digest" >&2; exit 1;
-  }
-fi
 docker pull "$app_image"
 docker pull "$migrate_image"
 app_id="$(bash scripts/verify-release-image.sh "$app_image" "$expected")"

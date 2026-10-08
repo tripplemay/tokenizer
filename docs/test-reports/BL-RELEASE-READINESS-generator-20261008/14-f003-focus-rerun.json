@@ -1,0 +1,22 @@
+{
+  "name": "14-f003-focus-rerun",
+  "command": "npx",
+  "args": [
+    "vitest",
+    "run",
+    "tests/ci/vps-host-preflight.test.ts",
+    "tests/ci/macos-launchd-installer-gate.test.ts",
+    "tests/server/release-image.test.ts",
+    "tests/server/release-rehearsal.test.ts",
+    "tests/server/release-predecessor-negative.test.ts"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008",
+  "started": "2026-10-08T15:27:22.584Z",
+  "finished": "2026-10-08T15:27:58.460Z",
+  "node": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "home": "/private/tmp/tkrg.BIlgHB/h",
+  "tmpdir": "/private/tmp/tkrg.BIlgHB/t",
+  "status": 0,
+  "signal": null,
+  "error": null
+}
