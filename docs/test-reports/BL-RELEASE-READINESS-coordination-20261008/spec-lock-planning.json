@@ -1,0 +1,6 @@
+{
+  "violation": false,
+  "detail": "58266af 的四项规划歧义均已闭合：两处旧测试适配被精确限定，原字节归档与 f700 基线 blob IDs 相同；legacy health 例外要求精确 activated digest/SHA/config/project/service/port，存在 code 时必须 ready，candidate activation 仍要求 ready；追加授权事件明确更新 non-main CI 和 maintenance 授权，原授权快照 blob 未变；F001/F002 精确路径、源 SHA、10 个源 blob/mode 均与 git ls-tree 一致，F003 文档路径明确。相对 f700 仅规划、状态和新增归档文件变更；工作树干净，未修改产品、原测试、历史证据、依赖或 schema。未发现 release gate bypass、自评或未映射 feature tag。这是只读 scope review，不是功能验收或发布批准；backup target、独立 Kimi 验收、exact native CI 和生产前置闸门仍开放。",
+  "offending_files": [],
+  "unmapped_tags": []
+}
