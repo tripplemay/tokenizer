@@ -1,0 +1,118 @@
+{
+  "schema": "windows-release-diagnosis/1",
+  "candidate_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "task_type": "supporting-read-only-diagnosis",
+  "release_ready": false,
+  "windows_executed_locally": false,
+  "ci": {
+    "run_id": 37803611472,
+    "windows_job_id": 113401991277,
+    "node": "22.23.3",
+    "vitest": "4.1.11",
+    "runner_image": "windows-2025-vs2026",
+    "runner_image_version": "20260925.250.1",
+    "os": "Windows Server 2025 10.0.26100 Datacenter",
+    "unit_tests": {"failed": 8, "passed": 1887, "skipped": 144, "total": 2039}
+  },
+  "evidence": [
+    {"path": "ci-37803611472-windows-original.log", "sha256": "1d6ccd9641c573f1de858ef723e75f59ba662b5c3f80505e6b80cfa0a22fdb4e"},
+    {"path": "ci-37803611472-windows-full-job.log", "sha256": "e219e8c1f8c9d8cebb7ef3b4c6d8f1b6c79dccb9a3d614e6b4f3a0e4fa2f7ec2"},
+    {"path": "ci-37803611472-windows-job.json", "sha256": "0db15d6495e6562c85473407cb6d87dda710faa5b79bf9075b3858bb48d54098"},
+    {"path": "ci-37803611472-run.json", "sha256": "2ea3fea417d7e21b2fd41701eccabd6b3522a58afa766ab6a1f68cfb097c0856"}
+  ],
+  "source_hashes": {
+    "src/cli/privacy.ts": "f9bf8a5a96f8a0e28e89c2a738ae7958cf8abf05a7b0c75df7fadb45573529c3",
+    "src/cli/replay.ts": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+    "src/cli/bounded-subprocess.ts": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+    "src/cli/bounded-subprocess-worker.mjs": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+    "src/cli/git.ts": "b061545aea0de812212674b48ad89b5e98cbdb7d1b39eee0b49247ca8a3c2269",
+    "tests/ci/vps-host-preflight.test.ts": "6afdff905d98cd78ba69de255e20043c0e93dd5f6dddcf95293d387b5f1421ca",
+    "tests/cli/b03-fixed-prereview-independent.test.ts": "0f0bad86666c5fb26472472a886dd3bb1d71f6d399a4545413a990533bcb065d",
+    "tests/cli/b03-round2-independent.test.ts": "b9d2370de9ef82bb868779a7d10b9f419de4a65d78ae5a69e58037699df39512",
+    "tests/cli/replay.test.ts": "ae2c4fdcc717c7c33091c6a913bc2ef4c28ae72e1c55fd7268a5c5e2c3e840a8",
+    "tests/cli/process-bounds/bounded-subprocess.test.ts": "7c2ba2825cfd96db2b89f34bae27bd71d63031d9c7118756cbffbda73c43c98a",
+    "tests/cli/process-bounds/replay-process-bounds.test.ts": "3a2b0538fc222bfb34b2e7be3f61bc0ad6fd09a1c11d9532ee364441d12a8caf",
+    "tests/fixtures/process-bounds/child.mjs": "80a93befc74408c4c23cd6ca1590ae7dcccefcf26766a26544525b1049b89625",
+    ".github/workflows/deploy-vps.yml": "1224292be1c260430fd8ffd7e55055921358082ed87f43f22f1ac6f73ca0b4d5",
+    ".gitattributes": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57"
+  },
+  "failures": [
+    {
+      "id": "W01", "test": "tests/ci/vps-host-preflight.test.ts:267-292",
+      "ci_lines": [514, 531], "observed": ["Static extractor returned newline; guard assertion failed at line 271"],
+      "classification": "static-fixture-hypothesis", "source_refs": ["tests/ci/vps-host-preflight.test.ts:64-69,270,283", ".github/workflows/deploy-vps.yml:227", ".gitattributes:1-14"],
+      "hypothesis": "LF-exact heading lookup under CRLF returns -1, so slice(-1) returns final newline",
+      "unproved": ["Actual native checkout workflow CRLF count"], "diagnostic_case": "workflow",
+      "decisive_evidence": ["Native heading index and byte newline counts", "Identical extractor on in-memory LF and CRLF variants without writing workflow"]
+    },
+    {
+      "id": "W02", "test": "tests/cli/b03-fixed-prereview-independent.test.ts:27-31 afterRead",
+      "ci_lines": [534, 540], "observed": ["Generic source could not be opened safely refusal", "afterPathStat variant passed; afterRead took 496 ms"],
+      "classification": "refusal-branch-unresolved", "source_refs": ["src/cli/replay.ts:198-249", "tests/cli/b03-fixed-prereview-independent.test.ts:30"],
+      "hypothesis": "Hook rename/mkdir/link throws native errno while descriptor is open, or post-read native checker supervision throws",
+      "unproved": ["Hook reached and completed replacement", "Specific failing syscall", "Parent guard reached"], "diagnostic_case": "parent",
+      "decisive_evidence": ["HookReached/hookStep", "Real rename/mkdir/link errno", "Pre/post parent inode and native PowerShell exit/close timing"]
+    },
+    {
+      "id": "W03", "test": "tests/cli/b03-fixed-prereview-independent.test.ts:48-55",
+      "ci_lines": [545, 555], "observed": ["5000 ms test timeout; actual 6241 ms"],
+      "classification": "aggregate-timeout-unresolved", "source_refs": ["src/cli/replay.ts:147-159,327-370", "tests/cli/b03-fixed-prereview-independent.test.ts:50-54"],
+      "hypothesis": "Seven bounded synchronous reads invoke up to fourteen native PowerShell processes across one default-timeout test",
+      "unproved": ["Each refusal completed as expected", "mergeCalls remained zero", "Per-operation stage timing"], "diagnostic_case": "confirmation",
+      "decisive_evidence": ["Separate preview/config-roots/mode/content elapsed times", "Native launch count and zero merge calls"]
+    },
+    {
+      "id": "W04", "test": "tests/cli/b03-round2-independent.test.ts:67-72",
+      "ci_lines": [558, 580], "observed": ["Filter admitted regular-file descendant regular\\child at line 70", "Cycle controls completed before second loop item; second rule assertion not reached"],
+      "classification": "confirmed-privacy-negative-failure", "source_refs": ["src/cli/privacy.ts:32-72", "tests/cli/b03-round2-independent.test.ts:68-71"],
+      "hypothesis": "Windows realpath/lstat ENOENT causes fallback to regular-file ancestor; realpath success lacks directory check and invalid descendant is included",
+      "unproved": ["Exact native errno sequence", "Invalid rule-root variant outcome", "Queue/wire effect beyond filter admission"], "diagnostic_case": "privacy",
+      "decisive_evidence": ["realpath/lstat errno at invalid child and ancestor type", "Invalid event/rule controls plus missing-directory positive control", "Identity untouched and no queue/upload"]
+    },
+    {
+      "id": "W05", "test": "tests/cli/replay.test.ts:152-179",
+      "ci_lines": [584, 594], "observed": ["5000 ms test timeout; actual 6598 ms"],
+      "classification": "aggregate-timeout-unresolved", "source_refs": ["tests/cli/replay.test.ts:157-178", "src/cli/replay.ts:147-159,359-370"],
+      "hypothesis": "Seven reads / up to fourteen native checks across preview and four confirmation negatives exceed aggregate timer",
+      "unproved": ["All original negative assertions completed", "Per-operation deadline or queue admission outcome"], "diagnostic_case": "binding",
+      "decisive_evidence": ["Per-stage refusal timing and native-check count", "Zero mergeCalls; later exact original-test rerun required"]
+    },
+    {
+      "id": "W06", "test": "tests/cli/process-bounds/bounded-subprocess.test.ts:96-101 inherited-pipes",
+      "ci_lines": [597, 606], "observed": ["No timeout exception; test took 432 ms under 500 ms child budget", "PID-count and liveness assertions not reached"],
+      "classification": "native-lifetime-unresolved", "source_refs": ["tests/fixtures/process-bounds/child.mjs:23-25", "src/cli/bounded-subprocess-worker.mjs:52-57,84-89", "Node v22.23.3 deps/uv/src/win/process.c:65-79,1016-1034"],
+      "hypothesis": "Non-detached Node descendant is auto-terminated by libuv's parent-owned Windows job when fixture parent exits at 200 ms; early ok may be valid",
+      "unproved": ["Returned status/kind", "Both native PIDs dead at return", "Actual successful job assignment", "Non-libuv inherited-handle coverage"], "diagnostic_case": "subprocess",
+      "decisive_evidence": ["Parent/descendant spawn/exit/close events", "Owned liveness at return and 100 ms", "Only if needed, additive native non-libuv shared-pipe control proving post-parent-exit heartbeat"]
+    },
+    {
+      "id": "W07", "test": "tests/cli/process-bounds/bounded-subprocess.test.ts:112-115",
+      "ci_lines": [609, 627], "observed": ["BoundedSubprocessSupervisionError subprocess cleanup failed instead of output error", "Test took 272 ms; 1200-byte success assertion not reached"],
+      "classification": "confirmed-cleanup-reason-reclassification", "source_refs": ["src/cli/bounded-subprocess-worker.mjs:12-56,60-65", "src/cli/bounded-subprocess.ts:99-104", "tests/fixtures/process-bounds/child.mjs:18-20"],
+      "hypothesis": "Short-lived 600+600 writer exits before taskkill; nonzero killer status sets successful false and worker overwrites output reason",
+      "unproved": ["Actual taskkill status/error", "Child-close timing relative to taskkill", "Whether cleanup failed or child already exited"], "diagnostic_case": "subprocess",
+      "decisive_evidence": ["taskkill launch/error/exit/close and child-close timestamps", "Worker result.kind and stream byte counters", "Both exact 1024/1200-byte controls plus long-lived overflow canary; no blanket nonzero success"]
+    },
+    {
+      "id": "W08", "test": "tests/cli/process-bounds/replay-process-bounds.test.ts:106-121",
+      "ci_lines": [630, 640], "observed": ["5000 ms test timeout; actual 6436 ms"],
+      "classification": "aggregate-timeout-unresolved", "source_refs": ["tests/cli/process-bounds/replay-process-bounds.test.ts:54-60,107-115", "src/cli/git.ts:59-83", "src/cli/replay.ts:147-159,359-380"],
+      "hypothesis": "Three Git setup calls, two cold Node/tsx probe imports, six native reparse checks and up to eight enrichment Git calls span one 5-second test",
+      "unproved": ["Final original queue/credential assertions completed", "Cold-process stage timing", "Single-process diagnostic latency is not original-case latency"], "diagnostic_case": "healthy",
+      "decisive_evidence": ["Read-only preview queue hash", "Separate preview/execute timing and launch counts", "Minimal queue canary exclusion/retained backlog", "Follow-up cold-process baseline before optimization"]
+    }
+  ],
+  "diagnostic_plan": {
+    "status": "unexecuted-native-plan",
+    "command": "node docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs",
+    "script_paths": ["native-diagnostics.mjs", "trace-preload.mjs"],
+    "independent_case_deadline_ms": 40000,
+    "combined_output_limit_bytes": 65536,
+    "trace_limit_bytes": 524288,
+    "fixture_lifetime_ms": 15000,
+    "cleanup": ["Watchdog only taskkills the still-live directly spawned diagnostic child PID /T /F with 2000 ms timeout", "Original fixture owns 15000 ms cap; wait 16000 ms then report only recorded owned PID liveness", "No stale-PID signalling; retain owned root and fail completion if any residue", "Disposable hosted runner is outer containment; unknown cleanup is failure"],
+    "prohibited": ["No push by worker", "No production, Secrets or credentials", "No progress/features/pending_gate changes", "No product/old test edits", "No global timeout/filter weakening", "No skip of native release cases", "No raw env/stream/content logging", "No image-name kill or unrelated process enumeration"],
+    "acceptance_boundary": "Additive instrumented branch evidence only. diagnosticCompleted is not product PASS or F004 acceptance. Fresh exact-candidate cross-family evaluation and original full native gates remain required."
+  },
+  "local_checks": ["Node22.22.0 --check for both new mjs scripts (syntax only)", "JSON parse and diagnosis.schema.json validation (no Windows execution)", "Source/evidence SHA-256 and report-only git path/whitespace review"]
+}

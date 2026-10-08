@@ -1,0 +1,16 @@
+{
+  "node": "v22.22.0",
+  "node_path": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "platform": "darwin",
+  "windows_executed": false,
+  "native_probe_runtime_executed": false,
+  "checks": [
+    {"check": "native-diagnostics.mjs --check", "exit_code": 0, "boundary": "syntax only"},
+    {"check": "trace-preload.mjs --check", "exit_code": 0, "boundary": "syntax only"},
+    {"check": "initial diagnosis schema validation using local require(ajv)", "exit_code": 1, "error_code": "MODULE_NOT_FOUND", "boundary": "worktree has no ajv installation; no dependency or lockfile change made"},
+    {"check": "schema validation using existing root tokenizer/node_modules/ajv", "exit_code": 0, "schema_valid": true, "errors": null, "boundary": "JSON/schema only; read-only existing dependency"},
+    {"check": "source and original evidence SHA-256 inventory", "exit_code": 0, "evidence_hashes_match": true, "source_hashes_match": true},
+    {"check": "git diff --cached --check including immutable raw logs", "exit_code": 2, "boundary": "original CI logs contain trailing whitespace; raw bytes intentionally not reformatted"},
+    {"check": "git diff --cached --check excluding only immutable raw log paths", "exit_code": 0, "boundary": "authored report, JSON and instrumentation whitespace only"}
+  ]
+}

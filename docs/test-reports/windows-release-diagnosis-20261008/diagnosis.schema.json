@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Supporting Windows diagnosis, not acceptance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "candidate_sha", "task_type", "release_ready", "windows_executed_locally", "ci", "evidence", "source_hashes", "failures", "diagnostic_plan", "local_checks"],
+  "properties": {
+    "schema": {"const": "windows-release-diagnosis/1"},
+    "candidate_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "task_type": {"const": "supporting-read-only-diagnosis"},
+    "release_ready": {"const": false},
+    "windows_executed_locally": {"const": false},
+    "ci": {"type": "object", "additionalProperties": false,
+      "required": ["run_id", "windows_job_id", "node", "vitest", "runner_image", "runner_image_version", "os", "unit_tests"],
+      "properties": {
+        "run_id": {"type": "integer"}, "windows_job_id": {"type": "integer"},
+        "node": {"type": "string"}, "vitest": {"type": "string"}, "runner_image": {"type": "string"},
+        "runner_image_version": {"type": "string"}, "os": {"type": "string"},
+        "unit_tests": {"type": "object", "required": ["failed", "passed", "skipped", "total"],
+          "properties": {"failed": {"const": 8}, "passed": {"const": 1887}, "skipped": {"const": 144}, "total": {"const": 2039}}, "additionalProperties": false}
+      }
+    },
+    "evidence": {"type": "array", "minItems": 4, "items": {"type": "object", "required": ["path", "sha256"], "additionalProperties": false,
+      "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}},
+    "source_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "failures": {"type": "array", "minItems": 8, "maxItems": 8, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "test", "ci_lines", "observed", "classification", "source_refs", "hypothesis", "unproved", "diagnostic_case", "decisive_evidence"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^W0[1-8]$"}, "test": {"type": "string"},
+        "ci_lines": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+        "observed": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "classification": {"enum": ["static-fixture-hypothesis", "refusal-branch-unresolved", "aggregate-timeout-unresolved", "confirmed-privacy-negative-failure", "native-lifetime-unresolved", "confirmed-cleanup-reason-reclassification"]},
+        "source_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "hypothesis": {"type": "string"}, "unproved": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "diagnostic_case": {"type": "string"}, "decisive_evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+      }
+    }},
+    "diagnostic_plan": {"type": "object", "additionalProperties": false,
+      "required": ["status", "command", "script_paths", "independent_case_deadline_ms", "combined_output_limit_bytes", "trace_limit_bytes", "fixture_lifetime_ms", "cleanup", "prohibited", "acceptance_boundary"],
+      "properties": {
+        "status": {"const": "unexecuted-native-plan"}, "command": {"type": "string"},
+        "script_paths": {"type": "array", "items": {"type": "string"}, "minItems": 2},
+        "independent_case_deadline_ms": {"const": 40000}, "combined_output_limit_bytes": {"const": 65536},
+        "trace_limit_bytes": {"const": 524288}, "fixture_lifetime_ms": {"const": 15000},
+        "cleanup": {"type": "array", "items": {"type": "string"}},
+        "prohibited": {"type": "array", "items": {"type": "string"}},
+        "acceptance_boundary": {"type": "string"}
+      }
+    },
+    "local_checks": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}
