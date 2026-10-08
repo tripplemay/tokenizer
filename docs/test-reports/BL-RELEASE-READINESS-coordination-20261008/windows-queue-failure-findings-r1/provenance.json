@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-08T20:26:41.499Z",
+  "candidate": "f754423387374afee0671f951730cac43bad7891",
+  "baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "sourceHashScope": "Canonical git blob bytes at candidate; not a claim about unrecorded Windows checkout CRLF bytes",
+  "reportWorktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-queue-failure-findings-r1",
+  "sources": [
+    {
+      "path": "tests/cli/b07-prereview-process.test.ts",
+      "sha256": "3f63c3c8b5cf9b221aff1db4709248502e849c90eab5429e1b3cbb47ed68160c",
+      "candidateBlob": "c89799d41f7d52c41b2958abda0b9b04e4b74314",
+      "baselineBlob": "c89799d41f7d52c41b2958abda0b9b04e4b74314",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "tests/fixtures/b07-prereview-worker.ts",
+      "sha256": "c3a93f7bc65836624cbe49ff561e5f719da8ec769be46a87ebc45aa86e475a8c",
+      "candidateBlob": "09691e1637cf185e2d1e60579296f70008695d05",
+      "baselineBlob": "09691e1637cf185e2d1e60579296f70008695d05",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/queue.ts",
+      "sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "candidateBlob": "1f1567920e8a566b9836bbd88ddeb5cec3a9ef32",
+      "baselineBlob": "1f1567920e8a566b9836bbd88ddeb5cec3a9ef32",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/atomic-file.ts",
+      "sha256": "89d68c5d2df6326e7f4221027b5b7c8dfcc86f3d79d34f24501a844e9d97b4ec",
+      "candidateBlob": "c6b72943fc5815062be7ebc8326445b354f3c574",
+      "baselineBlob": "c6b72943fc5815062be7ebc8326445b354f3c574",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/config.ts",
+      "sha256": "d208f2721dff99de446625014c6cff4345b08cd88c16bc4730a290a17cef92e3",
+      "candidateBlob": "a52074b4fdace1dbfca6f88ffcca5aa2d7bc4ead",
+      "baselineBlob": "a52074b4fdace1dbfca6f88ffcca5aa2d7bc4ead",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/queue-event-version.ts",
+      "sha256": "050be69bf10c472c33ccc357df49a7dd8b1fae719398ea491d426237855e51eb",
+      "candidateBlob": "7dc989fb21fca5bcfbbfdae80c20351373f596ef",
+      "baselineBlob": "7dc989fb21fca5bcfbbfdae80c20351373f596ef",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/file-permissions.ts",
+      "sha256": "0f388aaedea2135b27f818019c9bec0ad11b63005ff3cbcf5435148eb8a0fc27",
+      "candidateBlob": "a285fd8cb98fcca8d5d7efaed273f9964add772f",
+      "baselineBlob": "a285fd8cb98fcca8d5d7efaed273f9964add772f",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/rejected-events.ts",
+      "sha256": "d9a8bd51c04c58c8253004ee03ab24aa72e5914a6a291113f77db6ac7e72c84c",
+      "candidateBlob": "8ea6be2627a5b83d4f5233d4e9dc45665b8d41e7",
+      "baselineBlob": "8ea6be2627a5b83d4f5233d4e9dc45665b8d41e7",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/cli/privacy.ts",
+      "sha256": "df0e955297f9192e67ac238cd416af703b29c1b839dc9629e772e2ff87ae697b",
+      "candidateBlob": "f1c6a91524c083df81bc6f5851a2258145e58e70",
+      "baselineBlob": "e5338f0614b956332a007fdec20f1c59b4fd1e23",
+      "unchangedFromBaseline": false,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/shared/usage-privacy.ts",
+      "sha256": "958b814790f31f2f8d4cec77adcc9dd7af602907e9a252b410f0d44a2c86c943",
+      "candidateBlob": "97d7fde798c5aa8f4cbb702650399ddfd49d406a",
+      "baselineBlob": "97d7fde798c5aa8f4cbb702650399ddfd49d406a",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "src/shared/git-remote.ts",
+      "sha256": "a36e8810fdec1a0066202987204aa8d7f3432f0b447235273e47a48ffa2bbb87",
+      "candidateBlob": "605b96e9bbc781b50e32d594f7caf8c17d19e2c5",
+      "baselineBlob": "605b96e9bbc781b50e32d594f7caf8c17d19e2c5",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "candidateBlob": "57b2a59283ca82575dfbc5c8410b4b127aa6c809",
+      "baselineBlob": "57b2a59283ca82575dfbc5c8410b4b127aa6c809",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "candidateBlob": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8",
+      "baselineBlob": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "0c64a61254091e3a181995d0495b107949e609d61599f260265e9a607e261b3a",
+      "candidateBlob": "7d39da9577d9afa1f901607fa8c6bc3b5432fcfd",
+      "baselineBlob": "7d39da9577d9afa1f901607fa8c6bc3b5432fcfd",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "7d42944ec57cdf57a41ee4664bd8ba9c281b90f8d1817974a19efb8572878c24",
+      "candidateBlob": "28e617c14a928f05ce201820e2c7b05a034aebf3",
+      "baselineBlob": "28e617c14a928f05ce201820e2c7b05a034aebf3",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    },
+    {
+      "path": ".github/workflows/deploy-vps.yml",
+      "sha256": "1224292be1c260430fd8ffd7e55055921358082ed87f43f22f1ac6f73ca0b4d5",
+      "candidateBlob": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+      "baselineBlob": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+      "unchangedFromBaseline": true,
+      "localBytesMatchCandidate": true
+    }
+  ],
+  "evidence": [
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-coordination-20261009/repair-ci-37813254244-windows-job-original.log",
+      "copyPath": "docs/test-reports/windows-queue-failure-findings-r1/repair-ci-37813254244-windows-job-original.log",
+      "byteLength": 102641,
+      "sha256": "d45f104b41195b1feddddd02576ae1288ea2a447ca02e4f4f7e4b89a3625b494",
+      "copyBytesEqual": true
+    },
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-coordination-20261009/repair-ci-37813254244-completed-original.json",
+      "copyPath": "docs/test-reports/windows-queue-failure-findings-r1/repair-ci-37813254244-completed-original.json",
+      "byteLength": 12630,
+      "sha256": "5c1091cad74e73909c1fc694bdb776930497e7ce184c3aca496b3c342171b884",
+      "copyBytesEqual": true
+    },
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/ci-37803611472-windows-full-job.log",
+      "copyPath": "docs/test-reports/windows-queue-failure-findings-r1/baseline-ci-37803611472-windows-full-job.log",
+      "byteLength": 142841,
+      "sha256": "e219e8c1f8c9d8cebb7ef3b4c6d8f1b6c79dccb9a3d614e6b4f3a0e4fa2f7ec2",
+      "copyBytesEqual": true
+    },
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/ci-37803611472-windows-original.log",
+      "copyPath": null,
+      "byteLength": 113924,
+      "sha256": "1d6ccd9641c573f1de858ef723e75f59ba662b5c3f80505e6b80cfa0a22fdb4e",
+      "copyBytesEqual": null
+    },
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/ci-37803611472-run.json",
+      "copyPath": null,
+      "byteLength": 12591,
+      "sha256": "2ea3fea417d7e21b2fd41701eccabd6b3522a58afa766ab6a1f68cfb097c0856",
+      "copyBytesEqual": null
+    },
+    {
+      "originalPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/native-ci-failure.md",
+      "copyPath": null,
+      "byteLength": 1344,
+      "sha256": "3352fbf6f75d420a2d6fbe83539c2b970c6637b91588804828fbd23d9ed4477d",
+      "copyBytesEqual": null
+    }
+  ],
+  "localProbe": [
+    {
+      "path": "docs/test-reports/windows-queue-failure-findings-r1/local-exit-information-loss.mjs",
+      "sha256": "7fc3ab3d9399eee9ef2124d8f5ea77b135d05bc1165bd931d16957d301123c9d"
+    },
+    {
+      "path": "docs/test-reports/windows-queue-failure-findings-r1/local-exit-information-loss-output.json",
+      "sha256": "2409da0d9db09c45046b230b592078ccc51a684826314d24c3b18bb14f39406a"
+    }
+  ],
+  "changedPathsBetweenRuns": [
+    "src/cli/privacy.ts",
+    "tests/ci/vps-host-preflight.test.ts",
+    "tests/ci/windows-native-repair-workflow.test.ts",
+    "tests/cli/windows-native-repair/privacy-ancestor.test.ts"
+  ]
+}

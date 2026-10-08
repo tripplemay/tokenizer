@@ -1,0 +1,11 @@
+{
+  "scope": "REPORT_SOURCE_AND_LOG_INTEGRITY_ONLY_NOT_WINDOWS_ACCEPTANCE",
+  "outcome": "PASS",
+  "sourceCount": 16,
+  "originalEvidenceCount": 6,
+  "exactEvidenceCopyCount": 3,
+  "decisiveLineReferencesChecked": true,
+  "candidateRunJobBindingChecked": true,
+  "onlyReportDirectoryInGitStatus": true,
+  "oldProductTestsUnmodified": true
+}

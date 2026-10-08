@@ -1,0 +1,36 @@
+{
+  "scope": "LOCAL_MACOS_ERROR_PROJECTION_ONLY_NOT_WINDOWS_OR_QUEUE_REPRODUCTION",
+  "platform": "darwin",
+  "arch": "arm64",
+  "node": "v25.7.0",
+  "observations": [
+    {
+      "label": "silent-exit-17",
+      "exit": {
+        "code": 17,
+        "signal": null,
+        "stderrAtExit": "",
+        "projectedErrorMessage": ""
+      },
+      "close": {
+        "code": 17,
+        "signal": null,
+        "stderrAtClose": ""
+      }
+    },
+    {
+      "label": "self-SIGTERM",
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "stderrAtExit": "",
+        "projectedErrorMessage": ""
+      },
+      "close": {
+        "code": null,
+        "signal": "SIGTERM",
+        "stderrAtClose": ""
+      }
+    }
+  ]
+}
