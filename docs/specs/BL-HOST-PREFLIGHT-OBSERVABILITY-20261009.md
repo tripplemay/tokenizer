@@ -61,7 +61,11 @@ or fallback-success behavior is allowed. The existing 5s/16384-byte query bound,
 16385-byte cap detector, 150s SSH/65536-byte report bounds stay unchanged.
 
 No raw invalid version text, stdout/stderr, HOME/path/config contents, secret
-values/hashes or additional environment fields may be emitted. Do not restore
+values/hashes or additional environment fields may be emitted by the new metadata.
+The existing approved files.* metadata/hash allowlist is byte-frozen; do not remove
+or expand it. Tag supporting implementation commits BL-RELEASE-READINESS-F003;
+this supporting name does not create a canonical feature or change F003 status.
+Do not restore
 HOME, inherit environment, query plugin directories, invoke fallback binaries,
 change Docker context/config, add host queries or perform host writes.
 
