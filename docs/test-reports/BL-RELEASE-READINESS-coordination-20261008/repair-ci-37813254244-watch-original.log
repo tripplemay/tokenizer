@@ -1,0 +1,532 @@
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+* Verify (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  * Post Checkout
+* Verify (Windows) (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  * Run unit tests
+  * Verify Windows agent owner force termination
+  * Upload Windows agent owner evidence
+  * Validate install.ps1 syntax
+  * Post Setup Node.js
+  * Post Checkout
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+* Verify (authenticated browser) (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  * Install Chromium
+  * Run authenticated critical journeys
+  * Keep browser failure screenshots and traces
+  * Post Setup Node.js
+  * Post Checkout
+  * Stop containers
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify in 2m39s (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+* Verify (Windows) (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  * Run unit tests
+  * Verify Windows agent owner force termination
+  * Upload Windows agent owner evidence
+  * Validate install.ps1 syntax
+  * Post Setup Node.js
+  * Post Checkout
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+* Verify (authenticated browser) (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  * Install Chromium
+  * Run authenticated critical journeys
+  * Keep browser failure screenshots and traces
+  * Post Setup Node.js
+  * Post Checkout
+  * Stop containers
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify in 2m39s (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+* Verify (Windows) (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  X Run unit tests
+  - Verify Windows agent owner force termination
+  ✓ Upload Windows agent owner evidence
+  - Validate install.ps1 syntax
+  - Post Setup Node.js
+  ✓ Post Checkout
+  * Complete job
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+* Verify (authenticated browser) (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  * Install Chromium
+  * Run authenticated critical journeys
+  * Keep browser failure screenshots and traces
+  * Post Setup Node.js
+  * Post Checkout
+  * Stop containers
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify in 2m39s (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+X Verify (Windows) in 3m52s (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  X Run unit tests
+  - Verify Windows agent owner force termination
+  ✓ Upload Windows agent owner evidence
+  - Validate install.ps1 syntax
+  - Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+* Verify (authenticated browser) (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  * Install Chromium
+  * Run authenticated critical journeys
+  * Keep browser failure screenshots and traces
+  * Post Setup Node.js
+  * Post Checkout
+  * Stop containers
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify in 2m39s (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+X Verify (Windows) in 3m52s (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  X Run unit tests
+  - Verify Windows agent owner force termination
+  ✓ Upload Windows agent owner evidence
+  - Validate install.ps1 syntax
+  - Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+* Verify (authenticated browser) (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  ✓ Install Chromium
+  ✓ Run authenticated critical journeys
+  ✓ Keep browser failure screenshots and traces
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  * Stop containers
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+
+X codex/windows-native-repair-ci-20261008 Deploy VPS · 37813254244
+Triggered via workflow_dispatch about 3 hours ago
+
+JOBS
+✓ Verify (macOS launchd) in 1m15s (ID 113518921158)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Require a usable native launchd GUI domain
+  ✓ Verify native macOS launchd pinned installer
+  ✓ Upload native macOS launchd installer evidence
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify in 2m39s (ID 113518921328)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Lint
+  ✓ Typecheck
+  ✓ Run unit tests
+  ✓ Detect contract changes
+  ✓ Checkout pinned framework fixtures
+  ✓ Run pinned bidirectional contract tests
+  ✓ Next.js build smoke check
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+X Verify (Windows) in 3m52s (ID 113518921402)
+  ✓ Set up job
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Typecheck
+  ✓ Verify native Windows pinned installer
+  ✓ Upload native Windows installer evidence
+  X Run unit tests
+  - Verify Windows agent owner force termination
+  ✓ Upload Windows agent owner evidence
+  - Validate install.ps1 syntax
+  - Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Complete job
+✓ Verify (PostgreSQL 16) in 1m12s (ID 113518921461)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Run database integration probes without skips
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+✓ Verify (authenticated browser) in 5m34s (ID 113518921536)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Checkout
+  ✓ Setup Node.js
+  ✓ Install dependencies
+  ✓ Apply all database migrations
+  ✓ Build production server
+  ✓ Install Chromium
+  ✓ Run authenticated critical journeys
+  ✓ Keep browser failure screenshots and traces
+  ✓ Post Setup Node.js
+  ✓ Post Checkout
+  ✓ Stop containers
+  ✓ Complete job
+- Read-only tokenizer host inventory in 0s (ID 113518922862)
+- Linux OCI and recovery rehearsal in 0s (ID 113521328069)
+- Deploy (ID 113521329051)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (macOS launchd): .github#2
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+Verify (macOS launchd): .github#1
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Verify (PostgreSQL 16): .github#2
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+Verify (PostgreSQL 16): .github#1
+

@@ -1,0 +1,865 @@
+﻿2026-10-08T20:12:38.0571542Z Current runner version: '2.337.0'
+2026-10-08T20:12:38.0601001Z ##[group]Runner Image Provisioner
+2026-10-08T20:12:38.0601988Z Hosted Compute Agent
+2026-10-08T20:12:38.0602609Z Version: 20260901.588
+2026-10-08T20:12:38.0603348Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-08T20:12:38.0604167Z Build Date: 2026-09-01T19:56:44Z
+2026-10-08T20:12:38.0604924Z Worker ID: {b449e444-cac7-4970-96dc-fe1b34cf139e}
+2026-10-08T20:12:38.0605747Z Azure Region: westus3
+2026-10-08T20:12:38.0606361Z ##[endgroup]
+2026-10-08T20:12:38.0607972Z ##[group]Operating System
+2026-10-08T20:12:38.0608706Z Microsoft Windows Server 2025
+2026-10-08T20:12:38.0609374Z 10.0.26100
+2026-10-08T20:12:38.0610332Z Datacenter
+2026-10-08T20:12:38.0610902Z ##[endgroup]
+2026-10-08T20:12:38.0611506Z ##[group]Runner Image
+2026-10-08T20:12:38.0612165Z Image: windows-2025-vs2026
+2026-10-08T20:12:38.0612820Z Version: 20260925.250.1
+2026-10-08T20:12:38.0614589Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+2026-10-08T20:12:38.0616662Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+2026-10-08T20:12:38.0617835Z ##[endgroup]
+2026-10-08T20:12:38.0619238Z ##[group]GITHUB_TOKEN Permissions
+2026-10-08T20:12:38.0621345Z Contents: read
+2026-10-08T20:12:38.0621958Z Metadata: read
+2026-10-08T20:12:38.0622587Z Packages: read
+2026-10-08T20:12:38.0623169Z ##[endgroup]
+2026-10-08T20:12:38.0625492Z Secret source: Actions
+2026-10-08T20:12:38.0626515Z Cache mode: write
+2026-10-08T20:12:38.0627460Z Prepare workflow directory
+2026-10-08T20:12:38.0996352Z Prepare all required actions
+2026-10-08T20:12:38.1053343Z Getting action download info
+2026-10-08T20:12:38.4589920Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-08T20:12:38.5560937Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-08T20:12:38.6883692Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-08T20:12:39.0616719Z Complete job name: Verify (Windows)
+2026-10-08T20:12:39.4597002Z ##[group]Run actions/checkout@v4
+2026-10-08T20:12:39.4598084Z with:
+2026-10-08T20:12:39.4598610Z   repository: tripplemay/tokenizer
+2026-10-08T20:12:39.4603846Z   token: ***
+2026-10-08T20:12:39.4604362Z   ssh-strict: true
+2026-10-08T20:12:39.4604898Z   ssh-user: git
+2026-10-08T20:12:39.4605433Z   persist-credentials: true
+2026-10-08T20:12:39.4606035Z   clean: true
+2026-10-08T20:12:39.4606566Z   sparse-checkout-cone-mode: true
+2026-10-08T20:12:39.4607219Z   fetch-depth: 1
+2026-10-08T20:12:39.4607744Z   fetch-tags: false
+2026-10-08T20:12:39.4608293Z   show-progress: true
+2026-10-08T20:12:39.4608845Z   lfs: false
+2026-10-08T20:12:39.4609360Z   submodules: false
+2026-10-08T20:12:39.4609929Z   set-safe-directory: true
+2026-10-08T20:12:39.4610570Z   allow-unsafe-pr-checkout: false
+2026-10-08T20:12:39.4611425Z ##[endgroup]
+2026-10-08T20:12:39.5900140Z Syncing repository: tripplemay/tokenizer
+2026-10-08T20:12:39.5902636Z ##[group]Getting Git version info
+2026-10-08T20:12:39.5903780Z Working directory is 'D:\a\tokenizer\tokenizer'
+2026-10-08T20:12:39.6530193Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-08T20:12:39.8556114Z git version 2.55.0.windows.5
+2026-10-08T20:12:39.8597198Z ##[endgroup]
+2026-10-08T20:12:39.8615734Z Temporarily overriding HOME='D:\a\_temp\36181f18-3e7a-4622-aafb-3e06959ecd11' before making global git config changes
+2026-10-08T20:12:39.8617138Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-08T20:12:39.8626327Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+2026-10-08T20:12:39.8913880Z Deleting the contents of 'D:\a\tokenizer\tokenizer'
+2026-10-08T20:12:39.8919849Z ##[group]Initializing the repository
+2026-10-08T20:12:39.8929495Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\tokenizer\tokenizer
+2026-10-08T20:12:39.9349735Z Initialized empty Git repository in D:/a/tokenizer/tokenizer/.git/
+2026-10-08T20:12:39.9390841Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/tripplemay/tokenizer
+2026-10-08T20:12:39.9671968Z ##[endgroup]
+2026-10-08T20:12:39.9672771Z ##[group]Disabling automatic garbage collection
+2026-10-08T20:12:39.9682133Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-08T20:12:39.9971004Z ##[endgroup]
+2026-10-08T20:12:39.9972036Z ##[group]Setting up auth
+2026-10-08T20:12:39.9984018Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-08T20:12:40.0319112Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-08T20:12:41.5569698Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-08T20:12:41.5824586Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-08T20:12:42.1014596Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-08T20:12:42.1339159Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-08T20:12:42.6169326Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-08T20:12:42.6448507Z ##[endgroup]
+2026-10-08T20:12:42.6449172Z ##[group]Fetching the repository
+2026-10-08T20:12:42.6466192Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f754423387374afee0671f951730cac43bad7891:refs/remotes/origin/codex/windows-native-repair-ci-20261008
+2026-10-08T20:12:44.4762382Z From https://github.com/tripplemay/tokenizer
+2026-10-08T20:12:44.4763209Z  * [new ref]         f754423387374afee0671f951730cac43bad7891 -> origin/codex/windows-native-repair-ci-20261008
+2026-10-08T20:12:44.4795484Z ##[endgroup]
+2026-10-08T20:12:44.4795982Z ##[group]Determining the checkout info
+2026-10-08T20:12:44.4797800Z ##[endgroup]
+2026-10-08T20:12:44.4806105Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-08T20:12:44.5088794Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-08T20:12:44.5343852Z ##[group]Checking out the ref
+2026-10-08T20:12:44.5353234Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/windows-native-repair-ci-20261008 refs/remotes/origin/codex/windows-native-repair-ci-20261008
+2026-10-08T20:12:45.1027567Z Switched to a new branch 'codex/windows-native-repair-ci-20261008'
+2026-10-08T20:12:45.1046313Z branch 'codex/windows-native-repair-ci-20261008' set up to track 'origin/codex/windows-native-repair-ci-20261008'.
+2026-10-08T20:12:45.1097465Z ##[endgroup]
+2026-10-08T20:12:45.1369797Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-08T20:12:45.1584110Z f754423387374afee0671f951730cac43bad7891
+2026-10-08T20:12:45.1998795Z ##[group]Run actions/setup-node@v4
+2026-10-08T20:12:45.1999064Z with:
+2026-10-08T20:12:45.1999236Z   node-version: 22
+2026-10-08T20:12:45.1999400Z   cache: npm
+2026-10-08T20:12:45.1999547Z   always-auth: false
+2026-10-08T20:12:45.1999709Z   check-latest: false
+2026-10-08T20:12:45.2001517Z   token: ***
+2026-10-08T20:12:45.2001683Z ##[endgroup]
+2026-10-08T20:12:45.4175228Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+2026-10-08T20:12:45.4181531Z (node:8488) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-08T20:12:45.4183476Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-08T20:12:45.4184354Z ##[group]Environment details
+2026-10-08T20:12:52.8476792Z node: v22.23.3
+2026-10-08T20:12:52.8477053Z npm: 10.9.9
+2026-10-08T20:12:52.8477193Z yarn: 1.22.22
+2026-10-08T20:12:52.8477847Z ##[endgroup]
+2026-10-08T20:12:52.8916014Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+2026-10-08T20:12:53.6297937Z C:\npm\cache
+2026-10-08T20:12:54.0233378Z npm cache is not found
+2026-10-08T20:12:54.0472442Z ##[group]Run npm ci
+2026-10-08T20:12:54.0472691Z [36;1mnpm ci[0m
+2026-10-08T20:12:54.0603673Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-08T20:12:54.0603978Z ##[endgroup]
+2026-10-08T20:13:01.8428037Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+2026-10-08T20:13:14.1009558Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2026-10-08T20:13:27.3790610Z 
+2026-10-08T20:13:27.3791581Z added 669 packages, and audited 671 packages in 33s
+2026-10-08T20:13:27.3791953Z 
+2026-10-08T20:13:27.3792148Z 185 packages are looking for funding
+2026-10-08T20:13:27.3792493Z   run `npm fund` for details
+2026-10-08T20:13:27.4461957Z 
+2026-10-08T20:13:27.4462795Z 7 high severity vulnerabilities
+2026-10-08T20:13:27.4463045Z 
+2026-10-08T20:13:27.4463414Z To address all issues (including breaking changes), run:
+2026-10-08T20:13:27.4463788Z   npm audit fix --force
+2026-10-08T20:13:27.4463941Z 
+2026-10-08T20:13:27.4464057Z Run `npm audit` for details.
+2026-10-08T20:13:30.1414966Z ##[group]Run npm run verify
+2026-10-08T20:13:30.1415241Z [36;1mnpm run verify[0m
+2026-10-08T20:13:30.1472090Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-08T20:13:30.1472402Z ##[endgroup]
+2026-10-08T20:13:30.7276664Z 
+2026-10-08T20:13:30.7277287Z > tokenizer@0.1.0 verify
+2026-10-08T20:13:30.7277739Z > prisma generate && tsc --noEmit
+2026-10-08T20:13:30.7277958Z 
+2026-10-08T20:13:31.1571324Z Prisma schema loaded from prisma\schema.prisma
+2026-10-08T20:13:31.7525300Z 
+2026-10-08T20:13:31.7526543Z ✔ Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 254ms
+2026-10-08T20:13:31.7526845Z 
+2026-10-08T20:13:31.7527171Z Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+2026-10-08T20:13:31.7527436Z 
+2026-10-08T20:13:31.7527831Z Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+2026-10-08T20:13:31.7528364Z 
+2026-10-08T20:13:31.7847684Z ┌─────────────────────────────────────────────────────────┐
+2026-10-08T20:13:31.7848416Z │  Update available 5.22.0 -> 8.0.0-rc.22                 │
+2026-10-08T20:13:31.7848981Z │                                                         │
+2026-10-08T20:13:31.7849548Z │  This is a major update - please follow the guide at    │
+2026-10-08T20:13:31.7850192Z │  https://pris.ly/d/major-version-upgrade                │
+2026-10-08T20:13:31.7850903Z │                                                         │
+2026-10-08T20:13:31.7851443Z │  Run the following to update                            │
+2026-10-08T20:13:31.7852004Z │    npm i --save-dev prisma@latest                       │
+2026-10-08T20:13:31.7852556Z │    npm i @prisma/client@latest                          │
+2026-10-08T20:13:31.7853130Z └─────────────────────────────────────────────────────────┘
+2026-10-08T20:13:43.1083154Z ##[group]Run New-Item -ItemType Directory -Path .ci -Force | Out-Null
+2026-10-08T20:13:43.1083872Z [36;1mNew-Item -ItemType Directory -Path .ci -Force | Out-Null[0m
+2026-10-08T20:13:43.1084804Z [36;1mnpx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json[0m
+2026-10-08T20:13:43.1086006Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-08T20:13:43.1086574Z [36;1mnode scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json[0m
+2026-10-08T20:13:43.1087156Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-08T20:13:43.1146815Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-08T20:13:43.1147114Z ##[endgroup]
+2026-10-08T20:13:44.5500806Z 
+2026-10-08T20:13:44.5503474Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90mD:/a/tokenizer/tokenizer[39m
+2026-10-08T20:13:44.5503977Z 
+2026-10-08T20:13:45.1516042Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:13:50.5565120Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:00.3721094Z [90mstdout[2m | tests/cli/agent-release-installer-windows.test.ts[2m > [22m[2mnative Windows pinned installer fixture[2m > [22m[2minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+2026-10-08T20:14:00.3725568Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"f77322a4691abf36c3e7be023f9b97db95fc4aeb","expectedOldCommit":"f77322a4691abf36c3e7be023f9b97db95fc4aeb","queueCanaryRetained":true,"credentialCanaryRetained":true}
+2026-10-08T20:14:00.3727593Z 
+2026-10-08T20:14:00.4566419Z  [32m✓[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 15398[2mms[22m[39m
+2026-10-08T20:14:00.4568038Z      [33m[2m✓[22m[39m installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens [33m 15396[2mms[22m[39m
+2026-10-08T20:14:00.4607625Z 
+2026-10-08T20:14:00.4620823Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-10-08T20:14:00.4621782Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-10-08T20:14:00.4622268Z [2m   Start at [22m 20:13:44
+2026-10-08T20:14:00.4622995Z [2m   Duration [22m 15.89s[2m (transform 71ms, setup 0ms, import 112ms, tests 15.40s, environment 0ms)[22m
+2026-10-08T20:14:00.4623453Z 
+2026-10-08T20:14:00.4636490Z JSON report written to D:/a/tokenizer/tokenizer/.ci/windows-installer.json
+2026-10-08T20:14:01.9933210Z Verified native Windows installer failure, restore, lock and offline rollback fixture
+2026-10-08T20:14:02.0328935Z ##[group]Run actions/upload-artifact@v4
+2026-10-08T20:14:02.0329205Z with:
+2026-10-08T20:14:02.0329375Z   name: windows-pinned-installer
+2026-10-08T20:14:02.0329586Z   path: .ci/windows-installer.json
+2026-10-08T20:14:02.0329784Z   if-no-files-found: warn
+2026-10-08T20:14:02.0329963Z   retention-days: 7
+2026-10-08T20:14:02.0330126Z   compression-level: 6
+2026-10-08T20:14:02.0330312Z   overwrite: false
+2026-10-08T20:14:02.0330472Z   include-hidden-files: false
+2026-10-08T20:14:02.0330649Z ##[endgroup]
+2026-10-08T20:14:02.1909775Z (node:6900) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-08T20:14:02.1910393Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-08T20:14:02.1951853Z With the provided path, there will be 1 file uploaded
+2026-10-08T20:14:02.1955887Z Artifact name is valid!
+2026-10-08T20:14:02.1957352Z Root directory input is valid!
+2026-10-08T20:14:02.5426339Z Beginning upload of artifact content to blob storage
+2026-10-08T20:14:02.5587905Z (node:6900) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-08T20:14:02.7974086Z Uploaded bytes 626
+2026-10-08T20:14:02.8592776Z Finished uploading artifact content to blob storage!
+2026-10-08T20:14:02.8593511Z SHA256 digest of uploaded artifact zip is 34c2f8c51b6feccbae7c59150aa96820ecdd583aeb3374b03546eb62b164fa18
+2026-10-08T20:14:02.8595292Z Finalizing artifact upload
+2026-10-08T20:14:03.1139728Z Artifact windows-pinned-installer.zip successfully finalized. Artifact ID 11575709064
+2026-10-08T20:14:03.1140883Z Artifact windows-pinned-installer has been successfully uploaded! Final size is 626 bytes. Artifact ID is 11575709064
+2026-10-08T20:14:03.1148309Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37813254244/artifacts/11575709064
+2026-10-08T20:14:03.1379304Z ##[group]Run npm run test
+2026-10-08T20:14:03.1379560Z [36;1mnpm run test[0m
+2026-10-08T20:14:03.1433965Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-08T20:14:03.1434253Z ##[endgroup]
+2026-10-08T20:14:03.7673693Z 
+2026-10-08T20:14:03.7674814Z > tokenizer@0.1.0 test
+2026-10-08T20:14:03.7675380Z > vitest run
+2026-10-08T20:14:03.7675524Z 
+2026-10-08T20:14:04.2259426Z 
+2026-10-08T20:14:04.2261819Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90mD:/a/tokenizer/tokenizer[39m
+2026-10-08T20:14:04.2262295Z 
+2026-10-08T20:14:05.3149171Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+2026-10-08T20:14:05.5068038Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+2026-10-08T20:14:05.9550837Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-08T20:14:05.9918226Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 763[2mms[22m[39m
+2026-10-08T20:14:06.7302966Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 389[2mms[22m[39m
+2026-10-08T20:14:06.8422111Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-08T20:14:07.1193708Z  [32m✓[39m tests/ci/vps-host-preflight.test.ts [2m([22m[2m43 tests[22m[2m | [22m[33m42 skipped[39m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:14:07.3676190Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-10-08T20:14:07.5238295Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+2026-10-08T20:14:08.7243834Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 821[2mms[22m[39m
+2026-10-08T20:14:09.0443914Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-10-08T20:14:10.8649890Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2999[2mms[22m[39m
+2026-10-08T20:14:10.8651388Z      [33m[2m✓[22m[39m checkpoints the same remaining tail between real sync and run subprocess batches [33m 2792[2mms[22m[39m
+2026-10-08T20:14:11.2788516Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-08T20:14:11.6196608Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-08T20:14:12.0591080Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+2026-10-08T20:14:12.8180240Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 169[2mms[22m[39m
+2026-10-08T20:14:13.2444721Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+2026-10-08T20:14:13.9555527Z  [32m✓[39m tests/server/batch-schema.test.ts [2m([22m[2m65 tests[22m[2m)[22m[32m 237[2mms[22m[39m
+2026-10-08T20:14:14.1972366Z  [2m[90m↓[39m[22m tests/server/release-image.test.ts [2m([22m[2m17 tests[22m[2m | [22m[33m17 skipped[39m[2m)[22m
+2026-10-08T20:14:14.4615122Z  [2m[90m↓[39m[22m tests/cli/agent-release-installer-macos.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:14:16.5312439Z  [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 1810[2mms[22m[39m
+2026-10-08T20:14:16.5449884Z      [33m[2m✓[22m[39m rejects `tokenizer agent status` before it can start a daemon [33m 939[2mms[22m[39m
+2026-10-08T20:14:16.5451888Z      [33m[2m✓[22m[39m reclaims a lock after Windows force-terminates the agent [33m 853[2mms[22m[39m
+2026-10-08T20:14:17.3838544Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:18.0151870Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:18.5173561Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:19.0983132Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:19.6675390Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:20.1625289Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:20.5551077Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:22.8365640Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:23.1834114Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:23.6233734Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:23.9895336Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:24.3548375Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:24.7315198Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:25.1275029Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:25.4749982Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:25.8434709Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:26.2107549Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:26.5883195Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:26.9897371Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:27.3715530Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:27.6529236Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 18319[2mms[22m[39m
+2026-10-08T20:14:27.6553713Z      [33m[2m✓[22m[39m accepts only the exact bounded relay envelope [33m 736[2mms[22m[39m
+2026-10-08T20:14:27.6631171Z      [33m[2m✓[22m[39m stages and reads v2 bindings through the data-only catalog, without agent ids [33m 1481[2mms[22m[39m
+2026-10-08T20:14:27.6647135Z      [33m[2m✓[22m[39m stages and reports legal v2 fast null bindings without a tool catalog [33m 1204[2mms[22m[39m
+2026-10-08T20:14:27.6652644Z      [33m[2m✓[22m[39m rejects v2 staging when the data-only registry validation fails [33m 1127[2mms[22m[39m
+2026-10-08T20:14:27.6665018Z      [33m[2m✓[22m[39m validates, atomically stages, and commits only harness.json [33m 965[2mms[22m[39m
+2026-10-08T20:14:27.6690976Z      [33m[2m✓[22m[39m commits only harness.json while preserving an unrelated staged file [33m 1693[2mms[22m[39m
+2026-10-08T20:14:27.6719617Z      [33m[2m✓[22m[39m rejects a tampered signature without changing the target [33m 1047[2mms[22m[39m
+2026-10-08T20:14:27.6732117Z      [33m[2m✓[22m[39m requires relay, signed, and discovered repo keys to agree [33m 726[2mms[22m[39m
+2026-10-08T20:14:27.6737540Z      [33m[2m✓[22m[39m rejects a full HEAD drift immediately before first staging [33m 1078[2mms[22m[39m
+2026-10-08T20:14:27.6760628Z      [33m[2m✓[22m[39m rejects invalid time window expired_intent [33m 643[2mms[22m[39m
+2026-10-08T20:14:27.6771794Z      [33m[2m✓[22m[39m rejects invalid time window intent_not_yet_valid [33m 473[2mms[22m[39m
+2026-10-08T20:14:27.6815891Z      [33m[2m✓[22m[39m requires harness.json to be clean [33m 542[2mms[22m[39m
+2026-10-08T20:14:27.6828047Z      [33m[2m✓[22m[39m retries the exact staged intent without comparing its old HEAD or creating a commit [33m 1117[2mms[22m[39m
+2026-10-08T20:14:27.6845140Z      [33m[2m✓[22m[39m does not report failure after commit success and completes the next exact retry idempotently [33m 866[2mms[22m[39m
+2026-10-08T20:14:27.6848321Z      [33m[2m✓[22m[39m recognizes a commit that succeeded immediately before the runner threw [33m 855[2mms[22m[39m
+2026-10-08T20:14:27.6851820Z      [33m[2m✓[22m[39m restores the original harness after a first-stage write failure [33m 632[2mms[22m[39m
+2026-10-08T20:14:27.6895779Z      [33m[2m✓[22m[39m restores the original harness after a first-stage readback failure [33m 654[2mms[22m[39m
+2026-10-08T20:14:27.6939951Z      [33m[2m✓[22m[39m restores after git add failure without disturbing an unrelated staged file [33m 682[2mms[22m[39m
+2026-10-08T20:14:27.6956196Z      [33m[2m✓[22m[39m does not report defaults copied into a repository with a different normalized identity [33m 977[2mms[22m[39m
+2026-10-08T20:14:27.7011387Z      [33m[2m✓[22m[39m rolls back a commit failure and never stages an unrelated file [33m 817[2mms[22m[39m
+2026-10-08T20:14:27.7614861Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:28.1977793Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:28.3168891Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+2026-10-08T20:14:28.6401527Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:28.8557994Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 12059[2mms[22m[39m
+2026-10-08T20:14:28.8582928Z      [33m[2m✓[22m[39m uses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing [33m 833[2mms[22m[39m
+2026-10-08T20:14:28.8587040Z      [33m[2m✓[22m[39m supports a2a while reducing absolute artifacts and raw failures to safe fixed summaries [33m 669[2mms[22m[39m
+2026-10-08T20:14:28.8619152Z      [33m[2m✓[22m[39m keeps a2a cancellation as a known terminal outcome with a fixed safe summary [33m 551[2mms[22m[39m
+2026-10-08T20:14:28.8622960Z      [33m[2m✓[22m[39m keeps runs of other batches (usage must survive batch switch) but rejects foreign refs [33m 616[2mms[22m[39m
+2026-10-08T20:14:28.8627589Z      [33m[2m✓[22m[39m rejects symlinked run-meta and never hashes a symlinked artifact [33m 511[2mms[22m[39m
+2026-10-08T20:14:28.8630264Z      [33m[2m✓[22m[39m derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) [33m 384[2mms[22m[39m
+2026-10-08T20:14:28.8675077Z      [33m[2m✓[22m[39m scans at most the newest 50 bounded regular JSON files [33m 2284[2mms[22m[39m
+2026-10-08T20:14:28.8717505Z      [33m[2m✓[22m[39m carries a valid usage block and capture mode intact into the summary [33m 370[2mms[22m[39m
+2026-10-08T20:14:28.8730471Z      [33m[2m✓[22m[39m keeps legacy run-meta without usage summarized with explicit nulls (regression) [33m 444[2mms[22m[39m
+2026-10-08T20:14:28.8736487Z      [33m[2m✓[22m[39m drops the whole usage block on unknown field but keeps the run (bypass, not a gate) [33m 336[2mms[22m[39m
+2026-10-08T20:14:28.8746697Z      [33m[2m✓[22m[39m drops the whole usage block on negative tokens but keeps the run (bypass, not a gate) [33m 387[2mms[22m[39m
+2026-10-08T20:14:28.8748462Z      [33m[2m✓[22m[39m drops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate) [33m 370[2mms[22m[39m
+2026-10-08T20:14:28.8753122Z      [33m[2m✓[22m[39m drops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) [33m 411[2mms[22m[39m
+2026-10-08T20:14:28.8756933Z      [33m[2m✓[22m[39m drops the whole usage block on zero turns but keeps the run (bypass, not a gate) [33m 341[2mms[22m[39m
+2026-10-08T20:14:28.8759717Z      [33m[2m✓[22m[39m drops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) [33m 365[2mms[22m[39m
+2026-10-08T20:14:28.8765048Z      [33m[2m✓[22m[39m drops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) [33m 360[2mms[22m[39m
+2026-10-08T20:14:28.8788314Z      [33m[2m✓[22m[39m drops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) [33m 380[2mms[22m[39m
+2026-10-08T20:14:28.8824592Z      [33m[2m✓[22m[39m drops the whole usage block on non-string model but keeps the run (bypass, not a gate) [33m 358[2mms[22m[39m
+2026-10-08T20:14:28.8829326Z      [33m[2m✓[22m[39m drops the whole usage block on oversized model name but keeps the run (bypass, not a gate) [33m 438[2mms[22m[39m
+2026-10-08T20:14:28.8832388Z      [33m[2m✓[22m[39m drops the whole usage block on array instead of object but keeps the run (bypass, not a gate) [33m 349[2mms[22m[39m
+2026-10-08T20:14:28.8834791Z      [33m[2m✓[22m[39m drops the whole usage block on string instead of object but keeps the run (bypass, not a gate) [33m 423[2mms[22m[39m
+2026-10-08T20:14:28.8842813Z      [33m[2m✓[22m[39m nulls an unknown capture mode while keeping a valid usage block [33m 418[2mms[22m[39m
+2026-10-08T20:14:28.8888787Z      [33m[2m✓[22m[39m accepts attribution_only with a null usage block (kimi shape) [33m 458[2mms[22m[39m
+2026-10-08T20:14:29.1138059Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 390[2mms[22m[39m
+2026-10-08T20:14:29.8575528Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+2026-10-08T20:14:50.2923092Z  [32m✓[39m tests/cli/privacy-admission-cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 20099[2mms[22m[39m
+2026-10-08T20:14:50.2924767Z      [33m[2m✓[22m[39m previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync [33m 10108[2mms[22m[39m
+2026-10-08T20:14:50.2934708Z      [33m[2m✓[22m[39m preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync [33m 6733[2mms[22m[39m
+2026-10-08T20:14:50.2944195Z      [33m[2m✓[22m[39m keeps paused collection and replay execution from changing queue or cursor [33m 3256[2mms[22m[39m
+2026-10-08T20:14:50.7187179Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-08T20:14:50.8746812Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 44065[2mms[22m[39m
+2026-10-08T20:14:50.8763121Z      [33m[2m✓[22m[39m 同时有 progress.json 与 harness-rules.md 才算 harness 项目 [33m 1221[2mms[22m[39m
+2026-10-08T20:14:50.8980146Z      [33m[2m✓[22m[39m uses a stable opaque key for local-only repos without leaking the root into the report [33m 1660[2mms[22m[39m
+2026-10-08T20:14:50.9007644Z      [33m[2m✓[22m[39m 从 features.json 统计完成度，并带上待批闸门 [33m 661[2mms[22m[39m
+2026-10-08T20:14:50.9106468Z      [33m[2m✓[22m[39m 待批闸门只上报 API 白名单字段 [33m 684[2mms[22m[39m
+2026-10-08T20:14:50.9155108Z      [33m[2m✓[22m[39m 已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 [33m 830[2mms[22m[39m
+2026-10-08T20:14:50.9189936Z      [33m[2m✓[22m[39m sends the running Agent identity on every device-driven Harness relay request [33m 1430[2mms[22m[39m
+2026-10-08T20:14:50.9233266Z      [33m[2m✓[22m[39m reports progress.mode_intent as applied and sends the identical applied ACK [33m 944[2mms[22m[39m
+2026-10-08T20:14:50.9235355Z      [33m[2m✓[22m[39m 签名有效时写入并提交 [33m 813[2mms[22m[39m
+2026-10-08T20:14:50.9238387Z      [33m[2m✓[22m[39m does not route an unbound legacy gate relay onto the current repository [33m 1350[2mms[22m[39m
+2026-10-08T20:14:50.9273204Z      [33m[2m✓[22m[39m fails closed when the signed decision wrapper matches multiple local repositories [33m 1697[2mms[22m[39m
+2026-10-08T20:14:50.9283616Z      [33m[2m✓[22m[39m 🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 [33m 873[2mms[22m[39m
+2026-10-08T20:14:50.9379571Z      [33m[2m✓[22m[39m 仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） [33m 691[2mms[22m[39m
+2026-10-08T20:14:50.9391807Z      [33m[2m✓[22m[39m 陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） [33m 897[2mms[22m[39m
+2026-10-08T20:14:50.9395405Z      [33m[2m✓[22m[39m progress.json 有未提交改动时本轮不写，避免与状态机打架 [33m 723[2mms[22m[39m
+2026-10-08T20:14:50.9397076Z      [33m[2m✓[22m[39m 某个项目上报失败不中断其余项目 [33m 1020[2mms[22m[39m
+2026-10-08T20:14:50.9398812Z      [33m[2m✓[22m[39m 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 [33m 926[2mms[22m[39m
+2026-10-08T20:14:50.9408375Z      [33m[2m✓[22m[39m report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit [33m 1359[2mms[22m[39m
+2026-10-08T20:14:50.9410863Z      [33m[2m✓[22m[39m mode relay 失败不阻塞另外两步 [33m 898[2mms[22m[39m
+2026-10-08T20:14:50.9420462Z      [33m[2m✓[22m[39m gate relay 失败不阻塞另外两步 [33m 1054[2mms[22m[39m
+2026-10-08T20:14:50.9544097Z      [33m[2m✓[22m[39m 本机闸门已有决策时不覆盖 [33m 745[2mms[22m[39m
+2026-10-08T20:14:50.9565332Z      [33m[2m✓[22m[39m applies the exact HTTP retryability matrix [33m 1715[2mms[22m[39m
+2026-10-08T20:14:50.9567929Z      [33m[2m✓[22m[39m classifies safe server codes and never retains response bodies in the snapshot [33m 882[2mms[22m[39m
+2026-10-08T20:14:50.9569549Z      [33m[2m✓[22m[39m falls back to http status when a response code is not normalized [33m 842[2mms[22m[39m
+2026-10-08T20:14:50.9571127Z      [33m[2m✓[22m[39m classifies timeouts for all independent subchains without short-circuiting [33m 1184[2mms[22m[39m
+2026-10-08T20:14:50.9575540Z      [33m[2m✓[22m[39m caps structured issues at 20 while retaining the full failed-project count [33m 15931[2mms[22m[39m
+2026-10-08T20:14:50.9713671Z      [33m[2m✓[22m[39m writes idle, success, degraded, and failed snapshots from actual outcomes [33m 1847[2mms[22m[39m
+2026-10-08T20:14:50.9716284Z      [33m[2m✓[22m[39m deduplicates unchanged issue details and logs recovery [33m 1186[2mms[22m[39m
+2026-10-08T20:14:51.4481694Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+2026-10-08T20:14:51.5721547Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 258[2mms[22m[39m
+2026-10-08T20:14:51.7991774Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+2026-10-08T20:14:52.4153118Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-08T20:14:52.6851431Z  [32m✓[39m tests/cli/b07-queue-resolution.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 745[2mms[22m[39m
+2026-10-08T20:14:52.8461949Z SUCCESS: The scheduled task "Tokenizer Agent Test" has successfully been created.
+2026-10-08T20:14:53.1841525Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+2026-10-08T20:14:53.1869884Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+2026-10-08T20:14:53.1872386Z 
+2026-10-08T20:14:53.1904967Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-08T20:14:53.4469041Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+2026-10-08T20:14:53.8406778Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-08T20:14:54.1783626Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1397[2mms[22m[39m
+2026-10-08T20:14:54.1841199Z      [33m[2m✓[22m[39m parses under WSH, waits for the agent, and propagates a failure exit code [33m 750[2mms[22m[39m
+2026-10-08T20:14:54.1869845Z      [33m[2m✓[22m[39m propagates a clean exit [33m 507[2mms[22m[39m
+2026-10-08T20:14:54.4429847Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:54.5096885Z  [32m✓[39m tests/cli/agent-release-installer.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:14:57.0014317Z  [32m✓[39m tests/cli/privacy-scope-safety.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 27777[2mms[22m[39m
+2026-10-08T20:14:57.0031567Z    [33m[2m✓[22m[39m R4 dot alias to an excluded workspace is rejected by preview, replay and ordinary collection [33m 2989[2mms[22m[39m
+2026-10-08T20:14:57.0062330Z    [33m[2m✓[22m[39m R5 an allowed symlink/junction to an excluded Git repo never reaches durable admission [33m 2877[2mms[22m[39m
+2026-10-08T20:14:57.0091583Z    [33m[2m✓[22m[39m an alias into a target outside the include scope is not rescued by any other allowed path [33m 2923[2mms[22m[39m
+2026-10-08T20:14:57.0267519Z    [33m[2m✓[22m[39m scope is checked again when enrichment introduces a different excluded workspace [33m 2788[2mms[22m[39m
+2026-10-08T20:14:57.0288151Z    [33m[2m✓[22m[39m an allowed physical target keeps legacy event identity and path bytes unchanged [33m 2798[2mms[22m[39m
+2026-10-08T20:14:57.0293577Z    [33m[2m✓[22m[39m retargeting a workspace alias cannot reuse a zero-admission confirmation for newly eligible rows [33m 2837[2mms[22m[39m
+2026-10-08T20:14:57.0334182Z    [33m[2m✓[22m[39m confirmation binds physical targets even when the count and wire payload stay the same [33m 2743[2mms[22m[39m
+2026-10-08T20:14:57.0339519Z    [33m[2m✓[22m[39m same-count different rows and retargeting immediately before merge invalidate confirmation [33m 4192[2mms[22m[39m
+2026-10-08T20:14:57.0432286Z    [33m[2m✓[22m[39m confirmation binds complete candidate payloads, not only event counts or IDs [33m 3613[2mms[22m[39m
+2026-10-08T20:14:57.4109301Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+2026-10-08T20:14:57.6447894Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+2026-10-08T20:14:57.9994531Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+2026-10-08T20:15:00.7190952Z  [32m✓[39m tests/ci/recovery-evidence.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2356[2mms[22m[39m
+2026-10-08T20:15:00.7211179Z      [33m[2m✓[22m[39m detects downloaded file tampering, missing files, extra files and wrong revision [33m 572[2mms[22m[39m
+2026-10-08T20:15:00.7260006Z      [33m[2m✓[22m[39m rejects manifest traversal paths and forged manifest hashes [33m 450[2mms[22m[39m
+2026-10-08T20:15:00.7294201Z      [33m[2m✓[22m[39m requires main provenance files separately and forbids main/non-main manifest downgrade [33m 352[2mms[22m[39m
+2026-10-08T20:15:12.1816156Z  [31m❯[39m tests/cli/replay.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 17323[2mms[22m[39m
+2026-10-08T20:15:12.1839922Z      [32m✓[39m uses the explicit buffer adapter while preserving normal Claude event IDs[32m 10[2mms[22m[39m
+2026-10-08T20:15:12.1854137Z      [33m[2m✓[22m[39m does not discover or open unselected sibling JSONL files [33m 1024[2mms[22m[39m
+2026-10-08T20:15:12.1873410Z      [33m[2m✓[22m[39m applies strict [from,to), event budget, and current admission scope [33m 1745[2mms[22m[39m
+2026-10-08T20:15:12.2050662Z      [33m[2m✓[22m[39m rejects symlinks, directories, swaps, growth, oversized input, and long records [33m 3445[2mms[22m[39m
+2026-10-08T20:15:12.2111396Z [31m     [31m×[31m binds execution to file, range, budgets, current scope, and privacy mode[39m[33m 6513[2mms[22m[39m
+2026-10-08T20:15:12.2121599Z      [33m[2m✓[22m[39m merges idempotently into retained backlog and never changes normal cursors [33m 4583[2mms[22m[39m
+2026-10-08T20:15:12.4394149Z [90mstdout[2m | tests/cli/agent-release-installer-windows.test.ts[2m > [22m[2mnative Windows pinned installer fixture[2m > [22m[2minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+2026-10-08T20:15:12.4471852Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"eab819dabaec4c10dd00274b8ea2f1e203471ed3","expectedOldCommit":"eab819dabaec4c10dd00274b8ea2f1e203471ed3","queueCanaryRetained":true,"credentialCanaryRetained":true}
+2026-10-08T20:15:12.4547429Z 
+2026-10-08T20:15:12.5442852Z  [32m✓[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 18242[2mms[22m[39m
+2026-10-08T20:15:12.5444425Z      [33m[2m✓[22m[39m installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens [33m 18240[2mms[22m[39m
+2026-10-08T20:15:12.9218488Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2msame ID corrected rejection must remain recoverable after older version was already quarantined
+2026-10-08T20:15:12.9223064Z [22m[39mQUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T20:15:12.843Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:12.897Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:12.9225576Z 
+2026-10-08T20:15:12.9635890Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mtwo same-ID versions rejected in one response must both remain recoverable
+2026-10-08T20:15:12.9640688Z [22m[39mQUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T20:15:12.938Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:12.938Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:12.9643102Z 
+2026-10-08T20:15:13.0813798Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mpartial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+2026-10-08T20:15:13.0819017Z [22m[39mSYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T20:15:12.977Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:13.054Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:13.0822076Z 
+2026-10-08T20:15:13.4081703Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mcommit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+2026-10-08T20:15:13.4140261Z [22m[39mCRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T20:15:13.349Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:13.376Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:13.4142576Z 
+2026-10-08T20:15:13.5849879Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mold-server rowless fallback must not discard corrected poison when old version was quarantined
+2026-10-08T20:15:13.5872656Z [22m[39mROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T20:15:13.499Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:13.535Z","code":"invalid_json","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:13.5906805Z 
+2026-10-08T20:15:13.6190151Z  [32m✓[39m tests/cli/b07-prereview-version-negative.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 794[2mms[22m[39m
+2026-10-08T20:15:14.0594555Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-08T20:15:14.5299380Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-08T20:15:14.7626281Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 2260[2mms[22m[39m
+2026-10-08T20:15:14.7658261Z      [33m[2m✓[22m[39m case 1 与机器侧 Python 规范化逐字节一致 [33m 811[2mms[22m[39m
+2026-10-08T20:15:15.0322198Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-10-08T20:15:19.0838008Z  [32m✓[39m tests/cli/b03-round2-independent.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 18028[2mms[22m[39m
+2026-10-08T20:15:19.0857152Z    [33m[2m✓[22m[39m 0-to-1 symlink retarget invalidates confirmation (final config boundary=false) [33m 3082[2mms[22m[39m
+2026-10-08T20:15:19.0879947Z    [33m[2m✓[22m[39m 0-to-1 symlink retarget invalidates confirmation (final config boundary=true) [33m 3810[2mms[22m[39m
+2026-10-08T20:15:19.0899060Z    [33m[2m✓[22m[39m same admission count but different selected event cannot reuse digest at final boundary [33m 4226[2mms[22m[39m
+2026-10-08T20:15:19.0906838Z    [33m[2m✓[22m[39m same event and wire payload but different physical target invalidates digest [33m 3370[2mms[22m[39m
+2026-10-08T20:15:19.0912077Z    [33m[2m✓[22m[39m same count and IDs but enrichment payload drift invalidates final confirmation [33m 3521[2mms[22m[39m
+2026-10-08T20:15:19.9260353Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 610[2mms[22m[39m
+2026-10-08T20:15:20.1133086Z  [32m✓[39m tests/cli/b07-replay-combination.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 4795[2mms[22m[39m
+2026-10-08T20:15:20.1134896Z      [33m[2m✓[22m[39m production replay merge preserves a corrected version when admitting confirmed older history [33m 4513[2mms[22m[39m
+2026-10-08T20:15:20.1337526Z  [2m[90m↓[39m[22m tests/server/release-rehearsal.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+2026-10-08T20:15:20.3393064Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:15:20.5999430Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+2026-10-08T20:15:25.0699291Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses preview with a real resistant Git tree and preserves all state
+2026-10-08T20:15:25.0807910Z [22m[39mREPLAY_BOUND {"mode":"preview","elapsedMs":7183,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+2026-10-08T20:15:25.0898446Z 
+2026-10-08T20:15:28.7294637Z  [32m✓[39m tests/cli/replay-safety-regression.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 8317[2mms[22m[39m
+2026-10-08T20:15:28.7398751Z    [33m[2m✓[22m[39m R1 refuses a parent replaced by a same-target symlink/junction at afterPathStat [33m 382[2mms[22m[39m
+2026-10-08T20:15:28.7449678Z    [33m[2m✓[22m[39m R1 refuses a parent replaced by a same-target symlink/junction at afterRead [33m 412[2mms[22m[39m
+2026-10-08T20:15:28.7465164Z    [33m[2m✓[22m[39m R1 refuses a replaced regular parent even when a hardlink preserves the leaf inode [33m 387[2mms[22m[39m
+2026-10-08T20:15:28.7551693Z    [33m[2m✓[22m[39m R3 binds workspace inference to confirmation even when only projectRoots changes [33m 3999[2mms[22m[39m
+2026-10-08T20:15:28.7553858Z    [33m[2m✓[22m[39m unchanged regular file remains usable and cursor bytes remain unchanged [33m 3124[2mms[22m[39m
+2026-10-08T20:15:29.1148479Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+2026-10-08T20:15:29.5635730Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 219[2mms[22m[39m
+2026-10-08T20:15:30.0890840Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+2026-10-08T20:15:30.3588849Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:15:30.6328426Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-08T20:15:32.2809629Z [90mstdout[2m | tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22m[2mprivacy path safety: dot alias for excluded real workspace must not be admitted
+2026-10-08T20:15:32.2812063Z [22m[39mDOT_PRIVACY {"dryRun":true,"planDigest":"002df216e2992b33f6938886d1698a651618490a764a90a6363809161a859d24","bytes":299,"records":1,"parsed":1,"selected":1,"filtered":1,"wouldAdmit":0,"warningCount":0,"sample":[]}
+2026-10-08T20:15:32.2812719Z 
+2026-10-08T20:15:32.2905350Z  [31m❯[39m tests/cli/b03-fixed-prereview-independent.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 11437[2mms[22m[39m
+2026-10-08T20:15:32.2907392Z    [33m[2m✓[22m[39m positive control: physical ordinary file admits minimized rows, retaining unrelated durable backlog [33m 2421[2mms[22m[39m
+2026-10-08T20:15:32.2911607Z    [33m[2m✓[22m[39m parent identity negative at afterPathStat reaches race hook and rejects a hardlinked leaf under a replacement directory [33m 377[2mms[22m[39m
+2026-10-08T20:15:32.2916179Z [31m   [31m×[31m parent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory[39m[33m 383[2mms[22m[39m
+2026-10-08T20:15:32.2917572Z    [32m✓[39m source path negative: parent symlink and explicit dot components fail closed[32m 4[2mms[22m[39m
+2026-10-08T20:15:32.2918781Z    [2m[90m↓[39m[22m FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer
+2026-10-08T20:15:32.2920557Z [31m   [31m×[31m final confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission[39m[33m 6304[2mms[22m[39m
+2026-10-08T20:15:32.2921777Z    [33m[2m✓[22m[39m file mutation negative reaches afterRead and rejects growth [33m 716[2mms[22m[39m
+2026-10-08T20:15:32.2923046Z    [33m[2m✓[22m[39m privacy path safety: dot alias for excluded real workspace must not be admitted [33m 1231[2mms[22m[39m
+2026-10-08T20:15:32.2924168Z    [2m[90m↓[39m[22m privacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue
+2026-10-08T20:15:32.5196790Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-08T20:15:32.7927463Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-08T20:15:33.1098697Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 2225[2mms[22m[39m
+2026-10-08T20:15:33.1121855Z      [33m[2m✓[22m[39m uses opencode:<message_id> as a stable sourceEventId [33m 511[2mms[22m[39m
+2026-10-08T20:15:33.1267012Z      [33m[2m✓[22m[39m skips messages whose role is not assistant [33m 709[2mms[22m[39m
+2026-10-08T20:15:33.1273690Z      [33m[2m✓[22m[39m skips assistant messages whose total token count is zero [33m 677[2mms[22m[39m
+2026-10-08T20:15:33.1288220Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-08T20:15:33.3858322Z  [32m✓[39m tests/cli/windows-native-repair/privacy-ancestor.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-08T20:15:33.3893100Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-08T20:15:33.6780066Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:15:33.8552482Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+2026-10-08T20:15:34.1408290Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-08T20:15:34.5778592Z  [2m[90m↓[39m[22m tests/server/b06-batch-db.probe.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+2026-10-08T20:15:35.0621815Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses execute with a real resistant Git tree and preserves all state
+2026-10-08T20:15:35.0626713Z [22m[39mREPLAY_BOUND {"mode":"execute","elapsedMs":7198,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+2026-10-08T20:15:35.0643625Z 
+2026-10-08T20:15:35.3709157Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m31 tests[22m[2m)[22m[33m 1463[2mms[22m[39m
+2026-10-08T20:15:35.4292737Z  [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+2026-10-08T20:15:35.7344446Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:35.7982962Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-08T20:15:36.1889976Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+2026-10-08T20:15:36.9023817Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 201[2mms[22m[39m
+2026-10-08T20:15:37.1306402Z  [2m[90m↓[39m[22m tests/server/release-predecessor-negative.test.ts [2m([22m[2m17 tests[22m[2m | [22m[33m17 skipped[39m[2m)[22m
+2026-10-08T20:15:37.7174170Z  [32m✓[39m tests/evaluator/b05-evidence-retention-round2.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 371[2mms[22m[39m
+2026-10-08T20:15:37.7179558Z      [33m[2m✓[22m[39m round-trips only four non-main allowlisted files and rejects downloaded tampering [33m 359[2mms[22m[39m
+2026-10-08T20:15:37.9780167Z  [2m[90m↓[39m[22m tests/ci/macos-launchd-cleanup-trap.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+2026-10-08T20:15:38.4653811Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-08T20:15:38.9787703Z  [2m[90m↓[39m[22m tests/server/b06-partial-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:15:39.4234972Z  [32m✓[39m tests/server/b06-partial-ack.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+2026-10-08T20:15:39.7109043Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:15:39.9416665Z  [31m❯[39m tests/cli/process-bounds/bounded-subprocess.test.ts [2m([22m[2m22 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 3892[2mms[22m[39m
+2026-10-08T20:15:39.9497553Z      [32m✓[39m preserves explicit argv, cwd/env, stdout/stderr and success[32m 204[2mms[22m[39m
+2026-10-08T20:15:39.9502005Z      [33m[2m✓[22m[39m preserves ordinary nonzero exit without confusing it with launch failure [33m 306[2mms[22m[39m
+2026-10-08T20:15:39.9636288Z      [32m✓[39m distinguishes a missing target cwd from worker supervision failure[32m 232[2mms[22m[39m
+2026-10-08T20:15:39.9646789Z      [2m[90m↓[39m[22m preserves termination signal
+2026-10-08T20:15:39.9649161Z      [32m✓[39m rejects invalid timeout 0 before launch[32m 4[2mms[22m[39m
+2026-10-08T20:15:39.9673322Z      [32m✓[39m rejects invalid timeout -1 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9687770Z      [32m✓[39m rejects invalid timeout NaN before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9691856Z      [32m✓[39m rejects invalid timeout Infinity before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9693492Z      [32m✓[39m rejects invalid timeout 0.5 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9695317Z      [32m✓[39m rejects invalid timeout 4294967296 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9702111Z      [32m✓[39m rejects invalid output budget 0 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9704600Z      [32m✓[39m rejects invalid output budget -1 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9706129Z      [32m✓[39m rejects invalid output budget NaN before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9707594Z      [32m✓[39m rejects invalid output budget Infinity before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9709103Z      [32m✓[39m rejects invalid output budget 0.5 before launch[32m 3[2mms[22m[39m
+2026-10-08T20:15:39.9712000Z      [32m✓[39m rejects invalid output budget 4294967296 before launch[32m 4[2mms[22m[39m
+2026-10-08T20:15:39.9730727Z      [33m[2m✓[22m[39m bounds resistant and reaps owned native processes [33m 700[2mms[22m[39m
+2026-10-08T20:15:39.9732204Z      [33m[2m✓[22m[39m bounds descendant and reaps owned native processes [33m 685[2mms[22m[39m
+2026-10-08T20:15:39.9912836Z [31m     [31m×[31m bounds inherited-pipes and reaps owned native processes[39m[33m 437[2mms[22m[39m
+2026-10-08T20:15:40.0066234Z      [33m[2m✓[22m[39m caps combined streams, omits raw stderr from errors and cleans overflow child [33m 339[2mms[22m[39m
+2026-10-08T20:15:40.0074768Z [31m     [31m×[31m accounts stdout and stderr against one combined byte budget[39m[32m 237[2mms[22m[39m
+2026-10-08T20:15:40.0379593Z      [33m[2m✓[22m[39m uses a real Windows executable for tree cleanup [33m 713[2mms[22m[39m
+2026-10-08T20:15:40.3615481Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+2026-10-08T20:15:40.6434953Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-08T20:15:40.9944861Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-08T20:15:41.3405350Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+2026-10-08T20:15:41.8447406Z  [2m[90m↓[39m[22m tests/server/b07-queue-id-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:15:43.1916091Z  [32m✓[39m tests/cli/b03-replay-deadline.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 3152[2mms[22m[39m
+2026-10-08T20:15:43.1935565Z    [33m[2m✓[22m[39m uses one execution deadline across both enrichments and refuses before merge [33m 3141[2mms[22m[39m
+2026-10-08T20:15:43.4706568Z  [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:15:43.7343789Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-08T20:15:44.4431813Z  [32m✓[39m tests/ci/macos-launchd-installer-gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 510[2mms[22m[39m
+2026-10-08T20:15:44.7635214Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-08T20:15:45.0052065Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:15:45.4200415Z [90mstderr[2m | tests/server/health.test.ts[2m > [22m[2mhealth layers[2m > [22m[2mfails closed on missing login configuration before touching the database
+2026-10-08T20:15:45.4202225Z [22m[39mreadiness failed {
+2026-10-08T20:15:45.4202821Z   requestId: [32m'192fab58-785e-401d-afa9-8bfc5977ccf2'[39m,
+2026-10-08T20:15:45.4203337Z   stage: [32m'runtime_config'[39m,
+2026-10-08T20:15:45.4203780Z   code: [32m'config_not_ready'[39m,
+2026-10-08T20:15:45.4204464Z   errorCode: [90mundefined[39m
+2026-10-08T20:15:45.4204807Z }
+2026-10-08T20:15:45.4205052Z 
+2026-10-08T20:15:45.4345402Z  [32m✓[39m tests/server/health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-08T20:15:45.6680012Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-08T20:15:45.7622140Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3352[2mms[22m[39m
+2026-10-08T20:15:45.7623850Z      [33m[2m✓[22m[39m wires Commander options without treating the Command object as injected dependencies [33m 3344[2mms[22m[39m
+2026-10-08T20:15:45.9170046Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-08T20:15:46.0188567Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-08T20:15:46.2011963Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:15:46.6804323Z  [32m✓[39m tests/cli/b07-versioned-quarantine.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 209[2mms[22m[39m
+2026-10-08T20:15:46.9077900Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:47.8553650Z  [32m✓[39m tests/server/standalone-artifact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 753[2mms[22m[39m
+2026-10-08T20:15:48.0657314Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:49.2987654Z [90mstdout[2m | tests/cli/b07-prereview-process.test.ts[2m > [22m[2mseparate native processes must not lose rejected correction after old same-ID quarantine
+2026-10-08T20:15:49.2991651Z [22m[39mMULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-08T20:15:48.713Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T20:15:49.250Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+2026-10-08T20:15:49.2993982Z 
+2026-10-08T20:15:49.3902444Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mdoes not renew the deadline across successive real Git calls
+2026-10-08T20:15:49.4086959Z [22m[39mSHARED_GIT_DEADLINE {"elapsedMs":7158,"gitInvocations":3}
+2026-10-08T20:15:49.4596770Z 
+2026-10-08T20:15:49.6391772Z  [31m❯[39m tests/cli/b07-prereview-process.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1360[2mms[22m[39m
+2026-10-08T20:15:49.7036499Z    [33m[2m✓[22m[39m separate native processes must not lose rejected correction after old same-ID quarantine [33m 1073[2mms[22m[39m
+2026-10-08T20:15:49.7114789Z [31m   [31m×[31m eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files[39m[32m 286[2mms[22m[39m
+2026-10-08T20:15:49.8646437Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode stall and returns null
+2026-10-08T20:15:49.8681770Z [22m[39mSTARTUP_BOUND {"mode":"stall","elapsedMs":2424,"version":null}
+2026-10-08T20:15:49.8714618Z 
+2026-10-08T20:15:50.0329485Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:15:51.6762031Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode overflow and returns null
+2026-10-08T20:15:51.6763371Z [22m[39mSTARTUP_BOUND {"mode":"overflow","elapsedMs":549,"version":null}
+2026-10-08T20:15:51.6764014Z 
+2026-10-08T20:15:51.8111862Z  [32m✓[39m tests/cli/queue-merge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1501[2mms[22m[39m
+2026-10-08T20:15:51.8113969Z      [33m[2m✓[22m[39m serializes concurrent replay/collection writers without losing retained backlog [33m 1449[2mms[22m[39m
+2026-10-08T20:15:52.0296620Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:15:52.2948931Z  [32m✓[39m tests/vendor/braces-backport.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-08T20:15:52.5624765Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-08T20:15:52.5785906Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode invalid and returns null
+2026-10-08T20:15:52.5788868Z [22m[39mSTARTUP_BOUND {"mode":"invalid","elapsedMs":284,"version":null}
+2026-10-08T20:15:52.5824649Z 
+2026-10-08T20:15:52.8636584Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-08T20:15:53.3094169Z  [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:15:53.4075870Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode short and returns null
+2026-10-08T20:15:53.4083397Z [22m[39mSTARTUP_BOUND {"mode":"short","elapsedMs":218,"version":null}
+2026-10-08T20:15:53.4085876Z 
+2026-10-08T20:15:53.5438714Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-08T20:15:53.7638885Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-08T20:15:54.0463073Z  [32m✓[39m tests/ci/b05-recovery-source.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:15:54.1786471Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mretains the production before-mutate deadline guard under the queue lock
+2026-10-08T20:15:54.1788628Z [22m[39mQUEUE_LOCK_GUARD {"lockSeen":true,"error":"Replay refused: queue admission exceeded 10000ms deadline","stateUnchanged":true}
+2026-10-08T20:15:54.1789617Z 
+2026-10-08T20:15:54.2461997Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode nonzero and returns null
+2026-10-08T20:15:54.2463687Z [22m[39mSTARTUP_BOUND {"mode":"nonzero","elapsedMs":202,"version":null}
+2026-10-08T20:15:54.2464423Z 
+2026-10-08T20:15:54.2660191Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:15:55.1220495Z  [32m✓[39m tests/ci/windows-native-repair-workflow.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+2026-10-08T20:15:55.1387220Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode signal and returns null
+2026-10-08T20:15:55.1392909Z [22m[39mSTARTUP_BOUND {"mode":"signal","elapsedMs":284,"version":null}
+2026-10-08T20:15:55.1393670Z 
+2026-10-08T20:15:55.3504219Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-08T20:15:55.7558152Z  [32m✓[39m tests/cli/b07-private-queue-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 100[2mms[22m[39m
+2026-10-08T20:15:55.9730198Z  [2m[90m↓[39m[22m tests/server/release-predecessor.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m5 skipped[39m[2m)[22m
+2026-10-08T20:15:56.2103462Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:15:56.6837868Z  [32m✓[39m tests/cli/agent-release-installer-windows-fixture.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 260[2mms[22m[39m
+2026-10-08T20:15:56.9431592Z  [32m✓[39m tests/cli/replay-contract.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-08T20:15:57.0454193Z  [32m✓[39m tests/cli/process-bounds/agent-version-bounds.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 10751[2mms[22m[39m
+2026-10-08T20:15:57.0458468Z    [33m[2m✓[22m[39m captures the actual install checkout SHA [33m 576[2mms[22m[39m
+2026-10-08T20:15:57.0467503Z    [33m[2m✓[22m[39m bounds real startup executable mode stall and returns null [33m 2998[2mms[22m[39m
+2026-10-08T20:15:57.0468614Z    [33m[2m✓[22m[39m bounds real startup executable mode overflow and returns null [33m 1816[2mms[22m[39m
+2026-10-08T20:15:57.0474506Z    [33m[2m✓[22m[39m bounds real startup executable mode invalid and returns null [33m 895[2mms[22m[39m
+2026-10-08T20:15:57.0482977Z    [33m[2m✓[22m[39m bounds real startup executable mode short and returns null [33m 837[2mms[22m[39m
+2026-10-08T20:15:57.0486191Z    [33m[2m✓[22m[39m bounds real startup executable mode nonzero and returns null [33m 838[2mms[22m[39m
+2026-10-08T20:15:57.0491336Z    [33m[2m✓[22m[39m bounds real startup executable mode signal and returns null [33m 888[2mms[22m[39m
+2026-10-08T20:15:57.0521106Z    [33m[2m✓[22m[39m keeps its import-time SHA even after the install checkout advances [33m 1037[2mms[22m[39m
+2026-10-08T20:15:57.0537289Z    [33m[2m✓[22m[39m uses native git.exe rather than .cmd resolution on Windows [33m 866[2mms[22m[39m
+2026-10-08T20:15:57.1770120Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:15:57.3076167Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:57.4226684Z  [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:57.6947690Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-08T20:15:57.7326436Z  [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:15:57.9295285Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:58.1709102Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:15:58.5217231Z  [32m✓[39m tests/ci/windows-installer-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 583[2mms[22m[39m
+2026-10-08T20:15:58.7532683Z  [32m✓[39m tests/cli/process-bounds/replay-process-bounds.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 43947[2mms[22m[39m
+2026-10-08T20:15:58.7557094Z    [33m[2m✓[22m[39m refuses preview with a real resistant Git tree and preserves all state [33m 10261[2mms[22m[39m
+2026-10-08T20:15:58.7560145Z    [33m[2m✓[22m[39m refuses execute with a real resistant Git tree and preserves all state [33m 10004[2mms[22m[39m
+2026-10-08T20:15:58.7561822Z    [33m[2m✓[22m[39m refuses preview output overflow without leaking raw stderr [33m 2158[2mms[22m[39m
+2026-10-08T20:15:58.7562958Z    [33m[2m✓[22m[39m refuses execute output overflow without leaking raw stderr [33m 3733[2mms[22m[39m
+2026-10-08T20:15:58.7619773Z    [33m[2m✓[22m[39m does not renew the deadline across successive real Git calls [33m 8432[2mms[22m[39m
+2026-10-08T20:15:58.7625345Z    [33m[2m✓[22m[39m retains the production before-mutate deadline guard under the queue lock [33m 4797[2mms[22m[39m
+2026-10-08T20:15:58.7627727Z    [33m[2m✓[22m[39m preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event [33m 4560[2mms[22m[39m
+2026-10-08T20:15:58.7675480Z  [32m✓[39m tests/cli/replay-operational-contract.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:15:58.9860797Z  [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 603[2mms[22m[39m
+2026-10-08T20:15:59.0951411Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-08T20:15:59.1173435Z  [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-08T20:15:59.2418892Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-08T20:15:59.3416019Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:15:59.4784793Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-08T20:15:59.6073425Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:15:59.6220459Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-08T20:15:59.8092404Z  [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-08T20:15:59.8452267Z  [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-08T20:15:59.9341245Z  [32m✓[39m tests/server/batch-wire-compatibility.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-08T20:16:00.0372366Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:16:00.1898551Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:16:00.2274893Z  [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-08T20:16:00.4646683Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-08T20:16:00.4758956Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-08T20:16:00.7012452Z  [32m✓[39m tests/ci/b06-pg16-workflow-gate.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:16:01.0082586Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-08T20:16:01.2494750Z  [32m✓[39m tests/cli/b07-private-atomic-creation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-08T20:16:01.4128124Z [90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via dot
+2026-10-08T20:16:01.4132564Z [22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"dot","stdout":"Collected 0 events; queue holds 0 unique events at C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-collect-negative-B0oA1T\\.tokenizer\\queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+2026-10-08T20:16:01.4134530Z 
+2026-10-08T20:16:01.5298368Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-08T20:16:01.8264797Z  [32m✓[39m tests/cli/service-launchd.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-08T20:16:02.1449256Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-08T20:16:02.4269769Z [90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via git-symlink
+2026-10-08T20:16:02.4273520Z [22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"git-symlink","stdout":"Collected 0 events; queue holds 0 unique events at C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-collect-negative-LvQ2qt\\.tokenizer\\queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+2026-10-08T20:16:02.4276665Z 
+2026-10-08T20:16:02.4289250Z  [32m✓[39m tests/cli/b03-fixed-collect-privacy-negative.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 1993[2mms[22m[39m
+2026-10-08T20:16:02.4290544Z    [33m[2m✓[22m[39m normal CLI collect independently rejects excluded workspace via dot [33m 977[2mms[22m[39m
+2026-10-08T20:16:02.4292306Z    [33m[2m✓[22m[39m normal CLI collect independently rejects excluded workspace via git-symlink [33m 1014[2mms[22m[39m
+2026-10-08T20:16:02.7003712Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-08T20:16:02.9534414Z  [32m✓[39m tests/ci/b07-obsolete-queue-test-archive.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:16:03.1845343Z  [2m[90m↓[39m[22m tests/cli/b03-round2-elapsed-negative.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:16:03.2046172Z  [32m✓[39m tests/cli/b03-round2-final-deadline-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 2457[2mms[22m[39m
+2026-10-08T20:16:03.2050164Z    [33m[2m✓[22m[39m final admission must refuse when its wall clock advances beyond budget during otherwise unchanged enrichment [33m 2455[2mms[22m[39m
+2026-10-08T20:16:03.8448216Z  [32m✓[39m tests/ci/b07-combination-test-scope.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:16:04.1609636Z  [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-08T20:16:04.2775490Z  [32m✓[39m tests/cli/b06-rejected-events-concurrency.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 844[2mms[22m[39m
+2026-10-08T20:16:04.2797966Z      [33m[2m✓[22m[39m serializes two native processes without losing either rejected event [33m 842[2mms[22m[39m
+2026-10-08T20:16:04.3782622Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-08T20:16:04.5218827Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:16:04.7542516Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-08T20:16:05.0412759Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-08T20:16:05.1386615Z  [32m✓[39m tests/cli/process-bounds/windows-reparse-bounds.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 501[2mms[22m[39m
+2026-10-08T20:16:05.1388660Z    [33m[2m✓[22m[39m fails closed on a native overflowing reparse checker without raw stderr [33m 500[2mms[22m[39m
+2026-10-08T20:16:05.2835378Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-08T20:16:05.5022629Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+2026-10-08T20:16:05.9171133Z  [32m✓[39m tests/ci/tsconfig-report-boundary.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 101[2mms[22m[39m
+2026-10-08T20:16:05.9372912Z  [32m✓[39m tests/ci/b07-combination-frozen-inputs.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 198[2mms[22m[39m
+2026-10-08T20:16:06.2220122Z  [32m✓[39m tests/server/agent-releases-route.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-08T20:16:06.5559449Z  [32m✓[39m tests/ci/b07-obsolete-queue-eol-policy.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 125[2mms[22m[39m
+2026-10-08T20:16:06.8530408Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-08T20:16:06.9114182Z  [32m✓[39m tests/cli/b07-queue-multiwriter.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 4524[2mms[22m[39m
+2026-10-08T20:16:06.9115761Z      [33m[2m✓[22m[39m preserves concurrent collection, newer versions and crash retries over real HTTP [33m 4522[2mms[22m[39m
+2026-10-08T20:16:07.0343209Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-08T20:16:07.0371345Z  [32m✓[39m tests/cli/replay-help.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 890[2mms[22m[39m
+2026-10-08T20:16:07.0372532Z      [33m[2m✓[22m[39m documents the explicit file, budgets, dry-run default, and digest confirmation [33m 888[2mms[22m[39m
+2026-10-08T20:16:07.0435445Z 
+2026-10-08T20:16:07.0436193Z [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+2026-10-08T20:16:07.0436484Z 
+2026-10-08T20:16:07.0439590Z [41m[1m FAIL [22m[49m tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22mparent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory
+2026-10-08T20:16:07.0445754Z [31m[1mAssertionError[22m: expected [Function] to throw error including 'source parent changed' but got 'Replay refused: source could not be o…'[39m
+2026-10-08T20:16:07.0446186Z 
+2026-10-08T20:16:07.0446400Z Expected: [32m"source parent changed"[39m
+2026-10-08T20:16:07.0446803Z Received: [31m"Replay refused: source could not be opened safely"[39m
+2026-10-08T20:16:07.0447025Z 
+2026-10-08T20:16:07.0447495Z [36m [2m❯[22m tests/cli/b03-fixed-prereview-independent.test.ts:[2m30:185[22m[39m
+2026-10-08T20:16:07.0487949Z 
+2026-10-08T20:16:07.0490644Z 
+2026-10-08T20:16:07.0492726Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+2026-10-08T20:16:07.0493033Z 
+2026-10-08T20:16:07.0494243Z [41m[1m FAIL [22m[49m tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22mfinal confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission
+2026-10-08T20:16:07.0495551Z [31m[1mError[22m: Test timed out in 5000ms.
+2026-10-08T20:16:07.0496180Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+2026-10-08T20:16:07.0496849Z [36m [2m❯[22m tests/cli/b03-fixed-prereview-independent.test.ts:[2m48:1[22m[39m
+2026-10-08T20:16:07.0497817Z     [90m 46|[39m })[33m;[39m
+2026-10-08T20:16:07.0498175Z     [90m 47|[39m
+2026-10-08T20:16:07.0498717Z     [90m 48|[39m it("final confirmation negatives: projectRoots, same-size content, and…
+2026-10-08T20:16:07.0499297Z     [90m   |[39m [31m^[39m
+2026-10-08T20:16:07.0499774Z     [90m 49|[39m   const dir = fixture(); const file = join(dir, "source.jsonl"); write…
+2026-10-08T20:16:07.0500271Z     [90m 50|[39m   const cfg = config(); const digest = dryRunBoundedReplay(plan(file),…
+2026-10-08T20:16:07.0500522Z 
+2026-10-08T20:16:07.0500700Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+2026-10-08T20:16:07.0500864Z 
+2026-10-08T20:16:07.0501502Z [41m[1m FAIL [22m[49m tests/cli/b07-prereview-process.test.ts[2m > [22meight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+2026-10-08T20:16:07.0516262Z {
+2026-10-08T20:16:07.0516518Z   stack: 'Error: \n' +
+2026-10-08T20:16:07.0517186Z     '    at ChildProcess.<anonymous> (D:/a/tokenizer/tokenizer/tests/cli/b07-prereview-process.test.ts:29:167)\n' +
+2026-10-08T20:16:07.0517961Z     '    at ChildProcess.emit (node:events:519:28)\n' +
+2026-10-08T20:16:07.0518345Z     '    at Process.ChildProcess._handle.onexit (node:internal/child_process:293:12)',
+2026-10-08T20:16:07.0518658Z   message: '',
+2026-10-08T20:16:07.0519090Z   constructor: 'Function<Error>',
+2026-10-08T20:16:07.0519299Z   name: 'Error',
+2026-10-08T20:16:07.0519476Z   toString: 'Function<toString>',
+2026-10-08T20:16:07.0519917Z   stacks: [
+2026-10-08T20:16:07.0520098Z     {
+2026-10-08T20:16:07.0520270Z       method: 'ChildProcess.<anonymous>',
+2026-10-08T20:16:07.0520603Z       file: 'D:/a/tokenizer/tokenizer/tests/cli/b07-prereview-process.test.ts',
+2026-10-08T20:16:07.0520908Z       line: 29,
+2026-10-08T20:16:07.0521065Z       column: 167
+2026-10-08T20:16:07.0521212Z     }
+2026-10-08T20:16:07.0521387Z   ]
+2026-10-08T20:16:07.0521675Z }
+2026-10-08T20:16:07.0522433Z [36m [2m❯[22m ChildProcess.<anonymous> tests/cli/b07-prereview-process.test.ts:[2m29:167[22m[39m
+2026-10-08T20:16:07.0531950Z 
+2026-10-08T20:16:07.0532087Z 
+2026-10-08T20:16:07.0532830Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+2026-10-08T20:16:07.0533201Z 
+2026-10-08T20:16:07.0534290Z [41m[1m FAIL [22m[49m tests/cli/replay.test.ts[2m > [22mbounded historical replay[2m > [22mbinds execution to file, range, budgets, current scope, and privacy mode
+2026-10-08T20:16:07.0535467Z [31m[1mError[22m: Test timed out in 5000ms.
+2026-10-08T20:16:07.0536551Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+2026-10-08T20:16:07.0537579Z [36m [2m❯[22m tests/cli/replay.test.ts:[2m152:3[22m[39m
+2026-10-08T20:16:07.0560974Z     [90m150|[39m   })[33m;[39m
+2026-10-08T20:16:07.0561454Z     [90m151|[39m
+2026-10-08T20:16:07.0562161Z     [90m152|[39m   it("binds execution to file, range, budgets, current scope, and priv…
+2026-10-08T20:16:07.0563091Z     [90m   |[39m   [31m^[39m
+2026-10-08T20:16:07.0563812Z     [90m153|[39m     [35mconst[39m root [33m=[39m [34mtemporaryRoot[39m()[33m;[39m
+2026-10-08T20:16:07.0573278Z     [90m154|[39m     [35mconst[39m file [33m=[39m [34mjoin[39m(root[33m,[39m [32m"confirm.jsonl"[39m)[33m;[39m
+2026-10-08T20:16:07.0573831Z 
+2026-10-08T20:16:07.0574143Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+2026-10-08T20:16:07.0574406Z 
+2026-10-08T20:16:07.0575406Z [41m[1m FAIL [22m[49m tests/cli/process-bounds/bounded-subprocess.test.ts[2m > [22mbounded subprocess primitive[2m > [22mbounds inherited-pipes and reaps owned native processes
+2026-10-08T20:16:07.0690099Z [31m[1mAssertionError[22m: expected function to throw an error, but it didn't[39m
+2026-10-08T20:16:07.0691038Z [36m [2m❯[22m tests/cli/process-bounds/bounded-subprocess.test.ts:[2m98:29[22m[39m
+2026-10-08T20:16:07.0691629Z     [90m 96|[39m   it.each(["resistant", "descendant", "inherited-pipes"])("bounds %s a…
+2026-10-08T20:16:07.0692169Z     [90m 97|[39m     [35mconst[39m start [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m()[33m;[39m
+2026-10-08T20:16:07.0692837Z     [90m 98|[39m     [34mexpect[39m(() [33m=>[39m [34mrun[39m(mode))[33m.[39m[34mtoThrow[39m([33mBoundedSubprocessTimeoutError[39m)[33m;[39m
+2026-10-08T20:16:07.0693366Z     [90m   |[39m                             [31m^[39m
+2026-10-08T20:16:07.0693764Z     [90m 99|[39m     expect(Date.now() - start).toBeLessThan(500 + SUBPROCESS_TOTAL_ALL…
+2026-10-08T20:16:07.0694507Z     [90m100|[39m     [34mexpect[39m([34mpids[39m()[33m.[39mlength)[33m.[39m[34mtoBe[39m(mode [33m===[39m [32m"resistant"[39m [33m?[39m [34m1[39m [33m:[39m [34m2[39m)[33m;[39m
+2026-10-08T20:16:07.0694943Z 
+2026-10-08T20:16:07.0699488Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+2026-10-08T20:16:07.0699842Z 
+2026-10-08T20:16:07.0704809Z [41m[1m FAIL [22m[49m tests/cli/process-bounds/bounded-subprocess.test.ts[2m > [22mbounded subprocess primitive[2m > [22maccounts stdout and stderr against one combined byte budget
+2026-10-08T20:16:07.0708247Z [31m[1mAssertionError[22m: expected error to be instance of BoundedSubprocessOutputError[39m
+2026-10-08T20:16:07.0708759Z 
+2026-10-08T20:16:07.0708979Z [32m- Expected:[39m
+2026-10-08T20:16:07.0709691Z [Function BoundedSubprocessOutputError]
+2026-10-08T20:16:07.0709947Z 
+2026-10-08T20:16:07.0710113Z [31m+ Received:[39m
+2026-10-08T20:16:07.0710667Z BoundedSubprocessSupervisionError {
+2026-10-08T20:16:07.0711057Z   "message": "subprocess cleanup failed",
+2026-10-08T20:16:07.0711389Z }
+2026-10-08T20:16:07.0711501Z 
+2026-10-08T20:16:07.0712032Z [36m [2m❯[22m tests/cli/process-bounds/bounded-subprocess.test.ts:[2m113:49[22m[39m
+2026-10-08T20:16:07.0712611Z     [90m111|[39m
+2026-10-08T20:16:07.0713142Z     [90m112|[39m   it("accounts stdout and stderr against one combined byte budget", ()…
+2026-10-08T20:16:07.0714102Z     [90m113|[39m     expect(() => run("combined", 2_000, 1_024)).toThrow(BoundedSubproc…
+2026-10-08T20:16:07.0714723Z     [90m   |[39m                                                 [31m^[39m
+2026-10-08T20:16:07.0715707Z     [90m114|[39m     [35mconst[39m result [33m=[39m [34mrun[39m([32m"combined"[39m[33m,[39m [34m2_000[39m[33m,[39m [34m1_200[39m)[33m;[39m
+2026-10-08T20:16:07.0716699Z     [90m115|[39m     [34mexpect[39m(result[33m.[39mstdout[33m.[39mlength [33m+[39m result[33m.[39mstderr[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m1_200[39m)[33m;[39m
+2026-10-08T20:16:07.0717128Z 
+2026-10-08T20:16:07.0717317Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+2026-10-08T20:16:07.0717473Z 
+2026-10-08T20:16:07.0717502Z 
+2026-10-08T20:16:07.0717936Z [2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m161 passed[39m[22m[2m | [22m[33m18 skipped[39m[90m (183)[39m
+2026-10-08T20:16:07.0718688Z [2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m1910 passed[39m[22m[2m | [22m[33m144 skipped[39m[90m (2060)[39m
+2026-10-08T20:16:07.0719226Z [2m   Start at [22m 20:14:04
+2026-10-08T20:16:07.0719754Z [2m   Duration [22m 122.79s[2m (transform 7.05s, setup 0ms, import 20.34s, tests 306.66s, environment 28ms)[22m
+2026-10-08T20:16:07.0720052Z 
+2026-10-08T20:16:07.0720083Z 
+2026-10-08T20:16:07.0739660Z ##[error]AssertionError: expected [Function] to throw error including 'source parent changed' but got 'Replay refused: source could not be o…'
+
+Expected: "source parent changed"
+Received: "Replay refused: source could not be opened safely"
+
+ ❯ tests/cli/b03-fixed-prereview-independent.test.ts:30:185
+
+
+2026-10-08T20:16:07.0745950Z 
+2026-10-08T20:16:07.0747658Z ##[error]Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/cli/b03-fixed-prereview-independent.test.ts:48:1
+
+
+2026-10-08T20:16:07.0748594Z 
+2026-10-08T20:16:07.0751965Z ##[error]{
+  stack: 'Error: \n' +
+    '    at ChildProcess.<anonymous> (D:/a/tokenizer/tokenizer/tests/cli/b07-prereview-process.test.ts:29:167)\n' +
+    '    at ChildProcess.emit (node:events:519:28)\n' +
+    '    at Process.ChildProcess._handle.onexit (node:internal/child_process:293:12)',
+  message: '',
+  constructor: 'Function<Error>',
+  name: 'Error',
+  toString: 'Function<toString>',
+  stacks: [
+    {
+      method: 'ChildProcess.<anonymous>',
+      file: 'D:/a/tokenizer/tokenizer/tests/cli/b07-prereview-process.test.ts',
+      line: 29,
+      column: 167
+    }
+  ]
+}
+ ❯ ChildProcess.<anonymous> tests/cli/b07-prereview-process.test.ts:29:167
+
+
+2026-10-08T20:16:07.0753752Z 
+2026-10-08T20:16:07.0754992Z ##[error]Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/cli/replay.test.ts:152:3
+
+
+2026-10-08T20:16:07.0755856Z 
+2026-10-08T20:16:07.0756804Z ##[error]AssertionError: expected function to throw an error, but it didn't
+ ❯ tests/cli/process-bounds/bounded-subprocess.test.ts:98:29
+
+
+2026-10-08T20:16:07.0757468Z 
+2026-10-08T20:16:07.0759268Z ##[error]AssertionError: expected error to be instance of BoundedSubprocessOutputError
+
+- Expected:
+[Function BoundedSubprocessOutputError]
+
++ Received:
+BoundedSubprocessSupervisionError {
+  "message": "subprocess cleanup failed",
+}
+
+ ❯ tests/cli/process-bounds/bounded-subprocess.test.ts:113:49
+
+
+2026-10-08T20:16:07.2940123Z ##[error]Process completed with exit code 1.
+2026-10-08T20:16:07.3099316Z ##[group]Run actions/upload-artifact@v4
+2026-10-08T20:16:07.3099598Z with:
+2026-10-08T20:16:07.3099764Z   name: windows-agent-owner
+2026-10-08T20:16:07.3099974Z   path: .ci/windows-agent-owner.json
+2026-10-08T20:16:07.3100179Z   if-no-files-found: warn
+2026-10-08T20:16:07.3100377Z   retention-days: 7
+2026-10-08T20:16:07.3100548Z   compression-level: 6
+2026-10-08T20:16:07.3100714Z   overwrite: false
+2026-10-08T20:16:07.3100884Z   include-hidden-files: false
+2026-10-08T20:16:07.3101066Z ##[endgroup]
+2026-10-08T20:16:07.4650624Z (node:3584) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-08T20:16:07.4651254Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-08T20:16:07.4689375Z ##[warning]No files were found with the provided path: .ci/windows-agent-owner.json. No artifacts will be uploaded.
+2026-10-08T20:16:07.4969497Z Post job cleanup.
+2026-10-08T20:16:07.6338206Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-08T20:16:07.6553796Z git version 2.55.0.windows.5
+2026-10-08T20:16:07.6601507Z Temporarily overriding HOME='D:\a\_temp\fa2c92d2-9f7f-4006-b876-98d43de73540' before making global git config changes
+2026-10-08T20:16:07.6602142Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-08T20:16:07.6609571Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+2026-10-08T20:16:07.6872656Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-08T20:16:07.7119788Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-08T20:16:08.1388135Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-08T20:16:08.1587002Z http.https://github.com/.extraheader
+2026-10-08T20:16:08.1619551Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-08T20:16:08.1849271Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-08T20:16:08.7104109Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-08T20:16:08.7341010Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-08T20:16:09.1682981Z Cleaning up orphan processes
+2026-10-08T20:16:09.1917149Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

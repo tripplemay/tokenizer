@@ -1,0 +1,10 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="34.709275">
+<testsuite name="critical-journeys.spec.ts" timestamp="2026-10-08T20:17:12.783Z" hostname="" tests="3" failures="0" skipped="0" time="33.052" errors="0">
+<testcase name="anonymous visitor is redirected to login" classname="critical-journeys.spec.ts" time="0.603">
+</testcase>
+<testcase name="historical tenant keeps range controls and can return to all-time events" classname="critical-journeys.spec.ts" time="0.887">
+</testcase>
+<testcase name="first enroll and upload reaches the dashboard without a manual reload" classname="critical-journeys.spec.ts" time="31.562">
+</testcase>
+</testsuite>
+</testsuites>

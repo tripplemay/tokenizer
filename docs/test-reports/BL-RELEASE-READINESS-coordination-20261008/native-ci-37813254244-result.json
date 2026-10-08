@@ -1,0 +1,48 @@
+{
+  "observed_at": "2026-10-08T20:23:47Z",
+  "role": "Coordinator evidence transport, not Evaluator",
+  "run_id": 37813254244,
+  "source_sha": "f754423387374afee0671f951730cac43bad7891",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "original_hashes": "repair-ci-37813254244-original-sha256.txt",
+  "jobs": {
+    "ubuntu": "success",
+    "macos_launchd": "success",
+    "postgresql_16": "success",
+    "authenticated_browser": "success",
+    "windows": "failure",
+    "host_preflight": "skipped",
+    "oci_and_recovery": "skipped",
+    "deploy": "skipped"
+  },
+  "windows": {
+    "job_id": 113518921402,
+    "passed": 1910,
+    "skipped": 144,
+    "failed": 6,
+    "test_files": {"passed": 161, "skipped": 18, "failed": 4},
+    "targeted_native_results": {
+      "original_privacy_scope_safety": "13 tests passed; raw line 364",
+      "new_privacy_ancestor_controls": "10 tests passed; raw line 460",
+      "new_workflow_parser_controls": "11 tests passed; raw line 576",
+      "original_host_preflight_file": "1 passed, 42 pre-existing Unix-only skips; raw line 225"
+    },
+    "failures": [
+      {"file": "tests/cli/b03-fixed-prereview-independent.test.ts", "case": "afterRead parent identity", "evidence": "expected source parent changed, received source could not be opened safely"},
+      {"file": "tests/cli/b03-fixed-prereview-independent.test.ts", "case": "final confirmation negatives", "evidence": "existing 5000ms test deadline exceeded"},
+      {"file": "tests/cli/b07-prereview-process.test.ts", "case": "eight simultaneous native writers", "evidence": "new relative to original CI; empty Error, native child exit/signal not recorded by fixture"},
+      {"file": "tests/cli/replay.test.ts", "case": "binding negatives", "evidence": "existing 5000ms test deadline exceeded"},
+      {"file": "tests/cli/process-bounds/bounded-subprocess.test.ts", "case": "inherited pipes", "evidence": "expected timeout exception was not thrown"},
+      {"file": "tests/cli/process-bounds/bounded-subprocess.test.ts", "case": "combined output budget", "evidence": "expected BoundedSubprocessOutputError, received BoundedSubprocessSupervisionError"}
+    ],
+    "not_a_simple_remaining_original_six": true,
+    "new_queue_failure_not_adjudicated_as_flake_or_data_loss": true,
+    "owner_force_termination_and_install_syntax": "skipped after unit failure"
+  },
+  "release_ready": false,
+  "F002_F004_F005": "pending",
+  "main_push": false,
+  "production_app_database_or_app_config_mutation": false,
+  "next": "Retain the exact failure set; isolate earliest unknown writer exit evidence before proposing changes. No rerun-to-green, old-test weakening or native acceptance."
+}

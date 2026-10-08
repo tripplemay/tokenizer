@@ -1,0 +1,48 @@
+{
+  "observed_at": "2026-10-08T20:26:43Z",
+  "role": "Coordinator evidence transport, not acceptance",
+  "release_ready": false,
+  "main_and_origin_main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "main_push": false,
+  "production_app_database_or_app_config_mutation": false,
+  "public_health": {"timestamp":"2026-10-08T20:26:43.854Z","ok":true,"commit":"92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1","not_image_provenance":true},
+  "host_preflight": {
+    "run": 37812774615,
+    "human_approval": "actual approved production review by tripplemay, original API retained",
+    "conclusion": "failure",
+    "redacted_report": "outcome refused, compose_unavailable, Docker29.1.3, Linux/x86_64",
+    "authenticated_ssh_transport_executed": true,
+    "app_config_app_image_database_identity": "not reached",
+    "HOME_cause": "hypothesis only, not proved",
+    "followup": "narrow supporting observability spec c4b81ff; independent planning scope review pending; no implementation/publication/livehost followup yet"
+  },
+  "repair_native_ci": {
+    "run": 37813254244,
+    "exact_source": "f754423387374afee0671f951730cac43bad7891",
+    "status": "completed",
+    "conclusion": "failure",
+    "ubuntu_macos_pg16_browser": "success",
+    "windows": "1910 passed,144 skipped,6 failed,4 failing files",
+    "targeted": "old privacy13/new privacy10/new workflow11 pass; old host43 contains1pass42Unix-onlyskip",
+    "new_failure": "eight native B07 writers: empty Error before queue/ACK checks; child exit/signal not recorded",
+    "not_simple_remaining_original_six": true,
+    "not_flake_or_data_loss_adjudication": true,
+    "oci_and_deploy": "skipped",
+    "original_archive_commit": "8c7c1c5",
+    "raw_windows_sha256": "d45f104b41195b1feddddd02576ae1288ea2a447ca02e4f4f7e4b89a3625b494",
+    "copied_raw_evidence": "repair-ci-37813254244-* and native-ci-37813254244-result.json",
+    "read_only_independent_queue_fact_diagnosis": "running, no product/test mutations"
+  },
+  "second_native_diagnostic": {
+    "run": 37822555762,
+    "exact_source": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "conclusion": "success for bounded diagnostic execution only",
+    "P0": "10/10 pass",
+    "P1": "10/10 configured7s timeouts",
+    "P2_and_downstream": "not reached",
+    "new_P1_arms": "proposal only, require new scope"
+  },
+  "backup": {"target":"dmitsvr","recipient_and_offline_custody":"awaiting user information","real_encrypted_backup_or_restore":false,"bootstrap_or_activation":false},
+  "POSTGRES_PASSWORD": "still absent; no existing password verification, rotation or Secret write",
+  "open": ["exact final Windows and all six release gates","formal fresh cross-family full-composition F005","actual predecessor source/image binding","real encrypted off-host backup and isolated recovery","existing PostgreSQL TCP credential proof and protected Secret","Agent distribution","original homepage production-browser freshness F005"]
+}
