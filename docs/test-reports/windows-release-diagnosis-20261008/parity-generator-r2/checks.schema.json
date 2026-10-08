@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "role", "sourceFreezeHead", "r1BaseHead", "scopeBaseHead", "checkedHead", "node", "platform", "nativeWindowsExecuted", "productRuntimeExecuted", "syntaxChecks", "schemaValidated", "finalControls", "allControlsPassed", "bounds", "nativeAttributeScriptExact", "frozenPathsUnchanged", "workflowUnchangedFromR1", "originalEvidenceInventory", "criticInputInventory", "proofInventory", "releaseAcceptance", "releaseReady"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "role": {"const": "supporting-generator-r2-static-checks"},
+    "sourceFreezeHead": {"const": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1"},
+    "r1BaseHead": {"const": "5ab1c93894aebcfb2ffad50604e942a10c3655f7"},
+    "scopeBaseHead": {"const": "846e8e07614a97dcebd9d2cd2bdb678f971651fd"},
+    "checkedHead": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "node": {"type": "string", "pattern": "^v22\\.[0-9]+\\.[0-9]+$"},
+    "platform": {"const": "darwin"},
+    "nativeWindowsExecuted": {"const": false},
+    "productRuntimeExecuted": {"const": false},
+    "syntaxChecks": {"const": 4},
+    "schemaValidated": {"const": true},
+    "finalControls": {"const": 14},
+    "allControlsPassed": {"const": true},
+    "bounds": {"const": {"totalMs": 600000, "caseMs": 40000, "cleanupMs": 3000, "operationMs": 10000, "smokeChildMs": 7000, "smokePs": 38, "totalPs": 76, "outputBytes": 65536, "traceBytes": 524288, "attributeBytes": 16384}},
+    "nativeAttributeScriptExact": {"const": true},
+    "frozenPathsUnchanged": {"const": true},
+    "workflowUnchangedFromR1": {"const": true},
+    "originalEvidenceInventory": {"type": "array", "minItems": 32, "maxItems": 32, "items": {"$ref": "#/definitions/hash"}},
+    "criticInputInventory": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/definitions/hash"}},
+    "proofInventory": {"type": "array", "minItems": 10, "items": {"type": "object", "additionalProperties": false, "required": ["path", "r1GitObject", "currentCommittedGitObject"], "properties": {"path": {"type": "string"}, "r1GitObject": {"type": "string", "pattern": "^[a-f0-9]{40}$"}, "currentCommittedGitObject": {"type": "string", "pattern": "^[a-f0-9]{40}$"}}}},
+    "releaseAcceptance": {"const": false},
+    "releaseReady": {"const": false}
+  },
+  "definitions": {
+    "hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "bytes": {"type": "integer", "minimum": 0}}}
+  }
+}

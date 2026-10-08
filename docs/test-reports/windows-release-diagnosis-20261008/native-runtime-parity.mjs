@@ -24,6 +24,102 @@ export const NATIVE_SCRIPT = "$ErrorActionPreference='Stop'; foreach($p in (Conv
 const owned = (root, path) => typeof path === 'string' && (path === root ||
   (!relative(root, path).startsWith('..') && !isAbsolute(relative(root, path))));
 
+const SAFE_CODES = new Set(['ENOENT', 'ENOTDIR', 'ELOOP', 'EACCES', 'EPERM', 'EIO', 'EBUSY', 'EINVAL', 'ENOSPC',
+  'EMFILE', 'ENFILE', 'EPIPE', 'ETIMEDOUT', 'EEXIST', 'EROFS', 'ENAMETOOLONG', 'ENODEV', 'ENOMEM', 'ESRCH', 'UNKNOWN',
+  'ERR_INVALID_ARG_TYPE', 'ERR_OUT_OF_RANGE', 'ERR_INVALID_ARG_VALUE', 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER',
+  'TW_PARITY_BUDGET', 'TW_MARKER_MISMATCH', 'TW_GIT_SETUP', 'PROBE_SETUP_ERROR', 'DIAGNOSTIC_FAILURE', 'LAUNCH_ERROR',
+  'NATIVE_ERROR', 'UNRECOGNIZED_ERROR_CODE', 'GUARD_HEALTH_IO', 'GUARD_LOG_IO_OR_LIMIT', 'GUARD_COUNTER_IO',
+  'GUARD_UNSAFE_METADATA', 'GUARD_LOG_LIMIT', 'TRACE_STATUS_WRITE', 'TRACE_IO_OR_SERIALIZATION', 'TRACE_LIMIT']);
+const SAFE_SIGNALS = new Set(['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGIOT', 'SIGBUS',
+  'SIGFPE', 'SIGKILL', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGPIPE', 'SIGALRM', 'SIGTERM', 'SIGCHLD', 'SIGCONT',
+  'SIGSTOP', 'SIGTSTP', 'SIGTTIN', 'SIGTTOU', 'SIGBREAK', 'SIGWINCH']);
+const ABORT_REASONS = new Set(['unknown-native-budget', 'native-cleanup-output-allowance-insufficient',
+  'total-powershell-budget-insufficient', 'smoke-powershell-budget-insufficient', 'native-budget-counter-unavailable',
+  'unexpected-synchronous-powershell', 'owned-lifetime-expired', 'owned-case-watchdog-expired',
+  'diagnostic-output-limit-exceeded']);
+export const safeCode = (value) => value == null ? null : SAFE_CODES.has(value) ? value : 'UNRECOGNIZED_ERROR_CODE';
+export const errorCode = (error) => { try { return safeCode(error?.code); } catch { return 'UNRECOGNIZED_ERROR_CODE'; } };
+const uint = (value, maximum = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && value >= 0 && value <= maximum;
+const finite = (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0;
+const exactKeys = (value, required, optional = []) => value && typeof value === 'object' && !Array.isArray(value) &&
+  required.every((key) => Object.hasOwn(value, key)) && Object.keys(value).every((key) => required.includes(key) || optional.includes(key));
+const safeTarget = (value) => {
+  if (['$OWNED', '$ANCESTOR_OR_OTHER', 'object', 'number', 'undefined', 'boolean', 'symbol', 'function'].includes(value)) return true;
+  if (typeof value !== 'string' || !value.startsWith('$OWNED/')) return false;
+  const path = value.slice(7).replaceAll('\\', '/');
+  if (['source.jsonl', 'guard.jsonl', 'trace.jsonl', 'counter.jsonl', 'home', 'tmp', 'appdata', 'localappdata',
+    'guard-health', 'trace-health', 'home/empty-gitconfig', 'home/.tokenizer', 'home/.tokenizer/queue.jsonl',
+    'home/.tokenizer/cursor.json', 'home/.tokenizer/config.json', 'afterPathStat', 'afterRead', 'afterPathStat-moved',
+    'afterRead-moved', 'afterPathStat/source.jsonl', 'afterRead/source.jsonl', 'afterPathStat-moved/source.jsonl',
+    'afterRead-moved/source.jsonl', 'binding-allowed', 'binding-allowed/project', 'binding-different'].includes(path)) return true;
+  return /^(?:guard-health|trace-health)\/[1-9][0-9]{0,9}\.json$/.test(path) ||
+    /^tmp\/tsx-runneradmin(?:\/(?:[0-9]{1,16}-)?[a-f0-9]{16,64}(?:\.(?:mjs|js|json))?)?$/.test(path);
+};
+
+// Evidence files are untrusted. Rebuild only exact event shapes; never export their original bytes.
+export function evidenceEvent(family, event) {
+  if (family === 'counter') return exactKeys(event, ['event', 'kind']) && event.event === 'powershell-admission' &&
+    ['smoke', 'downstream'].includes(event.kind) ? { event: event.event, kind: event.kind } : null;
+  const base = family === 'trace' ? ['pid', 'sequence', 'at', 'monotonicMs', 'event'] : ['pid', 'sequence', 'at', 'event'];
+  if (!['guard', 'trace'].includes(family) || !exactKeys(event, base, Object.keys(event ?? {}).filter((key) => !base.includes(key))) ||
+      !uint(event.pid, 0xffffffff) || event.pid === 0 || !uint(event.sequence, 10000000) || !uint(event.at) ||
+      (family === 'trace' && !finite(event.monotonicMs)) || typeof event.event !== 'string') return null;
+  let required = [], optional = [];
+  const schemas = {
+    'guard-preload': ['commonBudgetGuardOn', 'oldTracePreloadOn'], 'owned-lifetime-expired': [],
+    'diagnostic-budget-abort': ['reason'], preload: ['node', 'uv'],
+    spawn: ['executable', 'childPid', 'detached'], 'child-error': ['executable', 'childPid', 'code'],
+    'child-exit': ['executable', 'status', 'signal'], 'child-close': ['executable', 'status', 'signal'],
+    'stdout-bytes': ['childPid', 'bytes'], 'stderr-bytes': ['childPid', 'bytes'],
+    'realpath-native': ['target', 'ok'], fs: ['operation', 'target', 'ok', 'elapsedMs'],
+    'spawn-sync': family === 'trace' ? ['executable', 'childPid', 'elapsedMs', 'status', 'signal', 'code', 'workerKind'] : ['executable', 'childPid', 'status', 'signal', 'code']
+  };
+  if (!Object.hasOwn(schemas, event.event)) return null;
+  if ((family === 'guard' && ['preload', 'fs', 'realpath-native', 'stdout-bytes', 'stderr-bytes'].includes(event.event)) ||
+      (family === 'trace' && ['guard-preload', 'owned-lifetime-expired', 'diagnostic-budget-abort'].includes(event.event))) return null;
+  required = schemas[event.event];
+  if (['child-exit', 'child-close'].includes(event.event)) optional = ['childPid'];
+  if (event.event === 'realpath-native' && event.ok === false) required = [...required, 'code'];
+  if (event.event === 'fs') {
+    if (event.ok === false) required = [...required, 'code', 'syscall'];
+    else optional = ['directory', 'file', 'symlink', 'dev', 'ino'];
+  }
+  if (!exactKeys(event, [...base, ...required], optional)) return null;
+  for (const [key, value] of Object.entries(event)) {
+    if ([...base].includes(key)) continue;
+    if (['commonBudgetGuardOn', 'oldTracePreloadOn', 'detached', 'ok', 'directory', 'file', 'symlink'].includes(key)) { if (typeof value !== 'boolean') return null; }
+    else if (key === 'reason') { if (!ABORT_REASONS.has(value)) return null; }
+    else if (key === 'executable') { if (!['node', 'node.exe', 'powershell.exe', 'taskkill.exe', 'git', 'git.exe', 'esbuild', 'esbuild.exe', 'other'].includes(value)) return null; }
+    else if (key === 'childPid') { if (value !== null && !uint(value, 0xffffffff)) return null; }
+    else if (key === 'status') { if (value !== null && (!Number.isSafeInteger(value) || value < -2147483648 || value > 0xffffffff)) return null; }
+    else if (key === 'signal') { if (value !== null && !SAFE_SIGNALS.has(value)) return null; }
+    else if (key === 'code') { if (value !== null && !SAFE_CODES.has(value)) return null; }
+    else if (key === 'workerKind') { if (![null, 'ok', 'timeout', 'output', 'launch', 'supervision'].includes(value)) return null; }
+    else if (key === 'target') { if (!safeTarget(value)) return null; }
+    else if (key === 'elapsedMs') { if (!finite(value)) return null; }
+    else if (key === 'bytes') { if (!uint(value, 2147483647)) return null; }
+    else if (key === 'node') { if (typeof value !== 'string' || !/^v22\.[0-9]{1,3}\.[0-9]{1,3}$/.test(value)) return null; }
+    else if (key === 'uv') { if (typeof value !== 'string' || !/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(value)) return null; }
+    else if (key === 'operation') { if (!['lstatSync', 'fstatSync', 'openSync', 'renameSync', 'mkdirSync', 'linkSync'].includes(value)) return null; }
+    else if (key === 'syscall') { if (value !== null && !['lstat', 'fstat', 'open', 'rename', 'mkdir', 'link'].includes(value)) return null; }
+    else if (['dev', 'ino'].includes(key)) { if (typeof value !== 'string' || !/^[0-9]{1,24}$/.test(value)) return null; }
+    else return null;
+  }
+  if (event.event === 'guard-preload' && event.commonBudgetGuardOn !== true) return null;
+  if (event.event === 'fs' && event.ok === true && optional.some((key) => Object.hasOwn(event, key)) && !optional.every((key) => Object.hasOwn(event, key))) return null;
+  return Object.fromEntries(Object.entries(event));
+}
+
+export function publicJsonl(family, rows) {
+  try {
+    if (!Array.isArray(rows)) return null;
+    const rebuilt = rows.map((event) => evidenceEvent(family, event));
+    if (rebuilt.some((event) => event === null)) return null;
+    const text = rebuilt.map((event) => JSON.stringify(event) + '\n').join('');
+    return Buffer.byteLength(text) <= BOUNDS.traceBytes ? text : null;
+  } catch { return null; }
+}
+
 export function armEnvironment(base, arm, root) {
   assert(Object.hasOwn(ARM_KEYS, arm), 'unknown arm');
   const env = { ...base };
@@ -51,8 +147,10 @@ export function admission({ now, deadline, usedTotal, usedSmoke, requiredPs, smo
 }
 
 function counts(file) {
-  const lines = fs.readFileSync(file, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
-  assert(lines.every((entry) => entry.event === 'powershell-admission' && ['smoke', 'downstream'].includes(entry.kind)));
+  const text = fs.readFileSync(file, 'utf8');
+  assert(Buffer.byteLength(text) <= BOUNDS.attributeBytes);
+  const lines = text.trim().split('\n').filter(Boolean).map(JSON.parse);
+  assert(lines.length <= BOUNDS.totalPs && lines.every((entry) => evidenceEvent('counter', entry)));
   return { total: lines.length, smoke: lines.filter((entry) => entry.kind === 'smoke').length };
 }
 
@@ -75,7 +173,9 @@ function installGuard() {
   const log = (event) => {
     try {
       if (fs.statSync(logFile).size >= BOUNDS.traceBytes) throw Object.assign(new Error(), { code: 'GUARD_LOG_LIMIT' });
-      append(logFile, JSON.stringify({ pid: process.pid, sequence: sequence++, at: Date.now(), ...event }) + '\n');
+      const rebuilt = evidenceEvent('guard', { pid: process.pid, sequence: sequence++, at: Date.now(), ...event });
+      if (!rebuilt) throw new Error('unsafe guard metadata');
+      append(logFile, JSON.stringify(rebuilt) + '\n');
     } catch { failed = true; reasonCode ??= 'GUARD_LOG_IO_OR_LIMIT'; health('failed'); }
   };
   health('pending');
@@ -94,6 +194,7 @@ function installGuard() {
     if (stopping) return;
     stopping = true;
     log({ event: 'owned-lifetime-expired' });
+    log({ event: 'diagnostic-budget-abort', reason: 'owned-lifetime-expired' });
     // Concurrent child handles are bounded by the explicit diagnostic cases.
     for (const child of children) stopOwnedHandle(child);
     process.exit(92);
@@ -122,9 +223,13 @@ function installGuard() {
     const child = originalSpawn.call(this, command, args, options);
     children.add(child);
     log({ event: 'spawn', executable: exe, childPid: child.pid ?? null, detached: options?.detached ?? false });
-    child.on(errorMonitor, (error) => log({ event: 'child-error', executable: exe, childPid: child.pid ?? null, code: error.code ?? null }));
-    child.on('exit', (status, signal) => log({ event: 'child-exit', executable: exe, childPid: child.pid, status, signal }));
-    child.on('close', (status, signal) => { children.delete(child); log({ event: 'child-close', executable: exe, childPid: child.pid, status, signal }); });
+    child.on(errorMonitor, (error) => {
+      const code = errorCode(error);
+      if (code === 'UNRECOGNIZED_ERROR_CODE') { failed = true; reasonCode ??= 'GUARD_UNSAFE_METADATA'; health('failed'); }
+      log({ event: 'child-error', executable: exe, childPid: child.pid ?? null, code });
+    });
+    child.on('exit', (status, signal) => log({ event: 'child-exit', executable: exe, childPid: child.pid ?? null, status, signal }));
+    child.on('close', (status, signal) => { children.delete(child); log({ event: 'child-close', executable: exe, childPid: child.pid ?? null, status, signal }); });
     return child;
   };
   cp.spawnSync = function (command, args, options) {
@@ -134,28 +239,36 @@ function installGuard() {
       throw Object.assign(new Error('diagnostic-budget-not-reached'), { code: 'TW_PARITY_BUDGET' });
     }
     const result = originalSpawnSync.call(this, command, args, options);
+    const code = errorCode(result.error);
+    if (code === 'UNRECOGNIZED_ERROR_CODE') { failed = true; reasonCode ??= 'GUARD_UNSAFE_METADATA'; health('failed'); }
     log({ event: 'spawn-sync', executable: executable(command), childPid: result.pid ?? null,
-      status: result.status, signal: result.signal, code: result.error?.code ?? null });
+      status: result.status, signal: result.signal, code });
     return result;
   };
   syncBuiltinESMExports();
   log({ event: 'guard-preload', commonBudgetGuardOn: true, oldTracePreloadOn: process.env.TW_PARITY_TRACE === 'on' });
 }
 
-function readRows(path, maximum = BOUNDS.traceBytes) {
+function readRows(path, family = 'guard', maximum = BOUNDS.traceBytes) {
   let bytes;
-  try { bytes = fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0); }
-  catch { return { rows: [], invalid: true, readFailed: true, bytes: Buffer.alloc(0) }; }
-  if (bytes.length > maximum) return { rows: [], invalid: true, bytes };
-  try { return { rows: bytes.toString('utf8').trim().split('\n').filter(Boolean).map(JSON.parse), invalid: false, bytes }; }
-  catch { return { rows: [], invalid: true, bytes }; }
+  try {
+    if (fs.existsSync(path) && fs.statSync(path).size > maximum) return { rows: [], invalid: true, bytesLength: fs.statSync(path).size };
+    bytes = fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0);
+  } catch { return { rows: [], invalid: true, readFailed: true, bytesLength: 0 }; }
+  if (bytes.length > maximum) return { rows: [], invalid: true, bytesLength: bytes.length };
+  try {
+    const rows = bytes.toString('utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
+    const publicText = publicJsonl(family, rows);
+    if (publicText === null) return { rows: [], invalid: true, bytesLength: bytes.length };
+    return { rows: rows.map((row) => evidenceEvent(family, row)), invalid: false, bytesLength: bytes.length, publicText };
+  } catch { return { rows: [], invalid: true, bytesLength: bytes.length }; }
 }
 
 export function validProbe(value, kind, arm, trace) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || value.case !== kind || value.arm !== arm ||
       value.commonBudgetGuardOn !== true || value.releaseAcceptance !== false) return false;
   if (value.probeSetupComplete === false) return Object.keys(value).every((key) =>
-    ['case', 'arm', 'commonBudgetGuardOn', 'probeSetupComplete', 'code', 'releaseAcceptance'].includes(key)) && /^[A-Z0-9_]{1,64}$/.test(value.code);
+    ['case', 'arm', 'commonBudgetGuardOn', 'probeSetupComplete', 'code', 'releaseAcceptance'].includes(key)) && SAFE_CODES.has(value.code);
   if (value.oldTracePreload !== trace || value.operationBudgetMs !== BOUNDS.operationMs || typeof value.p2Succeeded !== 'boolean' ||
       !Array.isArray(value.observations) || value.observations.length > 64 ||
       Object.keys(value).some((key) => !['case', 'arm', 'oldTracePreload', 'commonBudgetGuardOn', 'operationBudgetMs', 'p2Succeeded', 'observations', 'releaseAcceptance'].includes(key))) return false;
@@ -168,12 +281,12 @@ export function validProbe(value, kind, arm, trace) {
     refusalKind: [null, 'unsafe-open', 'parent-changed', 'stale-confirmation', 'deadline', 'source-changed', 'reparse-check', 'other-refusal'],
     errorClass: ['Error', 'TypeError', 'RangeError', 'AssertionError', 'BoundedSubprocessTimeoutError', 'BoundedSubprocessLaunchError', 'BoundedSubprocessOutputError', 'BoundedSubprocessSupervisionError'],
     hookStep: ['not-entered', 'rename', 'mkdir', 'hardlink', 'complete'] };
-  return value.observations.every((event) => event && stages.includes(event.stage) && Object.entries(event).every(([key, item]) => {
+  const fieldsValid = value.observations.every((event) => event && stages.includes(event.stage) && Object.entries(event).every(([key, item]) => {
     if (key === 'stage') return true;
     if (booleans.includes(key)) return typeof item === 'boolean';
     if (['elapsedMs', 'mergeCalls'].includes(key)) return typeof item === 'number' && Number.isFinite(item) && item >= 0;
     if (Object.hasOwn(enums, key)) return enums[key].includes(item);
-    if (['code', 'hookCode'].includes(key)) return item === null || (typeof item === 'string' && /^[A-Z0-9_]{1,64}$/.test(item));
+    if (['code', 'hookCode'].includes(key)) return item === null || SAFE_CODES.has(item);
     if (key === 'value') return item && Object.entries(item).every(([name, content]) => {
       if (['fixedMarkerMatched', 'hasDigest'].includes(name)) return typeof content === 'boolean';
       if (name === 'signal') return content === null;
@@ -182,6 +295,62 @@ export function validProbe(value, kind, arm, trace) {
     });
     return false;
   }));
+  return fieldsValid && probeCoverage(value);
+}
+
+export function probeCoverage(value) {
+  const events = value.observations;
+  if (!Array.isArray(events)) return false;
+  const measured = (event) => event?.reached === true && typeof event.ok === 'boolean' && finite(event.elapsedMs) &&
+    (event.ok ? exactKeys(event, ['stage', 'reached', 'elapsedMs', 'ok', 'value']) :
+      exactKeys(event, ['stage', 'reached', 'elapsedMs', 'ok', 'classification', 'errorClass', 'code', 'refusalKind']));
+  const unreachable = (event, reason) => exactKeys(event, ['stage', 'reached', 'reason']) && event.reached === false && event.reason === reason;
+  const sequence = (stages) => events.length === stages.length && events.every((event, index) => event.stage === stages[index]);
+  if (value.case === 'smoke') {
+    if (!sequence(['P0', 'P1', 'P2'])) return false;
+    let previous = true;
+    for (const event of events) {
+      if (previous) {
+        if (!measured(event)) return false;
+        if (event.ok && (!exactKeys(event.value, ['status', 'signal', 'fixedMarkerMatched', 'stdoutBytes', 'stderrBytes']) ||
+          event.value.status !== 0 || event.value.signal !== null || event.value.fixedMarkerMatched !== true)) return false;
+        previous = event.ok;
+      } else if (!unreachable(event, 'previous-smoke-did-not-complete')) return false;
+    }
+    return value.p2Succeeded === previous;
+  }
+  if (value.p2Succeeded !== false) return false;
+  if (value.case === 'parent') {
+    if (!sequence(['afterPathStat', 'afterPathStat-hook', 'afterRead', 'afterRead-hook'])) return false;
+    for (const index of [0, 2]) {
+      const read = events[index], hook = events[index + 1];
+      if (!measured(read) || !exactKeys(hook, ['stage', 'hookReached', 'hookStep', 'hookCode'])) return false;
+      if (read.ok && !exactKeys(read.value, ['bytes', 'records'])) return false;
+      if ((!hook.hookReached && (hook.hookStep !== 'not-entered' || hook.hookCode !== null)) ||
+        (hook.hookReached && hook.hookStep === 'not-entered') || (hook.hookStep === 'complete' && hook.hookCode !== null)) return false;
+    }
+    return true;
+  }
+  const stages = value.case === 'healthy' ? ['preview', 'preview-read-only', 'execute', 'queue'] :
+    ['preview', ...(value.case === 'binding' ? ['bad-digest', 'privacy-scope'] : ['projectRoots']), 'privacy-mode', 'source-content', 'merge-count'];
+  if (!['confirmation', 'binding', 'healthy'].includes(value.case) || !sequence(stages) || !measured(events[0])) return false;
+  const previewOK = events[0].ok;
+  if (previewOK && (!exactKeys(events[0].value, ['wouldAdmit', 'hasDigest']) || events[0].value.hasDigest !== true)) return false;
+  if (value.case === 'healthy') {
+    if (!exactKeys(events[1], ['stage', 'unchanged']) ||
+      !(previewOK ? measured(events[2]) : unreachable(events[2], 'preview-did-not-complete')) ||
+      !exactKeys(events[3], ['stage', 'executeEntered', 'containsCanary', 'retained', 'warmSingleProductProcessNotOriginalColdProbeParity']) ||
+      events[3].executeEntered !== previewOK || events[3].warmSingleProductProcessNotOriginalColdProbeParity !== true) return false;
+    return !events[2].ok || exactKeys(events[2].value, ['admitted'], ['backlog']);
+  }
+  for (const event of events.slice(1, -1)) {
+    if (!(previewOK ? measured(event) : unreachable(event, 'preview-did-not-complete'))) return false;
+    if (event.ok && !exactKeys(event.value, [])) return false;
+  }
+  const merge = events.at(-1);
+  return exactKeys(merge, ['stage', 'mergeCalls', 'executeEntered', 'zeroDoesNotProveUnreachedNegative']) &&
+    uint(merge.mergeCalls) && merge.executeEntered === previewOK && merge.zeroDoesNotProveUnreachedNegative === !previewOK &&
+    (previewOK || merge.mergeCalls === 0);
 }
 
 function healthStates(directory, expected) {
@@ -193,8 +362,8 @@ function healthStates(directory, expected) {
       const state = JSON.parse(bytes);
       assert(state.pid === pid && ['complete', 'pending', 'failed'].includes(state.state));
       assert(Object.keys(state).every((key) => ['pid', 'state', 'reasonCode'].includes(key)));
-      assert(state.reasonCode === undefined || /^[A-Z0-9_]{1,64}$/.test(state.reasonCode));
-      states.push(state);
+      assert(state.reasonCode === undefined || SAFE_CODES.has(state.reasonCode));
+      states.push({ pid, state: state.state, ...(state.reasonCode ? { reasonCode: state.reasonCode } : {}) });
     } catch { missingPids.push(pid); }
   }
   return { states, missingPids, complete: missingPids.length === 0 && states.every((state) => state.state === 'complete') };
@@ -215,7 +384,8 @@ async function runParent() {
   let diagnosticIncomplete = false;
   const notReached = (id, arm, trace, reason) => {
     const record = { id, arm, oldTracePreload: trace, commonBudgetGuardOn: true,
-      reached: false, classification: 'diagnostic-budget-not-reached', reason, releaseAcceptance: false };
+      reached: false, rootProcessStarted: false, productResultUnknown: true,
+      classification: 'diagnostic-budget-not-reached', reason, releaseAcceptance: false };
     records.push(record); fs.writeFileSync(join(output, id + '.json'), JSON.stringify(record) + '\n');
   };
   const runCase = async (id, arm, trace, kind, requiredPs) => {
@@ -251,7 +421,7 @@ async function runParent() {
     const result = await new Promise((done) => {
       const child = cp.spawn(process.execPath, ['--import', 'tsx', self, '--probe'], { cwd: repo, env, windowsHide: true });
       rootPid = child.pid;
-      let settled = false, stopped = false, stdout = Buffer.alloc(0), stderr = Buffer.alloc(0), bytes = 0, launchCode = null;
+      let settled = false, stopped = false, stopReason = null, stdout = Buffer.alloc(0), stderr = Buffer.alloc(0), bytes = 0, launchCode = null;
       const finish = () => {
         if (settled) return; settled = true; clearTimeout(watchdog); clearTimeout(finalTimer);
         const text = Buffer.concat([stdout, stderr]).toString('utf8');
@@ -263,30 +433,30 @@ async function runParent() {
             if (validProbe(candidate, kind === 'smoke' ? 'smoke' : id.split('-').at(-1), arm, trace)) reported = candidate;
           }
         } catch { /* no raw fallback */ }
-        done({ status: child.exitCode, signal: child.signalCode, stopped, launchCode, stdoutBytes: stdout.length,
+        done({ status: child.exitCode, signal: child.signalCode, stopped, stopReason, launchCode, stdoutBytes: stdout.length,
           stderrBytes: stderr.length, canaries, canaryCoverageComplete: bytes <= BOUNDS.outputBytes,
           reported, protocolValid: Boolean(reported), outputBoundExceeded: bytes > BOUNDS.outputBytes });
       };
-      const stop = () => {
-        if (stopped) return; stopped = true;
+      const stop = (reason = 'owned-case-watchdog-expired') => {
+        if (stopped) return; stopped = true; stopReason = reason;
         if (child.pid && child.exitCode === null && child.signalCode === null) {
           try { cp.spawnSync('taskkill.exe', ['/pid', String(child.pid), '/T', '/F'], { timeout: 1_000, stdio: 'ignore', windowsHide: true, killSignal: 'SIGKILL' }); } catch { /* unknown cleanup remains separate */ }
           try { child.kill('SIGKILL'); } catch { /* only the owned handle; unknown retained */ }
         }
       };
       const remainingCase = Math.max(1, caseDeadline - Date.now());
-      const watchdog = setTimeout(stop, remainingCase);
+      const watchdog = setTimeout(() => stop('owned-case-watchdog-expired'), remainingCase);
       const finalTimer = setTimeout(() => { stop(); child.stdout?.destroy(); child.stderr?.destroy(); child.unref(); finish(); }, remainingCase + BOUNDS.cleanupMs);
       for (const [stream, key] of [[child.stdout, 'stdout'], [child.stderr, 'stderr']]) stream.on('data', (chunk) => {
-        bytes += chunk.length; if (bytes > BOUNDS.outputBytes) { stop(); return; }
+        bytes += chunk.length; if (bytes > BOUNDS.outputBytes) { stop('diagnostic-output-limit-exceeded'); return; }
         if (key === 'stdout') stdout = Buffer.concat([stdout, chunk]); else stderr = Buffer.concat([stderr, chunk]);
       });
-      child.on(errorMonitor, (error) => { launchCode = /^[A-Z0-9_]{1,64}$/.test(error.code ?? '') ? error.code : 'LAUNCH_ERROR'; });
+      child.on(errorMonitor, (error) => { launchCode = errorCode(error) ?? 'LAUNCH_ERROR'; });
       // The diagnostic parent intentionally handles its own launch failure, not a product child error.
       child.on('error', () => finish());
       child.on('close', finish);
     });
-    const guard = readRows(guardFile), traceRows = readRows(traceFile);
+    const guard = readRows(guardFile, 'guard'), traceRows = readRows(traceFile, 'trace');
     const expected = new Set([rootPid].filter((pid) => Number.isSafeInteger(pid) && pid > 0));
     const observedPids = new Set(expected);
     for (const event of guard.rows) {
@@ -303,23 +473,31 @@ async function runParent() {
     const guardHealth = healthStates(join(root, 'guard-health'), expected);
     const traceHealth = trace === 'on' ? healthStates(join(root, 'trace-health'), expected) : null;
     const guardAborts = guard.rows.filter((event) => event.event === 'diagnostic-budget-abort').map((event) => event.reason);
-    const traceUnknown = trace === 'on' && (traceRows.invalid || traceRows.bytes.length === 0 || !traceHealth.complete);
+    const traceUnknown = trace === 'on' && (traceRows.invalid || traceRows.bytesLength === 0 || !traceHealth.complete);
+    const diagnosticAbortReasons = [...new Set([...guardAborts,
+      ...(result.status === 92 || guard.rows.some((event) => event.event === 'owned-lifetime-expired') ? ['owned-lifetime-expired'] : []),
+      ...(result.stopped ? [result.stopReason ?? 'owned-case-watchdog-expired'] : [])])];
+    const provenanceUnknown = guard.invalid || guard.bytesLength === 0 || !guardHealth.complete;
     const cleanupUnknownBasis = [
       ...(possibleLiveAfterOwnedCap.length ? ['possible-live-historical-pid-no-signal'] : []),
       ...(result.stopped || result.status === null ? ['forced-or-unconfirmed-root-termination'] : []),
       ...(guard.rows.some((event) => event.event === 'owned-lifetime-expired') ? ['owned-lifetime-expired'] : []),
-      ...(guard.invalid || guard.bytes.length === 0 || !guardHealth.complete ? ['ownership-observer-incomplete'] : [])
+      ...(provenanceUnknown ? ['ownership-observer-incomplete'] : [])
     ];
     const cleanupUnknown = cleanupUnknownBasis.length > 0;
-    const complete = result.protocolValid && result.status === 0 && !result.stopped && !result.outputBoundExceeded &&
-      !Object.values(result.canaries).some(Boolean) && !guard.invalid && guard.bytes.length > 0 && guardHealth.complete && !traceUnknown && !cleanupUnknown && guardAborts.length === 0;
+    const complete = result.protocolValid && result.reported.probeSetupComplete !== false && result.status === 0 && !result.stopped && !result.outputBoundExceeded &&
+      !Object.values(result.canaries).some(Boolean) && !provenanceUnknown && !traceUnknown && !cleanupUnknown && diagnosticAbortReasons.length === 0;
     diagnosticIncomplete ||= !complete;
-    const record = { id, arm, oldTracePreload: trace, commonBudgetGuardOn: true, reached: true, changedFromE0Keys: changedKeys,
+    const record = { id, arm, oldTracePreload: trace, commonBudgetGuardOn: true, reached: diagnosticAbortReasons.length === 0,
+      rootProcessStarted: true, classification: diagnosticAbortReasons.length ? 'diagnostic-budget-not-reached' :
+        complete ? 'diagnostic-observation-complete-not-product-pass' : 'diagnostic-incomplete-provenance-unknown',
+      productResultUnknown: !complete, abortProvenanceUnknown: provenanceUnknown,
+      diagnosticAbortReasons, changedFromE0Keys: changedKeys,
       sourceFreezeHead: SOURCE_FREEZE, node: process.version, uv: process.versions.uv, platform: process.platform,
       ...result, guardAborts, diagnosticCompleted: complete, releaseAcceptance: false };
     records.push(record); fs.writeFileSync(join(output, id + '.json'), JSON.stringify(record, null, 2) + '\n');
-    for (const [label, parsed] of [['guard', guard], ['trace', traceRows]]) if (parsed.bytes.length) {
-      fs.writeFileSync(join(output, id + '.' + label + '.jsonl'), parsed.bytes.subarray(0, BOUNDS.traceBytes));
+    for (const [label, parsed] of [['guard', guard], ['trace', traceRows]]) if (!parsed.invalid && parsed.rows.length) {
+      fs.writeFileSync(join(output, id + '.' + label + '.jsonl'), parsed.publicText);
     }
     fs.writeFileSync(join(output, id + '.health.json'), JSON.stringify({ expectedPids: [...expected], guardHealth,
       oldTraceRequested: trace === 'on', traceHealth, traceCompletenessUnknown: traceUnknown,
@@ -327,8 +505,8 @@ async function runParent() {
       productCleanupConclusion: 'not-derived-from-trace-health' }) + '\n');
     fs.writeFileSync(join(output, id + '.cleanup.json'), JSON.stringify({ possibleLiveAtReturn, possibleLiveAfterOwnedCap,
       cleanupUnknown, cleanupUnknownBasis, productCleanupFailure: 'not-inferred', pidLivenessDoesNotProveWholeTree: true, historicalPidsSignalled: false,
-      guardBytes: guard.bytes.length, traceBytes: traceRows.bytes.length,
-      truncated: guard.bytes.length > BOUNDS.traceBytes || traceRows.bytes.length > BOUNDS.traceBytes,
+      guardBytes: guard.bytesLength, traceBytes: traceRows.bytesLength, unsafeEvidenceSuppressed: guard.invalid || traceRows.invalid,
+      oversizedEvidenceSuppressed: guard.bytesLength > BOUNDS.traceBytes || traceRows.bytesLength > BOUNDS.traceBytes,
       rootRetained: cleanupUnknown }) + '\n');
     if (cleanupUnknown) retainedRoots.push(id); else fs.rmSync(root, { recursive: true, force: true });
     return record;
@@ -343,14 +521,19 @@ async function runParent() {
     if (!arm) { notReached(`downstream-${trace}-${kind}`, null, trace, 'no-complete-P2-success-arm'); continue; }
     await runCase(`downstream-${trace}-${kind}`, arm, trace, 'downstream', requiredPs);
   }
-  const used = counts(counter);
-  assert(used.total <= BOUNDS.totalPs && used.smoke <= BOUNDS.smokePs);
-  fs.writeFileSync(join(output, 'powershell-counter.jsonl'), fs.readFileSync(counter));
+  const counterRows = readRows(counter, 'counter', BOUNDS.attributeBytes);
+  let used;
+  try {
+    used = counts(counter);
+    assert(!counterRows.invalid && used.total <= BOUNDS.totalPs && used.smoke <= BOUNDS.smokePs);
+  } catch { used = { total: null, smoke: null, known: false }; counterRows.invalid = true; diagnosticIncomplete = true; }
+  if (!counterRows.invalid) fs.writeFileSync(join(output, 'powershell-counter.jsonl'), counterRows.publicText);
   const summary = { sourceFreezeHead: SOURCE_FREEZE, productBaseline: '76d916ba2e3a7147acda5ac9ef15fa70a9cd9958',
     node: process.version, uv: process.versions.uv, platform: process.platform, bounds: BOUNDS,
     selectedArms: selected, optionalCombinedArmExecuted: false, commonBudgetGuardOn: true,
     offMeansOldTraceOffNotUninstrumented: true, E4IsBuiltinSystemModulePathNotFullMachineParity: true,
-    usedPowerShell: used, cases: records.map(({ id, reached, diagnosticCompleted, reason }) => ({ id, reached, diagnosticCompleted, reason })),
+    usedPowerShell: used, counterEvidenceInvalid: counterRows.invalid,
+    cases: records.map(({ id, reached, diagnosticCompleted, reason }) => ({ id, reached, diagnosticCompleted, reason })),
     retainedRoots, diagnosticCompleted: !diagnosticIncomplete, releaseAcceptance: false, releaseReady: false };
   fs.writeFileSync(join(output, 'parity-summary.json'), JSON.stringify(summary, null, 2) + '\n');
   if (retainedRoots.length === 0) fs.rmSync(runRoot, { recursive: true, force: true });
@@ -375,9 +558,9 @@ async function runProbe() {
     const beforeAborts = guardAborts(), start = performance.now();
     try { const value = action(); observations.push({ stage, reached: true, elapsedMs: performance.now() - start, ok: true, value: summarize(value) }); return value; }
     catch (error) { observations.push({ stage, reached: true, elapsedMs: performance.now() - start, ok: false,
-      classification: guardAborts() > beforeAborts || error.code === 'TW_PARITY_BUDGET' ? 'diagnostic-budget-not-reached' : 'observed-native-or-product-refusal',
+      classification: guardAborts() > beforeAborts || errorCode(error) === 'TW_PARITY_BUDGET' ? 'diagnostic-budget-not-reached' : 'observed-native-or-product-refusal',
       errorClass: ['Error', 'TypeError', 'RangeError', 'AssertionError', 'BoundedSubprocessTimeoutError', 'BoundedSubprocessLaunchError', 'BoundedSubprocessOutputError', 'BoundedSubprocessSupervisionError'].includes(error.constructor?.name) ? error.constructor.name : 'Error',
-      code: /^[A-Z0-9_]{1,64}$/.test(error.code ?? '') ? error.code : null, refusalKind: refusal(error) }); return null; }
+      code: errorCode(error), refusalKind: refusal(error) }); return null; }
   };
   const unreachable = (stage, reason) => observations.push({ stage, reached: false, reason });
   const file = join(root, 'source.jsonl');
@@ -415,7 +598,7 @@ async function runProbe() {
         hookReached = true;
         try { hookStep = 'rename'; fs.renameSync(parent, moved); hookStep = 'mkdir'; fs.mkdirSync(parent);
           hookStep = 'hardlink'; fs.linkSync(join(moved, 'source.jsonl'), source); hookStep = 'complete'; }
-        catch (error) { hookCode = /^[A-Z0-9_]{1,64}$/.test(error.code ?? '') ? error.code : 'NATIVE_ERROR'; throw error; }
+        catch (error) { hookCode = errorCode(error) ?? 'NATIVE_ERROR'; throw error; }
       } }), (value) => ({ bytes: value.bytes.length, records: value.records }));
       observations.push({ stage: stage + '-hook', hookReached, hookStep, hookCode });
     }
@@ -423,10 +606,12 @@ async function runProbe() {
     assert(['confirmation', 'binding', 'healthy'].includes(kind), 'unknown probe case');
     const { dryRunBoundedReplay, executeBoundedReplay } = await product('src/cli/replay.ts');
     const { planBoundedReplay } = await product('src/cli/replay-contract.ts');
+    const bindingAllowed = join(root, 'binding-allowed'), bindingProject = join(bindingAllowed, 'project'), bindingDifferent = join(root, 'binding-different');
+    if (kind === 'binding') fs.mkdirSync(bindingProject, { recursive: true });
     const cfg = { serverUrl: 'http://127.0.0.1:9', projectRoots: [], sources: { claude: true, codex: false, opencode: false, aider: false, kimicode: false },
-      privacy: { mode: 'local-only', includePaths: kind === 'binding' ? ['/allowed'] : [], excludePaths: [] } };
+      privacy: { mode: 'local-only', includePaths: kind === 'binding' ? [bindingAllowed] : [], excludePaths: [] } };
     const plan = (dryRun = true) => planBoundedReplay({ source: 'claude-code', file, from: '2026-10-07T00:00:00.000Z', to: '2026-10-08T00:00:00.000Z', maxBytes: 100_000, maxEvents: 10, dryRun });
-    fs.writeFileSync(file, row('one', kind === 'binding' ? '/allowed/project' : root));
+    fs.writeFileSync(file, row('one', kind === 'binding' ? bindingProject : root));
     let mergeCalls = 0, executeEntered = false;
     const mergeEvents = () => { mergeCalls++; return { events: [], added: 0 }; };
     if (kind === 'healthy') {
@@ -452,9 +637,9 @@ async function runProbe() {
       if (preview) {
         executeEntered = true;
         if (kind === 'binding') measure('bad-digest', () => executeBoundedReplay(plan(false), cfg, '0'.repeat(64), { readCurrentConfig: () => cfg, mergeEvents }));
-        for (const [stage, changed] of [[kind === 'binding' ? 'privacy-scope' : 'projectRoots', kind === 'binding' ? { ...cfg, privacy: { ...cfg.privacy, includePaths: ['/different'] } } : { ...cfg, projectRoots: [root] }],
+        for (const [stage, changed] of [[kind === 'binding' ? 'privacy-scope' : 'projectRoots', kind === 'binding' ? { ...cfg, privacy: { ...cfg.privacy, includePaths: [bindingDifferent] } } : { ...cfg, projectRoots: [root] }],
           ['privacy-mode', { ...cfg, privacy: { ...cfg.privacy, mode: 'sync' } }]]) measure(stage, () => executeBoundedReplay(plan(false), cfg, preview.planDigest, { readCurrentConfig: () => changed, mergeEvents }));
-        if (kind === 'binding') fs.appendFileSync(file, row('changed', '/allowed/project'));
+        if (kind === 'binding') fs.appendFileSync(file, row('changed', bindingProject));
         measure('source-content', () => executeBoundedReplay(plan(false), cfg, preview.planDigest, { readCurrentConfig: () => { if (kind !== 'binding') fs.writeFileSync(file, row('two')); return cfg; }, mergeEvents }));
       } else for (const stage of stages) unreachable(stage, 'preview-did-not-complete');
       observations.push({ stage: 'merge-count', mergeCalls, executeEntered, zeroDoesNotProveUnreachedNegative: !executeEntered });
@@ -471,14 +656,14 @@ else if (process.argv[1] && resolve(process.argv[1]) === self) {
   if (process.argv[2] === '--probe') {
     try { await runProbe(); } catch (error) {
       console.log(JSON.stringify({ case: process.env.TW_PARITY_CASE, arm: process.env.TW_PARITY_ARM, commonBudgetGuardOn: true,
-        probeSetupComplete: false, code: /^[A-Z0-9_]{1,64}$/.test(error.code ?? '') ? error.code : 'PROBE_SETUP_ERROR', releaseAcceptance: false }));
+        probeSetupComplete: false, code: errorCode(error) ?? 'PROBE_SETUP_ERROR', releaseAcceptance: false }));
       process.exitCode = 1;
     }
   } else {
     assert(process.argv.length === 2, 'no ad-hoc cases or arms');
     try { await runParent(); } catch (error) {
       console.log(JSON.stringify({ diagnosticCompleted: false, diagnosticSetupOrEvidenceFailure: true,
-        code: /^[A-Z0-9_]{1,64}$/.test(error.code ?? '') ? error.code : 'DIAGNOSTIC_FAILURE', releaseAcceptance: false }));
+        code: errorCode(error) ?? 'DIAGNOSTIC_FAILURE', releaseAcceptance: false }));
       process.exitCode = 1;
     }
   }

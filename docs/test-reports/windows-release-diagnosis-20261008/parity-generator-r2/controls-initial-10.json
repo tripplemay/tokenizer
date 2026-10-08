@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-generator-r2-controls-not-independent-verdict",
+  "exactSource": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "scopeBase": "846e8e07614a97dcebd9d2cd2bdb678f971651fd",
+  "currentHead": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "scriptSha256": "1debe7a876392c94492cdf44897f54ff1a22deee5afad411a873c01828230acd",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "nativeWindowsExecuted": false,
+  "productRuntimeExecuted": false,
+  "mockedParentAndGuardOnly": true,
+  "controls": [
+    {
+      "id": "C01-exact-source-and-path-scope",
+      "execution": "completed",
+      "expected": "Only approved new files and workflow command/label/metadata",
+      "passed": true,
+      "violation": false,
+      "changedPaths": [
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ]
+    },
+    {
+      "id": "C02-frozen-trees-and-original-hashes",
+      "execution": "completed",
+      "expected": "Product/tests/state/old reports and 32 originals unchanged",
+      "passed": true,
+      "violation": false,
+      "objects": [
+        {
+          "path": "src",
+          "base": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d",
+          "current": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d"
+        },
+        {
+          "path": "tests",
+          "base": "7e8022a84dc47165b900e2d05f019477e81a2a0d",
+          "current": "7e8022a84dc47165b900e2d05f019477e81a2a0d"
+        },
+        {
+          "path": "package.json",
+          "base": "57b2a59283ca82575dfbc5c8410b4b127aa6c809",
+          "current": "57b2a59283ca82575dfbc5c8410b4b127aa6c809"
+        },
+        {
+          "path": "package-lock.json",
+          "base": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8",
+          "current": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8"
+        },
+        {
+          "path": "progress.json",
+          "base": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc",
+          "current": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc"
+        },
+        {
+          "path": "features.json",
+          "base": "918eb22c3679c2ceab23533c482c48fc38fe6b92",
+          "current": "918eb22c3679c2ceab23533c482c48fc38fe6b92"
+        },
+        {
+          "path": "backlog.json",
+          "base": "9d69bd77a7796e58b93d7503fd48ce09057056de",
+          "current": "9d69bd77a7796e58b93d7503fd48ce09057056de"
+        },
+        {
+          "path": ".github/workflows/deploy-vps.yml",
+          "base": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+          "current": "9c2654610229eea6a52b424b73ec5d49831e82c4"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs",
+          "base": "dd823c6be301ae671223836be3097c9cc36b8c5d",
+          "current": "dd823c6be301ae671223836be3097c9cc36b8c5d"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+          "base": "d654d16301fcd9b0367c346ebc46ae383ffb2269",
+          "current": "d654d16301fcd9b0367c346ebc46ae383ffb2269"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/native-findings-r1",
+          "base": "44065a123523725894d093eb2c011a3644e352c0",
+          "current": "44065a123523725894d093eb2c011a3644e352c0"
+        },
+        {
+          "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1",
+          "base": "b2b024492c4bc798f620a50b802018d1fe32f5ce",
+          "current": "b2b024492c4bc798f620a50b802018d1fe32f5ce"
+        }
+      ],
+      "originalHashesVerified": 32
+    },
+    {
+      "id": "C03-env-and-admission",
+      "execution": "completed",
+      "expected": "One environment key per arm; fixed 43-second reserve and launch caps",
+      "passed": true,
+      "violation": false,
+      "arms": [
+        {
+          "arm": "E0",
+          "changedKeys": []
+        },
+        {
+          "arm": "E1",
+          "changedKeys": [
+            "SystemDrive"
+          ]
+        },
+        {
+          "arm": "E2",
+          "changedKeys": [
+            "APPDATA"
+          ]
+        },
+        {
+          "arm": "E3",
+          "changedKeys": [
+            "LOCALAPPDATA"
+          ]
+        },
+        {
+          "arm": "E4",
+          "changedKeys": [
+            "PSModulePath"
+          ]
+        }
+      ],
+      "bounds": {
+        "totalMs": 600000,
+        "caseMs": 40000,
+        "cleanupMs": 3000,
+        "operationMs": 10000,
+        "smokeChildMs": 7000,
+        "smokePs": 38,
+        "totalPs": 76,
+        "outputBytes": 65536,
+        "traceBytes": 524288,
+        "attributeBytes": 16384
+      }
+    },
+    {
+      "id": "C04-logger-and-native-semantics",
+      "execution": "completed",
+      "expected": "Logger failure preserves return/exception/error event and adds no stream observer",
+      "passed": true,
+      "violation": false,
+      "modes": [
+        "normal",
+        "logger-stat",
+        "logger-append",
+        "native-throw",
+        "sync-throw"
+      ]
+    },
+    {
+      "id": "C05-owned-handle-cleanup",
+      "execution": "completed",
+      "expected": "Expired active owned handle only; closed handle never signalled",
+      "passed": true,
+      "violation": false,
+      "activeOwnedHandleKillCalls": 1,
+      "closedHandleKillCalls": 0
+    },
+    {
+      "id": "C06-expiry-not-reached-classification",
+      "execution": "completed",
+      "expected": "Owned lifetime guard abort explicitly diagnostic-not-reached",
+      "passed": true,
+      "violation": false,
+      "observed": {
+        "reached": false,
+        "status": 92,
+        "reported": null,
+        "classificationPresent": true,
+        "guardAborts": [
+          "owned-lifetime-expired"
+        ],
+        "diagnosticCompleted": false,
+        "cleanupUnknown": true,
+        "cleanupUnknownBasis": [
+          "owned-lifetime-expired"
+        ]
+      }
+    },
+    {
+      "id": "C07-artifact-jsonl-allowlist-boundary",
+      "execution": "completed",
+      "expected": "Unknown keys/raw stderr/content/credential fixture rejected before artifact publication",
+      "passed": true,
+      "violation": false,
+      "unknownKeysPublished": false,
+      "rawFixturePublished": false,
+      "diagnosticCompletedDespiteInjectedRows": false,
+      "actualHostSecretAccess": false,
+      "allFilesVirtual": true
+    },
+    {
+      "id": "C08-guard-error-code-sanitization",
+      "execution": "completed",
+      "expected": "Native error metadata cannot carry arbitrary raw code strings into artifacts",
+      "passed": true,
+      "violation": false,
+      "rawFixtureLogged": false,
+      "nativeErrorPreserved": true,
+      "actualHostSecretAccess": false
+    },
+    {
+      "id": "C09-protocol-completeness",
+      "execution": "completed",
+      "expected": "P2 admission requires stage evidence; empty smoke output cannot assert complete P2",
+      "passed": true,
+      "violation": false,
+      "riskObserved": false,
+      "emptyObservationsAcceptedForP2": false,
+      "scope": "generator defense-gap regression control; no native execution"
+    },
+    {
+      "id": "C10-workflow-and-syntax",
+      "execution": "completed",
+      "expected": "Static syntax and dedicated workflow actionlint",
+      "passed": true,
+      "violation": false,
+      "syntaxChecks": 2,
+      "actionlintExitCode": 0
+    }
+  ],
+  "violation": false,
+  "controlExecutionFailure": false,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}
