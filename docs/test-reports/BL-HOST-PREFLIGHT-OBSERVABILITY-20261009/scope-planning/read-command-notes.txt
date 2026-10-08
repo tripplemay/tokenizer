@@ -1,0 +1,19 @@
+Initial passive read error, retained without replacing it:
+
+Command:
+rg -n -C 8 'F003|host inventory|preflight|Compose' docs/specs/BL-RELEASE-READINESS-spec.md pre-impl-adjudication.md
+Exit status: 2
+Raw error:
+rg: pre-impl-adjudication.md: No such file or directory (os error 2)
+
+The command still displayed the parent F003 specification. No test or product
+run occurred, and this is not a failed acceptance control.
+
+Corrected passive lookup:
+rg --files | rg 'pre-impl-adjudication\.md$'
+Exit status: 0
+Raw output:
+framework/harness/pre-impl-adjudication.md
+
+The critic then read framework/harness/pre-impl-adjudication.md lines 142-192,
+including sections 4.6 and 4.7, with sed. No file was modified to fix this lookup.
