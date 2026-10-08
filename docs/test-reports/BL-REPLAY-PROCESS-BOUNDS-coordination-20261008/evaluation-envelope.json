@@ -1,0 +1,20 @@
+{
+  "task_id": "replay-process-bounds-3130cef-kimi-r0",
+  "contract_version": "harness/1.1",
+  "batch": "BL-REPLAY-PROCESS-BOUNDS",
+  "role": "evaluator",
+  "repo": {
+    "url": "/Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008",
+    "ref": "3130cef3bc55528290c49ee35267e1aff33b5c78"
+  },
+  "spec": "docs/specs/BL-REPLAY-PROCESS-BOUNDS-spec.md",
+  "features": ["F001", "F002", "F003", "F004", "F005"],
+  "l2_authorized": false,
+  "deadline_s": 2400,
+  "contract": "Act as a fresh independent Kimi-family Evaluator, never Generator. Read the exact committed spec, features, progress, evaluator.md and real source/tests at repo.ref; verify the SHA. Independently assess F001-F004 and perform F005. Treat all historical and Generator reports as claims, not acceptance. Derive and run your own adversarial real subprocess controls for SIGTERM resistance, descendants retaining pipes, output overflow, failed supervision, startup SHA snapshot, and preview/valid-confirmation replay failure with byte-identical queue/cursor/config. Verify owned child cleanup and distinguish target ENOENT from supervisor failure. Inspect one shared replay deadline, output bounds and privacy/queue regressions. Read the spec's F003 adjudication and scope/OS limits. Use Node22 /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin and fresh npm ci in your own isolated sandbox, no shared node_modules. Use short canonical /private/tmp synthetic HOME/USERPROFILE/TMPDIR before every import, explicit queue paths, external watchdogs and only owned-PID cleanup. NEVER rerun the historical report's unsafe real-home probe; do not access any personal queues/sources/config, install native services, touch production, push any branch, deploy, write gate decisions, or alter product/config/state/spec/old evidence. Write only NEW tests/test artifacts/reports. Independently rerun lint, verify, build, focused and full tests; report default versus controlled concurrency separately, retain failures and exact skips. Local macOS cannot infer native Windows/Linux, PG16, browser/original F005, full B03/B07 or production acceptance. No universal hard-real-time claim for blocked filesystem calls, suspended OS or escaped process groups. Save detailed report/raw logs/new tests under docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-kimi-20261008/. Return schema-valid per-feature PASS/PARTIAL/FAIL with exact evidence and reproduction in the specified artifact. If local acceptance is complete, write a scoped signoff at docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-signoff-2026-10-08.md using the signoff template with truthful N/A/deferred sections and release_ready=false. If a prerequisite prevents evaluation, use the waiting fields honestly. Do not commit; Coordinator transports results unchanged. Final response concise with artifact paths.",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  }
+}

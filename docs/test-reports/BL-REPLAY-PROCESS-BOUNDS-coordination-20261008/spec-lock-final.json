@@ -1,0 +1,188 @@
+{
+  "role": "spec-lock-critic",
+  "audit_type": "read-only scope and artifact preservation audit",
+  "audited_at": "2026-10-08T03:37:07.855Z",
+  "baseline": "ba292a059184a36e4bb6c3341ac059606d24f961",
+  "candidate": "3130cef3bc55528290c49ee35267e1aff33b5c78",
+  "violation": false,
+  "detail": "已提交候选的完整 58 路径 diff 均有规格或规划归档归属；F001-F004 feature tag、状态与允许路径一致。F004 无产品源码改动。原测试、报告、历史输入和旧状态归档保持原字节。没有 Generator 自行写入 Evaluator 结论、签收或人闸门决定。本结论仅为范围审查，不是功能验收。当前工作树另有 Coordinator 在复查期间创建的未跟踪派活信封，已确认不属于冻结候选，因此不宣称整个工作树 clean。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "candidate_scope": {
+    "changed_path_count": 58,
+    "paths_outside_allowlist": [],
+    "product_paths": [
+      "src/cli/agent-version.ts",
+      "src/cli/bounded-subprocess-worker.mjs",
+      "src/cli/bounded-subprocess.ts",
+      "src/cli/git.ts",
+      "src/cli/replay.ts"
+    ],
+    "dependency_workflow_framework_schema_frontend_queue_cursor_drift": false
+  },
+  "commit_mapping": [
+    {
+      "sha": "1bd6b6ce4d0c40be73e762c574ee03a3fb3c191a",
+      "purpose": "规划、规格、旧状态归档及历史输入",
+      "product_changes": false,
+      "status": "building",
+      "completed_features": 0
+    },
+    {
+      "sha": "d1e3ccf8c30b62a13c058f4c74c39b83a8de60ec",
+      "feature": "F001",
+      "tag": "feat(BL-REPLAY-PROCESS-BOUNDS-F001)",
+      "product_paths": [
+        "src/cli/bounded-subprocess-worker.mjs",
+        "src/cli/bounded-subprocess.ts"
+      ],
+      "status": "building",
+      "completed_features": 1
+    },
+    {
+      "sha": "252aa6af4bdc8e4abcf0b9c52c59327097287360",
+      "feature": "F002",
+      "tag": "feat(BL-REPLAY-PROCESS-BOUNDS-F002)",
+      "product_paths": [
+        "src/cli/agent-version.ts"
+      ],
+      "status": "building",
+      "completed_features": 2
+    },
+    {
+      "sha": "a14e6bf898221b7a9a8311cedd0ecd7478c2f09e",
+      "purpose": "F003 前置 compatibility adjudication",
+      "product_changes": false,
+      "authorized_extension": "F003 可窄范围修改 helper pair，将 target cwd 经结构化参数传输，区分 target ENOENT 与 worker failure"
+    },
+    {
+      "sha": "1c85dba5724c84ccaa95140d510bf0548b677f44",
+      "feature": "F003",
+      "tag": "feat(BL-REPLAY-PROCESS-BOUNDS-F003)",
+      "product_paths": [
+        "src/cli/bounded-subprocess-worker.mjs",
+        "src/cli/bounded-subprocess.ts",
+        "src/cli/git.ts",
+        "src/cli/replay.ts"
+      ],
+      "status": "building",
+      "completed_features": 3
+    },
+    {
+      "sha": "3130cef3bc55528290c49ee35267e1aff33b5c78",
+      "feature": "F004",
+      "tag": "feat(BL-REPLAY-PROCESS-BOUNDS-F004)",
+      "changed_path_count": 28,
+      "generator_evidence_paths": 18,
+      "batch_test_fixture_paths": 8,
+      "state_paths": 2,
+      "product_paths": [],
+      "paths_outside_F004_allowlist": [],
+      "status": "verifying",
+      "completed_features": 4,
+      "current_sprint": "BL-REPLAY-PROCESS-BOUNDS-F005"
+    }
+  ],
+  "F004_product_freeze": {
+    "comparison": "1c85dba5724c84ccaa95140d510bf0548b677f44..3130cef3bc55528290c49ee35267e1aff33b5c78",
+    "src_tree_before": "8b3afc1048214f75fea76c2c4c0525e69af9d3e6",
+    "src_tree_after": "8b3afc1048214f75fea76c2c4c0525e69af9d3e6",
+    "src_app_prisma_diff": [],
+    "package_lock_test_config_workflow_framework_diff": []
+  },
+  "frozen_inputs": {
+    "method": "从 baseline Git tree 枚举 tests/ 与 docs/test-reports/，使用 git cat-file --batch 提取原 blob，逐文件比对当前字节，并比较 candidate blob 和 mode",
+    "tests": 189,
+    "reports": 1088,
+    "total": 1277,
+    "working_byte_mismatches": [],
+    "committed_blob_or_mode_mismatches": []
+  },
+  "archive_fidelity": [
+    {
+      "source": "ba292a0:features.json",
+      "copy": "docs/archive/privacy-queue-closeout-20261008/features.json",
+      "source_and_candidate_blob": "a71cf2e0738fd51f5dc88bc1c4be3bcb188cad3d",
+      "sha256": "f27f2f57c7d41b05e3dbe47b81c7e8198720d6fb7f1e2c0b1263d73a6b10cb07",
+      "byte_identical": true
+    },
+    {
+      "source": "ba292a0:progress.json",
+      "copy": "docs/archive/privacy-queue-closeout-20261008/progress.json",
+      "source_and_candidate_blob": "5eb8f8358a3a5116f734a7a0bc29209dd68e5222",
+      "sha256": "151adcea3fb72764db61e978684d2471f5f9dfd0b4a56f3e33852f91973d36",
+      "byte_identical": true
+    }
+  ],
+  "historical_input_fidelity": {
+    "copy_directory": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-inputs-20261008/",
+    "items": [
+      {
+        "copy": "upstream-REPORT.md",
+        "source": "eac098e:docs/test-reports/B03-replay-kimi-evaluator-20261008/REPORT.md",
+        "source_and_candidate_blob": "5fed0d6ddbd88c298ece118b2671739e637f6bda",
+        "byte_identical": true
+      },
+      {
+        "copy": "upstream-verdict.json",
+        "source": "eac098e:docs/test-reports/B03-replay-kimi-evaluator-20261008/verdict.json",
+        "source_and_candidate_blob": "a6cd0ca594f366407038df2db21a95e280f8b341",
+        "byte_identical": true
+      },
+      {
+        "copy": "upstream-timeout.log",
+        "source": "00aeca9:docs/test-reports/B03-replay-kimi-evaluator-20261008/evidence/node-syncspawn-timeout-semantics.log",
+        "source_and_candidate_blob": "63ec330bcfa23783b087d55ffcc36dc478fbd19e",
+        "byte_identical": true
+      },
+      {
+        "copy": "upstream-startup.log",
+        "source": "00aeca9:docs/test-reports/B03-replay-kimi-evaluator-20261008/evidence/git-stall-startup-evidence.log",
+        "source_and_candidate_blob": "5c87cb3948c86d8df02247c4df7ad8feab3b2eb8",
+        "byte_identical": true
+      }
+    ]
+  },
+  "generator_evidence_preservation": {
+    "directory": "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-generator-20261008/",
+    "final_inventory": {
+      "file": "final-input-inventory.json",
+      "source_test_fixture_entries": 18,
+      "current_sha256_or_candidate_blob_mismatches": []
+    },
+    "initial_failure_logs_unchanged_from_F003": [
+      {
+        "file": "F003-original-focused.log",
+        "blob": "637d4de8318c19f75060095d08b35555ee3c4f74"
+      },
+      {
+        "file": "F003-verify.log",
+        "blob": "7b070ab93320fda31880a824011be14ead7d9cdb"
+      }
+    ]
+  },
+  "gate_and_independence": {
+    "all_six_post_baseline_commits": {
+      "pending_gate": null,
+      "evaluator_feedback": null,
+      "docs_signoff": null
+    },
+    "F005_executor": "evaluator",
+    "F005_status": "pending",
+    "generator_self_acceptance_found": false
+  },
+  "working_tree": {
+    "HEAD": "3130cef3bc55528290c49ee35267e1aff33b5c78",
+    "tracked_diff_from_HEAD": [],
+    "whole_worktree_clean": false,
+    "untracked": [
+      "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-coordination-20261008/evaluation-envelope.json"
+    ],
+    "untracked_classification": "Coordinator 确认其在复查期间创建；属于候选冻结后的 coordination-only 派活产物，repo.ref 明确为 3130cef3bc55528290c49ee35267e1aff33b5c78；未纳入 F004 scope verdict"
+  },
+  "limitations": [
+    "本次未运行产品测试，未独立复验 Generator 的功能、性能或清理结果。",
+    "本次未修改文件、提交、推送或写入闸门决定。",
+    "不能由此结论推断 F005、原首页 F005、native Windows/Linux、PG16、完整 B03/B07 或生产发布通过。"
+  ]
+}
