@@ -13,8 +13,11 @@ Worker never pushes, calls production/SSH/Secrets/environment APIs or deploys.
 
 Workflow requirements:
 
-- `workflow_dispatch` only, no push/PR, no production environment, contents read
-  only, no Secrets or remote targets, isolated concurrency group.
+- `workflow_dispatch` plus a push trigger restricted to the single exact branch
+  `codex/windows-native-diagnostic-ci-20261008`; no PR/main/glob trigger. A job
+  `if` must also require `refs/heads/codex/windows-native-diagnostic-ci-20261008`.
+  No production environment, contents read only, no Secrets or remote targets,
+  isolated concurrency group.
 - Native windows-latest / setup-node22, immutable commit checkout, fresh npm ci;
   do not install/change any user service. Record actual HEAD, OS, Node/libuv and
   Git versions. Invoke the reviewed Node synthetic diagnostic script using its
@@ -30,3 +33,11 @@ Workflow requirements:
 Acceptance here is workflow syntax/scope transport. The observed native runtime
 then determines a separately committed narrow repair scope and independent
 cross-family acceptance. No diagnostic success implies production readiness.
+
+## Transport adjudication
+
+GitHub's documented workflow_dispatch default-branch requirement prevents a
+new manual-only workflow from being the dependable transport on this branch.
+Do not publish main to register it. The narrowly approved exact-branch push
+trigger above is only for this synthetic diagnostic branch, never a relaxation
+of release gates. Source: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch
