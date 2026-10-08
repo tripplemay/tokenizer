@@ -1,0 +1,31 @@
+{
+  "kind": "generator_delivery_not_verdict",
+  "batch_id": "BL-RELEASE-READINESS",
+  "baseline": "58266afef071a4575cb9a349601f3a7736cdf199",
+  "source_freeze_sha": "55cfe2353da6d1901e82c60f40a9edc944349b9a",
+  "implementation_commits": {
+    "F001": "652995d147236d4d881489ebd9309ab99631b1e8",
+    "F002": "9a5a0d347c341c6443ee68831043d4de7b3a3dd3",
+    "F002_adjudication_transport": "0bbe22ae799850d48cdc1bd131964b7f67f08bd3",
+    "F002_strict_null_revision": "c93d8c1c4f21309a88bb28ba808416dd4524eb69",
+    "F003": "55cfe2353da6d1901e82c60f40a9edc944349b9a"
+  },
+  "local_records": {
+    "fresh_node22_npm_ci": {"log":"01-npm-ci.log","exit_code":0,"reported_high_vulnerabilities":7},
+    "lint":"16-f004-lint.json",
+    "verify":"17-f004-verify.json",
+    "build":"18-f004-build.json",
+    "default_full":{"record":"19-f004-full-default.json","passed":2005,"skipped":34},
+    "focused":{"record":"20-f004-focused.json","passed":185,"skipped":6}
+  },
+  "preservation": {"report":"final-rerun-provenance.json","starting_tracked_blobs":2164,"unauthorized_changes":0},
+  "F004_status":"pending_exact_native_CI",
+  "F005_status":"pending_independent_Kimi_acceptance",
+  "harness_status":"building",
+  "release_ready":false,
+  "worker_pushed":false,
+  "worker_operated_live_host":false,
+  "worker_modified_secrets_or_environments":false,
+  "worker_wrote_human_gate_decision":false,
+  "limits":["No local substitute for exact final native CI","No independent signoff","No production cutover/recovery or provenance claim","No original homepage F005 closure"]
+}
