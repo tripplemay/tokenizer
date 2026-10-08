@@ -108,6 +108,19 @@ batch's NEW generator evidence directory. No new product behavior in F004.
 - Record source/test SHA inventory and frozen-input preservation. One runnable
   local commit per feature with feature-id tag, state updated each time.
 
+## F003 compatibility adjudication (2026-10-08)
+
+Generator reported five unchanged replay-test failures in
+`F003-original-focused.log`: a missing target workspace cwd prevented the worker
+itself from starting, incorrectly classifying ordinary Git absence as supervisor
+failure. Coordinator/Planner approved the following narrow integration repair:
+F003 may also adapt the F001 helper pair so the worker starts from the caller's
+cwd and receives the target child's cwd as a structured argument. Only the
+target launch's ordinary ENOENT/non-repository case retains historical absent-Git
+semantics; helper/protocol failure, timeout and output overflow remain fail-closed.
+Add distinct target-cwd versus worker-failure controls and rerun the unchanged
+focused cases. Preserve the first failure log; no historical assertion changes.
+
 ## F005: independent acceptance
 
 A fresh Kimi-family evaluator must independently re-derive failure cases from
