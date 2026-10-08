@@ -1,0 +1,21 @@
+{
+  "role": "Coordinator transport only",
+  "original_commit": "d7433c8611d7875a9080d663e1761706446a891a",
+  "original_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-queue-failure-findings-r1",
+  "original_report": "docs/test-reports/windows-queue-failure-findings-r1/",
+  "copy": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/windows-queue-failure-findings-r1/",
+  "directory_diff_exit": 0,
+  "all_12_members_tracked": true,
+  "conclusions_or_original_evidence_modified": false,
+  "own_copy_validation_attempt": {
+    "command": "node docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/windows-queue-failure-findings-r1/verify-report.mjs",
+    "exit": 1,
+    "error": "ENOENT: no such file or directory, open docs/test-reports/windows-queue-failure-findings-r1/verdict.json",
+    "raw_output": "first attempt console tool output retained; no raw log was captured",
+    "explanation": "The original verifier pins its original report path and exact candidate checkout; it is not a relocated-bundle/parent verifier. It must run in the original worktree. Do not modify it or claim this attempt passed."
+  },
+  "verification_boundary": "Transport proved byte-identical directory copy and tracked members, not fresh functional or relocated source acceptance. Original verification-output.json is evidence of the worker's original integrity check only.",
+  "supported_fact": "Empty Error came from exit callback, not close; exact child code/signal and worker entry are unobserved; queue/ACK checks were not reached.",
+  "release_ready": false,
+  "followup_native_observation": "proposal only, not executed"
+}
