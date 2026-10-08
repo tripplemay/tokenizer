@@ -1,0 +1,10 @@
+{
+  "violation": true,
+  "detail": "仅审查 committed 58266af..9a5a0d3 的 F001/F002，排除并发未提交 F003。唯一违规为 progress.json.current_sprint 从批次 BL-RELEASE-READINESS 改成 F003，违反 critic 将该字段作为 batch_scope 的契约；Coordinator 已要求下个 checkpoint 恢复批次名，feature cursor 只放 session_notes，当前提交尚未闭合。产品 scope 检查通过：F001 七个路径与冻结源 blob/mode 完全相同；F002 两个 shell 与 bc9 完全相同；release-image 相对 bc9 仅增加两条已授权的更强 rollback-order 断言。旧测试仅改批准的 release-image/release-rehearsal 两处；新增 predecessor negatives 属 F002。workflow 仅选择性加入 macOS job/needs 与 predecessor guard，原 B06/B07/PG16/no-skip floor 和其他 gate 未删除。冻结 queue/process、依赖、vendor、schema/migrations、旧报告及原始归档未改。两个 feat tags 均映射实际 F001/F002；未发现 Generator release bypass、GitHub settings 修改或自评。原始命令失败及 rerun 日志均保留。本结论不是功能验收或发布批准。",
+  "offending_files": ["progress.json"],
+  "unmapped_tags": [],
+  "reviewed_head": "9a5a0d347c341c6443ee68831043d4de7b3a3dd3",
+  "feature_tags": ["feat(BL-RELEASE-READINESS-F001)","feat(BL-RELEASE-READINESS-F002)"],
+  "actual_nonreport_paths": [".github/workflows/deploy-vps.yml","features.json","progress.json","scripts/ci/assert-macos-launchd-installer.mjs","scripts/deploy-vps-release.sh","scripts/verify-vps-predecessor.sh","src/cli/service.ts","tests/ci/macos-launchd-cleanup-trap.test.ts","tests/ci/macos-launchd-installer-gate.test.ts","tests/cli/agent-release-installer-macos.test.ts","tests/cli/service-launchd.test.ts","tests/server/release-image.test.ts","tests/server/release-predecessor-negative.test.ts","tests/server/release-rehearsal.test.ts"],
+  "new_report_artifact_directory":"docs/test-reports/BL-RELEASE-READINESS-generator-20261008/"
+}
