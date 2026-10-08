@@ -1,0 +1,46 @@
+{
+  "batch": "BL-REPLAY-PROCESS-BOUNDS",
+  "spec": "docs/specs/BL-REPLAY-PROCESS-BOUNDS-spec.md",
+  "features": [
+    {
+      "id": "F001",
+      "title": "Bounded subprocess primitive with output limits and owned-tree cleanup",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "F001 spec: validated budgets, explicit argv, status/streams, typed timeout/output errors, bounded tree cleanup and native adversarial unit controls."
+    },
+    {
+      "id": "F002",
+      "title": "Bound startup Git SHA snapshot without losing startup identity",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "F002 spec: bounded capped startup Git, valid SHA or null, import-time immutable snapshot, real stalled executable controls with synthetic homes."
+    },
+    {
+      "id": "F003",
+      "title": "Integrate bounded Git and Windows reparse supervision into replay",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "F003 spec: shared replay deadline, bounded subprocess output, fail-closed timeout/supervision errors, unchanged exact-version queue and confirmation semantics."
+    },
+    {
+      "id": "F004",
+      "title": "Retain failure reproductions and run portable regression controls",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "F004 spec: baseline reproductions, new native process fixtures, preserved original tests/evidence, Node22 fresh install/lint/verify/build/focused/full results with failures and platform skips."
+    },
+    {
+      "id": "F005",
+      "title": "Independent cross-family exact-candidate acceptance",
+      "priority": "high",
+      "executor": "evaluator",
+      "status": "completed",
+      "acceptance": "F005 spec: independent Kimi-family real process/deadline probes, immutable verdict and scoped signoff, explicit native/production and timing limits; no release inference."
+    }
+  ]
+}

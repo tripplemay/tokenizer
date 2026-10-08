@@ -1,0 +1,8 @@
+{
+  "observed_at":"2026-10-08T04:24:53Z",
+  "authority":{"coordinator_takeover":true,"gated_main_push_and_deploy":true,"source":"User allowed main push and deploy after gates pass","non_main_ci_publication":null,"legacy_baseline_maintenance":null,"off_host_backup_target":null,"write_pending_gate_decision":false,"worker_push_or_deploy":false},
+  "repository":{"main":"2074991717abaf3cb34d9aad894bcd4357fefbc3","candidate_base":"f700b9ae94c0663a6b7a6fb59acec244ea2b8659","content_dirty":false},
+  "live":{"health_ok":true,"reported_commit":"92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1","image_identity_verified":false,"postgres_password_secret_present":false,"production_environment_protection_rules":[],"default_documented_ssh":"Permission denied (publickey)"},
+  "release_blockers":["Exact composed native CI not run","Legacy predecessor and recovery point unproved","POSTGRES_PASSWORD Secret absent","Production environment approval protection absent","Maintenance and off-host backup details pending"],
+  "boundary":"Read-only metadata/public health only; no push/deploy/secret values/host writes/human decisions."
+}
