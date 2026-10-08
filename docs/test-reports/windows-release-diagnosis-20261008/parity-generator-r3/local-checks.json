@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-generator-r3-static-checks",
+  "r2BaseHead": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "sourceFreezeHead": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "checkedHead": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "sourceSha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "syntaxChecks": 4,
+  "schemaValidated": true,
+  "controlsPassed": true,
+  "rootMetadataCases": 11,
+  "frozenBoundariesUnchanged": true,
+  "originalHashesVerified": 32,
+  "criticFilesHashed": 11,
+  "nativeWindowsExecuted": false,
+  "productRuntimeExecuted": false,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}

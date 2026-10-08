@@ -39,6 +39,19 @@ const ABORT_REASONS = new Set(['unknown-native-budget', 'native-cleanup-output-a
   'diagnostic-output-limit-exceeded']);
 export const safeCode = (value) => value == null ? null : SAFE_CODES.has(value) ? value : 'UNRECOGNIZED_ERROR_CODE';
 export const errorCode = (error) => { try { return safeCode(error?.code); } catch { return 'UNRECOGNIZED_ERROR_CODE'; } };
+export function rootMetadata(child) {
+  const result = { pid: null, status: null, signal: null, unknown: false };
+  for (const [property, key] of [['pid', 'pid'], ['exitCode', 'status'], ['signalCode', 'signal']]) {
+    try {
+      const value = child[property];
+      const valid = key === 'pid' ? Number.isSafeInteger(value) && value > 0 && value <= 0xffffffff :
+        key === 'status' ? value === null || (Number.isSafeInteger(value) && value >= -2147483648 && value <= 0xffffffff) :
+          value === null || SAFE_SIGNALS.has(value);
+      if (valid) result[key] = value; else result.unknown = true;
+    } catch { result.unknown = true; }
+  }
+  return result;
+}
 const uint = (value, maximum = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && value >= 0 && value <= maximum;
 const finite = (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 const exactKeys = (value, required, optional = []) => value && typeof value === 'object' && !Array.isArray(value) &&
@@ -420,7 +433,8 @@ async function runParent() {
     let rootPid;
     const result = await new Promise((done) => {
       const child = cp.spawn(process.execPath, ['--import', 'tsx', self, '--probe'], { cwd: repo, env, windowsHide: true });
-      rootPid = child.pid;
+      const launchMetadata = rootMetadata(child);
+      rootPid = launchMetadata.pid;
       let settled = false, stopped = false, stopReason = null, stdout = Buffer.alloc(0), stderr = Buffer.alloc(0), bytes = 0, launchCode = null;
       const finish = () => {
         if (settled) return; settled = true; clearTimeout(watchdog); clearTimeout(finalTimer);
@@ -433,14 +447,18 @@ async function runParent() {
             if (validProbe(candidate, kind === 'smoke' ? 'smoke' : id.split('-').at(-1), arm, trace)) reported = candidate;
           }
         } catch { /* no raw fallback */ }
-        done({ status: child.exitCode, signal: child.signalCode, stopped, stopReason, launchCode, stdoutBytes: stdout.length,
+        const metadata = rootMetadata(child);
+        done({ status: metadata.status, signal: metadata.signal,
+          rootMetadataUnknown: launchMetadata.unknown || metadata.unknown || launchCode === 'UNRECOGNIZED_ERROR_CODE',
+          stopped, stopReason, launchCode, stdoutBytes: stdout.length,
           stderrBytes: stderr.length, canaries, canaryCoverageComplete: bytes <= BOUNDS.outputBytes,
           reported, protocolValid: Boolean(reported), outputBoundExceeded: bytes > BOUNDS.outputBytes });
       };
       const stop = (reason = 'owned-case-watchdog-expired') => {
         if (stopped) return; stopped = true; stopReason = reason;
-        if (child.pid && child.exitCode === null && child.signalCode === null) {
-          try { cp.spawnSync('taskkill.exe', ['/pid', String(child.pid), '/T', '/F'], { timeout: 1_000, stdio: 'ignore', windowsHide: true, killSignal: 'SIGKILL' }); } catch { /* unknown cleanup remains separate */ }
+        const metadata = rootMetadata(child);
+        if (!metadata.unknown && metadata.pid && metadata.status === null && metadata.signal === null) {
+          try { cp.spawnSync('taskkill.exe', ['/pid', String(metadata.pid), '/T', '/F'], { timeout: 1_000, stdio: 'ignore', windowsHide: true, killSignal: 'SIGKILL' }); } catch { /* unknown cleanup remains separate */ }
           try { child.kill('SIGKILL'); } catch { /* only the owned handle; unknown retained */ }
         }
       };
@@ -482,10 +500,12 @@ async function runParent() {
       ...(possibleLiveAfterOwnedCap.length ? ['possible-live-historical-pid-no-signal'] : []),
       ...(result.stopped || result.status === null ? ['forced-or-unconfirmed-root-termination'] : []),
       ...(guard.rows.some((event) => event.event === 'owned-lifetime-expired') ? ['owned-lifetime-expired'] : []),
+      ...(result.rootMetadataUnknown ? ['root-return-metadata-unknown'] : []),
       ...(provenanceUnknown ? ['ownership-observer-incomplete'] : [])
     ];
     const cleanupUnknown = cleanupUnknownBasis.length > 0;
-    const complete = result.protocolValid && result.reported.probeSetupComplete !== false && result.status === 0 && !result.stopped && !result.outputBoundExceeded &&
+    const complete = result.protocolValid && result.reported.probeSetupComplete !== false && result.status === 0 && result.signal === null &&
+      !result.rootMetadataUnknown && !result.launchCode && !result.stopped && !result.outputBoundExceeded &&
       !Object.values(result.canaries).some(Boolean) && !provenanceUnknown && !traceUnknown && !cleanupUnknown && diagnosticAbortReasons.length === 0;
     diagnosticIncomplete ||= !complete;
     const record = { id, arm, oldTracePreload: trace, commonBudgetGuardOn: true, reached: diagnosticAbortReasons.length === 0,

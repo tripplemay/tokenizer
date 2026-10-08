@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "role", "r2BaseHead", "sourceFreezeHead", "checkedHead", "sourceSha256", "node", "platform", "syntaxChecks", "schemaValidated", "controlsPassed", "rootMetadataCases", "frozenBoundariesUnchanged", "originalHashesVerified", "criticFilesHashed", "nativeWindowsExecuted", "productRuntimeExecuted", "releaseAcceptance", "releaseReady"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "role": {"const": "supporting-generator-r3-static-checks"},
+    "r2BaseHead": {"const": "d1df23737b49acabcb4c5823f75944b378b4e038"},
+    "sourceFreezeHead": {"const": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1"},
+    "checkedHead": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "sourceSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "node": {"type": "string", "pattern": "^v22\\.[0-9]+\\.[0-9]+$"},
+    "platform": {"const": "darwin"},
+    "syntaxChecks": {"const": 4},
+    "schemaValidated": {"const": true},
+    "controlsPassed": {"const": true},
+    "rootMetadataCases": {"const": 11},
+    "frozenBoundariesUnchanged": {"const": true},
+    "originalHashesVerified": {"const": 32},
+    "criticFilesHashed": {"type": "integer", "minimum": 11},
+    "nativeWindowsExecuted": {"const": false},
+    "productRuntimeExecuted": {"const": false},
+    "releaseAcceptance": {"const": false},
+    "releaseReady": {"const": false}
+  }
+}

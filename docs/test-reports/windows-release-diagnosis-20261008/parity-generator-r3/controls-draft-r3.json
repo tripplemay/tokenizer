@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-generator-r3-controls-not-independent-verdict",
+  "r2BaseHead": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "sourceScriptSha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+  "controls": [
+    {
+      "id": "R3-root-return-metadata-boundary",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "evidence": [
+        {
+          "field": "normal",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": false,
+          "diagnosticCompleted": true,
+          "selectedP2Arm": true
+        },
+        {
+          "field": "signalCode",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "exitCode",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "pid",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "error.code",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "close-arguments-not-exported",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": false,
+          "diagnosticCompleted": true,
+          "selectedP2Arm": true
+        },
+        {
+          "field": "status-getter",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "signal-getter",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "pid-getter",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "error-code-getter",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": true,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        },
+        {
+          "field": "known-signal-not-success",
+          "unsafeValuePublished": false,
+          "rootMetadataUnknown": false,
+          "diagnosticCompleted": false,
+          "selectedP2Arm": false
+        }
+      ],
+      "virtualOnly": true,
+      "nativeReachability": "unknown-not-tested"
+    },
+    {
+      "id": "R3-native-property-and-error-semantics",
+      "execution": "completed",
+      "passed": true,
+      "violation": false,
+      "nativeObjectUntouched": true,
+      "getterFailuresBecomeUnknown": true,
+      "errorMonitorSemanticsUnchanged": true
+    }
+  ],
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "controlsPassed": true,
+  "nativeWindowsExecuted": false,
+  "productRuntimeExecuted": false,
+  "allRuntimeEvidenceVirtual": true,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-generator-retained-local-control-failure",
+  "script": "controls-draft-syntax-failure.mjs",
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "exitCode": 1,
+  "errorClass": "SyntaxError",
+  "errorMessage": "Unexpected reserved word",
+  "line": 194,
+  "cause": "Archived draft accidentally retained the opening of the next unrelated control before the new top-level await. Corrected only the new R3 control script; CLI was not changed to satisfy this tooling failure.",
+  "nativeWindowsExecuted": false,
+  "productRuntimeExecuted": false,
+  "controlsExecuted": false,
+  "releaseAcceptance": false
+}
