@@ -60,6 +60,7 @@ esac`);
     { DETAILS: `true|fixture|postgres|${imageId}` }, { DETAILS: `true|fixture|app|sha256:${'e'.repeat(64)}` },
     { PORT: '0.0.0.0:3010' },
     { HEALTH_BODY: `{"ok":true,"code":"db_unavailable","commit":"${oldSha}"}` },
+    { HEALTH_BODY: `{"ok":true,"code":null,"commit":"${oldSha}"}` },
     { HEALTH_BODY: `{"ok":true,"code":"ready","commit":"${sha}"}` }
   ])('refuses wrong or missing serving identity without writes %#', (overrides) => {
     const before = snapshot();

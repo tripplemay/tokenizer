@@ -1,0 +1,15 @@
+{
+  "kind": "generator_adjudicated_source_exception_not_acceptance",
+  "adjudication_source_commit": "8ff63a7",
+  "transported_adjudication_commit": "0bbe22a",
+  "frozen_source": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+  "path": "scripts/verify-vps-predecessor.sh",
+  "source_sha256": "1689a73a02b5eb0d15d5b22291472cedf14cb72d2d43fbb2a8717e72b2ef0d72",
+  "revision_sha256": "7ea8747ecd048614c890511d8b9f887986d7701b51d2f3b73e958dbe6a90816b",
+  "exception": "Replace only the old readiness predicate with ((has(\"code\") | not) or .code == \"ready\"). An absent code remains permitted only with the exact activated predecessor; an explicit null is refused.",
+  "new_negative_control_path": "tests/server/release-predecessor-negative.test.ts",
+  "new_negative_control_sha256": "7fd1e9879273b85db81ec8892216e8629c23b407eef6f8034f5de68ece7c1dbb",
+  "command_record": "13-f002-null-code-revision.json",
+  "command_log": "13-f002-null-code-revision.log",
+  "result": "vitest: 2 files, 34 tests passed; independent evaluation remains pending"
+}

@@ -96,6 +96,6 @@ details="$(docker inspect --format '{{.State.Running}}|{{index .Config.Labels "c
 [[ "$details" == "true|$project|app|$old_id" ]] || fail "running app identity, project, service, or image differs"
 [[ "$(docker port "$container" 3000/tcp)" == 127.0.0.1:3010 ]] || fail "running app is not bound to the production backend"
 health="$(curl -fsS --max-time 3 http://127.0.0.1:3010/api/health)" || fail "running app readiness is unavailable"
-printf '%s' "$health" | jq -e --arg sha "$old_sha" '.ok == true and (.code == null or .code == "ready") and .commit == $sha' >/dev/null ||
+printf '%s' "$health" | jq -e --arg sha "$old_sha" '.ok == true and ((has("code") | not) or .code == "ready") and .commit == $sha' >/dev/null ||
   fail "production backend does not report the activated predecessor"
 printf 'production predecessor preflight passed: project=%s commit=%s\n' "$project" "$old_sha"
