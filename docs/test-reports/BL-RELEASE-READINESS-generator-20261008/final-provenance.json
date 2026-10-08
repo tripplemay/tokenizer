@@ -1,0 +1,246 @@
+{
+  "kind": "generator_source_path_hash_provenance_not_acceptance",
+  "baseline": "58266afef071a4575cb9a349601f3a7736cdf199",
+  "current_head_before_commit": "55cfe2353da6d1901e82c60f40a9edc944349b9a",
+  "generated_at": "2026-10-08T15:45:59.771Z",
+  "files": [
+    {
+      "feature": "F001",
+      "path": "scripts/ci/assert-macos-launchd-installer.mjs",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "3a1dd5a90a15eaa0a8192b9c2a8395c8841c68f9",
+      "mode": "100644",
+      "source_sha256": "168e0bc92b2ed3bce7e7b40b3aa55ec25cf247a1f2829c23f4954ef461907250",
+      "actual_sha256": "168e0bc92b2ed3bce7e7b40b3aa55ec25cf247a1f2829c23f4954ef461907250",
+      "identical": true,
+      "actual_git_blob": "3a1dd5a90a15eaa0a8192b9c2a8395c8841c68f9"
+    },
+    {
+      "feature": "F001",
+      "path": "src/cli/service.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "ac1f918b3726a56ecab35426bccf75c625a764cf",
+      "mode": "100644",
+      "source_sha256": "84568a283b81c479320fd6093ab95b293c0758cd9d5828347b512f97073aa624",
+      "actual_sha256": "84568a283b81c479320fd6093ab95b293c0758cd9d5828347b512f97073aa624",
+      "identical": true,
+      "actual_git_blob": "ac1f918b3726a56ecab35426bccf75c625a764cf"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/ci/macos-launchd-cleanup-trap.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "f4e2b334bb38f2671aede796444a51d7872380a6",
+      "mode": "100644",
+      "source_sha256": "89b77447e043d48796a2c79ee1d36e5c1636db1542fdd4d52265fd327c65ae00",
+      "actual_sha256": "89b77447e043d48796a2c79ee1d36e5c1636db1542fdd4d52265fd327c65ae00",
+      "identical": true,
+      "actual_git_blob": "f4e2b334bb38f2671aede796444a51d7872380a6"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/ci/macos-launchd-installer-gate.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "d889a678cce173612e52986023c98e59540b342f",
+      "mode": "100644",
+      "source_sha256": "34d69b2c9b4f7749cd39d618b8302a0a53ac82f0c40f78b46ca1f95176a7c2cc",
+      "actual_sha256": "34d69b2c9b4f7749cd39d618b8302a0a53ac82f0c40f78b46ca1f95176a7c2cc",
+      "identical": true,
+      "actual_git_blob": "d889a678cce173612e52986023c98e59540b342f"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/cli/agent-release-installer-macos.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "e6a73902a10254620aa9af1a05aeec188c436cf8",
+      "mode": "100644",
+      "source_sha256": "8c61933772d7690d1d6bee90fae4fcbc6c86dd9fa2c39d353c1c380ad456a5b3",
+      "actual_sha256": "8c61933772d7690d1d6bee90fae4fcbc6c86dd9fa2c39d353c1c380ad456a5b3",
+      "identical": true,
+      "actual_git_blob": "e6a73902a10254620aa9af1a05aeec188c436cf8"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/cli/service-launchd.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "ff96a504995f629137d51f2769032f8767976c6b",
+      "mode": "100644",
+      "source_sha256": "97c4dbfd847510f362c41fb50814fbff06e210a0e7962b95d81a2acbe5c3dd4e",
+      "actual_sha256": "97c4dbfd847510f362c41fb50814fbff06e210a0e7962b95d81a2acbe5c3dd4e",
+      "identical": true,
+      "actual_git_blob": "ff96a504995f629137d51f2769032f8767976c6b"
+    },
+    {
+      "feature": "F001",
+      "path": "tests/server/release-rehearsal.test.ts",
+      "source_sha": "3d0a974f4916c911917e1b09811c98d5c96b1ec0",
+      "source_git_blob": "7127fb3f1b2a1dc400b50bb1ab8e4fc99619b6c5",
+      "mode": "100644",
+      "source_sha256": "3088738aa027e814eb807c3b5efa2761bf48c10c9afffc30e00e3377a745fdc8",
+      "actual_sha256": "3088738aa027e814eb807c3b5efa2761bf48c10c9afffc30e00e3377a745fdc8",
+      "identical": true,
+      "actual_git_blob": "7127fb3f1b2a1dc400b50bb1ab8e4fc99619b6c5"
+    },
+    {
+      "feature": "F002",
+      "path": "scripts/deploy-vps-release.sh",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5",
+      "mode": "100644",
+      "source_sha256": "5997249ef4e25ffd2756a73d7b49c28216718be549e4c44e627bdc80f6f17a5d",
+      "actual_sha256": "5997249ef4e25ffd2756a73d7b49c28216718be549e4c44e627bdc80f6f17a5d",
+      "identical": true,
+      "actual_git_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5"
+    },
+    {
+      "feature": "F002",
+      "path": "scripts/verify-vps-predecessor.sh",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "815d599d0ed804428dbd27e3ab0f534b92ecc5d7",
+      "mode": "100644",
+      "source_sha256": "1689a73a02b5eb0d15d5b22291472cedf14cb72d2d43fbb2a8717e72b2ef0d72",
+      "actual_sha256": "7ea8747ecd048614c890511d8b9f887986d7701b51d2f3b73e958dbe6a90816b",
+      "identical": false,
+      "actual_git_blob": "4751f4a4e7daba733d8a32456818a115af189739"
+    },
+    {
+      "feature": "F002",
+      "path": "tests/server/release-image.test.ts",
+      "source_sha": "bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6",
+      "source_git_blob": "3709f446dbf1aa769e1ee396fa9cf957bff9a6ac",
+      "mode": "100644",
+      "source_sha256": "19f16240fe576ac319ba8d1b72b17ec9c1d707dd1f231c2291fc1dd99dcb866e",
+      "actual_sha256": "dee8d0bbc78ac3351cb0492a8b85c0bcd5bf3db088e900d94f139eefe6b6dd5f",
+      "identical": false,
+      "actual_git_blob": "880480a870c5888fd67bbe7dbf1c50448a099f38"
+    }
+  ],
+  "preservation": [
+    {
+      "path": "package.json",
+      "baseline_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "actual_sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a",
+      "identical": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "actual_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "identical": true
+    },
+    {
+      "path": "src/cli/queue.ts",
+      "baseline_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "actual_sha256": "e5c299a3af45dd1a812aa020fe97ac64c6fb3fabb1fc9e090485c8a026c46094",
+      "identical": true
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "baseline_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "actual_sha256": "978549628bedc3a7d0ed2b3bbf19db0f361c6d60e095dcda452cd059f899fc77",
+      "identical": true
+    }
+  ],
+  "new_sources": [
+    {
+      "path": ".github/workflows/deploy-vps.yml",
+      "sha256": "1224292be1c260430fd8ffd7e55055921358082ed87f43f22f1ac6f73ca0b4d5",
+      "git_blob": "9c2654610229eea6a52b424b73ec5d49831e82c4"
+    },
+    {
+      "path": "scripts/ci/vps-host-preflight.sh",
+      "sha256": "83799b580d9d4457f7c899a45b9a8acc87720fc64c47a2bcbd5483a474fe0002",
+      "git_blob": "0982156fccf3ab3e901a600d6dc77a4860c0c990"
+    },
+    {
+      "path": "tests/ci/vps-host-preflight.test.ts",
+      "sha256": "6afdff905d98cd78ba69de255e20043c0e93dd5f6dddcf95293d387b5f1421ca",
+      "git_blob": "15cab7ffbfdd10e9676e29d64425a91cd2d9915a"
+    },
+    {
+      "path": "tests/server/release-predecessor-negative.test.ts",
+      "sha256": "7fd1e9879273b85db81ec8892216e8629c23b407eef6f8034f5de68ece7c1dbb",
+      "git_blob": "421725b436e1f860efc522d0158bb6c7e6881d72"
+    }
+  ],
+  "tracked_changes_from_baseline": [
+    ".github/workflows/deploy-vps.yml",
+    "docs/specs/BL-RELEASE-READINESS-spec.md",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/01-npm-ci.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/02-f001-focus.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/02-f001-focus.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/03-f001-verify.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/03-f001-verify.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/04-f002-focus.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/04-f002-focus.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/05-f002-verify.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/05-f002-verify.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/06-f002-focus-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/06-f002-focus-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/07-f002-focus-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/07-f002-focus-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/08-f003-focus.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/08-f003-focus.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/09-f003-verify.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/09-f003-verify.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/10-f003-focus-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/10-f003-focus-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/11-f003-verify-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/11-f003-verify-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/12-f003-transport-diagnostic.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/12-f003-transport-diagnostic.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/13-f002-null-code-revision.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/13-f002-null-code-revision.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/14-f003-focus-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/14-f003-focus-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/15-f003-verify-rerun.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/15-f003-verify-rerun.log",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/F001-provenance.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/F002-null-code-revision.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/F002-provenance.json",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/capture-provenance.mjs",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/operator-preflight.md",
+    "docs/test-reports/BL-RELEASE-READINESS-generator-20261008/run-local.mjs",
+    "features.json",
+    "progress.json",
+    "scripts/ci/assert-macos-launchd-installer.mjs",
+    "scripts/ci/vps-host-preflight.sh",
+    "scripts/deploy-vps-release.sh",
+    "scripts/verify-vps-predecessor.sh",
+    "src/cli/service.ts",
+    "tests/ci/macos-launchd-cleanup-trap.test.ts",
+    "tests/ci/macos-launchd-installer-gate.test.ts",
+    "tests/ci/vps-host-preflight.test.ts",
+    "tests/cli/agent-release-installer-macos.test.ts",
+    "tests/cli/service-launchd.test.ts",
+    "tests/server/release-image.test.ts",
+    "tests/server/release-predecessor-negative.test.ts",
+    "tests/server/release-rehearsal.test.ts"
+  ],
+  "frozen_inventory": {
+    "path": "frozen-input-paths.json",
+    "total": 2164,
+    "unauthorized_changes": [
+      {
+        "path": "scripts/deploy-vps-release.sh",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "e9e786ba82599e566a9877f432087831a189a4df",
+        "actual_blob": "c0e994818e4a8191175e3eda86a9d3d7a50216b5",
+        "identical": false,
+        "authorized_mutable_path": false
+      }
+    ],
+    "declared_changes": [
+      ".github/workflows/deploy-vps.yml",
+      "docs/specs/BL-RELEASE-READINESS-spec.md",
+      "features.json",
+      "progress.json",
+      "src/cli/service.ts",
+      "tests/server/release-image.test.ts",
+      "tests/server/release-rehearsal.test.ts"
+    ]
+  },
+  "workflow_transport": "Selective macOS job/needs plus predecessor guards; B06/B07 env/probes and floor15 retained.",
+  "limits": "Byte/source provenance and local command records only; no independent acceptance or release readiness."
+}

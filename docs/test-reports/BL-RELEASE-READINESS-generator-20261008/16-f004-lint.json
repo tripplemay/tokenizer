@@ -1,0 +1,17 @@
+{
+  "name": "16-f004-lint",
+  "command": "npm",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008",
+  "started": "2026-10-08T15:44:52.307Z",
+  "finished": "2026-10-08T15:44:57.504Z",
+  "node": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "home": "/private/tmp/tkrg.BIlgHB/h",
+  "tmpdir": "/private/tmp/tkrg.BIlgHB/t",
+  "status": 0,
+  "signal": null,
+  "error": null
+}

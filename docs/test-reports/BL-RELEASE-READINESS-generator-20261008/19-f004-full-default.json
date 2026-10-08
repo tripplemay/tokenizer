@@ -1,0 +1,17 @@
+{
+  "name": "19-f004-full-default",
+  "command": "npm",
+  "args": [
+    "run",
+    "test"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008",
+  "started": "2026-10-08T15:46:50.238Z",
+  "finished": "2026-10-08T15:47:38.443Z",
+  "node": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "home": "/private/tmp/tkrg.BIlgHB/h",
+  "tmpdir": "/private/tmp/tkrg.BIlgHB/t",
+  "status": 0,
+  "signal": null,
+  "error": null
+}
