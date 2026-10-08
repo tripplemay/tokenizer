@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "task": "BL-HOST-PREFLIGHT-OBSERVABILITY-20261009",
+  "role": "independent_supporting_scope_critic",
+  "review_phase": "planning_before_product_implementation",
+  "base_sha": "1f52c86d5e5448ed48959cb1bfe63b6de1d26798",
+  "initial_spec_sha": "c4b81ff554d39ce36d2de2b754cdd2f6f531f675",
+  "reviewed_spec_sha": "9db2ebf293f874157ef614af6bf53b4bc91e996d",
+  "spec_path": "docs/specs/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009.md",
+  "spec_sha256": "c78394b6090868d586b1d3e42af0095cf26789929bb63f8b212d5a01248d0fc7",
+  "violation": false,
+  "detail": "No current scope violation: the reviewed planning commits change only the supporting spec. The final spec fixes the two non-blocking ownership/redaction ambiguities. This locks narrow implementation constraints, not implementation quality or functional acceptance.",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "blocking_findings": [],
+  "functional_acceptance": "not_performed",
+  "post_implementation_scope_review": "required_on_exact_generator_source",
+  "fresh_cross_family_supporting_evaluation": "required",
+  "release_ready": false,
+  "findings": [
+    {
+      "id": "SP-01",
+      "severity": "non_blocking_boundary_clarified",
+      "topic": "feature_ownership_and_state",
+      "finding": "Supporting work has its own report/spec name but cannot create a canonical feature, change F003 completion, or close parent F004/F005.",
+      "resolution": "Final spec lines 66-67 require BL-RELEASE-READINESS-F003 implementation tags. Existing features.json F003 and parent spec lines 57-76 and 103-104 already own the inventory script, workflow and additive preflight tests.",
+      "status": "resolved_before_implementation"
+    },
+    {
+      "id": "SP-02",
+      "severity": "non_blocking_boundary_clarified",
+      "topic": "secret_hash_redaction",
+      "finding": "A blanket reading of the original prohibition on secret hashes could contradict preservation of the existing approved files.* hashes, including .env metadata.",
+      "resolution": "Final spec lines 63-66 limit the prohibition to new metadata and freeze the old files.* allowlist without removal or expansion. No new data, hashes, raw outputs or environment values may enter compose_probe.",
+      "status": "resolved_before_implementation"
+    },
+    {
+      "id": "SP-03",
+      "severity": "implementation_guardrail",
+      "topic": "pipeline_classification",
+      "finding": "The baseline query() normalizes capture failure to 1. Its result cannot supply the required original pipeline_exit_status. With pipefail, the recorded pipeline status also need not be Docker's own status.",
+      "required_constraint": "Keep query() byte-frozen. Instrument only the existing Compose capture with identical timeout --signal=KILL 5s / docker compose version --short / head -c 16385 argv; preserve the whole pipeline status before any status-masking operation. An exceeded retained capture cap takes precedence over a nonzero pipeline; never reinterpret 124, 137 or 141 as an internal cause.",
+      "status": "locked_for_post_review"
+    },
+    {
+      "id": "SP-04",
+      "severity": "implementation_guardrail",
+      "topic": "bounded_capture_bytes",
+      "finding": "captured_bytes describes the bounded shell string after command substitution strips trailing newlines, not emitted stdout/stderr. Shell string length must not silently become a multibyte character count under a non-C local test locale.",
+      "required_constraint": "Measure bytes of the retained string without adding host queries, changing global locale/shared query behavior, or widening bounds. Retain 16385-byte capture, 16384-byte rejection threshold, 5s query timeout, 150s SSH timeout and 65536-byte transport-report limit. Do not infer a total emitted byte count or repair newline/locale behavior elsewhere.",
+      "status": "locked_for_post_review"
+    },
+    {
+      "id": "SP-05",
+      "severity": "implementation_guardrail",
+      "topic": "home_presence",
+      "finding": "home_present is variable presence, not truthiness, a readable path, or proof of Docker plugin/config discovery. A present empty HOME must still be true.",
+      "required_constraint": "Use shell presence-only inspection, never serialize HOME, never inspect the path/config/plugin directories, and never restore or inherit HOME in the frozen SSH invocation.",
+      "status": "locked_for_post_review"
+    },
+    {
+      "id": "SP-06",
+      "severity": "implementation_guardrail",
+      "topic": "validator_and_regressions",
+      "finding": "The actual workflow filter is the transport allowlist. A surrogate validator or old-test adaptations would not prove the allowed change.",
+      "required_constraint": "Extend only the existing jq validator. Require exact compose_probe keys, enum, boolean, integer ranges and null/not_run relationships; reject extra secret-bearing keys. Execute every old host-preflight test byte-unchanged, add separate controls, pin every workflow byte outside the validator and shared/non-Compose script behavior, retain initial failures without retries to green.",
+      "status": "locked_for_post_review"
+    },
+    {
+      "id": "SP-07",
+      "severity": "evidence_limit",
+      "topic": "host_cause_and_effects",
+      "finding": "The retained live report proves compose_unavailable before config/app/postgres identity collection. The frozen SSH invocation omits HOME. Neither proves that HOME or plugin discovery caused the refusal.",
+      "required_constraint": "No additional host query, plugin fallback, environment repair, installation, service/config/DB mutation, SSH/GH/Secrets operation or credential access by workers. Only Coordinator may publish the exact reviewed/evaluated non-main source and request protected human-reviewed host-preflight.",
+      "status": "locked_for_post_review"
+    }
+  ],
+  "classification_contract": [
+    { "condition": "before Compose execution", "status": "not_run", "pipeline_exit_status": null, "captured_bytes": null },
+    { "condition": "retained string exceeds the unchanged cap, regardless of pipeline status", "status": "output_bound_exceeded", "pipeline_exit_status": "integer 0..255", "captured_bytes": 16385 },
+    { "condition": "nonzero pipeline without exceeded cap", "status": "command_failed", "pipeline_exit_status": "integer 1..255", "captured_bytes": "integer 0..16384" },
+    { "condition": "zero pipeline without exceeded cap and invalid existing semver", "status": "invalid_version", "pipeline_exit_status": 0, "captured_bytes": "integer 0..16384" },
+    { "condition": "zero pipeline without exceeded cap and valid existing semver", "status": "ok", "pipeline_exit_status": 0, "captured_bytes": "integer 0..16384" }
+  ],
+  "frozen_baseline_blobs": {
+    ".github/workflows/deploy-vps.yml": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+    "scripts/ci/vps-host-preflight.sh": "0982156fccf3ab3e901a600d6dc77a4860c0c990",
+    "tests/ci/vps-host-preflight.test.ts": "15cab7ffbfdd10e9676e29d64425a91cd2d9915a",
+    "progress.json": "abd043789c21bb067582475b8bea7002a4570bd5",
+    "features.json": "918eb22c3679c2ceab23533c482c48fc38fe6b92"
+  },
+  "independent_evidence": [
+    "AGENTS.md, harness-rules.md, CLAUDE.md, current progress.json/features.json read from disk",
+    "Final spec and 9db2ebf diff independently read",
+    "Base script, real workflow validator/SSH invocation and all existing host-preflight test source independently read",
+    "git diff --name-status base..initial_spec showed only the new spec",
+    "git diff --stat 76d916ba..base for script/workflow/old-test paths returned empty",
+    "Retained original run 37812774615 inventory JSON independently read"
+  ],
+  "commands_not_performed": [
+    "product or test execution",
+    "push, GH API, SSH, production operation or credential access",
+    "spec/product/test/state/rules/dependency/auto-memory edit"
+  ],
+  "retained_read_error": "read-command-notes.txt"
+}

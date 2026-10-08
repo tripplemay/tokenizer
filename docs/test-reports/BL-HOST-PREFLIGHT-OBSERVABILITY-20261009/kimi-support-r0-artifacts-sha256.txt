@@ -1,0 +1,14 @@
+51d21111e0db5c08284bd02b5126ad77637673b0a26d1d8cd3d244b33687ee75  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/08-real-workflow-validator-filter.txt
+0aa4bebca3646defacd7c8c687a0f947a296c46afa480e826b068b1cdd47365a  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/03-vitest-existing-host-preflight.log
+d385798363fc486d2348a68aaae58d70759cd3d6de1a73f8e87793c990b0148d  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/01-environment-and-npm-ci.log
+25ccb25548cc11d2a93dc5f7b7d63a819ef4001e3d03bb96f31773d26cee3048  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/05-vitest-evaluator-controls.log
+d1d4882480e549491e698b75d647bb17258d570f8a2f65c9896ae2ee66389679  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/06-vitest-evaluator-controls-corrected-rerun.log
+025a6de27db76cf8be8cc6555a0555590e5cfef58ddfb27a728327475cea7b9a  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/02-verify-prisma-tsc.log
+315005c063d057547dcc0dceb992880f5ff09e8f0d97d087c1444b972fea235e  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/04-typecheck-with-evaluator-test.log
+c354af3cad559c3eddc93f2f6874514f42500af6346360a5b06100730aabcad4  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/README.md
+1a09b5e913b8d7aee3db8a3a9aa319564e2534b9c32d27301a3d3c5084c37ebf  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-kimi-support-20261009/07-frozen-baseline-git-evidence.log
+06cc559aaf8b328ca24a399e324f7ef72d25eb48f5526051b8376cc72d7a5a68  docs/test-reports/BL-HOST-PREFLIGHT-OBS-SUPPORT-verdict.json
+bf9538a647e95b5fe1e955625a4518e04332b077fccd3f12f465e6e581bdc99f  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/kimi-support-r0-runtime-original.log
+0243d8d6e4bd851bc36b0b6ec1e29f10619b7be8f1dbd80ac057b8303a1491b4  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/kimi-support-r0-probe-original.ts.txt
+c8687bcfc56001aed4152eb0b2913a1a4ad8d0b90371591220236fb9409a0641  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/kimi-support-r0-receipt-original.json
+a37278cb0bf045c215b6c1477379f30186dac5f4e4be13a32675e5a94668cdcc  docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/kimi-support-r0-run-original.log

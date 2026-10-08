@@ -1,0 +1,52 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-observability-20261009[39m
+
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22minventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations[33m 1313[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mreports a healthy legacy source image and missing ledger as legacy, never creates activation[33m 1029[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses missing-app without writes or disclosure[33m 797[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses duplicate-app without writes or disclosure[33m 800[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-project without writes or disclosure[33m 851[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-service without writes or disclosure[33m 1104[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses stopped-app without writes or disclosure[33m 899[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unhealthy-app without writes or disclosure[33m 885[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-port without writes or disclosure[33m 920[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-image without writes or disclosure[33m 874[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-network without writes or disclosure[33m 992[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-volume without writes or disclosure[33m 1149[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unready without writes or disclosure[33m 1267[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-health-code without writes or disclosure[33m 1277[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses null-health-code without writes or disclosure[33m 1274[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses wrong-health-sha without writes or disclosure[33m 1268[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses health-failure without writes or disclosure[33m 1310[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses raw-canary without writes or disclosure[32m 169[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses raw-user-canary without writes or disclosure[33m 991[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mbounds a hung query to five seconds and suppresses its failed stderr[33m 5159[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mdoes not execute config content and clears Docker/Compose/proxy environment overrides[33m 1291[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unsafe selected configuration: duplicate[33m 549[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unsafe selected configuration: malicious-image[33m 554[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unsafe selected configuration: symlink[32m 203[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses unsafe selected configuration: oversized[32m 243[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrejects malicious/missing remote args before queries 0[32m 9[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrejects malicious/missing remote args before queries 1[32m 10[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrejects malicious/missing remote args before queries 2[32m 8[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrejects malicious/missing remote args before queries 3[32m 8[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mtransports the exact reviewed script on stdin and uploads only validated JSON[33m 1383[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 0[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 1[32m 12[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 2[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 3[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 4[32m 10[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 5[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 6[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mrefuses invalid SSH input before an SSH invocation 7[32m 11[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mnever retains unallowlisted or failed transport bytes: raw-stdout[33m 1415[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mnever retains unallowlisted or failed transport bytes: extra-key[33m 1392[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mnever retains unallowlisted or failed transport bytes: failed-transport[33m 1364[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mread-only allowlisted tokenizer host preflight[2m > [22mretains a valid redacted refusal while returning nonzero[33m 901[2mms[22m[39m
+ [32m✓[39m tests/ci/vps-host-preflight.test.ts[2m > [22mhost-preflight operation separation and preserved release gates[2m > [22mdispatches inventory alone even on main, and preserves push/PR/release gates[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m43 passed[39m[22m[90m (43)[39m
+[2m   Start at [22m 03:40:07
+[2m   Duration [22m 34.01s[2m (transform 28ms, setup 0ms, import 36ms, tests 33.75s, environment 0ms)[22m
+

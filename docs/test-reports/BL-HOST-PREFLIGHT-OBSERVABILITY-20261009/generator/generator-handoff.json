@@ -1,0 +1,23 @@
+{
+  "batch_id": "BL-RELEASE-READINESS",
+  "created_at": "2026-10-08T20:43:49Z",
+  "features": [
+    {
+      "feature_id": "F003",
+      "commits": ["cddb822cc2452c2042309de73064a38f0c4224cf"],
+      "files_touched": [
+        "scripts/ci/vps-host-preflight.sh",
+        ".github/workflows/deploy-vps.yml",
+        "tests/ci/vps-host-preflight-observability.test.ts"
+      ],
+      "notes": "Supporting fixed Compose metadata only. Shared/non-Compose script and workflow outside the existing host validator are pinned against a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca. Source is frozen. Report-only evidence commit is separate. Independent scope/evaluation and native/release signoff remain outside this Generator handoff."
+    }
+  ],
+  "l1_ran": {
+    "lint": "npm run lint: initial exit 0; complete log logs/14-lint-initial.log.",
+    "typecheck": "npm run verify: initial exit 2 (new synthetic env TS2769), corrected new env types only, subsequent exit 0; complete logs 13 and 16.",
+    "test": "Node22 fresh npm ci: initial config exit 1 then relocated original session exit 0. Old host suite initial exit 0 / 43 passed. New suite initial exit 1 / 31 passed 1 failed, new baseline fixture env corrected without weakening assertions, subsequent exit 0 / 32 passed. Complete logs 04,10,11,12,15. Generator development evidence only, not acceptance."
+  },
+  "waiting": null,
+  "waiting_detail": "Independent post-source scope review and fresh Kimi-family supporting evaluation are required on cddb822cc2452c2042309de73064a38f0c4224cf. Native/release_ready remains false. Initial unredirected tar output was truncated; do not claim complete raw extraction evidence."
+}

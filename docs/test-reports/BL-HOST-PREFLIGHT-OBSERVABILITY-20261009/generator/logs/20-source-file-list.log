@@ -1,0 +1,3 @@
+M	.github/workflows/deploy-vps.yml
+M	scripts/ci/vps-host-preflight.sh
+A	tests/ci/vps-host-preflight-observability.test.ts

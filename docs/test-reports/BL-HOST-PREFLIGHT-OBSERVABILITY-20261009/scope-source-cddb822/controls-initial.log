@@ -1,0 +1,48 @@
+{"control":"exact script allowed-spans only vs a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca","result":"satisfied","detail":"Entire script equals base after removing only explicit initialization/serialization and restoring Compose capture."}
+{"control":"workflow byte freeze and old validator predicates vs a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca","result":"satisfied","detail":"Every byte outside actual jq filter unchanged; every old filter predicate unchanged."}
+{"control":"old tests and protected paths frozen vs a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca","result":"satisfied","detail":"No protected-path diff."}
+{"control":"exact script allowed-spans only vs 1f52c86d5e5448ed48959cb1bfe63b6de1d26798","result":"satisfied","detail":"Entire script equals base after removing only explicit initialization/serialization and restoring Compose capture."}
+{"control":"workflow byte freeze and old validator predicates vs 1f52c86d5e5448ed48959cb1bfe63b6de1d26798","result":"satisfied","detail":"Every byte outside actual jq filter unchanged; every old filter predicate unchanged."}
+{"control":"old tests and protected paths frozen vs 1f52c86d5e5448ed48959cb1bfe63b6de1d26798","result":"satisfied","detail":"No protected-path diff."}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  {
++   captured_bytes: null,
+-   captured_bytes: 7,
+    home_present: false,
++   pipeline_exit_status: null,
++   status: 'not_run'
+-   pipeline_exit_status: 0,
+-   status: 'ok'
+  }
+
+    at file:///Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-observability-20261009/docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/scope-source-cddb822/controls.mjs:160:14
+    at control (file:///Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-observability-20261009/docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/scope-source-cddb822/controls.mjs:22:18)
+    at file:///Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-observability-20261009/docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/scope-source-cddb822/controls.mjs:158:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:639:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: {
+    status: 'not_run',
+    pipeline_exit_status: null,
+    captured_bytes: null,
+    home_present: false
+  },
+  expected: {
+    status: 'ok',
+    pipeline_exit_status: 0,
+    captured_bytes: 7,
+    home_present: false
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.7.0
