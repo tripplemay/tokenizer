@@ -1,0 +1,1207 @@
+{
+  "report_type": "supporting-read-only-runtime-diagnosis-facts-and-proposal",
+  "generated_at_utc": "2026-10-08T18:26:35Z",
+  "role": "supporting diagnostician under harness-rules section 1.5; not Evaluator, Generator or product acceptance",
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "scope": {
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-diagnostic-ci-20261008",
+    "head": "56a326dab9b44da8cd5ca27e16148092a9e518a6",
+    "initial_inspection_head_and_actual_CI_execution_ref": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "archive_commit_boundary": "Coordinator advanced HEAD during this report to 56a326d with documentation/evidence only. Offline comparison confirmed diagnostic CLI, trace preload, three inspected product files and workflow are byte-identical to the actual CI execution ref. No native run of 56a326d is claimed.",
+    "only_outputs": [
+      "analysis.json",
+      "README.md",
+      "original-sha256.json"
+    ],
+    "native_execution_performed": false,
+    "network_or_remote_actions_performed": false,
+    "state_product_tests_workflow_edits": false
+  },
+  "evidence": {
+    "run_id": 37822555762,
+    "job_id": 113467034986,
+    "transport_conclusion": "success",
+    "transport_conclusion_meaning": "Diagnostic CLI exit 0, not native Windows release-gate PASS.",
+    "run_event": "push",
+    "job_started_at": "2026-10-08T18:13:06Z",
+    "job_completed_at": "2026-10-08T18:15:31Z",
+    "artifact_directory": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "native_output_subdirectory": "windows-release-diagnosis-20261008/native-output-parity-1791483248698",
+    "provenance_subdirectory": "windows-native-ci-20261008",
+    "raw_ci_metadata": "docs/test-reports/windows-native-ci-20261008/runtime-parity-ci-37822555762-original.json",
+    "raw_ci_log": "docs/test-reports/windows-native-ci-20261008/runtime-parity-ci-37822555762-original.log",
+    "artifact_files": 57,
+    "native_output_files": 55,
+    "metadata_and_log_files": 2,
+    "hashed_files": 59,
+    "archive_watch_log_boundary": "The later Coordinator archive also contains a watch log; it was not used to infer native runtime behavior and is outside this report's 57 original uploaded files plus metadata/log hash inventory.",
+    "hashed_bytes": 121007,
+    "actual_head": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "declared_source_freeze": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+    "failed_release_baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "os": {
+      "caption": "Microsoft Windows Server 2025 Datacenter",
+      "version": "10.0.26100",
+      "build": "26100",
+      "runner_image": "windows-2025-vs2026",
+      "runner_image_version": "20260925.250.1"
+    },
+    "runtime": {
+      "node": "v22.23.3",
+      "uv": "1.51.0",
+      "platform": "win32",
+      "arch": "x64",
+      "git": "git version 2.55.0.windows.5",
+      "powershell_version": "not recorded"
+    },
+    "provenance_boundary": "Current downloaded bytes and captured CI metadata/log were checked offline. No signed artifact authenticity, complete remote filesystem deletion or exact runtime source attestation is asserted."
+  },
+  "source_identity": [
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+      "disk_matches_git_HEAD": true,
+      "at_declared_source_freeze": "file not present; the freeze label is not the diagnostic CLI content identity"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+      "disk_matches_git_HEAD": true,
+      "matches_source_freeze": true
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+      "disk_matches_git_HEAD": true,
+      "matches_source_freeze_and_failed_release_baseline": true
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+      "disk_matches_git_HEAD": true,
+      "matches_source_freeze_and_failed_release_baseline": true
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+      "disk_matches_git_HEAD": true,
+      "matches_source_freeze_and_failed_release_baseline": true
+    },
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+      "disk_matches_git_HEAD": true
+    }
+  ],
+  "environment_boundary": {
+    "original_runner_env_parity": false,
+    "old_trace_off_means": "old trace preload off; common budget/lifetime guard still on",
+    "base_system_keys": [
+      "PATH",
+      "SystemRoot",
+      "WINDIR",
+      "ComSpec",
+      "PATHEXT"
+    ],
+    "synthetic_owned_variables": "HOME/USERPROFILE, temp paths, empty Git config, diagnostic root/counter/health/case variables and guard NODE_OPTIONS",
+    "arms": {
+      "E0": [],
+      "E1": [
+        "SystemDrive derived from allowed SystemRoot"
+      ],
+      "E2": [
+        "synthetic owned APPDATA"
+      ],
+      "E3": [
+        "synthetic owned LOCALAPPDATA"
+      ],
+      "E4": [
+        "PSModulePath restricted to SystemRoot/System32/WindowsPowerShell/v1.0/Modules"
+      ]
+    },
+    "combined_arm_executed": false,
+    "E4_full_machine_or_personal_module_path": false,
+    "causal_limit": "One execution per arm/form in fixed off-then-on order. Consistent outcomes do not prove no instrumentation effect or identify a missing environment key."
+  },
+  "bounds": {
+    "total_ms": 600000,
+    "owned_case_ms": 40000,
+    "cleanup_allowance_ms": 3000,
+    "operation_ms": 10000,
+    "smoke_child_ms": 7000,
+    "smoke_powershell_cap": 38,
+    "total_powershell_cap": 76,
+    "case_output_bytes": 65536,
+    "trace_bytes": 524288,
+    "native_output_bytes": 16384
+  },
+  "observations": [
+    {
+      "id": "O1",
+      "fact": "All ten P0 fixed-marker calls completed; each matched its fixed marker, native status 0, signal null, stdout 21 bytes, stderr 0.",
+      "elapsed_ms_range": [
+        263.61699999999996,
+        313.8899
+      ]
+    },
+    {
+      "id": "O2",
+      "fact": "All ten separately launched P1 fixed synthetic ConvertFrom-Json calls reached the bounded worker and returned BoundedSubprocessTimeoutError; none produced a successful P1 marker.",
+      "elapsed_ms_range": [
+        7182.7663999999995,
+        7193.5611
+      ],
+      "spawn_to_taskkill_ms_range": [
+        6998,
+        7011
+      ],
+      "deadline_configured_ms": 7000
+    },
+    {
+      "id": "O3",
+      "fact": "Every guard shows P0 native close status 0, then P1 PowerShell spawn, taskkill spawn/close status 0 and P1 native close status 1; no guard child-error, budget-abort or owned-lifetime-expired event.",
+      "limit": "The P1 status 1 is observed after forced termination; it is not an independent pre-timeout script failure."
+    },
+    {
+      "id": "O4",
+      "fact": "All five trace-on forms show bounded worker kinds ok then timeout; only P0 has a 21-byte stdout event, with no P1 stdout/stderr byte event.",
+      "limit": "No cmdlet-resolution/module-load/JSON-parse internal milestone was captured."
+    },
+    {
+      "id": "O5",
+      "fact": "All ten P2 observations are reached=false with previous-smoke-did-not-complete. No arm is selected. All eight downstream records are reached=false and rootProcessStarted=false.",
+      "limit": "No parent hook, confirmation, binding or healthy aggregate analog behavior was tested."
+    },
+    {
+      "id": "O6",
+      "fact": "The 20 original counter entries are powershell-admission/smoke, matching 20 native PowerShell spawn events; downstream admissions are zero."
+    },
+    {
+      "id": "O7",
+      "fact": "Offline artifact checks reconcile all guard/trace per-PID contiguous sequences, expected preload PID sets, health complete-state PID sets and published evidence byte counts.",
+      "limit": "Per-process health source files were not uploaded separately; complete flags and states are captured normalized records, not a new remote health measurement."
+    },
+    {
+      "id": "O8",
+      "fact": "All ten cleanup files report no possible live observed PIDs at either sample, no unknown basis and no retained root; every owned P1 taskkill has close status 0.",
+      "limit": "These sampled observed PID checks and captured statements do not independently prove entire process-tree absence or filesystem removal, nor product cleanup success in unexecuted cases."
+    },
+    {
+      "id": "O9",
+      "fact": "All ten root protocol records report canary flags false, output scan complete, stderr 0 and no output overflow; known canary literals are absent in all 55 native-output artifacts.",
+      "limit": "Canary coverage is bounded diagnostic-root stdout/stderr coverage. Timeout worker output omits raw native stdout/stderr. No downstream queue mutation or product privacy acceptance can be inferred."
+    }
+  ],
+  "decisive_branch_trace": [
+    {
+      "source": "native-runtime-parity.mjs:596-609",
+      "relationship": "P0 marker -> P1 fixed JSON cmdlet invocation -> P2 native attribute script, each in a separate bounded worker; previous=false skips the next stage."
+    },
+    {
+      "source": "src/cli/bounded-subprocess.ts:70-101",
+      "relationship": "7-second timeout passed into frozen worker; trace-on helper kind timeout maps to BoundedSubprocessTimeoutError, which the diagnostic measure records."
+    },
+    {
+      "source": "src/cli/bounded-subprocess-worker.mjs:12-57,70-87",
+      "relationship": "Async native child timer calls finish(timeout), attempts owned taskkill and awaits native close; unsuccessful cleanup would replace timeout with supervision. Captured traces show timeout, not supervision."
+    },
+    {
+      "source": "native-runtime-parity.mjs:507-510,534-541,557-561",
+      "relationship": "Observation-complete permits captured native refusal. It does not require P1/P2 success. P2 success plus diagnosticCompleted is the separate downstream-selection predicate. This explains diagnostic exit 0 and workflow SUCCESS with all downstream unexecuted."
+    },
+    {
+      "source": "src/cli/replay.ts:148-158; native-runtime-parity.mjs:23,598",
+      "relationship": "P2 literal matches the frozen replay native reparse-attribute script, but P2 was never invoked. No replay-source safety conclusion follows."
+    }
+  ],
+  "per_group_actual_reachability": [
+    {
+      "id": "smoke-off-E0",
+      "arm": "E0",
+      "old_trace_preload": "off",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [],
+      "root_pid": 4912,
+      "worker_pids": [
+        2512,
+        2124
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 313.8899,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 4924,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7183.334,
+        "native_pid": 4624,
+        "spawn_to_taskkill_ms": 6998,
+        "taskkill_pid": 6784,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": null,
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 595,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1843,
+        "preload_pids": [
+          4912,
+          2512,
+          2124
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": false,
+        "events": 0,
+        "bytes": 0,
+        "continuous_per_pid_sequence": true,
+        "health_complete": null,
+        "health_pid_count": 0,
+        "worker_kinds": []
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-off-E1",
+      "arm": "E1",
+      "old_trace_preload": "off",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "SystemDrive"
+      ],
+      "root_pid": 7396,
+      "worker_pids": [
+        2872,
+        4832
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 274.4165,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 6804,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7190.4292,
+        "native_pid": 2644,
+        "spawn_to_taskkill_ms": 7011,
+        "taskkill_pid": 3684,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": null,
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 596,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1843,
+        "preload_pids": [
+          7396,
+          2872,
+          4832
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": false,
+        "events": 0,
+        "bytes": 0,
+        "continuous_per_pid_sequence": true,
+        "health_complete": null,
+        "health_pid_count": 0,
+        "worker_kinds": []
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-off-E2",
+      "arm": "E2",
+      "old_trace_preload": "off",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "APPDATA"
+      ],
+      "root_pid": 7352,
+      "worker_pids": [
+        10092,
+        9392
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 299.24979999999994,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 4392,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7183.9745,
+        "native_pid": 7116,
+        "spawn_to_taskkill_ms": 7006,
+        "taskkill_pid": 3596,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": null,
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 606,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1848,
+        "preload_pids": [
+          7352,
+          10092,
+          9392
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": false,
+        "events": 0,
+        "bytes": 0,
+        "continuous_per_pid_sequence": true,
+        "health_complete": null,
+        "health_pid_count": 0,
+        "worker_kinds": []
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-off-E3",
+      "arm": "E3",
+      "old_trace_preload": "off",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "LOCALAPPDATA"
+      ],
+      "root_pid": 9836,
+      "worker_pids": [
+        9588,
+        5864
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 263.61699999999996,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 1800,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7184.4153,
+        "native_pid": 2344,
+        "spawn_to_taskkill_ms": 7011,
+        "taskkill_pid": 8676,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": null,
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 606,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1843,
+        "preload_pids": [
+          9836,
+          9588,
+          5864
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": false,
+        "events": 0,
+        "bytes": 0,
+        "continuous_per_pid_sequence": true,
+        "health_complete": null,
+        "health_pid_count": 0,
+        "worker_kinds": []
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-off-E4",
+      "arm": "E4",
+      "old_trace_preload": "off",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "PSModulePath"
+      ],
+      "root_pid": 900,
+      "worker_pids": [
+        3712,
+        2616
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 278.30349999999993,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 768,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7187.5764,
+        "native_pid": 6392,
+        "spawn_to_taskkill_ms": 6998,
+        "taskkill_pid": 7304,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": null,
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 606,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1837,
+        "preload_pids": [
+          900,
+          3712,
+          2616
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": false,
+        "events": 0,
+        "bytes": 0,
+        "continuous_per_pid_sequence": true,
+        "health_complete": null,
+        "health_pid_count": 0,
+        "worker_kinds": []
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-on-E0",
+      "arm": "E0",
+      "old_trace_preload": "on",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [],
+      "root_pid": 8252,
+      "worker_pids": [
+        1228,
+        3252
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 299.80589999999995,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 4216,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7193.061100000001,
+        "native_pid": 5784,
+        "spawn_to_taskkill_ms": 7000,
+        "taskkill_pid": 7360,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": "timeout",
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 613,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1840,
+        "preload_pids": [
+          8252,
+          1228,
+          3252
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": true,
+        "events": 34,
+        "bytes": 5474,
+        "continuous_per_pid_sequence": true,
+        "health_complete": true,
+        "health_pid_count": 3,
+        "worker_kinds": [
+          "ok",
+          "timeout"
+        ]
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-on-E1",
+      "arm": "E1",
+      "old_trace_preload": "on",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "SystemDrive"
+      ],
+      "root_pid": 7916,
+      "worker_pids": [
+        7076,
+        856
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 285.40419999999995,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 4852,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7184.1126,
+        "native_pid": 6484,
+        "spawn_to_taskkill_ms": 6999,
+        "taskkill_pid": 2504,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": "timeout",
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 605,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1832,
+        "preload_pids": [
+          7916,
+          7076,
+          856
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": true,
+        "events": 34,
+        "bytes": 5473,
+        "continuous_per_pid_sequence": true,
+        "health_complete": true,
+        "health_pid_count": 3,
+        "worker_kinds": [
+          "ok",
+          "timeout"
+        ]
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-on-E2",
+      "arm": "E2",
+      "old_trace_preload": "on",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "APPDATA"
+      ],
+      "root_pid": 3836,
+      "worker_pids": [
+        7456,
+        1960
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 273.91249999999997,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 4944,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7182.7663999999995,
+        "native_pid": 3756,
+        "spawn_to_taskkill_ms": 6998,
+        "taskkill_pid": 5792,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": "timeout",
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 614,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1840,
+        "preload_pids": [
+          3836,
+          7456,
+          1960
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": true,
+        "events": 34,
+        "bytes": 5481,
+        "continuous_per_pid_sequence": true,
+        "health_complete": true,
+        "health_pid_count": 3,
+        "worker_kinds": [
+          "ok",
+          "timeout"
+        ]
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-on-E3",
+      "arm": "E3",
+      "old_trace_preload": "on",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "LOCALAPPDATA"
+      ],
+      "root_pid": 4392,
+      "worker_pids": [
+        9888,
+        10064
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 276.1096,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 7096,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7193.5611,
+        "native_pid": 4340,
+        "spawn_to_taskkill_ms": 7010,
+        "taskkill_pid": 924,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": "timeout",
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 595,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1845,
+        "preload_pids": [
+          4392,
+          9888,
+          10064
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": true,
+        "events": 34,
+        "bytes": 5495,
+        "continuous_per_pid_sequence": true,
+        "health_complete": true,
+        "health_pid_count": 3,
+        "worker_kinds": [
+          "ok",
+          "timeout"
+        ]
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    },
+    {
+      "id": "smoke-on-E4",
+      "arm": "E4",
+      "old_trace_preload": "on",
+      "common_guard_on": true,
+      "changed_from_E0_keys": [
+        "PSModulePath"
+      ],
+      "root_pid": 7340,
+      "worker_pids": [
+        7176,
+        9964
+      ],
+      "P0": {
+        "reached": true,
+        "fixed_marker_matched": true,
+        "elapsed_ms": 278.8801000000001,
+        "stdout_bytes": 21,
+        "stderr_bytes": 0,
+        "native_pid": 8676,
+        "native_close_status": 0
+      },
+      "P1": {
+        "reached": true,
+        "completed": false,
+        "error_class": "BoundedSubprocessTimeoutError",
+        "refusal_kind": "deadline",
+        "elapsed_ms": 7185.0396,
+        "native_pid": 8616,
+        "spawn_to_taskkill_ms": 7000,
+        "taskkill_pid": 6384,
+        "taskkill_close_status": 0,
+        "native_close_status": 1,
+        "trace_worker_kind": "timeout",
+        "native_stream_events": 0
+      },
+      "P2": {
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      },
+      "root": {
+        "status": 0,
+        "signal": null,
+        "stdout_bytes": 604,
+        "stderr_bytes": 0,
+        "protocol_valid": true,
+        "diagnostic_observation_complete": true
+      },
+      "guard": {
+        "events": 14,
+        "bytes": 1840,
+        "preload_pids": [
+          7340,
+          7176,
+          9964
+        ],
+        "continuous_per_pid_sequence": true,
+        "complete_health_pid_count": 3,
+        "abort_count": 0
+      },
+      "trace": {
+        "requested": true,
+        "events": 34,
+        "bytes": 5459,
+        "continuous_per_pid_sequence": true,
+        "health_complete": true,
+        "health_pid_count": 3,
+        "worker_kinds": [
+          "ok",
+          "timeout"
+        ]
+      },
+      "cleanup": {
+        "reported_possible_live_at_return": [],
+        "reported_possible_live_after_owned_cap": [],
+        "reported_unknown": false,
+        "root_retained": false,
+        "tree_absence_independently_proven": false
+      },
+      "canary": {
+        "reported_root_output_flags": {
+          "rawContentFound": false,
+          "credentialFound": false,
+          "rawStderrFound": false
+        },
+        "reported_root_output_scan_complete": true,
+        "raw_native_P1_stream_bytes_retained": false
+      }
+    }
+  ],
+  "downstream_actual_reachability": [
+    {
+      "id": "downstream-off-binding",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-off-confirmation",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-off-healthy",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-off-parent",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-on-binding",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-on-confirmation",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-on-healthy",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    },
+    {
+      "id": "downstream-on-parent",
+      "reached": false,
+      "root_process_started": false,
+      "reason": "no-complete-P2-success-arm",
+      "product_result_unknown": true
+    }
+  ],
+  "offline_cross_checks": {
+    "all_assertions_completed": true,
+    "smoke_records": 10,
+    "guard_events": 140,
+    "trace_events": 170,
+    "guard_complete_pid_states": 30,
+    "trace_complete_pid_states": 15,
+    "powershell_spawn_events": 20,
+    "taskkill_spawn_events": 10,
+    "counter_entries": 20,
+    "counter_smoke_entries": 20,
+    "counter_downstream_entries": 0,
+    "selected_arms": {},
+    "P0_completed": 10,
+    "P1_timed_out": 10,
+    "P2_reached": 0,
+    "downstream_roots_started": 0,
+    "canary_literals_absent_in_55_native_output_files": true
+  },
+  "inferences": [
+    {
+      "hypothesis": "The earliest unresolved boundary is P1 cmdlet resolution/module loading/initialization or subsequent fixed JSON conversion under the stripped synthetic environment.",
+      "support": "P0 native PowerShell starts and exits normally while every separately launched P1 times out.",
+      "not_established": "Which P1 internal phase stalls, exact missing dependency/environment value, or a product implementation defect."
+    },
+    {
+      "hypothesis": "Neither the old trace preload toggle nor any one of the four approved keys alone was sufficient to admit P1 in these ten observations.",
+      "not_established": "Full original CI environment equivalence, universal causal insufficiency, combined-arm behavior or absence of timing/order effects."
+    }
+  ],
+  "unknowns_and_forbidden_attributions": [
+    "No PowerShell version, internal P1 stage, cmdlet resolution provenance or native stderr content was retained.",
+    "P0 is a separate PowerShell process; it does not prove P1 reached ConvertFrom-Json execution rather than command discovery or module autoload.",
+    "E4 is the WindowsPowerShell built-in system module directory only, not every machine module directory or full runner environment.",
+    "No P2 GetAttributes execution; no parent afterPathStat/afterRead hook, rename/mkdir/hardlink operation; no downstream preview, execute, merge-count, queue or binding assertion.",
+    "Do not attribute original aggregate 5-second failures, parent rename failures or historical taskkill failures from these unreached assertions.",
+    "Diagnostic-complete/root status 0 and source record productResultUnknown=false describe known smoke observation, not native Windows product acceptance.",
+    "No clean-baseline native replay was performed by this report author; no cross-family Evaluator/F005 or release claim."
+  ],
+  "next_experiment_proposal": {
+    "status": "proposal only; not authorized or executed",
+    "target": "P1 earliest uncertain stage only",
+    "minimal_scope": "Seek a new explicit narrow scope for one E0/old-trace-on/common-guard-on P1-only probe with diagnostic-owned integer/fixed-marker milestones before cmdlet resolution, after resolution/module readiness and after the same fixed synthetic ConvertFrom-Json. Preserve milestone evidence even if the existing timeout result omits native streams; record only stage enums, elapsed time, allowlisted error code and approved machine-only module provenance class.",
+    "baseline": "Keep the existing frozen product worker/replay unchanged and the fixed synthetic JSON input; do not launch P2 or downstream in this first localization experiment.",
+    "bounds_unchanged": "Retain 7000ms native child, 10000ms operation, 16384-byte native output, owned lifetime/cleanup/global bounds; no current script modification or old-test timeout increase is authorized.",
+    "environment_refinement": "Only after P1 phase evidence, propose one newly reviewed, machine-only cmdlet/module-loading refinement (for example explicitly resolving/importing the approved built-in utility module); treat it as a separate hypothesis, not a product repair. Raw personal module paths and full runner env inheritance stay excluded.",
+    "new_scope_required_for": [
+      "any P1 recorder or diagnostic script change",
+      "any cmdlet/import behavior refinement",
+      "any added environment key or arm",
+      "any combined environment arm",
+      "any time-budget change",
+      "any extra native or downstream execution"
+    ],
+    "decision_after_evidence": "If P1 still lacks a stage boundary, preserve unknown and return to the earliest missing milestone. P1 success alone remains insufficient for P2/native release acceptance."
+  },
+  "method": "Offline focused source reads, Git object byte comparisons, original artifact JSON/JSONL parsing, cross-PID event/health/count/byte checks and SHA-256 binding. No downloaded code executed."
+}
