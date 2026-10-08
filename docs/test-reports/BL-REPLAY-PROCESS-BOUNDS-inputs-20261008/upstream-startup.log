@@ -1,0 +1,9 @@
+# stalled-git shim on PATH; tokenizer replay dry-run; marker records every git invocation with args
+t0=1791402991953
+exit=1 elapsed=38709ms
+--- git invocations observed by shim:
+git-entered args=[rev-parse --short=12 HEAD] time=1791402992343
+git-entered args=[rev-parse --show-toplevel] time=1791403022699
+--- stderr:
+Replay refused: Git enrichment exceeded 10000ms deadline
+--- decomposition: first call 'rev-parse --short=12 HEAD' = src/cli/agent-version.ts module-load probe (no timeout); second 'rev-parse --show-toplevel' = bounded replay enrichment (killed ~8s)

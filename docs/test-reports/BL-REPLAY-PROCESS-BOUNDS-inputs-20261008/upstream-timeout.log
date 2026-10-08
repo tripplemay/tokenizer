@@ -1,0 +1,6 @@
+# Node v22.22.0 execFileSync timeout semantics on macOS (timeout=2000ms, sleep=5s stubs)
+# gitA: multi-command script, default SIGTERM disposition | gitB: ignores SIGTERM | gitC: single sleep
+gitA {"elapsed":2003,"code":"ETIMEDOUT","signal":"SIGTERM","status":null}
+gitB {"elapsed":5014,"code":"ETIMEDOUT","signal":null,"status":1}
+gitC {"elapsed":2002,"code":"ETIMEDOUT","signal":"SIGTERM","status":null}
+# gitB shows: timeout sends SIGTERM but the synchronous spawn then WAITS for the child to exit (5028ms >= 5s natural lifetime) - a SIGTERM-ignoring child is not preemptible

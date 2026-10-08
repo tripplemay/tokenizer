@@ -1,0 +1,22 @@
+{
+  "batch": "BL-PRIVACY-QUEUE-CLOSEOUT",
+  "spec": "docs/specs/BL-PRIVACY-QUEUE-CLOSEOUT-spec.md",
+  "features": [
+    {
+      "id": "F001",
+      "title": "Compose bounded replay with exact-version durable queue and quarantine",
+      "priority": "high",
+      "executor": "generator",
+      "status": "completed",
+      "acceptance": "One shared lock-held queue primitive preserves B03 physical-scope/final-payload confirmation and elapsed guard, exact-version merge/ACK/quarantine and private atomic writes. Frozen upstream evidence remains byte-identical. Regression controls and Node22 clean install/lint/verify/test/build are recorded; no claim of native CI or release acceptance."
+    },
+    {
+      "id": "F002",
+      "title": "Independent cross-family acceptance of the combined candidate",
+      "priority": "high",
+      "executor": "evaluator",
+      "status": "completed",
+      "acceptance": "Fresh different-model-family evaluator independently checks the exact committed candidate against the spec using focused adversarial and real multiprocess controls, records an immutable verdict and limitations. Native Windows/Linux/PG16 and production gates remain explicit if not exercised; no self-signoff."
+    }
+  ]
+}

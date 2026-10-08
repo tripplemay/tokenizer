@@ -1,48 +1,27 @@
 {
-  "status": "done",
-  "user_goal": "Implement the user-approved optimization order, starting with B03 privacy/replay and B06/B07 loss prevention in an isolated takeover worktree.",
-  "total_features": 2,
-  "completed_features": 2,
+  "status": "building",
+  "user_goal": "Continue the approved optimization order: close B03 startup/replay subprocess bounds before mutable OpenCode cursor consistency.",
+  "total_features": 5,
+  "completed_features": 0,
   "fix_rounds": 0,
-  "current_sprint": "BL-PRIVACY-QUEUE-CLOSEOUT",
-  "last_updated": "2026-10-07T20:17:45.212Z",
+  "current_sprint": "BL-REPLAY-PROCESS-BOUNDS",
+  "last_updated": "2026-10-08T03:05:36.729Z",
   "reference_docs": [
-    "docs/specs/BL-PRIVACY-QUEUE-CLOSEOUT-spec.md",
-    "docs/archive/takeover-20261008/progress.json",
-    "docs/archive/takeover-20261008/features.json"
+    "docs/specs/BL-REPLAY-PROCESS-BOUNDS-spec.md",
+    "docs/archive/privacy-queue-closeout-20261008/progress.json",
+    "docs/test-reports/BL-REPLAY-PROCESS-BOUNDS-inputs-20261008/README.md"
   ],
   "docs": {
-    "spec": "docs/specs/BL-PRIVACY-QUEUE-CLOSEOUT-spec.md",
+    "spec": "docs/specs/BL-REPLAY-PROCESS-BOUNDS-spec.md",
     "test_cases": null,
-    "signoff": "docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-signoff-2026-10-08.md",
+    "signoff": null,
     "framework_reviewed": true
   },
   "role_assignments": null,
-  "evaluator_feedback": {
-    "batch_id": "BL-PRIVACY-QUEUE-CLOSEOUT",
-    "fix_round": 0,
-    "created_at": "2026-10-07T20:10:22Z",
-    "waiting": null,
-    "verdicts": [
-      {
-        "feature_id": "F001",
-        "result": "PASS",
-        "evidence": "Exact SHA 27d9664e37a659ad28962bee224d871378e4336c verified (git rev-parse HEAD) and independently re-tested in a fresh sandbox clone (/tmp/pqev27d9/repo, git checkout of the SHA, 0 dirty files) with clean Node v22.22.0 npm ci (exit 0, 670 packages, no shared node_modules), synthetic short-root HOME/TMPDIR on macOS arm64. Commands: lint exit 0; verify (prisma generate + tsc) exit 0; production build exit 0 against synthetic unreachable DB placeholder; focused suites 168 passed/3 skipped (matches generator); full suite controlled --maxWorkers=2: 1883 passed/31 skipped exit 0; full suite DEFAULT workers with short TMPDIR: 1883 passed/31 skipped exit 0 (generator's long-root default-run failures — tsx socket collision at 111-byte IPC paths and harness-command 5000ms timeout — did not reproduce here; single-machine observation, not a stability proof). Evaluator-derived adversarial controls (17/17 passed, docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/kimi-tests.json): spec control 1+4 backlog + same-ID corrected versions coexist including on the real executeBoundedReplay path (admitted=1, pre-existing backlog and correction retained, re-execution admitted=0); control 2 ACK removes only the exact version, stale re-ACK byte-identical no-op; control 3 beforeMutate throw leaves queue bytes unchanged and lock released, foreign lock + timeoutMs:400 throws 'Timed out after 400ms' (350ms-4s, not 5s default); control 5 rejected v1+v2 of one ID are two durable quarantine rows, prior same-ID row does not suppress new correction, replayed rejections idempotent; control 6 fresh negatives — symlink leaf/parent, literal dot-segment, FIFO, relative path, glob/non-.jsonl plan, forged/stale confirmation digest, privacy-scope change — all refuse with queue untouched; control 8 real probe: 6 concurrent writers -> 25 unique versions, no torn JSONL, queue mode 600; ACK of old version over loopback HTTP while child writes correction -> correction survives; quarantine path forced to a directory -> syncEvents rejects and active queue byte-identical, healthy retry drains with poison quarantined; SIGKILLed mid-sync child loses nothing, retry duplicates (2 server requests) and resolves. Sole-writer topology confirmed in source: sync.ts, agent.ts, index.ts, replay.ts all route through queue.ts mergeQueue/resolveQueueEvents; agent.ts/index.ts/replay.ts unchanged vs baseline f8449e8; workflow diff limited to B07 PG16 probe (floor 14->15); vitest historicalTestConfig composition is actually spread into the effective exclude array, both B05 tests active. Immutable evidence: pinned evaluator tests byte-identical to f8449e8 git objects; f8449e8..HEAD under docs/test-reports = 75 additions, 0 modifications/deletions; frozen-inputs CI control (1025 files) passed in focused run; 31 skips match generator skips.json (scratch-DB probes, native-Windows cases, external fixtures). Unexecuted gates explicit: no native Windows/Linux exact-SHA CI, no real PG16, no browser, no service installer, no production, no F005; release readiness false.",
-        "steps_to_reproduce": "1) git clone --no-hardlinks <frozen-worktree> /tmp/pqev27d9/repo && cd /tmp/pqev27d9/repo && git checkout 27d9664e37a659ad28962bee224d871378e4336c (verify git rev-parse HEAD). 2) PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:$PATH npm ci. 3) HOME=/private/tmp/pqev27d9/home TMPDIR=/private/tmp/pqev27d9/tmp DATABASE_URL=postgresql://127.0.0.1:1/tokenizer_synth npm run lint && npm run verify && npm run build (note: use realpath HOME — symlinked /tmp HOME trips SWC ERR_SWC_NATIVE_CACHE, see build-symlink-home-failure.log). 4) npx vitest run tests/cli/b07 tests/cli/b03 tests/cli/replay tests/cli/queue-merge.test.ts tests/cli/agent-sync-checkpoint.test.ts tests/evaluator/bl-homepage-freshness-f002-f003.test.ts tests/ci/b07 tests/ci/b06-pg16-workflow-gate.test.ts tests/ci/b05-recovery-source.test.ts tests/evaluator/b05-evidence-retention-round2.test.ts --maxWorkers=2 (168 passed/3 skipped). 5) npx vitest run (default) and npx vitest run --maxWorkers=2 (both 1883 passed/31 skipped with short TMPDIR). 6) Copy the three kimi-f002-* artifacts from docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/ into tests/cli/ and run npx vitest run tests/cli/kimi-f002-adversarial.test.ts tests/cli/kimi-f002-multiprocess.test.ts (17 passed). 7) Immutable evidence: git hash-object on the pinned tests vs git rev-parse f8449e8:<path>; git diff --name-status f8449e8..HEAD -- docs/test-reports/ (additions only)."
-      },
-      {
-        "feature_id": "F002",
-        "result": "PASS",
-        "evidence": "Fresh Kimi-family evaluator (different model family than the Codex generator) performed the independent acceptance of the exact committed candidate 27d9664e37a659ad28962bee224d871378e4336c: generator reports were treated as claims — every command was re-run in the evaluator's own sandbox (fresh npm ci, no shared node_modules), expectations re-derived from docs/specs/BL-PRIVACY-QUEUE-CLOSEOUT-spec.md, and 17 new adversarial/multiprocess tests were written and executed (all pass) covering spec regression controls 1-8 including real two-process + loopback-HTTP interleaving, quarantine write failure with byte-identical queue preservation, and SIGKILL crash/retry with duplicate-tolerant recovery. Verdict, commands, environmental failures with causality (SWC cache-root vs /tmp symlink; probe zombie-connection hang), and limitations are recorded immutably in docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/README.md with raw logs; this artifact is the schema-valid per-feature verdict. Explicitly unexecuted and NOT inferred: native Windows/Linux exact-SHA CI, real PG16, authenticated browser, service installers, production/staging, F005; default-worker full-suite success is a single short-root macOS observation, not a default/CI stability proof (harness-command timeout cause unestablished); npm ci used --no-audit so the 7 high audit findings were not re-derived; no fresh Git-timeout injection derived (existing b03 deadline suites rerun green); release readiness remains false; no human gate decision written; no product/config/state files modified — only new tests/report artifacts.",
-        "steps_to_reproduce": "Read docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-kimi-20261008/README.md (method, command table, spec-control mapping, environmental findings, limitations). Raw evidence in the same directory: command-summary.txt, npm-ci.log, lint.log, verify.log, build.log, build-symlink-home-failure.log, focused.log, full-default.log, full-controlled.log, kimi-tests.json, kimi-tests.log, and the three new test artifacts kimi-f002-adversarial.test.ts, kimi-f002-multiprocess.probe.ts, kimi-f002-multiprocess.test.ts. Re-run per the F001 steps_to_reproduce in this artifact."
-      }
-    ]
-  },
-  "generator_handoff": "F001 implementation and local command evidence are in docs/test-reports/BL-PRIVACY-QUEUE-CLOSEOUT-generator-20261008/README.md. queue.ts owns the shared B03/B07 exact-version merge, ACK and quarantine flow; replay admission/deadline source is unchanged. Node 22 fresh npm ci, lint, verify and production build exited 0. Final focused controls: 168 passed/3 skipped. Short-root controlled full run (--maxWorkers=2): 1883 passed/31 skipped. Default-worker runs had a harness-command 5000ms timeout; the test passed alone, but baseline reproducibility/cause is not established. The long-root runner also exposed macOS tsx socket truncation/collision; original failures, native socket probe and short-root replay are retained. All 1025 frozen inputs compare byte-identically with their recorded Git objects. Seven high dependency audit findings were observed without dependency changes. F002 remains pending fresh cross-family acceptance and spec-lock review; native Windows/Linux exact-SHA CI, real PG16, browser, production and F005 gates remain unexecuted. No push, deployment, human decision or personal source/queue/config access.",
+  "evaluator_feedback": null,
+  "generator_handoff": null,
   "session_notes": {
-    "planning": "User approved implementation order and explicitly transferred coordination to this conversation. Isolated baseline 82d6376; original active F005 and unmerged combination tree are preserved, not signed off or modified. Implement one bounded combined slice before starting later packages. Different-family evaluator required. No push/deploy/human decision writes.",
-    "generator": "Completed F001 only from frozen f8449e8 in the assigned isolated worktree. Preserve all historical reports/tests; the two obsolete B06 checkpoint/archive cases have explicit successors. Approved B05 configuration composition keeps both B05 tests active and checks the actual effective exclusion set. Source/test/config remained unchanged across final verification; only the evidence runner's synthetic temp root was shortened after a socket-length probe. Controlled local test success is not default-concurrency stability, native CI acceptance or a release verdict. Await F002; do not update old evaluator verdicts or close original F005.",
-    "coordinator": "Exact product candidate 27d9664 independently accepted by registered Kimi-family evaluator; receipt COMPLETED, F001/F002 PASS. Original evaluator verdict, scoped signoff, 17 derived tests and raw command logs are retained byte-for-byte. Local batch only is done; full B03/B07, original F005 and release readiness remain open. Final archive adds only docs/state, not product code. Next: remaining B03 privacy controls and mutable-source/cursor consistency, then B08 CAS, B04/B05 release gates and later approved packages. Preserve default-worker timeout, platform/PG16/production and dependency-audit limitations. No push/deploy/human decision or changes to original worktrees."
+    "planning": "User approved continuing on 2026-10-08. Isolated ba292a0 baseline; original completed local batch archived unchanged. Newly observed independent B03 F1/F2 execution boundaries take precedence before privacy expansion/cursor work. No new mode_defaults intent exists; default host-native Generator path, separate Kimi-family Evaluator and read-only scope critic. Existing tests/reports immutable. No push/deploy/personal-home access/human gate decisions; no full B03/B07 or original F005 closure."
   },
   "pending_gate": null,
   "mode_intent": null

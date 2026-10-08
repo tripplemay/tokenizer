@@ -1,0 +1,107 @@
+{
+  "artifactType": "evaluator_verdict",
+  "batch": "B03-bounded-historical-replay",
+  "evaluator": {
+    "family": "kimi",
+    "instance": "fresh independent Kimi Code CLI session",
+    "date": "2026-10-08",
+    "context": "fresh context; no reliance on Generator or same-family prereview claims; all findings reproduced by evaluator-owned probes"
+  },
+  "product": {
+    "headSha": "6a030f6a3099684058cd5caed049f943cf03ab9a",
+    "detachedHeadVerified": true,
+    "gitRemotePresent": false,
+    "sliceInspected": "d39c796^..HEAD (baseline before 420b539 through final diff d20da68391b4cde73e4b29a5385c7dc3fbbeddef..HEAD)",
+    "spec": "docs/specs/B03-scope-admission-slice-20261007.md"
+  },
+  "slice_verdict": "pass",
+  "release_ready": false,
+  "release_blockers": [
+    "no main-branch integration performed or requested",
+    "no production/staging deploy gates evaluated",
+    "F005 and broader B03 closeout scope (non-Claude adapters, raw diagnostic opt-in, identity migration, canary rollout, historical cleanup) explicitly out of scope"
+  ],
+  "l1_local": {
+    "environment": "macOS arm64, Node v22.22.0 (nvm), npm ci",
+    "lint": "pass (0 errors, 0 warnings)",
+    "typecheck": "pass (npm run verify: prisma generate + tsc --noEmit)",
+    "focused_b03": "pass (11 files, 109 passed, 3 skipped windows-only)",
+    "full_suite": "pass (1639 passed, 26 skipped, 0 failed; clean re-run)",
+    "flake_note": "first full-suite run had 1 load-contention spawnSync timeout in tests/cli/agent-lifecycle.test.ts (pre-slice file); passed in isolation and in the clean re-run",
+    "diff_check": "clean for src/ tests/ bin/ package.json"
+  },
+  "ci_run": {
+    "id": 37671827051,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/37671827051",
+    "workflow": "Deploy VPS",
+    "event": "workflow_dispatch",
+    "headBranch": "codex/b03-replay-deadline-ci-20261008",
+    "headSha": "6a030f6a3099684058cd5caed049f943cf03ab9a",
+    "headShaMatchesLocalHead": true,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": {
+      "Verify": "success (1639 passed / 26 skipped, lint+tsc+build steps green, log content-verified)",
+      "Verify (Windows)": "success (1630 passed / 35 skipped; B03 replay suites ran natively incl. UNC/device/alternate-stream refusals and junction races)",
+      "Verify (PostgreSQL 16)": "success",
+      "Verify (authenticated browser)": "success",
+      "Deploy": "skipped (required on non-main ref)"
+    }
+  },
+  "independent_probes": {
+    "location": "docs/test-reports/B03-replay-kimi-evaluator-20261008/probes/",
+    "total_checks_passed": 96,
+    "suites": {
+      "probe-lib": "28/28 pass",
+      "probe-cli": "37/37 pass",
+      "probe-sync": "9/9 pass",
+      "probe-backfill": "9/9 pass",
+      "probe-queue": "8/8 pass",
+      "probe-deadline": "5/5 pass (+2 boundary notes, +1 observed platform limit)"
+    },
+    "coverage": {
+      "dot_traversal": "pass (plan + read layers; canonical path required)",
+      "symlink_to_excluded_physical_project": "pass (leaf, parent, alias-of-cwd, broken link; wouldAdmit=0; zero admission)",
+      "retarget_after_preview": "pass (file append, rule edit, projectRoots change, alias retarget, real-git branch drift all invalidate digest before merge)",
+      "projectRoots_and_payload_drift": "pass",
+      "file_fifo_parent_symlink_races": "pass (FIFO refusal 6ms non-blocking; hardlink-preserved inode parent swap refused)",
+      "queue_and_cursor_preservation": "pass (dry-run byte-identical home; execute keeps legacy backlog; idempotent re-execute; foreign lock bounded refusal; corrupt queue fail-closed; ack exact-version only; concurrent writers serialized)",
+      "single_file_and_budgets": "pass (sibling FIFO/unreadable files never opened; byte/event/record/line ceilings; 31-day range; 16MiB/5000 caps; no widening keys; frozen maxFiles=1)",
+      "dry_run_no_mutation_no_network": "pass (state byte-identical; zero fixture-server requests; no network code in replay.ts)",
+      "local_only_to_sync_backlog": "pass (no upload at configure; exactly one upload at next sync; acked rows drained; wire minimized; no fingerprint on wire; status discloses backlog+timing)",
+      "no_implicit_historical_backfill": "pass (rule removal does not replay previously excluded records; cursor untouched by configure)",
+      "stalled_git_child_refuses_before_mutation": "pass (dry-run and execute refuse with deadline error; execute queue byte-identical; enrichment kill ~8s in isolation)",
+      "final_admission_deadline": "pass (lock-wait bounded; suite deterministic test + Q1 confirm no mutation after deadline/expiry)"
+    }
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "boundary-note",
+      "blocking": false,
+      "summary": "End-to-end CLI wall-clock is not capped at ~10s when git stalls: pre-existing module-load `git rev-parse --short=12 HEAD` in src/cli/agent-version.ts (untouched by this slice, imported via sync.ts) has no timeout and ran before the replay deadline scope (observed 30s linger; refusal still correct at ~38.7s with no mutation).",
+      "recommendation": "follow-up: timeout or lazify the agent-version module-load git probe",
+      "evidence": "evidence/git-stall-startup-evidence.log"
+    },
+    {
+      "id": "F2",
+      "severity": "platform-limit",
+      "blocking": false,
+      "summary": "Deadline cannot preempt an individual wedged synchronous filesystem syscall, and Node's synchronous-spawn timeout waits for a SIGTERM-ignoring/deferring child to exit (observed blocked past 23s outer guard; ordinary stalled children die at ~8s). No universal 10s end-to-end wall-clock cap is claimed.",
+      "evidence": "evidence/node-syncspawn-timeout-semantics.log, evidence/probe-deadline.log"
+    },
+    {
+      "id": "F3",
+      "severity": "note",
+      "blocking": false,
+      "summary": "executeBoundedReplay's default merge target is the real ~/.tokenizer/queue.jsonl; isolated tests must inject mergeEvents (suite does). One evaluator probe iteration wrote one synthetic row to the real queue; verified sole line and deleted immediately. Not a product defect."
+    }
+  ],
+  "safety_invariants_confirmed": [
+    "every refusal path (plan, path safety, race, digest staleness, paused, deadline, lock timeout) occurs before durable queue mutation",
+    "dry-run mutates nothing and performs no network I/O",
+    "no implicit historical backfill; rule edits never reset cursors",
+    "legacy admitted backlog is never retroactively filtered or erased",
+    "collection scope fingerprint is a local label only, never transmitted"
+  ]
+}
