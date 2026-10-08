@@ -1,0 +1,46 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008
+
+ ✓ tests/cli/privacy.test.ts (5 tests) 6ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts (10 tests) 12ms
+ ✓ tests/ci/windows-native-repair-workflow.test.ts (11 tests) 12ms
+ ✓ tests/cli/privacy-scope-safety.test.ts (13 tests) 250ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts (22 tests | 1 skipped) 2028ms
+     ✓ bounds resistant and reaps owned native processes  538ms
+     ✓ bounds descendant and reaps owned native processes  537ms
+     ✓ bounds inherited-pipes and reaps owned native processes  536ms
+ ✓ tests/ci/vps-host-preflight.test.ts (43 tests) 35378ms
+     ✓ inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations  1422ms
+     ✓ reports a healthy legacy source image and missing ledger as legacy, never creates activation  1118ms
+     ✓ refuses missing-app without writes or disclosure  866ms
+     ✓ refuses duplicate-app without writes or disclosure  871ms
+     ✓ refuses wrong-project without writes or disclosure  929ms
+     ✓ refuses wrong-service without writes or disclosure  897ms
+     ✓ refuses stopped-app without writes or disclosure  920ms
+     ✓ refuses unhealthy-app without writes or disclosure  894ms
+     ✓ refuses wrong-port without writes or disclosure  1008ms
+     ✓ refuses wrong-image without writes or disclosure  931ms
+     ✓ refuses wrong-network without writes or disclosure  1082ms
+     ✓ refuses wrong-volume without writes or disclosure  1243ms
+     ✓ refuses unready without writes or disclosure  1373ms
+     ✓ refuses wrong-health-code without writes or disclosure  1363ms
+     ✓ refuses null-health-code without writes or disclosure  1355ms
+     ✓ refuses wrong-health-sha without writes or disclosure  1384ms
+     ✓ refuses health-failure without writes or disclosure  1347ms
+     ✓ refuses raw-user-canary without writes or disclosure  1026ms
+     ✓ bounds a hung query to five seconds and suppresses its failed stderr  5162ms
+     ✓ does not execute config content and clears Docker/Compose/proxy environment overrides  1364ms
+     ✓ refuses unsafe selected configuration: duplicate  583ms
+     ✓ refuses unsafe selected configuration: malicious-image  600ms
+     ✓ transports the exact reviewed script on stdin and uploads only validated JSON  1487ms
+     ✓ never retains unallowlisted or failed transport bytes: raw-stdout  1459ms
+     ✓ never retains unallowlisted or failed transport bytes: extra-key  1500ms
+     ✓ never retains unallowlisted or failed transport bytes: failed-transport  1442ms
+     ✓ retains a valid redacted refusal while returning nonzero  965ms
+
+ Test Files  6 passed (6)
+      Tests  103 passed | 1 skipped (104)
+   Start at  23:53:50
+   Duration  35.58s (transform 500ms, setup 0ms, import 887ms, tests 37.69s, environment 0ms)
+
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008/docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-2-vitest.json

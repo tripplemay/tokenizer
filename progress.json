@@ -5,12 +5,13 @@
   "completed_features": 2,
   "fix_rounds": 0,
   "current_sprint": "BL-WINDOWS-NATIVE-REPAIR",
-  "last_updated": "2026-10-08T16:49:00Z",
+  "last_updated": "2026-10-08T16:56:00Z",
   "docs": {"spec":"docs/specs/BL-WINDOWS-NATIVE-REPAIR-spec.md","test_cases":null,"signoff":null,"framework_reviewed":true},
   "role_assignments": null,
   "mode_intent": null,
   "evaluator_feedback": null,
   "pending_gate": null,
   "release_ready": false,
-  "session_notes": {"coordinator":"Parent release-readiness archived unchanged from cdad05a; parent/main untouched. Only native-confirmed narrow scope; unresolved parent/timing/inherited fixture causes require further diagnosis and separate adjudication. Isolated Generator, scope critic and fresh Kimi required. No main push or production app/DB change."}
+  "generator_handoff": {"source_head":"a5a7d59a67e3da61228d05ddd1f297aa12da24e4","artifact":"docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/generator-handoff.json","implemented":["F001","F003"],"pending":["F002","F004","F005"],"independent_acceptance":false,"native_acceptance":false,"release_ready":false},
+  "session_notes": {"coordinator":"Parent release-readiness archived unchanged from cdad05a; parent/main untouched. Only native-confirmed narrow scope; unresolved parent/timing/inherited fixture causes require further diagnosis and separate adjudication. Isolated Generator, scope critic and fresh Kimi required. No main push or production app/DB change.","generator":"F001 ce232aa and F003 ee1e3b0 implemented with21 additive controls; F002 report-only a5a7d59 preserves unknown-cleanup supervision. Fresh Node22.22.0 npmci/lint/verify/build/full/focused development checks recorded; full1/full2 each2026 passed34 skipped, focused1/focused2 each103 passed1 skipped. Original failing controls and raw logs retained; nine source hashes accompany frozen-source reruns. F002/F004/F005 and W02/W03/W05/W06/W07/W08 remain open, batch building2/5, release_ready=false. No self-verdict, push, deployment, SSH, Secrets/environment or human decision change."}
 }

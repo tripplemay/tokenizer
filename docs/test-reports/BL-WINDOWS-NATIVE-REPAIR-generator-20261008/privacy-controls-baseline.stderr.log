@@ -1,0 +1,63 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > rejects the recorded Windows ENOENT/ENOENT/regular-realpath fallback for an event
+AssertionError: expected [ { source: 'claude-code', …(5) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "localWorkspacePath": undefined,
++     "occurredAt": "2026-10-08T00:00:00.000Z",
++     "rawJson": {
++       "synthetic": true,
++     },
++     "source": "claude-code",
++     "sourceEventId": "immutable:/private/tmp/wnrg-tmp-20261008/wnp-IC0Dhi/regular/child",
++     "workspacePath": "/private/tmp/wnrg-tmp-20261008/wnp-IC0Dhi/regular/child",
++   },
++ ]
+
+ ❯ tests/cli/windows-native-repair/privacy-ancestor.test.ts:54:47
+     52|     nativeMissingRegularTail(path);
+     53|     const row = event(path), before = JSON.stringify(row);
+     54|     expect(filterUsageEvents([row], rules())).toEqual([]);
+       |                                               ^
+     55|     expect(JSON.stringify(row)).toBe(before);
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > fails closed for an ENOENT tail in a exclude rule
+AssertionError: expected [ { source: 'claude-code', …(5) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "localWorkspacePath": undefined,
++     "occurredAt": "2026-10-08T00:00:00.000Z",
++     "rawJson": {
++       "synthetic": true,
++     },
++     "source": "claude-code",
++     "sourceEventId": "immutable:/private/tmp/wnrg-tmp-20261008/wnp-0pnSEd/directory",
++     "workspacePath": "/private/tmp/wnrg-tmp-20261008/wnp-0pnSEd/directory",
++   },
++ ]
+
+ ❯ tests/cli/windows-native-repair/privacy-ancestor.test.ts:61:111
+     59|     const path = join(regular, "child");
+     60|     nativeMissingRegularTail(path);
+     61|     expect(filterUsageEvents([event(directory)], kind === "include" ? …
+       |                                                                                                               ^
+     62|   });
+     63|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

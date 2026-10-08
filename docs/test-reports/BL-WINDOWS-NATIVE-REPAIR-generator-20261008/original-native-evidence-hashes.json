@@ -1,0 +1,158 @@
+{
+  "root": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-diagnostic-ci-20261008/docs/test-reports/windows-native-ci-20261008/run-37808814119-original",
+  "run": 37808814119,
+  "diagnosticOnly": true,
+  "releaseAcceptance": false,
+  "files": [
+    {
+      "path": "windows-native-ci-20261008/diagnostic-result.json",
+      "bytes": 215,
+      "sha256": "216a52334c063705efb3edf29f147df8dd5377d9614f340f53afc4bcaf4a820c"
+    },
+    {
+      "path": "windows-native-ci-20261008/provenance.json",
+      "bytes": 619,
+      "sha256": "b8743c0c7ca51fddd2a82c75deecb4233e74edd53f736019b8afc4aaa4d257ae"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/binding.cleanup.json",
+      "bytes": 156,
+      "sha256": "0761e57eeede7821e17dacc650b4fba4782b1ead6bbe335a35b82f77b56ca5a3"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/binding.json",
+      "bytes": 514,
+      "sha256": "9b40ed1eef2c47ceacda434507ca64199b742b082e758c5f8fc901015abb00ed"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/binding.trace-health.json",
+      "bytes": 317,
+      "sha256": "d45dee74495952e42bf54d63c1b422fa9f5a12894e25eaa5118ffe940a53f281"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/binding.trace.jsonl",
+      "bytes": 5993,
+      "sha256": "75b8cc48596a119ba80c4b34df8cd4ca9bb4dbe16448e4f86361b9fb675f3368"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.cleanup.json",
+      "bytes": 156,
+      "sha256": "24bd1768c12b191cfc47786db7becdbb707177a79ca32e7a67cdc05e0327225e"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.json",
+      "bytes": 516,
+      "sha256": "b033f25eb034872c1f16598165ee37d2df74b36f56c7bf78e487ae4217b94f4a"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.trace-health.json",
+      "bytes": 317,
+      "sha256": "22c42770ebaa1f00061542838a03011850fadf60a6b2f6936fc3562f2f4c6690"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.trace.jsonl",
+      "bytes": 6006,
+      "sha256": "f3e727a503c06dca32bd338cf184a4db85aae1d857df316a08cffbbc45f8e37d"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/healthy.cleanup.json",
+      "bytes": 156,
+      "sha256": "192e487957afca105103fbb14a8f1927217c0f26f37d328e5ff8d4551f0f69e1"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/healthy.json",
+      "bytes": 579,
+      "sha256": "ca909083aaea7924b9890caab8aea3bc30723743684fd85e4e1089ae0399a0cd"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/healthy.trace-health.json",
+      "bytes": 317,
+      "sha256": "ff62cf6c5ea5f1cf68b2eef30f3d76feaae0e47b15cdb1632a311a20c1f73f0e"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/healthy.trace.jsonl",
+      "bytes": 7197,
+      "sha256": "112b97c532faea764595ef0bde27cfc1f25c044b71ccd2bc91253d917a140c23"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/parent.cleanup.json",
+      "bytes": 157,
+      "sha256": "385aef189cfc76d11967a1188abb83c589a9011b36a27afbaacb64f0f37b744e"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/parent.json",
+      "bytes": 829,
+      "sha256": "5059cb7dad47ee1c306c32f108cca1a4ffb89bb0f47ed277b91a83c1ce0830a6"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/parent.trace-health.json",
+      "bytes": 354,
+      "sha256": "b5e45680fda7a75b5a33960637f543dde22e5f3b7fc5e469c030df36d6b16b54"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/parent.trace.jsonl",
+      "bytes": 10464,
+      "sha256": "4696c0c3cd7fd45d4734a7030fe1571c8f5e602e3b1711deeb64a8f4320081ea"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/privacy.cleanup.json",
+      "bytes": 156,
+      "sha256": "0622d5c2bd0585599d154260e933666f7c18871305074e857e0d8ff0e0b74773"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/privacy.json",
+      "bytes": 1202,
+      "sha256": "a2e93ecba64c4bbc9807910049084eb47ddd7a51a1cf012d59b5429404a56982"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/privacy.trace-health.json",
+      "bytes": 280,
+      "sha256": "a678c0f411773b4c4d66eeec01605aed71c0bb7720589fa8062ccf6a701a3c97"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/privacy.trace.jsonl",
+      "bytes": 7223,
+      "sha256": "3a817bf8c08a6a950016e564b751e25903e74aa62619ac10751234ab1ba230e5"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.cleanup.json",
+      "bytes": 195,
+      "sha256": "c02318af6fb47bb16f0c26212a1b399061d0f73e495a9c61ea554923d6f2189e"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.json",
+      "bytes": 1967,
+      "sha256": "9b4ea96bfa2ac9d64ab0095662362f561e6455dac10caebc4d9d4f4eadf9f5d1"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.trace-health.json",
+      "bytes": 791,
+      "sha256": "e50405a5157b8e955fb657bc859d94a06f7dc153c2dc073b9a59395f4dcc2657"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.trace.jsonl",
+      "bytes": 13678,
+      "sha256": "ea2cd0438db07dc85672ce7e4dfdc9254dddedf23db0a83d6ab8a4d19be14598"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/workflow.cleanup.json",
+      "bytes": 156,
+      "sha256": "e0bfc3837fbe45c25a73e8125cad04e20152f4be40efcdc5256a096f29ed5c62"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/workflow.json",
+      "bytes": 1993,
+      "sha256": "04b4a08c5163389ead5f54a59a5452f1e0b407472e45f60fc8888525af7d7e8a"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/workflow.trace-health.json",
+      "bytes": 280,
+      "sha256": "84169ce5ecb871d425bd407ef0875ea3c195d5d3fb9f4a97e93f9b42e27698f0"
+    },
+    {
+      "path": "windows-release-diagnosis-20261008/native-output-1791476860167/workflow.trace.jsonl",
+      "bytes": 2449,
+      "sha256": "9696300a30ddb6b11ea61d0b6cb8be2247847075b3b23bee593edc652674b829"
+    }
+  ]
+}

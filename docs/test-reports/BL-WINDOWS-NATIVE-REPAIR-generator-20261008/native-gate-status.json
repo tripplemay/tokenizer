@@ -1,0 +1,81 @@
+{
+  "batch": "BL-WINDOWS-NATIVE-REPAIR",
+  "generator_record_only": true,
+  "candidate_native_run": null,
+  "candidate_native_acceptance": false,
+  "release_ready": false,
+  "original_release": {
+    "source": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "run": 37803611472,
+    "windows_job": 113401991277,
+    "node": "v22.23.3",
+    "failed": 8,
+    "passed": 1887,
+    "skipped": 144,
+    "original_log": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/ci-37803611472-windows-original.log",
+    "original_log_sha256": "1d6ccd9641c573f1de858ef723e75f59ba662b5c3f80505e6b80cfa0a22fdb4e"
+  },
+  "gates": [
+    {
+      "id": "W01",
+      "file": "tests/ci/vps-host-preflight.test.ts",
+      "name": "dispatches inventory alone even on main, and preserves push/PR/release gates",
+      "original_failure": "CRLF checkout produces heading index -1; guards absent from wrong slice",
+      "candidate": "F003 implemented with local LF/CRLF controls; exact candidate native result pending"
+    },
+    {
+      "id": "W02",
+      "file": "tests/cli/b03-fixed-prereview-independent.test.ts",
+      "name": "parent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory",
+      "original_failure": "expected source parent changed but got source could not be opened",
+      "candidate": "pending; original diagnosis did not reach afterRead hook; source/test frozen"
+    },
+    {
+      "id": "W03",
+      "file": "tests/cli/b03-fixed-prereview-independent.test.ts",
+      "name": "final confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission",
+      "original_failure": "aggregate test exceeded existing 5000ms",
+      "candidate": "pending; supporting diagnostic refused at initial native check; source/test/timeouts frozen"
+    },
+    {
+      "id": "W04",
+      "file": "tests/cli/b03-round2-independent.test.ts",
+      "name": "symlink cycle and ENOTDIR fail closed for event and scope roots",
+      "original_failure": "regular-file child admitted after native ENOENT fallback",
+      "candidate": "F001 implemented with local modeled-native and filesystem controls; exact candidate native result pending"
+    },
+    {
+      "id": "W05",
+      "file": "tests/cli/replay.test.ts",
+      "name": "binds execution to file, range, budgets, current scope, and privacy mode",
+      "original_failure": "aggregate test exceeded existing 5000ms",
+      "candidate": "pending; supporting diagnostic refused at initial native check; source/test/timeouts frozen"
+    },
+    {
+      "id": "W06",
+      "file": "tests/cli/process-bounds/bounded-subprocess.test.ts",
+      "name": "bounds inherited-pipes and reaps owned native processes",
+      "original_failure": "expected timeout throw but returned normally",
+      "candidate": "pending; fixture-recorded PIDs dead at return/+100ms does not prove arbitrary owned-tree cleanup; source/test frozen"
+    },
+    {
+      "id": "W07",
+      "file": "tests/cli/process-bounds/bounded-subprocess.test.ts",
+      "name": "accounts stdout and stderr against one combined byte budget",
+      "original_failure": "1024 overflow returned supervision instead of output; 1200 remains successful",
+      "candidate": "F002 pending; no authoritative narrow ownership/completion proof; worker/test/error classes/caps frozen"
+    },
+    {
+      "id": "W08",
+      "file": "tests/cli/process-bounds/replay-process-bounds.test.ts",
+      "name": "preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event",
+      "original_failure": "aggregate test exceeded existing 5000ms",
+      "candidate": "pending; supporting diagnostic refused at initial native check; source/test/timeouts frozen"
+    }
+  ],
+  "non_windows_original_release_jobs": "Ubuntu, macOS launchd, PostgreSQL16 and authenticated browser success at old source; not candidate or batch signoff",
+  "original_oci_and_deploy": "skipped; not accepted",
+  "candidate_linux_mac_db_browser_oci_production": "not assessed by this Generator",
+  "F004": "pending",
+  "F005": "pending"
+}

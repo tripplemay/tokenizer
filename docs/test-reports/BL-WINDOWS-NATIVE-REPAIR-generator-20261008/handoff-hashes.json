@@ -1,0 +1,323 @@
+{
+  "schema": 1,
+  "excludes": [
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/handoff-hashes.json"
+  ],
+  "files": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F001-implementation.md",
+      "bytes": 1785,
+      "sha256": "e98cd3b15e98e68a7a0c8eac652a85987745ecedfb3c1b451b31991db9c9b045"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F002-pending.md",
+      "bytes": 2542,
+      "sha256": "1f29e4d43abf1a4ca217625210a207157a817e61bd1b487673eba0d1c859d922"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F003-implementation.md",
+      "bytes": 1976,
+      "sha256": "04f81816dfa12be437b7de68573f94bbdb7ca978957eba0a767c9d767e780bff"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F004-local-checks.md",
+      "bytes": 3890,
+      "sha256": "c77773022d0209b1ae5f7e7775ac88135cd4bc6be0e6cc136ad43dbed540ace2"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/baseline-tracked-inventory.json",
+      "bytes": 964507,
+      "sha256": "b4853d50dcb29f462a273ae8138c2a96350a84dee356026d0c951b2488104a35"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/build-1.json",
+      "bytes": 666,
+      "sha256": "4722dea9ac13fce1c3c2d267dc69c58f60dc0807a04bb6347aa1e401fda7e288"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/build-1.stderr.log",
+      "bytes": 868,
+      "sha256": "48c779abb2f58a89d315b833f95df575ca22c3c1012c41c1378f551d53cad1ee"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/build-1.stdout.log",
+      "bytes": 2180,
+      "sha256": "5326cac8d6d7a21e963259e6befd2e4748cdc8d893ae1ecc26d0aef9d8785dca"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/bundle-hashes.mjs",
+      "bytes": 1407,
+      "sha256": "024d67d327ad1700a6f57ed0a3e3a9dd35015a3540730241294811cb8cf1f415"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-1-vitest.json",
+      "bytes": 36241,
+      "sha256": "0b7e226246f28edb531537600cd298492725e1a043e9ff585fd70020f00b40c5"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-1.json",
+      "bytes": 1200,
+      "sha256": "0ee67b5a3f66e7cb867f7684907af51717ec3aff00e0b2e72318b9ccb5bfa6fd"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-1.stdout.log",
+      "bytes": 3131,
+      "sha256": "fec72a1ea22185e0a93b5b3b3fd764a03e24671c6b7631bf9984660aa6d55ea3"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-2-vitest.json",
+      "bytes": 36255,
+      "sha256": "44d14e2f05a62fa1b2e5913f88660fa91d909bb6f36268fa6c322d11f327639a"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-2.json",
+      "bytes": 2660,
+      "sha256": "14bd60daa158d29a878cbfa3ff9a9877c8c6ae96d58da1578edecac9d1f93cc7"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/focused-2.stdout.log",
+      "bytes": 3133,
+      "sha256": "90073cb364229c8f1dce61efaa4813f052955f278131dfadf9835eb76c5511aa"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-1-vitest.json",
+      "bytes": 708291,
+      "sha256": "557a044ba8bedd56d9470ae6901d2b94d066ee48b8815fb9ec975fc10cb6a523"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-1.json",
+      "bytes": 904,
+      "sha256": "8387161dbc7d2fd6bc3e179f5f0cabf96f5a480cc72b871124087d3b12cb7595"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-1.stderr.log",
+      "bytes": 667,
+      "sha256": "9342cb8a75b9c6f75cc25ceaf3a48fde970029abeacb61fa5634b9c392114604"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-1.stdout.log",
+      "bytes": 31179,
+      "sha256": "94fbe7f8dc42f62ae75ecaade4b3957eaf86e86a0d8d186e72087ef0c17918a1"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-2-vitest.json",
+      "bytes": 708228,
+      "sha256": "7279a005144a3c925b2af790afdf1c2dea82fa8dc54a7d5d7d1e62b11b751610"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-2.json",
+      "bytes": 2364,
+      "sha256": "bf4772def572a1511ec337c1b2a3db8d26bc942779fa9aafb46a57c8fd6c0df8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-2.stderr.log",
+      "bytes": 667,
+      "sha256": "9fb44647d1e5661afcf5731895d495a212587bc7406ba6c389aa06d085bbf167"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/full-2.stdout.log",
+      "bytes": 30925,
+      "sha256": "5fbf62192a09041bb54b06dd8aa5dca822c4a89619ce41c409bac34ccac7ce35"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/generator-handoff.json",
+      "bytes": 3121,
+      "sha256": "c0388118fcf036d4c37fa1d056675185cedd4d30b971f48b397c1180245783e5"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/install-1.json",
+      "bytes": 652,
+      "sha256": "a548d57542331e03ab7c844e4103d551e3d886f79b8c0d8551fc89cfc1d3236d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/install-1.stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/install-1.stdout.log",
+      "bytes": 264,
+      "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/lint-1.json",
+      "bytes": 664,
+      "sha256": "4b284349fcc659cfb93e0e2308e0e7fc13d6bd2621ef7a99e4f66fac80eafd58"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/lint-1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/lint-1.stdout.log",
+      "bytes": 59,
+      "sha256": "6f72dd022c6c0b0b88bea54acd13e30e181426d7e1196d05cf385e554242d78c"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/native-gate-status.json",
+      "bytes": 4109,
+      "sha256": "6dda8f93fa8c30ed356476f24f4fb436c526c8f890d617f3d5af5c59820f8048"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/original-native-evidence-hashes.json",
+      "bytes": 6714,
+      "sha256": "789f6beacf43ae40e52bdce310bc3cd383e92eaafe954954ccc5e8163a3af2fd"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-baseline.json",
+      "bytes": 754,
+      "sha256": "c785f2055279742ad1be1b475cb750bc0b1bc09e46374c5932023559d8f39770"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-baseline.stderr.log",
+      "bytes": 2293,
+      "sha256": "98894341f922828e267f76ae34591325848b8b436cd1d9c5a617f491ee001c1b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-baseline.stdout.log",
+      "bytes": 2161,
+      "sha256": "f09b5b4de76aeab598522568e814e818a7058460c3dd198bebe7003c6279378f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-repaired.json",
+      "bytes": 754,
+      "sha256": "d3b629da1ae49c659670e8b4e612e787902e63b2817db8058872b40f9124df99"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-repaired.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-repaired.stdout.log",
+      "bytes": 2005,
+      "sha256": "ed071d5ddd459f02e4acaa7bc79ace8ff3392e7815f214a0eea0208a5a313b45"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/run-local.mjs",
+      "bytes": 3439,
+      "sha256": "80e588e38e9f212ef390c220515efe1c643e08a8a968519dbd6e26092e9ca6da"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/source-boundary.json",
+      "bytes": 3308,
+      "sha256": "0fde3327e48eb756bcbcfab68d030d450914296717d983d7cd92152afb467cb1"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/source-inventory.mjs",
+      "bytes": 4503,
+      "sha256": "75b26ccff165812f2fa849505a2ca2d4a31c031ae027ddc1733a60b5a9003834"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-1.json",
+      "bytes": 668,
+      "sha256": "aba573ad98ec0378e45153b53c774763a587ceece666519e2d88581bf73672a4"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-1.stdout.log",
+      "bytes": 404,
+      "sha256": "fe3d7472b1957f8f5815c627c6f6c09af22e3f2765e17fb3ad9567f28defc6c0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-2.json",
+      "bytes": 2128,
+      "sha256": "f3149812fa3ecc5b3a3400dfcbc41b280f943362817a0befab6edf3653d14182"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/verify-2.stdout.log",
+      "bytes": 394,
+      "sha256": "c1dcfbe28ffb3ddb5c273fb4652c90fdf3c472807ab1564507317e333c1f2ea9"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.json",
+      "bytes": 771,
+      "sha256": "a725280fb09fc8eadaa5eae45904fc87ec75c7ddd6cf05162d9ca1fe908df858"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.stderr.log",
+      "bytes": 7577,
+      "sha256": "281e448a2c1831b72da1372bd4a52aac0aa8a7a652d00270c46a62a7ad7b7700"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.stdout.log",
+      "bytes": 2738,
+      "sha256": "6795fa233c5b2fc1788bdb1f1a4700f9667f518a52cf24cffd819bd53d8622b8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.json",
+      "bytes": 771,
+      "sha256": "56a54b02c6970ff1c732cb605fc718758e2db2051f61cd521c5db715b661f2fd"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.stdout.log",
+      "bytes": 2237,
+      "sha256": "d07a71d3f42aac69de6a9e60f6a897b9998b0180fbc48197dd251e5761d4e7ad"
+    },
+    {
+      "path": "features.json",
+      "bytes": 1682,
+      "sha256": "c04b8cd4bdd5dd46ce531dbcba8369bd4b52478ff8ae503010e76e7b4b6908b4"
+    },
+    {
+      "path": "progress.json",
+      "bytes": 1867,
+      "sha256": "e92316658af2f35c6550f64a61b35742dae602c949689c3971e1ca23730bb58a"
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "bytes": 3012,
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "bytes": 5545,
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+    },
+    {
+      "path": "src/cli/privacy.ts",
+      "bytes": 5279,
+      "sha256": "df0e955297f9192e67ac238cd416af703b29c1b839dc9629e772e2ff87ae697b"
+    },
+    {
+      "path": "tests/ci/vps-host-preflight.test.ts",
+      "bytes": 19388,
+      "sha256": "2f89f6034657c882fee023c08942f85375da6437f3fe9b85bd1096b823c95077"
+    },
+    {
+      "path": "tests/ci/windows-native-repair-workflow.test.ts",
+      "bytes": 3063,
+      "sha256": "1acb228683fac68c3d8731afb14a9762e856f6648dc168dd55040fdfb08b0413"
+    },
+    {
+      "path": "tests/cli/windows-native-repair/privacy-ancestor.test.ts",
+      "bytes": 6092,
+      "sha256": "003e292d76dc318fdec3e7795d21c5fb6ab322a1d16d5f05bf321e6f2fb66e0f"
+    }
+  ]
+}

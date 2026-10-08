@@ -1,0 +1,21 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008
+
+ × tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > rejects the recorded Windows ENOENT/ENOENT/regular-realpath fallback for an event 12ms
+   → expected [ { source: 'claude-code', …(5) } ] to deeply equal []
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > fails closed for an ENOENT tail in a include rule 4ms
+ × tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > fails closed for an ENOENT tail in a exclude rule 1ms
+   → expected [ { source: 'claude-code', …(5) } ] to deeply equal []
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > rejects a native regular-file descendant in either event path 1ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > retains ordinary missing directory tails in events and include/exclude rules 1ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > does not demand a directory for a directly resolved valid event or rule 1ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > preserves physical alias matching and admission fingerprint without rewriting identities 1ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > keeps EACCES resolution failures closed 0ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > keeps ELOOP resolution failures closed 1ms
+ ✓ tests/cli/windows-native-repair/privacy-ancestor.test.ts > missing-tail privacy ancestor controls > rejects an unresolved existing link instead of treating it as an ordinary missing tail 0ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 8 passed (10)
+   Start at  23:47:02
+   Duration  325ms (transform 48ms, setup 0ms, import 64ms, tests 23ms, environment 0ms)
+

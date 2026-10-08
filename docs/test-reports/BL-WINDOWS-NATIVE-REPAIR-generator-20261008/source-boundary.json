@@ -1,0 +1,75 @@
+{
+  "baseline": "c8e63c52302f9fa5b7756985400705faa8209be4",
+  "inspectedHead": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+  "originalTrackedCount": 2269,
+  "changes": [
+    {
+      "path": "features.json",
+      "baseMode": "100644",
+      "baseBlob": "181d1bb74af96e1998283c275560689c0debae01",
+      "mode": "100644",
+      "currentBlob": "49c7e029063b6fad037cc275394ab5fccbda4fbf",
+      "sha256": "c04b8cd4bdd5dd46ce531dbcba8369bd4b52478ff8ae503010e76e7b4b6908b4",
+      "bytes": 1682,
+      "changed": true,
+      "allowed": true
+    },
+    {
+      "path": "progress.json",
+      "baseMode": "100644",
+      "baseBlob": "29eb811842470e9f9a5adaa75d5adf88f6291198",
+      "mode": "100644",
+      "currentBlob": "346cefd3d4cc172769c4a5c1087c7588edc20cdd",
+      "sha256": "e92316658af2f35c6550f64a61b35742dae602c949689c3971e1ca23730bb58a",
+      "bytes": 1867,
+      "changed": true,
+      "allowed": true
+    },
+    {
+      "path": "src/cli/privacy.ts",
+      "baseMode": "100644",
+      "baseBlob": "e5338f0614b956332a007fdec20f1c59b4fd1e23",
+      "mode": "100644",
+      "currentBlob": "f1c6a91524c083df81bc6f5851a2258145e58e70",
+      "sha256": "df0e955297f9192e67ac238cd416af703b29c1b839dc9629e772e2ff87ae697b",
+      "bytes": 5279,
+      "changed": true,
+      "allowed": true
+    },
+    {
+      "path": "tests/ci/vps-host-preflight.test.ts",
+      "baseMode": "100644",
+      "baseBlob": "15cab7ffbfdd10e9676e29d64425a91cd2d9915a",
+      "mode": "100644",
+      "currentBlob": "35220485d20e9217598da1555ac3bf8044795b68",
+      "sha256": "2f89f6034657c882fee023c08942f85375da6437f3fe9b85bd1096b823c95077",
+      "bytes": 19388,
+      "changed": true,
+      "allowed": true
+    }
+  ],
+  "frozenChanges": [],
+  "newTracked": [
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F001-implementation.md",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F002-pending.md",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/F003-implementation.md",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-baseline.json",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/privacy-controls-repaired.json",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.json",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.stderr.log",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-baseline.stdout.log",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.json",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.stderr.log",
+    "docs/test-reports/BL-WINDOWS-NATIVE-REPAIR-generator-20261008/workflow-controls-repaired.stdout.log",
+    "tests/ci/windows-native-repair-workflow.test.ts",
+    "tests/cli/windows-native-repair/privacy-ancestor.test.ts"
+  ],
+  "assertions": {
+    "originalCount": 63,
+    "currentCount": 63,
+    "originalSha256": "3d7c385089526178ef8d7f91376b424c598ce58b85e9cdcf4e57e31c3ccf56b7",
+    "currentSha256": "3d7c385089526178ef8d7f91376b424c598ce58b85e9cdcf4e57e31c3ccf56b7",
+    "identical": true
+  },
+  "check": "byte/mode inventory only, not functional or release acceptance"
+}

@@ -1,0 +1,70 @@
+{
+  "label": "verify",
+  "attempt": "2",
+  "start": "2026-10-08T16:53:27.124Z",
+  "end": "2026-10-08T16:53:32.657Z",
+  "command": [
+    "npm",
+    [
+      "run",
+      "verify"
+    ]
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008",
+  "source": {
+    "head": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+    "files": [
+      {
+        "path": "src/cli/privacy.ts",
+        "sha256": "df0e955297f9192e67ac238cd416af703b29c1b839dc9629e772e2ff87ae697b"
+      },
+      {
+        "path": "src/cli/bounded-subprocess-worker.mjs",
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      {
+        "path": "src/cli/bounded-subprocess.ts",
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      {
+        "path": "tests/ci/vps-host-preflight.test.ts",
+        "sha256": "2f89f6034657c882fee023c08942f85375da6437f3fe9b85bd1096b823c95077"
+      },
+      {
+        "path": "tests/ci/windows-native-repair-workflow.test.ts",
+        "sha256": "1acb228683fac68c3d8731afb14a9762e856f6648dc168dd55040fdfb08b0413"
+      },
+      {
+        "path": "tests/cli/windows-native-repair/privacy-ancestor.test.ts",
+        "sha256": "003e292d76dc318fdec3e7795d21c5fb6ab322a1d16d5f05bf321e6f2fb66e0f"
+      },
+      {
+        "path": "package.json",
+        "sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      {
+        "path": "vitest.config.ts",
+        "sha256": "7d42944ec57cdf57a41ee4664bd8ba9c281b90f8d1817974a19efb8572878c24"
+      }
+    ]
+  },
+  "runtime": {
+    "node": "v22.22.0",
+    "uv": "1.51.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "environment": {
+    "HOME": "/private/tmp/wnrg-home-20261008",
+    "TMPDIR": "/private/tmp/wnrg-tmp-20261008",
+    "nodeBin": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "status": 0,
+  "signal": null,
+  "error": null
+}

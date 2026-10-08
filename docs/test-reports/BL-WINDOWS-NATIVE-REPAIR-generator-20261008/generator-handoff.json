@@ -1,0 +1,53 @@
+{
+  "batch": "BL-WINDOWS-NATIVE-REPAIR",
+  "role": "generator",
+  "initial_head": "c8e63c52302f9fa5b7756985400705faa8209be4",
+  "frozen_source_head": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+  "branch": "codex/windows-native-repair-generator-20261008",
+  "feature_commits": {
+    "F001": "ce232aa7e16b8d1c5661c5ad70020c0588d96640",
+    "F003": "ee1e3b084c02e85284126433f3dfdef49685fcb2",
+    "F002_pending_report_only": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4"
+  },
+  "implemented_for_independent_review": ["F001", "F003"],
+  "pending": ["F002", "F004", "F005"],
+  "status": "building",
+  "completed_features": 2,
+  "total_features": 5,
+  "functional_acceptance": false,
+  "native_acceptance": false,
+  "release_acceptance": false,
+  "release_ready": false,
+  "F002": "No authoritative narrow owned-tree/completed-cleanup proof. Worker byte-frozen; direct close/stdio closure plus taskkill128 cannot suppress supervision. See F002-pending.md.",
+  "local_execution": {
+    "node": "v22.22.0",
+    "libuv": "1.51.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "fresh_npm_ci": "exit0; before implementation with dependencies unchanged",
+    "lint_verify_build": "exit0",
+    "full_attempts_1_and_2": {"passed": 2026, "skipped": 34, "failed": 0},
+    "focused_attempts_1_and_2": {"passed": 103, "skipped": 1, "failed": 0},
+    "privacy_baseline": {"passed": 8, "failed": 2},
+    "privacy_repaired": {"passed": 10, "failed": 0},
+    "newline_helper_before_normalization": {"passed": 3, "failed": 8},
+    "newline_repaired": {"passed": 11, "failed": 0},
+    "audit_warning": "npmci reported7 high vulnerabilities; dependency audit not assessed or repaired"
+  },
+  "evidence": {
+    "local_record": "F004-local-checks.md",
+    "source_inventory": "baseline-tracked-inventory.json",
+    "frozen_boundary": "source-boundary.json",
+    "hash_list": "handoff-hashes.json",
+    "native_original_hashes": "original-native-evidence-hashes.json",
+    "original_and_pending_native_gates": "native-gate-status.json",
+    "precise_source_rerun_metadata": ["verify-2.json", "focused-2.json", "full-2.json"],
+    "raw_stdout_stderr": "All baseline/repaired/install/lint/verify/build/focused/full .stdout.log and .stderr.log, retained including failed attempts",
+    "full_test_results": ["full-1-vitest.json", "full-2-vitest.json", "focused-1-vitest.json", "focused-2-vitest.json"]
+  },
+  "next_owner": "Coordinator transports unchanged artifacts and precise final evidence commit; scope critic and fresh registered Kimi independently review actual frozen source. Exact candidate native CI must retain unresolved failures/skips. No claim of batch completion.",
+  "remaining_native": ["W01 candidate result pending", "W02", "W03", "W04 candidate result pending", "W05", "W06", "W07/F002", "W08"],
+  "prohibited_operations_performed": [],
+  "push_deploy_ssh_secrets_environment_human_decisions_changed": false,
+  "final_evidence_head": "Transport final exact HEAD via git rev-parse HEAD after committing this evidence; no self-referential commit hash is embedded. Product and tests remain byte-identical to frozen_source_head."
+}
