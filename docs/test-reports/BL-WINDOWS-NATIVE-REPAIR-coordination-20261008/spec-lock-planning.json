@@ -1,0 +1,52 @@
+{
+  "violation": false,
+  "detail": "只读 planning scope review，精确 HEAD98207166；尚无 Generator 实现或功能验收。规划提交仅新增 spec、原 parent 状态归档，并更新本独立 worktree 的 features/progress；parent features/progress 归档 blob 与 cdad05a 完全相同，基线 cdad05a 的产品/测试/workflow 与失败 source76d916b 相同。已从原 native JSON/JSONL/provenance 核对 W04 regular-file ancestor admission、W07 combined output/child-close/taskkill race 和 W01 CRLF fixture，未用实现叙述代替证据。F001 仅 privacy.ts 的 missing-tail directory ancestor 判断及新 controls，不要求合法直接事件路径为目录，不碰 queue/wire；F003 仅批准的新 host-preflight 旧测试文件在内存归一化 LF/CRLF、缺失 heading 显式失败，保留所有 guards/assertions，真实 workflow/.gitattributes 不变。F002 acceptance 明确非零 killer status 不能独立视为成功，alive/unclosed/unknown cleanup 仍 supervision，不改平台架构/error hierarchy/caps/deadlines。Coordinator 认可下述既有条款的从严解释；Generator 拿不到 authoritative ownership/completion proof 时 F002 必须 pending，只交证据，不能为了旧测试变绿无条件改成 output。旧 parent hook/三类 replay timer/inherited arbitrary-descendant cause 不得猜改；所有其他旧测试/fixtures/timeouts/exclusions、global caps、accepted queue/replay/Git/version/service、dependencies/vendor/schema/migrations 和旧报告字节/模式冻结。F004/F005 与 parent release gates 保持开放，fresh registered Kimi 独立验收，不能自评，也不能以 F001/F003 本地完成宣布批次 done 或发布通过。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "reviewed_head": "982071663ff94d973cafd368b851c13b94c21f88",
+  "baseline": "cdad05a4ddb70b4fe76056645d9a041708bc71a7",
+  "failed_release_source": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "batch_scope": "BL-WINDOWS-NATIVE-REPAIR",
+  "status_at_review": "planning",
+  "allowed_implementation_paths": {
+    "F001": [
+      "src/cli/privacy.ts",
+      "tests/cli/windows-native-repair/privacy*.test.ts"
+    ],
+    "F002": [
+      "src/cli/bounded-subprocess-worker.mjs",
+      "tests/cli/windows-native-repair/subprocess*.test.ts",
+      "tests/fixtures/windows-native-repair/"
+    ],
+    "F003": [
+      "tests/ci/vps-host-preflight.test.ts",
+      "tests/ci/windows-native-repair-workflow*.test.ts"
+    ]
+  },
+  "strict_f002_condition": {
+    "coordinator_confirmed": true,
+    "direct_child_exit_close_and_stdio_closed_is_arbitrary_owned_tree_proof": false,
+    "taskkill_128_semantics_proved": false,
+    "unknown_cleanup_must_remain": "supervision",
+    "without_authoritative_narrow_proof": "F002 pending with evidence only; no unconditional output classification, no supervision weakening, no architectural expansion or cap change"
+  },
+  "native_evidence": {
+    "run_id": 37808814119,
+    "head": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+    "node": "v22.23.3",
+    "libuv": "1.51.0",
+    "platform": "win32",
+    "W04": "regular-child event count1 versus expected0; native realpath/lstat ENOENT followed by regular ancestor realpath success; directory-missing-tail positive retained",
+    "W07": "worker6920: stdout600+stderr600; child884 exit/close0 before taskkill5640 exit/close128; combined1024 supervision versus1200 positive; exact killer128 meaning unproved",
+    "W01": "checkout821 CRLF; six heading indexes -1; in-memory LF preserves six release operation guards",
+    "unresolved": "Parent hookReached=false; confirmation/binding/healthy previews refuse at initial native check; inherited fixture both recorded PIDs dead at return/+100ms does not prove arbitrary descendants cleanup or Windows job ownership"
+  },
+  "archived_parent_blob_ids": {
+    "features": "918eb22c3679c2ceab23533c482c48fc38fe6b92",
+    "progress": "fd42f708f7b99648d67c33d8fb329c53a7c6833a"
+  },
+  "functional_acceptance": false,
+  "release_acceptance": false,
+  "release_ready": false,
+  "write_scope": "仅新增本 planning scope artifact；未修改产品、旧测试、原证据、root/parent 状态或 commit。"
+}
