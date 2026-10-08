@@ -1,0 +1,31 @@
+{
+  "label": "privacy-controls",
+  "attempt": "repaired",
+  "start": "2026-10-08T16:47:33.714Z",
+  "end": "2026-10-08T16:47:34.231Z",
+  "command": [
+    "npx",
+    [
+      "vitest",
+      "run",
+      "tests/cli/windows-native-repair",
+      "--reporter=verbose"
+    ]
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008",
+  "runtime": {
+    "node": "v22.22.0",
+    "uv": "1.51.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "environment": {
+    "HOME": "/private/tmp/wnrg-home-20261008",
+    "TMPDIR": "/private/tmp/wnrg-tmp-20261008",
+    "nodeBin": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "status": 0,
+  "signal": null,
+  "error": null
+}

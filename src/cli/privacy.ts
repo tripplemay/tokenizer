@@ -41,7 +41,10 @@ function physicalScopePath(value: string): string | null {
   const missing: string[] = [];
   for (;;) {
     try {
-      return paths.join(realpathSync.native(current), ...missing);
+      const resolved = realpathSync.native(current);
+      // Windows reports ENOENT for a child beneath an existing regular file.
+      if (missing.length > 0 && !lstatSync(resolved).isDirectory()) return null;
+      return paths.join(resolved, ...missing);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") return null;
       try {
