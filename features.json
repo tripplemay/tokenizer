@@ -31,7 +31,7 @@
       "title": "Retain failure reproductions and run portable regression controls",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "F004 spec: baseline reproductions, new native process fixtures, preserved original tests/evidence, Node22 fresh install/lint/verify/build/focused/full results with failures and platform skips."
     },
     {

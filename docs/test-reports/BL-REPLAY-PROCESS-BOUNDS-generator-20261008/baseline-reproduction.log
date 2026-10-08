@@ -1,0 +1,4 @@
+{"stage":"fresh-baseline-npm-ci","status":0,"signal":null,"elapsedMs":86553,"watchdog":false,"capExceeded":false,"output":"baseline-npm-ci.log","baseline":"ba292a059184a36e4bb6c3341ac059606d24f961"}
+{"stage":"baseline-startup-unbounded","status":null,"signal":"SIGKILL","elapsedMs":4505,"watchdog":true,"capExceeded":false,"output":""}
+{"stage":"baseline-SIGTERM-resistant-replay","status":null,"signal":"SIGKILL","elapsedMs":11510,"watchdog":true,"capExceeded":false,"output":"","queueUnchanged":true}
+{"stage":"owned-fixture-cleanup","trackedProcesses":7,"remaining":[]}

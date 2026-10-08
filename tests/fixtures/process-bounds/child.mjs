@@ -15,6 +15,9 @@ if (mode === "normal") {
   process.exitCode = 23;
 } else if (mode === "signal") {
   process.kill(process.pid, "SIGTERM");
+} else if (mode === "combined") {
+  process.stdout.write("a".repeat(600));
+  process.stderr.write("b".repeat(600));
 } else {
   process.on("SIGTERM", () => {});
   if (mode === "descendant" || mode === "inherited-pipes") {

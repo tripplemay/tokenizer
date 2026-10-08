@@ -69,6 +69,7 @@ it.each(["preview", "execute"])("refuses %s with a real resistant Git tree and p
   expect(protectedPaths.map((path) => readFileSync(path))).toEqual(before);
   expect(pids().length).toBeGreaterThanOrEqual(2);
   await expect.poll(() => pids().some((pid) => { try { process.kill(pid, 0); return true; } catch { return false; } }), { timeout: 2_000 }).toBe(false);
+  console.log("REPLAY_BOUND", JSON.stringify({ mode, elapsedMs: result.elapsedMs, trackedProcesses: pids().length, stateUnchanged: true, liveOwnedProcesses: 0 }));
 }, 20_000);
 
 it.each(["preview", "execute"])("refuses %s output overflow without leaking raw stderr", (mode) => {
@@ -88,6 +89,7 @@ it("does not renew the deadline across successive real Git calls", () => {
   expect(result.error).toMatch(/deadline/);
   expect(result.elapsedMs).toBeLessThan(10_000);
   expect(pids().length).toBeGreaterThan(1);
+  console.log("SHARED_GIT_DEADLINE", JSON.stringify({ elapsedMs: result.elapsedMs, gitInvocations: pids().length }));
 }, 20_000);
 
 it("retains the production before-mutate deadline guard under the queue lock", () => {
@@ -98,6 +100,7 @@ it("retains the production before-mutate deadline guard under the queue lock", (
   expect(result.error).toBe("Replay refused: queue admission exceeded 10000ms deadline");
   expect(existsSync(`${queue}.lock`)).toBe(false);
   expect(protectedPaths.map((path) => readFileSync(path))).toEqual(before);
+  console.log("QUEUE_LOCK_GUARD", JSON.stringify({ lockSeen: result.lockSeen, error: result.error, stateUnchanged: true }));
 });
 
 it("preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event", () => {

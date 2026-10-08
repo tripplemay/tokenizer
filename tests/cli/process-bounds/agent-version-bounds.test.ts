@@ -50,6 +50,7 @@ it.each(["stall", "overflow", "invalid", "short", "nonzero", "signal"])("bounds 
   const result = readVersion({ ...makeGitShim(root, env), PB_GIT_MODE: mode });
   expect(result).toMatchObject({ first: null, second: null });
   expect(result.elapsedMs).toBeLessThan(process.platform === "win32" ? 5_000 : 4_000);
+  console.log("STARTUP_BOUND", JSON.stringify({ mode, elapsedMs: result.elapsedMs, version: result.first }));
 }, 10_000);
 
 it("keeps its import-time SHA even after the install checkout advances", () => {

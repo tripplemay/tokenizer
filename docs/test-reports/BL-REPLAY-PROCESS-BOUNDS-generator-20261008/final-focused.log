@@ -1,0 +1,275 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > preserves explicit argv, cwd/env, stdout/stderr and success 130ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > preserves ordinary nonzero exit without confusing it with launch failure 167ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > distinguishes a missing target cwd from worker supervision failure 105ms
+stdout | tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via dot
+NORMAL_COLLECT_NEGATIVE {"kind":"dot","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tk-pb-tmp/b03-collect-negative-ugBvNK/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+ ✓ tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via dot 810ms
+stdout | tests/cli/b07-prereview-process.test.ts > separate native processes must not lose rejected correction after old same-ID quarantine
+MULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-08T03:31:51.826Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:52.232Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/cli/b07-prereview-process.test.ts > separate native processes must not lose rejected correction after old same-ID quarantine 1066ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > preserves termination signal 141ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout 0 before launch 1ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout -1 before launch 1ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout NaN before launch 2ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout Infinity before launch 1ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout 0.5 before launch 1ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid timeout 4294967296 before launch 2ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget 0 before launch 1ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget -1 before launch 0ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget NaN before launch 0ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget Infinity before launch 0ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget 0.5 before launch 0ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > rejects invalid output budget 4294967296 before launch 0ms
+stdout | tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via git-symlink
+NORMAL_COLLECT_NEGATIVE {"kind":"git-symlink","stdout":"Collected 0 events; queue holds 0 unique events at /private/tmp/tk-pb-tmp/b03-collect-negative-7Qe81Y/.tokenizer/queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+
+ ✓ tests/cli/b03-fixed-collect-privacy-negative.test.ts > normal CLI collect independently rejects excluded workspace via git-symlink 701ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > bounds resistant and reaps owned native processes 575ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > R4 dot alias to an excluded workspace is rejected by preview, replay and ordinary collection 12ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > R5 an allowed symlink/junction to an excluded Git repo never reaches durable admission 28ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > an alias into a target outside the include scope is not rescued by any other allowed path 35ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > nonexistent descendants still resolve their existing symlink ancestor for scope admission 1ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > broken symlink/junction resolution fails closed instead of treating the link as a missing directory 1ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > every workspace path must satisfy include; excludes take precedence on every path 1ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > scope is checked again when enrichment introduces a different excluded workspace 8ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > Windows mixed separators, traversal and conflicting aliases cannot bypass scope on any host 1ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > an allowed physical target keeps legacy event identity and path bytes unchanged 163ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > retargeting a workspace alias cannot reuse a zero-admission confirmation for newly eligible rows 68ms
+stdout | tests/cli/b07-prereview-process.test.ts > eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+MULTIPROCESS_CONTROL {"beforeCount":8,"afterAckCount":7}
+
+ ✓ tests/cli/b07-prereview-process.test.ts > eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files 996ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > confirmation binds physical targets even when the count and wire payload stay the same 55ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > same-count different rows and retargeting immediately before merge invalidate confirmation 104ms
+ ✓ tests/cli/privacy-scope-safety.test.ts > confirmation binds complete candidate payloads, not only event counts or IDs 3ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > bounds descendant and reaps owned native processes 609ms
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer
+INDEPENDENT_FIFO {"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > positive control: physical ordinary file admits minimized rows, retaining unrelated durable backlog 60ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > parent identity negative at afterPathStat reaches race hook and rejects a hardlinked leaf under a replacement directory 2ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > parent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory 1ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > source path negative: parent symlink and explicit dot components fail closed 1ms
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: dot alias for excluded real workspace must not be admitted
+DOT_PRIVACY {"dryRun":true,"planDigest":"92a0dbd366e478affcce871af58453b4e2222bb0aede5dcf6d3bd5a9b7845462","bytes":278,"records":1,"parsed":1,"selected":1,"filtered":1,"wouldAdmit":0,"warningCount":0,"sample":[]}
+
+stdout | tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue
+GIT_ALIAS_PRIVACY {"result":{"dryRun":false,"planDigest":"52777bdbe18ab3a0ca5e6ec3aeab6db4499dee179a387853f4f8374d223ea503","selected":1,"filtered":1,"admitted":0,"duplicates":0,"backlog":0,"warningCount":0,"upload":"Backlog remains local until sync mode; it then uploads on the next Agent/run/sync cycle."},"queue":""}
+
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer 169ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > final confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission 55ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > file mutation negative reaches afterRead and rejects growth 1ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: dot alias for excluded real workspace must not be admitted 2ms
+ ✓ tests/cli/b03-fixed-prereview-independent.test.ts > privacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue 27ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > bounds inherited-pipes and reaps owned native processes 588ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > caps combined streams, omits raw stderr from errors and cleans overflow child 86ms
+ ✓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > accounts stdout and stderr against one combined byte budget 140ms
+ ↓ tests/cli/process-bounds/bounded-subprocess.test.ts > bounded subprocess primitive > uses a real Windows executable for tree cleanup
+ ✓ tests/cli/replay-help.test.ts > bounded replay CLI help > documents the explicit file, budgets, dry-run default, and digest confirmation 341ms
+ ✓ tests/cli/b07-queue-multiwriter.test.ts > B07 native two-process queue liveness > preserves concurrent collection, newer versions and crash retries over real HTTP 2660ms
+ ✓ tests/cli/b03-round2-independent.test.ts > 0-to-1 symlink retarget invalidates confirmation (final config boundary=false) 60ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > shares one primitive and retains old backlog plus distinct corrected versions 8ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > checks beforeMutate under the shared lock and leaves original bytes on guard failure 3ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > honors the supplied bounded lock timeout instead of the default five seconds 62ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > production replay merge preserves a corrected version when admitting confirmed older history 34ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > normalizes exact-version keys across raw payloads, remote credentials and field order 2ms
+ ✓ tests/cli/b07-replay-combination.test.ts > B03 replay with B07 shared exact-version queue > quarantine write failure leaves every exact active version and original bytes recoverable 7ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > uses the explicit buffer adapter while preserving normal Claude event IDs 4ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > does not discover or open unselected sibling JSONL files 38ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > applies strict [from,to), event budget, and current admission scope 4ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > rejects symlinks, directories, swaps, growth, oversized input, and long records 9ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > binds execution to file, range, budgets, current scope, and privacy mode 10ms
+ ✓ tests/cli/replay.test.ts > bounded historical replay > merges idempotently into retained backlog and never changes normal cursors 4ms
+ ✓ tests/cli/b03-round2-independent.test.ts > 0-to-1 symlink retarget invalidates confirmation (final config boundary=true) 54ms
+ ✓ tests/cli/privacy-admission-cli.test.ts > privacy admission CLI lifecycle > previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync 2771ms
+stdout | tests/cli/replay-safety-regression.test.ts > R2 safely refuses regular-file to FIFO swap without waiting for a writer
+FIFO_FIXED {"elapsedMs":162,"status":0,"stdout":"FIFO_CREATED\nSAFE_REFUSAL Replay refused: opened source is not a regular file\n"}
+
+ ✓ tests/cli/replay-safety-regression.test.ts > R1 refuses parent symlink/junction traversal before reading the source 3ms
+ ✓ tests/cli/replay-safety-regression.test.ts > R1 refuses a parent replaced by a same-target symlink/junction at afterPathStat 1ms
+ ✓ tests/cli/replay-safety-regression.test.ts > R1 refuses a parent replaced by a same-target symlink/junction at afterRead 2ms
+ ✓ tests/cli/replay-safety-regression.test.ts > R1 refuses a replaced regular parent even when a hardlink preserves the leaf inode 2ms
+ ✓ tests/cli/replay-safety-regression.test.ts > R3 binds workspace inference to confirmation even when only projectRoots changes 51ms
+ ✓ tests/cli/b03-round2-independent.test.ts > same admission count but different selected event cannot reuse digest at final boundary 105ms
+ ✓ tests/cli/b03-round2-independent.test.ts > same event and wire payload but different physical target invalidates digest 52ms
+ ✓ tests/cli/b03-round2-independent.test.ts > same count and IDs but enrichment payload drift invalidates final confirmation 3ms
+ ✓ tests/cli/b03-round2-independent.test.ts > ordinary missing descendants are admitted only under canonical existing allowed ancestors, with identity untouched 2ms
+ ✓ tests/cli/b03-round2-independent.test.ts > broken symlink resolution fails closed at leaf 1ms
+ ✓ tests/cli/b03-round2-independent.test.ts > broken symlink resolution fails closed at descendant 1ms
+ ✓ tests/cli/b03-round2-independent.test.ts > broken symlink resolution fails closed at rule 2ms
+ ✓ tests/cli/b03-round2-independent.test.ts > symlink cycle and ENOTDIR fail closed for event and scope roots 1ms
+ ✓ tests/cli/b03-round2-independent.test.ts > foreign Windows drive paths retain lexical bytes but dot traversal, sibling prefixes, and conflicting paths are denied 1ms
+ ✓ tests/cli/b03-round2-independent.test.ts > foreign UNC policy is lexical, with case/separator boundaries and dot refusal; no native UNC claim 0ms
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode stall and returns null
+STARTUP_BOUND {"mode":"stall","elapsedMs":2079,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > captures the actual install checkout SHA 583ms
+ ✓ tests/cli/replay-safety-regression.test.ts > R2 safely refuses regular-file to FIFO swap without waiting for a writer 165ms
+ ✓ tests/cli/replay-safety-regression.test.ts > refuses dot traversal instead of normalizing away a symlink ancestor 2ms
+ ✓ tests/cli/replay-safety-regression.test.ts > unchanged regular file remains usable and cursor bytes remain unchanged 88ms
+ ↓ tests/cli/replay-safety-regression.test.ts > Windows refuses unsupported UNC source before opening
+ ↓ tests/cli/replay-safety-regression.test.ts > Windows refuses unsupported device source before opening
+ ↓ tests/cli/replay-safety-regression.test.ts > Windows refuses unsupported alternate stream source before opening
+stdout | tests/cli/b07-prereview-version-negative.test.ts > same ID corrected rejection must remain recoverable after older version was already quarantined
+QUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:31:54.227Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:54.232Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > two same-ID versions rejected in one response must both remain recoverable
+QUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:31:54.237Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:54.237Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+SYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:31:54.240Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:54.266Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/cli/b07-versioned-quarantine.test.ts > B07 rejected exact-version durability > keeps a later rejected correction after an older version was quarantined 7ms
+ ✓ tests/cli/b07-versioned-quarantine.test.ts > B07 rejected exact-version durability > keeps both rejected versions in one resolution and dedupes an identical retry 5ms
+ ✓ tests/cli/b07-versioned-quarantine.test.ts > B07 rejected exact-version durability > preserves both versions across a quarantine-then-queue-write fault and retry 6ms
+stdout | tests/cli/b07-prereview-version-negative.test.ts > commit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+CRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:31:54.272Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:54.273Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+stdout | tests/cli/b07-prereview-version-negative.test.ts > old-server rowless fallback must not discard corrected poison when old version was quarantined
+ROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T03:31:54.279Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T03:31:54.281Z","code":"invalid_json","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > same ID corrected rejection must remain recoverable after older version was already quarantined 10ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > two same-ID versions rejected in one response must both remain recoverable 4ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > partial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted 29ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > failure after quarantine but before active queue commit is retryable for one version 4ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > commit failure then same-ID corrected rejection must retain BOTH exact versions on retry 3ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > old ACK exact-version control preserves simultaneous corrected active version 2ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > corrupt quarantine fail-closed control retains active versions and original bytes 3ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > old-server rowless fallback must not discard corrected poison when old version was quarantined 5ms
+ ✓ tests/cli/b07-prereview-version-negative.test.ts > old-server global rowless rejection keeps active correction when the empty envelope also fails 3ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > partial ACK removes only exact versions and preserves a concurrent correction 35ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > fails closed on an incomplete or forged partial ACK (incomplete) 2ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > fails closed on an incomplete or forged partial ACK (forged) 1ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > retains the active queue when durable quarantine is corrupt 2ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > retains accepted and rejected queue bytes when the internal partial ACK checkpoint fails, then retries idempotently 11ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > supports a row-addressed previous-server rejection without retrying poison 3ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > isolates rowless previous-server invalid_json with bounded binary narrowing 7ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > fails closed on a global rowless invalid_json when the empty probe also fails 2ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > does not retry a permanent auth failure or expose its body 1ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > keeps bounded transient retry and exact-ACKs after recovery 8ms
+ ✓ tests/cli/b07-queue-resolution.test.ts > B07 exact-version durable queue resolution > quarantines before deleting so a quarantine failure cannot lose poison 2ms
+ ✓ tests/cli/b07-private-queue-files.test.ts > B07 private durable queue files > creates and atomically replaces queue and quarantine as owner-only 7ms
+ ✓ tests/cli/b07-private-queue-files.test.ts > B07 private durable queue files > does not silently chmod a canonical legacy queue on read but tightens its next mutation 2ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > defaults an explicit one-file UTC-budgeted request to a frozen dry-run plan 4ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope undefined 1ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope  0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope / 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope /Users/example 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope C:\ 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope ~/.claude 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope relative.jsonl 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope /logs/*.jsonl 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope /logs/a?.jsonl 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects missing/broad/directory/glob scope /logs/[ab].jsonl 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > accepts literal Windows file spelling without selecting a Windows home root 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > refuses unsupported source codex rather than falling back to discovery 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > refuses unsupported source opencode rather than falling back to discovery 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > refuses unsupported source kimicode rather than falling back to discovery 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > refuses unsupported source aider rather than falling back to discovery 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > refuses unsupported source all rather than falling back to discovery 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects unknown recursive or root scope options 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {"from":"2026-10-01T01:00:00+01:00"} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {"to":"2026-10-01T00:00:00.000Z"} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires a bounded canonical UTC range {"to":"2027-10-02T00:00:00.000Z"} 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget undefined 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget 0 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget -1 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget Infinity 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget 1.5 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid byte budget 16777217 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget undefined 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget 0 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget -1 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget Infinity 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget 1.5 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > rejects an unbounded/invalid event budget 5001 0ms
+ ✓ tests/cli/replay-contract.test.ts > bounded replay request contract > requires an explicit false flag for the separate execution phase 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > preserves the exact one-file limits and dry-run default 2ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > represents execution only through an explicit false dryRun phase 1ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > rejects one-unit range and budget overruns 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > rejects CLI-only or caller-controlled widening: {"execute":true} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > rejects CLI-only or caller-controlled widening: {"recursive":true} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > rejects CLI-only or caller-controlled widening: {"maxFiles":1} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > rejects CLI-only or caller-controlled widening: {"homeDir":"/"} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"source":"all"} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"source":"codex"} 1ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"file":"/"} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"file":"/selected/*.jsonl"} 1ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"file":"relative.jsonl"} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > retains the historical unsupported/broad scope negatives: {"from":"2026-10-01T08:00:00.000+08:00"} 0ms
+ ✓ tests/cli/replay-operational-contract.test.ts > R07 operational replay contract > keeps collection scope independent of upload mode and list order 1ms
+ ✓ tests/cli/b03-round2-final-deadline-negative.test.ts > final admission must refuse when its wall clock advances beyond budget during otherwise unchanged enrichment 12ms
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode overflow and returns null
+STARTUP_BOUND {"mode":"overflow","elapsedMs":108,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode stall and returns null 2367ms
+ ✓ tests/cli/privacy.test.ts > privacy controls > does not treat projectRoots as an upload allowlist 2ms
+ ✓ tests/cli/privacy.test.ts > privacy controls > applies explicit include and exclude paths with directory boundaries 2ms
+ ✓ tests/cli/privacy.test.ts > privacy controls > fails closed on malformed privacy settings 1ms
+ ✓ tests/cli/privacy.test.ts > privacy controls > labels collection rules independently of upload mode or rule ordering 1ms
+ ✓ tests/cli/privacy.test.ts > privacy controls > discloses admitted backlog and next-cycle automatic upload rather than promising an immediate upload 0ms
+ ✓ tests/cli/b07-private-atomic-creation.test.ts > restricts the empty atomic temp file before private bytes are written 2ms
+ ✓ tests/cli/b07-private-atomic-creation.test.ts > failed restriction retains the original file and removes only its own empty temp 1ms
+ ↓ tests/cli/process-bounds/windows-reparse-bounds.test.ts > fails closed on a native overflowing reparse checker without raw stderr
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode invalid and returns null
+STARTUP_BOUND {"mode":"invalid","elapsedMs":61,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode overflow and returns null 309ms
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode short and returns null
+STARTUP_BOUND {"mode":"short","elapsedMs":63,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode invalid and returns null 200ms
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode nonzero and returns null
+STARTUP_BOUND {"mode":"nonzero","elapsedMs":61,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode short and returns null 200ms
+stdout | tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode signal and returns null
+STARTUP_BOUND {"mode":"signal","elapsedMs":63,"version":null}
+
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode nonzero and returns null 178ms
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > bounds real startup executable mode signal and returns null 177ms
+ ✓ tests/cli/process-bounds/agent-version-bounds.test.ts > keeps its import-time SHA even after the install checkout advances 291ms
+ ↓ tests/cli/process-bounds/agent-version-bounds.test.ts > uses native git.exe rather than .cmd resolution on Windows
+ ✓ tests/cli/privacy-admission-cli.test.ts > privacy admission CLI lifecycle > preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync 1674ms
+ ✓ tests/cli/privacy-admission-cli.test.ts > privacy admission CLI lifecycle > keeps paused collection and replay execution from changing queue or cursor 688ms
+stdout | tests/cli/b03-round2-elapsed-negative.test.ts > bounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget
+GIT_ELAPSED_NEGATIVE {"elapsedMs":8411,"status":0,"stdout":"REPLAY_STARTED\nREPLAY_REFUSED Replay refused: Git enrichment exceeded 10000ms deadline\n"}
+
+ ✓ tests/cli/b03-round2-elapsed-negative.test.ts > bounded preview refuses stalled Git enrichment within its 10000 ms elapsed budget 8416ms
+stdout | tests/cli/process-bounds/replay-process-bounds.test.ts > refuses preview with a real resistant Git tree and preserves all state
+REPLAY_BOUND {"mode":"preview","elapsedMs":8067,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+
+ ✓ tests/cli/b03-replay-deadline.test.ts > interrupts a real stalled Git process within the replay deadline 8380ms
+ ✓ tests/cli/b03-replay-deadline.test.ts > uses one execution deadline across both enrichments and refuses before merge 6ms
+ ✓ tests/cli/b03-replay-deadline.test.ts > keeps normal collection enrichment opt-in free and preserves event identity 0ms
+ ✓ tests/cli/b03-replay-deadline.test.ts > leaves the durable queue byte-identical when the final deadline trips under its lock 1ms
+stdout | tests/cli/process-bounds/replay-process-bounds.test.ts > refuses execute with a real resistant Git tree and preserves all state
+REPLAY_BOUND {"mode":"execute","elapsedMs":8035,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > refuses preview with a real resistant Git tree and preserves all state 8650ms
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > refuses execute with a real resistant Git tree and preserves all state 8385ms
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > refuses preview output overflow without leaking raw stderr 229ms
+stdout | tests/cli/process-bounds/replay-process-bounds.test.ts > does not renew the deadline across successive real Git calls
+SHARED_GIT_DEADLINE {"elapsedMs":8044,"gitInvocations":4}
+
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > refuses execute output overflow without leaking raw stderr 368ms
+stdout | tests/cli/process-bounds/replay-process-bounds.test.ts > retains the production before-mutate deadline guard under the queue lock
+QUEUE_LOCK_GUARD {"lockSeen":true,"error":"Replay refused: queue admission exceeded 10000ms deadline","stateUnchanged":true}
+
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > does not renew the deadline across successive real Git calls 8232ms
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > retains the production before-mutate deadline guard under the queue lock 403ms
+ ✓ tests/cli/process-bounds/replay-process-bounds.test.ts > preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event 610ms
+
+ Test Files  25 passed | 1 skipped (26)
+      Tests  188 passed | 6 skipped (194)
+   Start at  10:31:50
+   Duration  27.16s (transform 978ms, setup 0ms, import 1.80s, tests 64.05s, environment 4ms)
+

@@ -1,0 +1,13 @@
+
+> tokenizer@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+
+ Test Files  162 passed | 13 skipped (175)
+      Tests  1919 passed | 34 skipped (1953)
+   Start at  10:28:41
+   Duration  27.57s (transform 4.19s, setup 0ms, import 12.93s, tests 110.56s, environment 18ms)
+

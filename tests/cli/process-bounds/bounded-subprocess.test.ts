@@ -68,7 +68,7 @@ describe("bounded subprocess primitive", () => {
     } catch (error) { caught = error; }
     expect(caught).toBeInstanceOf(BoundedSubprocessLaunchError);
     expect(caught).toHaveProperty("code", "ENOENT");
-    const preload = fileURLToPath(new URL("../../fixtures/process-bounds/worker-failure.mjs", import.meta.url));
+    const preload = new URL("../../fixtures/process-bounds/worker-failure.mjs", import.meta.url).href;
     try {
       runBoundedSubprocess(process.execPath, [fixture, "normal", pidFile], {
         cwd: root, env: { ...env, NODE_OPTIONS: `--import=${preload}` }, timeoutMs: 500, maxOutputBytes: 1_024
@@ -107,6 +107,12 @@ describe("bounded subprocess primitive", () => {
     expect(caught).toBeInstanceOf(BoundedSubprocessOutputError);
     expect(String(caught)).not.toContain("RAW-STDERR-CANARY");
     await expect.poll(() => pids().some(alive), { timeout: 2_000 }).toBe(false);
+  });
+
+  it("accounts stdout and stderr against one combined byte budget", () => {
+    expect(() => run("combined", 2_000, 1_024)).toThrow(BoundedSubprocessOutputError);
+    const result = run("combined", 2_000, 1_200);
+    expect(result.stdout.length + result.stderr.length).toBe(1_200);
   });
 
   it.skipIf(process.platform !== "win32")("uses a real Windows executable for tree cleanup", async () => {
