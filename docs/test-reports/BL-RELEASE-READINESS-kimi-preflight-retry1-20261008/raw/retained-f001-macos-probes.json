@@ -1,0 +1,27 @@
+{
+ "suite": "f001-macos-probes",
+ "total": 5,
+ "passed": 5,
+ "results": [
+  {
+   "name": "launchd identity: production default; isolated label rules; real HOME rejected",
+   "pass": true
+  },
+  {
+   "name": "installer gate: accepts exactly one native pass; rejects fail/skip/rename/dup/wrong-OS",
+   "pass": true
+  },
+  {
+   "name": "transported F001 bytes are identical to declared source commit 3d0a974",
+   "pass": true
+  },
+  {
+   "name": "F002 predecessor guard bytes match adjudicated revision record",
+   "pass": true
+  },
+  {
+   "name": "workflow composes macOS gate without dropping accepted release prerequisites",
+   "pass": true
+  }
+ ]
+}

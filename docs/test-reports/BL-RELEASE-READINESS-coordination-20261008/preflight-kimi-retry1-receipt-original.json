@@ -1,0 +1,27 @@
+{
+  "task_id": "release-readiness-preflight-76d916b-kimi-r0",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-RELEASE-PREFLIGHT-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-RELEASE-PREFLIGHT",
+  "ref": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-release-evaluations-retry1-20261008/BL-RELEASE-PREFLIGHT-local-cli--kimi--evaluator-release-readiness-preflight-76d916b-kimi-r0",
+  "artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-release-evaluations-retry1-20261008/BL-RELEASE-PREFLIGHT-local-cli--kimi--evaluator-release-readiness-preflight-76d916b-kimi-r0/docs/test-reports/BL-RELEASE-PREFLIGHT-verdict.json",
+  "log": "/Volumes/ORICO/project/.worktrees/tokenizer-release-evaluations-retry1-20261008/run-release-readiness-preflight-76d916b-kimi-r0.log",
+  "envelope_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261008/preflight-evaluation-retry1-envelope.json",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 1098,
+  "effective_timeout_s": 2400,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "process_exit",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

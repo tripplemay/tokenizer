@@ -1,0 +1,123 @@
+{
+ "suite": "f-additional-probes-retry1",
+ "total": 29,
+ "passed": 29,
+ "results": [
+  {
+   "name": "F002-x live: COMPOSE_PROJECT_NAME override in baseline refused, byte-identical",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: symlinked .env refused",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: predecessor manifest/env mismatch refused",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: symlinked previous-env refused even with matching bytes",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: old-format health with ok=false refused",
+   "pass": true
+  },
+  {
+   "name": "F002-x retained: missing previous-env refused before candidate checks",
+   "pass": true
+  },
+  {
+   "name": "F002-x retained: candidate env wrong port refused",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: pre-existing identical candidate manifest accepted without rewrite",
+   "pass": true
+  },
+  {
+   "name": "F002-x live: missing APP_HOST_PORT refused as missing/duplicate",
+   "pass": true
+  },
+  {
+   "name": "F003-x wrong app network refused (wrong_project_network)",
+   "pass": true
+  },
+  {
+   "name": "F003-x wrong postgres volume refused (wrong_project_volume)",
+   "pass": true
+  },
+  {
+   "name": "F003-x wrong postgres network refused (wrong_project_network)",
+   "pass": true
+  },
+  {
+   "name": "F003-x env image vs running image id mismatch refused (wrong_image_reference)",
+   "pass": true
+  },
+  {
+   "name": "F003-x non-digest running image refused (wrong_serving_app)",
+   "pass": true
+  },
+  {
+   "name": "F003-x health endpoint failure refused (backend_unavailable), stderr canary suppressed",
+   "pass": true
+  },
+  {
+   "name": "F003-x absent postgres still observed with unknown postgres fields",
+   "pass": true
+  },
+  {
+   "name": "F003-x symlinked .releases directory refused (unsafe_release_directory)",
+   "pass": true
+  },
+  {
+   "name": "F003-x oversized .env refused (oversized_config_file)",
+   "pass": true
+  },
+  {
+   "name": "F003-x .env APP_HOST_PORT=0.0.0.0:3010 refused (invalid_setting)",
+   "pass": true
+  },
+  {
+   "name": "F003-x relative and traversal deploy paths refused before any query",
+   "pass": true
+  },
+  {
+   "name": "F003-x root image user and numeric uid user reported without failure",
+   "pass": true
+  },
+  {
+   "name": "F003-x invalid OCI revision label refused (image_query_failed); <no value> tolerated",
+   "pass": true
+  },
+  {
+   "name": "T-x allowlist rejects unexpected files key and storage/network tampering",
+   "pass": true
+  },
+  {
+   "name": "T-x host-preflight transport: clean env, bounded report, artifact only redacted JSON",
+   "pass": true
+  },
+  {
+   "name": "T-x inventory script: stderr suppressed, no ledger writes, no sourced env, read-only docker",
+   "pass": true
+  },
+  {
+   "name": "F001-x native fixture test uses only owned ci labels and RUNNER_TEMP-scoped roots",
+   "pass": true
+  },
+  {
+   "name": "F001-x workflow cleanup trap refuses out-of-scope fixture records",
+   "pass": true
+  },
+  {
+   "name": "F001-x installer gate rejects reports with failed tests or missing assertion list",
+   "pass": true
+  },
+  {
+   "name": "F001-x F001 transported paths present and service.ts launchd code matches 3d0a974 bytes",
+   "pass": true
+  }
+ ]
+}

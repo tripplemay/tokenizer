@@ -1,0 +1,83 @@
+{
+ "suite": "f002-predecessor-probes",
+ "total": 19,
+ "passed": 19,
+ "results": [
+  {
+   "name": "live happy path: exact digest predecessor passes, read-only",
+   "pass": true
+  },
+  {
+   "name": "explicit null health code is REFUSED (adjudicated predicate)",
+   "pass": true
+  },
+  {
+   "name": "absent code field with ok=true and exact SHA is accepted (old format)",
+   "pass": true
+  },
+  {
+   "name": "wrong health code (db_unavailable) refused",
+   "pass": true
+  },
+  {
+   "name": "health commit mismatch refused",
+   "pass": true
+  },
+  {
+   "name": "legacy source-built predecessor image refused",
+   "pass": true
+  },
+  {
+   "name": "missing activation ledger refused",
+   "pass": true
+  },
+  {
+   "name": "wrong backend port (0.0.0.0) refused",
+   "pass": true
+  },
+  {
+   "name": "duplicate GIT_COMMIT in baseline refused",
+   "pass": true
+  },
+  {
+   "name": "missing running app refused before any candidate manifest write",
+   "pass": true
+  },
+  {
+   "name": "two running apps refused",
+   "pass": true
+  },
+  {
+   "name": "wrong compose project refused",
+   "pass": true
+  },
+  {
+   "name": "wrong service identity refused",
+   "pass": true
+  },
+  {
+   "name": "non-running container refused",
+   "pass": true
+  },
+  {
+   "name": "same-SHA predecessor refused",
+   "pass": true
+  },
+  {
+   "name": "stale previous-env retention record refused (byte mismatch)",
+   "pass": true
+  },
+  {
+   "name": "conflicting existing candidate manifest refused without rewrite",
+   "pass": true
+  },
+  {
+   "name": "retained mode: candidate env selecting different project refused",
+   "pass": true
+  },
+  {
+   "name": "invalid candidate args refused before any docker call",
+   "pass": true
+  }
+ ]
+}

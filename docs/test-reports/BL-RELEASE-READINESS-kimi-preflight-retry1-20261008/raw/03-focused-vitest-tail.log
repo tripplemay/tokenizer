@@ -1,0 +1,25 @@
+     ✓ refuses wrong-port without writes or disclosure  922ms
+     ✓ refuses wrong-image without writes or disclosure  881ms
+     ✓ refuses wrong-network without writes or disclosure  996ms
+     ✓ refuses wrong-volume without writes or disclosure  1149ms
+     ✓ refuses unready without writes or disclosure  1271ms
+     ✓ refuses wrong-health-code without writes or disclosure  1275ms
+     ✓ refuses null-health-code without writes or disclosure  1268ms
+     ✓ refuses wrong-health-sha without writes or disclosure  1272ms
+     ✓ refuses health-failure without writes or disclosure  1269ms
+     ✓ refuses raw-user-canary without writes or disclosure  958ms
+     ✓ bounds a hung query to five seconds and suppresses its failed stderr  5165ms
+     ✓ does not execute config content and clears Docker/Compose/proxy environment overrides  1262ms
+     ✓ refuses unsafe selected configuration: duplicate  544ms
+     ✓ refuses unsafe selected configuration: malicious-image  551ms
+     ✓ transports the exact reviewed script on stdin and uploads only validated JSON  1377ms
+     ✓ never retains unallowlisted or failed transport bytes: raw-stdout  1521ms
+     ✓ never retains unallowlisted or failed transport bytes: extra-key  1403ms
+     ✓ never retains unallowlisted or failed transport bytes: failed-transport  1443ms
+     ✓ retains a valid redacted refusal while returning nonzero  968ms
+
+ Test Files  6 passed (6)
+      Tests  90 passed (90)
+   Start at  23:37:19
+   Duration  33.88s (transform 251ms, setup 0ms, import 312ms, tests 37.56s, environment 0ms)
+

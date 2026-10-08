@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-08T16:57:00Z",
+  "release_ready": false,
+  "main_remote_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "production_app_or_database_mutation": false,
+  "main_push": false,
+  "safe_ci_branch": "codex/release-readiness-ci-20261008",
+  "safe_ci_source_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "release_ci": {"run":37803611472,"conclusion":"failure","windows_failures":8,"oci":"skipped","deploy":"skipped"},
+  "supporting_kimi_preflight": {
+    "original_attempt":"TIMEOUT/no verdict; original receipt/raw evidence retained",
+    "single_retry":"RETURNED0; mechanical exact-contract validation completed",
+    "features":{"F001":"PASS","F002":"PASS","F003":"PASS"},
+    "not_formal_parent_F005":true,
+    "verdict":"docs/test-reports/BL-RELEASE-PREFLIGHT-verdict.json"
+  },
+  "host_preflight": {"run":37812774615,"operation":"host-preflight","status":"waiting","requires_human_production_review":true,"deploy":"skipped","approved_by_coordinator":false},
+  "windows_diagnostic": {"run":37808814119,"source":"f6b89d781a74f7baff4db0d47733e813f04b839c","diagnostic_only":true,"exit":"nonzero; trace completeness and unreached branches are not product-failure proof"},
+  "windows_narrow_repair": {"source_freeze":"a5a7d59a67e3da61228d05ddd1f297aa12da24e4","worktree":"tokenizer-windows-native-repair-generator-20261008","F001":"implemented; independent/native acceptance pending","F002":"pending; worker unchanged, arbitrary owned-tree completion unproved","F003":"implemented; independent/native acceptance pending","source_scope_violation":false,"not_yet_transported_to_parent":true},
+  "runtime_parity":"committed separate diagnostic scope; implementation in progress, no second native run yet",
+  "encrypted_backup":{"target":"dmitsvr","recipient_and_custody":"awaiting user information","backup_or_restore_executed":false},
+  "bootstrap_proposal":{"source_commit":"3d384c6328caf4ac4f9ad08fc5ff758947e4f44c","original_transport":"bootstrap-proposal-original/","status":"proposal only; unknown prerequisites remain null"},
+  "open_gates":["original Windows/native failures","parent F004 exact final CI","formal fresh full-composition acceptance","actual predecessor image/source evidence","real encrypted off-host backup and isolated restore","existing POSTGRES_PASSWORD verification/Secret","Agent distribution","original homepage production-browser F005"]
+}
