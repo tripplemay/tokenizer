@@ -1,0 +1,234 @@
+Read-only tokenizer host inventory	Set up job	﻿2026-10-08T20:12:23.0347545Z Current runner version: '2.337.0'
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0372769Z ##[group]Runner Image Provisioner
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0374008Z Hosted Compute Agent
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0374751Z Version: 20261002.596
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0375576Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0376591Z Build Date: 2026-10-02T***:28:27Z
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0377828Z Worker ID: {d27ad87c-18c4-4abb-8547-4b469342d34d}
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0378702Z Region: westus3
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0379432Z Cloud: Azure
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0380280Z ##[endgroup]
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0381901Z ##[group]Operating System
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0382677Z Ubuntu
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0383373Z 24.04.5
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0383988Z LTS
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0384657Z ##[endgroup]
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0385328Z ##[group]Runner Image
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0386092Z Image: ubuntu-24.04
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0386756Z Version: 20261004.327.1
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0387974Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0390257Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0391363Z ##[endgroup]
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0392683Z ##[group]GITHUB_TOKEN Permissions
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0395136Z Contents: read
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0395858Z Metadata: read
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0396528Z ##[endgroup]
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0398688Z Secret source: Actions
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0400028Z Cache mode: write
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0401043Z Prepare workflow directory
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0884058Z Prepare all required actions
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.0933316Z Getting action download info
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.4188744Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.5291189Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Read-only tokenizer host inventory	Set up job	2026-10-08T20:12:23.8193140Z Complete job name: Read-only tokenizer host inventory
+Read-only tokenizer host inventory	Checkout reviewed inventory script	﻿2026-10-08T20:12:23.8834265Z ##[group]Run actions/checkout@v4
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8835241Z with:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8835915Z   repository: tripplemay/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8840057Z   token: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8840734Z   ssh-strict: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8841369Z   ssh-user: git
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8842019Z   persist-credentials: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8842719Z   clean: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8843392Z   sparse-checkout-cone-mode: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8844091Z   fetch-depth: 1
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8844733Z   fetch-tags: false
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8845397Z   show-progress: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8846049Z   lfs: false
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8846649Z   submodules: false
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8847300Z   set-safe-directory: true
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8848013Z   allow-unsafe-pr-checkout: false
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8848887Z env:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8849684Z   VPS_HOST: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8850386Z   VPS_USER: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8853617Z   VPS_SSH_KEY: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8854271Z   VPS_SSH_PORT: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8855125Z   VPS_DEPLOY_PATH: ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.8855796Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9868625Z Syncing repository: tripplemay/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9871706Z ##[group]Getting Git version info
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9872690Z Working directory is '/home/runner/work/tokenizer/tokenizer'
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9874084Z [command]/usr/bin/git version
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9940647Z git version 2.55.0
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9960999Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9975057Z Temporarily overriding HOME='/home/runner/work/_temp/493ab269-af8f-40ae-ba2f-4b2e0e92c2b1' before making global git config changes
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9977071Z Adding repository directory to the temporary git global config as a safe directory
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:23.9981501Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tokenizer/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0026553Z Deleting the contents of '/home/runner/work/tokenizer/tokenizer'
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0030992Z ##[group]Initializing the repository
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0035364Z [command]/usr/bin/git init /home/runner/work/tokenizer/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0137056Z hint: Using 'master' as the name for the initial branch. This default branch name
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0138775Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0144042Z hint: to use in all of your new repositories, which will suppress this warning,
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0145828Z hint: call:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0147206Z hint:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0148511Z hint: 	git config --global init.defaultBranch <name>
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0149832Z hint:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0151116Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0152835Z hint: 'development'. The just-created branch can be renamed via this command:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0154297Z hint:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0155190Z hint: 	git branch -m <name>
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0156260Z hint:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0157517Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0160177Z Initialized empty Git repository in /home/runner/work/tokenizer/tokenizer/.git/
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0163263Z [command]/usr/bin/git remote add origin https://github.com/tripplemay/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0198188Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0200212Z ##[group]Disabling automatic garbage collection
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0201555Z [command]/usr/bin/git config --local gc.auto 0
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0257651Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0259254Z ##[group]Setting up auth
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0262830Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0291499Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0609410Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0642282Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0896144Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.0924857Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.1137729Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.1175443Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.1177242Z ##[group]Fetching the repository
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:24.1185875Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +76d916ba2e3a7147acda5ac9ef15fa70a9cd9958:refs/remotes/origin/codex/release-readiness-ci-20261008
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5118346Z From https://github.com/tripplemay/tokenizer
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5121831Z  * [new ref]         76d916ba2e3a7147acda5ac9ef15fa70a9cd9958 -> origin/codex/release-readiness-ci-20261008
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5128146Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5132296Z ##[group]Determining the checkout info
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5134950Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5136260Z [command]/usr/bin/git sparse-checkout disable
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5183319Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5213953Z ##[group]Checking out the ref
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.5217966Z [command]/usr/bin/git checkout --progress --force -B codex/release-readiness-ci-20261008 refs/remotes/origin/codex/release-readiness-ci-20261008
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.6566480Z Switched to a new branch 'codex/release-readiness-ci-20261008'
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.6570685Z branch 'codex/release-readiness-ci-20261008' set up to track 'origin/codex/release-readiness-ci-20261008'.
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.6580842Z ##[endgroup]
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.6622052Z [command]/usr/bin/git log -1 --format=%H
+Read-only tokenizer host inventory	Checkout reviewed inventory script	2026-10-08T20:12:25.6645424Z 76d916ba2e3a7147acda5ac9ef15fa70a9cd9958
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	﻿2026-10-08T20:12:25.6916706Z ##[group]Run set +x
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6918696Z [36;1mset +x[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6920458Z [36;1mset -euo pipefail[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6922119Z [36;1mumask 077[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6923760Z [36;1mmkdir -p host-preflight-evidence[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6925667Z [36;1msource_sha=unknown[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6927788Z [36;1mif [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]; then source_sha="$GITHUB_SHA"; fi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6930872Z [36;1mjq -n --arg source "$source_sha" --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6935000Z [36;1m  '{schema_version:1,operation:"host-preflight",source_sha:$source,timestamp:$timestamp,outcome:"refused",reason:"transport_failed"}' \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6938489Z [36;1m  > host-preflight-evidence/inventory.json[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6940924Z [36;1mDEPLOY_PATH="${VPS_DEPLOY_PATH:-***}"[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6942766Z [36;1mPORT="${VPS_SSH_PORT:-***}"[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6944884Z [36;1mif [[ ! "$VPS_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.:-]*$ || ${#VPS_HOST} -gt 253 ||[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6947552Z [36;1m      ! "$VPS_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]{0,63}$ || -z "$VPS_SSH_KEY" ||[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6950553Z [36;1m      ! "$DEPLOY_PATH" =~ ^/[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ || ${#DEPLOY_PATH} -gt 256 ||[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6953652Z [36;1m      "$DEPLOY_PATH" == */../* || "$DEPLOY_PATH" == */./* || "$DEPLOY_PATH" == */.. || "$DEPLOY_PATH" == */. ||[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6956485Z [36;1m      ! "$PORT" =~ ^[0-9]{1,5}$ || "$source_sha" == unknown ]]; then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6959043Z [36;1m  echo 'Host inventory connection inputs are missing or invalid' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6961392Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6962840Z [36;1mif (( 10#$PORT < 1 || 10#$PORT > 65535 )); then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6965902Z [36;1m  echo 'Host inventory connection inputs are missing or invalid' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6968181Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6969635Z [36;1mwork="$(mktemp -d)"[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6971192Z [36;1mtrap 'rm -rf "$work"' EXIT[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6972961Z [36;1mprintf '%s\n' "$VPS_SSH_KEY" > "$work/key"[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6974698Z [36;1mchmod 600 "$work/key"[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6977209Z [36;1mif ! timeout --signal=KILL 15s ssh-keyscan -T 5 -p "$PORT" -H "$VPS_HOST" > "$work/known_hosts" 2>/dev/null ||[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6980049Z [36;1m   [[ ! -s "$work/known_hosts" ]]; then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6982201Z [36;1m  echo 'Host inventory SSH trust discovery failed' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6984183Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6985481Z [36;1mstatus=0[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6987181Z [36;1mtimeout --signal=KILL 150s ssh -i "$work/key" -p "$PORT" \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6990452Z [36;1m  -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$work/known_hosts" \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6993628Z [36;1m  -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=2 \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6995967Z [36;1m  "$VPS_USER@$VPS_HOST" \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.6998205Z [36;1m  "env -i PATH=/usr/local/bin:/usr/bin:/bin bash -s -- '$DEPLOY_PATH' '$GITHUB_SHA'" \[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7001594Z [36;1m  < scripts/ci/vps-host-preflight.sh 2>/dev/null | head -c 65537 > "$work/inventory.json" || status=$?[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7004429Z [36;1mif (( $(wc -c < "$work/inventory.json") > 65536 )); then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7006703Z [36;1m  echo 'Host inventory exceeded the report bound' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7008833Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7010393Z [36;1mif ! jq -e --arg source "$GITHUB_SHA" '[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7012281Z [36;1m  def sha: test("^([0-9a-f]{40}|unknown)$");[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7014246Z [36;1m  def id: test("^([0-9a-f]{12,64}|unknown)$");[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7016231Z [36;1m  def digest: test("^(sha256:[0-9a-f]{64}|unknown)$");[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7018962Z [36;1m  def image: test("^(unknown|[a-z0-9][a-z0-9./:_-]{1,240}(@sha256:[0-9a-f]{64})?)$");[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7021775Z [36;1m  def exact($expected): (keys | sort) == ($expected | sort);[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7025888Z [36;1m  exact(["schema_version","operation","source_sha","timestamp","outcome","reason","project","baseline","platform","free_kib","versions","settings","app","postgres","storage","files"]) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7030561Z [36;1m  .schema_version == 1 and .operation == "host-preflight" and .source_sha == $source and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7033536Z [36;1m  (.timestamp | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7035953Z [36;1m  (.outcome == "observed" or .outcome == "refused") and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7048518Z [36;1m  (.reason | IN("none","invalid_input","missing_tools","invalid_path","platform_unavailable","unsupported_platform","space_unavailable","docker_unavailable","compose_unavailable","unsafe_config_file","file_metadata_unavailable","oversized_config_file","unsafe_release_directory","duplicate_setting","invalid_setting","app_query_failed","missing_or_multiple_app","wrong_serving_app","unhealthy_app","wrong_backend_binding","image_query_failed","wrong_image_reference","wrong_project_network","postgres_query_failed","multiple_postgres","wrong_postgres_identity","wrong_project_volume","network_query_failed","volume_query_failed","backend_unavailable","backend_unready","unknown_serving_revision","wrong_backend_revision")) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7061208Z [36;1m  .project == "tokenizer" and (.baseline | IN("unknown","legacy_or_unknown","digest_activated")) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7064800Z [36;1m  (.platform | test("^(unknown|Linux/(x86_64|aarch64|arm64))$")) and (.free_kib | test("^(unknown|[0-9]{1,16})$")) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7068504Z [36;1m  (.versions | exact(["docker","compose"]) and all(.[]; test("^(unknown|v?[0-9]+\\.[0-9]+\\.[0-9]+[a-zA-Z0-9.+-]{0,32})$"))) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7073637Z [36;1m  (.settings | exact(["GIT_COMMIT","APP_IMAGE","MIGRATE_IMAGE","APP_HOST_PORT"]) and (.GIT_COMMIT | sha) and (.APP_IMAGE | image) and (.MIGRATE_IMAGE | image) and (.APP_HOST_PORT | IN("unknown","127.0.0.1:3010"))) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7082768Z [36;1m  (.app | exact(["id","status","health","image_id","revision","user","uid","port","network"]) and (.id | id) and (.status | IN("unknown","running")) and (.health | IN("unknown","healthy")) and (.image_id | digest) and (.revision | sha) and (.user | test("^(unknown|***|node|[0-9]{1,10}(:[0-9]{1,10})?)$")) and (.uid | test("^(unknown|[0-9]{1,10})$")) and (.port | IN("unknown","127.0.0.1:3010")) and (.network | IN("unknown","tokenizer_default"))) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7093474Z [36;1m  (.postgres | exact(["id","status","health","image_id","network","volume"]) and (.id | id) and (.status | IN("unknown","running","exited","created","paused","restarting","dead")) and (.health | IN("unknown","healthy","unhealthy","starting")) and (.image_id | digest) and (.network | IN("unknown","tokenizer_default")) and (.volume | IN("unknown","tokenizer_postgres-data"))) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7101970Z [36;1m  (.storage | exact(["network","network_driver","volume","volume_driver"]) and .network == "tokenizer_default" and .volume == "tokenizer_postgres-data" and (.network_driver | IN("unknown","bridge")) and (.volume_driver | IN("unknown","local"))) and[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7108623Z [36;1m  (.files | (keys - ["env","compose","release_compose","releases","manifest","activation"] | length) == 0 and all(.[]; exact(["sha256","mode"]) and (.sha256 | test("^([0-9a-f]{64}|missing|directory)$")) and (.mode | test("^([0-7]{3,4}|missing)$"))))[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7112991Z [36;1m' "$work/inventory.json" >/dev/null 2>&1; then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7115393Z [36;1m  echo 'Host inventory returned no valid allowlisted report' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7117528Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7119286Z [36;1mjq . "$work/inventory.json" > host-preflight-evidence/inventory.json[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7122792Z [36;1mif [[ "$status" != 0 ]] || ! jq -e '.outcome == "observed"' host-preflight-evidence/inventory.json >/dev/null; then[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7125808Z [36;1m  echo 'Host inventory refused the serving state' >&2; exit 1[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7127786Z [36;1mfi[0m
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7311467Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7313473Z env:
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7314866Z   VPS_HOST: ***
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7316225Z   VPS_USER: ***
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7324172Z   VPS_SSH_KEY: ***
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7325546Z   VPS_SSH_PORT: ***
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7326973Z   VPS_DEPLOY_PATH: ***
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:25.7328343Z ##[endgroup]
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:31.0135751Z Host inventory refused the serving state
+Read-only tokenizer host inventory	Collect bounded allowlisted inventory over SSH stdin	2026-10-08T20:12:31.0165003Z ##[error]Process completed with exit code 1.
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	﻿2026-10-08T20:12:31.0292384Z ##[group]Run actions/upload-artifact@v4
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0292978Z with:
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0293575Z   name: tokenizer-host-preflight-76d916ba2e3a7147acda5ac9ef15fa70a9cd9958
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0294346Z   path: host-preflight-evidence/inventory.json
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0294896Z   if-no-files-found: error
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0295390Z   retention-days: 7
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0295853Z   compression-level: 6
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0296353Z   overwrite: false
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0296860Z   include-hidden-files: false
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0297353Z env:
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0297916Z   VPS_HOST: ***
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0298417Z   VPS_USER: ***
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0300683Z   VPS_SSH_KEY: ***
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0301215Z   VPS_SSH_PORT: ***
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0301717Z   VPS_DEPLOY_PATH: ***
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.0302186Z ##[endgroup]
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.1922038Z (node:2106) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.1923702Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.1969120Z With the provided path, there will be 1 file uploaded
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.1970985Z Artifact name is valid!
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.1971903Z Root directory input is valid!
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.5450447Z Beginning upload of artifact content to blob storage
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.5616028Z (node:2106) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.8044530Z Uploaded bytes 575
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.8705962Z Finished uploading artifact content to blob storage!
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.8708012Z SHA256 digest of uploaded artifact zip is 17c6f6abb546f9c9063e2c0f8a48ea57e7763d33a09a9555934bb18e70e21d52
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:31.8709402Z Finalizing artifact upload
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:32.1067227Z Artifact tokenizer-host-preflight-76d916ba2e3a7147acda5ac9ef15fa70a9cd9958.zip successfully finalized. Artifact ID 11575982961
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:32.1069659Z Artifact tokenizer-host-preflight-76d916ba2e3a7147acda5ac9ef15fa70a9cd9958 has been successfully uploaded! Final size is 575 bytes. Artifact ID is 11575982961
+Read-only tokenizer host inventory	Retain only redacted allowlisted host inventory	2026-10-08T20:12:32.1075838Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37812774615/artifacts/11575982961
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	﻿2026-10-08T20:12:32.1305701Z Post job cleanup.
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2140684Z [command]/usr/bin/git version
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2183911Z git version 2.55.0
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2224895Z Temporarily overriding HOME='/home/runner/work/_temp/613c96e5-adbd-49f6-b156-b1f07e0b0213' before making global git config changes
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2226034Z Adding repository directory to the temporary git global config as a safe directory
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2231443Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tokenizer/tokenizer
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2270292Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2302367Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2517551Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2542542Z http.https://github.com/.extraheader
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2552757Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2583459Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2808452Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Read-only tokenizer host inventory	Post Checkout reviewed inventory script	2026-10-08T20:12:32.2840706Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Read-only tokenizer host inventory	Complete job	﻿2026-10-08T20:12:32.3238804Z Cleaning up orphan processes
+Read-only tokenizer host inventory	Complete job	2026-10-08T20:12:32.3521115Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

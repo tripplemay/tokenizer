@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "operation": "host-preflight",
+  "source_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "timestamp": "2026-10-08T20:12:29Z",
+  "outcome": "refused",
+  "reason": "compose_unavailable",
+  "project": "tokenizer",
+  "baseline": "unknown",
+  "platform": "Linux/x86_64",
+  "free_kib": "30562304",
+  "versions": {
+    "docker": "29.1.3",
+    "compose": "unknown"
+  },
+  "settings": {
+    "GIT_COMMIT": "unknown",
+    "APP_IMAGE": "unknown",
+    "MIGRATE_IMAGE": "unknown",
+    "APP_HOST_PORT": "unknown"
+  },
+  "app": {
+    "id": "unknown",
+    "status": "unknown",
+    "health": "unknown",
+    "image_id": "unknown",
+    "revision": "unknown",
+    "user": "unknown",
+    "uid": "unknown",
+    "port": "unknown",
+    "network": "unknown"
+  },
+  "postgres": {
+    "id": "unknown",
+    "status": "unknown",
+    "health": "unknown",
+    "image_id": "unknown",
+    "network": "unknown",
+    "volume": "unknown"
+  },
+  "storage": {
+    "network": "tokenizer_default",
+    "network_driver": "unknown",
+    "volume": "tokenizer_postgres-data",
+    "volume_driver": "unknown"
+  },
+  "files": {}
+}
