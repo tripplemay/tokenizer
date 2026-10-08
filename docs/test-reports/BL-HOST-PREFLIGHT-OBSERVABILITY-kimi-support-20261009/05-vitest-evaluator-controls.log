@@ -1,0 +1,111 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-host-observability-evaluation-20261009/BL-HOST-PREFLIGHT-OBS-SUPPORT-local-cli--kimi--evaluator-host-preflight-observability-cddb822-kimi-support-r0
+
+ ❯ tests/evaluator/host-preflight-observability-kimi-support.test.ts (41 tests | 2 failed) 16173ms
+     ✓ captures a valid Compose version with unchanged argv/5s/16385 bounds, then proceeds  706ms
+     ✓ strips trailing newlines before counting captured bytes  698ms
+     ✓ retains the exact whole pipeline exit status 1 (never normalized to 1) 239ms
+     ✓ retains the exact whole pipeline exit status 2 (never normalized to 1) 236ms
+     ✓ retains the exact whole pipeline exit status 23 (never normalized to 1) 236ms
+     ✓ retains the exact whole pipeline exit status 124 (never normalized to 1) 236ms
+     ✓ retains the exact whole pipeline exit status 137 (never normalized to 1) 235ms
+     ✓ retains the exact whole pipeline exit status 141 (never normalized to 1) 235ms
+     ✓ retains the exact whole pipeline exit status 255 (never normalized to 1) 235ms
+     ✓ records the rightmost failing capture stage, not the Docker client exit code 235ms
+     ✓ fails closed as command_failed even when captured stdout is a valid semver 234ms
+     ✓ classifies invalid retained versions with zero disclosure: 0 234ms
+     ✓ classifies invalid retained versions with zero disclosure: 1 233ms
+     ✓ classifies invalid retained versions with zero disclosure: 2 238ms
+     ✓ classifies invalid retained versions with zero disclosure: 3 234ms
+     ✓ classifies invalid retained versions with zero disclosure: 4 233ms
+     ✓ prioritizes the retained-output cap over pipeline status 0 236ms
+     ✓ prioritizes the retained-output cap over pipeline status 1 237ms
+     ✓ prioritizes the retained-output cap over pipeline status 141 235ms
+     × counts captured shell bytes (not locale characters) under a multibyte locale 465ms
+     ✓ refuses a multibyte string truncated mid-codepoint at the 16385 cap 236ms
+     ✓ bounds a hung Compose query with the unchanged 5s kill and records the pipeline status as a number  5234ms
+     ✓ keeps not_run null metrics and issues no Compose query on early 'platform_unavailable' refusal 92ms
+     ✓ keeps not_run null metrics and issues no Compose query on early 'docker_unavailable' refusal 194ms
+     ✓ keeps not_run null metrics and runs zero tools on invalid input 13ms
+     ✓ records only HOME presence (never value/path/emptiness): false  716ms
+     ✓ records only HOME presence (never value/path/emptiness): true  758ms
+     ✓ records only HOME presence (never value/path/emptiness): true  745ms
+     ✓ keeps the missing-jq minimal refusal unchanged and outside full transport reports 11ms
+     ✓ matches the frozen baseline script byte-for-byte on behavior and report shape minus compose_probe  1424ms
+     ✓ builds a real valid refused report via the candidate script for validator controls  391ms
+     ✓ accepts every fixed classification with consistent null/range relationships 32ms
+     ✓ rejects missing keys, extra keys and non-object compose_probe values 41ms
+     ✓ rejects invalid status enums, types, ranges, fractions and null-relationship violations 138ms
+     ✓ rejects foreign source_sha and raw canary/secret-bearing report additions 21ms
+     ✓ does not weaken the pre-existing allowlists (old clauses still reject) 54ms
+     ✓ pins the candidate commit and the exact changed-file set over the frozen baseline 26ms
+     ✓ pins old tests, protected state, dependency and rule files to baseline blobs 128ms
+     ✓ pins every workflow byte outside the host report validator 11ms
+     ✓ confines the validator diff to the bounded_integer helper, exact() key list and compose_probe clause 13ms
+     × pins the shared query() implementation and confines the script diff to the Compose capture/serialization 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/host-preflight-observability-kimi-support.test.ts > evaluator-independent Compose probe synthetic controls > counts captured shell bytes (not locale characters) under a multibyte locale
+AssertionError: expected [ [ 'docker', 'version', …(2) ], …(3) ] to deeply equal [ [ 'docker', 'version', …(2) ], …(1) ]
+
+- Expected
++ Received
+
+@@ -9,6 +9,18 @@
+      "docker",
+      "compose",
+      "version",
+      "--short",
+    ],
++   [
++     "docker",
++     "version",
++     "--format",
++     "{{.Server.Version}}",
++   ],
++   [
++     "docker",
++     "compose",
++     "version",
++     "--short",
++   ],
+  ]
+
+ ❯ expectComposeRefusal tests/evaluator/host-preflight-observability-kimi-support.test.ts:113:52
+    111|   expect(x.body.files).toEqual({});
+    112|   // No later queries and no mutation-style argv after the Compose ref…
+    113|   expect(x.calls.filter((c) => c[0] === 'docker')).toEqual([
+       |                                                    ^
+    114|     ['docker', 'version', '--format', '{{.Server.Version}}'],
+    115|     ['docker', 'compose', 'version', '--short']
+ ❯ tests/evaluator/host-preflight-observability-kimi-support.test.ts:233:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/evaluator/host-preflight-observability-kimi-support.test.ts > evaluator-independent frozen baseline controls > pins the shared query() implementation and confines the script diff to the Compose capture/serialization
+AssertionError: if ! [[ "$value" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]]; then: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/evaluator/host-preflight-observability-kimi-support.test.ts:493:160
+    491|     expect(added.length).toBe(16);
+    492|     for (const line of added) {
+    493|       expect(/compose_probe|compose_pipeline_exit_status|compose_captu…
+       |                                                                                                                                                                ^
+    494|     }
+    495|     // The Compose capture keeps the identical bounded argv as the fro…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 39 passed (41)
+   Start at  03:58:09
+   Duration  16.46s (transform 28ms, setup 0ms, import 38ms, tests 16.17s, environment 0ms)
+
+exit=1

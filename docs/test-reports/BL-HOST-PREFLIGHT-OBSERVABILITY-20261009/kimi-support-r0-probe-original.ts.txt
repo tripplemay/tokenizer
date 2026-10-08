@@ -1,0 +1,504 @@
+import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+// Independent supporting-evaluator controls for the F003 Compose refusal
+// observability candidate at cddb822, derived from scratch from the spec
+// docs/specs/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009.md, the candidate
+// script/workflow bytes and the frozen baseline a5ea6e3 (parent commit).
+// Synthetic local fixtures only: no Docker/SSH/network/credential access.
+
+const BASE = 'a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca';
+const CANDIDATE = 'cddb822cc2452c2042309de73064a38f0c4224cf';
+const SCRIPT_PATH = 'scripts/ci/vps-host-preflight.sh';
+const WORKFLOW_PATH = '.github/workflows/deploy-vps.yml';
+const SHA = 'e'.repeat(40);
+const SECRET = 'KIMI_SUPPORT_SECRET_CANARY_6f27b9_NEVER_RETAIN';
+const HOME_CANARY = '/kimi-support-synthetic-home-canary-3d81_NEVER_RETAIN';
+const scriptText = readFileSync(SCRIPT_PATH, 'utf8');
+const workflowText = readFileSync(WORKFLOW_PATH, 'utf8');
+
+let root: string, bin: string, deploy: string, callsFile: string;
+
+type Probe = { status: string; pipeline_exit_status: number | null; captured_bytes: number | null; home_present: boolean };
+
+function gitShow(path: string, ref = BASE): string {
+  const r = spawnSync('git', ['show', `${ref}:${path}`], { encoding: 'utf8' });
+  if (r.status !== 0) throw new Error(`git show ${ref}:${path}: ${r.stderr}`);
+  return r.stdout;
+}
+
+function extractValidator(workflow: string) {
+  const lines = workflow.split('\n');
+  const start = lines.findIndex((line) => line.includes('if ! jq -e --arg source "$GITHUB_SHA"'));
+  const end = lines.findIndex((line, i) => i > start && line.includes("' \"$work/inventory.json\" >/dev/null 2>&1; then"));
+  if (start < 0 || end < 0) throw new Error('real host report validator not found in workflow');
+  return {
+    filterLines: lines.slice(start + 1, end),
+    filter: lines.slice(start + 1, end).join('\n'),
+    outside: [...lines.slice(0, start + 1), '<VALIDATOR_FILTER>', ...lines.slice(end)].join('\n')
+  };
+}
+
+function gate(body: unknown, source = SHA) {
+  return spawnSync('jq', ['-e', '--arg', 'source', source, extractValidator(workflowText).filter], {
+    input: JSON.stringify(body), encoding: 'utf8', env: { PATH: '/usr/bin:/bin', NODE_ENV: 'test' }
+  });
+}
+
+function stub(name: string, body: string) {
+  const path = join(bin, name);
+  writeFileSync(path, `#!${process.execPath}\n'use strict';\nconst fs=require('node:fs');\nconst log=(a)=>fs.appendFileSync(process.env.CALLS,JSON.stringify(a)+'\\n');\n${body}\n`);
+  chmodSync(path, 0o755);
+}
+
+function snap(dir = deploy): string[] {
+  return readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap((entry) => {
+    const p = join(dir, entry.name);
+    if (entry.isDirectory()) return [`d ${entry.name}`, ...snap(p).map((x) => `${entry.name}/${x}`)];
+    return [`f ${entry.name} ${(statSync(p).mode & 0o7777).toString(8)} ${createHash('sha256').update(readFileSync(p)).digest('hex')}`];
+  });
+}
+
+function readCalls(): string[][] {
+  return existsSync(callsFile) ? readFileSync(callsFile, 'utf8').trim().split('\n').map((line) => JSON.parse(line)) : [];
+}
+
+interface RunOptions {
+  composeOut?: string; composeExit?: number; headExit?: number; hang?: boolean;
+  unameExit?: number; dockerVersionExit?: number; home?: string; noHome?: boolean;
+  args?: string[]; source?: string;
+}
+
+function run(o: RunOptions = {}) {
+  const env: NodeJS.ProcessEnv = {
+    NODE_ENV: 'test',
+    PATH: `${bin}:/usr/bin:/bin`,
+    CALLS: callsFile,
+    TMPDIR: root,
+    LC_ALL: 'en_US.UTF-8',
+    SECRET_CANARY: SECRET,
+    COMPOSE_OUT_B64: Buffer.from(o.composeOut ?? 'v2.35.1\n', 'utf8').toString('base64'),
+    COMPOSE_EXIT: String(o.composeExit ?? 0),
+    COMPOSE_HANG: o.hang ? '1' : '',
+    HEAD_EXIT: o.headExit ? String(o.headExit) : '',
+    UNAME_EXIT: o.unameExit ? String(o.unameExit) : '',
+    DOCKER_VERSION_EXIT: o.dockerVersionExit ? String(o.dockerVersionExit) : ''
+  };
+  if (!o.noHome) env.HOME = o.home ?? join(root, 'synthetic-home');
+  const before = snap();
+  const result = spawnSync('/bin/bash', [o.source ?? join(process.cwd(), SCRIPT_PATH), ...(o.args ?? [deploy, SHA])], {
+    env, encoding: 'utf8', timeout: 15_000
+  });
+  expect(result.error).toBeUndefined();
+  expect(result.stdout + result.stderr).not.toContain(SECRET);
+  expect(result.stdout + result.stderr).not.toContain(HOME_CANARY);
+  expect(result.stderr).toBe('');
+  expect(snap()).toEqual(before);
+  const body = JSON.parse(result.stdout);
+  return { result, body, probe: body.compose_probe as Probe, calls: readCalls() };
+}
+
+function expectComposeRefusal(x: ReturnType<typeof run>, probe: Probe) {
+  expect(x.result.status).toBe(1);
+  expect(x.body.outcome).toBe('refused');
+  expect(x.body.reason).toBe('compose_unavailable');
+  expect(x.body.versions).toEqual({ docker: '29.1.3', compose: 'unknown' });
+  expect(x.probe).toEqual(probe);
+  expect(x.body.files).toEqual({});
+  // No later queries and no mutation-style argv after the Compose refusal.
+  expect(x.calls.filter((c) => c[0] === 'docker')).toEqual([
+    ['docker', 'version', '--format', '{{.Server.Version}}'],
+    ['docker', 'compose', 'version', '--short']
+  ]);
+  expect(x.calls.filter((c) => c[0] === 'timeout')).toEqual([
+    ['timeout', '--signal=KILL', '5s', 'uname', '-s'],
+    ['timeout', '--signal=KILL', '5s', 'uname', '-m'],
+    ['timeout', '--signal=KILL', '5s', 'df', '-Pk', '--', deploy],
+    ['timeout', '--signal=KILL', '5s', 'docker', 'version', '--format', '{{.Server.Version}}'],
+    ['timeout', '--signal=KILL', '5s', 'docker', 'compose', 'version', '--short']
+  ]);
+  expect(x.calls.filter((c) => c[0] === 'head')).toEqual(Array.from({ length: 5 }, () => ['head', '-c', '16385']));
+  expect(x.calls.some((c) => ['stat', 'sha256sum', 'curl'].includes(c[0]))).toBe(false);
+  // A valid redacted refusal must still pass the real workflow transport validator.
+  expect(gate(x.body).status, JSON.stringify(x.body)).toBe(0);
+}
+
+describe.skipIf(process.platform === 'win32')('evaluator-independent Compose probe synthetic controls', () => {
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'hpo-kimi-'));
+    bin = join(root, 'bin');
+    deploy = join(root, 'deploy');
+    callsFile = join(root, 'calls.jsonl');
+    mkdirSync(bin);
+    mkdirSync(deploy);
+    writeFileSync(join(deploy, '.env'), `AUTH_SECRET=${SECRET}\nDATABASE_URL=postgresql://secret:pw@example/db\n`);
+    writeFileSync(join(deploy, 'docker-compose.yml'), `# ${SECRET}\nservices: {}\n`);
+    writeFileSync(join(deploy, 'docker-compose.release.yml'), 'services: {}\n');
+
+    stub('timeout', `const {spawnSync}=require('node:child_process');
+      const a=process.argv.slice(2); log(['timeout',...a]);
+      if(a.shift()!=='--signal=KILL')process.exit(97);
+      const limit=a.shift(); if(!/^[0-9]+s$/.test(limit))process.exit(97);
+      const r=spawnSync(a[0],a.slice(1),{timeout:Number(limit.slice(0,-1))*1000,killSignal:'SIGKILL',maxBuffer:64*1024*1024});
+      if(r.stdout)process.stdout.write(r.stdout);
+      if(r.error&&r.error.code==='ETIMEDOUT')process.exit(124);
+      process.exit(r.status===null||r.status===undefined?1:r.status);`);
+    stub('head', `const a=process.argv.slice(2); log(['head',...a]);
+      if(a[0]!=='-c'||!/^[0-9]+$/.test(a[1]))process.exit(97);
+      const input=fs.readFileSync(0);
+      process.stdout.write(input.subarray(0,Number(a[1])));
+      const expected=Buffer.from(process.env.COMPOSE_OUT_B64||'','base64');
+      if(process.env.HEAD_EXIT&&input.equals(expected))process.exit(Number(process.env.HEAD_EXIT));
+      process.exit(0);`);
+    stub('uname', `const a=process.argv.slice(2); log(['uname',...a]);
+      if(process.env.UNAME_EXIT)process.exit(Number(process.env.UNAME_EXIT));
+      process.stdout.write(a[0]==='-s'?'Linux\\n':'x86_64\\n');`);
+    stub('df', `const a=process.argv.slice(2); log(['df',...a]);
+      process.stdout.write('Filesystem 1024-blocks Used Available Capacity Mounted on\\nfixture 100000 100 99900 1% /scope\\n');`);
+    stub('docker', `const a=process.argv.slice(2),e=process.env; log(['docker',...a]);
+      process.stderr.write(e.SECRET_CANARY||'');
+      if(a[0]==='version'){if(e.DOCKER_VERSION_EXIT)process.exit(Number(e.DOCKER_VERSION_EXIT));process.stdout.write('29.1.3\\n');process.exit(0);}
+      if(a[0]==='compose'&&a[1]==='version'&&a[2]==='--short'&&a.length===3){
+        if(e.COMPOSE_HANG==='1'){setTimeout(()=>process.exit(0),60000);return;}
+        process.stdout.write(Buffer.from(e.COMPOSE_OUT_B64||'','base64'),()=>process.exit(Number(e.COMPOSE_EXIT||'0')));
+        return;
+      }
+      if(a[0]==='ps')process.exit(0);
+      process.exit(99);`);
+    stub('stat', `const a=process.argv.slice(2); log(['stat',...a]);
+      const s=fs.statSync(a[a.length-1]);
+      process.stdout.write((a[1]==='%s'?s.size:(s.mode&0o7777).toString(8))+'\\n');`);
+    stub('sha256sum', `const c=require('node:crypto'); const a=process.argv.slice(2); log(['sha256sum',...a]);
+      process.stdout.write(c.createHash('sha256').update(fs.readFileSync(a[a.length-1])).digest('hex')+'  fixture\\n');`);
+    stub('curl', `const a=process.argv.slice(2); log(['curl',...a]); process.exit(7);`);
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+
+  it('captures a valid Compose version with unchanged argv/5s/16385 bounds, then proceeds', () => {
+    const x = run();
+    expect(x.probe).toEqual({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 7, home_present: true });
+    expect(x.body.versions.compose).toBe('v2.35.1');
+    // Pipeline continues past Compose and fails at the next allowlisted query.
+    expect(x.body.reason).toBe('missing_or_multiple_app');
+    expect(x.result.status).toBe(1);
+    expect(gate(x.body).status, JSON.stringify(x.body)).toBe(0);
+    const composeCalls = x.calls.filter((c) => c[0] === 'timeout' && c.includes('compose'));
+    expect(composeCalls).toEqual([['timeout', '--signal=KILL', '5s', 'docker', 'compose', 'version', '--short']]);
+  });
+
+  it('strips trailing newlines before counting captured bytes', () => {
+    const x = run({ composeOut: 'v2.35.1\n\n\n' });
+    expect(x.probe).toEqual({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 7, home_present: true });
+    expect(x.body.versions.compose).toBe('v2.35.1');
+  });
+
+  it.each([1, 2, 23, 124, 137, 141, 255])('retains the exact whole pipeline exit status %i (never normalized to 1)', (code) => {
+    expectComposeRefusal(run({ composeExit: code, composeOut: `${SECRET}\n` }), {
+      status: 'command_failed', pipeline_exit_status: code, captured_bytes: Buffer.byteLength(SECRET), home_present: true
+    });
+  });
+
+  it('records the rightmost failing capture stage, not the Docker client exit code', () => {
+    expectComposeRefusal(run({ composeExit: 7, headExit: 141, composeOut: 'v2.35.1\n' }), {
+      status: 'command_failed', pipeline_exit_status: 141, captured_bytes: 7, home_present: true
+    });
+  });
+
+  it('fails closed as command_failed even when captured stdout is a valid semver', () => {
+    expectComposeRefusal(run({ composeExit: 9, composeOut: '2.35.1\n' }), {
+      status: 'command_failed', pipeline_exit_status: 9, captured_bytes: 6, home_present: true
+    });
+  });
+
+  it.each(['', 'garbage\n', `${SECRET}\n`, 'v2.35.1\ninvalid', '2.35\n'])('classifies invalid retained versions with zero disclosure: %#', (out) => {
+    expectComposeRefusal(run({ composeOut: out }), {
+      status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: Buffer.byteLength(out.replace(/\n+$/, '')), home_present: true
+    });
+  });
+
+  it.each([0, 1, 141])('prioritizes the retained-output cap over pipeline status %i', (code) => {
+    expectComposeRefusal(run({ composeOut: 'x'.repeat(20000), composeExit: code }), {
+      status: 'output_bound_exceeded', pipeline_exit_status: code, captured_bytes: 16385, home_present: true
+    });
+  });
+
+  it('counts a single multibyte code point as shell bytes, not characters, under a UTF-8 locale', () => {
+    expectComposeRefusal(run({ composeOut: 'é\n' }), {
+      status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 2, home_present: true
+    });
+  });
+
+  it('counts a multibyte string at the 16384 boundary as bytes, not characters', () => {
+    expectComposeRefusal(run({ composeOut: `${'é'.repeat(8192)}\n` }), {
+      status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 16384, home_present: true
+    });
+  });
+
+  it('refuses a multibyte string truncated mid-codepoint at the 16385 cap', () => {
+    expectComposeRefusal(run({ composeOut: 'é'.repeat(10000) }), {
+      status: 'output_bound_exceeded', pipeline_exit_status: 0, captured_bytes: 16385, home_present: true
+    });
+  });
+
+  it('bounds a hung Compose query with the unchanged 5s kill and records the pipeline status as a number', () => {
+    const start = Date.now();
+    const x = run({ hang: true });
+    expect(Date.now() - start).toBeLessThan(9_000);
+    expectComposeRefusal(x, { status: 'command_failed', pipeline_exit_status: 124, captured_bytes: 0, home_present: true });
+  }, 15_000);
+
+  it.each([{ unameExit: 4, reason: 'platform_unavailable' }, { dockerVersionExit: 3, reason: 'docker_unavailable' }])(
+    'keeps not_run null metrics and issues no Compose query on early $reason refusal', (o) => {
+      const x = run(o);
+      expect(x.result.status).toBe(1);
+      expect(x.body.reason).toBe(o.reason);
+      expect(x.probe).toEqual({ status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: true });
+      expect(x.calls.some((c) => c.includes('compose'))).toBe(false);
+      expect(gate(x.body).status, JSON.stringify(x.body)).toBe(0);
+    });
+
+  it('keeps not_run null metrics and runs zero tools on invalid input', () => {
+    const x = run({ args: ['/opt/tokenizer/../escape', SHA], noHome: true });
+    expect(x.result.status).toBe(1);
+    expect(x.body.reason).toBe('invalid_input');
+    expect(x.probe).toEqual({ status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: false });
+    expect(x.calls).toEqual([]);
+    // Deliberately cleared source_sha is foreign to the validator's $source: rejected.
+    expect(gate(x.body).status).not.toBe(0);
+  });
+
+  it.each([{ home: undefined, present: false }, { home: '', present: true }, { home: HOME_CANARY, present: true }])(
+    'records only HOME presence (never value/path/emptiness): $present', ({ home, present }) => {
+      const x = run(home === undefined ? { noHome: true } : { home });
+      expect(x.probe).toEqual({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 7, home_present: present });
+      expect(JSON.stringify(x.body)).not.toContain(HOME_CANARY);
+    });
+
+  it('keeps the missing-jq minimal refusal unchanged and outside full transport reports', () => {
+    const date = join(bin, 'date');
+    writeFileSync(date, '#!/bin/bash\nprintf "2026-10-09T00:00:00Z\\n"\n');
+    chmodSync(date, 0o755);
+    const result = spawnSync('/bin/bash', [join(process.cwd(), SCRIPT_PATH), deploy, SHA], {
+      env: { PATH: bin, NODE_ENV: 'test' }, encoding: 'utf8', timeout: 10_000
+    });
+    expect(result.status).toBe(1);
+    const body = JSON.parse(result.stdout);
+    expect(body).toEqual({ schema_version: 1, operation: 'host-preflight', outcome: 'refused', reason: 'missing_tools' });
+    expect(body).not.toHaveProperty('compose_probe');
+    expect(gate(body).status).not.toBe(0);
+  });
+
+  it('matches the frozen baseline script byte-for-byte on behavior and report shape minus compose_probe', () => {
+    const candidate = run();
+    rmSync(callsFile);
+    const original = join(root, 'baseline.sh');
+    writeFileSync(original, gitShow(SCRIPT_PATH));
+    const result = spawnSync('/bin/bash', [original, deploy, SHA], {
+      env: {
+        NODE_ENV: 'test', PATH: `${bin}:/usr/bin:/bin`, CALLS: callsFile, TMPDIR: root, LC_ALL: 'en_US.UTF-8',
+        SECRET_CANARY: SECRET, COMPOSE_OUT_B64: Buffer.from('v2.35.1\n').toString('base64'), COMPOSE_EXIT: '0',
+        COMPOSE_HANG: '', HEAD_EXIT: '', UNAME_EXIT: '', DOCKER_VERSION_EXIT: '', HOME: join(root, 'synthetic-home')
+      },
+      encoding: 'utf8', timeout: 15_000
+    });
+    expect(result.status).toBe(candidate.result.status);
+    expect(result.stdout + result.stderr).not.toContain(SECRET);
+    const { compose_probe: _probe, timestamp: _ts, ...candidateBody } = candidate.body;
+    const { timestamp: _ots, ...originalBody } = JSON.parse(result.stdout);
+    expect(candidateBody).toEqual(originalBody);
+    expect(readCalls()).toEqual(candidate.calls);
+  });
+});
+
+describe('evaluator-independent real workflow validator controls', () => {
+  let rootDir: string, template: Record<string, unknown>, goodProbe: Probe;
+  const mkdtemp = () => {
+    const dir = mkdtempSync(join(tmpdir(), 'hpo-kimi-gate-'));
+    mkdirSync(join(dir, 'deploy'));
+    return dir;
+  };
+
+  it('builds a real valid refused report via the candidate script for validator controls', () => {
+    // Minimal standalone fixture (no stubs needed beyond tool fakes) reused from scratch here.
+    rootDir = mkdtemp();
+    const binDir = join(rootDir, 'bin');
+    mkdirSync(binDir);
+    const mk = (name: string, body: string) => {
+      writeFileSync(join(binDir, name), `#!${process.execPath}\n${body}\n`);
+      chmodSync(join(binDir, name), 0o755);
+    };
+    mk('timeout', `const{spawnSync}=require('node:child_process');const a=process.argv.slice(2);a.shift();a.shift();
+      const r=spawnSync(a[0],a.slice(1),{timeout:5000,killSignal:'SIGKILL'});if(r.stdout)process.stdout.write(r.stdout);
+      process.exit(r.error?.code==='ETIMEDOUT'?124:r.status??1);`);
+    mk('uname', `process.stdout.write(process.argv[2]==='-s'?'Linux\\n':'x86_64\\n');`);
+    mk('df', `process.stdout.write('Filesystem 1024-blocks Used Available Capacity Mounted on\\nfixture 100000 100 99900 1% /scope\\n');`);
+    mk('docker', `const a=process.argv.slice(2);
+      if(a[0]==='version'){process.stdout.write('29.1.3\\n');process.exit(0);}
+      if(a[0]==='compose'){process.stdout.write('v2.35.1\\n');process.exit(0);}
+      process.exit(0);`);
+    mk('stat', `const fs=require('node:fs');const a=process.argv.slice(2);const s=fs.statSync(a[a.length-1]);
+      process.stdout.write((a[1]==='%s'?s.size:(s.mode&0o7777).toString(8))+'\\n');`);
+    mk('sha256sum', `const fs=require('node:fs'),c=require('node:crypto');const a=process.argv.slice(2);
+      process.stdout.write(c.createHash('sha256').update(fs.readFileSync(a[a.length-1])).digest('hex')+'  f\\n');`);
+    mk('curl', `process.exit(7);`);
+    writeFileSync(join(rootDir, 'deploy', '.env'), `AUTH_SECRET=${SECRET}\n`);
+    const result = spawnSync('/bin/bash', [join(process.cwd(), SCRIPT_PATH), join(rootDir, 'deploy'), SHA], {
+      env: { PATH: `${binDir}:/usr/bin:/bin`, NODE_ENV: 'test' }, encoding: 'utf8', timeout: 15_000
+    });
+    expect(result.status).toBe(1);
+    template = JSON.parse(result.stdout);
+    expect(template.outcome).toBe('refused');
+    goodProbe = template.compose_probe as Probe;
+    expect(goodProbe).toEqual({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 7, home_present: false });
+    expect(gate(template).status, JSON.stringify(template)).toBe(0);
+    rmSync(rootDir, { recursive: true, force: true });
+  });
+
+  it('accepts every fixed classification with consistent null/range relationships', () => {
+    const valid: Probe[] = [
+      { status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: true },
+      { status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: false },
+      { status: 'ok', pipeline_exit_status: 0, captured_bytes: 0, home_present: false },
+      { status: 'ok', pipeline_exit_status: 0, captured_bytes: 16384, home_present: true },
+      { status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 0, home_present: false },
+      { status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 16384, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: 1, captured_bytes: 0, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: 255, captured_bytes: 16384, home_present: true },
+      { status: 'output_bound_exceeded', pipeline_exit_status: 0, captured_bytes: 16385, home_present: false },
+      { status: 'output_bound_exceeded', pipeline_exit_status: 141, captured_bytes: 16385, home_present: true }
+    ];
+    for (const probe of valid) expect(gate({ ...template, compose_probe: probe }).status, JSON.stringify(probe)).toBe(0);
+  });
+
+  it('rejects missing keys, extra keys and non-object compose_probe values', () => {
+    const bad: unknown[] = [undefined, null, true, 0, 'ok', [], SECRET, {},
+      { ...goodProbe, extra: 1 }, { ...goodProbe, note: SECRET },
+      ...Object.keys(goodProbe).map((key) => Object.fromEntries(Object.entries(goodProbe).filter(([k]) => k !== key)))];
+    for (const probe of bad) expect(gate({ ...template, compose_probe: probe }).status, JSON.stringify(probe)).not.toBe(0);
+  });
+
+  it('rejects invalid status enums, types, ranges, fractions and null-relationship violations', () => {
+    const bad: unknown[] = [
+      ...[null, 0, true, [], {}, 'timeout', 'missing_plugin', 'ok ', 'OK', SECRET].map((status) => ({ ...goodProbe, status })),
+      ...[null, -1, 256, 0.5, '0', false, [], {}].map((pipeline_exit_status) => ({ ...goodProbe, pipeline_exit_status })),
+      ...[null, -1, 16385, 7.5, '7', true, [], {}].map((captured_bytes) => ({ ...goodProbe, captured_bytes })),
+      ...[null, 0, 1, 'false', [], {}, HOME_CANARY].map((home_present) => ({ ...goodProbe, home_present })),
+      { status: 'not_run', pipeline_exit_status: 0, captured_bytes: null, home_present: false },
+      { status: 'not_run', pipeline_exit_status: null, captured_bytes: 0, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: null, captured_bytes: 7, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: 0, captured_bytes: 7, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: 23, captured_bytes: null, home_present: false },
+      { status: 'command_failed', pipeline_exit_status: 23, captured_bytes: 16385, home_present: false },
+      { status: 'ok', pipeline_exit_status: null, captured_bytes: 7, home_present: false },
+      { status: 'ok', pipeline_exit_status: 1, captured_bytes: 7, home_present: false },
+      { status: 'ok', pipeline_exit_status: 0, captured_bytes: null, home_present: false },
+      { status: 'invalid_version', pipeline_exit_status: 1, captured_bytes: 7, home_present: false },
+      { status: 'output_bound_exceeded', pipeline_exit_status: null, captured_bytes: 16385, home_present: false },
+      { status: 'output_bound_exceeded', pipeline_exit_status: 256, captured_bytes: 16385, home_present: false },
+      { status: 'output_bound_exceeded', pipeline_exit_status: 0, captured_bytes: 16384, home_present: false },
+      { status: 'output_bound_exceeded', pipeline_exit_status: 0, captured_bytes: 16386, home_present: false }
+    ];
+    for (const probe of bad) expect(gate({ ...template, compose_probe: probe }).status, JSON.stringify(probe)).not.toBe(0);
+  });
+
+  it('rejects foreign source_sha and raw canary/secret-bearing report additions', () => {
+    expect(gate(template, 'f'.repeat(40)).status).not.toBe(0);
+    expect(gate({ ...template, source_sha: 'f'.repeat(40) }).status).not.toBe(0);
+    expect(gate({ ...template, source_sha: SECRET }).status).not.toBe(0);
+    for (const addition of [
+      { ...template, leak: SECRET },
+      { ...template, compose_probe: { ...goodProbe, leak: SECRET } },
+      { ...template, versions: { ...template.versions as object, leak: SECRET } },
+      { ...template, files: { leak: { sha256: SECRET, mode: '600' } } }
+    ]) expect(gate(addition).status).not.toBe(0);
+  });
+
+  it('does not weaken the pre-existing allowlists (old clauses still reject)', () => {
+    const t = template as Record<string, any>;
+    const bad: unknown[] = [
+      { ...t, extra_top_level: 1 },
+      Object.fromEntries(Object.entries(t).filter(([k]) => k !== 'app')),
+      Object.fromEntries(Object.entries(t).filter(([k]) => k !== 'compose_probe')),
+      { ...t, schema_version: 2 },
+      { ...t, operation: 'deploy' },
+      { ...t, outcome: 'approved' },
+      { ...t, reason: 'pwned' },
+      { ...t, timestamp: '2026-10-09' },
+      { ...t, platform: 'Darwin/arm64' },
+      { ...t, free_kib: '1'.repeat(17) },
+      { ...t, versions: { docker: 'not a version', compose: 'unknown' } },
+      { ...t, versions: { docker: '29.1.3' } },
+      { ...t, app: { ...t.app, status: 'exited' } },
+      { ...t, app: { ...t.app, health: 'unhealthy' } },
+      { ...t, postgres: { ...t.postgres, status: 'corrupt' } },
+      { ...t, settings: { ...t.settings, APP_HOST_PORT: '0.0.0.0:3010' } },
+      { ...t, files: { env: { sha256: 'g'.repeat(64), mode: '600' } } },
+      { ...t, files: { foreign: { sha256: 'a'.repeat(64), mode: '600' } } }
+    ];
+    for (const body of bad) expect(gate(body).status).not.toBe(0);
+  });
+});
+
+describe('evaluator-independent frozen baseline controls', () => {
+  it('pins the candidate commit and the exact changed-file set over the frozen baseline', () => {
+    expect(spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim()).toBe(CANDIDATE);
+    const changed = spawnSync('git', ['diff', '--name-only', `${BASE}..HEAD`], { encoding: 'utf8' }).stdout.trim().split('\n').sort();
+    expect(changed).toEqual([WORKFLOW_PATH, SCRIPT_PATH, 'tests/ci/vps-host-preflight-observability.test.ts'].sort());
+  });
+
+  it('pins old tests, protected state, dependency and rule files to baseline blobs', () => {
+    for (const path of ['tests/ci/vps-host-preflight.test.ts', 'progress.json', 'features.json', 'harness-rules.md',
+      'AGENTS.md', 'CLAUDE.md', 'generator.md', 'package.json', 'package-lock.json', 'vitest.config.ts',
+      'docs/specs/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009.md']) {
+      expect(createHash('sha256').update(readFileSync(path)).digest('hex'), path)
+        .toBe(createHash('sha256').update(gitShow(path)).digest('hex'));
+    }
+  });
+
+  it('pins every workflow byte outside the host report validator', () => {
+    expect(extractValidator(workflowText).outside).toBe(extractValidator(gitShow(WORKFLOW_PATH)).outside);
+  });
+
+  it('confines the validator diff to the bounded_integer helper, exact() key list and compose_probe clause', () => {
+    const diff = spawnSync('git', ['diff', `${BASE}..HEAD`, '--unified=0', '--', WORKFLOW_PATH], { encoding: 'utf8' }).stdout;
+    const removed = diff.split('\n').filter((l) => l.startsWith('-') && !l.startsWith('---')).map((l) => l.slice(1));
+    const added = diff.split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++')).map((l) => l.slice(1));
+    expect(removed.length).toBe(1);
+    expect(removed[0]).toContain('exact(["schema_version"');
+    expect(removed[0]).not.toContain('compose_probe');
+    expect(added.length).toBe(9);
+    expect(added.some((l) => l.includes('def bounded_integer($max)'))).toBe(true);
+    expect(added.some((l) => l.includes('exact(["schema_version"') && l.includes('"compose_probe"'))).toBe(true);
+    for (const line of added) {
+      expect(/bounded_integer|compose_probe|pipeline_exit_status|captured_bytes|home_present|else false end/.test(line), line).toBe(true);
+    }
+  });
+
+  it('pins the shared query() implementation and confines the script diff to the Compose capture/serialization', () => {
+    const original = gitShow(SCRIPT_PATH);
+    const slice = (text: string) => text.slice(text.indexOf('query() {'), text.indexOf('valid_sha()'));
+    expect(slice(scriptText)).toBe(slice(original));
+    const diff = spawnSync('git', ['diff', `${BASE}..HEAD`, '--unified=0', '--', SCRIPT_PATH], { encoding: 'utf8' }).stdout;
+    const removed = diff.split('\n').filter((l) => l.startsWith('-') && !l.startsWith('---')).map((l) => l.slice(1));
+    const added = diff.split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++')).map((l) => l.slice(1));
+    // Only the old Compose query/validation lines were replaced.
+    expect(removed.length).toBe(2);
+    expect(removed[0]).toBe('value="$(query docker compose version --short)" || fail compose_unavailable');
+    expect(removed[1]).toContain('=~ ^v?[0-9]+');
+    expect(removed[1]).toContain('|| fail compose_unavailable');
+    // Every added line belongs to the fixed metadata block: no new host queries.
+    expect(added.length).toBe(16);
+    const semverRecheck = 'if ! [[ "$value" =~ ^v?[0-9]+\\.[0-9]+\\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]]; then';
+    for (const line of added) {
+      const inMetadataBlock = /compose_|HOME\+x|retained shell string|LC_ALL=C/.test(line) || line === 'fi' || line === semverRecheck;
+      expect(inMetadataBlock, line).toBe(true);
+    }
+    // The Compose capture keeps the identical bounded argv as the frozen query() path.
+    expect(added).toContain('value="$(timeout --signal=KILL 5s docker compose version --short 2>/dev/null | head -c 16385)" || compose_pipeline_exit_status=$?');
+    expect(scriptText).toContain('value="$(timeout --signal=KILL 5s "$@" 2>/dev/null | head -c 16385)" || return 1');
+  });
+});

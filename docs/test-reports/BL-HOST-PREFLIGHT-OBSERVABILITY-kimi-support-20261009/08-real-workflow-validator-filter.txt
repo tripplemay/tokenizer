@@ -1,0 +1,28 @@
+          if ! jq -e --arg source "$GITHUB_SHA" '
+            def sha: test("^([0-9a-f]{40}|unknown)$");
+            def id: test("^([0-9a-f]{12,64}|unknown)$");
+            def digest: test("^(sha256:[0-9a-f]{64}|unknown)$");
+            def image: test("^(unknown|[a-z0-9][a-z0-9./:_-]{1,240}(@sha256:[0-9a-f]{64})?)$");
+            def exact($expected): (keys | sort) == ($expected | sort);
+            def bounded_integer($max): type == "number" and floor == . and . >= 0 and . <= $max;
+            exact(["schema_version","operation","source_sha","timestamp","outcome","reason","project","baseline","platform","free_kib","versions","compose_probe","settings","app","postgres","storage","files"]) and
+            .schema_version == 1 and .operation == "host-preflight" and .source_sha == $source and
+            (.timestamp | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")) and
+            (.outcome == "observed" or .outcome == "refused") and
+            (.reason | IN("none","invalid_input","missing_tools","invalid_path","platform_unavailable","unsupported_platform","space_unavailable","docker_unavailable","compose_unavailable","unsafe_config_file","file_metadata_unavailable","oversized_config_file","unsafe_release_directory","duplicate_setting","invalid_setting","app_query_failed","missing_or_multiple_app","wrong_serving_app","unhealthy_app","wrong_backend_binding","image_query_failed","wrong_image_reference","wrong_project_network","postgres_query_failed","multiple_postgres","wrong_postgres_identity","wrong_project_volume","network_query_failed","volume_query_failed","backend_unavailable","backend_unready","unknown_serving_revision","wrong_backend_revision")) and
+            .project == "tokenizer" and (.baseline | IN("unknown","legacy_or_unknown","digest_activated")) and
+            (.platform | test("^(unknown|Linux/(x86_64|aarch64|arm64))$")) and (.free_kib | test("^(unknown|[0-9]{1,16})$")) and
+            (.versions | exact(["docker","compose"]) and all(.[]; test("^(unknown|v?[0-9]+\\.[0-9]+\\.[0-9]+[a-zA-Z0-9.+-]{0,32})$"))) and
+            (.compose_probe | type == "object" and exact(["status","pipeline_exit_status","captured_bytes","home_present"]) and
+              (.home_present | type == "boolean") and
+              if .status == "not_run" then .pipeline_exit_status == null and .captured_bytes == null
+              elif .status == "output_bound_exceeded" then (.pipeline_exit_status | bounded_integer(255)) and .captured_bytes == 16385
+              elif .status == "command_failed" then (.pipeline_exit_status | bounded_integer(255) and . > 0) and (.captured_bytes | bounded_integer(16384))
+              elif .status == "ok" or .status == "invalid_version" then .pipeline_exit_status == 0 and (.captured_bytes | bounded_integer(16384))
+              else false end) and
+            (.settings | exact(["GIT_COMMIT","APP_IMAGE","MIGRATE_IMAGE","APP_HOST_PORT"]) and (.GIT_COMMIT | sha) and (.APP_IMAGE | image) and (.MIGRATE_IMAGE | image) and (.APP_HOST_PORT | IN("unknown","127.0.0.1:3010"))) and
+            (.app | exact(["id","status","health","image_id","revision","user","uid","port","network"]) and (.id | id) and (.status | IN("unknown","running")) and (.health | IN("unknown","healthy")) and (.image_id | digest) and (.revision | sha) and (.user | test("^(unknown|root|node|[0-9]{1,10}(:[0-9]{1,10})?)$")) and (.uid | test("^(unknown|[0-9]{1,10})$")) and (.port | IN("unknown","127.0.0.1:3010")) and (.network | IN("unknown","tokenizer_default"))) and
+            (.postgres | exact(["id","status","health","image_id","network","volume"]) and (.id | id) and (.status | IN("unknown","running","exited","created","paused","restarting","dead")) and (.health | IN("unknown","healthy","unhealthy","starting")) and (.image_id | digest) and (.network | IN("unknown","tokenizer_default")) and (.volume | IN("unknown","tokenizer_postgres-data"))) and
+            (.storage | exact(["network","network_driver","volume","volume_driver"]) and .network == "tokenizer_default" and .volume == "tokenizer_postgres-data" and (.network_driver | IN("unknown","bridge")) and (.volume_driver | IN("unknown","local"))) and
+            (.files | (keys - ["env","compose","release_compose","releases","manifest","activation"] | length) == 0 and all(.[]; exact(["sha256","mode"]) and (.sha256 | test("^([0-9a-f]{64}|missing|directory)$")) and (.mode | test("^([0-7]{3,4}|missing)$"))))
+          ' "$work/inventory.json" >/dev/null 2>&1; then

@@ -1,0 +1,19 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-host-observability-evaluation-20261009/BL-HOST-PREFLIGHT-OBS-SUPPORT-local-cli--kimi--evaluator-host-preflight-observability-cddb822-kimi-support-r0
+
+ ✓ tests/evaluator/host-preflight-observability-kimi-support.test.ts (42 tests) 16306ms
+     ✓ captures a valid Compose version with unchanged argv/5s/16385 bounds, then proceeds  705ms
+     ✓ strips trailing newlines before counting captured bytes  683ms
+     ✓ bounds a hung Compose query with the unchanged 5s kill and records the pipeline status as a number  5217ms
+     ✓ records only HOME presence (never value/path/emptiness): false  919ms
+     ✓ records only HOME presence (never value/path/emptiness): true  712ms
+     ✓ records only HOME presence (never value/path/emptiness): true  740ms
+     ✓ matches the frozen baseline script byte-for-byte on behavior and report shape minus compose_probe  1456ms
+     ✓ builds a real valid refused report via the candidate script for validator controls  412ms
+
+ Test Files  1 passed (1)
+      Tests  42 passed (42)
+   Start at  03:59:33
+   Duration  16.82s (transform 30ms, setup 0ms, import 41ms, tests 16.31s, environment 0ms)
+
+exit=0

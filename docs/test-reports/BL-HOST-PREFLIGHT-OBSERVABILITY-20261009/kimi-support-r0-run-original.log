@@ -1,0 +1,8 @@
+[dispatch] ✓ 信封合法（task=host-preflight-observability-cddb822-kimi-support-r0 batch=BL-HOST-PREFLIGHT-OBS-SUPPORT role=evaluator）
+[dispatch] ✓ CLI integration 注册表合法（15 个角色能力）
+[dispatch-run] transport=local-cli → 本机沙箱
+[dispatch] ✓ 信封合法（task=host-preflight-observability-cddb822-kimi-support-r0 batch=BL-HOST-PREFLIGHT-OBS-SUPPORT role=evaluator）
+[sandbox] worktree: /Volumes/ORICO/project/.worktrees/tokenizer-host-observability-evaluation-20261009/BL-HOST-PREFLIGHT-OBS-SUPPORT-local-cli--kimi--evaluator-host-preflight-observability-cddb822-kimi-support-r0 @ cddb822cc245
+[sandbox] 专用 HOME: /Users/yixingzhou/.harness-sandbox/kimi（已确认无 shell 初始化文件）
+[sandbox] outcome=RETURNED exit=0 1024s · log=/Volumes/ORICO/project/.worktrees/tokenizer-host-observability-evaluation-20261009/run-host-preflight-observability-cddb822-kimi-support-r0.log
+[sandbox] 取证后清理：git worktree remove --force '/Volumes/ORICO/project/.worktrees/tokenizer-host-observability-evaluation-20261009/BL-HOST-PREFLIGHT-OBS-SUPPORT-local-cli--kimi--evaluator-host-preflight-observability-cddb822-kimi-support-r0'
