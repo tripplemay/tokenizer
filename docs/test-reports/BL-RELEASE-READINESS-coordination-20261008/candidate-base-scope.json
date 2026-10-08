@@ -1,0 +1,1164 @@
+{
+  "kind": "coordinator_release_scope_inventory_not_acceptance",
+  "main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "candidate_base": "f700b9ae94c0663a6b7a6fb59acec244ea2b8659",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "added": 2,
+      "removed": 0
+    },
+    {
+      "path": ".env.example",
+      "added": 10,
+      "removed": 1
+    },
+    {
+      "path": ".eslintrc.json",
+      "added": 0,
+      "removed": 3
+    },
+    {
+      "path": ".gitattributes",
+      "added": 14,
+      "removed": 0
+    },
+    {
+      "path": ".github/workflows/contract-conformance.yml",
+      "added": 27,
+      "removed": 8
+    },
+    {
+      "path": ".github/workflows/deploy-vps.yml",
+      "added": 436,
+      "removed": 51
+    },
+    {
+      "path": ".gitignore",
+      "added": 2,
+      "removed": 0
+    },
+    {
+      "path": "Dockerfile",
+      "added": 10,
+      "removed": 4
+    },
+    {
+      "path": "README.md",
+      "added": 45,
+      "removed": 0
+    },
+    {
+      "path": "app/_components/onboarding-card.tsx",
+      "added": 26,
+      "removed": 15
+    },
+    {
+      "path": "app/api/admin/cleanup-claude-legacy/route.ts",
+      "added": 7,
+      "removed": 1
+    },
+    {
+      "path": "app/api/admin/login/route.ts",
+      "added": 2,
+      "removed": 1
+    },
+    {
+      "path": "app/api/admin/pricing/review/route.ts",
+      "added": 3,
+      "removed": 3
+    },
+    {
+      "path": "app/api/admin/pricing/scan/route.ts",
+      "added": 3,
+      "removed": 1
+    },
+    {
+      "path": "app/api/agent/releases/route.ts",
+      "added": 25,
+      "removed": 0
+    },
+    {
+      "path": "app/api/harness/report/route.ts",
+      "added": 7,
+      "removed": 2
+    },
+    {
+      "path": "app/api/health/capabilities/route.ts",
+      "added": 7,
+      "removed": 0
+    },
+    {
+      "path": "app/api/health/live/route.ts",
+      "added": 7,
+      "removed": 0
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "added": 2,
+      "removed": 25
+    },
+    {
+      "path": "app/api/quota/snapshots/batch/route.ts",
+      "added": 9,
+      "removed": 23
+    },
+    {
+      "path": "app/api/usage/events/batch/route.ts",
+      "added": 44,
+      "removed": 7
+    },
+    {
+      "path": "app/page.tsx",
+      "added": 87,
+      "removed": 5
+    },
+    {
+      "path": "bin/tokenizer",
+      "added": 26,
+      "removed": 18
+    },
+    {
+      "path": "docker-compose.release.yml",
+      "added": 7,
+      "removed": 0
+    },
+    {
+      "path": "docker-compose.yml",
+      "added": 12,
+      "removed": 4
+    },
+    {
+      "path": "eslint.config.mjs",
+      "added": 16,
+      "removed": 0
+    },
+    {
+      "path": "messages/en.json",
+      "added": 18,
+      "removed": 0
+    },
+    {
+      "path": "messages/zh-CN.json",
+      "added": 18,
+      "removed": 0
+    },
+    {
+      "path": "next-env.d.ts",
+      "added": 2,
+      "removed": 1
+    },
+    {
+      "path": "next.config.mjs",
+      "added": 4,
+      "removed": 1
+    },
+    {
+      "path": "package-lock.json",
+      "added": 2202,
+      "removed": 1193
+    },
+    {
+      "path": "package.json",
+      "added": 18,
+      "removed": 10
+    },
+    {
+      "path": "playwright.config.ts",
+      "added": 44,
+      "removed": 0
+    },
+    {
+      "path": "public/install.ps1",
+      "added": 161,
+      "removed": 56
+    },
+    {
+      "path": "public/install.sh",
+      "added": 245,
+      "removed": 38
+    },
+    {
+      "path": "scripts/ci/assert-vitest-results.mjs",
+      "added": 26,
+      "removed": 0
+    },
+    {
+      "path": "scripts/ci/assert-windows-agent-owner.mjs",
+      "added": 19,
+      "removed": 0
+    },
+    {
+      "path": "scripts/ci/assert-windows-installer.mjs",
+      "added": 13,
+      "removed": 0
+    },
+    {
+      "path": "scripts/ci/recovery-evidence.mjs",
+      "added": 88,
+      "removed": 0
+    },
+    {
+      "path": "scripts/deploy-vps-release.sh",
+      "added": 96,
+      "removed": 0
+    },
+    {
+      "path": "scripts/select-release-predecessor.sh",
+      "added": 21,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test-next16-auth-tenant.mjs",
+      "added": 102,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/b02-next16-magic-link.mjs",
+      "added": 74,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/b02-next16-playwright.cjs",
+      "added": 94,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/b03-scope-admission-independent.mjs",
+      "added": 227,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/b04-agent-release-linux-native.sh",
+      "added": 100,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/b05-tcp-readiness-independent.mjs",
+      "added": 141,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/probe-braces-compat.cjs",
+      "added": 42,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/probe-braces-depth.cjs",
+      "added": 61,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/rehearse-release.sh",
+      "added": 126,
+      "removed": 0
+    },
+    {
+      "path": "scripts/test/release-canary.ts",
+      "added": 55,
+      "removed": 0
+    },
+    {
+      "path": "scripts/validate-deploy-secrets.sh",
+      "added": 52,
+      "removed": 2
+    },
+    {
+      "path": "scripts/verify-release-image.sh",
+      "added": 24,
+      "removed": 0
+    },
+    {
+      "path": "scripts/verify-standalone.mjs",
+      "added": 47,
+      "removed": 0
+    },
+    {
+      "path": "src/auth.ts",
+      "added": 2,
+      "removed": 2
+    },
+    {
+      "path": "src/cli/agent-version.ts",
+      "added": 10,
+      "removed": 6
+    },
+    {
+      "path": "src/cli/agent.ts",
+      "added": 30,
+      "removed": 15
+    },
+    {
+      "path": "src/cli/atomic-file.ts",
+      "added": 24,
+      "removed": 5
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "added": 94,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "added": 112,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/collect.ts",
+      "added": 7,
+      "removed": 11
+    },
+    {
+      "path": "src/cli/config.ts",
+      "added": 23,
+      "removed": 3
+    },
+    {
+      "path": "src/cli/git.ts",
+      "added": 46,
+      "removed": 19
+    },
+    {
+      "path": "src/cli/index.ts",
+      "added": 115,
+      "removed": 14
+    },
+    {
+      "path": "src/cli/privacy.ts",
+      "added": 107,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/queue-event-version.ts",
+      "added": 11,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/queue.ts",
+      "added": 105,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/rejected-events.ts",
+      "added": 60,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/replay-contract.ts",
+      "added": 50,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "added": 408,
+      "removed": 0
+    },
+    {
+      "path": "src/cli/sync.ts",
+      "added": 185,
+      "removed": 37
+    },
+    {
+      "path": "src/components/admin/data-tables/CheckTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/data-tables/ColumnsTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/data-tables/ComplexTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/data-tables/DevelopmentTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/default/CheckTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/default/ComplexTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/admin/nft-marketplace/TableTopCreators.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/footer/FooterAuthDefault.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/components/rtl/dashboard/CheckTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/rtl/dashboard/ComplexTable.tsx",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "path": "src/components/rtlProvider/RtlProvider.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/components/sidebar/RTL.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/components/sidebar/components/Links.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/components/sidebar/componentsrtl/Links.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/components/sidebar/index.tsx",
+      "added": 0,
+      "removed": 1
+    },
+    {
+      "path": "src/parsers/aider.ts",
+      "added": 1,
+      "removed": 2
+    },
+    {
+      "path": "src/parsers/claude.ts",
+      "added": 42,
+      "removed": 10
+    },
+    {
+      "path": "src/parsers/codex.ts",
+      "added": 2,
+      "removed": 1
+    },
+    {
+      "path": "src/parsers/jsonl.ts",
+      "added": 4,
+      "removed": 1
+    },
+    {
+      "path": "src/parsers/kimicode.ts",
+      "added": 1,
+      "removed": 2
+    },
+    {
+      "path": "src/parsers/opencode.ts",
+      "added": 1,
+      "removed": 22
+    },
+    {
+      "path": "src/server/admin-token.ts",
+      "added": 22,
+      "removed": 0
+    },
+    {
+      "path": "src/server/auth-secret.ts",
+      "added": 15,
+      "removed": 0
+    },
+    {
+      "path": "src/server/auth.ts",
+      "added": 3,
+      "removed": 2
+    },
+    {
+      "path": "src/server/batch-input.ts",
+      "added": 228,
+      "removed": 0
+    },
+    {
+      "path": "src/server/harness-cost.ts",
+      "added": 10,
+      "removed": 28
+    },
+    {
+      "path": "src/server/health-core.ts",
+      "added": 23,
+      "removed": 0
+    },
+    {
+      "path": "src/server/health.ts",
+      "added": 60,
+      "removed": 0
+    },
+    {
+      "path": "src/server/ingest.ts",
+      "added": 2,
+      "removed": 1
+    },
+    {
+      "path": "src/server/pricing/cache.ts",
+      "added": 11,
+      "removed": 0
+    },
+    {
+      "path": "src/server/pricing/detect.ts",
+      "added": 5,
+      "removed": 1
+    },
+    {
+      "path": "src/server/pricing/lookup.ts",
+      "added": 3,
+      "removed": 3
+    },
+    {
+      "path": "src/server/summaries.ts",
+      "added": 32,
+      "removed": 14
+    },
+    {
+      "path": "src/server/usage-cost-cache.ts",
+      "added": 15,
+      "removed": 0
+    },
+    {
+      "path": "src/shared/agent-releases.json",
+      "added": 1,
+      "removed": 0
+    },
+    {
+      "path": "src/shared/git-remote.ts",
+      "added": 61,
+      "removed": 0
+    },
+    {
+      "path": "src/shared/input-sanitization.ts",
+      "added": 2,
+      "removed": 1
+    },
+    {
+      "path": "src/shared/usage-batch-protocol.ts",
+      "added": 1,
+      "removed": 0
+    },
+    {
+      "path": "src/shared/usage-privacy.ts",
+      "added": 64,
+      "removed": 0
+    },
+    {
+      "path": "src/styles/index.css",
+      "added": 0,
+      "removed": 4
+    },
+    {
+      "path": "tests/ci/b05-recovery-source.test.ts",
+      "added": 47,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b06-obsolete-queue-test-archive.test.ts",
+      "added": 29,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b06-pg16-workflow-gate.test.ts",
+      "added": 43,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b07-combination-frozen-inputs.test.ts",
+      "added": 21,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b07-combination-test-scope.test.ts",
+      "added": 30,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b07-obsolete-queue-eol-policy.test.ts",
+      "added": 17,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/b07-obsolete-queue-test-archive.test.ts",
+      "added": 35,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/recovery-evidence.test.ts",
+      "added": 148,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/tsconfig-report-boundary.test.ts",
+      "added": 28,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/windows-agent-owner-gate.test.ts",
+      "added": 58,
+      "removed": 0
+    },
+    {
+      "path": "tests/ci/windows-installer-gate.test.ts",
+      "added": 52,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/agent-lifecycle.test.ts",
+      "added": 128,
+      "removed": 8
+    },
+    {
+      "path": "tests/cli/agent-release-installer-windows-fixture.test.ts",
+      "added": 57,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/agent-release-installer-windows.test.ts",
+      "added": 181,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/agent-release-installer.test.ts",
+      "added": 177,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/agent-sync-checkpoint.test.ts",
+      "added": 85,
+      "removed": 14
+    },
+    {
+      "path": "tests/cli/b03-fixed-collect-privacy-negative.test.ts",
+      "added": 23,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b03-fixed-prereview-independent.test.ts",
+      "added": 79,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b03-replay-deadline.test.ts",
+      "added": 114,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b03-round2-elapsed-negative.test.ts",
+      "added": 17,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b03-round2-final-deadline-negative.test.ts",
+      "added": 21,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b03-round2-independent.test.ts",
+      "added": 86,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b06-batch-failure-queue.test.ts",
+      "added": 31,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b06-partial-ack.test.ts",
+      "added": 212,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b06-rejected-events-concurrency.test.ts",
+      "added": 39,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-prereview-process.test.ts",
+      "added": 37,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-prereview-version-negative.test.ts",
+      "added": 86,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-private-atomic-creation.test.ts",
+      "added": 40,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-private-queue-files.test.ts",
+      "added": 69,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-queue-multiwriter.probe.ts",
+      "added": 179,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-queue-multiwriter.test.ts",
+      "added": 44,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-queue-resolution.test.ts",
+      "added": 202,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-replay-combination.test.ts",
+      "added": 135,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/b07-versioned-quarantine.test.ts",
+      "added": 95,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/git.test.ts",
+      "added": 61,
+      "removed": 3
+    },
+    {
+      "path": "tests/cli/harness.test.ts",
+      "added": 3,
+      "removed": 1
+    },
+    {
+      "path": "tests/cli/install-agent-lifecycle.test.ts",
+      "added": 6,
+      "removed": 2
+    },
+    {
+      "path": "tests/cli/privacy-admission-cli.test.ts",
+      "added": 207,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/privacy-scope-safety.test.ts",
+      "added": 170,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/privacy.test.ts",
+      "added": 46,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/process-bounds/agent-version-bounds.test.ts",
+      "added": 74,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/process-bounds/bounded-subprocess.test.ts",
+      "added": 122,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/process-bounds/fixtures.ts",
+      "added": 26,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/process-bounds/replay-process-bounds.test.ts",
+      "added": 122,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/process-bounds/windows-reparse-bounds.test.ts",
+      "added": 28,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/queue-merge.test.ts",
+      "added": 90,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/replay-contract.test.ts",
+      "added": 55,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/replay-help.test.ts",
+      "added": 19,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/replay-operational-contract.test.ts",
+      "added": 75,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/replay-safety-regression.test.ts",
+      "added": 141,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/replay.test.ts",
+      "added": 223,
+      "removed": 0
+    },
+    {
+      "path": "tests/cli/sync-retry.test.ts",
+      "added": 146,
+      "removed": 4
+    },
+    {
+      "path": "tests/e2e/critical-journeys.spec.ts",
+      "added": 168,
+      "removed": 0
+    },
+    {
+      "path": "tests/evaluator/b03-scope-admission-independent.test.ts",
+      "added": 66,
+      "removed": 0
+    },
+    {
+      "path": "tests/evaluator/b05-evidence-retention-round2.test.ts",
+      "added": 106,
+      "removed": 0
+    },
+    {
+      "path": "tests/evaluator/b05-tcp-readiness-independent.test.ts",
+      "added": 57,
+      "removed": 0
+    },
+    {
+      "path": "tests/evaluator/bl-homepage-freshness-f002-f003.test.ts",
+      "added": 35,
+      "removed": 16
+    },
+    {
+      "path": "tests/evaluator/bl-security-p1-f008-probes.test.ts",
+      "added": 10,
+      "removed": 12
+    },
+    {
+      "path": "tests/fixtures/agent-release-node-options.ts",
+      "added": 4,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/agent-release-node-preload.cjs",
+      "added": 19,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/b03-replay-git-deadline.ts",
+      "added": 22,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/b03-round2-git-timeout.ts",
+      "added": 10,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/b07-prereview-worker.ts",
+      "added": 11,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/merge-queue-worker.ts",
+      "added": 15,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/agent-version-probe.mjs",
+      "added": 16,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/baseline-reproduction.ts",
+      "added": 105,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/child.mjs",
+      "added": 33,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/git-shim.mjs",
+      "added": 33,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/inventory.mjs",
+      "added": 35,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/replay-probe.mjs",
+      "added": 32,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/windows-git-shim.cs",
+      "added": 14,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/process-bounds/worker-failure.mjs",
+      "added": 4,
+      "removed": 0
+    },
+    {
+      "path": "tests/fixtures/replay-fifo-safety.ts",
+      "added": 17,
+      "removed": 0
+    },
+    {
+      "path": "tests/helpers/b05-source-invariants.ts",
+      "added": 43,
+      "removed": 0
+    },
+    {
+      "path": "tests/integration/b09-next-pg-replay.mjs",
+      "added": 259,
+      "removed": 0
+    },
+    {
+      "path": "tests/parsers/claude.test.ts",
+      "added": 17,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/admin-token.test.ts",
+      "added": 57,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/agent-releases-route.test.ts",
+      "added": 19,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/auth-secret.test.ts",
+      "added": 21,
+      "removed": 1
+    },
+    {
+      "path": "tests/server/b06-batch-db.probe.test.ts",
+      "added": 85,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/b06-partial-ack-db.probe.test.ts",
+      "added": 107,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/b06-partial-ack.test.ts",
+      "added": 113,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/b07-queue-id-ack-db.probe.test.ts",
+      "added": 98,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/batch-schema.test.ts",
+      "added": 212,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/batch-wire-compatibility.test.ts",
+      "added": 34,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/dependency-security-floor.test.ts",
+      "added": 33,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/deploy-secrets.test.ts",
+      "added": 91,
+      "removed": 3
+    },
+    {
+      "path": "tests/server/git-privacy-db.probe.test.ts",
+      "added": 72,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/harness-cost.test.ts",
+      "added": 49,
+      "removed": 8
+    },
+    {
+      "path": "tests/server/harness-dispatch-usage.test.ts",
+      "added": 12,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/health.test.ts",
+      "added": 89,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/ingest-project.test.ts",
+      "added": 89,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/ingest-upsert.test.ts",
+      "added": 27,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/model-detect.test.ts",
+      "added": 12,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/pricing-scan-cache.test.ts",
+      "added": 54,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/release-image.test.ts",
+      "added": 155,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/release-predecessor.test.ts",
+      "added": 59,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/release-rehearsal.test.ts",
+      "added": 130,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/standalone-artifact.test.ts",
+      "added": 68,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/summary-cache-tags.test.ts",
+      "added": 66,
+      "removed": 0
+    },
+    {
+      "path": "tests/server/usage-batch-input.test.ts",
+      "added": 28,
+      "removed": 12
+    },
+    {
+      "path": "tests/server/usage-cost-cache-invalidation.test.ts",
+      "added": 62,
+      "removed": 0
+    },
+    {
+      "path": "tests/shared/home-first-use.test.ts",
+      "added": 125,
+      "removed": 0
+    },
+    {
+      "path": "tests/shared/usage-privacy.test.ts",
+      "added": 65,
+      "removed": 0
+    },
+    {
+      "path": "tests/vendor/braces-backport.test.ts",
+      "added": 89,
+      "removed": 0
+    },
+    {
+      "path": "tsconfig.json",
+      "added": 3,
+      "removed": 3
+    },
+    {
+      "path": "vendor/braces/LICENSE",
+      "added": 21,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/PATCH-MANIFEST.json",
+      "added": 59,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/README.md",
+      "added": 586,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/TOKENIZER-BACKPORT.md",
+      "added": 50,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/index.js",
+      "added": 170,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/compile.js",
+      "added": 61,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/constants.js",
+      "added": 58,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/expand.js",
+      "added": 114,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/parse.js",
+      "added": 334,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/stringify.js",
+      "added": 32,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/lib/utils.js",
+      "added": 132,
+      "removed": 0
+    },
+    {
+      "path": "vendor/braces/package.json",
+      "added": 71,
+      "removed": 0
+    },
+    {
+      "path": "vitest.config.ts",
+      "added": 21,
+      "removed": 1
+    }
+  ],
+  "files_count": 230,
+  "additions": 16186,
+  "deletions": 1780,
+  "schema_change": false,
+  "live_reported_sha": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+  "main_vs_reported_source_diff": "No diff for app/src/public/scripts/Dockerfile/package*.json/prisma/workflows/docker-compose.yml; not proof of current image byte identity.",
+  "scope_note": "Existing upgrade composition includes dependency/framework/runtime/auth/server admission/privacy/queue/installer/release/onboarding/cost changes and tests, not merely the last two accepted local slices. No actual client Agent distribution update or full upgrade signoff inferred."
+}
