@@ -1,11 +1,11 @@
 {
-  "status":"planning",
+  "status":"building",
   "user_goal":"Coordinate integration, exact-candidate release gates and deployment; push main only after all gates pass.",
   "total_features":5,
   "completed_features":0,
   "fix_rounds":0,
   "current_sprint":"BL-RELEASE-READINESS",
-  "last_updated":"2026-10-08T04:34:00Z",
+  "last_updated":"2026-10-08T04:43:00Z",
   "reference_docs":["docs/specs/BL-RELEASE-READINESS-spec.md","docs/archive/process-bounds-closeout-20261008/progress.json"],
   "docs":{"spec":"docs/specs/BL-RELEASE-READINESS-spec.md","test_cases":null,"signoff":null,"framework_reviewed":true},
   "role_assignments":null,
@@ -13,5 +13,5 @@
   "evaluator_feedback":null,
   "pending_gate":null,
   "release_ready":false,
-  "session_notes":{"coordinator":"Gated main push/deploy authorized. Non-main CI/maintenance/off-host backup pending. Original main active batch untouched. Fresh Generator implementation and Kimi evaluation remain separate."}
+  "session_notes":{"coordinator":"Gated main push/deploy, non-main CI publication and maintenance now explicitly authorized. Encrypted off-host backup target unanswered. Narrow two-file old fixture/stronger-gate adaptation and old health format adjudicated in committed spec; original bytes archived. Root main untouched. Isolated Generator and fresh Kimi Evaluator required."}
 }

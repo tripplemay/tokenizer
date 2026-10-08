@@ -1,0 +1,9 @@
+{
+  "source":"User answer: allow maintenance now and publish non-main CI branch",
+  "non_main_ci_publication":true,
+  "legacy_baseline_maintenance_now":true,
+  "gated_main_push_and_deploy":true,
+  "off_host_backup_target":null,
+  "scope":"Maintenance authorization covers app-only old-version baseline switch, short interruption; not database rebuild/live restore or password rotation. Technical restore/provenance/rollback prerequisites still required.",
+  "original_snapshot":"authorization-and-preflight.json is immutable observation/authority snapshot from earlier planning."
+}

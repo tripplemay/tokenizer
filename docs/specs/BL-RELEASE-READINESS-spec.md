@@ -6,7 +6,9 @@ The user transferred coordination and explicitly authorized the Coordinator to
 push main and deploy only after release gates pass. This overrides the external
 Codex no-push restriction for that authorized coordination; dispatched workers
 must never push. Non-main CI publication, maintenance timing and encrypted
-off-host backup remain unanswered at planning. Never write pending_gate.decision.
+off-host backup remain unanswered at planning. A subsequent user reply authorized
+non-main CI publication and maintenance now; encrypted backup target remains
+unanswered. Never write pending_gate.decision.
 
 This batch prepares the accepted candidate for release. It does NOT perform a
 legacy baseline switch, mutate production, rotate passwords, create an Agent
@@ -107,3 +109,39 @@ Commit each feature as feat(BL-RELEASE-READINESS-Fnnn). Isolated Generator,
 read-only scope critic, registered fresh Kimi Evaluator. Workers never push,
 deploy, modify Secrets/environments or human decisions. Coordinator transports
 exact reviewed diffs, records human authorization and preserves originals.
+
+## Coordinator scope adjudication before implementation
+
+Read-only critic identified old fixture incompatibility with stronger gates.
+Only two existing test files have narrowly authorized adaptations:
+tests/server/release-rehearsal.test.ts adds verify-macos-agent to its exact
+deploy needs expectation, retaining every previous prerequisite/assertion.
+tests/server/release-image.test.ts may use bc9badc's fixture additions and new
+controls, and its two existing assertion adaptations: immutable digest rejection
+message becomes 'immutable candidate manifest differs'; containment ordering
+compares stop app against the last --env-file (rollback), since preflight now
+also uses --env-file. Retain all old test cases and other behavioral assertions.
+Strengthen the latter with an explicit rollback up-after-stop assertion if needed.
+Original bytes are archived in BL-RELEASE-READINESS-inputs-20261008/. No other
+old test/evidence changes authorized.
+
+Reject 'legacy predecessor' means reject a source-built/non-digest image or a
+missing activation/config ledger. Old health format without code is acceptable
+ONLY with ok=true, exact activated SHA, exact image/config/project/service/port
+evidence; if code exists it must be ready. This permits the separately reviewed
+same-old-source baseline, not fabricated legacy provenance. Candidate activation
+continues to require code=ready. Retain a negative control for wrong health code.
+
+Exact imported F001 paths: src/cli/service.ts,
+scripts/ci/assert-macos-launchd-installer.mjs,
+tests/ci/macos-launchd-cleanup-trap.test.ts,
+tests/ci/macos-launchd-installer-gate.test.ts,
+tests/cli/agent-release-installer-macos.test.ts,
+tests/cli/service-launchd.test.ts, tests/server/release-rehearsal.test.ts.
+Source is 3d0a974f4916c911917e1b09811c98d5c96b1ec0 (the final composed B04 bytes);
+workflow patch must be selective to retain newer B06/B07 gates. F002 source is
+bc9badc8c9c62aaaa2b4aa92ab40d7bc37ee9ed6 for scripts/verify-vps-predecessor.sh,
+scripts/deploy-vps-release.sh and tests/server/release-image.test.ts, with only
+the declared additive stricter controls. F003 docs path is
+docs/test-reports/BL-RELEASE-READINESS-generator-20261008/operator-preflight.md.
+Provenance/hash inventory belongs under that same Generator report directory.
