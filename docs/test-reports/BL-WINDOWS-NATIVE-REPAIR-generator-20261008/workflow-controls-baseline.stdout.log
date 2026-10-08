@@ -1,0 +1,28 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-windows-native-repair-generator-20261008
+
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify job from LF and CRLF 4ms
+   → missing workflow job heading: verify
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-windows job from LF and CRLF 1ms
+   → missing workflow job heading: verify-windows
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-macos-agent job from LF and CRLF 1ms
+   → missing workflow job heading: verify-macos-agent
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-db job from LF and CRLF 1ms
+   → missing workflow job heading: verify-db
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-browser job from LF and CRLF 1ms
+   → missing workflow job heading: verify-browser
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded release-artifact job from LF and CRLF 1ms
+   → missing workflow job heading: release-artifact
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > keeps LF/CRLF inventory separate from release and preserves all release needs 2ms
+   → missing workflow job heading: host-preflight
+ ✓ tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > refuses a missing selected heading rather than slicing from -1 ("\n") 1ms
+ ✓ tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > refuses a missing selected heading rather than slicing from -1 ("\r\n") 1ms
+ ✓ tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > refuses a missing inventory end heading ("\n") 1ms
+ × tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > refuses a missing inventory end heading ("\r\n") 2ms
+   → expected [Function] to throw error including 'missing workflow job heading: verify' but got 'missing workflow job heading: host-pr…'
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 3 passed (11)
+   Start at  23:47:03
+   Duration  378ms (transform 55ms, setup 0ms, import 251ms, tests 15ms, environment 0ms)
+

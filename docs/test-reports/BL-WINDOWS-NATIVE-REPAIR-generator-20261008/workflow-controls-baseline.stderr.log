@@ -1,0 +1,124 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify job from LF and CRLF
+Error: missing workflow job heading: verify
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-windows job from LF and CRLF
+Error: missing workflow job heading: verify-windows
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-macos-agent job from LF and CRLF
+Error: missing workflow job heading: verify-macos-agent
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-db job from LF and CRLF
+Error: missing workflow job heading: verify-db
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded verify-browser job from LF and CRLF
+Error: missing workflow job heading: verify-browser
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > extracts the same guarded release-artifact job from LF and CRLF
+Error: missing workflow job heading: release-artifact
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:21:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > keeps LF/CRLF inventory separate from release and preserves all release needs
+Error: missing workflow job heading: host-preflight
+ ❯ workflowJob evalmachine.<anonymous>:4:15
+ ❯ evalmachine.<anonymous>:11:1
+ ❯ extract tests/ci/windows-native-repair-workflow.test.ts:14:3
+     12| const workflow = readFileSync(".github/workflows/deploy-vps.yml", "utf…
+     13| const extract = (text: string, name: string, until?: string): string =>
+     14|   runInNewContext(`${helper}\nworkflowJob(text, name, until)`, { text,…
+       |   ^
+     15| const gates = ["verify", "verify-windows", "verify-macos-agent", "veri…
+     16| const guard = "if: github.event_name != 'workflow_dispatch' || inputs.…
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:30:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/ci/windows-native-repair-workflow.test.ts > real host-preflight fixture newline extraction controls > refuses a missing inventory end heading ("\r\n")
+AssertionError: expected [Function] to throw error including 'missing workflow job heading: verify' but got 'missing workflow job heading: host-pr…'
+
+Expected: "missing workflow job heading: verify"
+Received: "missing workflow job heading: host-preflight"
+
+ ❯ tests/ci/windows-native-repair-workflow.test.ts:47:61
+     45|   it.each(["\n", "\r\n"])("refuses a missing inventory end heading (%j…
+     46|     const text = workflow.replace(/\n/g, newline).replace(`  verify:${…
+     47|     expect(() => extract(text, "host-preflight", "verify")).toThrow("m…
+       |                                                             ^
+     48|   });
+     49| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+

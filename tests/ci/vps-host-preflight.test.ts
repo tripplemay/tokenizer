@@ -10,7 +10,7 @@ const appId = 'a'.repeat(12), postgresId = 'b'.repeat(12);
 const imageId = `sha256:${'a'.repeat(64)}`, postgresImageId = `sha256:${'b'.repeat(64)}`;
 const appImage = `ghcr.io/test/app@${imageId}`, migrateImage = `ghcr.io/test/migrate@sha256:${'e'.repeat(64)}`;
 const script = join(process.cwd(), 'scripts/ci/vps-host-preflight.sh');
-const workflow = readFileSync('.github/workflows/deploy-vps.yml', 'utf8');
+const workflow = readFileSync('.github/workflows/deploy-vps.yml', 'utf8').replace(/\r\n/g, '\n');
 const canary = 'AUTH_SECRET_RAW_CANARY_DO_NOT_DISCLOSE';
 let root: string, deployPath: string, bin: string;
 
@@ -59,6 +59,15 @@ function assertReadOnly() {
       expect(args).toContain('--filter');
     }
   }
+}
+
+function workflowJob(text: string, name: string, until?: string): string {
+  text = text.replace(/\r\n/g, '\n');
+  const start = text.indexOf(`  ${name}:\n`);
+  if (start < 0) throw new Error(`missing workflow job heading: ${name}`);
+  const end = until ? text.indexOf(`  ${until}:\n`, start + 1) : undefined;
+  if (end !== undefined && end < 0) throw new Error(`missing workflow job heading: ${until}`);
+  return text.slice(start, end).split(/\n  [a-z][a-z-]+:\n/)[0];
 }
 
 function inventoryStep(): string {
@@ -267,7 +276,7 @@ describe('host-preflight operation separation and preserved release gates', () =
   it('dispatches inventory alone even on main, and preserves push/PR/release gates', () => {
     const gates = ['verify','verify-windows','verify-macos-agent','verify-db','verify-browser','release-artifact'];
     for (const name of gates) {
-      const job = workflow.slice(workflow.indexOf(`  ${name}:\n`)).split(/\n  [a-z][a-z-]+:\n/)[0];
+      const job = workflowJob(workflow, name);
       expect(job).toContain("if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'");
     }
     expect(workflow).toContain("if: github.event_name == 'workflow_dispatch' && inputs.operation == 'host-preflight'");
@@ -280,7 +289,7 @@ describe('host-preflight operation separation and preserved release gates', () =
       expect(event !== 'workflow_dispatch' || operation === 'release').toBe(release);
       expect(event === 'workflow_dispatch' && operation === 'host-preflight').toBe(inventory);
     }
-    const job = workflow.slice(workflow.indexOf('  host-preflight:\n'), workflow.indexOf('  verify:\n'));
+    const job = workflowJob(workflow, 'host-preflight', 'verify');
     expect(job).not.toMatch(/npm ci|build-push|docker\/login|rsync|\bscp\b|rehearse-release|migrate deploy|deploy-vps-release|REGISTRY_TOKEN|AUTH_SECRET|POSTGRES_PASSWORD/);
     expect(job).toContain('< scripts/ci/vps-host-preflight.sh');
     expect(job).toContain('timeout --signal=KILL 150s ssh');
