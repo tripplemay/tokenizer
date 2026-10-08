@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "task": "BL-HOST-PREFLIGHT-OBSERVABILITY-20261009",
+  "role": "independent_supporting_scope_critic",
+  "review_phase": "post_generator_exact_source",
+  "source_sha": "cddb822cc2452c2042309de73064a38f0c4224cf",
+  "planning_artifact_sha": "a5ea6e3f66ab4b4b831de88a6bcb078f444b2aca",
+  "original_base_sha": "1f52c86d5e5448ed48959cb1bfe63b6de1d26798",
+  "final_spec_sha": "9db2ebf293f874157ef614af6bf53b4bc91e996d",
+  "violation": false,
+  "detail": "The exact three-file Generator source stays inside the locked supporting F003 scope. Independent byte controls against both bases prove that only Compose capture, fixed metadata serialization and the real jq validator changed; old tests and protected paths have no diff. Narrow independent synthetic controls support the specified metadata boundaries. This is not functional, feature or release acceptance.",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "blocking_findings": [],
+  "functional_acceptance": "not_performed",
+  "feature_acceptance": "not_performed",
+  "release_signoff": "not_performed",
+  "release_ready": false,
+  "future_product_change_requires_new_exact_ref_review": true,
+  "files_reviewed": [
+    ".github/workflows/deploy-vps.yml",
+    "scripts/ci/vps-host-preflight.sh",
+    "tests/ci/vps-host-preflight-observability.test.ts"
+  ],
+  "source_blobs": {
+    ".github/workflows/deploy-vps.yml": "0964fc2f11bcd70aefb2ab938d9b13a7b4498596",
+    "scripts/ci/vps-host-preflight.sh": "9f74a3740e6954a5ded23ccd4178d26c23496121",
+    "tests/ci/vps-host-preflight-observability.test.ts": "1c169fe622de4a293089341096612049bb429321",
+    "tests/ci/vps-host-preflight.test.ts": "15cab7ffbfdd10e9676e29d64425a91cd2d9915a",
+    "progress.json": "abd043789c21bb067582475b8bea7002a4570bd5",
+    "features.json": "918eb22c3679c2ceab23533c482c48fc38fe6b92",
+    "docs/specs/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009.md": "ab9d4509c893fb0339d527fca5ba518db2eca804"
+  },
+  "findings": [
+    {
+      "id": "SS-01",
+      "topic": "scope_and_frozen_bytes",
+      "classification": "no_violation_observed",
+      "evidence": "controls-realpath-fixture.log controls 1-6; git diff --name-status and protected-path checks",
+      "finding": "Source minus planning base has exactly the three allowed files. Normalizing only metadata initialization/serialization and the Compose capture restores the entire old script exactly against both bases. The entire workflow outside the actual jq filter and every old predicate inside it are byte-equal. Old tests, product paths, dependencies, schema, state, rules and auto-memory show no diff."
+    },
+    {
+      "id": "SS-02",
+      "topic": "pipeline_capture_classification",
+      "classification": "no_violation_observed",
+      "evidence": "actual source diff and independent numeric/rightmost/over-cap controls",
+      "finding": "The Compose-only assignment preserves the pipefail pipeline status before classification, not query()'s normalized 1. Cap detection precedes nonzero and invalid-semver handling. Pipeline 124/137/141 remains numeric without cause inference; a rightmost failing head control records 141 rather than Docker 7. Refusals keep compose_unavailable, unknown Compose version and no later inventory queries."
+    },
+    {
+      "id": "SS-03",
+      "topic": "bounded_bytes_and_home",
+      "classification": "no_violation_observed",
+      "evidence": "actual source diff; independent HOME, trailing-newline, multibyte and synthetic-hang controls",
+      "finding": "A Compose-only subshell LC_ALL=C counts bytes of the retained shell string; no global/shared-query locale change occurs. The cap, timeout argv and report transport bounds remain unchanged. HOME is only presence-tested; unset, empty and canary-path controls produce false/true/true without values being retained. The bounded synthetic hang returned command_failed/124/0 in 5485 ms; this proves only the fixture boundary, not live timeout ownership or cleanup."
+    },
+    {
+      "id": "SS-04",
+      "topic": "schema_allowlist_and_redaction",
+      "classification": "no_violation_observed",
+      "evidence": "actual jq filter from exact source; independent five positive metadata controls, 41 malformed metadata negatives and 3 report-addition negatives",
+      "finding": "schema_version and old fields remain unchanged. compose_probe has exactly the four locked keys, types/ranges, enums and null relationships; missing/extra/invalid controls reject. No new stdout/stderr/HOME/config value or hash is emitted by metadata. Synthetic canaries do not appear in candidate stdout/stderr; old files.* allowlist and missing-jq minimal report are unchanged source bytes."
+    },
+    {
+      "id": "SS-05",
+      "topic": "feature_state_and_host_effects",
+      "classification": "no_violation_observed",
+      "evidence": "commit source tag, existing features.json F003, frozen workflow/script byte comparisons",
+      "finding": "The implementation commit is tagged BL-RELEASE-READINESS-F003, a real existing feature. Supporting work creates no feature or state transition. No new host query, fallback, environment restoration, config/service/DB write or installation is present. SSH invocation, protected production environment and operation/job conditions are outside the unchanged validator boundary. Workers obtain no publication/production authority."
+    },
+    {
+      "id": "SS-06",
+      "topic": "new_tests_and_acceptance_limit",
+      "classification": "evidence_limit_not_violation",
+      "evidence": "new test source independently inspected, not executed by this critic",
+      "finding": "The additive test file includes capture, HOME, canary, cap, synthetic hung-query, actual-filter and source-pin controls without changing old tests. Generator's reported old/new Vitest, verify and lint outcomes were not used as critic evidence. Full old/new suite execution and fresh Kimi-family supporting acceptance belong to the separate Evaluator; this report cannot close those gates or parent release gates."
+    },
+    {
+      "id": "SS-07",
+      "topic": "initial_critic_fixture_failure",
+      "classification": "retained_own_fixture_failure",
+      "evidence": "controls-initial.mjs, controls-initial.log, controls.mjs, controls-realpath-fixture.log",
+      "finding": "The first independent driver exited 1 after six static controls, observing not_run/null where its HOME test expected ok. Its /tmp fixture was a macOS symlink alias; ls showed /tmp -> private/tmp and the unchanged physical-path guard refuses noncanonical deploy paths. Only the critic fixture root was changed to realpathSync, with initial source/log retained and separate corrected-fixture output. No product, test assertion, cap or timeout was changed and the original failure is not presented as a passing run."
+    }
+  ],
+  "independent_controls": {
+    "runtime": "Node.js v25.7.0, local macOS synthetic fixtures",
+    "initial_run": {
+      "source": "controls-initial.mjs",
+      "log": "controls-initial.log",
+      "exit_status": 1,
+      "completed_static_controls": 6,
+      "first_failure": "Own noncanonical /tmp deploy fixture; HOME expectation encountered not_run/null"
+    },
+    "corrected_fixture_run": {
+      "source": "controls.mjs",
+      "log": "controls-realpath-fixture.log",
+      "exit_status": 0,
+      "completed_narrow_controls": 29,
+      "malformed_metadata_rejected": 41,
+      "secret_bearing_report_additions_rejected": 3,
+      "synthetic_hang_elapsed_ms": 5485,
+      "fixture_change_only": "Import realpathSync and canonicalize newly created temp root; no assertion/product changes"
+    }
+  },
+  "artifact_sha256": {
+    "controls-initial.mjs": "2ff03f9ca441ed27867fa6932de60354a43c50934e661ba1bcd10af038d52552",
+    "controls-initial.log": "a2d4fbad48982f5f96240227d5acdf0012ccf012c0caf15bb89dc1441958cd31",
+    "controls.mjs": "186f6b1d42ea45f384a8dce12e818dbedde0f466611772f3372c022f586b6197",
+    "controls-realpath-fixture.log": "c0f240ce807f635b5be760bbbdbca730e88ccc7d7bb3a13a0aad04404de4ea16"
+  },
+  "excluded_claims": [
+    "feature or release PASS",
+    "live HOME/plugin root cause",
+    "native Windows or exact release CI acceptance",
+    "backup/recovery or predecessor identity",
+    "live timeout ownership, owned-tree cleanup or emitted-output measurement"
+  ],
+  "operations_not_performed": [
+    "Vitest old/new suite, lint, typecheck or build by this critic",
+    "push, GH, SSH, production/Secrets/environment operation or credential access",
+    "product/test/spec/state/rules/auto-memory/Generator-report edit"
+  ]
+}
