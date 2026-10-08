@@ -29,3 +29,15 @@ for close up to its cleanup allowance before responding. Fixtures have an
 independent 15-second lifetime cap and cleanup is limited to recorded fixture
 PIDs/groups. These bounds do not claim hard real-time behavior under suspended
 workers, blocked synchronous syscalls, escaped groups or an unresponsive OS.
+
+## F002
+
+`F002-focused.log`: 27 passed / 2 Windows-only skipped across F001 and F002.
+`F002-verify.log`: `npm run verify`, exit 0.
+Startup Git receives 2,000 ms execution and 128 combined output bytes. A
+successful unsignalled exit with a 12-64 hexadecimal abbreviated SHA is required.
+Real subprocess controls cover SIGTERM resistance, overflow, invalid/short SHA,
+nonzero and signal exits. The healthy case matches the install checkout SHA;
+a disposable install checkout advances after module import without changing
+the imported snapshot. Windows fixture construction produces a native git.exe
+via the OS .NET compiler, not a .cmd wrapper; Windows execution remains unrun.

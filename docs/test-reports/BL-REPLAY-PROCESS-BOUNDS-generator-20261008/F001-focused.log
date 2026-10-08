@@ -1,0 +1,14 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+
+ Test Files  1 passed (1)
+      Tests  19 passed | 1 skipped (20)
+   Start at  10:10:04
+   Duration  2.00s (transform 26ms, setup 0ms, import 35ms, tests 1.90s, environment 0ms)
+
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

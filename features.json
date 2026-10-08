@@ -15,7 +15,7 @@
       "title": "Bound startup Git SHA snapshot without losing startup identity",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "F002 spec: bounded capped startup Git, valid SHA or null, import-time immutable snapshot, real stalled executable controls with synthetic homes."
     },
     {
