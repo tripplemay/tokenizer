@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "localAnalysisOnly": true,
+  "nativeRuntimeExecutedLocally": false,
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "syntaxChecksPassed": 2,
+  "findingsSchemaValid": true,
+  "parityPlanUnexecutedAndBounded": true,
+  "eightUniqueCaseIds": true,
+  "evidenceFilesCompared": 32,
+  "copiedEvidenceByteIdenticalToParentDownload": true,
+  "derivedAnalysisDeterministic": true,
+  "productAndOldTestDiffBaselineToNativeHeadEmpty": true,
+  "transportedDiagnosticScriptsUnchanged": true,
+  "originalReportAndProductAndStateWorkingTreeDiffEmpty": true,
+  "scriptHashes": {
+    "analyze.mjs": "39a0361d38a6a5f0df6e60d4cdaf70fa29a552611210b4bb2bc4c7aac33d5f1d",
+    "check-local.mjs": "f2ebc28800a043b25013eb5701a4886ae3fcd7c254cd09a3cd0b3b07f20dad5c"
+  },
+  "releaseAcceptance": false,
+  "releaseReady": false
+}

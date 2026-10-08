@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "role", "runId", "jobId", "releaseBaseline", "diagnosticHead", "releaseAcceptance", "releaseReady", "originalReportsUnchanged", "jobExitInterpretation", "cases"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "role": { "const": "supporting-read-only-diagnosis" },
+    "runId": { "const": 37808814119 },
+    "jobId": { "const": 113420026669 },
+    "releaseBaseline": { "const": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958" },
+    "diagnosticHead": { "const": "f6b89d781a74f7baff4db0d47733e813f04b839c" },
+    "releaseAcceptance": { "const": false },
+    "releaseReady": { "const": false },
+    "originalReportsUnchanged": { "const": true },
+    "jobExitInterpretation": { "type": "string", "minLength": 1 },
+    "cases": {
+      "type": "array", "minItems": 8, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "classification", "nativeCase", "confirmed", "notProven", "originalAssertionBoundary", "narrowRepairProposal", "evidence"],
+        "properties": {
+          "id": { "enum": ["W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08"] },
+          "classification": { "type": "string", "minLength": 1 },
+          "nativeCase": { "enum": ["workflow", "privacy", "parent", "confirmation", "binding", "healthy", "subprocess"] },
+          "confirmed": { "$ref": "#/definitions/strings" },
+          "notProven": { "$ref": "#/definitions/strings" },
+          "originalAssertionBoundary": { "type": "string", "minLength": 1 },
+          "narrowRepairProposal": { "type": "string", "minLength": 1 },
+          "evidence": { "$ref": "#/definitions/strings" }
+        }
+      }
+    }
+  },
+  "definitions": { "strings": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
+}

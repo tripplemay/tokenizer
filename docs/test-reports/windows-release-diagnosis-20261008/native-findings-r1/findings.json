@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-read-only-diagnosis",
+  "runId": 37808814119,
+  "jobId": 113420026669,
+  "releaseBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "diagnosticHead": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+  "releaseAcceptance": false,
+  "releaseReady": false,
+  "originalReportsUnchanged": true,
+  "jobExitInterpretation": "Only subprocess pending sidecars trigger diagnosticCompleted=false; all seven case processes exit0, no surviving fixture PID, no disclosure, no watchdog stop, no truncation. Not a product cleanup or release verdict.",
+  "cases": [
+    {
+      "id": "W01",
+      "classification": "confirmed-test-line-ending-assumption",
+      "nativeCase": "workflow",
+      "confirmed": ["Checkout has821 CRLFs; all six exact LF job markers index=-1 and extraction length1", "Same bytes normalized in memory to LF find all six guards; constructed CRLF fails identically"],
+      "notProven": ["No release workflow authorization bypass is shown"],
+      "originalAssertionBoundary": "First guard assertion gets newline; later dependent inventory assertions not reached",
+      "narrowRepairProposal": "Separately approve newline-aware static parsing and explicit marker-found checks; preserve every guard and inventory assertion, do not change workflow authorization or silently rewrite checkout bytes",
+      "evidence": ["workflow.json stdout.observations[0..2]", "tests/ci/vps-host-preflight.test.ts:267-292"]
+    },
+    {
+      "id": "W02",
+      "classification": "diagnostic-precondition-blocked-original-hook-root-cause-unresolved",
+      "nativeCase": "parent",
+      "confirmed": ["Both hooks report hookReached=false/hookStep=not-entered", "Each initial native PowerShell check produces no captured output, exceeds remaining about7s subprocess budget, is killed successfully, worker returns timeout", "readBoundedReplayFile catch maps bounded timeout to source could not be opened safely before open/read/rename"],
+      "notProven": ["No renameSync, mkdirSync replacement, linkSync, openSync source or afterRead branch executed", "Original afterRead failure cannot be attributed to Windows rename sharing, reparse refusal or directory identity mismatch", "Reason PowerShell stalls in stripped synthetic environment is not observed"],
+      "originalAssertionBoundary": "Original toThrow message mismatch prevents reached assertion; original afterPathStat control passed but this diagnostic did not reach either hook",
+      "narrowRepairProposal": "No product/hook repair yet. Add approved same-host bounded native-attribute cold/warm and environment/preload A/B controls; once gate succeeds, record original hook native errno and identity transitions without changing old assertions",
+      "evidence": ["parent.json stdout.observations", "parent.trace.jsonl:25-34,44-53", "src/cli/replay.ts:147-159,198-228,245-247"]
+    },
+    {
+      "id": "W03",
+      "classification": "diagnostic-preview-blocked-original-aggregate-timeout-unresolved",
+      "nativeCase": "confirmation",
+      "confirmed": ["Only preview executes; fails in7175.6856ms via first PowerShell worker timeout", "mergeCalls=0 because execute and all three stale-confirmation negatives are not entered"],
+      "notProven": ["No stale projectRoots, mode or same-size-content assertion executed", "Original5s failure is not proven to be aggregation rather than a different slow or failing native stage"],
+      "originalAssertionBoundary": "Original test timed out; diagnostic preview never returns digest; mergeCalls=0 is vacuous for confirmation safety",
+      "narrowRepairProposal": "First unblock and measure unchanged original preconditions; preserve10s operation budget and5s test default. If aggregation alone is proven, separately approve bounded individual semantic cases with unchanged negatives and no global timeout increase",
+      "evidence": ["confirmation.json stdout.observations", "confirmation.trace.jsonl:24-32", "tests/cli/b03-fixed-prereview-independent.test.ts:48-55"]
+    },
+    {
+      "id": "W04",
+      "classification": "confirmed-product-invalid-descendant-admission",
+      "nativeCase": "privacy",
+      "confirmed": ["regular\\child realpath.native and lstatSync both return ENOENT; fallback regular realpath succeeds; original input event retained, count1 instead0", "regular is a regular-file fixture created by successful writeFileSync; successful fallback lacks any directory-type inspection", "Cycle ELOOP rejected; broken junction lstat symlink rejected; ordinary nonexistent directory descendant admitted as positive control", "Invalid regular-child include rule returns0 due lexical scope mismatch, not proof of physicalScopePath rejection"],
+      "notProven": ["No direct stat/isFile record of successful regular ancestor was instrumented", "No actual queue write, transmitted event or secret disclosure was attempted"],
+      "originalAssertionBoundary": "Original cycle checks completed; second regular-child event assertion failed; following invalid-root assertion not reached",
+      "narrowRepairProposal": "When missing suffix is nonempty, verify canonical existing ancestor is a directory and fail closed on stat errors before joining suffix; retain valid directory aliases, missing-directory positive behavior, event identity and wire/cursor contracts. Rejecting all ENOENT or rejecting all symlinks is not acceptable",
+      "evidence": ["privacy.json stdout.observations", "privacy.trace.jsonl:17-24,25-38,39-44", "native-diagnostics.mjs:154-164", "src/cli/privacy.ts:32-60"]
+    },
+    {
+      "id": "W05",
+      "classification": "diagnostic-preview-blocked-original-aggregate-timeout-unresolved",
+      "nativeCase": "binding",
+      "confirmed": ["Only preview executes; fails in7214.5001ms via first PowerShell worker timeout; mergeCalls=0"],
+      "notProven": ["Bad digest, changed privacy scope/mode and grown content branches never run", "No14-check aggregate duration measured; original timeout root cause unresolved"],
+      "originalAssertionBoundary": "Original5s timeout gives no reached-stage record; diagnostic has no digest and never enters execute",
+      "narrowRepairProposal": "Measure same-runtime unchanged preconditions first; if aggregate-only proven, independently scoped bounded binding negatives preserve old assertions and all privacy checks; no filter weakening or global timer increase",
+      "evidence": ["binding.json stdout.observations", "binding.trace.jsonl:24-32", "tests/cli/replay.test.ts:152-179"]
+    },
+    {
+      "id": "W06",
+      "classification": "confirmed-fixture-no-live-inherited-holder-mechanism-inferred",
+      "nativeCase": "subprocess",
+      "confirmed": ["Inherited parent7292 spawns non-detached resistant descendant880; parent exits0 and close follows0.4254ms later", "Worker returns ok in355.6876ms; product returns356.2108ms before500ms deadline; no taskkill spawned in this mode", "Both owned PIDs dead at return, +100ms and final16s audit; neither apparent escape nor held pipes observed"],
+      "notProven": ["Windows job-object membership/KILL_ON_JOB_CLOSE was not queried; mechanism remains libuv-source-backed inference", "A true live inherited-handle holder case is not exercised by this fixture on this runner", "No universal descendant cleanup guarantee from this one run"],
+      "originalAssertionBoundary": "Original expected TimeoutError not thrown; subsequent PID count/poll assertions not reached",
+      "narrowRepairProposal": "No product timeout repair established. Separately approve additive Windows-specific live-handle canary with handshake/PID ownership, independent15s cap and exact cleanup. Do not skip native inherited case or invert original assertion solely to accept early exit",
+      "evidence": ["subprocess.json stdout.observations[4..7]", "subprocess.trace.jsonl:41-51", "subprocess.cleanup.json", "tests/fixtures/process-bounds/child.mjs:22-31"]
+    },
+    {
+      "id": "W07",
+      "classification": "confirmed-product-reclassification-race-owned-tree-safety-unproven",
+      "nativeCase": "subprocess",
+      "confirmed": ["Worker6920 records stdout600 then stderr600; total1200 exceeds1024, taskkill5640 spawned", "Child884 exits0/closes before taskkill exits/closes128; worker returns supervision, product throws cleanup failed despite owned PID dead at return", "Exact1200 positive returns600+600 with worker ok; long-lived overflow returns output and taskkill0, no live PIDs"],
+      "notProven": ["Taskkill stderr discarded; status128 alone does not prove a specific native error", "Authoritative ownership and whole-owned-tree termination are not established; dead direct fixture PID and stdio close do not establish arbitrary tree cleanup", "No evidence justifies ignoring all nonzero taskkill results or accepting closed parent with live descendants"],
+      "originalAssertionBoundary": "Original first OutputError assertion receives SupervisionError; original exact1200 positive not reached but new additive positive succeeds",
+      "narrowRepairProposal": "Do not change classification just to pass old assertion. Until authoritative ownership and whole-owned-scope termination are established, unknown remains supervision. Only a future proven benign already-gone race may retain the latched output cause; preserve strict failure for live residue, access failure or cleanup timeout; do not replace successful&&closed with closed alone",
+      "evidence": ["subprocess.trace.jsonl:52-64,65-74,75-91", "subprocess.json stdout.observations[8..13]", "src/cli/bounded-subprocess-worker.mjs:12-67", "src/cli/bounded-subprocess.ts:101-104"]
+    },
+    {
+      "id": "W08",
+      "classification": "diagnostic-preview-blocked-original-aggregate-timeout-unresolved",
+      "nativeCase": "healthy",
+      "confirmed": ["Three Git setup calls finish0 in54.1051/93.9877/31.8356ms", "Preview fails7194.9511ms at first native-attribute worker timeout before product Git enrichment", "Queue hash unchanged, retained backlog present and synthetic canaries absent; execute not entered"],
+      "notProven": ["No wouldAdmit1, admitted1, gitCommit, sanitized gitRemote or final cursor/config preservation result", "No6-PowerShell/8-cold-Git aggregate measured", "Original uses two fresh probes; diagnostic uses one product process and different environment"],
+      "originalAssertionBoundary": "Original5s timeout does not locate reached stage; new queue preservation is only pre-execute refusal control",
+      "narrowRepairProposal": "Measure unchanged original cold preview and execute separately under approved diagnostics after native gate works; only then decide startup amortization/test partitioning without renewing deadline, relaxing assertions or increasing global timeout",
+      "evidence": ["healthy.json stdout.observations", "healthy.trace.jsonl:16-18,29-38", "tests/cli/process-bounds/replay-process-bounds.test.ts:106-121"]
+    }
+  ]
+}

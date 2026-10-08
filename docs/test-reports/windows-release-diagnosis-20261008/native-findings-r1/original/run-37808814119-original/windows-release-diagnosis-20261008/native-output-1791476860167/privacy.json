@@ -1,0 +1,12 @@
+{
+  "case": "privacy",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "instrumented": true,
+  "status": 0,
+  "signal": null,
+  "stopped": false,
+  "stdout": "{\"case\":\"privacy\",\"observations\":[{\"stage\":\"regular-child-event\",\"elapsedMs\":2.491199999999992,\"ok\":true,\"value\":{\"count\":1,\"expected\":0,\"identityUntouched\":true}},{\"stage\":\"regular-child-rule\",\"elapsedMs\":1.6698000000000093,\"ok\":true,\"value\":{\"count\":0,\"expected\":0}},{\"stage\":\"cycle-event\",\"elapsedMs\":1.4528999999999996,\"ok\":true,\"value\":{\"count\":0,\"expected\":0,\"identityUntouched\":true}},{\"stage\":\"cycle-rule\",\"elapsedMs\":1.3301999999999907,\"ok\":true,\"value\":{\"count\":0,\"expected\":0}},{\"stage\":\"broken-child-event\",\"elapsedMs\":1.8937999999999988,\"ok\":true,\"value\":{\"count\":0,\"expected\":0,\"identityUntouched\":true}},{\"stage\":\"broken-child-rule\",\"elapsedMs\":2.3811000000000035,\"ok\":true,\"value\":{\"count\":0,\"expected\":0}},{\"stage\":\"missing-directory-child-event\",\"elapsedMs\":2.350599999999986,\"ok\":true,\"value\":{\"count\":1,\"expected\":1,\"identityUntouched\":true}}],\"releaseAcceptance\":false}\n",
+  "stderr": ""
+}

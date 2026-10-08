@@ -1,0 +1,12 @@
+{
+  "case": "parent",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "instrumented": true,
+  "status": 0,
+  "signal": null,
+  "stopped": false,
+  "stdout": "{\"case\":\"parent\",\"observations\":[{\"stage\":\"afterPathStat-hook\",\"hookReached\":false,\"hookStep\":\"not-entered\"},{\"stage\":\"afterPathStat\",\"elapsedMs\":7171.7086,\"ok\":false,\"errorClass\":\"Error\",\"code\":null,\"refusal\":\"Replay refused: source could not be opened safely\",\"supervisionMessage\":null},{\"stage\":\"afterRead-hook\",\"hookReached\":false,\"hookStep\":\"not-entered\"},{\"stage\":\"afterRead\",\"elapsedMs\":7178.6914,\"ok\":false,\"errorClass\":\"Error\",\"code\":null,\"refusal\":\"Replay refused: source could not be opened safely\",\"supervisionMessage\":null}],\"releaseAcceptance\":false}\n",
+  "stderr": ""
+}

@@ -1,0 +1,12 @@
+{
+  "case": "workflow",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "instrumented": true,
+  "status": 0,
+  "signal": null,
+  "stopped": false,
+  "stdout": "{\"case\":\"workflow\",\"observations\":[{\"stage\":\"checkout\",\"crlfCount\":821,\"jobs\":[{\"job\":\"verify\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-windows\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-macos-agent\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-db\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-browser\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"release-artifact\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false}]},{\"stage\":\"LF\",\"crlfCount\":0,\"jobs\":[{\"job\":\"verify\",\"index\":8883,\"extractedLength\":2807,\"guardPresent\":true},{\"job\":\"verify-windows\",\"index\":11691,\"extractedLength\":3044,\"guardPresent\":true},{\"job\":\"verify-macos-agent\",\"index\":14736,\"extractedLength\":2852,\"guardPresent\":true},{\"job\":\"verify-db\",\"index\":17589,\"extractedLength\":2497,\"guardPresent\":true},{\"job\":\"verify-browser\",\"index\":20087,\"extractedLength\":1940,\"guardPresent\":true},{\"job\":\"release-artifact\",\"index\":22028,\"extractedLength\":8754,\"guardPresent\":true}]},{\"stage\":\"CRLF\",\"crlfCount\":821,\"jobs\":[{\"job\":\"verify\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-windows\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-macos-agent\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-db\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"verify-browser\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false},{\"job\":\"release-artifact\",\"index\":-1,\"extractedLength\":1,\"guardPresent\":false}]}],\"releaseAcceptance\":false}\n",
+  "stderr": ""
+}

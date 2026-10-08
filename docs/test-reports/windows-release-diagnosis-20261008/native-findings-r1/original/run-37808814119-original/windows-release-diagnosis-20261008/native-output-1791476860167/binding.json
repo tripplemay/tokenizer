@@ -1,0 +1,12 @@
+{
+  "case": "binding",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "instrumented": true,
+  "status": 0,
+  "signal": null,
+  "stopped": false,
+  "stdout": "{\"case\":\"binding\",\"observations\":[{\"stage\":\"preview\",\"elapsedMs\":7214.500099999999,\"ok\":false,\"errorClass\":\"Error\",\"code\":null,\"refusal\":\"Replay refused: source could not be opened safely\",\"supervisionMessage\":null},{\"stage\":\"merge-count\",\"mergeCalls\":0}],\"releaseAcceptance\":false}\n",
+  "stderr": ""
+}

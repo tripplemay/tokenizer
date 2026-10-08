@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "diagnostic_only": true,
+  "release_acceptance": false,
+  "failed_release_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "head": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+  "expected_sha": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+  "timestamp_utc": "2026-10-08T16:26:54.3081363Z",
+  "os": {
+    "caption": "Microsoft Windows Server 2025 Datacenter",
+    "version": "10.0.26100",
+    "build_number": "26100"
+  },
+  "runtime": {
+    "node": "v22.23.3",
+    "uv": "1.51.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "git": "git version 2.55.0.windows.5"
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "status": "proposal-not-approved-not-implemented-not-executed",
+  "diagnosticOnly": true,
+  "releaseAcceptance": false,
+  "immutableProductBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "arms": [
+    { "id": "E0", "changeFromE0": "none", "environment": "original-strict-synthetic-allowlist" },
+    { "id": "E1", "changeFromE0": "SystemDrive", "source": "drive-of-already-allowed-SystemRoot" },
+    { "id": "E2", "changeFromE0": "APPDATA", "source": "fresh-owned-synthetic-directory" },
+    { "id": "E3", "changeFromE0": "LOCALAPPDATA", "source": "fresh-owned-synthetic-directory" },
+    { "id": "E4", "changeFromE0": "PSModulePath", "source": "machine-only-system-installation-paths-no-user-or-process-env-inheritance" }
+  ],
+  "optionalCombinedArm": "Only pre-adjudicated required fields added sequentially one key per step; never discover-and-inherit arbitrary runner fields",
+  "powerShellStages": ["P0-pure-fixed-marker", "P1-fixed-synthetic-ConvertFrom-Json-smoke", "P2-exact-owned-path-native-attribute-check"],
+  "stageAdmission": "Only previous smoke success admits next stage; not-reached explicitly reported",
+  "instrumentationArms": ["preload-off-with-independent-parent-observation", "preload-on-with-trace-health-fail-closed"],
+  "downstreamAdmission": "Only P2 success admits parent hooks and confirmation/binding/healthy aggregate analog; no stale negative assertion claimed before execute",
+  "bounds": { "operationDeadlineMs": 10000, "windowsInitialChildBudgetMsApprox": 7000, "caseWatchdogMs": 40000, "totalDiagnosticDeadlineMs": 600000, "workflowDeadlineMinutes": 12, "maxPowerShellSmokeLaunches": 38, "maxPowerShellLaunchesIncludingConditionalAnalogs": 76, "outputBytes": 65536, "traceBytes": 524288, "nativeAttributeOutputBytes": 16384 },
+  "cleanup": "Only active directly-owned handle or independently verified identity/tree; unknown PID recorded not signalled; bounded cleanup; incomplete remains explicit",
+  "output": "Allowlisted stage/timing/errno/PID/ownership/canary/hash metadata JSON and JSONL only; no environment values, raw input, profile, credentials or arbitrary PowerShell stderr",
+  "prohibited": ["product-or-old-test-or-fixture-edits", "global-timeout-increase", "unbounded-retries", "full-runner-environment-inheritance", "secret-or-user-credential-reading", "network-or-production", "release-pass", "unknown-whole-tree-state-reclassified-as-output-only"]
+}

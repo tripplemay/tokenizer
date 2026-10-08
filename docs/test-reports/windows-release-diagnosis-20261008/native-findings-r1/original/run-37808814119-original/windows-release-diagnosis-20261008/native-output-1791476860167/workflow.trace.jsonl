@@ -1,0 +1,15 @@
+{"pid":3336,"sequence":0,"at":1791476860237,"monotonicMs":35.1881,"event":"preload","node":"v22.23.3","uv":"1.51.0"}
+{"pid":3336,"sequence":1,"at":1791476860242,"monotonicMs":39.9778,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.11639999999999873}
+{"pid":3336,"sequence":2,"at":1791476860246,"monotonicMs":43.7961,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.049600000000005195}
+{"pid":3336,"sequence":3,"at":1791476860247,"monotonicMs":44.3759,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.05270000000000152}
+{"pid":3336,"sequence":4,"at":1791476860247,"monotonicMs":45.1462,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.05180000000000007}
+{"pid":3336,"sequence":5,"at":1791476860251,"monotonicMs":48.5883,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.05560000000000542}
+{"pid":3336,"sequence":6,"at":1791476860253,"monotonicMs":50.7834,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.05760000000000076}
+{"pid":3336,"sequence":7,"at":1791476860254,"monotonicMs":51.5305,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.051600000000000534}
+{"pid":3336,"sequence":8,"at":1791476860257,"monotonicMs":54.4196,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.057099999999998374}
+{"pid":3336,"sequence":9,"at":1791476860260,"monotonicMs":57.771,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.0555000000000021}
+{"pid":3336,"sequence":10,"at":1791476860279,"monotonicMs":76.6289,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.12000000000000455}
+{"pid":3336,"sequence":11,"at":1791476860283,"monotonicMs":80.4229,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.0688999999999993}
+{"pid":3336,"sequence":12,"at":1791476860284,"monotonicMs":81.3411,"event":"fs","operation":"openSync","target":"object","ok":true,"elapsedMs":0.07569999999999766}
+{"pid":3336,"sequence":13,"at":1791476860294,"monotonicMs":91.4757,"event":"fs","operation":"mkdirSync","target":"$OWNED/tmp\\tsx-runneradmin","ok":true,"elapsedMs":0.49210000000000775}
+{"pid":3336,"sequence":14,"at":1791476860403,"monotonicMs":200.3375,"event":"fs","operation":"mkdirSync","target":"$OWNED/tmp\\tsx-runneradmin","ok":true,"elapsedMs":0.21759999999997603}

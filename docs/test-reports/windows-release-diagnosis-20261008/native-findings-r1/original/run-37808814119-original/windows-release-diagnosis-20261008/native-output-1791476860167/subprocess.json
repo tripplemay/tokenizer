@@ -1,0 +1,12 @@
+{
+  "case": "subprocess",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "instrumented": true,
+  "status": 0,
+  "signal": null,
+  "stopped": false,
+  "stdout": "{\"case\":\"subprocess\",\"observations\":[{\"stage\":\"resistant-1024\",\"elapsedMs\":660.8985,\"ok\":false,\"errorClass\":\"BoundedSubprocessTimeoutError\",\"code\":null,\"refusal\":null,\"supervisionMessage\":\"subprocess deadline exceeded\"},{\"stage\":\"resistant-liveness-at-return\",\"owned\":[4924],\"alive\":[]},{\"stage\":\"descendant-1024\",\"elapsedMs\":635.0953,\"ok\":false,\"errorClass\":\"BoundedSubprocessTimeoutError\",\"code\":null,\"refusal\":null,\"supervisionMessage\":\"subprocess deadline exceeded\"},{\"stage\":\"descendant-liveness-at-return\",\"owned\":[2180,5028],\"alive\":[]},{\"stage\":\"inherited-pipes-1024\",\"elapsedMs\":356.21079999999984,\"ok\":true,\"value\":{\"status\":0,\"signal\":null,\"stdoutBytes\":0,\"stderrBytes\":0}},{\"stage\":\"inherited-pipes-liveness-at-return\",\"owned\":[7292,880],\"alive\":[]},{\"stage\":\"inherited-pipes-liveness-100ms\",\"owned\":[7292,880],\"alive\":[]},{\"stage\":\"combined-1024\",\"elapsedMs\":209.44399999999996,\"ok\":false,\"errorClass\":\"BoundedSubprocessSupervisionError\",\"code\":null,\"refusal\":null,\"supervisionMessage\":\"subprocess cleanup failed\"},{\"stage\":\"combined-liveness-at-return\",\"owned\":[884],\"alive\":[]},{\"stage\":\"combined-1200\",\"elapsedMs\":150.51240000000007,\"ok\":true,\"value\":{\"status\":0,\"signal\":null,\"stdoutBytes\":600,\"stderrBytes\":600}},{\"stage\":\"combined-liveness-at-return\",\"owned\":[8800],\"alive\":[]},{\"stage\":\"overflow-2048\",\"elapsedMs\":222.20420000000013,\"ok\":false,\"errorClass\":\"BoundedSubprocessOutputError\",\"code\":null,\"refusal\":null,\"supervisionMessage\":\"subprocess output limit exceeded\"},{\"stage\":\"overflow-liveness-at-return\",\"owned\":[10148],\"alive\":[]}],\"releaseAcceptance\":false}\n",
+  "stderr": ""
+}

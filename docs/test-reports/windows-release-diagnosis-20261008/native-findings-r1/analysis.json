@@ -1,0 +1,3925 @@
+{
+  "schemaVersion": 1,
+  "analysisOnly": true,
+  "releaseAcceptance": false,
+  "runId": 37808814119,
+  "provenance": {
+    "schema_version": 1,
+    "diagnostic_only": true,
+    "release_acceptance": false,
+    "failed_release_sha": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "head": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+    "expected_sha": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+    "timestamp_utc": "2026-10-08T16:26:54.3081363Z",
+    "os": {
+      "caption": "Microsoft Windows Server 2025 Datacenter",
+      "version": "10.0.26100",
+      "build_number": "26100"
+    },
+    "runtime": {
+      "node": "v22.23.3",
+      "uv": "1.51.0",
+      "platform": "win32",
+      "arch": "x64"
+    },
+    "git": "git version 2.55.0.windows.5"
+  },
+  "result": {
+    "schema_version": 1,
+    "diagnostic_only": true,
+    "release_acceptance": false,
+    "head": "f6b89d781a74f7baff4db0d47733e813f04b839c",
+    "exit_code": 1,
+    "timestamp_utc": "2026-10-08T16:28:38.3847362Z"
+  },
+  "failedCompletionConditions": [
+    "subprocess:trace-completeness-unknown"
+  ],
+  "evidenceInventory": [
+    {
+      "path": "original/ci-37808814119-original.json",
+      "bytes": 2195,
+      "sha256": "d1aa019f7acddef8936f75a955e0fe35c6dd63e908c93afef2afe999b124cabb"
+    },
+    {
+      "path": "original/ci-37808814119-original.log",
+      "bytes": 37987,
+      "sha256": "683729d92640bd6ed41ea9822f79ba22b5c4db9fcc503e23b5ea1732b14e819a"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-native-ci-20261008/diagnostic-result.json",
+      "bytes": 215,
+      "sha256": "216a52334c063705efb3edf29f147df8dd5377d9614f340f53afc4bcaf4a820c"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-native-ci-20261008/provenance.json",
+      "bytes": 619,
+      "sha256": "b8743c0c7ca51fddd2a82c75deecb4233e74edd53f736019b8afc4aaa4d257ae"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/binding.cleanup.json",
+      "bytes": 156,
+      "sha256": "0761e57eeede7821e17dacc650b4fba4782b1ead6bbe335a35b82f77b56ca5a3"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/binding.json",
+      "bytes": 514,
+      "sha256": "9b40ed1eef2c47ceacda434507ca64199b742b082e758c5f8fc901015abb00ed"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/binding.trace-health.json",
+      "bytes": 317,
+      "sha256": "d45dee74495952e42bf54d63c1b422fa9f5a12894e25eaa5118ffe940a53f281"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/binding.trace.jsonl",
+      "bytes": 5993,
+      "sha256": "75b8cc48596a119ba80c4b34df8cd4ca9bb4dbe16448e4f86361b9fb675f3368"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.cleanup.json",
+      "bytes": 156,
+      "sha256": "24bd1768c12b191cfc47786db7becdbb707177a79ca32e7a67cdc05e0327225e"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.json",
+      "bytes": 516,
+      "sha256": "b033f25eb034872c1f16598165ee37d2df74b36f56c7bf78e487ae4217b94f4a"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.trace-health.json",
+      "bytes": 317,
+      "sha256": "22c42770ebaa1f00061542838a03011850fadf60a6b2f6936fc3562f2f4c6690"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/confirmation.trace.jsonl",
+      "bytes": 6006,
+      "sha256": "f3e727a503c06dca32bd338cf184a4db85aae1d857df316a08cffbbc45f8e37d"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/healthy.cleanup.json",
+      "bytes": 156,
+      "sha256": "192e487957afca105103fbb14a8f1927217c0f26f37d328e5ff8d4551f0f69e1"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/healthy.json",
+      "bytes": 579,
+      "sha256": "ca909083aaea7924b9890caab8aea3bc30723743684fd85e4e1089ae0399a0cd"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/healthy.trace-health.json",
+      "bytes": 317,
+      "sha256": "ff62cf6c5ea5f1cf68b2eef30f3d76feaae0e47b15cdb1632a311a20c1f73f0e"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/healthy.trace.jsonl",
+      "bytes": 7197,
+      "sha256": "112b97c532faea764595ef0bde27cfc1f25c044b71ccd2bc91253d917a140c23"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/parent.cleanup.json",
+      "bytes": 157,
+      "sha256": "385aef189cfc76d11967a1188abb83c589a9011b36a27afbaacb64f0f37b744e"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/parent.json",
+      "bytes": 829,
+      "sha256": "5059cb7dad47ee1c306c32f108cca1a4ffb89bb0f47ed277b91a83c1ce0830a6"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/parent.trace-health.json",
+      "bytes": 354,
+      "sha256": "b5e45680fda7a75b5a33960637f543dde22e5f3b7fc5e469c030df36d6b16b54"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/parent.trace.jsonl",
+      "bytes": 10464,
+      "sha256": "4696c0c3cd7fd45d4734a7030fe1571c8f5e602e3b1711deeb64a8f4320081ea"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/privacy.cleanup.json",
+      "bytes": 156,
+      "sha256": "0622d5c2bd0585599d154260e933666f7c18871305074e857e0d8ff0e0b74773"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/privacy.json",
+      "bytes": 1202,
+      "sha256": "a2e93ecba64c4bbc9807910049084eb47ddd7a51a1cf012d59b5429404a56982"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/privacy.trace-health.json",
+      "bytes": 280,
+      "sha256": "a678c0f411773b4c4d66eeec01605aed71c0bb7720589fa8062ccf6a701a3c97"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/privacy.trace.jsonl",
+      "bytes": 7223,
+      "sha256": "3a817bf8c08a6a950016e564b751e25903e74aa62619ac10751234ab1ba230e5"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.cleanup.json",
+      "bytes": 195,
+      "sha256": "c02318af6fb47bb16f0c26212a1b399061d0f73e495a9c61ea554923d6f2189e"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.json",
+      "bytes": 1967,
+      "sha256": "9b4ea96bfa2ac9d64ab0095662362f561e6455dac10caebc4d9d4f4eadf9f5d1"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.trace-health.json",
+      "bytes": 791,
+      "sha256": "e50405a5157b8e955fb657bc859d94a06f7dc153c2dc073b9a59395f4dcc2657"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/subprocess.trace.jsonl",
+      "bytes": 13678,
+      "sha256": "ea2cd0438db07dc85672ce7e4dfdc9254dddedf23db0a83d6ab8a4d19be14598"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/workflow.cleanup.json",
+      "bytes": 156,
+      "sha256": "e0bfc3837fbe45c25a73e8125cad04e20152f4be40efcdc5256a096f29ed5c62"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/workflow.json",
+      "bytes": 1993,
+      "sha256": "04b4a08c5163389ead5f54a59a5452f1e0b407472e45f60fc8888525af7d7e8a"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/workflow.trace-health.json",
+      "bytes": 280,
+      "sha256": "84169ce5ecb871d425bd407ef0875ea3c195d5d3fb9f4a97e93f9b42e27698f0"
+    },
+    {
+      "path": "original/run-37808814119-original/windows-release-diagnosis-20261008/native-output-1791476860167/workflow.trace.jsonl",
+      "bytes": 2449,
+      "sha256": "9696300a30ddb6b11ea61d0b6cb8be2247847075b3b23bee593edc652674b829"
+    }
+  ],
+  "cases": {
+    "workflow": {
+      "observations": [
+        {
+          "stage": "checkout",
+          "crlfCount": 821,
+          "jobs": [
+            {
+              "job": "verify",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-windows",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-macos-agent",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-db",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-browser",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "release-artifact",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            }
+          ]
+        },
+        {
+          "stage": "LF",
+          "crlfCount": 0,
+          "jobs": [
+            {
+              "job": "verify",
+              "index": 8883,
+              "extractedLength": 2807,
+              "guardPresent": true
+            },
+            {
+              "job": "verify-windows",
+              "index": 11691,
+              "extractedLength": 3044,
+              "guardPresent": true
+            },
+            {
+              "job": "verify-macos-agent",
+              "index": 14736,
+              "extractedLength": 2852,
+              "guardPresent": true
+            },
+            {
+              "job": "verify-db",
+              "index": 17589,
+              "extractedLength": 2497,
+              "guardPresent": true
+            },
+            {
+              "job": "verify-browser",
+              "index": 20087,
+              "extractedLength": 1940,
+              "guardPresent": true
+            },
+            {
+              "job": "release-artifact",
+              "index": 22028,
+              "extractedLength": 8754,
+              "guardPresent": true
+            }
+          ]
+        },
+        {
+          "stage": "CRLF",
+          "crlfCount": 821,
+          "jobs": [
+            {
+              "job": "verify",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-windows",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-macos-agent",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-db",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "verify-browser",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            },
+            {
+              "job": "release-artifact",
+              "index": -1,
+              "extractedLength": 1,
+              "guardPresent": false
+            }
+          ]
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          3336
+        ],
+        "states": [
+          {
+            "pid": 3336,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 2449,
+        "traceTruncated": false
+      },
+      "workers": [],
+      "traceRows": 15,
+      "events": [
+        {
+          "line": 1,
+          "pid": 3336,
+          "sequence": 0,
+          "at": 1791476860237,
+          "monotonicMs": 35.1881,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 3336,
+          "sequence": 13,
+          "at": 1791476860294,
+          "monotonicMs": 91.4757,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.49210000000000775
+        },
+        {
+          "line": 15,
+          "pid": 3336,
+          "sequence": 14,
+          "at": 1791476860403,
+          "monotonicMs": 200.3375,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.21759999999997603
+        }
+      ]
+    },
+    "privacy": {
+      "observations": [
+        {
+          "stage": "regular-child-event",
+          "elapsedMs": 2.491199999999992,
+          "ok": true,
+          "value": {
+            "count": 1,
+            "expected": 0,
+            "identityUntouched": true
+          }
+        },
+        {
+          "stage": "regular-child-rule",
+          "elapsedMs": 1.6698000000000093,
+          "ok": true,
+          "value": {
+            "count": 0,
+            "expected": 0
+          }
+        },
+        {
+          "stage": "cycle-event",
+          "elapsedMs": 1.4528999999999996,
+          "ok": true,
+          "value": {
+            "count": 0,
+            "expected": 0,
+            "identityUntouched": true
+          }
+        },
+        {
+          "stage": "cycle-rule",
+          "elapsedMs": 1.3301999999999907,
+          "ok": true,
+          "value": {
+            "count": 0,
+            "expected": 0
+          }
+        },
+        {
+          "stage": "broken-child-event",
+          "elapsedMs": 1.8937999999999988,
+          "ok": true,
+          "value": {
+            "count": 0,
+            "expected": 0,
+            "identityUntouched": true
+          }
+        },
+        {
+          "stage": "broken-child-rule",
+          "elapsedMs": 2.3811000000000035,
+          "ok": true,
+          "value": {
+            "count": 0,
+            "expected": 0
+          }
+        },
+        {
+          "stage": "missing-directory-child-event",
+          "elapsedMs": 2.350599999999986,
+          "ok": true,
+          "value": {
+            "count": 1,
+            "expected": 1,
+            "identityUntouched": true
+          }
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          3488
+        ],
+        "states": [
+          {
+            "pid": 3488,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 7223,
+        "traceTruncated": false
+      },
+      "workers": [],
+      "traceRows": 44,
+      "events": [
+        {
+          "line": 1,
+          "pid": 3488,
+          "sequence": 0,
+          "at": 1791476860629,
+          "monotonicMs": 34.9359,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 3488,
+          "sequence": 13,
+          "at": 1791476860695,
+          "monotonicMs": 99.9994,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.3703999999999894
+        },
+        {
+          "line": 15,
+          "pid": 3488,
+          "sequence": 14,
+          "at": 1791476860806,
+          "monotonicMs": 211.3266,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.23220000000000596
+        },
+        {
+          "line": 16,
+          "pid": 3488,
+          "sequence": 15,
+          "at": 1791476860883,
+          "monotonicMs": 287.6243,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/allowed",
+          "ok": true,
+          "elapsedMs": 1.6988000000000056
+        },
+        {
+          "line": 17,
+          "pid": 3488,
+          "sequence": 16,
+          "at": 1791476860885,
+          "monotonicMs": 289.9815,
+          "event": "realpath-native",
+          "target": "$OWNED/regular\\child",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 18,
+          "pid": 3488,
+          "sequence": 17,
+          "at": 1791476860886,
+          "monotonicMs": 290.4476,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/regular\\child",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.1312000000000353
+        },
+        {
+          "line": 19,
+          "pid": 3488,
+          "sequence": 18,
+          "at": 1791476860886,
+          "monotonicMs": 290.9226,
+          "event": "realpath-native",
+          "target": "$OWNED/regular",
+          "ok": true
+        },
+        {
+          "line": 20,
+          "pid": 3488,
+          "sequence": 19,
+          "at": 1791476860887,
+          "monotonicMs": 291.3885,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 21,
+          "pid": 3488,
+          "sequence": 20,
+          "at": 1791476860887,
+          "monotonicMs": 292.1618,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 22,
+          "pid": 3488,
+          "sequence": 21,
+          "at": 1791476860888,
+          "monotonicMs": 292.5702,
+          "event": "realpath-native",
+          "target": "$OWNED/regular\\child",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 23,
+          "pid": 3488,
+          "sequence": 22,
+          "at": 1791476860888,
+          "monotonicMs": 292.903,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/regular\\child",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.07200000000000273
+        },
+        {
+          "line": 24,
+          "pid": 3488,
+          "sequence": 23,
+          "at": 1791476860888,
+          "monotonicMs": 293.3198,
+          "event": "realpath-native",
+          "target": "$OWNED/regular",
+          "ok": true
+        },
+        {
+          "line": 25,
+          "pid": 3488,
+          "sequence": 24,
+          "at": 1791476860889,
+          "monotonicMs": 294.2963,
+          "event": "realpath-native",
+          "target": "$OWNED/cycle",
+          "ok": false,
+          "code": "ELOOP"
+        },
+        {
+          "line": 26,
+          "pid": 3488,
+          "sequence": 25,
+          "at": 1791476860890,
+          "monotonicMs": 294.7489,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 27,
+          "pid": 3488,
+          "sequence": 26,
+          "at": 1791476860890,
+          "monotonicMs": 295.2397,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 28,
+          "pid": 3488,
+          "sequence": 27,
+          "at": 1791476860891,
+          "monotonicMs": 296.1522,
+          "event": "realpath-native",
+          "target": "$OWNED/cycle",
+          "ok": false,
+          "code": "ELOOP"
+        },
+        {
+          "line": 29,
+          "pid": 3488,
+          "sequence": 28,
+          "at": 1791476860892,
+          "monotonicMs": 296.5827,
+          "event": "realpath-native",
+          "target": "$OWNED/broken\\child",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 30,
+          "pid": 3488,
+          "sequence": 29,
+          "at": 1791476860892,
+          "monotonicMs": 296.9197,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/broken\\child",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.08459999999996626
+        },
+        {
+          "line": 31,
+          "pid": 3488,
+          "sequence": 30,
+          "at": 1791476860892,
+          "monotonicMs": 297.2627,
+          "event": "realpath-native",
+          "target": "$OWNED/broken",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 32,
+          "pid": 3488,
+          "sequence": 31,
+          "at": 1791476860893,
+          "monotonicMs": 297.6473,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/broken",
+          "ok": true,
+          "elapsedMs": 0.09649999999999181,
+          "directory": false,
+          "file": false,
+          "symlink": true,
+          "dev": "742408122",
+          "ino": "844424931147981"
+        },
+        {
+          "line": 33,
+          "pid": 3488,
+          "sequence": 32,
+          "at": 1791476860893,
+          "monotonicMs": 298.0457,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 34,
+          "pid": 3488,
+          "sequence": 33,
+          "at": 1791476860894,
+          "monotonicMs": 298.5203,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        },
+        {
+          "line": 35,
+          "pid": 3488,
+          "sequence": 34,
+          "at": 1791476860894,
+          "monotonicMs": 299.0483,
+          "event": "realpath-native",
+          "target": "$OWNED/broken\\child",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 36,
+          "pid": 3488,
+          "sequence": 35,
+          "at": 1791476860895,
+          "monotonicMs": 299.3861,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/broken\\child",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.08289999999999509
+        },
+        {
+          "line": 37,
+          "pid": 3488,
+          "sequence": 36,
+          "at": 1791476860895,
+          "monotonicMs": 299.7214,
+          "event": "realpath-native",
+          "target": "$OWNED/broken",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 38,
+          "pid": 3488,
+          "sequence": 37,
+          "at": 1791476860895,
+          "monotonicMs": 300.3037,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/broken",
+          "ok": true,
+          "elapsedMs": 0.24279999999998836,
+          "directory": false,
+          "file": false,
+          "symlink": true,
+          "dev": "742408122",
+          "ino": "844424931147981"
+        },
+        {
+          "line": 39,
+          "pid": 3488,
+          "sequence": 38,
+          "at": 1791476860896,
+          "monotonicMs": 300.8562,
+          "event": "realpath-native",
+          "target": "$OWNED/allowed\\missing\\child",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 40,
+          "pid": 3488,
+          "sequence": 39,
+          "at": 1791476860896,
+          "monotonicMs": 301.2202,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/allowed\\missing\\child",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.06749999999999545
+        },
+        {
+          "line": 41,
+          "pid": 3488,
+          "sequence": 40,
+          "at": 1791476860897,
+          "monotonicMs": 301.5517,
+          "event": "realpath-native",
+          "target": "$OWNED/allowed\\missing",
+          "ok": false,
+          "code": "ENOENT"
+        },
+        {
+          "line": 42,
+          "pid": 3488,
+          "sequence": 41,
+          "at": 1791476860897,
+          "monotonicMs": 301.8721,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/allowed\\missing",
+          "ok": false,
+          "code": "ENOENT",
+          "syscall": "lstat",
+          "elapsedMs": 0.06720000000001392
+        },
+        {
+          "line": 43,
+          "pid": 3488,
+          "sequence": 42,
+          "at": 1791476860897,
+          "monotonicMs": 302.2907,
+          "event": "realpath-native",
+          "target": "$OWNED/allowed",
+          "ok": true
+        },
+        {
+          "line": 44,
+          "pid": 3488,
+          "sequence": 43,
+          "at": 1791476860898,
+          "monotonicMs": 302.7596,
+          "event": "realpath-native",
+          "target": "$OWNED",
+          "ok": true
+        }
+      ]
+    },
+    "parent": {
+      "observations": [
+        {
+          "stage": "afterPathStat-hook",
+          "hookReached": false,
+          "hookStep": "not-entered"
+        },
+        {
+          "stage": "afterPathStat",
+          "elapsedMs": 7171.7086,
+          "ok": false,
+          "errorClass": "Error",
+          "code": null,
+          "refusal": "Replay refused: source could not be opened safely",
+          "supervisionMessage": null
+        },
+        {
+          "stage": "afterRead-hook",
+          "hookReached": false,
+          "hookStep": "not-entered"
+        },
+        {
+          "stage": "afterRead",
+          "elapsedMs": 7178.6914,
+          "ok": false,
+          "errorClass": "Error",
+          "code": null,
+          "refusal": "Replay refused: source could not be opened safely",
+          "supervisionMessage": null
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          5216,
+          8208,
+          6184
+        ],
+        "states": [
+          {
+            "pid": 5216,
+            "state": "complete"
+          },
+          {
+            "pid": 6184,
+            "state": "complete"
+          },
+          {
+            "pid": 8208,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 10464,
+        "traceTruncated": false
+      },
+      "workers": [
+        {
+          "line": 34,
+          "pid": 5216,
+          "sequence": 25,
+          "at": 1791476868651,
+          "monotonicMs": 7602.8001,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 8208,
+          "elapsedMs": 7166.0316,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 53,
+          "pid": 5216,
+          "sequence": 36,
+          "at": 1791476875831,
+          "monotonicMs": 14782.9375,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6184,
+          "elapsedMs": 7174.9214,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ],
+      "traceRows": 53,
+      "events": [
+        {
+          "line": 1,
+          "pid": 5216,
+          "sequence": 0,
+          "at": 1791476861082,
+          "monotonicMs": 35.3068,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 5216,
+          "sequence": 13,
+          "at": 1791476861140,
+          "monotonicMs": 92.2042,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.497799999999998
+        },
+        {
+          "line": 15,
+          "pid": 5216,
+          "sequence": 14,
+          "at": 1791476861261,
+          "monotonicMs": 213.5864,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.27889999999999304
+        },
+        {
+          "line": 16,
+          "pid": 5216,
+          "sequence": 15,
+          "at": 1791476861479,
+          "monotonicMs": 430.6844,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/afterPathStat",
+          "ok": true,
+          "elapsedMs": 0.6390999999999849
+        },
+        {
+          "line": 17,
+          "pid": 5216,
+          "sequence": 16,
+          "at": 1791476861480,
+          "monotonicMs": 432.6427,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.14960000000002083,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374883553285"
+        },
+        {
+          "line": 18,
+          "pid": 5216,
+          "sequence": 17,
+          "at": 1791476861481,
+          "monotonicMs": 433.0349,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05060000000003129,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "281474976711969"
+        },
+        {
+          "line": 19,
+          "pid": 5216,
+          "sequence": 18,
+          "at": 1791476861481,
+          "monotonicMs": 433.4433,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05189999999998918,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906843396"
+        },
+        {
+          "line": 20,
+          "pid": 5216,
+          "sequence": 19,
+          "at": 1791476861482,
+          "monotonicMs": 433.8115,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05420000000003711,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849860265399"
+        },
+        {
+          "line": 21,
+          "pid": 5216,
+          "sequence": 20,
+          "at": 1791476861482,
+          "monotonicMs": 434.1815,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05639999999999645,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876910"
+        },
+        {
+          "line": 22,
+          "pid": 5216,
+          "sequence": 21,
+          "at": 1791476861482,
+          "monotonicMs": 434.6463,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.04889999999994643,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876940"
+        },
+        {
+          "line": 23,
+          "pid": 5216,
+          "sequence": 22,
+          "at": 1791476861483,
+          "monotonicMs": 435.0196,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED",
+          "ok": true,
+          "elapsedMs": 0.03849999999999909,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1970324837016045"
+        },
+        {
+          "line": 24,
+          "pid": 5216,
+          "sequence": 23,
+          "at": 1791476861483,
+          "monotonicMs": 435.4146,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/afterPathStat",
+          "ok": true,
+          "elapsedMs": 0.056100000000014916,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899907858707"
+        },
+        {
+          "line": 25,
+          "pid": 5216,
+          "sequence": 24,
+          "at": 1791476861484,
+          "monotonicMs": 435.8522,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/afterPathStat\\source.jsonl",
+          "ok": true,
+          "elapsedMs": 0.12669999999997117,
+          "directory": false,
+          "file": true,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374884569367"
+        },
+        {
+          "line": 26,
+          "pid": 8208,
+          "sequence": 0,
+          "at": 1791476861549,
+          "monotonicMs": 37.8757,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 28,
+          "pid": 8208,
+          "sequence": 2,
+          "at": 1791476861560,
+          "monotonicMs": 47.3388,
+          "event": "spawn",
+          "executable": "powershell.exe",
+          "childPid": 9660,
+          "detached": false
+        },
+        {
+          "line": 29,
+          "pid": 8208,
+          "sequence": 3,
+          "at": 1791476868555,
+          "monotonicMs": 7043.074,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 6616,
+          "detached": false
+        },
+        {
+          "line": 30,
+          "pid": 8208,
+          "sequence": 4,
+          "at": 1791476868630,
+          "monotonicMs": 7117.8622,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 6616,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 31,
+          "pid": 8208,
+          "sequence": 5,
+          "at": 1791476868631,
+          "monotonicMs": 7118.36,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 6616,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 32,
+          "pid": 8208,
+          "sequence": 6,
+          "at": 1791476868642,
+          "monotonicMs": 7129.809,
+          "event": "child-exit",
+          "executable": "powershell.exe",
+          "childPid": 9660,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 33,
+          "pid": 8208,
+          "sequence": 7,
+          "at": 1791476868642,
+          "monotonicMs": 7130.1384,
+          "event": "child-close",
+          "executable": "powershell.exe",
+          "childPid": 9660,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 34,
+          "pid": 5216,
+          "sequence": 25,
+          "at": 1791476868651,
+          "monotonicMs": 7602.8001,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 8208,
+          "elapsedMs": 7166.0316,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 35,
+          "pid": 5216,
+          "sequence": 26,
+          "at": 1791476868652,
+          "monotonicMs": 7603.7261,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/afterRead",
+          "ok": true,
+          "elapsedMs": 0.2782999999999447
+        },
+        {
+          "line": 36,
+          "pid": 5216,
+          "sequence": 27,
+          "at": 1791476868653,
+          "monotonicMs": 7604.8587,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.06950000000051659,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374883553285"
+        },
+        {
+          "line": 37,
+          "pid": 5216,
+          "sequence": 28,
+          "at": 1791476868653,
+          "monotonicMs": 7605.1838,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.04110000000036962,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "281474976711969"
+        },
+        {
+          "line": 38,
+          "pid": 5216,
+          "sequence": 29,
+          "at": 1791476868653,
+          "monotonicMs": 7605.5485,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.0433999999995649,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906843396"
+        },
+        {
+          "line": 39,
+          "pid": 5216,
+          "sequence": 30,
+          "at": 1791476868654,
+          "monotonicMs": 7605.8448,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.0419000000001688,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849860265399"
+        },
+        {
+          "line": 40,
+          "pid": 5216,
+          "sequence": 31,
+          "at": 1791476868654,
+          "monotonicMs": 7606.1499,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05559999999968568,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876910"
+        },
+        {
+          "line": 41,
+          "pid": 5216,
+          "sequence": 32,
+          "at": 1791476868654,
+          "monotonicMs": 7606.4385,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.04070000000047003,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876940"
+        },
+        {
+          "line": 42,
+          "pid": 5216,
+          "sequence": 33,
+          "at": 1791476868655,
+          "monotonicMs": 7606.7477,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED",
+          "ok": true,
+          "elapsedMs": 0.03269999999974971,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1970324837016045"
+        },
+        {
+          "line": 43,
+          "pid": 5216,
+          "sequence": 34,
+          "at": 1791476868655,
+          "monotonicMs": 7607.0828,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/afterRead",
+          "ok": true,
+          "elapsedMs": 0.0430000000005748,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899907858722"
+        },
+        {
+          "line": 44,
+          "pid": 5216,
+          "sequence": 35,
+          "at": 1791476868655,
+          "monotonicMs": 7607.432,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/afterRead\\source.jsonl",
+          "ok": true,
+          "elapsedMs": 0.04869999999937136,
+          "directory": false,
+          "file": true,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "844424931148068"
+        },
+        {
+          "line": 45,
+          "pid": 6184,
+          "sequence": 0,
+          "at": 1791476868715,
+          "monotonicMs": 36.533,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 47,
+          "pid": 6184,
+          "sequence": 2,
+          "at": 1791476868724,
+          "monotonicMs": 44.8867,
+          "event": "spawn",
+          "executable": "powershell.exe",
+          "childPid": 5704,
+          "detached": false
+        },
+        {
+          "line": 48,
+          "pid": 6184,
+          "sequence": 3,
+          "at": 1791476875720,
+          "monotonicMs": 7041.2192,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 6476,
+          "detached": false
+        },
+        {
+          "line": 49,
+          "pid": 6184,
+          "sequence": 4,
+          "at": 1791476875794,
+          "monotonicMs": 7114.5249,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 6476,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 50,
+          "pid": 6184,
+          "sequence": 5,
+          "at": 1791476875794,
+          "monotonicMs": 7114.9959,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 6476,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 51,
+          "pid": 6184,
+          "sequence": 6,
+          "at": 1791476875807,
+          "monotonicMs": 7128.4414,
+          "event": "child-exit",
+          "executable": "powershell.exe",
+          "childPid": 5704,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 52,
+          "pid": 6184,
+          "sequence": 7,
+          "at": 1791476875808,
+          "monotonicMs": 7128.8928,
+          "event": "child-close",
+          "executable": "powershell.exe",
+          "childPid": 5704,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 53,
+          "pid": 5216,
+          "sequence": 36,
+          "at": 1791476875831,
+          "monotonicMs": 14782.9375,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6184,
+          "elapsedMs": 7174.9214,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ]
+    },
+    "subprocess": {
+      "observations": [
+        {
+          "stage": "resistant-1024",
+          "elapsedMs": 660.8985,
+          "ok": false,
+          "errorClass": "BoundedSubprocessTimeoutError",
+          "code": null,
+          "refusal": null,
+          "supervisionMessage": "subprocess deadline exceeded"
+        },
+        {
+          "stage": "resistant-liveness-at-return",
+          "owned": [
+            4924
+          ],
+          "alive": []
+        },
+        {
+          "stage": "descendant-1024",
+          "elapsedMs": 635.0953,
+          "ok": false,
+          "errorClass": "BoundedSubprocessTimeoutError",
+          "code": null,
+          "refusal": null,
+          "supervisionMessage": "subprocess deadline exceeded"
+        },
+        {
+          "stage": "descendant-liveness-at-return",
+          "owned": [
+            2180,
+            5028
+          ],
+          "alive": []
+        },
+        {
+          "stage": "inherited-pipes-1024",
+          "elapsedMs": 356.21079999999984,
+          "ok": true,
+          "value": {
+            "status": 0,
+            "signal": null,
+            "stdoutBytes": 0,
+            "stderrBytes": 0
+          }
+        },
+        {
+          "stage": "inherited-pipes-liveness-at-return",
+          "owned": [
+            7292,
+            880
+          ],
+          "alive": []
+        },
+        {
+          "stage": "inherited-pipes-liveness-100ms",
+          "owned": [
+            7292,
+            880
+          ],
+          "alive": []
+        },
+        {
+          "stage": "combined-1024",
+          "elapsedMs": 209.44399999999996,
+          "ok": false,
+          "errorClass": "BoundedSubprocessSupervisionError",
+          "code": null,
+          "refusal": null,
+          "supervisionMessage": "subprocess cleanup failed"
+        },
+        {
+          "stage": "combined-liveness-at-return",
+          "owned": [
+            884
+          ],
+          "alive": []
+        },
+        {
+          "stage": "combined-1200",
+          "elapsedMs": 150.51240000000007,
+          "ok": true,
+          "value": {
+            "status": 0,
+            "signal": null,
+            "stdoutBytes": 600,
+            "stderrBytes": 600
+          }
+        },
+        {
+          "stage": "combined-liveness-at-return",
+          "owned": [
+            8800
+          ],
+          "alive": []
+        },
+        {
+          "stage": "overflow-2048",
+          "elapsedMs": 222.20420000000013,
+          "ok": false,
+          "errorClass": "BoundedSubprocessOutputError",
+          "code": null,
+          "refusal": null,
+          "supervisionMessage": "subprocess output limit exceeded"
+        },
+        {
+          "stage": "overflow-liveness-at-return",
+          "owned": [
+            10148
+          ],
+          "alive": []
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          5828,
+          7724,
+          4924,
+          1212,
+          2180,
+          5028,
+          5348,
+          7292,
+          880,
+          6920,
+          884,
+          9408,
+          8800,
+          9568,
+          10148
+        ],
+        "states": [
+          {
+            "pid": 10148,
+            "state": "pending"
+          },
+          {
+            "pid": 1212,
+            "state": "complete"
+          },
+          {
+            "pid": 2180,
+            "state": "pending"
+          },
+          {
+            "pid": 4924,
+            "state": "pending"
+          },
+          {
+            "pid": 5028,
+            "state": "pending"
+          },
+          {
+            "pid": 5348,
+            "state": "complete"
+          },
+          {
+            "pid": 5828,
+            "state": "complete"
+          },
+          {
+            "pid": 6920,
+            "state": "complete"
+          },
+          {
+            "pid": 7292,
+            "state": "complete"
+          },
+          {
+            "pid": 7724,
+            "state": "complete"
+          },
+          {
+            "pid": 880,
+            "state": "pending"
+          },
+          {
+            "pid": 8800,
+            "state": "complete"
+          },
+          {
+            "pid": 884,
+            "state": "complete"
+          },
+          {
+            "pid": 9408,
+            "state": "complete"
+          },
+          {
+            "pid": 9568,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": false,
+        "traceCompletenessUnknown": true,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [
+          4924,
+          2180,
+          5028,
+          7292,
+          880,
+          884,
+          8800,
+          10148
+        ],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 13678,
+        "traceTruncated": false
+      },
+      "workers": [
+        {
+          "line": 26,
+          "pid": 5828,
+          "sequence": 15,
+          "at": 1791476876940,
+          "monotonicMs": 948.1225,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 7724,
+          "elapsedMs": 659.7966999999999,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 40,
+          "pid": 5828,
+          "sequence": 16,
+          "at": 1791476877575,
+          "monotonicMs": 1583.9593,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 1212,
+          "elapsedMs": 634.5695000000001,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 51,
+          "pid": 5828,
+          "sequence": 17,
+          "at": 1791476877932,
+          "monotonicMs": 1940.5001,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 5348,
+          "elapsedMs": 355.6876,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "ok"
+        },
+        {
+          "line": 64,
+          "pid": 5828,
+          "sequence": 18,
+          "at": 1791476878243,
+          "monotonicMs": 2251.7796,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6920,
+          "elapsedMs": 208.85550000000012,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "supervision"
+        },
+        {
+          "line": 74,
+          "pid": 5828,
+          "sequence": 19,
+          "at": 1791476878394,
+          "monotonicMs": 2402.639,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 9408,
+          "elapsedMs": 149.8768,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "ok"
+        },
+        {
+          "line": 91,
+          "pid": 5828,
+          "sequence": 20,
+          "at": 1791476878617,
+          "monotonicMs": 2625.2747,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 9568,
+          "elapsedMs": 221.60870000000023,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "output"
+        }
+      ],
+      "traceRows": 91,
+      "events": [
+        {
+          "line": 1,
+          "pid": 5828,
+          "sequence": 0,
+          "at": 1791476876027,
+          "monotonicMs": 36.6695,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 5828,
+          "sequence": 13,
+          "at": 1791476876088,
+          "monotonicMs": 96.1402,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.41150000000000375
+        },
+        {
+          "line": 15,
+          "pid": 5828,
+          "sequence": 14,
+          "at": 1791476876208,
+          "monotonicMs": 216.3853,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.2505999999999915
+        },
+        {
+          "line": 16,
+          "pid": 7724,
+          "sequence": 0,
+          "at": 1791476876343,
+          "monotonicMs": 36.1426,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 18,
+          "pid": 7724,
+          "sequence": 2,
+          "at": 1791476876352,
+          "monotonicMs": 44.0902,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 4924,
+          "detached": false
+        },
+        {
+          "line": 19,
+          "pid": 4924,
+          "sequence": 0,
+          "at": 1791476876409,
+          "monotonicMs": 37.6656,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 21,
+          "pid": 7724,
+          "sequence": 3,
+          "at": 1791476876851,
+          "monotonicMs": 543.2565,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 7804,
+          "detached": false
+        },
+        {
+          "line": 22,
+          "pid": 7724,
+          "sequence": 4,
+          "at": 1791476876913,
+          "monotonicMs": 605.2698,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 7804,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 23,
+          "pid": 7724,
+          "sequence": 5,
+          "at": 1791476876913,
+          "monotonicMs": 605.7809,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 7804,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 24,
+          "pid": 7724,
+          "sequence": 6,
+          "at": 1791476876914,
+          "monotonicMs": 606.5136,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 4924,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 25,
+          "pid": 7724,
+          "sequence": 7,
+          "at": 1791476876914,
+          "monotonicMs": 606.9154,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 4924,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 26,
+          "pid": 5828,
+          "sequence": 15,
+          "at": 1791476876940,
+          "monotonicMs": 948.1225,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 7724,
+          "elapsedMs": 659.7966999999999,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 27,
+          "pid": 1212,
+          "sequence": 0,
+          "at": 1791476877000,
+          "monotonicMs": 35.1701,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 29,
+          "pid": 1212,
+          "sequence": 2,
+          "at": 1791476877008,
+          "monotonicMs": 42.84,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 2180,
+          "detached": false
+        },
+        {
+          "line": 30,
+          "pid": 2180,
+          "sequence": 0,
+          "at": 1791476877065,
+          "monotonicMs": 34.7612,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 32,
+          "pid": 2180,
+          "sequence": 2,
+          "at": 1791476877073,
+          "monotonicMs": 41.534,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 5028,
+          "detached": false
+        },
+        {
+          "line": 33,
+          "pid": 5028,
+          "sequence": 0,
+          "at": 1791476877121,
+          "monotonicMs": 35.0964,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 35,
+          "pid": 1212,
+          "sequence": 3,
+          "at": 1791476877507,
+          "monotonicMs": 541.9451,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 7816,
+          "detached": false
+        },
+        {
+          "line": 36,
+          "pid": 1212,
+          "sequence": 4,
+          "at": 1791476877566,
+          "monotonicMs": 600.2169,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 2180,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 37,
+          "pid": 1212,
+          "sequence": 5,
+          "at": 1791476877566,
+          "monotonicMs": 600.8117,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 2180,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 38,
+          "pid": 1212,
+          "sequence": 6,
+          "at": 1791476877567,
+          "monotonicMs": 601.685,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 7816,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 39,
+          "pid": 1212,
+          "sequence": 7,
+          "at": 1791476877567,
+          "monotonicMs": 601.9958,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 7816,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 40,
+          "pid": 5828,
+          "sequence": 16,
+          "at": 1791476877575,
+          "monotonicMs": 1583.9593,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 1212,
+          "elapsedMs": 634.5695000000001,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 41,
+          "pid": 5348,
+          "sequence": 0,
+          "at": 1791476877635,
+          "monotonicMs": 34.6957,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 43,
+          "pid": 5348,
+          "sequence": 2,
+          "at": 1791476877644,
+          "monotonicMs": 42.2869,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 7292,
+          "detached": false
+        },
+        {
+          "line": 44,
+          "pid": 7292,
+          "sequence": 0,
+          "at": 1791476877703,
+          "monotonicMs": 36.7415,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 46,
+          "pid": 7292,
+          "sequence": 2,
+          "at": 1791476877711,
+          "monotonicMs": 43.7621,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 880,
+          "detached": false
+        },
+        {
+          "line": 47,
+          "pid": 880,
+          "sequence": 0,
+          "at": 1791476877761,
+          "monotonicMs": 36.3653,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 49,
+          "pid": 5348,
+          "sequence": 3,
+          "at": 1791476877924,
+          "monotonicMs": 322.3888,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 7292,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 50,
+          "pid": 5348,
+          "sequence": 4,
+          "at": 1791476877924,
+          "monotonicMs": 322.8142,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 7292,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 51,
+          "pid": 5828,
+          "sequence": 17,
+          "at": 1791476877932,
+          "monotonicMs": 1940.5001,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 5348,
+          "elapsedMs": 355.6876,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "ok"
+        },
+        {
+          "line": 52,
+          "pid": 6920,
+          "sequence": 0,
+          "at": 1791476878095,
+          "monotonicMs": 34.8037,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 54,
+          "pid": 6920,
+          "sequence": 2,
+          "at": 1791476878104,
+          "monotonicMs": 42.637,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 884,
+          "detached": false
+        },
+        {
+          "line": 55,
+          "pid": 884,
+          "sequence": 0,
+          "at": 1791476878161,
+          "monotonicMs": 36.4314,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 57,
+          "pid": 6920,
+          "sequence": 3,
+          "at": 1791476878166,
+          "monotonicMs": 104.9153,
+          "event": "stdout-bytes",
+          "childPid": 884,
+          "bytes": 600
+        },
+        {
+          "line": 58,
+          "pid": 6920,
+          "sequence": 4,
+          "at": 1791476878167,
+          "monotonicMs": 105.6115,
+          "event": "stderr-bytes",
+          "childPid": 884,
+          "bytes": 600
+        },
+        {
+          "line": 59,
+          "pid": 6920,
+          "sequence": 5,
+          "at": 1791476878171,
+          "monotonicMs": 110.1197,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 5640,
+          "detached": false
+        },
+        {
+          "line": 60,
+          "pid": 6920,
+          "sequence": 6,
+          "at": 1791476878175,
+          "monotonicMs": 114.3598,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 884,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 61,
+          "pid": 6920,
+          "sequence": 7,
+          "at": 1791476878176,
+          "monotonicMs": 114.9256,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 884,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 62,
+          "pid": 6920,
+          "sequence": 8,
+          "at": 1791476878234,
+          "monotonicMs": 173.3054,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 5640,
+          "status": 128,
+          "signal": null
+        },
+        {
+          "line": 63,
+          "pid": 6920,
+          "sequence": 9,
+          "at": 1791476878235,
+          "monotonicMs": 173.8317,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 5640,
+          "status": 128,
+          "signal": null
+        },
+        {
+          "line": 64,
+          "pid": 5828,
+          "sequence": 18,
+          "at": 1791476878243,
+          "monotonicMs": 2251.7796,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6920,
+          "elapsedMs": 208.85550000000012,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "supervision"
+        },
+        {
+          "line": 65,
+          "pid": 9408,
+          "sequence": 0,
+          "at": 1791476878306,
+          "monotonicMs": 36.6367,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 67,
+          "pid": 9408,
+          "sequence": 2,
+          "at": 1791476878315,
+          "monotonicMs": 45.0243,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 8800,
+          "detached": false
+        },
+        {
+          "line": 68,
+          "pid": 8800,
+          "sequence": 0,
+          "at": 1791476878371,
+          "monotonicMs": 36.0399,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 70,
+          "pid": 9408,
+          "sequence": 3,
+          "at": 1791476878377,
+          "monotonicMs": 107.074,
+          "event": "stdout-bytes",
+          "childPid": 8800,
+          "bytes": 600
+        },
+        {
+          "line": 71,
+          "pid": 9408,
+          "sequence": 4,
+          "at": 1791476878378,
+          "monotonicMs": 107.785,
+          "event": "stderr-bytes",
+          "childPid": 8800,
+          "bytes": 600
+        },
+        {
+          "line": 72,
+          "pid": 9408,
+          "sequence": 5,
+          "at": 1791476878385,
+          "monotonicMs": 114.8503,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 8800,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 73,
+          "pid": 9408,
+          "sequence": 6,
+          "at": 1791476878385,
+          "monotonicMs": 115.2553,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 8800,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 74,
+          "pid": 5828,
+          "sequence": 19,
+          "at": 1791476878394,
+          "monotonicMs": 2402.639,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 9408,
+          "elapsedMs": 149.8768,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "ok"
+        },
+        {
+          "line": 75,
+          "pid": 9568,
+          "sequence": 0,
+          "at": 1791476878453,
+          "monotonicMs": 33.5322,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 77,
+          "pid": 9568,
+          "sequence": 2,
+          "at": 1791476878462,
+          "monotonicMs": 41.4742,
+          "event": "spawn",
+          "executable": "node.exe",
+          "childPid": 10148,
+          "detached": false
+        },
+        {
+          "line": 78,
+          "pid": 10148,
+          "sequence": 0,
+          "at": 1791476878519,
+          "monotonicMs": 35.3666,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 80,
+          "pid": 9568,
+          "sequence": 3,
+          "at": 1791476878523,
+          "monotonicMs": 103.3764,
+          "event": "stderr-bytes",
+          "childPid": 10148,
+          "bytes": 18
+        },
+        {
+          "line": 81,
+          "pid": 9568,
+          "sequence": 4,
+          "at": 1791476878534,
+          "monotonicMs": 113.8794,
+          "event": "stdout-bytes",
+          "childPid": 10148,
+          "bytes": 4096
+        },
+        {
+          "line": 82,
+          "pid": 9568,
+          "sequence": 5,
+          "at": 1791476878538,
+          "monotonicMs": 118.031,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 2492,
+          "detached": false
+        },
+        {
+          "line": 83,
+          "pid": 9568,
+          "sequence": 6,
+          "at": 1791476878550,
+          "monotonicMs": 129.5261,
+          "event": "stdout-bytes",
+          "childPid": 10148,
+          "bytes": 4096
+        },
+        {
+          "line": 84,
+          "pid": 9568,
+          "sequence": 7,
+          "at": 1791476878566,
+          "monotonicMs": 145.4737,
+          "event": "stdout-bytes",
+          "childPid": 10148,
+          "bytes": 4096
+        },
+        {
+          "line": 85,
+          "pid": 9568,
+          "sequence": 8,
+          "at": 1791476878582,
+          "monotonicMs": 161.6836,
+          "event": "stdout-bytes",
+          "childPid": 10148,
+          "bytes": 4096
+        },
+        {
+          "line": 86,
+          "pid": 9568,
+          "sequence": 9,
+          "at": 1791476878587,
+          "monotonicMs": 167.3782,
+          "event": "stdout-bytes",
+          "childPid": 10148,
+          "bytes": 4096
+        },
+        {
+          "line": 87,
+          "pid": 9568,
+          "sequence": 10,
+          "at": 1791476878599,
+          "monotonicMs": 178.5531,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 2492,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 88,
+          "pid": 9568,
+          "sequence": 11,
+          "at": 1791476878599,
+          "monotonicMs": 179.0349,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 2492,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 89,
+          "pid": 9568,
+          "sequence": 12,
+          "at": 1791476878600,
+          "monotonicMs": 179.6696,
+          "event": "child-exit",
+          "executable": "node.exe",
+          "childPid": 10148,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 90,
+          "pid": 9568,
+          "sequence": 13,
+          "at": 1791476878600,
+          "monotonicMs": 179.9708,
+          "event": "child-close",
+          "executable": "node.exe",
+          "childPid": 10148,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 91,
+          "pid": 5828,
+          "sequence": 20,
+          "at": 1791476878617,
+          "monotonicMs": 2625.2747,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 9568,
+          "elapsedMs": 221.60870000000023,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "output"
+        }
+      ]
+    },
+    "confirmation": {
+      "observations": [
+        {
+          "stage": "preview",
+          "elapsedMs": 7175.6856,
+          "ok": false,
+          "errorClass": "Error",
+          "code": null,
+          "refusal": "Replay refused: source could not be opened safely",
+          "supervisionMessage": null
+        },
+        {
+          "stage": "merge-count",
+          "mergeCalls": 0
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          2956,
+          6644
+        ],
+        "states": [
+          {
+            "pid": 2956,
+            "state": "complete"
+          },
+          {
+            "pid": 6644,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 6006,
+        "traceTruncated": false
+      },
+      "workers": [
+        {
+          "line": 32,
+          "pid": 2956,
+          "sequence": 23,
+          "at": 1791476902223,
+          "monotonicMs": 7552.2021,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6644,
+          "elapsedMs": 7169.3595000000005,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ],
+      "traceRows": 32,
+      "events": [
+        {
+          "line": 1,
+          "pid": 2956,
+          "sequence": 0,
+          "at": 1791476894706,
+          "monotonicMs": 35.9092,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 2956,
+          "sequence": 13,
+          "at": 1791476894762,
+          "monotonicMs": 91.2765,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.47999999999998977
+        },
+        {
+          "line": 15,
+          "pid": 2956,
+          "sequence": 14,
+          "at": 1791476894873,
+          "monotonicMs": 201.5977,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.24699999999998568
+        },
+        {
+          "line": 16,
+          "pid": 2956,
+          "sequence": 15,
+          "at": 1791476895050,
+          "monotonicMs": 379.4566,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.1893000000000029,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374883553285"
+        },
+        {
+          "line": 17,
+          "pid": 2956,
+          "sequence": 16,
+          "at": 1791476895051,
+          "monotonicMs": 379.909,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05299999999999727,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "281474976711969"
+        },
+        {
+          "line": 18,
+          "pid": 2956,
+          "sequence": 17,
+          "at": 1791476895051,
+          "monotonicMs": 380.2463,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05259999999998399,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906843396"
+        },
+        {
+          "line": 19,
+          "pid": 2956,
+          "sequence": 18,
+          "at": 1791476895051,
+          "monotonicMs": 380.5682,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.046499999999980446,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849860265399"
+        },
+        {
+          "line": 20,
+          "pid": 2956,
+          "sequence": 19,
+          "at": 1791476895052,
+          "monotonicMs": 380.8904,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.04790000000002692,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876910"
+        },
+        {
+          "line": 21,
+          "pid": 2956,
+          "sequence": 20,
+          "at": 1791476895052,
+          "monotonicMs": 381.2042,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.045099999999990814,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876940"
+        },
+        {
+          "line": 22,
+          "pid": 2956,
+          "sequence": 21,
+          "at": 1791476895052,
+          "monotonicMs": 381.5009,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED",
+          "ok": true,
+          "elapsedMs": 0.03640000000001464,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "3377699720528499"
+        },
+        {
+          "line": 23,
+          "pid": 2956,
+          "sequence": 22,
+          "at": 1791476895053,
+          "monotonicMs": 381.9036,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/source.jsonl",
+          "ok": true,
+          "elapsedMs": 0.05669999999997799,
+          "directory": false,
+          "file": true,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374884569339"
+        },
+        {
+          "line": 24,
+          "pid": 6644,
+          "sequence": 0,
+          "at": 1791476895117,
+          "monotonicMs": 36.3016,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 26,
+          "pid": 6644,
+          "sequence": 2,
+          "at": 1791476895126,
+          "monotonicMs": 45.1059,
+          "event": "spawn",
+          "executable": "powershell.exe",
+          "childPid": 9076,
+          "detached": false
+        },
+        {
+          "line": 27,
+          "pid": 6644,
+          "sequence": 3,
+          "at": 1791476902122,
+          "monotonicMs": 7040.7022,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 7860,
+          "detached": false
+        },
+        {
+          "line": 28,
+          "pid": 6644,
+          "sequence": 4,
+          "at": 1791476902194,
+          "monotonicMs": 7112.968,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 7860,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 29,
+          "pid": 6644,
+          "sequence": 5,
+          "at": 1791476902195,
+          "monotonicMs": 7113.5426,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 7860,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 30,
+          "pid": 6644,
+          "sequence": 6,
+          "at": 1791476902212,
+          "monotonicMs": 7131.266,
+          "event": "child-exit",
+          "executable": "powershell.exe",
+          "childPid": 9076,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 31,
+          "pid": 6644,
+          "sequence": 7,
+          "at": 1791476902213,
+          "monotonicMs": 7131.7781,
+          "event": "child-close",
+          "executable": "powershell.exe",
+          "childPid": 9076,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 32,
+          "pid": 2956,
+          "sequence": 23,
+          "at": 1791476902223,
+          "monotonicMs": 7552.2021,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 6644,
+          "elapsedMs": 7169.3595000000005,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ]
+    },
+    "binding": {
+      "observations": [
+        {
+          "stage": "preview",
+          "elapsedMs": 7214.500099999999,
+          "ok": false,
+          "errorClass": "Error",
+          "code": null,
+          "refusal": "Replay refused: source could not be opened safely",
+          "supervisionMessage": null
+        },
+        {
+          "stage": "merge-count",
+          "mergeCalls": 0
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          8944,
+          4536
+        ],
+        "states": [
+          {
+            "pid": 4536,
+            "state": "complete"
+          },
+          {
+            "pid": 8944,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 5993,
+        "traceTruncated": false
+      },
+      "workers": [
+        {
+          "line": 32,
+          "pid": 8944,
+          "sequence": 23,
+          "at": 1791476910294,
+          "monotonicMs": 7915.9787,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 4536,
+          "elapsedMs": 7205.4619,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ],
+      "traceRows": 32,
+      "events": [
+        {
+          "line": 1,
+          "pid": 8944,
+          "sequence": 0,
+          "at": 1791476902412,
+          "monotonicMs": 35.5712,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 8944,
+          "sequence": 13,
+          "at": 1791476902471,
+          "monotonicMs": 93.3244,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.3640000000000043
+        },
+        {
+          "line": 15,
+          "pid": 8944,
+          "sequence": 14,
+          "at": 1791476902705,
+          "monotonicMs": 327.4887,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.25139999999998963
+        },
+        {
+          "line": 16,
+          "pid": 8944,
+          "sequence": 15,
+          "at": 1791476903083,
+          "monotonicMs": 705.5895,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.29910000000006676,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374883553285"
+        },
+        {
+          "line": 17,
+          "pid": 8944,
+          "sequence": 16,
+          "at": 1791476903084,
+          "monotonicMs": 706.1814,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.07080000000007658,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "281474976711969"
+        },
+        {
+          "line": 18,
+          "pid": 8944,
+          "sequence": 17,
+          "at": 1791476903084,
+          "monotonicMs": 706.6436,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.06619999999998072,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906843396"
+        },
+        {
+          "line": 19,
+          "pid": 8944,
+          "sequence": 18,
+          "at": 1791476903085,
+          "monotonicMs": 707.0718,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05820000000005621,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849860265399"
+        },
+        {
+          "line": 20,
+          "pid": 8944,
+          "sequence": 19,
+          "at": 1791476903085,
+          "monotonicMs": 707.5597,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.09449999999992542,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876910"
+        },
+        {
+          "line": 21,
+          "pid": 8944,
+          "sequence": 20,
+          "at": 1791476903086,
+          "monotonicMs": 708.0015,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.05989999999997053,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876940"
+        },
+        {
+          "line": 22,
+          "pid": 8944,
+          "sequence": 21,
+          "at": 1791476903086,
+          "monotonicMs": 708.5856,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED",
+          "ok": true,
+          "elapsedMs": 0.04809999999997672,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "3659174697239155"
+        },
+        {
+          "line": 23,
+          "pid": 8944,
+          "sequence": 22,
+          "at": 1791476903087,
+          "monotonicMs": 709.1252,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/source.jsonl",
+          "ok": true,
+          "elapsedMs": 0.08109999999999218,
+          "directory": false,
+          "file": true,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849861279995"
+        },
+        {
+          "line": 24,
+          "pid": 4536,
+          "sequence": 0,
+          "at": 1791476903172,
+          "monotonicMs": 66.0609,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 26,
+          "pid": 4536,
+          "sequence": 2,
+          "at": 1791476903206,
+          "monotonicMs": 83.4135,
+          "event": "spawn",
+          "executable": "powershell.exe",
+          "childPid": 5976,
+          "detached": false
+        },
+        {
+          "line": 27,
+          "pid": 4536,
+          "sequence": 3,
+          "at": 1791476910192,
+          "monotonicMs": 7069.3363,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 3268,
+          "detached": false
+        },
+        {
+          "line": 28,
+          "pid": 4536,
+          "sequence": 4,
+          "at": 1791476910263,
+          "monotonicMs": 7140.474,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 3268,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 29,
+          "pid": 4536,
+          "sequence": 5,
+          "at": 1791476910264,
+          "monotonicMs": 7140.958,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 3268,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 30,
+          "pid": 4536,
+          "sequence": 6,
+          "at": 1791476910276,
+          "monotonicMs": 7153.541,
+          "event": "child-exit",
+          "executable": "powershell.exe",
+          "childPid": 5976,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 31,
+          "pid": 4536,
+          "sequence": 7,
+          "at": 1791476910277,
+          "monotonicMs": 7154.0704,
+          "event": "child-close",
+          "executable": "powershell.exe",
+          "childPid": 5976,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 32,
+          "pid": 8944,
+          "sequence": 23,
+          "at": 1791476910294,
+          "monotonicMs": 7915.9787,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 4536,
+          "elapsedMs": 7205.4619,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ]
+    },
+    "healthy": {
+      "observations": [
+        {
+          "stage": "preview",
+          "elapsedMs": 7194.9511,
+          "ok": false,
+          "errorClass": "Error",
+          "code": null,
+          "refusal": "Replay refused: source could not be opened safely",
+          "supervisionMessage": null
+        },
+        {
+          "stage": "preview-read-only",
+          "unchanged": true
+        },
+        {
+          "stage": "queue",
+          "containsCanary": false,
+          "retained": true
+        }
+      ],
+      "health": {
+        "expectedTracePids": [
+          3492,
+          4680
+        ],
+        "states": [
+          {
+            "pid": 3492,
+            "state": "complete"
+          },
+          {
+            "pid": 4680,
+            "state": "complete"
+          }
+        ],
+        "missingPids": [],
+        "invalidTrace": false,
+        "traceReadFailureCode": null,
+        "healthReadFailureCode": null,
+        "traceComplete": true,
+        "traceCompletenessUnknown": false,
+        "productCleanupConclusion": "not-derived-from-trace-health"
+      },
+      "cleanup": {
+        "fixturePids": [],
+        "liveFixturePids": [],
+        "ownedLifetimeCapMs": 15000,
+        "stalePidsSignalled": false,
+        "rootRetained": false,
+        "traceBytes": 7197,
+        "traceTruncated": false
+      },
+      "workers": [
+        {
+          "line": 37,
+          "pid": 3492,
+          "sequence": 28,
+          "at": 1791476918239,
+          "monotonicMs": 7792.6432,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 4680,
+          "elapsedMs": 7188.9775,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        }
+      ],
+      "traceRows": 38,
+      "events": [
+        {
+          "line": 1,
+          "pid": 3492,
+          "sequence": 0,
+          "at": 1791476910482,
+          "monotonicMs": 36.2555,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 14,
+          "pid": 3492,
+          "sequence": 13,
+          "at": 1791476910552,
+          "monotonicMs": 105.6726,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.4568999999999903
+        },
+        {
+          "line": 15,
+          "pid": 3492,
+          "sequence": 14,
+          "at": 1791476910665,
+          "monotonicMs": 218.8678,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/tmp\\tsx-runneradmin",
+          "ok": true,
+          "elapsedMs": 0.22239999999999327
+        },
+        {
+          "line": 16,
+          "pid": 3492,
+          "sequence": 15,
+          "at": 1791476910915,
+          "monotonicMs": 469.0307,
+          "event": "spawn-sync",
+          "executable": "git",
+          "childPid": 7816,
+          "elapsedMs": 54.10510000000005,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": null
+        },
+        {
+          "line": 17,
+          "pid": 3492,
+          "sequence": 16,
+          "at": 1791476911010,
+          "monotonicMs": 563.4581,
+          "event": "spawn-sync",
+          "executable": "git",
+          "childPid": 1612,
+          "elapsedMs": 93.98770000000002,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": null
+        },
+        {
+          "line": 18,
+          "pid": 3492,
+          "sequence": 17,
+          "at": 1791476911042,
+          "monotonicMs": 595.789,
+          "event": "spawn-sync",
+          "executable": "git",
+          "childPid": 7212,
+          "elapsedMs": 31.8356,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": null
+        },
+        {
+          "line": 19,
+          "pid": 3492,
+          "sequence": 18,
+          "at": 1791476911043,
+          "monotonicMs": 596.6037,
+          "event": "fs",
+          "operation": "mkdirSync",
+          "target": "$OWNED/home\\.tokenizer",
+          "ok": true,
+          "elapsedMs": 0.4290000000000873
+        },
+        {
+          "line": 20,
+          "pid": 3492,
+          "sequence": 19,
+          "at": 1791476911044,
+          "monotonicMs": 597.3948,
+          "event": "fs",
+          "operation": "openSync",
+          "target": "$OWNED/home\\.tokenizer\\queue.jsonl",
+          "ok": true,
+          "elapsedMs": 0.06680000000005748
+        },
+        {
+          "line": 21,
+          "pid": 3492,
+          "sequence": 20,
+          "at": 1791476911047,
+          "monotonicMs": 600.4298,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.10960000000000036,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1407374883553285"
+        },
+        {
+          "line": 22,
+          "pid": 3492,
+          "sequence": 21,
+          "at": 1791476911047,
+          "monotonicMs": 600.8391,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.0884000000000924,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "281474976711969"
+        },
+        {
+          "line": 23,
+          "pid": 3492,
+          "sequence": 22,
+          "at": 1791476911047,
+          "monotonicMs": 601.1712,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.048599999999964894,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906843396"
+        },
+        {
+          "line": 24,
+          "pid": 3492,
+          "sequence": 23,
+          "at": 1791476911048,
+          "monotonicMs": 601.5357,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.053699999999935244,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849860265399"
+        },
+        {
+          "line": 25,
+          "pid": 3492,
+          "sequence": 24,
+          "at": 1791476911048,
+          "monotonicMs": 601.9009,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.052099999999995816,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876910"
+        },
+        {
+          "line": 26,
+          "pid": 3492,
+          "sequence": 25,
+          "at": 1791476911048,
+          "monotonicMs": 602.2209,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$ANCESTOR_OR_OTHER",
+          "ok": true,
+          "elapsedMs": 0.048499999999989996,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1125899906876940"
+        },
+        {
+          "line": 27,
+          "pid": 3492,
+          "sequence": 26,
+          "at": 1791476911049,
+          "monotonicMs": 602.5175,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED",
+          "ok": true,
+          "elapsedMs": 0.040599999999926695,
+          "directory": true,
+          "file": false,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "3940649673949811"
+        },
+        {
+          "line": 28,
+          "pid": 3492,
+          "sequence": 27,
+          "at": 1791476911049,
+          "monotonicMs": 602.8756,
+          "event": "fs",
+          "operation": "lstatSync",
+          "target": "$OWNED/source.jsonl",
+          "ok": true,
+          "elapsedMs": 0.05499999999994998,
+          "directory": false,
+          "file": true,
+          "symlink": false,
+          "dev": "742408122",
+          "ino": "1688849861279988"
+        },
+        {
+          "line": 29,
+          "pid": 4680,
+          "sequence": 0,
+          "at": 1791476911120,
+          "monotonicMs": 42.3184,
+          "event": "preload",
+          "node": "v22.23.3",
+          "uv": "1.51.0"
+        },
+        {
+          "line": 31,
+          "pid": 4680,
+          "sequence": 2,
+          "at": 1791476911130,
+          "monotonicMs": 51.0761,
+          "event": "spawn",
+          "executable": "powershell.exe",
+          "childPid": 7288,
+          "detached": false
+        },
+        {
+          "line": 32,
+          "pid": 4680,
+          "sequence": 3,
+          "at": 1791476918124,
+          "monotonicMs": 7045.2496,
+          "event": "spawn",
+          "executable": "taskkill.exe",
+          "childPid": 3440,
+          "detached": false
+        },
+        {
+          "line": 33,
+          "pid": 4680,
+          "sequence": 4,
+          "at": 1791476918197,
+          "monotonicMs": 7118.4973,
+          "event": "child-exit",
+          "executable": "taskkill.exe",
+          "childPid": 3440,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 34,
+          "pid": 4680,
+          "sequence": 5,
+          "at": 1791476918197,
+          "monotonicMs": 7119.0513,
+          "event": "child-close",
+          "executable": "taskkill.exe",
+          "childPid": 3440,
+          "status": 0,
+          "signal": null
+        },
+        {
+          "line": 35,
+          "pid": 4680,
+          "sequence": 6,
+          "at": 1791476918214,
+          "monotonicMs": 7135.8803,
+          "event": "child-exit",
+          "executable": "powershell.exe",
+          "childPid": 7288,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 36,
+          "pid": 4680,
+          "sequence": 7,
+          "at": 1791476918215,
+          "monotonicMs": 7136.3208,
+          "event": "child-close",
+          "executable": "powershell.exe",
+          "childPid": 7288,
+          "status": 1,
+          "signal": null
+        },
+        {
+          "line": 37,
+          "pid": 3492,
+          "sequence": 28,
+          "at": 1791476918239,
+          "monotonicMs": 7792.6432,
+          "event": "spawn-sync",
+          "executable": "node.exe",
+          "childPid": 4680,
+          "elapsedMs": 7188.9775,
+          "status": 0,
+          "signal": null,
+          "code": null,
+          "workerKind": "timeout"
+        },
+        {
+          "line": 38,
+          "pid": 3492,
+          "sequence": 29,
+          "at": 1791476918240,
+          "monotonicMs": 7793.3422,
+          "event": "fs",
+          "operation": "openSync",
+          "target": "$OWNED/home\\.tokenizer\\queue.jsonl",
+          "ok": true,
+          "elapsedMs": 0.08190000000013242
+        }
+      ]
+    }
+  },
+  "replayPowerShell": {
+    "parent": [
+      {
+        "workerLine": 34,
+        "workerPid": 8208,
+        "powerShellPid": 9660,
+        "spawnLine": 28,
+        "taskkillLine": 29,
+        "closeLine": 33,
+        "beforeTaskkillMs": 6995.735199999999,
+        "closeAfterTaskkillMs": 87.0644000000002,
+        "totalWorkerMs": 7166.0316,
+        "workerKind": "timeout",
+        "capturedOutputRows": 0
+      },
+      {
+        "workerLine": 53,
+        "workerPid": 6184,
+        "powerShellPid": 5704,
+        "spawnLine": 47,
+        "taskkillLine": 48,
+        "closeLine": 52,
+        "beforeTaskkillMs": 6996.3324999999995,
+        "closeAfterTaskkillMs": 87.67360000000008,
+        "totalWorkerMs": 7174.9214,
+        "workerKind": "timeout",
+        "capturedOutputRows": 0
+      }
+    ],
+    "confirmation": [
+      {
+        "workerLine": 32,
+        "workerPid": 6644,
+        "powerShellPid": 9076,
+        "spawnLine": 26,
+        "taskkillLine": 27,
+        "closeLine": 31,
+        "beforeTaskkillMs": 6995.5963,
+        "closeAfterTaskkillMs": 91.07590000000073,
+        "totalWorkerMs": 7169.3595000000005,
+        "workerKind": "timeout",
+        "capturedOutputRows": 0
+      }
+    ],
+    "binding": [
+      {
+        "workerLine": 32,
+        "workerPid": 4536,
+        "powerShellPid": 5976,
+        "spawnLine": 26,
+        "taskkillLine": 27,
+        "closeLine": 31,
+        "beforeTaskkillMs": 6985.9228,
+        "closeAfterTaskkillMs": 84.73409999999967,
+        "totalWorkerMs": 7205.4619,
+        "workerKind": "timeout",
+        "capturedOutputRows": 0
+      }
+    ],
+    "healthy": [
+      {
+        "workerLine": 37,
+        "workerPid": 4680,
+        "powerShellPid": 7288,
+        "spawnLine": 31,
+        "taskkillLine": 32,
+        "closeLine": 36,
+        "beforeTaskkillMs": 6994.1735,
+        "closeAfterTaskkillMs": 91.07120000000032,
+        "totalWorkerMs": 7188.9775,
+        "workerKind": "timeout",
+        "capturedOutputRows": 0
+      }
+    ]
+  },
+  "combinedTimeline": [
+    {
+      "line": 52,
+      "pid": 6920,
+      "sequence": 0,
+      "at": 1791476878095,
+      "monotonicMs": 34.8037,
+      "event": "preload",
+      "node": "v22.23.3",
+      "uv": "1.51.0"
+    },
+    {
+      "line": 54,
+      "pid": 6920,
+      "sequence": 2,
+      "at": 1791476878104,
+      "monotonicMs": 42.637,
+      "event": "spawn",
+      "executable": "node.exe",
+      "childPid": 884,
+      "detached": false
+    },
+    {
+      "line": 57,
+      "pid": 6920,
+      "sequence": 3,
+      "at": 1791476878166,
+      "monotonicMs": 104.9153,
+      "event": "stdout-bytes",
+      "childPid": 884,
+      "bytes": 600
+    },
+    {
+      "line": 58,
+      "pid": 6920,
+      "sequence": 4,
+      "at": 1791476878167,
+      "monotonicMs": 105.6115,
+      "event": "stderr-bytes",
+      "childPid": 884,
+      "bytes": 600
+    },
+    {
+      "line": 59,
+      "pid": 6920,
+      "sequence": 5,
+      "at": 1791476878171,
+      "monotonicMs": 110.1197,
+      "event": "spawn",
+      "executable": "taskkill.exe",
+      "childPid": 5640,
+      "detached": false
+    },
+    {
+      "line": 60,
+      "pid": 6920,
+      "sequence": 6,
+      "at": 1791476878175,
+      "monotonicMs": 114.3598,
+      "event": "child-exit",
+      "executable": "node.exe",
+      "childPid": 884,
+      "status": 0,
+      "signal": null
+    },
+    {
+      "line": 61,
+      "pid": 6920,
+      "sequence": 7,
+      "at": 1791476878176,
+      "monotonicMs": 114.9256,
+      "event": "child-close",
+      "executable": "node.exe",
+      "childPid": 884,
+      "status": 0,
+      "signal": null
+    },
+    {
+      "line": 62,
+      "pid": 6920,
+      "sequence": 8,
+      "at": 1791476878234,
+      "monotonicMs": 173.3054,
+      "event": "child-exit",
+      "executable": "taskkill.exe",
+      "childPid": 5640,
+      "status": 128,
+      "signal": null
+    },
+    {
+      "line": 63,
+      "pid": 6920,
+      "sequence": 9,
+      "at": 1791476878235,
+      "monotonicMs": 173.8317,
+      "event": "child-close",
+      "executable": "taskkill.exe",
+      "childPid": 5640,
+      "status": 128,
+      "signal": null
+    }
+  ],
+  "inheritedTimeline": [
+    {
+      "line": 41,
+      "pid": 5348,
+      "sequence": 0,
+      "at": 1791476877635,
+      "monotonicMs": 34.6957,
+      "event": "preload",
+      "node": "v22.23.3",
+      "uv": "1.51.0"
+    },
+    {
+      "line": 43,
+      "pid": 5348,
+      "sequence": 2,
+      "at": 1791476877644,
+      "monotonicMs": 42.2869,
+      "event": "spawn",
+      "executable": "node.exe",
+      "childPid": 7292,
+      "detached": false
+    },
+    {
+      "line": 44,
+      "pid": 7292,
+      "sequence": 0,
+      "at": 1791476877703,
+      "monotonicMs": 36.7415,
+      "event": "preload",
+      "node": "v22.23.3",
+      "uv": "1.51.0"
+    },
+    {
+      "line": 46,
+      "pid": 7292,
+      "sequence": 2,
+      "at": 1791476877711,
+      "monotonicMs": 43.7621,
+      "event": "spawn",
+      "executable": "node.exe",
+      "childPid": 880,
+      "detached": false
+    },
+    {
+      "line": 47,
+      "pid": 880,
+      "sequence": 0,
+      "at": 1791476877761,
+      "monotonicMs": 36.3653,
+      "event": "preload",
+      "node": "v22.23.3",
+      "uv": "1.51.0"
+    },
+    {
+      "line": 49,
+      "pid": 5348,
+      "sequence": 3,
+      "at": 1791476877924,
+      "monotonicMs": 322.3888,
+      "event": "child-exit",
+      "executable": "node.exe",
+      "childPid": 7292,
+      "status": 0,
+      "signal": null
+    },
+    {
+      "line": 50,
+      "pid": 5348,
+      "sequence": 4,
+      "at": 1791476877924,
+      "monotonicMs": 322.8142,
+      "event": "child-close",
+      "executable": "node.exe",
+      "childPid": 7292,
+      "status": 0,
+      "signal": null
+    }
+  ]
+}
