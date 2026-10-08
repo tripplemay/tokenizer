@@ -7,7 +7,7 @@
       "title": "Bounded subprocess primitive with output limits and owned-tree cleanup",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "F001 spec: validated budgets, explicit argv, status/streams, typed timeout/output errors, bounded tree cleanup and native adversarial unit controls."
     },
     {
