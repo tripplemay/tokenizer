@@ -1,0 +1,963 @@
+Verify (Windows)	Set up job	﻿2026-10-08T15:47:21.6709092Z Current runner version: '2.337.0'
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6779272Z ##[group]Runner Image Provisioner
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6780810Z Hosted Compute Agent
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6781611Z Version: 20260901.588
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6782550Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6783630Z Build Date: 2026-09-01T19:56:44Z
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6784666Z Worker ID: {3a0af612-d7f3-4066-9722-0b55ace74ab0}
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6785713Z Azure Region: northcentralus
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6786544Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6788646Z ##[group]Operating System
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6789609Z Microsoft Windows Server 2025
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6790531Z 10.0.26100
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6791256Z Datacenter
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6792007Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6792755Z ##[group]Runner Image
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6793610Z Image: windows-2025-vs2026
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6794530Z Version: 20260925.250.1
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6796309Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6799533Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6801587Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6803442Z ##[group]GITHUB_TOKEN Permissions
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6805925Z Contents: read
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6806779Z Metadata: read
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6807558Z Packages: read
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6808319Z ##[endgroup]
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6811016Z Secret source: Actions
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6812312Z Cache mode: write
+Verify (Windows)	Set up job	2026-10-08T15:47:21.6813295Z Prepare workflow directory
+Verify (Windows)	Set up job	2026-10-08T15:47:21.7186042Z Prepare all required actions
+Verify (Windows)	Set up job	2026-10-08T15:47:21.7247509Z Getting action download info
+Verify (Windows)	Set up job	2026-10-08T15:47:21.9610200Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Verify (Windows)	Set up job	2026-10-08T15:47:22.0840588Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Verify (Windows)	Set up job	2026-10-08T15:47:22.2380145Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Verify (Windows)	Set up job	2026-10-08T15:47:22.5907710Z Complete job name: Verify (Windows)
+Verify (Windows)	Checkout	﻿2026-10-08T15:47:22.7523361Z ##[group]Run actions/checkout@v4
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7524541Z with:
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7524964Z   repository: tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7528963Z   token: ***
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7529366Z   ssh-strict: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7529771Z   ssh-user: git
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7530187Z   persist-credentials: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7530656Z   clean: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7531286Z   sparse-checkout-cone-mode: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7531777Z   fetch-depth: 1
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7532172Z   fetch-tags: false
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7532798Z   show-progress: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7533210Z   lfs: false
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7533593Z   submodules: false
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7534017Z   set-safe-directory: true
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7534492Z   allow-unsafe-pr-checkout: false
+Verify (Windows)	Checkout	2026-10-08T15:47:22.7535298Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:22.9010490Z Syncing repository: tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:22.9012607Z ##[group]Getting Git version info
+Verify (Windows)	Checkout	2026-10-08T15:47:22.9013493Z Working directory is 'D:\a\tokenizer\tokenizer'
+Verify (Windows)	Checkout	2026-10-08T15:47:22.9884782Z [command]"C:\Program Files\Git\bin\git.exe" version
+Verify (Windows)	Checkout	2026-10-08T15:47:23.3352739Z git version 2.55.0.windows.5
+Verify (Windows)	Checkout	2026-10-08T15:47:23.3402786Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:23.3421327Z Temporarily overriding HOME='D:\a\_temp\2e2bd77b-43c1-48df-acc1-258217d83151' before making global git config changes
+Verify (Windows)	Checkout	2026-10-08T15:47:23.3423460Z Adding repository directory to the temporary git global config as a safe directory
+Verify (Windows)	Checkout	2026-10-08T15:47:23.3432053Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:23.4137790Z Deleting the contents of 'D:\a\tokenizer\tokenizer'
+Verify (Windows)	Checkout	2026-10-08T15:47:23.4144075Z ##[group]Initializing the repository
+Verify (Windows)	Checkout	2026-10-08T15:47:23.4152842Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\tokenizer\tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:23.4937659Z Initialized empty Git repository in D:/a/tokenizer/tokenizer/.git/
+Verify (Windows)	Checkout	2026-10-08T15:47:23.4983221Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5577615Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5579217Z ##[group]Disabling automatic garbage collection
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5587020Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5880594Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5882430Z ##[group]Setting up auth
+Verify (Windows)	Checkout	2026-10-08T15:47:23.5892124Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Verify (Windows)	Checkout	2026-10-08T15:47:23.6191129Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Verify (Windows)	Checkout	2026-10-08T15:47:24.9558369Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (Windows)	Checkout	2026-10-08T15:47:24.9843846Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Verify (Windows)	Checkout	2026-10-08T15:47:25.5094937Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (Windows)	Checkout	2026-10-08T15:47:25.5387290Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Verify (Windows)	Checkout	2026-10-08T15:47:26.0510605Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Verify (Windows)	Checkout	2026-10-08T15:47:26.0820149Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:26.0820868Z ##[group]Fetching the repository
+Verify (Windows)	Checkout	2026-10-08T15:47:26.0833574Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +76d916ba2e3a7147acda5ac9ef15fa70a9cd9958:refs/remotes/origin/codex/release-readiness-ci-20261008
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3668307Z From https://github.com/tripplemay/tokenizer
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3669488Z  * [new ref]         76d916ba2e3a7147acda5ac9ef15fa70a9cd9958 -> origin/codex/release-readiness-ci-20261008
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3709662Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3710292Z ##[group]Determining the checkout info
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3713676Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:27.3723079Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Verify (Windows)	Checkout	2026-10-08T15:47:27.4124719Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Verify (Windows)	Checkout	2026-10-08T15:47:27.4407916Z ##[group]Checking out the ref
+Verify (Windows)	Checkout	2026-10-08T15:47:27.4417828Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/release-readiness-ci-20261008 refs/remotes/origin/codex/release-readiness-ci-20261008
+Verify (Windows)	Checkout	2026-10-08T15:47:28.0506696Z Switched to a new branch 'codex/release-readiness-ci-20261008'
+Verify (Windows)	Checkout	2026-10-08T15:47:28.0570366Z branch 'codex/release-readiness-ci-20261008' set up to track 'origin/codex/release-readiness-ci-20261008'.
+Verify (Windows)	Checkout	2026-10-08T15:47:28.0625113Z ##[endgroup]
+Verify (Windows)	Checkout	2026-10-08T15:47:28.1026933Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Verify (Windows)	Checkout	2026-10-08T15:47:28.1302963Z 76d916ba2e3a7147acda5ac9ef15fa70a9cd9958
+Verify (Windows)	Setup Node.js	﻿2026-10-08T15:47:28.1834485Z ##[group]Run actions/setup-node@v4
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1834865Z with:
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1835076Z   node-version: 22
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1835293Z   cache: npm
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1835479Z   always-auth: false
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1835681Z   check-latest: false
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1838520Z   token: ***
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.1838743Z ##[endgroup]
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.3557925Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.3565069Z (node:7948) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.3566769Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:28.3568255Z ##[group]Environment details
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:32.4463393Z node: v22.23.3
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:32.4463927Z npm: 10.9.9
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:32.4464158Z yarn: 1.22.22
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:32.4465232Z ##[endgroup]
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:32.5204664Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:33.0237140Z C:\npm\cache
+Verify (Windows)	Setup Node.js	2026-10-08T15:47:33.2950529Z npm cache is not found
+Verify (Windows)	Install dependencies	﻿2026-10-08T15:47:33.3251359Z ##[group]Run npm ci
+Verify (Windows)	Install dependencies	2026-10-08T15:47:33.3251687Z [36;1mnpm ci[0m
+Verify (Windows)	Install dependencies	2026-10-08T15:47:33.3749820Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Install dependencies	2026-10-08T15:47:33.3750213Z ##[endgroup]
+Verify (Windows)	Install dependencies	2026-10-08T15:47:40.7764179Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+Verify (Windows)	Install dependencies	2026-10-08T15:47:54.6386284Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.7807453Z 
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.7808681Z added 669 packages, and audited 671 packages in 36s
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.7809116Z 
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.7809365Z 185 packages are looking for funding
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.7809767Z   run `npm fund` for details
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8661544Z 
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8662586Z 7 high severity vulnerabilities
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8663144Z 
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8663406Z To address all issues (including breaking changes), run:
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8663872Z   npm audit fix --force
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8664026Z 
+Verify (Windows)	Install dependencies	2026-10-08T15:48:09.8664138Z Run `npm audit` for details.
+Verify (Windows)	Typecheck	﻿2026-10-08T15:48:11.8431943Z ##[group]Run npm run verify
+Verify (Windows)	Typecheck	2026-10-08T15:48:11.8432298Z [36;1mnpm run verify[0m
+Verify (Windows)	Typecheck	2026-10-08T15:48:11.8498454Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Typecheck	2026-10-08T15:48:11.8498820Z ##[endgroup]
+Verify (Windows)	Typecheck	2026-10-08T15:48:12.6145833Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:12.6146553Z > tokenizer@0.1.0 verify
+Verify (Windows)	Typecheck	2026-10-08T15:48:12.6146951Z > prisma generate && tsc --noEmit
+Verify (Windows)	Typecheck	2026-10-08T15:48:12.6147132Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.1332957Z Prisma schema loaded from prisma\schema.prisma
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9093849Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9095053Z ✔ Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 338ms
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9095580Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9096339Z Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9096873Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9097636Z Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9098358Z 
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9496064Z ┌─────────────────────────────────────────────────────────┐
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9497212Z │  Update available 5.22.0 -> 8.0.0-rc.21                 │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9497929Z │                                                         │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9498634Z │  This is a major update - please follow the guide at    │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9499447Z │  https://pris.ly/d/major-version-upgrade                │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9500147Z │                                                         │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9500804Z │  Run the following to update                            │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9501505Z │    npm i --save-dev prisma@latest                       │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9502206Z │    npm i @prisma/client@latest                          │
+Verify (Windows)	Typecheck	2026-10-08T15:48:13.9503213Z └─────────────────────────────────────────────────────────┘
+Verify (Windows)	Verify native Windows pinned installer	﻿2026-10-08T15:48:26.6362750Z ##[group]Run New-Item -ItemType Directory -Path .ci -Force | Out-Null
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6363371Z [36;1mNew-Item -ItemType Directory -Path .ci -Force | Out-Null[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6364129Z [36;1mnpx vitest run tests/cli/agent-release-installer-windows.test.ts --reporter=default --reporter=json --outputFile=.ci/windows-installer.json[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6365037Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6365503Z [36;1mnode scripts/ci/assert-windows-installer.mjs .ci/windows-installer.json[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6365934Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6434916Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:26.6435287Z ##[endgroup]
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:28.2174422Z 
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:28.2177845Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:28.2178436Z 
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:28.8411988Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:34.0145213Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.6619943Z [90mstdout[2m | tests/cli/agent-release-installer-windows.test.ts[2m > [22m[2mnative Windows pinned installer fixture[2m > [22m[2minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.6625798Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"5a8fd9c46f660399f6075b72e352f912f4c043d6","expectedOldCommit":"5a8fd9c46f660399f6075b72e352f912f4c043d6","queueCanaryRetained":true,"credentialCanaryRetained":true}
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.6628165Z 
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7560373Z  [32m✓[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 15019[2mms[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7562302Z      [33m[2m✓[22m[39m installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens [33m 15017[2mms[22m[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7606480Z 
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7613496Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7614338Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7614947Z [2m   Start at [22m 15:48:28
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7617768Z [2m   Duration [22m 15.52s[2m (transform 80ms, setup 0ms, import 124ms, tests 15.02s, environment 0ms)[22m
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7620348Z 
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.7639898Z JSON report written to D:/a/tokenizer/tokenizer/.ci/windows-installer.json
+Verify (Windows)	Verify native Windows pinned installer	2026-10-08T15:48:43.8689213Z Verified native Windows installer failure, restore, lock and offline rollback fixture
+Verify (Windows)	Upload native Windows installer evidence	﻿2026-10-08T15:48:43.9156502Z ##[group]Run actions/upload-artifact@v4
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9156926Z with:
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9157141Z   name: windows-pinned-installer
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9157416Z   path: .ci/windows-installer.json
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9157681Z   if-no-files-found: warn
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9157901Z   retention-days: 7
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9158103Z   compression-level: 6
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9158337Z   overwrite: false
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9158546Z   include-hidden-files: false
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:43.9158780Z ##[endgroup]
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.1281223Z (node:10048) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.1282569Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.1336604Z With the provided path, there will be 1 file uploaded
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.1342293Z Artifact name is valid!
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.1344030Z Root directory input is valid!
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.4388413Z Beginning upload of artifact content to blob storage
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.4574028Z (node:10048) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.5474841Z Uploaded bytes 627
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.5777657Z Finished uploading artifact content to blob storage!
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.5778826Z SHA256 digest of uploaded artifact zip is 284b5d24e39db3a4e39a34962b3704c84a9979e282c82495f3de447c94600e0b
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.5780978Z Finalizing artifact upload
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.8489880Z Artifact windows-pinned-installer.zip successfully finalized. Artifact ID 11561089048
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.8491304Z Artifact windows-pinned-installer has been successfully uploaded! Final size is 627 bytes. Artifact ID is 11561089048
+Verify (Windows)	Upload native Windows installer evidence	2026-10-08T15:48:44.8501640Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37803611472/artifacts/11561089048
+Verify (Windows)	Run unit tests	﻿2026-10-08T15:48:44.8787571Z ##[group]Run npm run test
+Verify (Windows)	Run unit tests	2026-10-08T15:48:44.8788053Z [36;1mnpm run test[0m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:44.8853678Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Verify (Windows)	Run unit tests	2026-10-08T15:48:44.8854035Z ##[endgroup]
+Verify (Windows)	Run unit tests	2026-10-08T15:48:45.5695106Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:48:45.5695789Z > tokenizer@0.1.0 test
+Verify (Windows)	Run unit tests	2026-10-08T15:48:45.5696215Z > vitest run
+Verify (Windows)	Run unit tests	2026-10-08T15:48:45.5696448Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:48:46.1193795Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:48:46.1196384Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90mD:/a/tokenizer/tokenizer[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:46.1197033Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:48:47.1584028Z  [32m✓[39m tests/server/harness-mode-intent-api.test.ts [2m([22m[2m107 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:47.4077009Z  [32m✓[39m tests/server/harness-report-mode-intent.test.ts [2m([22m[2m69 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:47.7578208Z  [32m✓[39m tests/cli/harness-tool-catalog.test.ts [2m([22m[2m77 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 703[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:47.8896689Z  [32m✓[39m tests/shared/harness-detail.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.4516360Z  [32m✓[39m tests/parsers/claude.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 356[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.5293703Z  [32m✓[39m tests/evaluator/bl-security-p1-f008-probes.test.ts [2m([22m[2m41 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[32m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8674541Z  [31m❯[39m tests/ci/vps-host-preflight.test.ts [2m([22m[2m43 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m42 skipped[39m[2m)[22m[32m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8676581Z      [2m[90m↓[39m[22m inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8677968Z      [2m[90m↓[39m[22m reports a healthy legacy source image and missing ledger as legacy, never creates activation
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8679071Z      [2m[90m↓[39m[22m refuses missing-app without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8679889Z      [2m[90m↓[39m[22m refuses duplicate-app without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8681228Z      [2m[90m↓[39m[22m refuses wrong-project without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8682202Z      [2m[90m↓[39m[22m refuses wrong-service without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8682971Z      [2m[90m↓[39m[22m refuses stopped-app without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8683706Z      [2m[90m↓[39m[22m refuses unhealthy-app without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8684493Z      [2m[90m↓[39m[22m refuses wrong-port without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8685299Z      [2m[90m↓[39m[22m refuses wrong-image without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8686468Z      [2m[90m↓[39m[22m refuses wrong-network without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8687655Z      [2m[90m↓[39m[22m refuses wrong-volume without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8689276Z      [2m[90m↓[39m[22m refuses unready without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8690330Z      [2m[90m↓[39m[22m refuses wrong-health-code without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8698660Z      [2m[90m↓[39m[22m refuses null-health-code without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8701144Z      [2m[90m↓[39m[22m refuses wrong-health-sha without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8702053Z      [2m[90m↓[39m[22m refuses health-failure without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8702895Z      [2m[90m↓[39m[22m refuses raw-canary without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8703721Z      [2m[90m↓[39m[22m refuses raw-user-canary without writes or disclosure
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8704681Z      [2m[90m↓[39m[22m bounds a hung query to five seconds and suppresses its failed stderr
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8706238Z      [2m[90m↓[39m[22m does not execute config content and clears Docker/Compose/proxy environment overrides
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8711667Z      [2m[90m↓[39m[22m refuses unsafe selected configuration: duplicate
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8712561Z      [2m[90m↓[39m[22m refuses unsafe selected configuration: malicious-image
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8713402Z      [2m[90m↓[39m[22m refuses unsafe selected configuration: symlink
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8714263Z      [2m[90m↓[39m[22m refuses unsafe selected configuration: oversized
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8715093Z      [2m[90m↓[39m[22m rejects malicious/missing remote args before queries 0
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8715938Z      [2m[90m↓[39m[22m rejects malicious/missing remote args before queries 1
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8717041Z      [2m[90m↓[39m[22m rejects malicious/missing remote args before queries 2
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8718125Z      [2m[90m↓[39m[22m rejects malicious/missing remote args before queries 3
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8719224Z      [2m[90m↓[39m[22m transports the exact reviewed script on stdin and uploads only validated JSON
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8720247Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 0
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8721111Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 1
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8722564Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 2
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8723474Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 3
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8724685Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 4
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8725549Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 5
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8726698Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 6
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8727814Z      [2m[90m↓[39m[22m refuses invalid SSH input before an SSH invocation 7
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8728802Z      [2m[90m↓[39m[22m never retains unallowlisted or failed transport bytes: raw-stdout
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8730102Z      [2m[90m↓[39m[22m never retains unallowlisted or failed transport bytes: extra-key
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8731231Z      [2m[90m↓[39m[22m never retains unallowlisted or failed transport bytes: failed-transport
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8732281Z      [2m[90m↓[39m[22m retains a valid redacted refusal while returning nonzero
+Verify (Windows)	Run unit tests	2026-10-08T15:48:48.8733711Z [31m     [31m×[31m dispatches inventory alone even on main, and preserves push/PR/release gates[39m[32m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:49.1797428Z  [32m✓[39m tests/evaluator/bl-native-subagent-bridges-f004.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:49.3861002Z  [32m✓[39m tests/server/harness-mode-intents-route.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:50.1196231Z  [32m✓[39m tests/cli/harness-modes.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:50.4817697Z  [32m✓[39m tests/shared/harness-mode-intent.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:52.9556574Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f002-f003.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 3237[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:52.9558482Z      [33m[2m✓[22m[39m checkpoints the same remaining tail between real sync and run subprocess batches [33m 3038[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:53.4496061Z  [32m✓[39m tests/server/harness-mode-intents-relay-route.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:53.8418199Z  [32m✓[39m tests/server/harness-cost.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:54.3012882Z  [32m✓[39m tests/server/heartbeat-harness.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 81[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:55.0397513Z  [32m✓[39m tests/shared/subscription-card.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 188[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:55.5702772Z  [32m✓[39m tests/evaluator/bl-agent-release-acceptance.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 132[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:56.2559898Z  [32m✓[39m tests/server/batch-schema.test.ts [2m([22m[2m65 tests[22m[2m)[22m[32m 267[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:56.5377376Z  [2m[90m↓[39m[22m tests/server/release-image.test.ts [2m([22m[2m17 tests[22m[2m | [22m[33m17 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:56.8442423Z  [2m[90m↓[39m[22m tests/cli/agent-release-installer-macos.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:59.3866610Z  [32m✓[39m tests/cli/agent-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 2247[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:59.3869107Z      [33m[2m✓[22m[39m rejects `tokenizer agent status` before it can start a daemon [33m 1199[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:59.3882671Z      [33m[2m✓[22m[39m reclaims a lock after Windows force-terminates the agent [33m 1026[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:48:59.8707832Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:00.2901234Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:00.6623491Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:01.0756066Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:01.4719643Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:01.8660916Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:02.2362568Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:04.6404001Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:05.0115081Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:05.3979942Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:05.7649953Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1097306Z  [32m✓[39m tests/cli/harness-mode-intents.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 15212[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1113698Z      [33m[2m✓[22m[39m accepts only the exact bounded relay envelope [33m 467[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1117257Z      [33m[2m✓[22m[39m stages and reads v2 bindings through the data-only catalog, without agent ids [33m 1200[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1136705Z      [33m[2m✓[22m[39m stages and reports legal v2 fast null bindings without a tool catalog [33m 991[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1177203Z      [33m[2m✓[22m[39m rejects v2 staging when the data-only registry validation fails [33m 665[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1184127Z      [33m[2m✓[22m[39m validates, atomically stages, and commits only harness.json [33m 982[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1185724Z      [33m[2m✓[22m[39m commits only harness.json while preserving an unrelated staged file [33m 1052[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1187456Z      [33m[2m✓[22m[39m rejects a tampered signature without changing the target [33m 458[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1188754Z      [33m[2m✓[22m[39m requires relay, signed, and discovered repo keys to agree [33m 463[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1190021Z      [33m[2m✓[22m[39m rejects a full HEAD drift immediately before first staging [33m 737[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1191521Z      [33m[2m✓[22m[39m rejects invalid time window expired_intent [33m 429[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1192635Z      [33m[2m✓[22m[39m rejects invalid time window intent_not_yet_valid [33m 441[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1193940Z      [33m[2m✓[22m[39m requires harness.json to be clean [33m 513[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1195253Z      [33m[2m✓[22m[39m retries the exact staged intent without comparing its old HEAD or creating a commit [33m 1213[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1196923Z      [33m[2m✓[22m[39m does not report failure after commit success and completes the next exact retry idempotently [33m 878[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1198489Z      [33m[2m✓[22m[39m recognizes a commit that succeeded immediately before the runner threw [33m 776[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1199860Z      [33m[2m✓[22m[39m restores the original harness after a first-stage write failure [33m 703[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1201182Z      [33m[2m✓[22m[39m restores the original harness after a first-stage readback failure [33m 742[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1202621Z      [33m[2m✓[22m[39m restores after git add failure without disturbing an unrelated staged file [33m 656[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1204245Z      [33m[2m✓[22m[39m does not report defaults copied into a repository with a different normalized identity [33m 1024[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1205688Z      [33m[2m✓[22m[39m rolls back a commit failure and never stages an unrelated file [33m 820[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.1427074Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.5656039Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.9072345Z  [32m✓[39m tests/shared/harness-mode-drilldown.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:06.9940478Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:07.3984800Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:07.6382064Z  [32m✓[39m tests/cli/sync-retry.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 365[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:07.7817868Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:08.2458694Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:08.6165507Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:09.0668408Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:09.4377455Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:09.8259379Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.2428022Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.6695912Z warning: in the working copy of 'tracked.txt', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8630506Z  [32m✓[39m tests/cli/harness-dispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 11181[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8637937Z      [33m[2m✓[22m[39m uses allowlisted facts, registry metadata, bounded time derivation, and safe artifact hashing [33m 421[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8641570Z      [33m[2m✓[22m[39m supports a2a while reducing absolute artifacts and raw failures to safe fixed summaries [33m 376[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8647324Z      [33m[2m✓[22m[39m keeps a2a cancellation as a known terminal outcome with a fixed safe summary [33m 410[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8657177Z      [33m[2m✓[22m[39m keeps runs of other batches (usage must survive batch switch) but rejects foreign refs [33m 407[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8660802Z      [33m[2m✓[22m[39m rejects symlinked run-meta and never hashes a symlinked artifact [33m 382[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8665496Z      [33m[2m✓[22m[39m derives local-cli identities from a tool-integrations/1 registry (post-migration mirror survival) [33m 379[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8729955Z      [33m[2m✓[22m[39m scans at most the newest 50 bounded regular JSON files [33m 2416[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8732152Z      [33m[2m✓[22m[39m carries a valid usage block and capture mode intact into the summary [33m 358[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8733870Z      [33m[2m✓[22m[39m keeps legacy run-meta without usage summarized with explicit nulls (regression) [33m 364[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8735565Z      [33m[2m✓[22m[39m drops the whole usage block on unknown field but keeps the run (bypass, not a gate) [33m 402[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8737303Z      [33m[2m✓[22m[39m drops the whole usage block on negative tokens but keeps the run (bypass, not a gate) [33m 363[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8738993Z      [33m[2m✓[22m[39m drops the whole usage block on token count above the 2e9 bound but keeps the run (bypass, not a gate) [33m 362[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8740795Z      [33m[2m✓[22m[39m drops the whole usage block on non-integer tokens but keeps the run (bypass, not a gate) [33m 495[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8742516Z      [33m[2m✓[22m[39m drops the whole usage block on zero turns but keeps the run (bypass, not a gate) [33m 389[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8744278Z      [33m[2m✓[22m[39m drops the whole usage block on turns above the 10000 bound but keeps the run (bypass, not a gate) [33m 386[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8756131Z      [33m[2m✓[22m[39m drops the whole usage block on foreign extraction source but keeps the run (bypass, not a gate) [33m 399[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8758176Z      [33m[2m✓[22m[39m drops the whole usage block on missing extraction source but keeps the run (bypass, not a gate) [33m 438[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8759904Z      [33m[2m✓[22m[39m drops the whole usage block on non-string model but keeps the run (bypass, not a gate) [33m 467[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8761642Z      [33m[2m✓[22m[39m drops the whole usage block on oversized model name but keeps the run (bypass, not a gate) [33m 366[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8763392Z      [33m[2m✓[22m[39m drops the whole usage block on array instead of object but keeps the run (bypass, not a gate) [33m 380[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8765128Z      [33m[2m✓[22m[39m drops the whole usage block on string instead of object but keeps the run (bypass, not a gate) [33m 391[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8766973Z      [33m[2m✓[22m[39m nulls an unknown capture mode while keeping a valid usage block [33m 462[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:10.8768464Z      [33m[2m✓[22m[39m accepts attribution_only with a null usage block (kimi shape) [33m 363[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:11.6534114Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f003-projects-card.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0743711Z  [32m✓[39m tests/cli/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 35676[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0786171Z      [33m[2m✓[22m[39m 同时有 progress.json 与 harness-rules.md 才算 harness 项目 [33m 547[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0825583Z      [33m[2m✓[22m[39m uses a stable opaque key for local-only repos without leaking the root into the report [33m 1392[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0884236Z      [33m[2m✓[22m[39m 从 features.json 统计完成度，并带上待批闸门 [33m 680[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0887039Z      [33m[2m✓[22m[39m 待批闸门只上报 API 白名单字段 [33m 531[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0906145Z      [33m[2m✓[22m[39m 已有决策的闸门不再上报 —— 服务端记录为准，防本机旧副本覆盖 [33m 558[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0926861Z      [33m[2m✓[22m[39m sends the running Agent identity on every device-driven Harness relay request [33m 1167[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0929468Z      [33m[2m✓[22m[39m reports progress.mode_intent as applied and sends the identical applied ACK [33m 653[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0931140Z      [33m[2m✓[22m[39m 签名有效时写入并提交 [33m 887[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0932687Z      [33m[2m✓[22m[39m does not route an unbound legacy gate relay onto the current repository [33m 474[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0957473Z      [33m[2m✓[22m[39m fails closed when the signed decision wrapper matches multiple local repositories [33m 1004[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0961210Z      [33m[2m✓[22m[39m 🔴 签名无效一律不写 —— 否则任何能调这个 API 的东西都能伪造批准 [33m 581[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0963499Z      [33m[2m✓[22m[39m 仓库缺 console.pub 时拒绝写入（无法验证来源，宁可卡住） [33m 583[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0965123Z      [33m[2m✓[22m[39m 陈旧批准不得解锁另一个闸门（gate id 不匹配即跳过） [33m 746[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0968078Z      [33m[2m✓[22m[39m progress.json 有未提交改动时本轮不写，避免与状态机打架 [33m 619[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0970022Z      [33m[2m✓[22m[39m 某个项目上报失败不中断其余项目 [33m 1100[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0971402Z      [33m[2m✓[22m[39m 🔴 上报整体失败也不拖住闸门中继 —— 人在网页上批了，机器必须还能拿到 [33m 952[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0973777Z      [33m[2m✓[22m[39m report、mode-intent 与 gate relay 三步各自失败隔离，且 mode staging 先于 gate commit [33m 1325[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0975648Z      [33m[2m✓[22m[39m mode relay 失败不阻塞另外两步 [33m 944[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0976843Z      [33m[2m✓[22m[39m gate relay 失败不阻塞另外两步 [33m 1092[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0978131Z      [33m[2m✓[22m[39m 本机闸门已有决策时不覆盖 [33m 707[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0979311Z      [33m[2m✓[22m[39m applies the exact HTTP retryability matrix [33m 1596[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0981013Z      [33m[2m✓[22m[39m classifies safe server codes and never retains response bodies in the snapshot [33m 638[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0982707Z      [33m[2m✓[22m[39m falls back to http status when a response code is not normalized [33m 614[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0985049Z      [33m[2m✓[22m[39m classifies timeouts for all independent subchains without short-circuiting [33m 658[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0986809Z      [33m[2m✓[22m[39m caps structured issues at 20 while retaining the full failed-project count [33m 13029[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0988535Z      [33m[2m✓[22m[39m writes idle, success, degraded, and failed snapshots from actual outcomes [33m 1468[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.0990075Z      [33m[2m✓[22m[39m deduplicates unchanged issue details and logs recovery [33m 1124[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:24.5360930Z  [32m✓[39m tests/server/harness-dispatch-usage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:25.3232259Z  [32m✓[39m tests/evaluator/bl-cost-batch-v1-f002-overview-cost-card.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 122[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:25.8858417Z  [32m✓[39m tests/evaluator/bl-homepage-freshness-f004.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 234[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:26.2376986Z  [2m[90m↓[39m[22m tests/evaluator/bl-cost-batch-v1-f003-cachekey-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:27.2667687Z  [32m✓[39m tests/cli/b07-queue-resolution.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 604[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:27.8740687Z  [32m✓[39m tests/server/ingest-project.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:28.2965771Z SUCCESS: The scheduled task "Tokenizer Agent Test" has successfully been created.
+Verify (Windows)	Run unit tests	2026-10-08T15:49:29.5654878Z  [32m✓[39m tests/cli/service-windows.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1337[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:29.5657233Z      [33m[2m✓[22m[39m parses under WSH, waits for the agent, and propagates a failure exit code [33m 708[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:29.5661032Z      [33m[2m✓[22m[39m propagates a clean exit [33m 489[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.1429277Z [90mstderr[2m | tests/server/ingest-upsert.test.ts[2m > [22m[2mingestUsageEvents conflict correction[2m > [22m[2mcorrects a stale row in place when the re-parsed event differs
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.1432567Z [22m[39musage-event correction (user user-1, device dev-1): claude-code/evt-1 model: claude-fable-5 -> claude-opus-4-8, inputTokens: 71133 -> 69461, outputTokens: 8 -> 767, totalTokens: 71141 -> 70228, fallbackFromModel: null -> claude-fable-5
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.1434592Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.1522048Z  [32m✓[39m tests/server/ingest-upsert.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.4233243Z  [2m[90m↓[39m[22m tests/server/harness-cost-range-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:30.7788659Z  [32m✓[39m tests/cli/agent-sync-checkpoint.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:31.2673106Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:32.9251157Z  [32m✓[39m tests/cli/privacy-admission-cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 20945[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:32.9253239Z      [33m[2m✓[22m[39m previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync [33m 10581[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:32.9256689Z      [33m[2m✓[22m[39m preserves admitted backlog and cursors, collects only later appends, then uploads on the next sync [33m 7021[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:32.9262398Z      [33m[2m✓[22m[39m keeps paused collection and replay execution from changing queue or cursor [33m 3340[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:33.2749724Z  [32m✓[39m tests/cli/agent-release-installer.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:34.1102246Z warning: in the working copy of 'src/cli/index.ts', LF will be replaced by CRLF the next time Git touches it
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7612930Z  [32m✓[39m tests/cli/privacy-scope-safety.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 28728[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7641856Z    [33m[2m✓[22m[39m R4 dot alias to an excluded workspace is rejected by preview, replay and ordinary collection [33m 2696[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7692107Z    [33m[2m✓[22m[39m R5 an allowed symlink/junction to an excluded Git repo never reaches durable admission [33m 2924[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7698848Z    [33m[2m✓[22m[39m an alias into a target outside the include scope is not rescued by any other allowed path [33m 2945[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7706229Z    [33m[2m✓[22m[39m scope is checked again when enrichment introduces a different excluded workspace [33m 2849[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7707944Z    [33m[2m✓[22m[39m an allowed physical target keeps legacy event identity and path bytes unchanged [33m 2943[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7711022Z    [33m[2m✓[22m[39m retargeting a workspace alias cannot reuse a zero-admission confirmation for newly eligible rows [33m 3141[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7713517Z    [33m[2m✓[22m[39m confirmation binds physical targets even when the count and wire payload stay the same [33m 3197[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7715513Z    [33m[2m✓[22m[39m same-count different rows and retargeting immediately before merge invalidate confirmation [33m 4175[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:36.7717380Z    [33m[2m✓[22m[39m confirmation binds complete candidate payloads, not only event counts or IDs [33m 3840[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:37.4697961Z  [32m✓[39m tests/evaluator/bl-transition-log-f003-timeline-view.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:37.9113051Z  [32m✓[39m tests/parsers/codex.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:40.4380568Z  [32m✓[39m tests/ci/recovery-evidence.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2225[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:40.4387143Z      [33m[2m✓[22m[39m detects downloaded file tampering, missing files, extra files and wrong revision [33m 567[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:40.4403171Z      [33m[2m✓[22m[39m rejects manifest traversal paths and forged manifest hashes [33m 375[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:40.4420181Z      [33m[2m✓[22m[39m requires main provenance files separately and forbids main/non-main manifest downgrade [33m 371[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:47.5764283Z [90mstdout[2m | tests/cli/agent-release-installer-windows.test.ts[2m > [22m[2mnative Windows pinned installer fixture[2m > [22m[2minstalls, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens
+Verify (Windows)	Run unit tests	2026-10-08T15:49:47.5771368Z [22m[39mB04_NATIVE_FIXTURE_OBSERVATIONS {"platform":"win32","node":"v22.23.3","configFailureExit":1,"serviceConfigFailureExit":1,"enrollmentFailureExit":1,"completedUpgradeExit":0,"offlineRollbackExit":0,"activeCommitAfterRollback":"05b2466d3361318c1133b7eed091f2547ba72331","expectedOldCommit":"05b2466d3361318c1133b7eed091f2547ba72331","queueCanaryRetained":true,"credentialCanaryRetained":true}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:47.5802316Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:47.6993508Z  [32m✓[39m tests/cli/agent-release-installer-windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 16571[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:47.6995580Z      [33m[2m✓[22m[39m installs, rejects failures and concurrency, then rolls back offline without leaking enrollment tokens [33m 16569[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:49.9604798Z  [32m✓[39m tests/server/harness-sign.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1956[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:49.9626448Z      [33m[2m✓[22m[39m case 1 与机器侧 Python 规范化逐字节一致 [33m 803[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.4450084Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2msame ID corrected rejection must remain recoverable after older version was already quarantined
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.4456192Z [22m[39mQUARANTINE_VERSION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T15:49:50.312Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:49:50.410Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.4460322Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.5009490Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mtwo same-ID versions rejected in one response must both remain recoverable
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.5014923Z [22m[39mQUARANTINE_SAME_BATCH_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T15:49:50.465Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:49:50.465Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.5018227Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.6694288Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mpartial ACK sync end-to-end retains a newer rejected version even when old rejection is persisted
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.6701353Z [22m[39mSYNC_VERSION_NEGATIVE {"result":{"inserted":0,"updated":0,"duplicates":0,"received":0,"deviceId":"fixture","rejected":1},"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T15:49:50.518Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:49:50.634Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.6705028Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.8652204Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mcommit failure then same-ID corrected rejection must retain BOTH exact versions on retry
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.8657302Z [22m[39mCRASH_CORRECTION_NEGATIVE {"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T15:49:50.763Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:49:50.821Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:50.8663600Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.0598113Z [90mstdout[2m | tests/cli/b07-prereview-version-negative.test.ts[2m > [22m[2mold-server rowless fallback must not discard corrected poison when old version was quarantined
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.0605033Z [22m[39mROWLESS_CORRECTION_NEGATIVE {"result":{"inserted":1,"updated":0,"duplicates":0,"received":1,"deviceId":"fixture","rejected":1},"requests":[[200,2],[200],[],[2]],"active":[],"quarantine":[{"version":1,"rejectedAt":"2026-10-08T15:49:50.943Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:49:51.003Z","code":"invalid_json","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.0609514Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.0957780Z  [32m✓[39m tests/cli/b07-prereview-version-negative.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 805[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6166842Z  [31m❯[39m tests/cli/replay.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 17983[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6169399Z      [32m✓[39m uses the explicit buffer adapter while preserving normal Claude event IDs[32m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6172142Z      [33m[2m✓[22m[39m does not discover or open unselected sibling JSONL files [33m 1108[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6191534Z      [33m[2m✓[22m[39m applies strict [from,to), event budget, and current admission scope [33m 1947[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6196160Z      [33m[2m✓[22m[39m rejects symlinks, directories, swaps, growth, oversized input, and long records [33m 3680[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6265705Z [31m     [31m×[31m binds execution to file, range, budgets, current scope, and privacy mode[39m[33m 6598[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6272578Z      [33m[2m✓[22m[39m merges idempotently into retained backlog and never changes normal cursors [33m 4634[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:51.6942551Z  [32m✓[39m tests/server/harness-batch-archive.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:52.1718794Z  [32m✓[39m tests/server/harness-report-transitions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:52.4448459Z  [32m✓[39m tests/shared/model-pricing.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:57.5983885Z  [32m✓[39m tests/cli/b07-replay-combination.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 4842[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:57.5995031Z      [33m[2m✓[22m[39m production replay merge preserves a corrected version when admitting confirmed older history [33m 4534[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.5012980Z  [32m✓[39m tests/cli/atomic-file.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 634[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7223827Z  [2m[90m↓[39m[22m tests/server/release-rehearsal.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7453258Z  [31m❯[39m tests/cli/b03-round2-independent.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 17948[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7455729Z    [33m[2m✓[22m[39m 0-to-1 symlink retarget invalidates confirmation (final config boundary=false) [33m 2968[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7470407Z    [33m[2m✓[22m[39m 0-to-1 symlink retarget invalidates confirmation (final config boundary=true) [33m 4048[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7475970Z    [33m[2m✓[22m[39m same admission count but different selected event cannot reuse digest at final boundary [33m 3956[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7477574Z    [33m[2m✓[22m[39m same event and wire payload but different physical target invalidates digest [33m 3825[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7480650Z    [33m[2m✓[22m[39m same count and IDs but enrichment payload drift invalidates final confirmation [33m 3117[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7482410Z    [32m✓[39m ordinary missing descendants are admitted only under canonical existing allowed ancestors, with identity untouched[32m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7483885Z    [32m✓[39m broken symlink resolution fails closed at leaf[32m 2[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7484948Z    [32m✓[39m broken symlink resolution fails closed at descendant[32m 2[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7486027Z    [32m✓[39m broken symlink resolution fails closed at rule[32m 2[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7487285Z [31m   [31m×[31m symlink cycle and ENOTDIR fail closed for event and scope roots[39m[32m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7488792Z    [2m[90m↓[39m[22m foreign Windows drive paths retain lexical bytes but dot traversal, sibling prefixes, and conflicting paths are denied
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.7490772Z    [2m[90m↓[39m[22m foreign UNC policy is lexical, with case/separator boundaries and dot refusal; no native UNC claim
+Verify (Windows)	Run unit tests	2026-10-08T15:49:58.9852858Z  [32m✓[39m tests/shared/path.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:49:59.2362605Z  [2m[90m↓[39m[22m tests/contract/fixture-ingest.contract.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:01.9512148Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses preview with a real resistant Git tree and preserves all state
+Verify (Windows)	Run unit tests	2026-10-08T15:50:01.9514645Z [22m[39mREPLAY_BOUND {"mode":"preview","elapsedMs":7218,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:01.9515709Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6925593Z  [32m✓[39m tests/cli/replay-safety-regression.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 8654[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6928826Z    [33m[2m✓[22m[39m R1 refuses a parent replaced by a same-target symlink/junction at afterPathStat [33m 401[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6932122Z    [33m[2m✓[22m[39m R1 refuses a parent replaced by a same-target symlink/junction at afterRead [33m 406[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6937456Z    [33m[2m✓[22m[39m R1 refuses a replaced regular parent even when a hardlink preserves the leaf inode [33m 403[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6939151Z    [33m[2m✓[22m[39m R3 binds workspace inference to confirmation even when only projectRoots changes [33m 4769[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:07.6941160Z    [33m[2m✓[22m[39m unchanged regular file remains usable and cursor bytes remain unchanged [33m 2658[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:08.0365637Z  [32m✓[39m tests/parsers/kimicode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:08.5501553Z  [32m✓[39m tests/cli/git.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 267[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:09.0806305Z  [32m✓[39m tests/evaluator/bl-codex-quota-window-f001-f002.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:09.3480807Z  [32m✓[39m tests/shared/framework-version.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:09.6320168Z  [32m✓[39m tests/quota/codex-chatgpt.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:10.3863796Z  [32m✓[39m tests/parsers/opencode.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 481[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:10.7152107Z  [32m✓[39m tests/server/model-detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.0843896Z  [32m✓[39m tests/server/harness-decisions-route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.5315853Z  [32m✓[39m tests/evaluator/bl-gate-inbox-f003-evidence-list.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.6992589Z [90mstdout[2m | tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22m[2mprivacy path safety: dot alias for excluded real workspace must not be admitted
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.6995929Z [22m[39mDOT_PRIVACY {"dryRun":true,"planDigest":"4350f38dd5ee6d3458c666a090cabcba9c8f5b057c3551ac3f60fcf464228f63","bytes":299,"records":1,"parsed":1,"selected":1,"filtered":1,"wouldAdmit":0,"warningCount":0,"sample":[]}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.6997929Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7102328Z  [31m❯[39m tests/cli/b03-fixed-prereview-independent.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 12176[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7127084Z    [33m[2m✓[22m[39m positive control: physical ordinary file admits minimized rows, retaining unrelated durable backlog [33m 2593[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7135037Z    [33m[2m✓[22m[39m parent identity negative at afterPathStat reaches race hook and rejects a hardlinked leaf under a replacement directory [33m 488[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7230505Z [31m   [31m×[31m parent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory[39m[33m 496[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7270441Z    [32m✓[39m source path negative: parent symlink and explicit dot components fail closed[32m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7309179Z    [2m[90m↓[39m[22m FIFO negative: independent timed child reaches regular-to-FIFO swap and returns without writer
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7311864Z [31m   [31m×[31m final confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission[39m[33m 6241[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7313923Z    [33m[2m✓[22m[39m file mutation negative reaches afterRead and rejects growth [33m 783[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7315426Z    [33m[2m✓[22m[39m privacy path safety: dot alias for excluded real workspace must not be admitted [33m 1567[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7317003Z    [2m[90m↓[39m[22m privacy path safety: Git enrichment exposing excluded canonical workspace must not enter queue
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7966070Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mrefuses execute with a real resistant Git tree and preserves all state
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7969459Z [22m[39mREPLAY_BOUND {"mode":"execute","elapsedMs":7174,"trackedProcesses":2,"stateUnchanged":true,"liveOwnedProcesses":0}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.7981974Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:11.8455297Z  [32m✓[39m tests/server/agent-version.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:12.1876127Z  [32m✓[39m tests/server/pricing-sources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:12.2627646Z  [32m✓[39m tests/evaluator/bl-homepage-codex-quota-probes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:12.6712415Z  [32m✓[39m tests/shared/harness-health.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:13.2480144Z  [2m[90m↓[39m[22m tests/server/b06-batch-db.probe.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:14.3243242Z  [32m✓[39m tests/shared/home-first-use.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:14.3467732Z  [32m✓[39m tests/server/deploy-secrets.test.ts [2m([22m[2m31 tests[22m[2m)[22m[33m 1842[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:14.6495976Z  [32m✓[39m tests/shared/harness-transitions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:14.7857397Z  [32m✓[39m tests/server/device-enroll.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:15.1497177Z  [32m✓[39m tests/server/harness-gates-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:15.8845187Z  [32m✓[39m tests/shared/quota-window-label.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:16.1088476Z  [2m[90m↓[39m[22m tests/server/release-predecessor-negative.test.ts [2m([22m[2m17 tests[22m[2m | [22m[33m17 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:16.6950948Z  [32m✓[39m tests/evaluator/b05-evidence-retention-round2.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 299[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:16.9121592Z  [2m[90m↓[39m[22m tests/ci/macos-launchd-cleanup-trap.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:17.3810534Z  [32m✓[39m tests/server/enrollment-tokens-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:17.9668178Z  [2m[90m↓[39m[22m tests/server/b06-partial-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.4012780Z  [32m✓[39m tests/server/b06-partial-ack.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.6505244Z  [32m✓[39m tests/server/quota.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8742066Z  [31m❯[39m tests/cli/process-bounds/bounded-subprocess.test.ts [2m([22m[2m22 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 3912[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8769152Z      [32m✓[39m preserves explicit argv, cwd/env, stdout/stderr and success[32m 178[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8829190Z      [33m[2m✓[22m[39m preserves ordinary nonzero exit without confusing it with launch failure [33m 301[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8836287Z      [32m✓[39m distinguishes a missing target cwd from worker supervision failure[32m 211[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8838112Z      [2m[90m↓[39m[22m preserves termination signal
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8839194Z      [32m✓[39m rejects invalid timeout 0 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8840327Z      [32m✓[39m rejects invalid timeout -1 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8841412Z      [32m✓[39m rejects invalid timeout NaN before launch[32m 3[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8842416Z      [32m✓[39m rejects invalid timeout Infinity before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8843976Z      [32m✓[39m rejects invalid timeout 0.5 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8845169Z      [32m✓[39m rejects invalid timeout 4294967296 before launch[32m 5[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8846273Z      [32m✓[39m rejects invalid output budget 0 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8847443Z      [32m✓[39m rejects invalid output budget -1 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8848518Z      [32m✓[39m rejects invalid output budget NaN before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8849705Z      [32m✓[39m rejects invalid output budget Infinity before launch[32m 3[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8850908Z      [32m✓[39m rejects invalid output budget 0.5 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8852103Z      [32m✓[39m rejects invalid output budget 4294967296 before launch[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8853334Z      [33m[2m✓[22m[39m bounds resistant and reaps owned native processes [33m 716[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8854654Z      [33m[2m✓[22m[39m bounds descendant and reaps owned native processes [33m 727[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8856082Z [31m     [31m×[31m bounds inherited-pipes and reaps owned native processes[39m[33m 432[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8857616Z      [32m✓[39m caps combined streams, omits raw stderr from errors and cleans overflow child[32m 298[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8859126Z [31m     [31m×[31m accounts stdout and stderr against one combined byte budget[39m[32m 272[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:18.8860495Z      [33m[2m✓[22m[39m uses a real Windows executable for tree cleanup [33m 727[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:19.2338060Z  [2m[90m↓[39m[22m tests/contract/sign-verify.contract.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:19.5659074Z  [32m✓[39m tests/server/harness-gate-notify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:19.8814810Z  [32m✓[39m tests/parsers/aider.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:20.1847733Z  [2m[90m↓[39m[22m tests/server/quota-account-db.probe.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:20.6772170Z  [2m[90m↓[39m[22m tests/server/b07-queue-id-ack-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:21.5574103Z  [32m✓[39m tests/cli/b03-replay-deadline.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 2569[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:21.5577842Z    [33m[2m✓[22m[39m uses one execution deadline across both enrichments and refuses before merge [33m 2558[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:21.8201513Z  [32m✓[39m tests/cli/install-agent-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:22.0720250Z  [32m✓[39m tests/shared/agent-release-version.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:22.9180366Z  [32m✓[39m tests/ci/macos-launchd-installer-gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 589[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.2483945Z  [32m✓[39m tests/server/usage-batch-input.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.4825696Z  [32m✓[39m tests/server/cleanup.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8307576Z [90mstderr[2m | tests/server/health.test.ts[2m > [22m[2mhealth layers[2m > [22m[2mfails closed on missing login configuration before touching the database
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8308959Z [22m[39mreadiness failed {
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8309626Z   requestId: [32m'547b1469-b3ea-40fb-a203-e25d05af336d'[39m,
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8310275Z   stage: [32m'runtime_config'[39m,
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8310783Z   code: [32m'config_not_ready'[39m,
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8311263Z   errorCode: [90mundefined[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8311588Z }
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8311816Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:23.8488690Z  [32m✓[39m tests/server/health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.1213836Z  [32m✓[39m tests/server/time-buckets.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.2974814Z  [32m✓[39m tests/cli/harness-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3170[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.2975882Z      [33m[2m✓[22m[39m wires Commander options without treating the Command object as injected dependencies [33m 3159[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.3784524Z  [32m✓[39m tests/shared/quota-presentation.test.ts [2m([22m[2m71 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.5655720Z  [32m✓[39m tests/cli/cursor.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:24.6690758Z  [2m[90m↓[39m[22m tests/server/harness-gates-route-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:25.1439443Z  [32m✓[39m tests/cli/b07-versioned-quarantine.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 234[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:25.4108465Z  [32m✓[39m tests/server/harness-gate-notify-evaluator-probes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:25.7987488Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mdoes not renew the deadline across successive real Git calls
+Verify (Windows)	Run unit tests	2026-10-08T15:50:25.7989090Z [22m[39mSHARED_GIT_DEADLINE {"elapsedMs":7195,"gitInvocations":3}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:25.7989995Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:26.6329991Z  [32m✓[39m tests/server/standalone-artifact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 993[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:26.8796712Z  [32m✓[39m tests/server/harness-dispatch-usage-evaluator-probes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.3140428Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode stall and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.3142288Z [22m[39mSTARTUP_BOUND {"mode":"stall","elapsedMs":2185,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.3143087Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.5514955Z [90mstdout[2m | tests/cli/b07-prereview-process.test.ts[2m > [22m[2mseparate native processes must not lose rejected correction after old same-ID quarantine
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.5522385Z [22m[39mMULTIPROCESS_QUARANTINE_NEGATIVE {"active":[],"rejected":[{"version":1,"rejectedAt":"2026-10-08T15:50:27.749Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":1,"totalTokens":1}},{"version":1,"rejectedAt":"2026-10-08T15:50:28.498Z","code":"invalid_event","event":{"source":"aider","sourceEventId":"same-id","occurredAt":"2026-10-08T00:00:00.000Z","repoKey":null,"gitRemote":null,"inputTokens":200,"totalTokens":200}}]}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:28.5525986Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.5044161Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode overflow and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.5047178Z [22m[39mSTARTUP_BOUND {"mode":"overflow","elapsedMs":331,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.5048615Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.8493405Z [90mstdout[2m | tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22m[2mretains the production before-mutate deadline guard under the queue lock
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.8495648Z [22m[39mQUEUE_LOCK_GUARD {"lockSeen":true,"error":"Replay refused: queue admission exceeded 10000ms deadline","stateUnchanged":true}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:30.8496785Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.2884634Z [90mstdout[2m | tests/cli/b07-prereview-process.test.ts[2m > [22m[2meight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.2886672Z [22m[39mMULTIPROCESS_CONTROL {"beforeCount":8,"afterAckCount":7}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.2909033Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.2936321Z  [32m✓[39m tests/cli/b07-prereview-process.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 4166[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.2988693Z    [33m[2m✓[22m[39m separate native processes must not lose rejected correction after old same-ID quarantine [33m 1437[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.3001311Z    [33m[2m✓[22m[39m eight simultaneous native writers preserve same-ID distinct versions, exact ACK, and owner-only new files [33m 2726[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.5464835Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode invalid and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.5468412Z [22m[39mSTARTUP_BOUND {"mode":"invalid","elapsedMs":253,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.5469241Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:31.6054381Z  [32m✓[39m tests/shared/auto-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.4919405Z  [32m✓[39m tests/cli/queue-merge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1571[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.4921187Z      [33m[2m✓[22m[39m serializes concurrent replay/collection writers without losing retained backlog [33m 1506[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.5393079Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode short and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.5395013Z [22m[39mSTARTUP_BOUND {"mode":"short","elapsedMs":301,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.5397633Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:33.7544661Z  [32m✓[39m tests/shared/device-status.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.0949915Z  [32m✓[39m tests/vendor/braces-backport.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.4116486Z  [32m✓[39m tests/server/harness-gate-notify-timeout-probe.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.6189729Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode nonzero and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.6191726Z [22m[39mSTARTUP_BOUND {"mode":"nonzero","elapsedMs":311,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.6193491Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:34.8682135Z  [32m✓[39m tests/shared/mode-badges.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.3526410Z  [2m[90m↓[39m[22m tests/server/git-privacy-db.probe.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.6738887Z  [32m✓[39m tests/quota/registry.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.7090765Z [90mstdout[2m | tests/cli/process-bounds/agent-version-bounds.test.ts[2m > [22m[2mbounds real startup executable mode signal and returns null
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.7092713Z [22m[39mSTARTUP_BOUND {"mode":"signal","elapsedMs":263,"version":null}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.7093486Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:35.9602310Z  [32m✓[39m tests/server/summary-metrics.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:36.2559372Z  [32m✓[39m tests/ci/b05-recovery-source.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:36.5621859Z  [32m✓[39m tests/shared/usage.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:36.8546842Z  [32m✓[39m tests/cli/harness-vm-provider-ceiling.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.2991025Z  [31m❯[39m tests/cli/process-bounds/replay-process-bounds.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 45270[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.2993352Z    [33m[2m✓[22m[39m refuses preview with a real resistant Git tree and preserves all state [33m 9936[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.2995895Z    [33m[2m✓[22m[39m refuses execute with a real resistant Git tree and preserves all state [33m 9842[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.2997428Z    [33m[2m✓[22m[39m refuses preview output overflow without leaking raw stderr [33m 2194[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.2999157Z    [33m[2m✓[22m[39m refuses execute output overflow without leaking raw stderr [33m 3612[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.3001806Z    [33m[2m✓[22m[39m does not renew the deadline across successive real Git calls [33m 8208[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.3010228Z    [33m[2m✓[22m[39m retains the production before-mutate deadline guard under the queue lock [33m 5038[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.3012612Z [31m   [31m×[31m preserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event[39m[33m 6436[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.3297628Z  [32m✓[39m tests/cli/b07-private-queue-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.5840658Z  [2m[90m↓[39m[22m tests/server/release-predecessor.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m5 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.6380934Z  [32m✓[39m tests/server/model-prices.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9651573Z  [32m✓[39m tests/cli/process-bounds/agent-version-bounds.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 13132[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9715514Z    [33m[2m✓[22m[39m captures the actual install checkout SHA [33m 673[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9736416Z    [33m[2m✓[22m[39m bounds real startup executable mode stall and returns null [33m 2835[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9863698Z    [33m[2m✓[22m[39m bounds real startup executable mode overflow and returns null [33m 2190[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9895046Z    [33m[2m✓[22m[39m bounds real startup executable mode invalid and returns null [33m 1040[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9898107Z    [33m[2m✓[22m[39m bounds real startup executable mode short and returns null [33m 1995[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9903454Z    [33m[2m✓[22m[39m bounds real startup executable mode nonzero and returns null [33m 1079[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9905118Z    [33m[2m✓[22m[39m bounds real startup executable mode signal and returns null [33m 1090[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9908284Z    [33m[2m✓[22m[39m keeps its import-time SHA even after the install checkout advances [33m 1208[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9909756Z    [33m[2m✓[22m[39m uses native git.exe rather than .cmd resolution on Windows [33m 1020[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:37.9917184Z  [32m✓[39m tests/cli/replay-contract.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.1838708Z  [32m✓[39m tests/cli/agent-release-installer-windows-fixture.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 325[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.2496973Z  [32m✓[39m tests/shared/agent-release-i18n.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.2568694Z  [32m✓[39m tests/server/pricing-review.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.4674699Z  [32m✓[39m tests/cli/privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.6436786Z  [32m✓[39m tests/server/summary-cache-tags.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.7691581Z  [32m✓[39m tests/shared/upgrade-banner.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:38.7867605Z  [32m✓[39m tests/server/pricing-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.0623783Z  [32m✓[39m tests/shared/url.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.3642922Z  [32m✓[39m tests/cli/replay-operational-contract.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.6261092Z  [32m✓[39m tests/ci/windows-installer-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 711[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.7061496Z  [32m✓[39m tests/server/usage-cost-cache-invalidation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.7246292Z  [32m✓[39m tests/ci/windows-agent-owner-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 683[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.9363242Z  [32m✓[39m tests/cli/file-permissions.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 16[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:39.9871402Z  [32m✓[39m tests/quota/auth-file.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.2470481Z  [32m✓[39m tests/cli/service-cron.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.2954485Z  [32m✓[39m tests/cli/proxy-env.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.3639005Z  [32m✓[39m tests/cli/harness-heartbeat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.5362839Z  [32m✓[39m tests/server/auth-secret.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.6759764Z  [32m✓[39m tests/shared/usage-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.7069692Z  [32m✓[39m tests/server/pricing-scan-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.9234348Z  [32m✓[39m tests/server/batch-wire-compatibility.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:40.9684710Z  [32m✓[39m tests/cli/harness-backoff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:41.1856484Z  [32m✓[39m tests/server/admin-token.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:41.2441360Z  [32m✓[39m tests/server/events-cursor.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:41.5074672Z  [32m✓[39m tests/server/daily-range.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:41.5757691Z  [32m✓[39m tests/shared/chart-type.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:41.9541157Z  [32m✓[39m tests/ci/b06-pg16-workflow-gate.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.2853006Z  [32m✓[39m tests/cli/enroll.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.6220740Z [90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via dot
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.6245218Z [22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"dot","stdout":"Collected 0 events; queue holds 0 unique events at C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-collect-negative-9ryfUL\\.tokenizer\\queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.6253623Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.6267350Z  [32m✓[39m tests/cli/b07-private-atomic-creation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:42.9854574Z  [32m✓[39m tests/cli/collect.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.3354311Z  [32m✓[39m tests/cli/service-launchd.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.7461894Z  [32m✓[39m tests/server/timezone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8836308Z [90mstdout[2m | tests/cli/b03-fixed-collect-privacy-negative.test.ts[2m > [22m[2mnormal CLI collect independently rejects excluded workspace via git-symlink
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8840696Z [22m[39mNORMAL_COLLECT_NEGATIVE {"kind":"git-symlink","stdout":"Collected 0 events; queue holds 0 unique events at C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-collect-negative-swCWAT\\.tokenizer\\queue.jsonl\nBacklog: 0 previously admitted events; retained locally while local-only. Switching to sync automatically uploads them on the next Agent/run/sync cycle.\n","queue":[]}
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8843306Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8856856Z  [32m✓[39m tests/cli/b03-fixed-collect-privacy-negative.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 2411[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8858625Z    [33m[2m✓[22m[39m normal CLI collect independently rejects excluded workspace via dot [33m 1141[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:43.8860369Z    [33m[2m✓[22m[39m normal CLI collect independently rejects excluded workspace via git-symlink [33m 1267[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:44.2053214Z  [32m✓[39m tests/server/harness-detail.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:44.4828013Z  [32m✓[39m tests/ci/b07-obsolete-queue-test-archive.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:44.7864383Z  [2m[90m↓[39m[22m tests/cli/b03-round2-elapsed-negative.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:44.8226695Z  [32m✓[39m tests/cli/b03-round2-final-deadline-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 2964[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:44.8235099Z    [33m[2m✓[22m[39m final admission must refuse when its wall clock advances beyond budget during otherwise unchanged enrichment [33m 2961[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:45.5328935Z  [32m✓[39m tests/ci/b07-combination-test-scope.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:45.9380014Z  [32m✓[39m tests/server/dependency-security-floor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:46.1570646Z  [32m✓[39m tests/cli/b06-rejected-events-concurrency.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1080[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:46.1572459Z      [33m[2m✓[22m[39m serializes two native processes without losing either rejected event [33m 1079[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:46.2585895Z  [32m✓[39m tests/shared/repo-link.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:46.4296326Z  [32m✓[39m tests/shared/harness-evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:46.7150113Z  [32m✓[39m tests/shared/input-sanitization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:47.0887852Z  [32m✓[39m tests/server/harness-gates-pending-count.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:47.1549609Z  [32m✓[39m tests/cli/process-bounds/windows-reparse-bounds.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 619[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:47.1551465Z    [33m[2m✓[22m[39m fails closed on a native overflowing reparse checker without raw stderr [33m 617[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:47.3700822Z  [32m✓[39m tests/shared/enrollment-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:47.6592940Z  [2m[90m↓[39m[22m tests/contract/canonical-json.contract.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:48.1823458Z  [32m✓[39m tests/ci/b07-combination-frozen-inputs.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 214[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:48.2123455Z  [32m✓[39m tests/ci/tsconfig-report-boundary.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 119[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:48.5699065Z  [32m✓[39m tests/server/agent-releases-route.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 41[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.0453072Z  [32m✓[39m tests/ci/b07-obsolete-queue-eol-policy.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 154[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.4079393Z  [32m✓[39m tests/shared/pending-gates-badge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.5981734Z  [32m✓[39m tests/cli/b07-queue-multiwriter.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 5577[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.5983518Z      [33m[2m✓[22m[39m preserves concurrent collection, newer versions and crash retries over real HTTP [33m 5574[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6095176Z  [32m✓[39m tests/cli/replay-help.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1161[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6096214Z      [33m[2m✓[22m[39m documents the explicit file, budgets, dry-run default, and digest confirmation [33m 1158[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6741997Z  [32m✓[39m tests/shared/html-escape.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6809454Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6810268Z [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6810589Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6814521Z [41m[1m FAIL [22m[49m tests/ci/vps-host-preflight.test.ts[2m > [22mhost-preflight operation separation and preserved release gates[2m > [22mdispatches inventory alone even on main, and preserves push/PR/release gates
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6822764Z [31m[1mAssertionError[22m: expected '\n' to contain 'if: github.event_name != \'workflow_d…'[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6823179Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6823323Z [32m- Expected[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6823580Z [31m+ Received[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6823734Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6824244Z [32m- if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6824865Z [31m+[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6825068Z [31m+[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6825170Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6825505Z [36m [2m❯[22m tests/ci/vps-host-preflight.test.ts:[2m271:19[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6891787Z     [90m269|[39m     [35mfor[39m ([35mconst[39m name [35mof[39m gates) {
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6893147Z     [90m270|[39m       const job = workflow.slice(workflow.indexOf(`  ${name}:\n`)).spl…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6894226Z     [90m271|[39m       expect(job).toContain("if: github.event_name != 'workflow_dispat…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6895051Z     [90m   |[39m                   [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6895552Z     [90m272|[39m     }
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6896297Z     [90m273|[39m     expect(workflow).toContain("if: github.event_name == 'workflow_dis…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6896827Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6898577Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6899351Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6900961Z [41m[1m FAIL [22m[49m tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22mparent identity negative at afterRead reaches race hook and rejects a hardlinked leaf under a replacement directory
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6904033Z [31m[1mAssertionError[22m: expected [Function] to throw error including 'source parent changed' but got 'Replay refused: source could not be o…'[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6905017Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6905380Z Expected: [32m"source parent changed"[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6906231Z Received: [31m"Replay refused: source could not be opened safely"[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6907037Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6907682Z [36m [2m❯[22m tests/cli/b03-fixed-prereview-independent.test.ts:[2m30:185[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6926653Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6926823Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6927737Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6928193Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6929910Z [41m[1m FAIL [22m[49m tests/cli/b03-fixed-prereview-independent.test.ts[2m > [22mfinal confirmation negatives: projectRoots, same-size content, and privacy mode changes never call admission
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6931595Z [31m[1mError[22m: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6932983Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6934481Z [36m [2m❯[22m tests/cli/b03-fixed-prereview-independent.test.ts:[2m48:1[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6935441Z     [90m 46|[39m })[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6935975Z     [90m 47|[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.6936856Z     [90m 48|[39m it("final confirmation negatives: projectRoots, same-size content, and…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7039532Z     [90m   |[39m [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7040546Z     [90m 49|[39m   const dir = fixture(); const file = join(dir, "source.jsonl"); write…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7041749Z     [90m 50|[39m   const cfg = config(); const digest = dryRunBoundedReplay(plan(file),…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7042832Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7043350Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7043827Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7045012Z [41m[1m FAIL [22m[49m tests/cli/b03-round2-independent.test.ts[2m > [22msymlink cycle and ENOTDIR fail closed for event and scope roots
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7046741Z [31m[1mAssertionError[22m: expected [ { source: 'claude-code', …(3) } ] to deeply equal [][39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7047499Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7047821Z [32m- Expected[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7048338Z [31m+ Received[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7048666Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7048967Z [32m- [][39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7049428Z [31m+ [[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7049872Z [31m+   {[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7050582Z [31m+     "occurredAt": "2026-10-07T12:00:00.000Z",[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7051402Z [31m+     "source": "claude-code",[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7052123Z [31m+     "sourceEventId": "stable",[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7053401Z [31m+     "workspacePath": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-round2-MOy6ef\\regular\\child",[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7054364Z [31m+   },[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7054835Z [31m+ ][39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7055127Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7064536Z [36m [2m❯[22m tests/cli/b03-round2-independent.test.ts:[2m70:67[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7065851Z     [90m 68|[39m   const dir = fixture(); const cycle = join(dir, "cycle"); link(cycle,…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7067361Z     [90m 69|[39m   [35mfor[39m ([35mconst[39m path [35mof[39m [cycle[33m,[39m [34mjoin[39m(regular[33m,[39m [32m"child"[39m)]) {
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7068808Z     [90m 70|[39m     expect(filterUsageEvents([event(path)], cfg([dir]).privacy!)).toEq…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7069924Z     [90m   |[39m                                                                   [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7070996Z     [90m 71|[39m     expect(filterUsageEvents([event(dir)], cfg([path]).privacy!)).toEq…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7072174Z     [90m 72|[39m   }
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7072514Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7073006Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7073470Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7074864Z [41m[1m FAIL [22m[49m tests/cli/replay.test.ts[2m > [22mbounded historical replay[2m > [22mbinds execution to file, range, budgets, current scope, and privacy mode
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7076293Z [31m[1mError[22m: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7077879Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7079506Z [36m [2m❯[22m tests/cli/replay.test.ts:[2m152:3[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7080136Z     [90m150|[39m   })[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7080589Z     [90m151|[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7081695Z     [90m152|[39m   it("binds execution to file, range, budgets, current scope, and priv…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7082507Z     [90m   |[39m   [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7084687Z     [90m153|[39m     [35mconst[39m root [33m=[39m [34mtemporaryRoot[39m()[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7085984Z     [90m154|[39m     [35mconst[39m file [33m=[39m [34mjoin[39m(root[33m,[39m [32m"confirm.jsonl"[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7086619Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7086980Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7087304Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7088653Z [41m[1m FAIL [22m[49m tests/cli/process-bounds/bounded-subprocess.test.ts[2m > [22mbounded subprocess primitive[2m > [22mbounds inherited-pipes and reaps owned native processes
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7090366Z [31m[1mAssertionError[22m: expected function to throw an error, but it didn't[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7091548Z [36m [2m❯[22m tests/cli/process-bounds/bounded-subprocess.test.ts:[2m98:29[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7092726Z     [90m 96|[39m   it.each(["resistant", "descendant", "inherited-pipes"])("bounds %s a…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7093775Z     [90m 97|[39m     [35mconst[39m start [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m()[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7095092Z     [90m 98|[39m     [34mexpect[39m(() [33m=>[39m [34mrun[39m(mode))[33m.[39m[34mtoThrow[39m([33mBoundedSubprocessTimeoutError[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7096083Z     [90m   |[39m                             [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7096838Z     [90m 99|[39m     expect(Date.now() - start).toBeLessThan(500 + SUBPROCESS_TOTAL_ALL…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7098296Z     [90m100|[39m     [34mexpect[39m([34mpids[39m()[33m.[39mlength)[33m.[39m[34mtoBe[39m(mode [33m===[39m [32m"resistant"[39m [33m?[39m [34m1[39m [33m:[39m [34m2[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7099220Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7099531Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7099813Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7101072Z [41m[1m FAIL [22m[49m tests/cli/process-bounds/bounded-subprocess.test.ts[2m > [22mbounded subprocess primitive[2m > [22maccounts stdout and stderr against one combined byte budget
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7102975Z [31m[1mAssertionError[22m: expected error to be instance of BoundedSubprocessOutputError[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7103549Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7103739Z [32m- Expected:[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7104123Z [Function BoundedSubprocessOutputError]
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7104416Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7104583Z [31m+ Received:[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7104982Z BoundedSubprocessSupervisionError {
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7105427Z   "message": "subprocess cleanup failed",
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7105841Z }
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7105988Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7106610Z [36m [2m❯[22m tests/cli/process-bounds/bounded-subprocess.test.ts:[2m113:49[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7107276Z     [90m111|[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7107962Z     [90m112|[39m   it("accounts stdout and stderr against one combined byte budget", ()…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7108992Z     [90m113|[39m     expect(() => run("combined", 2_000, 1_024)).toThrow(BoundedSubproc…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7110161Z     [90m   |[39m                                                 [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7111311Z     [90m114|[39m     [35mconst[39m result [33m=[39m [34mrun[39m([32m"combined"[39m[33m,[39m [34m2_000[39m[33m,[39m [34m1_200[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7113177Z     [90m115|[39m     [34mexpect[39m(result[33m.[39mstdout[33m.[39mlength [33m+[39m result[33m.[39mstderr[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m1_200[39m)[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7114162Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7114537Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7115068Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7116317Z [41m[1m FAIL [22m[49m tests/cli/process-bounds/replay-process-bounds.test.ts[2m > [22mpreserves ordinary Git enrichment and read-only preview, then admits a confirmed minimal event
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7117616Z [31m[1mError[22m: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7118706Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7119995Z [36m [2m❯[22m tests/cli/process-bounds/replay-process-bounds.test.ts:[2m106:1[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7120739Z     [90m104|[39m })[33m;[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7121099Z     [90m105|[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7121812Z     [90m106|[39m it("preserves ordinary Git enrichment and read-only preview, then admi…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7122569Z     [90m   |[39m [31m^[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7123638Z     [90m107|[39m   for (const args of [["init", "-q"], ["-c", "user.name=Fixture", "-c"…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7125363Z     [90m108|[39m     ["remote", "add", "origin", "***git.example/te…
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7125789Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7126158Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7126488Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7126535Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7127447Z [2m Test Files [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m157 passed[39m[22m[2m | [22m[33m18 skipped[39m[90m (181)[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7132398Z [2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m1887 passed[39m[22m[2m | [22m[33m144 skipped[39m[90m (2039)[39m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7133408Z [2m   Start at [22m 15:48:46
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7136519Z [2m   Duration [22m 123.53s[2m (transform 6.06s, setup 0ms, import 20.63s, tests 303.94s, environment 35ms)[22m
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7139593Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7176885Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7200449Z ##[error]AssertionError: expected '\n' to contain 'if: github.event_name != \'workflow_d…'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- Expected
+Verify (Windows)	Run unit tests	+ Received
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
+Verify (Windows)	Run unit tests	+
+Verify (Windows)	Run unit tests	+
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ tests/ci/vps-host-preflight.test.ts:271:19
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7208023Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7210717Z ##[error]AssertionError: expected [Function] to throw error including 'source parent changed' but got 'Replay refused: source could not be o…'
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	Expected: "source parent changed"
+Verify (Windows)	Run unit tests	Received: "Replay refused: source could not be opened safely"
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ tests/cli/b03-fixed-prereview-independent.test.ts:30:185
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7212467Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7214316Z ##[error]Error: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+Verify (Windows)	Run unit tests	 ❯ tests/cli/b03-fixed-prereview-independent.test.ts:48:1
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7215420Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7218032Z ##[error]AssertionError: expected [ { source: 'claude-code', …(3) } ] to deeply equal []
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- Expected
+Verify (Windows)	Run unit tests	+ Received
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- []
+Verify (Windows)	Run unit tests	+ [
+Verify (Windows)	Run unit tests	+   {
+Verify (Windows)	Run unit tests	+     "occurredAt": "2026-10-07T12:00:00.000Z",
+Verify (Windows)	Run unit tests	+     "source": "claude-code",
+Verify (Windows)	Run unit tests	+     "sourceEventId": "stable",
+Verify (Windows)	Run unit tests	+     "workspacePath": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\b03-round2-MOy6ef\\regular\\child",
+Verify (Windows)	Run unit tests	+   },
+Verify (Windows)	Run unit tests	+ ]
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ tests/cli/b03-round2-independent.test.ts:70:67
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7219609Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7221443Z ##[error]Error: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+Verify (Windows)	Run unit tests	 ❯ tests/cli/replay.test.ts:152:3
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7222730Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7223901Z ##[error]AssertionError: expected function to throw an error, but it didn't
+Verify (Windows)	Run unit tests	 ❯ tests/cli/process-bounds/bounded-subprocess.test.ts:98:29
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7224768Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7227073Z ##[error]AssertionError: expected error to be instance of BoundedSubprocessOutputError
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	- Expected:
+Verify (Windows)	Run unit tests	[Function BoundedSubprocessOutputError]
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	+ Received:
+Verify (Windows)	Run unit tests	BoundedSubprocessSupervisionError {
+Verify (Windows)	Run unit tests	  "message": "subprocess cleanup failed",
+Verify (Windows)	Run unit tests	}
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	 ❯ tests/cli/process-bounds/bounded-subprocess.test.ts:113:49
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7228663Z 
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.7230379Z ##[error]Error: Test timed out in 5000ms.
+Verify (Windows)	Run unit tests	If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+Verify (Windows)	Run unit tests	 ❯ tests/cli/process-bounds/replay-process-bounds.test.ts:106:1
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	
+Verify (Windows)	Run unit tests	2026-10-08T15:50:49.8636306Z ##[error]Process completed with exit code 1.
+Verify (Windows)	Upload Windows agent owner evidence	﻿2026-10-08T15:50:49.8829341Z ##[group]Run actions/upload-artifact@v4
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8829705Z with:
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8829897Z   name: windows-agent-owner
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8830160Z   path: .ci/windows-agent-owner.json
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8830428Z   if-no-files-found: warn
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8830643Z   retention-days: 7
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8830846Z   compression-level: 6
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8831059Z   overwrite: false
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8831266Z   include-hidden-files: false
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:49.8831496Z ##[endgroup]
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:50.0790544Z (node:2172) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:50.0791542Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Verify (Windows)	Upload Windows agent owner evidence	2026-10-08T15:50:50.0837124Z ##[warning]No files were found with the provided path: .ci/windows-agent-owner.json. No artifacts will be uploaded.
+Verify (Windows)	Post Checkout	﻿2026-10-08T15:50:50.1174859Z Post job cleanup.
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3066118Z [command]"C:\Program Files\Git\bin\git.exe" version
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3353687Z git version 2.55.0.windows.5
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3421206Z Temporarily overriding HOME='D:\a\_temp\ea7aa361-dd11-488f-aa66-4c7815275ab5' before making global git config changes
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3422563Z Adding repository directory to the temporary git global config as a safe directory
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3432802Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.3744473Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.4036494Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.9359461Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.9604517Z http.https://github.com/.extraheader
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.9644389Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Verify (Windows)	Post Checkout	2026-10-08T15:50:50.9931980Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Verify (Windows)	Post Checkout	2026-10-08T15:50:51.5079556Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Verify (Windows)	Post Checkout	2026-10-08T15:50:51.5366552Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Verify (Windows)	Complete job	﻿2026-10-08T15:50:52.0795402Z Cleaning up orphan processes
+Verify (Windows)	Complete job	2026-10-08T15:50:52.0829509Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
