@@ -1,0 +1,58 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+ ❯ tests/ci/vps-host-preflight.test.ts (42 tests | 2 failed) 34455ms
+     × transports the exact reviewed script on stdin and uploads only validated JSON 1433ms
+     × retains a valid redacted refusal while returning nonzero 979ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > transports the exact reviewed script on stdin and uploads only validated JSON
+AssertionError: Host inventory returned no valid allowlisted report
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:223:42
+    221|     const remote = run(); expect(remote.status).toBe(0);
+    222|     const before = snapshot(), { result, artifact } = runWorkflow(remo…
+    223|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+    224|     expect(JSON.parse(artifact).source_sha).toBe(sha);
+    225|     expect(`${artifact}${result.stdout}${result.stderr}`).not.toContai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > retains a valid redacted refusal while returning nonzero
+AssertionError: expected { schema_version: 1, …(5) } to match object { outcome: 'refused', …(1) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "outcome": "refused",
+-   "reason": "missing_or_multiple_app",
++   "reason": "transport_failed",
+  }
+
+ ❯ tests/ci/vps-host-preflight.test.ts:257:34
+    255|     const { result, artifact } = runWorkflow(remote.stdout, { SSH_STAT…
+    256|     expect(result.status).not.toBe(0);
+    257|     expect(JSON.parse(artifact)).toMatchObject({ outcome: 'refused', r…
+       |                                  ^
+    258|     expect(`${artifact}${result.stderr}`).not.toContain(canary);
+    259|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  2 failed | 78 passed (80)
+   Start at  22:07:28
+   Duration  34.58s (transform 138ms, setup 0ms, import 175ms, tests 39.60s, environment 0ms)
+

@@ -1,0 +1,18 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 126ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+tests/ci/vps-host-preflight.test.ts(211,65): error TS2345: Argument of type '(args: string) => void' is not assignable to parameter of type '(...args: [string, string] | []) => Awaitable<void>'.
+  Types of parameters 'args' and 'args' are incompatible.
+    Type '[string, string] | []' is not assignable to type '[args: string]'.
+      Type '[string, string]' is not assignable to type '[args: string]'.
+        Source has 2 element(s) but target allows only 1.
+tests/ci/vps-host-preflight.test.ts(212,28): error TS2345: Argument of type 'string' is not assignable to parameter of type 'string[]'.

@@ -1,0 +1,107 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-generator-20261008
+
+ ❯ tests/ci/vps-host-preflight.test.ts (42 tests | 1 failed | 41 skipped) 1360ms
+     × transports the exact reviewed script on stdin and uploads only validated JSON 1359ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > transports the exact reviewed script on stdin and uploads only validated JSON
+AssertionError: 
+{
+  "schema_version": 1,
+  "operation": "host-preflight",
+  "source_sha": "cccccccccccccccccccccccccccccccccccccccc",
+  "timestamp": "2026-10-08T15:09:11Z",
+  "outcome": "observed",
+  "reason": "none",
+  "project": "tokenizer",
+  "baseline": "digest_activated",
+  "platform": "Linux/x86_64",
+  "free_kib": "99900",
+  "versions": {
+    "docker": "27.5.1",
+    "compose": "2.35.1"
+  },
+  "settings": {
+    "GIT_COMMIT": "dddddddddddddddddddddddddddddddddddddddd",
+    "APP_IMAGE": "ghcr.io/test/app@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "MIGRATE_IMAGE": "ghcr.io/test/migrate@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "APP_HOST_PORT": "127.0.0.1:3010"
+  },
+  "app": {
+    "id": "aaaaaaaaaaaa",
+    "status": "running",
+    "health": "healthy",
+    "image_id": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "revision": "dddddddddddddddddddddddddddddddddddddddd",
+    "user": "node",
+    "uid": "unknown",
+    "port": "127.0.0.1:3010",
+    "network": "tokenizer_default"
+  },
+  "postgres": {
+    "id": "bbbbbbbbbbbb",
+    "status": "running",
+    "health": "healthy",
+    "image_id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "network": "tokenizer_default",
+    "volume": "tokenizer_postgres-data"
+  },
+  "storage": {
+    "network": "tokenizer_default",
+    "network_driver": "bridge",
+    "volume": "tokenizer_postgres-data",
+    "volume_driver": "local"
+  },
+  "files": {
+    "env": {
+      "sha256": "e6e41f46022a91e68299674470fb34654b5f6588db99e8bfb618ba68831486c1",
+      "mode": "644"
+    },
+    "compose": {
+      "sha256": "97fa285af6d41654299a13f61f72432ec173cf18f717d853175f2ac667b52f11",
+      "mode": "644"
+    },
+    "release_compose": {
+      "sha256": "fa6ccea1ca4e3a031d9e99f25cc05db803aa9bac642c000ddab14f6d9da54b52",
+      "mode": "644"
+    },
+    "releases": {
+      "sha256": "directory",
+      "mode": "755"
+    },
+    "manifest": {
+      "sha256": "8cd4f9c3f4d0e1fb3e83eaf8d11d8c3bba9e1d35e3ffe7c2b716356acd9cbbe1",
+      "mode": "644"
+    },
+    "activation": {
+      "sha256": "6b85118ba606f273b87f30005e06614f193066a3c258fbb5802bcd6db3b1d8e0",
+      "mode": "644"
+    }
+  }
+}
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:225:61
+    223|     const filter = step.slice(step.indexOf('def sha:')).split(/\n\s*' …
+    224|     const gate = spawnSync('jq', ['-e', '--arg', 'source', sha, filter…
+    225|     expect(gate.status, `${gate.stderr}\n${remote.stdout}`).toBe(0);
+       |                                                             ^
+    226|     const before = snapshot(), { result, artifact } = runWorkflow(remo…
+    227|     expect(result.status, result.stderr).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 41 skipped (42)
+   Start at  22:09:11
+   Duration  1.47s (transform 27ms, setup 0ms, import 36ms, tests 1.36s, environment 0ms)
+

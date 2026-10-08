@@ -2,10 +2,10 @@
   "status":"building",
   "user_goal":"Coordinate integration, exact-candidate release gates and deployment; push main only after all gates pass.",
   "total_features":5,
-  "completed_features":2,
+  "completed_features":3,
   "fix_rounds":0,
-  "current_sprint":"F003",
-  "last_updated":"2026-10-08T14:55:00Z",
+  "current_sprint":"BL-RELEASE-READINESS",
+  "last_updated":"2026-10-08T15:28:00Z",
   "reference_docs":["docs/specs/BL-RELEASE-READINESS-spec.md","docs/archive/process-bounds-closeout-20261008/progress.json"],
   "docs":{"spec":"docs/specs/BL-RELEASE-READINESS-spec.md","test_cases":null,"signoff":null,"framework_reviewed":true},
   "role_assignments":null,
@@ -13,5 +13,5 @@
   "evaluator_feedback":null,
   "pending_gate":null,
   "release_ready":false,
-  "session_notes":{"coordinator":"Gated main push/deploy, non-main CI publication and maintenance now explicitly authorized. Encrypted off-host backup target unanswered. Narrow two-file old fixture/stronger-gate adaptation and old health format adjudicated in committed spec; original bytes archived. Root main untouched. Isolated Generator and fresh Kimi Evaluator required."}
+  "session_notes":{"coordinator":"Gated main push/deploy, non-main CI publication and maintenance now explicitly authorized. Encrypted off-host backup target unanswered. Narrow two-file old fixture/stronger-gate adaptation and old health format adjudicated in committed spec; original bytes archived. Root main untouched. Isolated Generator and fresh Kimi Evaluator required.","generator":"Active feature F004 local regression. F001/F002/F003 implementation checkpoints recorded. 14-f003-focus-rerun:98 passed; 15-f003-verify-rerun:exit0. Earlier fixture/typecheck/transport-filter failures are immutable in this report directory. F004 native exact-SHA CI remains Coordinator-owned and pending; status stays building. No worker push, live host operation or release acceptance."}
 }

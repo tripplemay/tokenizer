@@ -31,6 +31,12 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      operation:
+        description: Release gates/deploy, or read-only scoped host inventory
+        required: true
+        type: choice
+        options: [release, host-preflight]
+        default: release
       predecessor_sha:
         description: Optional distinct prior source SHA; defaults to fetched origin/main
         required: false
@@ -46,8 +52,105 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  host-preflight:
+    name: Read-only tokenizer host inventory
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'host-preflight'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    environment: production
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+      VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+    steps:
+      - name: Checkout reviewed inventory script
+        uses: actions/checkout@v4
+
+      - name: Collect bounded allowlisted inventory over SSH stdin
+        shell: bash
+        run: |
+          set +x
+          set -euo pipefail
+          umask 077
+          mkdir -p host-preflight-evidence
+          source_sha=unknown
+          if [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]; then source_sha="$GITHUB_SHA"; fi
+          jq -n --arg source "$source_sha" --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{schema_version:1,operation:"host-preflight",source_sha:$source,timestamp:$timestamp,outcome:"refused",reason:"transport_failed"}' \
+            > host-preflight-evidence/inventory.json
+          DEPLOY_PATH="${VPS_DEPLOY_PATH:-/opt/tokenizer}"
+          PORT="${VPS_SSH_PORT:-22}"
+          if [[ ! "$VPS_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.:-]*$ || ${#VPS_HOST} -gt 253 ||
+                ! "$VPS_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]{0,63}$ || -z "$VPS_SSH_KEY" ||
+                ! "$DEPLOY_PATH" =~ ^/[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ || ${#DEPLOY_PATH} -gt 256 ||
+                "$DEPLOY_PATH" == */../* || "$DEPLOY_PATH" == */./* || "$DEPLOY_PATH" == */.. || "$DEPLOY_PATH" == */. ||
+                ! "$PORT" =~ ^[0-9]{1,5}$ || "$source_sha" == unknown ]]; then
+            echo 'Host inventory connection inputs are missing or invalid' >&2; exit 1
+          fi
+          if (( 10#$PORT < 1 || 10#$PORT > 65535 )); then
+            echo 'Host inventory connection inputs are missing or invalid' >&2; exit 1
+          fi
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          printf '%s\n' "$VPS_SSH_KEY" > "$work/key"
+          chmod 600 "$work/key"
+          if ! timeout --signal=KILL 15s ssh-keyscan -T 5 -p "$PORT" -H "$VPS_HOST" > "$work/known_hosts" 2>/dev/null ||
+             [[ ! -s "$work/known_hosts" ]]; then
+            echo 'Host inventory SSH trust discovery failed' >&2; exit 1
+          fi
+          status=0
+          timeout --signal=KILL 150s ssh -i "$work/key" -p "$PORT" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$work/known_hosts" \
+            -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=2 \
+            "$VPS_USER@$VPS_HOST" \
+            "env -i PATH=/usr/local/bin:/usr/bin:/bin bash -s -- '$DEPLOY_PATH' '$GITHUB_SHA'" \
+            < scripts/ci/vps-host-preflight.sh 2>/dev/null | head -c 65537 > "$work/inventory.json" || status=$?
+          if (( $(wc -c < "$work/inventory.json") > 65536 )); then
+            echo 'Host inventory exceeded the report bound' >&2; exit 1
+          fi
+          if ! jq -e --arg source "$GITHUB_SHA" '
+            def sha: test("^([0-9a-f]{40}|unknown)$");
+            def id: test("^([0-9a-f]{12,64}|unknown)$");
+            def digest: test("^(sha256:[0-9a-f]{64}|unknown)$");
+            def image: test("^(unknown|[a-z0-9][a-z0-9./:_-]{1,240}(@sha256:[0-9a-f]{64})?)$");
+            def exact($expected): (keys | sort) == ($expected | sort);
+            exact(["schema_version","operation","source_sha","timestamp","outcome","reason","project","baseline","platform","free_kib","versions","settings","app","postgres","storage","files"]) and
+            .schema_version == 1 and .operation == "host-preflight" and .source_sha == $source and
+            (.timestamp | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")) and
+            (.outcome == "observed" or .outcome == "refused") and
+            (.reason | IN("none","invalid_input","missing_tools","invalid_path","platform_unavailable","unsupported_platform","space_unavailable","docker_unavailable","compose_unavailable","unsafe_config_file","file_metadata_unavailable","oversized_config_file","unsafe_release_directory","duplicate_setting","invalid_setting","app_query_failed","missing_or_multiple_app","wrong_serving_app","unhealthy_app","wrong_backend_binding","image_query_failed","wrong_image_reference","wrong_project_network","postgres_query_failed","multiple_postgres","wrong_postgres_identity","wrong_project_volume","network_query_failed","volume_query_failed","backend_unavailable","backend_unready","unknown_serving_revision","wrong_backend_revision")) and
+            .project == "tokenizer" and (.baseline | IN("unknown","legacy_or_unknown","digest_activated")) and
+            (.platform | test("^(unknown|Linux/(x86_64|aarch64|arm64))$")) and (.free_kib | test("^(unknown|[0-9]{1,16})$")) and
+            (.versions | exact(["docker","compose"]) and all(.[]; test("^(unknown|v?[0-9]+\\.[0-9]+\\.[0-9]+[a-zA-Z0-9.+-]{0,32})$"))) and
+            (.settings | exact(["GIT_COMMIT","APP_IMAGE","MIGRATE_IMAGE","APP_HOST_PORT"]) and (.GIT_COMMIT | sha) and (.APP_IMAGE | image) and (.MIGRATE_IMAGE | image) and (.APP_HOST_PORT | IN("unknown","127.0.0.1:3010"))) and
+            (.app | exact(["id","status","health","image_id","revision","user","uid","port","network"]) and (.id | id) and (.status | IN("unknown","running")) and (.health | IN("unknown","healthy")) and (.image_id | digest) and (.revision | sha) and (.user | test("^(unknown|root|node|[0-9]{1,10}(:[0-9]{1,10})?)$")) and (.uid | test("^(unknown|[0-9]{1,10})$")) and (.port | IN("unknown","127.0.0.1:3010")) and (.network | IN("unknown","tokenizer_default"))) and
+            (.postgres | exact(["id","status","health","image_id","network","volume"]) and (.id | id) and (.status | IN("unknown","running","exited","created","paused","restarting","dead")) and (.health | IN("unknown","healthy","unhealthy","starting")) and (.image_id | digest) and (.network | IN("unknown","tokenizer_default")) and (.volume | IN("unknown","tokenizer_postgres-data"))) and
+            (.storage | exact(["network","network_driver","volume","volume_driver"]) and .network == "tokenizer_default" and .volume == "tokenizer_postgres-data" and (.network_driver | IN("unknown","bridge")) and (.volume_driver | IN("unknown","local"))) and
+            (.files | (keys - ["env","compose","release_compose","releases","manifest","activation"] | length) == 0 and all(.[]; exact(["sha256","mode"]) and (.sha256 | test("^([0-9a-f]{64}|missing|directory)$")) and (.mode | test("^([0-7]{3,4}|missing)$"))))
+          ' "$work/inventory.json" >/dev/null 2>&1; then
+            echo 'Host inventory returned no valid allowlisted report' >&2; exit 1
+          fi
+          jq . "$work/inventory.json" > host-preflight-evidence/inventory.json
+          if [[ "$status" != 0 ]] || ! jq -e '.outcome == "observed"' host-preflight-evidence/inventory.json >/dev/null; then
+            echo 'Host inventory refused the serving state' >&2; exit 1
+          fi
+
+      - name: Retain only redacted allowlisted host inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tokenizer-host-preflight-${{ github.sha }}
+          path: host-preflight-evidence/inventory.json
+          if-no-files-found: error
+          retention-days: 7
+
   verify:
     name: Verify
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -121,6 +224,7 @@ jobs:
 
   verify-windows:
     name: Verify (Windows)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -198,6 +302,7 @@ jobs:
 
   verify-macos-agent:
     name: Verify (macOS launchd)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: macos-latest
     timeout-minutes: 20
     steps:
@@ -265,6 +370,7 @@ jobs:
 
   verify-db:
     name: Verify (PostgreSQL 16)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -323,6 +429,7 @@ jobs:
 
   verify-browser:
     name: Verify (authenticated browser)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -384,6 +491,7 @@ jobs:
           retention-days: 7
   release-artifact:
     name: Linux OCI and recovery rehearsal
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'release'
     runs-on: ubuntu-latest
     needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser]
     permissions:
@@ -572,7 +680,7 @@ jobs:
       packages: read
       attestations: read
     needs: [verify, verify-windows, verify-macos-agent, verify-db, verify-browser, release-artifact]
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.bootstrap_rehearsal != true
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.operation == 'release')) && inputs.bootstrap_rehearsal != true
     environment: production
     env:
       VPS_HOST: ${{ secrets.VPS_HOST }}
