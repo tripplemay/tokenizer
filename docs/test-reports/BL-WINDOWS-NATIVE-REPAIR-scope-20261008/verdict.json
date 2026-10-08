@@ -1,0 +1,58 @@
+{
+  "violation": false,
+  "detail": "只读审查 committed c8e63c5..a5a7d59 的冻结 source，不包含 Generator 后续未提交的 local evidence/state。F001 唯一产品改动是 privacy.ts 对 missing.length>0 的 canonical existing ancestor 检查 isDirectory；直接有效事件路径不被新要求为目录，未触碰 queue/wire/replay/Git 或一般重构。新 privacy 文件含10个 additive controls，范围符合 F001。F003 仅批准的 host-preflight fixture 在内存归一化 CRLF，并使用检查 selected/end heading 的纯 helper；真实 workflow/.gitattributes 未改，新增11个 LF/CRLF/missing-heading controls。独立只读 AST 提取复算旧 expect parent expressions 为63/63且 hash完全相同，未改旧 guards/needs/no-mutation/assertions/platform skips/timeouts。F002 是 report-only pending：worker blob 与 baseline完全相同，没有把 taskkill128/direct-child close/stdio close 当 authoritative owned-tree completion，没有改成无条件 output 或弱化 supervision；报告明确 W07 未修。所有其他旧 tests/fixtures、caps/deadlines、queue/process/replay/version/service、依赖/lock/vendor/schema/migrations、原报告与 parent state archive 均冻结。Feature commit tags 均映射本 batch 真实 F001/F002/F003；progress 仍 building/current_sprint=batch，completed_features=2只是 Generator 两项 implementation checkpoints，F002/F004/F005 pending、evaluator_feedback/pending_gate=null、release_ready=false。未发现自评或发布闸门绕过。此结论仅 source scope，不是 native Windows/功能验收、批次 done 或发布通过，parent release 与 unresolved parent/timer/inherited gates仍开放。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "reviewed_source_head": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+  "baseline": "c8e63c52302f9fa5b7756985400705faa8209be4",
+  "feature_commits": [
+    {
+      "head": "ce232aa7e16b8d1c5661c5ad70020c0588d96640",
+      "tag": "fix(BL-WINDOWS-NATIVE-REPAIR-F001)",
+      "scope": "privacy.ts narrow missing-tail directory guard and additive controls"
+    },
+    {
+      "head": "ee1e3b084c02e85284126433f3dfdef49685fcb2",
+      "tag": "test(BL-WINDOWS-NATIVE-REPAIR-F003)",
+      "scope": "authorized in-memory workflow fixture normalization and additive controls"
+    },
+    {
+      "head": "a5a7d59a67e3da61228d05ddd1f297aa12da24e4",
+      "tag": "docs(BL-WINDOWS-NATIVE-REPAIR-F002)",
+      "scope": "report-only pending; no subprocess source/test repair"
+    }
+  ],
+  "actual_changed_nonreport_paths": [
+    "features.json",
+    "progress.json",
+    "src/cli/privacy.ts",
+    "tests/ci/vps-host-preflight.test.ts",
+    "tests/ci/windows-native-repair-workflow.test.ts",
+    "tests/cli/windows-native-repair/privacy-ancestor.test.ts"
+  ],
+  "preservation_evidence": {
+    "bounded_subprocess_worker_baseline_and_candidate_blob": "bce773e8023eb542f25d97723e2b3a13279bd3bd",
+    "real_deploy_workflow_baseline_and_candidate_blob": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+    "historical_expect_ast_count_baseline": 63,
+    "historical_expect_ast_count_candidate": 63,
+    "historical_expect_parent_expression_lists_identical": true,
+    "historical_expect_ast_sha256": "0c9d753b2ab150dafa3029c1516b674e6fb709bae746b8c758e9bd65f7dc35e7",
+    "protected_tree_command": "git diff --exit-code c8e63c5 a5a7d59a67e3da61228d05ddd1f297aa12da24e4 -- . ':(exclude)docs/**' ':(exclude)progress.json' ':(exclude)features.json' ':(exclude)src/cli/privacy.ts' ':(exclude)tests/ci/vps-host-preflight.test.ts' ':(exclude)tests/ci/windows-native-repair-workflow.test.ts' ':(exclude)tests/cli/windows-native-repair/privacy-ancestor.test.ts'",
+    "protected_tree_exit_code": 0,
+    "protected_tree_output": "",
+    "spec_archive_and_coordination_evidence_diff_output": ""
+  },
+  "feature_status_at_source_freeze": {
+    "F001": "implemented-not-independently-accepted",
+    "F002": "pending-report-only",
+    "F003": "implemented-not-independently-accepted",
+    "F004": "pending-exact-native-CI",
+    "F005": "pending-fresh-cross-family-acceptance"
+  },
+  "native_windows_executed_by_scope_critic": false,
+  "functional_acceptance": false,
+  "release_acceptance": false,
+  "batch_done": false,
+  "release_ready": false,
+  "write_scope": "仅新增本 scope artifact；未修改源码、旧tests、原证据、状态或 commit。"
+}
