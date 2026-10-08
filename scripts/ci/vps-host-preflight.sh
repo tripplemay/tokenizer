@@ -25,6 +25,8 @@ postgres_id=unknown postgres_status=unknown postgres_health=unknown postgres_ima
 app_network=unknown postgres_network=unknown postgres_volume=unknown
 network_driver=unknown volume_driver=unknown
 files='{}'
+compose_probe_status=not_run compose_pipeline_exit_status=null compose_captured_bytes=null compose_home_present=false
+if [[ ${HOME+x} == x ]]; then compose_home_present=true; fi
 
 emit() {
   if ! command -v jq >/dev/null; then
@@ -34,6 +36,8 @@ emit() {
   jq -n --arg source "$source_sha" --arg timestamp "$timestamp" --arg outcome "$outcome" --arg reason "$reason" \
     --arg baseline "$baseline" --arg platform "$platform" --arg free "$free_kib" \
     --arg docker "$docker_version" --arg compose "$compose_version" \
+    --arg probe_status "$compose_probe_status" --argjson pipeline_status "$compose_pipeline_exit_status" \
+    --argjson captured_bytes "$compose_captured_bytes" --argjson home_present "$compose_home_present" \
     --arg commit "$commit" --arg app_image "$app_image" --arg migrate_image "$migrate_image" --arg host_port "$host_port" \
     --arg app_id "$app_id" --arg app_status "$app_status" --arg app_health "$app_health" --arg app_image_id "$app_image_id" \
     --arg revision "$revision" --arg image_user "$image_user" --arg uid "$uid" --arg app_network "$app_network" \
@@ -43,6 +47,7 @@ emit() {
     '{schema_version:1,operation:"host-preflight",source_sha:$source,timestamp:$timestamp,outcome:$outcome,reason:$reason,
       project:"tokenizer",baseline:$baseline,platform:$platform,free_kib:$free,
       versions:{docker:$docker,compose:$compose},
+      compose_probe:{status:$probe_status,pipeline_exit_status:$pipeline_status,captured_bytes:$captured_bytes,home_present:$home_present},
       settings:{GIT_COMMIT:$commit,APP_IMAGE:$app_image,MIGRATE_IMAGE:$migrate_image,APP_HOST_PORT:$host_port},
       app:{id:$app_id,status:$app_status,health:$app_health,image_id:$app_image_id,revision:$revision,user:$image_user,uid:$uid,port:$host_port,network:$app_network},
       postgres:{id:$postgres_id,status:$postgres_status,health:$postgres_health,image_id:$postgres_image_id,network:$postgres_network,volume:$postgres_volume},
@@ -79,8 +84,17 @@ free_kib="$value"
 value="$(query docker version --format '{{.Server.Version}}')" || fail docker_unavailable
 [[ "$value" =~ ^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]] || fail docker_unavailable
 docker_version="$value"
-value="$(query docker compose version --short)" || fail compose_unavailable
-[[ "$value" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]] || fail compose_unavailable
+compose_pipeline_exit_status=0
+value="$(timeout --signal=KILL 5s docker compose version --short 2>/dev/null | head -c 16385)" || compose_pipeline_exit_status=$?
+# Count the retained shell string in bytes, not emitted output or locale characters.
+compose_captured_bytes="$(LC_ALL=C; printf '%s' "${#value}")"
+if (( compose_captured_bytes > 16384 )); then compose_probe_status=output_bound_exceeded; fail compose_unavailable; fi
+if (( compose_pipeline_exit_status != 0 )); then compose_probe_status=command_failed; fail compose_unavailable; fi
+if ! [[ "$value" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]]; then
+  compose_probe_status=invalid_version
+  fail compose_unavailable
+fi
+compose_probe_status=ok
 compose_version="$value"
 
 metadata() {
