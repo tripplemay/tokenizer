@@ -1,0 +1,13 @@
+{
+  "violation": true,
+  "snapshot_stage": "initial_instrumentation_review",
+  "reviewed_diagnosis_head": "ec7b439893f4e2c1d0b6de8b1943f1a38860e70b",
+  "detail": "已读 committed diagnosis ec7b439（仅10个新增docs路径，产品/旧tests/workflow/状态未改；e073运输稍后校验）。Instrumentation 有一项需先闭合的语义污染：trace-preload.mjs 的 fs wrappers 在 native API 成功后同步 log，log 的 stat/append 可抛错并被当作 native failure，甚至替换原异常；cp.spawn 新增 child.on('error', observer) 也会在原程序无 error listener 时吞掉本应未处理的 error 事件。这不涉及生产/真实凭证，但不符合 README 声称 'propagate original errors'；不能将其宣称语义中性。建议诊断agent单独追加最小修订：logger fail-safe 且独立标记 trace failure，让 diagnosticCompleted=false；child-error观察使用 events.errorMonitor 而非新增普通 error listener。保留原commit及修改证据。我仍等待workflow精确HEAD，不执行 native 或产品验收。",
+  "offending_files": [
+    "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+  ],
+  "unmapped_tags": [],
+  "blocking_publication_at_snapshot": true,
+  "functional_acceptance": false,
+  "boundary": "这是首次 instrumentation scope finding 原样持久化。后续复查必须另写 scope-verdict.json，不覆盖或软化本快照；不修改产品、旧测试或发布状态。"
+}

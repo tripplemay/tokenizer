@@ -1,0 +1,40 @@
+{
+  "violation": false,
+  "detail": "只读审查 supporting diagnostic transport 的 committed 76d916b..17c65d8，以及诊断 source ec7b439/98c30de 和 workflow f111479，按 d6200799 已提交 spec 裁决。所有差异仅新增 diagnostic workflow、supporting spec 与两个新报告目录；原产品、依赖、旧 tests/fixtures、deploy-vps workflow、progress/features/human gate 字节未改。首次 instrumentation violation 保留在独立初版快照，98c30de/17c65d8 的最小修订闭合它：logger stat/append/serialization 和 health-sidecar 写入异常均在 catch 边界内，原 native 返回值/异常不被替换；child error 观察改用 errorMonitor，不再消费原来未处理的 error。独立父进程对 pending/failed/missing/invalid/unreadable trace health fail-closed 为 diagnosticCompleted=false，且明确不推导产品 cleanup 失败。诊断代码只使用新 synthetic HOME/temp、系统环境白名单和固定 fixture；不继承真实账户/代理/provider/NODE_OPTIONS 凭证，不打印原始事件、环境、命令参数或流内容，raw result 的 synthetic canary 扫描可拒绝归档；trace 仅记录受控 owned-path labels、长度、PID、状态和错误码。watchdog 仅针对尚未观测退出的直接 spawned diagnostic root PID，未对记录的旧 fixture PIDs 发信号；保留 40s/64KiB/约512KiB bounds、原 fixture 15s 自限和残留 fail-closed，不枚举或杀无关进程。workflow 的 trigger 与 job if 双重硬锁唯一精确 diagnostic branch，无 main/PR/glob；contents read、persist-credentials=false、immutable SHA 校验、Node22/fresh npm ci、12min、无 environment/Secrets/SSH/production/service 操作，非零退出原样失败。always upload 仅固定 provenance/result 和 native-output JSON/JSONL，不上传 source events/temp/profile/raw env。诊断 subtree unchanged transport 与 workflow unchanged bytes 已机械核对。此结论仅关闭 supporting scope；未执行 native Windows 或产品功能验收，不是发布 PASS，原 release Windows 8fail、OCI/deploy skipped、F004/F005 和 release_ready=false 未被软化。",
+  "offending_files": [],
+  "unmapped_tags": [],
+  "reviewed_head": "17c65d8bc9c263e2671629921010852c379c1d17",
+  "baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "locked_spec_commit": "d6200799c643d41e2d681bd368ef3e8425657e8f",
+  "diagnosis_initial_commit": "ec7b439893f4e2c1d0b6de8b1943f1a38860e70b",
+  "diagnosis_revision_commit": "98c30de2852e6347b3336b774b7a04d850f6103b",
+  "diagnosis_transport_revision_commit": "17c65d8bc9c263e2671629921010852c379c1d17",
+  "workflow_commit": "f111479ed8350f81a703c20c9a9ca6941c48b512",
+  "actual_allowed_paths": [
+    ".github/workflows/windows-release-diagnostics.yml",
+    "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+    "docs/test-reports/windows-native-ci-20261008/",
+    "docs/test-reports/windows-release-diagnosis-20261008/"
+  ],
+  "transport_evidence": {
+    "source_and_transported_diagnosis_tree": "223714d2a2f66fa9b2e9922f30ceca9c9cbadffd",
+    "f111479_and_reviewed_workflow_blob": "6a41cdc8991196fc917255172f5851dcf467339a",
+    "protected_tree_command": "git diff --exit-code 76d916ba2e3a7147acda5ac9ef15fa70a9cd9958 17c65d8bc9c263e2671629921010852c379c1d17 -- . ':(exclude)docs/**' ':(exclude).github/workflows/windows-release-diagnostics.yml'",
+    "protected_tree_exit_code": 0,
+    "protected_tree_output": "",
+    "native_diagnostics_sha256": "24f4350da6eb2839abb3226cb96720f29c934eb399ee51b71237f8aea2346ede",
+    "trace_preload_sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+  },
+  "preserved_initial_findings": "scope-initial-instrumentation-findings.json",
+  "measurement_limits": [
+    "Preload tracing adds timing and I/O overhead; diagnostic observations are instrumented branch evidence, not uninstrumented performance or old-test acceptance.",
+    "Forced termination may leave trace health pending. Unknown completeness must remain diagnostic nonzero, not proof of product cleanup failure.",
+    "Recorded PID liveness can conservatively include PID reuse; no stale recorded PID is killed to hide a residue.",
+    "Only static source/diff/provenance were reviewed here. The reported macOS logger-only controls are retained implementation evidence, not independent native Windows acceptance."
+  ],
+  "native_windows_executed_by_scope_critic": false,
+  "functional_acceptance": false,
+  "release_acceptance": false,
+  "release_ready": false,
+  "write_scope": "仅新增初版 scope finding 和本最终 scope verdict；未修改产品、测试、原证据、状态或 commit。"
+}
