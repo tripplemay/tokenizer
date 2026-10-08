@@ -1,0 +1,13 @@
+{
+  "source":"User selected the known local server alias dmitsvr for encrypted off-host backups",
+  "target_alias":"dmitsvr",
+  "ssh_batchmode_authenticated":true,
+  "target_backup_parent":"/var/backups",
+  "parent_owner":"root:root",
+  "parent_mode":"755",
+  "observed_free_space":"29G",
+  "documented_source_path_present_on_target":false,
+  "source_vs_target_identity_verified":false,
+  "encrypted_backup_destination_ready":false,
+  "boundaries":"Only SSH alias resolution, hostname, /var/backups filesystem/mode and documented /opt/tokenizer existence queried. No backups, keys, accounts, config changes or unrelated files/process enumeration. Target chosen, but encryption/retention/transfer/restore evidence still required."
+}
