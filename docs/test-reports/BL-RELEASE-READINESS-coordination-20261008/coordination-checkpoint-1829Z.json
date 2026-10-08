@@ -1,0 +1,77 @@
+{
+  "observed_at": "2026-10-08T18:29:15Z",
+  "release_ready": false,
+  "main_sha": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "main_push": false,
+  "production_app_database_or_app_config_mutation": false,
+  "public_health": {
+    "observed_at": "2026-10-08T18:24:14.983Z",
+    "ok": true,
+    "reported_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "image_provenance_not_established": true
+  },
+  "supporting_kimi_repair": {
+    "task": "windows-repair-f754423-kimi-support-r0",
+    "exact_ref": "f754423387374afee0671f951730cac43bad7891",
+    "F001": "PASS",
+    "F003": "PASS",
+    "fresh_focused": "103 passed, 1 pre-existing native-only skip",
+    "own_corrected_controls": "33 passed; original initial failures retained",
+    "transport_commit": "be2422c",
+    "not_formal_F005_or_native_release_acceptance": true
+  },
+  "actual_repair_ci": {
+    "run_id": 37813254244,
+    "exact_ref": "f754423387374afee0671f951730cac43bad7891",
+    "status": "pending",
+    "jobs_started": false,
+    "not_a_passing_gate": true
+  },
+  "host_preflight": {
+    "run_id": 37812774615,
+    "status": "waiting",
+    "operation": "host-preflight",
+    "required_human_production_approval": true,
+    "coordinator_approved": false,
+    "occupies_shared_deploy_vps_concurrency": true
+  },
+  "second_native_diagnostic": {
+    "run_id": 37822555762,
+    "exact_ci_ref": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "product_baseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "conclusion": "success; diagnostic execution only",
+    "approved_generator_source": "4ea76bcd22360609f0af2fa0da1b99da1b7cd332",
+    "scope_verdict": "violation=false; thirteen independent VM controls twice passed",
+    "original_R1_R2_blockers_retained": true,
+    "native_runtime": "Windows Server2025, Node22.23.3, libuv1.51.0",
+    "P0_fixed_marker": "10 of10 succeeded",
+    "P1_ConvertFromJson": "10 of10 reached configured7s timeout",
+    "P2_native_attribute": "not reached in every arm",
+    "downstream_parent_confirmation_binding_healthy": "all8 not reached",
+    "used_PowerShell": {"total":20,"smoke":20},
+    "selected_successful_env_arm": null,
+    "not_original_CI_environment_parity": true,
+    "old_trace_off_still_common_guard_on": true,
+    "not_product_or_release_acceptance": true,
+    "original_artifacts_commit": "56a326d",
+    "artifact_worktree": "tokenizer-windows-native-diagnostic-ci-20261008",
+    "next_experiment": "proposal only; earliest uncertain stage is P1, require new locked scope before extra arms or changes"
+  },
+  "backup": {
+    "target": "dmitsvr",
+    "recipient_and_offline_custody": "awaiting user information",
+    "real_backup_or_restore_executed": false,
+    "bootstrap_or_activation_executed": false
+  },
+  "POSTGRES_PASSWORD": "absent from protected production environment; no existing-password verification or Secret write",
+  "unchanged_open_gates": [
+    "unresolved original Windows failures, including F002 unknown whole-owned-tree cleanup",
+    "parent F004 exact final six-gate CI",
+    "formal fresh cross-family full-composition F005",
+    "authenticated actual predecessor image and source binding",
+    "real encrypted off-host backup and isolated recovery",
+    "existing PostgreSQL credential TCP proof and protected Secret",
+    "Agent distribution",
+    "original homepage authenticated production-browser freshness F005"
+  ]
+}
