@@ -1,0 +1,18 @@
+{
+  "status":"building",
+  "user_goal":"Coordinate integration, exact-candidate release gates and deployment; push main only after all gates pass.",
+  "total_features":5,
+  "completed_features":3,
+  "fix_rounds":0,
+  "current_sprint":"BL-RELEASE-READINESS",
+  "last_updated":"2026-10-08T16:02:51Z",
+  "reference_docs":["docs/specs/BL-RELEASE-READINESS-spec.md","docs/archive/process-bounds-closeout-20261008/progress.json"],
+  "docs":{"spec":"docs/specs/BL-RELEASE-READINESS-spec.md","test_cases":null,"signoff":null,"framework_reviewed":true},
+  "role_assignments":null,
+  "mode_intent":null,
+  "evaluator_feedback":null,
+  "pending_gate":null,
+  "release_ready":false,
+  "generator_handoff":"F001-F003 source freezes at 55cfe2353da6d1901e82c60f40a9edc944349b9a. Node22 fresh npm ci log01 exit0 (7 high vulnerabilities reported); records16/17/18 lint/verify/build exit0, record19 default full 2005 passed/34 skipped, record20 focused 185 passed/6 skipped. Immutable initial failures/reruns, 2164-path source inventory and adjudicated hashes are in docs/test-reports/BL-RELEASE-READINESS-generator-20261008/README.md and handoff.json. F004 stays pending exact final native CI owned by Coordinator; F005 stays pending fresh registered Kimi acceptance. No worker push/live-host/Secrets/environment/human-decision operation. State stays building and release_ready=false; local results are not a release verdict.",
+  "session_notes":{"coordinator":"Gated main push/deploy, non-main CI publication and maintenance now explicitly authorized. User selected dmitsvr for encrypted off-host backup; SSH connectivity and free space observed, but no backup or restore exists yet. Exact76d916b native run37803611472 FAILED: Ubuntu/macOS/PG16/authenticated browser passed, Windows8failed1887passed144skipped; OCI and deploy skipped. Original logs retained. F004 remains pending, release_ready=false. Supporting native diagnosis must precede a separately locked narrow repair; no old test/timeout/assertion weakening. Root main and production app/DB untouched. Fresh Kimi supporting preflight remains distinct from formal F005.","generator":"F004 local part recorded at frozen source55cfe23: lint/verify/build exit0, default full2005 passed/34 skipped, focused185 passed/6 skipped. Earlier fixture/typecheck/transport-filter failures and first provenance checker omission are immutable with separate corrected reruns. Active F004 native exact-SHA CI is Coordinator-owned and pending; status stays building. F005 independent Kimi evaluation remains pending. No further source/test/workflow edits after source freeze; no worker push/live-host/release acceptance."}
+}
