@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-independent-scope-critic",
+  "reviewType": "committed-source-scope-transport-gate-not-product-evaluation",
+  "exactSource": "d1df23737b49acabcb4c5823f75944b378b4e038",
+  "exactSourceTree": "519bcdf7bf8c398ad829f230772616b5753328cf",
+  "r1Source": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "scopeBase": "846e8e07614a97dcebd9d2cd2bdb678f971651fd",
+  "originalFreeze": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "productBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "spec": "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+  "specGitObject": "9623f4bd52818f22177048d79a0dd07bfa542c7f",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-runtime-parity-generator-20261008",
+  "sourceScriptSha256": "dea613a691c9e904fd55427abc2b316a012b9ebc1c80b2b3cefe89642505fa00",
+  "controlScriptSha256": "b59e882f2f66c78a0d3a2671f7659df274303f8440b3b24a4a352d651f328340",
+  "violation": true,
+  "scopeTransportAllowed": false,
+  "outcome": "FAIL_SCOPE_TRANSPORT_ROOT_RETURN_METADATA_ALLOWLIST",
+  "summary": "The R2 committed tree and all frozen boundaries pass independent scope checks. R1 C06/C07/C08/C09 were independently reexecuted and their original failures close in the tested virtual flows. Transport remains blocked by a further export boundary: root child.exitCode and child.signalCode are copied into uploaded case JSON without value validation. Synthetic canaries in either property reach artifacts; an unknown signal can additionally coexist with diagnosticCompleted=true. This is an artifact-boundary finding, not evidence that native Node/Windows can produce those values or that any real secret leaked.",
+  "independence": {
+    "basis": "Fresh supporting critic read on-disk AGENTS.md, harness-rules.md, CLAUDE.md, state, current spec, original R1 verdict/controls, new CLI, immutable trace and relevant product code. Independently authored VM controls run actual source functions extracted from exact Git source. Generator claims were not used as acceptance evidence.",
+    "supportingTaskSection": "harness-rules.md section 1.5",
+    "stateStatusObserved": "building",
+    "implementationModified": false,
+    "generatorFilesModified": false,
+    "specModified": false,
+    "stateModified": false,
+    "r1ArtifactsModified": false,
+    "commitPushGitHubSshProductionExecuted": false,
+    "humanDecisionWritten": false
+  },
+  "sourceBinding": {
+    "headMatchesCoordinatorFreeze": true,
+    "entireTrackedWorktreeMatchesExactSource": true,
+    "sourceBytesReadFromGit": true,
+    "sourceUnchangedDuringFinalControls": true,
+    "evidence": "controls-frozen-r1.json C01; git diff --exit-code d1df23737b49acabcb4c5823f75944b378b4e038; exact HEAD/tree and SHA-256 assertions",
+    "changedScope": "11 committed paths relative to R1: new CLI revision plus parity-generator-r2 report/check artifacts only. No workflow change in R2."
+  },
+  "findings": [
+    {
+      "id": "SCOPE-R2-F001",
+      "severity": "blocker",
+      "violation": true,
+      "title": "Root process return metadata bypasses the exported value allowlist",
+      "requirement": "Current spec lines 69 and 77 require no raw env/stderr/content and only allowlisted metadata/canary evidence; unknown/raw credential content must not pass through any uploaded artifact boundary.",
+      "evidence": [
+        "native-runtime-parity.mjs:436-438 copies child.exitCode and child.signalCode directly into result, unlike the explicit validation of guard/trace events and errorCode.",
+        "native-runtime-parity.mjs:488-489 decides complete from status===0 without validating signal; 491-498 spreads ...result into case JSON and writes it to native-output-parity-*.",
+        "The unchanged dedicated workflow uploads native-output-*/*.json at .github/workflows/windows-release-diagnostics.yml:100.",
+        "controls-frozen-r1.json C11 independently injects signalCode='RAW-STDERR-CANARY' into an in-memory root child handle: the canary appears in all 18 case JSON files; smoke-off-E0.json has status=0, signal='RAW-STDERR-CANARY', classification='diagnostic-observation-complete-not-product-pass', diagnosticCompleted=true.",
+        "The separate exitCode='RAW-STDERR-CANARY' injection appears in the ten smoke JSON files even though classification is diagnostic-incomplete-provenance-unknown and diagnosticCompleted=false.",
+        "Separate pid, error.code and close-event status/signal injections do not publish the canary. Unsafe pid evidence is rejected; error.code is rebuilt as UNRECOGNIZED_ERROR_CODE; close-event values are not copied."
+      ],
+      "minimumReproduction": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r2/controls.mjs d1df23737b49acabcb4c5823f75944b378b4e038 controls-frozen-replay.json; inspect C11. Use a previously unused output filename.",
+      "observedLimits": "All files/processes/streams for C11 are virtual. The test proves missing export validation, not actual native reachability of arbitrary signal/exit properties, actual host secret access, or actual leakage. Native Node/Windows behavior is unexecuted and unknown.",
+      "minimumCorrectionBoundary": "Within the new CLI only, validate and reconstruct all root return metadata before artifact publication and completion/P2 admission. Unsafe status/signal metadata must be suppressed and fail closed as diagnostic unknown. Keep exact native return objects, exceptions and errorMonitor behavior untouched; do not change product, old trace, workflow, tests, R1/R2 evidence or state. A new correction needs a new exact frozen source and independent scope review."
+    }
+  ],
+  "r1DecisionControlsReexecuted": [
+    {
+      "originalControl": "C06-expiry-not-reached-classification",
+      "currentControl": "C06-R1-expiry-plus-watchdog-budget-output-notreached",
+      "closedInTestedFlow": true,
+      "evidence": "Lifetime status92/owned-lifetime row, explicit launch-budget row, root watchdog and output-limit controls all produce reached=false, classification=diagnostic-budget-not-reached, productResultUnknown=true, diagnosticCompleted=false. Cleanup unknown remains separate; productCleanupFailure='not-inferred'."
+    },
+    {
+      "originalControl": "C07-artifact-jsonl-allowlist-boundary",
+      "currentControl": "C07-R1-injection-artifact-boundary-all-families",
+      "closedInTestedFlow": true,
+      "evidence": "Original unknownKey/rawStderr/arbitraryContent guard/trace injection is suppressed with diagnosticCompleted=false. Additional unsafe guard code, unsafe trace node, counter extra-key and probe raw-content injections also cannot reach exported artifacts. Valid exported JSONL rows are independently revalidated. This does not close new C11."
+    },
+    {
+      "originalControl": "C08-guard-error-code-sanitization",
+      "currentControl": "C08-R1-unsafe-error-code-native-behavior",
+      "closedInTestedFlow": true,
+      "evidence": "Original unsafe native error.code canary logs only UNRECOGNIZED_ERROR_CODE, sets failed health and preserves the exact thrown error event identity; no ordinary error handler is installed by the common guard."
+    },
+    {
+      "originalControl": "C09-protocol-completeness",
+      "currentControl": "C09-R1-protocol-completeness-and-P2-selection",
+      "closedInTestedFlow": true,
+      "evidence": "Empty, missing, duplicated, reversed and malformed observations fail for smoke/parent/confirmation/binding/healthy. Failed P1 plus unreachable P2 accepts only p2Succeeded=false. Empty smoke reports select no arm and launch no downstream case."
+    }
+  ],
+  "verifiedNonViolations": [
+    {
+      "topic": "Frozen tree and original evidence",
+      "evidence": "C01/C02 compare exact Git objects for src/tests/app/prisma/packages/state/spec/all workflows/old diagnostics/trace/native-findings-r1/parity-generator-r1, verify all 32 original inventory hashes from Git and disk, and verify the three original parity-scope-r1 hashes.",
+      "r1EvidenceSha256": {
+        "verdict.json": "106ff610950022b23702207dbcac051a4d9499e6c772f6ba1c30eb05679706ce",
+        "controls.mjs": "b562d74205e75ee0587c8349b44dc35a38af96527a25b529c4c46a486e6983d2",
+        "controls.json": "5289c79db1eb913969d3d96f20169f34b49ea4475d1deb4c4e25003189eb4f92"
+      }
+    },
+    {
+      "topic": "Environment forms and instrumentation",
+      "evidence": "C03 executes E0-E4 single-key controls and the extracted parent. Ten smoke launches cross old trace off/on in exact order; each includes the common guard. Host TOKEN/HOME/profile/appdata/personal module fixtures do not enter child env. E4 is the SystemRoot-derived built-in module directory. No combined arm or uninstrumented-original claim."
+    },
+    {
+      "topic": "Budgets, fairness and admission",
+      "evidence": "C03/C05 verify 600s/40s/3s reserves, 10s operation bound, 38 smoke/76 total caps and denied worst-case admission. Virtual worst-case consumption prioritizes both parent forms, then confirmation, denies both binding cases, and fairly admits healthy forms at exactly total76/smoke30. Synchronous PowerShell cannot bypass the guard. No budget increase/retry."
+    },
+    {
+      "topic": "Ordinary native observation semantics",
+      "evidence": "C04/C08 test normal, stat logger failure, append logger failure, health write failure, native spawn throw and native sync throw. Exact native return/thrown object identity and unhandled ordinary error behavior are retained. Common guard has no stream data observer."
+    },
+    {
+      "topic": "Owned-only cleanup and diagnostic unknown",
+      "evidence": "C05/C06/C10 only signal active owned handles, never closed ones or historical PID observations. taskkill128 is not a whole-tree/product cleanup conclusion. Parent health failure produces abortProvenanceUnknown/productResultUnknown and diagnosticCompleted=false. Historical PID liveness is signal0 only; cleanupUnknown remains separate."
+    },
+    {
+      "topic": "Owned binding fixture",
+      "evidence": "C10 and source lines609-614/640-642 verify binding allowed/project/different paths are derived from the owned case root rather than /allowed/project. This is static fixture-boundary verification, not native binding/product execution."
+    },
+    {
+      "topic": "Workflow isolation and syntax",
+      "evidence": "C02/C12 prove all workflows Git-object frozen and dedicated workflow byte-identical to R1; Node22 syntax and actionlint both exit0. Exact diagnostic branch/job guard, permissions, immutable checkout, fresh npm ci, 12-minute timeout and explicit upload paths are unchanged."
+    }
+  ],
+  "retainedControlHistory": [
+    {
+      "artifact": "controls-draft-r0.json",
+      "sourceState": "DRAFT_NOT_A_GATE",
+      "matchingControlSource": "controls-draft-r0.mjs",
+      "detail": "Initial draft findings are preserved. C05 was a test expectation error: append failure happens during initial guard-preload before the later counter failure, so the first failure reason is GUARD_LOG_IO_OR_LIMIT; health still fails closed. C07 was a test regex error matching the legitimate allowlisted boolean key rawContentFound rather than a leaked rawContent key. Both test defects were corrected without changing the CLI. C11 remains independently confirmed. Archived control source hashes match their original outputs."
+    },
+    {
+      "artifact": "controls-frozen-r0.json",
+      "sourceState": "FROZEN_COMMITTED_SOURCE",
+      "matchingControlSource": "controls-frozen-r0.mjs",
+      "detail": "First frozen run retains C11 failure as an assertion; the other eleven controls pass. Final run expands only C11 into independent root signal/exit/pid/error/close metadata cases and records the observed artifact effects directly."
+    },
+    {
+      "artifact": "controls-frozen-r1.json",
+      "sourceState": "FROZEN_COMMITTED_SOURCE",
+      "matchingControlSource": "controls.mjs",
+      "detail": "Authoritative final run: 12 controls completed, 11 pass, C11 fails, no control-execution failure, exact CLI source unchanged throughout."
+    }
+  ],
+  "verification": {
+    "command": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r2/controls.mjs d1df23737b49acabcb4c5823f75944b378b4e038 controls-frozen-r1.json",
+    "node": "v22.22.0",
+    "hostPlatform": "darwin",
+    "exitCode": 1,
+    "controlsCompleted": 12,
+    "controlsPassed": 11,
+    "controlExecutionFailure": false,
+    "retainedFailedExpectation": "C11-parent-exported-return-metadata-value-boundary",
+    "nativeWindowsExecuted": false,
+    "productRuntimeExecuted": false,
+    "realServicesExecuted": false,
+    "allRuntimeEvidenceVirtual": true,
+    "gitHubSshProductionExecuted": false,
+    "artifacts": [
+      "controls.mjs", "controls-draft-r0.mjs", "controls-draft-r0.json",
+      "controls-frozen-r0.mjs", "controls-frozen-r0.json", "controls-frozen-r1.json", "README.md", "verdict.json"
+    ]
+  },
+  "unknownBoundaries": [
+    "Native Windows PowerShell smoke and actual selected P2 arms were not executed.",
+    "Native parent rename/hardlink hooks, confirmation/binding/healthy product analogs, real process cleanup and whole-tree taskkill128 effects were not executed.",
+    "Strict real-time 600s/40s guarantees under OS/syscall/event-loop stalls are not proven by VM controls.",
+    "Actual native ability to produce the synthetic unsafe root return values, actual runtime artifact bytes and actual secret leakage remain unknown.",
+    "No old test assertions, aggregate timeouts, user services, production or release readiness were evaluated."
+  ],
+  "recommendedNextStep": "Do not transport frozen d1df23737b49acabcb4c5823f75944b378b4e038 to native diagnostic push. Preserve this original R2 conclusion and all histories unchanged. Make the minimum new-CLI export-boundary correction in a separately frozen revision, then request fresh independent scope controls; do not infer product/native/release acceptance.",
+  "productAcceptance": false,
+  "nativeAcceptance": false,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}
