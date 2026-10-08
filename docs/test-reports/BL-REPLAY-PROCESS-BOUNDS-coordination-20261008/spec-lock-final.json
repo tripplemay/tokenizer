@@ -110,7 +110,7 @@
       "source": "ba292a0:progress.json",
       "copy": "docs/archive/privacy-queue-closeout-20261008/progress.json",
       "source_and_candidate_blob": "5eb8f8358a3a5116f734a7a0bc29209dd68e5222",
-      "sha256": "151adcea3fb72764db61e978684d2471f5f9dfd0b4a56f3e33852f91973d36",
+      "sha256": "151adcea3fb72764db61e978684d2471f5f1f9dfd0b4a56f3e33852f91973d36",
       "byte_identical": true
     }
   ],
