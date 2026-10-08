@@ -1,0 +1,96 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "windowsProductExecuted": false,
+  "scope": "syntax-schema-hashes-and-synthetic-logger-semantics-only",
+  "controls": [
+    {
+      "mode": "baseline",
+      "passed": true,
+      "status": 0,
+      "stdoutSummary": {
+        "success": true,
+        "originalErrorCode": "ENOENT"
+      },
+      "states": [
+        {
+          "pid": 43986,
+          "state": "complete"
+        }
+      ],
+      "unhandledErrorPreserved": null
+    },
+    {
+      "mode": "stat-failure",
+      "passed": true,
+      "status": 0,
+      "stdoutSummary": {
+        "success": true,
+        "originalErrorCode": "ENOENT"
+      },
+      "states": [
+        {
+          "pid": 43987,
+          "state": "failed",
+          "reasonCode": "EIO"
+        }
+      ],
+      "unhandledErrorPreserved": null
+    },
+    {
+      "mode": "append-failure",
+      "passed": true,
+      "status": 0,
+      "stdoutSummary": {
+        "success": true,
+        "originalErrorCode": "ENOENT"
+      },
+      "states": [
+        {
+          "pid": 43988,
+          "state": "failed",
+          "reasonCode": "EIO"
+        }
+      ],
+      "unhandledErrorPreserved": null
+    },
+    {
+      "mode": "unhandled-child-error",
+      "passed": true,
+      "status": 1,
+      "stdoutSummary": null,
+      "states": [
+        {
+          "pid": 43989,
+          "state": "complete"
+        }
+      ],
+      "unhandledErrorPreserved": true
+    }
+  ],
+  "syntax": [
+    {
+      "file": "native-diagnostics.mjs",
+      "exitCode": 0,
+      "code": null
+    },
+    {
+      "file": "trace-preload.mjs",
+      "exitCode": 0,
+      "code": null
+    },
+    {
+      "file": "revision-checks.mjs",
+      "exitCode": 0,
+      "code": null
+    }
+  ],
+  "schemaValid": true,
+  "schemaErrors": null,
+  "evidenceHashesMatch": true,
+  "sourceHashesMatch": true,
+  "instrumentationHashes": {
+    "native-diagnostics.mjs": "24f4350da6eb2839abb3226cb96720f29c934eb399ee51b71237f8aea2346ede",
+    "trace-preload.mjs": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+  }
+}

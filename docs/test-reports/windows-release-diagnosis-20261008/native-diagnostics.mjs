@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, realpathSync, rmSync, existsSync,
-  renameSync, linkSync, symlinkSync, appendFileSync } from 'node:fs';
+  renameSync, linkSync, symlinkSync, appendFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -24,19 +24,22 @@ if (process.argv[2] !== '--probe') {
   for (const name of selected) {
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'tw-')));
     const home = join(root, 'home'), temp = join(root, 'tmp'), trace = join(root, 'trace.jsonl');
-    mkdirSync(home); mkdirSync(temp);
+    const traceHealthDirectory = join(root, 'trace-health');
+    mkdirSync(home); mkdirSync(temp); mkdirSync(traceHealthDirectory);
     const env = {};
     for (const key of ['PATH', 'SystemRoot', 'SYSTEMROOT', 'WINDIR', 'ComSpec', 'PATHEXT']) {
       const match = Object.keys(process.env).find((value) => value.toLowerCase() === key.toLowerCase());
       if (match) env[key] = process.env[match];
     }
     Object.assign(env, { HOME: home, USERPROFILE: home, TEMP: temp, TMP: temp, TMPDIR: temp,
-      TW_ROOT: root, TW_TRACE: trace, TW_CASE: name, TW_REPO: repo,
+      TW_ROOT: root, TW_TRACE: trace, TW_TRACE_HEALTH: traceHealthDirectory, TW_CASE: name, TW_REPO: repo,
       GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: join(home, 'empty-gitconfig'), GIT_TERMINAL_PROMPT: '0',
       NODE_OPTIONS: '--import=' + pathToFileURL(join(here, 'trace-preload.mjs')).href });
     writeFileSync(env.GIT_CONFIG_GLOBAL, '');
+    let diagnosticPid;
     const result = await new Promise((resolveResult) => {
       const child = spawn(process.execPath, ['--import', 'tsx', fileURLToPath(import.meta.url), '--probe'], { cwd: repo, env, windowsHide: true });
+      diagnosticPid = child.pid;
       let bytes = 0, stdout = '', stderr = '', stopped = false;
       const stop = () => {
         if (stopped || child.exitCode !== null || child.signalCode !== null) return;
@@ -57,17 +60,49 @@ if (process.argv[2] !== '--probe') {
     const safe = disclosure ? { disclosure: true, rawBytesRetained: false } : result;
     writeFileSync(join(output, name + '.json'), JSON.stringify({ case: name, node: process.version,
       uv: process.versions.uv, platform: process.platform, instrumented: true, ...safe }, null, 2) + '\n');
-    const traceBytes = existsSync(trace) ? readFileSync(trace) : Buffer.alloc(0);
+    let traceBytes = Buffer.alloc(0), traceReadFailureCode = null;
+    try { if (existsSync(trace)) traceBytes = readFileSync(trace); }
+    catch (error) { traceReadFailureCode = error.code ?? 'TRACE_READ_FAILED'; }
     if (traceBytes.length) writeFileSync(join(output, name + '.trace.jsonl'), traceBytes);
     // Original child fixture independently exits within 15 s. No stale PID is signalled.
     await new Promise((done) => setTimeout(done, name === 'subprocess' || result.stopped ? 16_000 : 100));
     const pidFile = join(root, 'pids');
     const pids = existsSync(pidFile) ? [...new Set(readFileSync(pidFile, 'utf8').trim().split('\n').map(Number).filter((pid) => Number.isSafeInteger(pid) && pid > 0))] : [];
     const alive = pids.filter((pid) => { try { process.kill(pid, 0); return true; } catch { return false; } });
+    const expectedTracePids = new Set([diagnosticPid].filter((pid) => Number.isSafeInteger(pid) && pid > 0));
+    let invalidTrace = false;
+    for (const line of traceBytes.toString('utf8').trim().split('\n').filter(Boolean)) {
+      try {
+        const event = JSON.parse(line);
+        if (event.event === 'preload') expectedTracePids.add(event.pid);
+        if (['spawn', 'spawn-sync'].includes(event.event) && /^node(?:\.exe)?$/i.test(event.executable ?? '') && Number.isSafeInteger(event.childPid) && event.childPid > 0) expectedTracePids.add(event.childPid);
+      } catch { invalidTrace = true; }
+    }
+    const states = new Map();
+    let healthFiles = [], healthReadFailureCode = null;
+    try { healthFiles = readdirSync(traceHealthDirectory).filter((file) => /^\d+\.json$/.test(file)); }
+    catch (error) { healthReadFailureCode = error.code ?? 'HEALTH_DIRECTORY_READ_FAILED'; }
+    for (const file of healthFiles) {
+      const pid = Number(file.slice(0, -5));
+      try {
+        const state = JSON.parse(readFileSync(join(traceHealthDirectory, file), 'utf8'));
+        if (state.pid !== pid || !['pending', 'failed', 'complete'].includes(state.state) ||
+          Object.keys(state).some((key) => !['pid', 'state', 'reasonCode'].includes(key)) ||
+          (state.reasonCode !== undefined && (typeof state.reasonCode !== 'string' || !/^[A-Z0-9_]{1,64}$/.test(state.reasonCode)))) throw new Error();
+        states.set(pid, state);
+      } catch { states.set(pid, { pid, state: 'invalid' }); }
+    }
+    const missingPids = [...expectedTracePids].filter((pid) => !states.has(pid));
+    const traceComplete = traceBytes.length > 0 && !traceReadFailureCode && !healthReadFailureCode && !invalidTrace && missingPids.length === 0 &&
+      [...states.values()].every((state) => state.state === 'complete');
+    writeFileSync(join(output, name + '.trace-health.json'), JSON.stringify({ expectedTracePids: [...expectedTracePids],
+      states: [...states.values()], missingPids, invalidTrace, traceReadFailureCode, healthReadFailureCode,
+      traceComplete, traceCompletenessUnknown: !traceComplete,
+      productCleanupConclusion: 'not-derived-from-trace-health' }) + '\n');
     writeFileSync(join(output, name + '.cleanup.json'), JSON.stringify({ fixturePids: pids, liveFixturePids: alive,
       ownedLifetimeCapMs: 15_000, stalePidsSignalled: false, rootRetained: alive.length > 0,
       traceBytes: traceBytes.length, traceTruncated: traceBytes.length >= 512 * 1024 }) + '\n');
-    failed ||= disclosure || result.stopped || result.status !== 0 || alive.length > 0 || traceBytes.length >= 512 * 1024;
+    failed ||= disclosure || result.stopped || result.status !== 0 || alive.length > 0 || traceBytes.length >= 512 * 1024 || !traceComplete;
     if (alive.length === 0) rmSync(root, { recursive: true, force: true });
   }
   console.log(JSON.stringify({ outputDirectory: output, diagnosticCompleted: !failed, releaseAcceptance: false }));

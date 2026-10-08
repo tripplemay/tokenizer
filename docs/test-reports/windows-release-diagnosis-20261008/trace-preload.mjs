@@ -1,17 +1,37 @@
 import fs from 'node:fs';
 import cp from 'node:child_process';
 import { syncBuiltinESMExports } from 'node:module';
-import { basename, relative, isAbsolute } from 'node:path';
+import { errorMonitor } from 'node:events';
+import { basename, relative, isAbsolute, join } from 'node:path';
 
 const append = fs.appendFileSync;
 const root = process.env.TW_ROOT;
 const trace = process.env.TW_TRACE;
-if (!root || !trace || !trace.startsWith(root)) throw new Error('synthetic trace root required');
+const healthDirectory = process.env.TW_TRACE_HEALTH;
+if (!root || !trace || !trace.startsWith(root) || !healthDirectory || !healthDirectory.startsWith(root)) throw new Error('synthetic trace root required');
+const writeHealth = fs.writeFileSync;
+const healthPath = join(healthDirectory, process.pid + '.json');
+let traceFailed = false;
+let traceFailureCode = null;
+const health = (state, reasonCode) => {
+  try { writeHealth(healthPath, JSON.stringify({ pid: process.pid, state, ...(reasonCode ? { reasonCode } : {}) }) + '\n'); }
+  catch { traceFailed = true; traceFailureCode ??= 'TRACE_STATUS_WRITE'; /* missing or pending status is independently rejected by the parent */ }
+};
+const failedTrace = (error) => {
+  traceFailed = true;
+  const reasonCode = typeof error?.code === 'string' && /^[A-Z0-9_]{1,64}$/.test(error.code) ? error.code : 'TRACE_IO_OR_SERIALIZATION';
+  traceFailureCode ??= reasonCode;
+  health('failed', traceFailureCode);
+};
+health('pending');
+process.once('exit', () => health(traceFailed ? 'failed' : 'complete', traceFailureCode));
 let sequence = 0;
 const log = (event) => {
-  if (fs.existsSync(trace) && fs.statSync(trace).size >= 512 * 1024) return;
-  append(trace, JSON.stringify({ pid: process.pid, sequence: sequence++,
-    at: Date.now(), monotonicMs: performance.now(), ...event }) + '\n');
+  try {
+    if (fs.existsSync(trace) && fs.statSync(trace).size >= 512 * 1024) { failedTrace({ code: 'TRACE_LIMIT' }); return; }
+    append(trace, JSON.stringify({ pid: process.pid, sequence: sequence++,
+      at: Date.now(), monotonicMs: performance.now(), ...event }) + '\n');
+  } catch (error) { failedTrace(error); }
 };
 const label = (value) => {
   if (typeof value !== 'string') return typeof value;
@@ -45,7 +65,7 @@ cp.spawn = function (command, args, options) {
   const child = spawn.call(this, command, args, options);
   const executable = basename(String(command));
   log({ event: 'spawn', executable, childPid: child.pid ?? null, detached: options?.detached ?? false });
-  child.on('error', (error) => log({ event: 'child-error', executable, childPid: child.pid ?? null, code: error.code ?? null }));
+  child.on(errorMonitor, (error) => log({ event: 'child-error', executable, childPid: child.pid ?? null, code: error.code ?? null }));
   child.on('exit', (status, signal) => log({ event: 'child-exit', executable, childPid: child.pid, status, signal }));
   child.on('close', (status, signal) => log({ event: 'child-close', executable, childPid: child.pid, status, signal }));
   child.stdout?.on('data', (chunk) => log({ event: 'stdout-bytes', childPid: child.pid, bytes: chunk.length }));
@@ -60,7 +80,7 @@ cp.spawnSync = function (command, args, options) {
   if (String(command) === process.execPath && Array.isArray(args) && args[0]?.endsWith('bounded-subprocess-worker.mjs')) {
     try { workerKind = JSON.parse(String(result.stdout).split('\n')[1]).kind; } catch { /* protocol failure is retained as null */ }
   }
-  log({ event: 'spawn-sync', executable: basename(String(command)), elapsedMs: performance.now() - started,
+  log({ event: 'spawn-sync', executable: basename(String(command)), childPid: result.pid ?? null, elapsedMs: performance.now() - started,
     status: result.status, signal: result.signal, code: result.error?.code ?? null, workerKind });
   return result;
 };
