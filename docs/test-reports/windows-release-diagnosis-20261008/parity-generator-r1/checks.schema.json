@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "role", "sourceFreezeHead", "scopeBaseHead", "node", "platform", "nativeWindowsExecuted", "productRuntimeExecuted", "syntaxChecks", "envResults", "admissionResults", "guardMockResults", "protocolAllowlistControlsPassed", "nativeAttributeScriptExact", "workflowOnlyApprovedCommandLabelMetadataChanged", "workflowActionlintPassed", "frozenProductTestsStateAndReportsUnchanged", "originalEvidenceHashesVerified", "optionalCombinedArmImplemented", "proofInventory", "newFileHashes", "releaseAcceptance", "releaseReady"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "role": { "const": "supporting-generator-static-checks" },
+    "sourceFreezeHead": { "const": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1" },
+    "scopeBaseHead": { "const": "846e8e07614a97dcebd9d2cd2bdb678f971651fd" },
+    "node": { "type": "string", "pattern": "^v22\\." },
+    "platform": { "type": "string" },
+    "nativeWindowsExecuted": { "const": false },
+    "productRuntimeExecuted": { "const": false },
+    "syntaxChecks": { "const": 2 },
+    "envResults": { "type": "array", "minItems": 5, "maxItems": 5 },
+    "admissionResults": { "type": "array", "minItems": 5, "maxItems": 5 },
+    "guardMockResults": { "type": "array", "minItems": 9, "maxItems": 9 },
+    "protocolAllowlistControlsPassed": { "const": true },
+    "nativeAttributeScriptExact": { "const": true },
+    "workflowOnlyApprovedCommandLabelMetadataChanged": { "const": true },
+    "workflowActionlintPassed": { "const": true },
+    "frozenProductTestsStateAndReportsUnchanged": { "const": true },
+    "originalEvidenceHashesVerified": { "const": 32 },
+    "optionalCombinedArmImplemented": { "const": false },
+    "proofInventory": { "type": "array", "minItems": 10, "maxItems": 10 },
+    "newFileHashes": { "type": "object", "minProperties": 2, "maxProperties": 2, "additionalProperties": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+    "releaseAcceptance": { "const": false },
+    "releaseReady": { "const": false }
+  }
+}

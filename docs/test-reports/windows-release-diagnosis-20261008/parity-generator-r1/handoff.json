@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "sourceFreezeHead": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "scopeBaseHead": "846e8e07614a97dcebd9d2cd2bdb678f971651fd",
+  "postCommitIndependentScopeReviewRequired": true,
+  "nativeWindowsExecuted": false,
+  "artifacts": [
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+      "bytes": 4389
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "sha256": "846f9eb6363d44912de8d8506ed62a53bc6e13fab6238f08a569a13c0fa60053",
+      "bytes": 36331
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/checks.mjs",
+      "sha256": "070d8e4218793f78e3aab593ae7f7a39b87bd525a11ba8930c33a2b540329465",
+      "bytes": 13005
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/checks.schema.json",
+      "sha256": "7ed89b51f97f875b554965177aca6fa53a0b26355d998f97ae4eb3629392f4e4",
+      "bytes": 2126
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/local-checks.json",
+      "sha256": "31835c1f20e62c0ed91e9d280932c73bb8efb6158c283ea6e7db12e06cfa13b1",
+      "bytes": 5331
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/README.md",
+      "sha256": "ff7b8d4e348f6c20de641194af08da5382b50800b625111e4786d3de5d160f67",
+      "bytes": 9322
+    }
+  ],
+  "proofInventory": [
+    {
+      "path": "src",
+      "frozenGitObject": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d",
+      "currentCommittedGitObject": "aed0109b2f26e5f7fb6ae2c7ca2cab3a80edc68d"
+    },
+    {
+      "path": "tests",
+      "frozenGitObject": "7e8022a84dc47165b900e2d05f019477e81a2a0d",
+      "currentCommittedGitObject": "7e8022a84dc47165b900e2d05f019477e81a2a0d"
+    },
+    {
+      "path": "package.json",
+      "frozenGitObject": "57b2a59283ca82575dfbc5c8410b4b127aa6c809",
+      "currentCommittedGitObject": "57b2a59283ca82575dfbc5c8410b4b127aa6c809"
+    },
+    {
+      "path": "package-lock.json",
+      "frozenGitObject": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8",
+      "currentCommittedGitObject": "e524b93cf30dbf840aa10aab81f1cbdf7866cfd8"
+    },
+    {
+      "path": "progress.json",
+      "frozenGitObject": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc",
+      "currentCommittedGitObject": "ff195b5ad13d3584d6ee8f6b459b82388ce4fddc"
+    },
+    {
+      "path": "features.json",
+      "frozenGitObject": "918eb22c3679c2ceab23533c482c48fc38fe6b92",
+      "currentCommittedGitObject": "918eb22c3679c2ceab23533c482c48fc38fe6b92"
+    },
+    {
+      "path": ".github/workflows/deploy-vps.yml",
+      "frozenGitObject": "9c2654610229eea6a52b424b73ec5d49831e82c4",
+      "currentCommittedGitObject": "9c2654610229eea6a52b424b73ec5d49831e82c4"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs",
+      "frozenGitObject": "dd823c6be301ae671223836be3097c9cc36b8c5d",
+      "currentCommittedGitObject": "dd823c6be301ae671223836be3097c9cc36b8c5d"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "frozenGitObject": "d654d16301fcd9b0367c346ebc46ae383ffb2269",
+      "currentCommittedGitObject": "d654d16301fcd9b0367c346ebc46ae383ffb2269"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-findings-r1/original",
+      "frozenGitObject": "fe2529e24933906177d0cf0b5ce4f82e044aea74",
+      "currentCommittedGitObject": "fe2529e24933906177d0cf0b5ce4f82e044aea74"
+    }
+  ],
+  "originalEvidenceHashesVerified": 32,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}

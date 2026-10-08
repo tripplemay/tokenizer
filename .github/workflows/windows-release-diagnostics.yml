@@ -50,6 +50,8 @@ jobs:
           [ordered]@{
             schema_version = 1
             diagnostic_only = $true
+            diagnostic_cli = 'native-runtime-parity.mjs'
+            source_freeze_head = '7c6936b97a54f13d1ceb3272f810cf51d28a34f1'
             release_acceptance = $false
             failed_release_sha = '76d916ba2e3a7147acda5ac9ef15fa70a9cd9958'
             head = $head
@@ -66,18 +68,20 @@ jobs:
           npm ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Run unchanged reviewed native diagnostic CLI
+      - name: Run reviewed bounded runtime parity diagnostic CLI
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $false
-          $script = 'docs/test-reports/windows-release-diagnosis-20261008/native-diagnostics.mjs'
+          $script = 'docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs'
           if (!(Test-Path -LiteralPath $script -PathType Leaf)) { throw 'Coordinator must transport the committed diagnostic script unchanged before dispatch' }
           node $script
           $diagnosticExit = $LASTEXITCODE
           [ordered]@{
             schema_version = 1
             diagnostic_only = $true
+            diagnostic_cli = 'native-runtime-parity.mjs'
+            source_freeze_head = '7c6936b97a54f13d1ceb3272f810cf51d28a34f1'
             release_acceptance = $false
             head = $env:GITHUB_SHA
             exit_code = $diagnosticExit
