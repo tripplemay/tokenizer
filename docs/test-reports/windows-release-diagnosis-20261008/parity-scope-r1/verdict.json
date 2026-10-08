@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "role": "supporting-independent-scope-critic",
+  "reviewType": "committed-source-scope-transport-gate-not-product-evaluation",
+  "exactSource": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-runtime-parity-generator-20261008",
+  "scopeBase": "846e8e07614a97dcebd9d2cd2bdb678f971651fd",
+  "originalFreeze": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "productBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "spec": "docs/specs/BL-WINDOWS-NATIVE-DIAGNOSTIC-spec.md",
+  "specReadAt": "5ab1c93894aebcfb2ffad50604e942a10c3655f7",
+  "sourceScriptSha256": "846f9eb6363d44912de8d8506ed62a53bc6e13fab6238f08a569a13c0fa60053",
+  "violation": true,
+  "scopeTransportAllowed": false,
+  "outcome": "FAIL_SCOPE_TRANSPORT_SEMANTIC_BOUNDARY",
+  "summary": "The seven committed changed paths and dedicated workflow edits are allowed, and frozen artifacts are intact. Transport is blocked by two semantic boundary findings: owned-lifetime guard abort lacks explicit diagnostic-not-reached classification, and JSONL evidence is published without an event/content allowlist. Ordinary guard return/error semantics passed pure mocks. This is not a product/native/release verdict.",
+  "independence": {
+    "basis": "Independently read on-disk rules, current spec, exact committed diff, new CLI, existing trace and relevant product sources. Conclusions are based on source and independently authored VM controls, not Generator handoff statements.",
+    "stateStatusObserved": "building",
+    "supportingTaskSection": "harness-rules.md section 1.5",
+    "implementationModified": false,
+    "specModified": false,
+    "stateModified": false,
+    "oldReportsModified": false,
+    "pushCommitDeployExecuted": false,
+    "humanDecisionWritten": false
+  },
+  "changedPaths": [
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "allowed": true,
+      "evidence": "git diff 846e8e07614a97dcebd9d2cd2bdb678f971651fd 5ab1c93894aebcfb2ffad50604e942a10c3655f7; controls.json C01 exact replacement equality",
+      "detail": "Only CLI command, corresponding step label, and diagnostic_cli/source_freeze_head metadata changed. Trigger, branch/job guard, permissions, checkout, npm ci, timeout and artifact paths are unchanged."
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "allowed": true,
+      "evidence": "Spec lines 53-60; controls.json C01",
+      "detail": "Allowed new path; its semantic safety requirements do not pass this scope gate."
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/README.md",
+      "allowed": true,
+      "evidence": "Spec lines 55-60; committed diff; controls.json C01"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/checks.mjs",
+      "allowed": true,
+      "evidence": "Spec lines 55-60; committed diff; controls.json C01"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/checks.schema.json",
+      "allowed": true,
+      "evidence": "Spec lines 55-60; committed diff; controls.json C01"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/handoff.json",
+      "allowed": true,
+      "evidence": "Spec lines 55-60; committed diff; controls.json C01"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/parity-generator-r1/local-checks.json",
+      "allowed": true,
+      "evidence": "Spec lines 55-60; committed diff; controls.json C01"
+    }
+  ],
+  "findings": [
+    {
+      "id": "SCOPE-R1-F001",
+      "severity": "blocker",
+      "violation": true,
+      "title": "Owned-lifetime abort is not explicitly classified diagnostic-not-reached",
+      "requirement": "Spec lines 83-91 require the common guard to report its own budget abort as diagnostic-not-reached, not product failure, with exhaustion explicit unknown.",
+      "evidence": [
+        "native-runtime-parity.mjs:92-100 logs owned-lifetime-expired and exits 92, rather than diagnostic-budget-abort.",
+        "native-runtime-parity.mjs:305 collects only diagnostic-budget-abort; 307-311 places lifetime expiry only in cleanupUnknownBasis; 317-319 always emits reached:true without a top-level not-reached classification for this path.",
+        "controls.json C06 runs the actual extracted runParent function against virtual filesystem/child handles: status=92, reported=null, reached=true, classification absent, guardAborts=[], diagnosticCompleted=false, cleanupUnknown=true with owned-lifetime-expired basis."
+      ],
+      "observedLimits": "The implementation correctly avoids claiming product cleanup failure. The failure is the missing explicit diagnostic provenance/not-reached classification; this report does not claim it emits productFailure=true.",
+      "minimumCorrectionBoundary": "Within the new CLI only, classify lifetime/watchdog diagnostic aborts explicitly and preserve unknown product result and cleanup as separate fields; do not alter frozen product behavior."
+    },
+    {
+      "id": "SCOPE-R1-F002",
+      "severity": "blocker",
+      "violation": true,
+      "title": "JSONL evidence publication bypasses the metadata/content allowlist",
+      "requirement": "Spec lines 69 and 77 require no raw env/stderr/content and only allowlisted metadata/canary evidence. The approved plan output contract excludes arbitrary stderr, credentials and arbitrary keys.",
+      "evidence": [
+        "native-runtime-parity.mjs:145-151 readRows checks size/JSON parsing only, without event/key/value schema validation.",
+        "native-runtime-parity.mjs:321-322 writes parsed.bytes directly into native-output artifact paths, including invalid or unrecognized bytes; 349 also publishes the counter's original bytes after counts checks only event/kind.",
+        "native-runtime-parity.mjs:125 and 137-138 persist child error.code without a sanitizer. The stdout/stderr canary check at 257-263 does not cover guard/trace bytes.",
+        ".github/workflows/windows-release-diagnostics.yml:100-101 uploads those native-output JSONL paths.",
+        "controls.json C07 injects virtual JSONL unknown keys and raw-stderr/content/credential fixtures: unknownKeysPublished=true, rawFixturePublished=true, diagnosticCompletedDespiteInjectedRows=true.",
+        "controls.json C08 emits a mock native error with a raw canary in code: rawFixtureLogged=true while the original error event is correctly preserved."
+      ],
+      "observedLimits": "This proves an unenforced artifact boundary, not actual host secret leakage. All injected content is synthetic and in-memory. Native Windows emitted data and real leakage remain unknown.",
+      "minimumCorrectionBoundary": "Validate/reconstruct every exported evidence event in the new CLI, reject unknown keys/unsafe values with fail-closed metadata, and never publish unvalidated raw bytes. The frozen old trace implementation must remain unchanged."
+    }
+  ],
+  "verifiedNonViolations": [
+    {
+      "topic": "frozen scope",
+      "violation": false,
+      "evidence": "controls.json C02 compares committed Git objects for src/tests/packages/state/deploy workflow/old scripts/native-findings and independently verifies all 32 evidenceInventory SHA-256 entries.",
+      "detail": "No Generator change to product, old tests, old diagnostics, trace preload, original evidence, state, or deploy-vps workflow. The approved spec clarification predates the implementation scope base."
+    },
+    {
+      "topic": "ordinary guard observation semantics",
+      "violation": false,
+      "evidence": "controls.json C04: normal, logger-stat, logger-append, native-throw and sync-throw pure VM cases passed.",
+      "detail": "The tested guard preserves exact native return objects and thrown errors; errorMonitor does not swallow unhandled error events. No guard stream data listener was found. Existing old trace stream observers are immutable and applied only in its explicit on arm."
+    },
+    {
+      "topic": "owned handle cleanup versus historical PID inference",
+      "violation": false,
+      "evidence": "controls.json C05; native-runtime-parity.mjs:84-90, 270-275, 299-332.",
+      "detail": "New cleanup targets active owned handles only. Historical PIDs are queried with signal 0 but not killed. Closed handle mock was not signalled. taskkill status 128 is not used to infer whole-tree/product cleanup success or failure. Unknown cleanup and trace health remain explicit and separate."
+    },
+    {
+      "topic": "environment and instrumentation forms",
+      "violation": false,
+      "evidence": "controls.json C03; native-runtime-parity.mjs:15, 27-43, 208-238, 336-344, 355-359.",
+      "detail": "Only E0-E4 are enumerated; one key per arm is asserted. HOME/USERPROFILE/temp/Git global config are synthetic; inherited environment keys are limited to PATH/SystemRoot/WINDIR/ComSpec/PATHEXT. E4 uses the built-in system module path, not inherited personal PSModulePath. Both forms self-preload the common guard. The output explicitly says old trace off is not uninstrumented original CI; no combined arm is executed."
+    },
+    {
+      "topic": "admission and fairness",
+      "violation": false,
+      "evidence": "controls.json C03; native-runtime-parity.mjs:11-13, 46-50, 105-119, 221-249, 336-344; src/cli/replay.ts:147-155, 198-228, 279-370.",
+      "detail": "Parent re-admits immediately before launch with a 40s case plus 3s cleanup/output scheduling reserve. Common worker guard enforces <=38 smoke/<=76 total PowerShell launches and <=10s native budget. Smoke is P0 then P1 then P2, with previous success required. First complete P2 arm per form is selected. Parent cases for both forms precede round-robin remaining analogs. Worst-case reservations are smoke=3, parent=3, confirmation=14, binding=14, healthy=6; 10 smoke cases plus all analogs would reserve 104 launches, so caps intentionally deny some cases rather than raise bounds. Denied cases are recorded. Absolute real-time enforcement under OS/syscall stalls is not proved."
+    },
+    {
+      "topic": "syntax and workflow isolation",
+      "violation": false,
+      "evidence": "controls.json C01/C10; dedicated workflow lines 3-28, 92-103.",
+      "detail": "Node22 syntax checks and actionlint passed. Existing exact non-main branch/job guard, contents:read, immutable checkout, no persisted checkout credentials, Node22/npm ci, 12-minute timeout and scoped upload list are retained."
+    }
+  ],
+  "risksAndUnknowns": [
+    {
+      "id": "SCOPE-R1-R001",
+      "status": "defense-gap-observed-actual-runtime-effect-unknown",
+      "evidence": "controls.json C09; native-runtime-parity.mjs:154-184 and 338.",
+      "detail": "validProbe accepts a smoke payload with observations=[] and p2Succeeded=true; it does not enforce stage completeness. The injected-parent control also shows empty observations can be marked diagnosticCompleted. Actual runProbe missing its stage observations was not demonstrated, so this is retained as a risk rather than an additional scope violation."
+    },
+    {
+      "id": "SCOPE-R1-R002",
+      "status": "unknown",
+      "evidence": "native-runtime-parity.mjs:422-428, 450-458; src/cli/git.ts:59-81.",
+      "detail": "Binding fixture cwd is /allowed/project rather than an owned-root-derived path; product Git enrichment may attempt that fixed outside-root directory. No live Windows filesystem probe was run, so accidental real-path collision and any unrelated data access are not proved. Keep the synthetic-only boundary explicit."
+    },
+    {
+      "id": "SCOPE-R1-R003",
+      "status": "unknown",
+      "evidence": "native-runtime-parity.mjs:75-79, 116-119, 368-374; src/cli/replay.ts:245-247.",
+      "detail": "If guard-abort logging is unavailable, product wrappers can replace a worker abort's code with a generic Replay refusal and measure may lack the before/after abort marker. The health path fails closed, but exact abort provenance in that combined failure path was not independently executed here."
+    },
+    {
+      "id": "SCOPE-R1-R004",
+      "status": "not-executed-unknown",
+      "detail": "No native Windows PowerShell smoke, parent rename/hardlink hook, downstream confirmation/binding/healthy analog, real cleanup tree, real timing, real output, service or network probe was executed. Native coverage, OS behavior, strict 600s elapsed bound and actual leakage are unknown. VM controls do not substitute for native acceptance."
+    }
+  ],
+  "verification": {
+    "command": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r1/controls.mjs",
+    "node": "v22.22.0",
+    "hostPlatform": "darwin",
+    "exitCode": 1,
+    "controlsExecuted": 10,
+    "controlExecutionFailure": false,
+    "retainedFailedExpectations": [
+      "C06-expiry-not-reached-classification",
+      "C07-artifact-jsonl-allowlist-boundary",
+      "C08-guard-error-code-sanitization",
+      "C09-protocol-completeness"
+    ],
+    "nativeWindowsExecuted": false,
+    "productRuntimeExecuted": false,
+    "realServicesExecuted": false,
+    "sshGitHubProductionExecuted": false,
+    "artifactFiles": [
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r1/controls.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r1/controls.json",
+      "docs/test-reports/windows-release-diagnosis-20261008/parity-scope-r1/verdict.json"
+    ]
+  },
+  "recommendedNextStep": "Do not transport this exact source to the next native diagnostic push. Preserve this R1 verdict and all controls unchanged; Generator may produce a separately frozen R2 within the approved new CLI/report scope, then request another independent committed-source scope review. Coordinator transports this original conclusion unchanged.",
+  "releaseAcceptance": false,
+  "nativeAcceptance": false,
+  "productAcceptance": false,
+  "releaseReady": false
+}
