@@ -1,0 +1,24 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 98ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+tests/ci/vps-host-preflight-observability.test.ts(34,52): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PATH: string; }' but required in type 'ProcessEnv'.
+tests/ci/vps-host-preflight-observability.test.ts(68,5): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type 'Record<string, string>' but required in type 'ProcessEnv'.
+tests/ci/vps-host-preflight-observability.test.ts(219,7): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PATH: string; CALLS: string; OUTPUT: string; CODE: string; PIPELINE_CODE: string; CANARY: string; }' but required in type 'ProcessEnv'.
+tests/ci/vps-host-preflight-observability.test.ts(235,7): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PATH: string; }' but required in type 'ProcessEnv'.
