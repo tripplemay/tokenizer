@@ -1,0 +1,103 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-upgrade-takeover-20261008
+
+ ❯ tests/cli/replay.test.ts (6 tests | 4 failed) 37ms
+     × does not discover or open unselected sibling JSONL files 12ms
+     × applies strict [from,to), event budget, and current admission scope 3ms
+     × binds execution to file, range, budgets, current scope, and privacy mode 3ms
+     × merges idempotently into retained backlog and never changes normal cursors 3ms
+ ❯ tests/cli/privacy-admission-cli.test.ts (3 tests | 1 failed) 3025ms
+     × previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync 575ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/cli/privacy-admission-cli.test.ts > privacy admission CLI lifecycle > previews without mutation, confirms into durable queue idempotently, and uploads only on the next sync
+AssertionError: Replay refused: Git enrichment could not complete safely
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/cli/privacy-admission-cli.test.ts:86:42
+     84|
+     85|     const preview = await runCli([...args, "--sample", "1"]);
+     86|     expect(preview.code, preview.stderr).toBe(0);
+       |                                          ^
+     87|     const previewJson = JSON.parse(preview.stdout);
+     88|     expect(previewJson).toMatchObject({ dryRun: true, selected: 1, wou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/cli/replay.test.ts > bounded historical replay > does not discover or open unselected sibling JSONL files
+Error: Replay refused: Git enrichment could not complete safely
+ ❯ fail src/cli/replay.ts:85:9
+     83|
+     84| function fail(message: string): never {
+     85|   throw new Error(`Replay refused: ${message}`);
+       |         ^
+     86| }
+     87|
+ ❯ enrichReplayEvents src/cli/replay.ts:103:5
+ ❯ inspectReplay src/cli/replay.ts:298:5
+ ❯ dryRunBoundedReplay src/cli/replay.ts:332:22
+ ❯ tests/cli/replay.test.ts:97:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/cli/replay.test.ts > bounded historical replay > applies strict [from,to), event budget, and current admission scope
+Error: Replay refused: Git enrichment could not complete safely
+ ❯ fail src/cli/replay.ts:85:9
+     83|
+     84| function fail(message: string): never {
+     85|   throw new Error(`Replay refused: ${message}`);
+       |         ^
+     86| }
+     87|
+ ❯ enrichReplayEvents src/cli/replay.ts:103:5
+ ❯ inspectReplay src/cli/replay.ts:298:5
+ ❯ dryRunBoundedReplay src/cli/replay.ts:332:22
+ ❯ tests/cli/replay.test.ts:111:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/cli/replay.test.ts > bounded historical replay > binds execution to file, range, budgets, current scope, and privacy mode
+Error: Replay refused: Git enrichment could not complete safely
+ ❯ fail src/cli/replay.ts:85:9
+     83|
+     84| function fail(message: string): never {
+     85|   throw new Error(`Replay refused: ${message}`);
+       |         ^
+     86| }
+     87|
+ ❯ enrichReplayEvents src/cli/replay.ts:103:5
+ ❯ inspectReplay src/cli/replay.ts:298:5
+ ❯ dryRunBoundedReplay src/cli/replay.ts:332:22
+ ❯ tests/cli/replay.test.ts:157:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/cli/replay.test.ts > bounded historical replay > merges idempotently into retained backlog and never changes normal cursors
+Error: Replay refused: Git enrichment could not complete safely
+ ❯ fail src/cli/replay.ts:85:9
+     83|
+     84| function fail(message: string): never {
+     85|   throw new Error(`Replay refused: ${message}`);
+       |         ^
+     86| }
+     87|
+ ❯ enrichReplayEvents src/cli/replay.ts:103:5
+ ❯ inspectReplay src/cli/replay.ts:298:5
+ ❯ dryRunBoundedReplay src/cli/replay.ts:332:22
+ ❯ tests/cli/replay.test.ts:188:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed | 20 passed (22)
+      Tests  5 failed | 147 passed | 3 skipped (155)
+   Start at  10:17:46
+   Duration  9.16s (transform 1.07s, setup 0ms, import 1.91s, tests 25.94s, environment 2ms)
+

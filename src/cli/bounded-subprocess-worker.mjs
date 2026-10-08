@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { writeSync } from "node:fs";
 
-const { command, args, timeoutMs, maxOutputBytes, cleanupMs } = JSON.parse(process.argv[2]);
+const { command, args, cwd, timeoutMs, maxOutputBytes, cleanupMs } = JSON.parse(process.argv[2]);
 let child;
 let finished = false;
 let closed = false;
@@ -70,6 +70,7 @@ function collect(target, chunk) {
 const timer = setTimeout(() => void finish({ kind: "timeout" }), timeoutMs);
 try {
   child = spawn(command, args, {
+    cwd,
     stdio: ["ignore", "pipe", "pipe"],
     detached: process.platform !== "win32",
     windowsHide: true
@@ -79,7 +80,7 @@ try {
   writeSync(1, `${child.pid ?? 0}\n`);
   child.stdout.on("data", (chunk) => collect(stdout, chunk));
   child.stderr.on("data", (chunk) => collect(stderr, chunk));
-  child.on("error", () => void finish({ kind: "launch" }));
+  child.on("error", (error) => void finish({ kind: "launch", code: error.code }));
   child.on("close", (status, signal) => {
     closed = true;
     void finish({ kind: "ok", status, signal,
@@ -87,7 +88,7 @@ try {
       stderr: Buffer.concat(stderr).toString("base64")
     });
   });
-} catch {
+} catch (error) {
   if (!child) writeSync(1, "0\n");
-  void finish({ kind: "launch" });
+  void finish({ kind: "launch", code: error.code });
 }

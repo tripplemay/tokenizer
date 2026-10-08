@@ -23,7 +23,7 @@
       "title": "Integrate bounded Git and Windows reparse supervision into replay",
       "priority": "high",
       "executor": "generator",
-      "status": "pending",
+      "status": "completed",
       "acceptance": "F003 spec: shared replay deadline, bounded subprocess output, fail-closed timeout/supervision errors, unchanged exact-version queue and confirmation semantics."
     },
     {

@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { parseGitRemote } from "@/shared/git-remote";
 import { UsageEventInput } from "@/shared/usage";
 import { normalizeWorkspacePath, pathCacheKey } from "@/shared/path";
+import { BoundedSubprocessLaunchError, BoundedSubprocessSupervisionError, runBoundedSubprocess, SUBPROCESS_TOTAL_ALLOWANCE_MS } from "./bounded-subprocess";
 
 type GitInfo = {
   localWorkspacePath: string;
@@ -14,7 +15,7 @@ type GitInfo = {
 const cache = new Map<string, GitInfo | null>();
 // Leave time for child termination and replay refusal propagation inside the
 // operation-wide deadline rather than using the full budget in execFileSync.
-const DEADLINE_TERMINATION_MARGIN_MS = 2_000;
+const DEADLINE_TERMINATION_MARGIN_MS = SUBPROCESS_TOTAL_ALLOWANCE_MS;
 
 export type GitEnrichmentOptions = { deadlineMs?: number };
 
@@ -26,21 +27,27 @@ function remainingTimeout(options: GitEnrichmentOptions): number | undefined {
 }
 
 function git(args: string[], cwd: string, options: GitEnrichmentOptions): string | null {
+  if (options.deadlineMs !== undefined) {
+    const timeoutMs = remainingTimeout(options)!;
+    try {
+      const result = runBoundedSubprocess("git", args, { cwd, timeoutMs, maxOutputBytes: 64 * 1024 });
+      if (result.signal !== null) throw new BoundedSubprocessSupervisionError("Replay Git process terminated unexpectedly");
+      if (Date.now() >= options.deadlineMs) throw new Error("Replay Git enrichment deadline exceeded");
+      return result.status === 0 ? result.stdout.trim() || null : null;
+    } catch (error) {
+      // A missing executable remains compatible with ordinary non-Git source
+      // files. Timeout/output/supervision errors must never cache partial data.
+      if (error instanceof BoundedSubprocessLaunchError && error.code === "ENOENT") return null;
+      throw error;
+    }
+  }
   try {
-    const timeout = remainingTimeout(options);
     return execFileSync("git", args, {
       cwd,
       encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      ...(timeout === undefined ? {} : { timeout })
+      stdio: ["ignore", "pipe", "ignore"]
     }).trim() || null;
-  } catch (error) {
-    const processError = error as NodeJS.ErrnoException & { killed?: boolean; signal?: string | null };
-    if (options.deadlineMs !== undefined &&
-        (processError.code === "ETIMEDOUT" || processError.killed === true || typeof processError.signal === "string" ||
-         Date.now() >= options.deadlineMs)) {
-      throw new Error("Replay Git enrichment deadline exceeded");
-    }
+  } catch {
     return null;
   }
 }

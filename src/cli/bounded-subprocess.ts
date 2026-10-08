@@ -3,7 +3,9 @@ import { fileURLToPath } from "node:url";
 
 export class BoundedSubprocessTimeoutError extends Error {}
 export class BoundedSubprocessOutputError extends Error {}
-export class BoundedSubprocessLaunchError extends Error {}
+export class BoundedSubprocessLaunchError extends Error {
+  constructor(public readonly code?: string) { super("subprocess failed to start"); }
+}
 export class BoundedSubprocessSupervisionError extends Error {}
 
 // The worker gets 1 s for tree termination and close notification, plus 1 s
@@ -27,6 +29,7 @@ type WorkerResult = {
   signal?: NodeJS.Signals | null;
   stdout?: string;
   stderr?: string;
+  code?: string;
 };
 
 const worker = fileURLToPath(new URL("./bounded-subprocess-worker.mjs", import.meta.url));
@@ -66,9 +69,9 @@ export function runBoundedSubprocess(
   }
   const helper = spawnSync(process.execPath, [worker, JSON.stringify({
     command, args, timeoutMs: options.timeoutMs, maxOutputBytes: options.maxOutputBytes,
+    cwd: options.cwd instanceof URL ? fileURLToPath(options.cwd) : options.cwd,
     cleanupMs: SUBPROCESS_CLEANUP_ALLOWANCE_MS
   })], {
-    cwd: options.cwd,
     env: options.env,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -97,7 +100,7 @@ export function runBoundedSubprocess(
   }
   if (result.kind === "timeout") throw new BoundedSubprocessTimeoutError("subprocess deadline exceeded");
   if (result.kind === "output") throw new BoundedSubprocessOutputError("subprocess output limit exceeded");
-  if (result.kind === "launch") throw new BoundedSubprocessLaunchError("subprocess failed to start");
+  if (result.kind === "launch") throw new BoundedSubprocessLaunchError(result.code);
   if (result.kind === "supervision") throw new BoundedSubprocessSupervisionError("subprocess cleanup failed");
   const stdout = Buffer.from(result.stdout!, "base64");
   const stderr = Buffer.from(result.stderr!, "base64");

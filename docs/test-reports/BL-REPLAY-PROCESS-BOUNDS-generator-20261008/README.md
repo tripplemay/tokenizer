@@ -41,3 +41,30 @@ nonzero and signal exits. The healthy case matches the install checkout SHA;
 a disposable install checkout advances after module import without changing
 the imported snapshot. Windows fixture construction produces a native git.exe
 via the OS .NET compiler, not a .cmd wrapper; Windows execution remains unrun.
+
+## F003
+
+Replay-bound Git uses the worker with 64 KiB combined output and Windows reparse
+checks use 16 KiB. Each call subtracts the declared supervision/cleanup allowance
+from the same operation deadline; ordinary collection still uses its prior
+Git path. Timeout/output/signal/supervision failures refuse without raw streams.
+
+`F003-focused.log`: 34 passed / 2 Windows-only skipped. Real resistant child
+trees refuse both preview and independently confirmed execution in under the
+10-second replay deadline; queue/cursor/config bytes remain unchanged. Real
+successive delayed Git calls share one deadline. A queue-lock clock control
+trips the production before-mutate guard without changing state.
+
+`F003-original-focused.log` preserves the initial 5 old-test failures:
+nonexistent historical workspaces were incorrectly passed as worker cwd,
+conflating target ENOENT with supervisor launch failure. Coordinator adjudication
+`a14e6bf` permits only a structured target-cwd transport fix in the helper pair.
+Worker now starts from caller cwd; target ENOENT is a typed launch absence.
+Other launch errors and actual worker failure remain fail-closed. Added distinct
+missing-target and broken-worker controls. No old test bytes changed.
+
+`F003-adjudicated-focused.log`: unchanged B03/B07/replay/privacy cases plus new
+controls, 187 passed / 5 skipped across 25 files. `F003-verify.log` preserves
+an initial new-test TypeScript ProcessEnv annotation failure; the new test uses
+Partial<ProcessEnv>. `F003-verify-rerun.log`, `F003-final-verify.log` and
+`F003-lint.log` record subsequent checks separately.

@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
 import { closeSync, constants, fstatSync, lstatSync, openSync, readSync } from "node:fs";
 import { dirname, isAbsolute, parse } from "node:path";
 import type { BigIntStats } from "node:fs";
@@ -11,6 +10,7 @@ import { mergeQueue } from "./collect";
 import { readConfig, type TokenizerConfig } from "./config";
 import { collectionAdmissionFingerprint, collectionScopeFingerprint, effectivePrivacy, filterUsageEvents, type PrivacyConfig } from "./privacy";
 import type { BoundedReplayPlan } from "./replay-contract";
+import { runBoundedSubprocess, SUBPROCESS_TOTAL_ALLOWANCE_MS } from "./bounded-subprocess";
 
 const MAX_PHYSICAL_RECORDS = 50_000;
 const MAX_LINE_BYTES = 1024 * 1024;
@@ -148,14 +148,15 @@ function checkSourcePath(file: string, deadlineMs: number, nativeAttributes = tr
     // Node's stat flags do not expose every Windows reparse tag. Check native
     // attributes before/after reading; unavailable checks fail closed.
     const script = "$ErrorActionPreference='Stop'; foreach($p in (ConvertFrom-Json $env:TOKENIZER_REPLAY_PATHS)) { if(([IO.File]::GetAttributes($p) -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'reparse point' } }; 'TOKENIZER_REPLAY_NO_REPARSE_V1'";
-    const remaining = deadlineMs - Date.now();
+    const remaining = deadlineMs - Date.now() - SUBPROCESS_TOTAL_ALLOWANCE_MS;
     if (remaining <= 0) fail(`read exceeded ${MAX_ELAPSED_MS}ms`);
-    const result = execFileSync("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script], {
+    const result = runBoundedSubprocess("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script], {
       env: { ...process.env, TOKENIZER_REPLAY_PATHS: JSON.stringify([...parents, file]) },
-      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], windowsHide: true,
-      timeout: remaining, maxBuffer: 16 * 1024
+      windowsHide: true, timeoutMs: remaining, maxOutputBytes: 16 * 1024
     });
-    if (result.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") fail("source reparse-point check failed");
+    if (result.status !== 0 || result.signal !== null || result.stdout.trim() !== "TOKENIZER_REPLAY_NO_REPARSE_V1") {
+      fail("source reparse-point check failed");
+    }
   }
   assertWithinDeadline(deadlineMs, "source inspection");
   return identities;

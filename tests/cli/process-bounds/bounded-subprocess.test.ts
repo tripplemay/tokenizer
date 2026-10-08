@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  BoundedSubprocessLaunchError, BoundedSubprocessOutputError, BoundedSubprocessTimeoutError,
+  BoundedSubprocessLaunchError, BoundedSubprocessOutputError, BoundedSubprocessTimeoutError, BoundedSubprocessSupervisionError,
   runBoundedSubprocess, SUBPROCESS_TOTAL_ALLOWANCE_MS
 } from "../../../src/cli/bounded-subprocess";
 
@@ -57,6 +57,26 @@ describe("bounded subprocess primitive", () => {
     expect(() => runBoundedSubprocess(join(root, "missing"), [], {
       cwd: root, env, timeoutMs: 500, maxOutputBytes: 1_024
     })).toThrow(BoundedSubprocessLaunchError);
+  });
+
+  it("distinguishes a missing target cwd from worker supervision failure", () => {
+    let caught: unknown;
+    try {
+      runBoundedSubprocess(process.execPath, [fixture, "normal", pidFile], {
+        cwd: join(root, "missing"), env, timeoutMs: 500, maxOutputBytes: 1_024
+      });
+    } catch (error) { caught = error; }
+    expect(caught).toBeInstanceOf(BoundedSubprocessLaunchError);
+    expect(caught).toHaveProperty("code", "ENOENT");
+    const preload = fileURLToPath(new URL("../../fixtures/process-bounds/worker-failure.mjs", import.meta.url));
+    try {
+      runBoundedSubprocess(process.execPath, [fixture, "normal", pidFile], {
+        cwd: root, env: { ...env, NODE_OPTIONS: `--import=${preload}` }, timeoutMs: 500, maxOutputBytes: 1_024
+      });
+    } catch (error) { caught = error; }
+    expect(caught).toBeInstanceOf(BoundedSubprocessSupervisionError);
+    expect(String(caught)).not.toContain("RAW-WORKER");
+    expect(pids()).toEqual([]);
   });
 
   it.skipIf(process.platform === "win32")("preserves termination signal", () => {
