@@ -145,3 +145,15 @@ scripts/deploy-vps-release.sh and tests/server/release-image.test.ts, with only
 the declared additive stricter controls. F003 docs path is
 docs/test-reports/BL-RELEASE-READINESS-generator-20261008/operator-preflight.md.
 Provenance/hash inventory belongs under that same Generator report directory.
+
+### Explicit null health code adjudication
+
+The imported bc9 predicate uses .code==null, which admits explicit null as well
+as an absent field. The locked wording is intentionally stricter: only a truly
+absent code field is old-format compatible; if present, code must equal ready.
+Approve exactly this one predicate change in scripts/verify-vps-predecessor.sh:
+((has("code") | not) or .code == "ready"), retaining ok=true and exact SHA.
+Use the same rule in F003 inventory. Add explicit-null negative controls in new
+tests; do not alter any existing health assertion. This narrow F002 source-byte
+exception supersedes exact bc9 transport for that predicate only; retain source
+and resulting hashes, tagged F002 revision commit and raw failed/rerun evidence.
