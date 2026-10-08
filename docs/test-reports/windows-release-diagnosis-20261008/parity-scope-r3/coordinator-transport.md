@@ -10,7 +10,8 @@ Coordinator transported the three implementation commits unchanged into this
 diagnostic-only worktree. The final CLI, dedicated workflow, product, old tests,
 dependencies, old diagnostics/trace and32 original native files match the
 approved Generator snapshot; git diff of the frozen execution paths is empty.
-Original R3 critic directory is byte-identical and its verdict hash matches.
+Original R3 critic files were copied byte-identically and their verdict hash
+matches; this separately authored Coordinator note is an additional artifact.
 The intermediate local commits are provenance history, not an authorization
 to execute either rejected tree. Only the final R3 tree may be pushed here.
 

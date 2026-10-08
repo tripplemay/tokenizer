@@ -1,0 +1,1 @@
+{"possibleLiveAtReturn":[],"possibleLiveAfterOwnedCap":[],"cleanupUnknown":false,"cleanupUnknownBasis":[],"productCleanupFailure":"not-inferred","pidLivenessDoesNotProveWholeTree":true,"historicalPidsSignalled":false,"guardBytes":1832,"traceBytes":5473,"unsafeEvidenceSuppressed":false,"oversizedEvidenceSuppressed":false,"rootRetained":false}

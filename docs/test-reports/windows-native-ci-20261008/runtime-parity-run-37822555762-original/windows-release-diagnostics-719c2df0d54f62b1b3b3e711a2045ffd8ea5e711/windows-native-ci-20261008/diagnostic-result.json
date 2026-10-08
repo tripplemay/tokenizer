@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "diagnostic_only": true,
+  "diagnostic_cli": "native-runtime-parity.mjs",
+  "source_freeze_head": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "release_acceptance": false,
+  "head": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+  "exit_code": 0,
+  "timestamp_utc": "2026-10-08T18:15:26.9236731Z"
+}

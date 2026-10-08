@@ -1,0 +1,84 @@
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-diagnostic-ci-20261008 Windows release diagnostics · 37822555762
+Triggered via push less than a minute ago
+
+JOBS
+* Read-only native Windows diagnosis (ID 113467034986)
+  ✓ Set up job
+  ✓ Checkout immutable diagnostic commit
+  ✓ Setup Node.js 22
+  ✓ Record minimal native provenance
+  * Fresh locked dependency install
+  * Run reviewed bounded runtime parity diagnostic CLI
+  * Retain only scoped native diagnostic JSON evidence
+  * Post Setup Node.js 22
+  * Post Checkout immutable diagnostic commit
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-diagnostic-ci-20261008 Windows release diagnostics · 37822555762
+Triggered via push about 1 minute ago
+
+JOBS
+* Read-only native Windows diagnosis (ID 113467034986)
+  ✓ Set up job
+  ✓ Checkout immutable diagnostic commit
+  ✓ Setup Node.js 22
+  ✓ Record minimal native provenance
+  * Fresh locked dependency install
+  * Run reviewed bounded runtime parity diagnostic CLI
+  * Retain only scoped native diagnostic JSON evidence
+  * Post Setup Node.js 22
+  * Post Checkout immutable diagnostic commit
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-diagnostic-ci-20261008 Windows release diagnostics · 37822555762
+Triggered via push about 1 minute ago
+
+JOBS
+* Read-only native Windows diagnosis (ID 113467034986)
+  ✓ Set up job
+  ✓ Checkout immutable diagnostic commit
+  ✓ Setup Node.js 22
+  ✓ Record minimal native provenance
+  ✓ Fresh locked dependency install
+  * Run reviewed bounded runtime parity diagnostic CLI
+  * Retain only scoped native diagnostic JSON evidence
+  * Post Setup Node.js 22
+  * Post Checkout immutable diagnostic commit
+Refreshing run status every 30 seconds. Press Ctrl+C to quit.
+
+* codex/windows-native-diagnostic-ci-20261008 Windows release diagnostics · 37822555762
+Triggered via push about 2 minutes ago
+
+JOBS
+* Read-only native Windows diagnosis (ID 113467034986)
+  ✓ Set up job
+  ✓ Checkout immutable diagnostic commit
+  ✓ Setup Node.js 22
+  ✓ Record minimal native provenance
+  ✓ Fresh locked dependency install
+  * Run reviewed bounded runtime parity diagnostic CLI
+  * Retain only scoped native diagnostic JSON evidence
+  * Post Setup Node.js 22
+  * Post Checkout immutable diagnostic commit
+✓ codex/windows-native-diagnostic-ci-20261008 Windows release diagnostics · 37822555762
+Triggered via push about 2 minutes ago
+
+JOBS
+✓ Read-only native Windows diagnosis in 2m25s (ID 113467034986)
+  ✓ Set up job
+  ✓ Checkout immutable diagnostic commit
+  ✓ Setup Node.js 22
+  ✓ Record minimal native provenance
+  ✓ Fresh locked dependency install
+  ✓ Run reviewed bounded runtime parity diagnostic CLI
+  ✓ Retain only scoped native diagnostic JSON evidence
+  ✓ Post Setup Node.js 22
+  ✓ Post Checkout immutable diagnostic commit
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Read-only native Windows diagnosis: .github#2
+

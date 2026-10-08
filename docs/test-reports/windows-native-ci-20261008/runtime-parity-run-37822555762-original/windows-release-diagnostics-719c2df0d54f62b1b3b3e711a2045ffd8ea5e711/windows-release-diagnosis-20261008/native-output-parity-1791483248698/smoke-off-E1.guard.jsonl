@@ -1,0 +1,14 @@
+{"pid":7396,"sequence":0,"at":1791483256654,"event":"guard-preload","commonBudgetGuardOn":true,"oldTracePreloadOn":false}
+{"pid":2872,"sequence":0,"at":1791483256952,"event":"guard-preload","commonBudgetGuardOn":true,"oldTracePreloadOn":false}
+{"pid":2872,"sequence":1,"at":1791483256960,"event":"spawn","executable":"powershell.exe","childPid":6804,"detached":false}
+{"pid":2872,"sequence":2,"at":1791483257144,"event":"child-exit","executable":"powershell.exe","childPid":6804,"status":0,"signal":null}
+{"pid":2872,"sequence":3,"at":1791483257145,"event":"child-close","executable":"powershell.exe","childPid":6804,"status":0,"signal":null}
+{"pid":7396,"sequence":1,"at":1791483257153,"event":"spawn-sync","executable":"node.exe","childPid":2872,"status":0,"signal":null,"code":null}
+{"pid":4832,"sequence":0,"at":1791483257222,"event":"guard-preload","commonBudgetGuardOn":true,"oldTracePreloadOn":false}
+{"pid":4832,"sequence":1,"at":1791483257230,"event":"spawn","executable":"powershell.exe","childPid":2644,"detached":false}
+{"pid":4832,"sequence":2,"at":1791483264241,"event":"spawn","executable":"taskkill.exe","childPid":3684,"detached":false}
+{"pid":4832,"sequence":3,"at":1791483264316,"event":"child-exit","executable":"taskkill.exe","childPid":3684,"status":0,"signal":null}
+{"pid":4832,"sequence":4,"at":1791483264316,"event":"child-close","executable":"taskkill.exe","childPid":3684,"status":0,"signal":null}
+{"pid":4832,"sequence":5,"at":1791483264333,"event":"child-exit","executable":"powershell.exe","childPid":2644,"status":1,"signal":null}
+{"pid":4832,"sequence":6,"at":1791483264333,"event":"child-close","executable":"powershell.exe","childPid":2644,"status":1,"signal":null}
+{"pid":7396,"sequence":2,"at":1791483264344,"event":"spawn-sync","executable":"node.exe","childPid":4832,"status":0,"signal":null,"code":null}

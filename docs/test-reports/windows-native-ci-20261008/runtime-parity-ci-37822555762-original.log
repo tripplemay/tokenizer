@@ -1,0 +1,251 @@
+Read-only native Windows diagnosis	Set up job	﻿2026-10-08T18:13:07.4639264Z Current runner version: '2.337.0'
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4692612Z ##[group]Runner Image Provisioner
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4693906Z Hosted Compute Agent
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4694766Z Version: 20260901.588
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4695692Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4696767Z Build Date: 2026-09-01T19:56:44Z
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4697905Z Worker ID: {d06e1cc9-48a4-434f-9871-c0a55be285ef}
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4698991Z Azure Region: northcentralus
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4700202Z ##[endgroup]
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4702125Z ##[group]Operating System
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4703042Z Microsoft Windows Server 2025
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4703972Z 10.0.26100
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4704706Z Datacenter
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4705439Z ##[endgroup]
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4706233Z ##[group]Runner Image
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4707113Z Image: windows-2025-vs2026
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4708012Z Version: 20260925.250.1
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4709815Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4713127Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4714701Z ##[endgroup]
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4716327Z ##[group]GITHUB_TOKEN Permissions
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4718740Z Contents: read
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4719676Z Metadata: read
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4720818Z ##[endgroup]
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4723581Z Secret source: Actions
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4724923Z Cache mode: write
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.4725895Z Prepare workflow directory
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.5185736Z Prepare all required actions
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.5255351Z Getting action download info
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.8325137Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:07.9549542Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:08.1189250Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Read-only native Windows diagnosis	Set up job	2026-10-08T18:13:08.4795392Z Complete job name: Read-only native Windows diagnosis
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	﻿2026-10-08T18:13:08.6221257Z ##[group]Run actions/checkout@v4
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6222408Z with:
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6222860Z   ref: 719c2df0d54f62b1b3b3e711a2045ffd8ea5e711
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6223421Z   fetch-depth: 1
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6223849Z   persist-credentials: false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6224356Z   repository: tripplemay/tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6228254Z   token: ***
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6228663Z   ssh-strict: true
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6229064Z   ssh-user: git
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6229818Z   clean: true
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6230233Z   sparse-checkout-cone-mode: true
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6230723Z   fetch-tags: false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6231132Z   show-progress: true
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6231555Z   lfs: false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6231953Z   submodules: false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6232374Z   set-safe-directory: true
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6232885Z   allow-unsafe-pr-checkout: false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.6233647Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.7834275Z Syncing repository: tripplemay/tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.7836936Z ##[group]Getting Git version info
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.7837895Z Working directory is 'D:\a\tokenizer\tokenizer'
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:08.8638040Z [command]"C:\Program Files\Git\bin\git.exe" version
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0239146Z git version 2.55.0.windows.5
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0289776Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0312162Z Temporarily overriding HOME='D:\a\_temp\defa0947-8542-4c15-b99a-dc7a683a2990' before making global git config changes
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0315065Z Adding repository directory to the temporary git global config as a safe directory
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0325113Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0660292Z Deleting the contents of 'D:\a\tokenizer\tokenizer'
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0667325Z ##[group]Initializing the repository
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.0676787Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\tokenizer\tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1198541Z Initialized empty Git repository in D:/a/tokenizer/tokenizer/.git/
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1247635Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/tripplemay/tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1583569Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1585929Z ##[group]Disabling automatic garbage collection
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1594272Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1884268Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1886324Z ##[group]Setting up auth
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.1896460Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:09.2203580Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:10.3408915Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:10.3815126Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:10.9847905Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:11.0186064Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:11.5908150Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:11.6251048Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:11.6252003Z ##[group]Fetching the repository
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:11.6264836Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 719c2df0d54f62b1b3b3e711a2045ffd8ea5e711
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8800176Z From https://github.com/tripplemay/tokenizer
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8801216Z  * branch            719c2df0d54f62b1b3b3e711a2045ffd8ea5e711 -> FETCH_HEAD
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8840542Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8841173Z ##[group]Determining the checkout info
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8842896Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.8857428Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.9206054Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.9576977Z ##[group]Checking out the ref
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:12.9586950Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 719c2df0d54f62b1b3b3e711a2045ffd8ea5e711
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6430589Z Note: switching to '719c2df0d54f62b1b3b3e711a2045ffd8ea5e711'.
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6431254Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6431534Z You are in 'detached HEAD' state. You can look around, make experimental
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6432033Z changes and commit them, and you can discard any commits you make in this
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6432514Z state without impacting any branches by switching back to a branch.
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6432802Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6432991Z If you want to create a new branch to retain commits you create, you may
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6433522Z do so (now or later) by using -c with the switch command. Example:
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6433781Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6433913Z   git switch -c <new-branch-name>
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434086Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434199Z Or undo this operation with:
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434388Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434492Z   git switch -
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434618Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6434821Z Turn off this advice by setting config variable advice.detachedHead to false
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6436362Z 
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6436752Z HEAD is now at 719c2df docs: transport original R3 scope approval with exact execution hashes
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6510673Z ##[endgroup]
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.6842394Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.7178655Z 719c2df0d54f62b1b3b3e711a2045ffd8ea5e711
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.7225910Z ##[group]Removing auth
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.7238687Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:13.7593912Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.3137276Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.3397262Z http.https://github.com/.extraheader
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.3441317Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.3747994Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.9570403Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:14.9919156Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Read-only native Windows diagnosis	Checkout immutable diagnostic commit	2026-10-08T18:13:15.5326473Z ##[endgroup]
+Read-only native Windows diagnosis	Setup Node.js 22	﻿2026-10-08T18:13:15.5774108Z ##[group]Run actions/setup-node@v4
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5774480Z with:
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5774692Z   node-version: 22
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5774903Z   always-auth: false
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5775102Z   check-latest: false
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5777620Z   token: ***
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.5777834Z ##[endgroup]
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.7610648Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.7618062Z (node:7004) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.7619175Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:15.7623273Z ##[group]Environment details
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:20.1179245Z node: v22.23.3
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:20.1179768Z npm: 10.9.9
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:20.1180247Z yarn: 1.22.22
+Read-only native Windows diagnosis	Setup Node.js 22	2026-10-08T18:13:20.1181048Z ##[endgroup]
+Read-only native Windows diagnosis	Record minimal native provenance	﻿2026-10-08T18:13:20.1564492Z ##[group]Run $ErrorActionPreference = 'Stop'
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1565021Z [36;1m$ErrorActionPreference = 'Stop'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1565363Z [36;1m$head = (& git rev-parse HEAD).Trim()[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1565712Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1566229Z [36;1mif ($head -cne $env:GITHUB_SHA) { throw 'Checkout HEAD differs from the dispatched immutable SHA' }[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1566745Z [36;1m$gitVersion = (& git --version).Trim()[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1567076Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1568005Z [36;1m$node = & node -e 'console.log(JSON.stringify({node:process.version,uv:process.versions.uv,platform:process.platform,arch:process.arch})); if(process.platform!=="win32" || !process.version.startsWith("v22.")) process.exit(2)'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1569259Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1569585Z [36;1m$node = $node | ConvertFrom-Json[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1569972Z [36;1m$os = Get-CimInstance -ClassName Win32_OperatingSystem[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1570379Z [36;1m$directory = 'docs/test-reports/windows-native-ci-20261008'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1570815Z [36;1mNew-Item -ItemType Directory -Path $directory -Force | Out-Null[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1571161Z [36;1m[ordered]@{[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1571587Z [36;1m  schema_version = 1[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1571815Z [36;1m  diagnostic_only = $true[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1572104Z [36;1m  diagnostic_cli = 'native-runtime-parity.mjs'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1572495Z [36;1m  source_freeze_head = '7c6936b97a54f13d1ceb3272f810cf51d28a34f1'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1572851Z [36;1m  release_acceptance = $false[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1573193Z [36;1m  failed_release_sha = '76d916ba2e3a7147acda5ac9ef15fa70a9cd9958'[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1573523Z [36;1m  head = $head[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1573739Z [36;1m  expected_sha = $env:GITHUB_SHA[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1574044Z [36;1m  timestamp_utc = [DateTime]::UtcNow.ToString('o')[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1574519Z [36;1m  os = [ordered]@{ caption = $os.Caption; version = $os.Version; build_number = $os.BuildNumber }[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1574946Z [36;1m  runtime = $node[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1575160Z [36;1m  git = $gitVersion[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1575584Z [36;1m} | ConvertTo-Json -Depth 5 | Set-Content -Path "$directory/provenance.json" -Encoding utf8NoBOM[0m
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1702530Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Read-only native Windows diagnosis	Record minimal native provenance	2026-10-08T18:13:20.1702915Z ##[endgroup]
+Read-only native Windows diagnosis	Fresh locked dependency install	﻿2026-10-08T18:13:21.0550153Z ##[group]Run npm ci
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:21.0550492Z [36;1mnpm ci[0m
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:21.0550757Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:21.0618513Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:21.0618875Z ##[endgroup]
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:31.8469122Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:13:48.2251632Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.8580309Z 
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.8581251Z added 669 packages, and audited 671 packages in 45s
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.8585580Z 
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.8587628Z 185 packages are looking for funding
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.8588829Z   run `npm fund` for details
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9671527Z 
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9672410Z 7 high severity vulnerabilities
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9672876Z 
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9673238Z To address all issues (including breaking changes), run:
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9673803Z   npm audit fix --force
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9674044Z 
+Read-only native Windows diagnosis	Fresh locked dependency install	2026-10-08T18:14:06.9674217Z Run `npm audit` for details.
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	﻿2026-10-08T18:14:08.2386748Z ##[group]Run $ErrorActionPreference = 'Stop'
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2387233Z [36;1m$ErrorActionPreference = 'Stop'[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2387599Z [36;1m$PSNativeCommandUseErrorActionPreference = $false[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2388145Z [36;1m$script = 'docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs'[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2388996Z [36;1mif (!(Test-Path -LiteralPath $script -PathType Leaf)) { throw 'Coordinator must transport the committed diagnostic script unchanged before dispatch' }[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2389654Z [36;1mnode $script[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2389890Z [36;1m$diagnosticExit = $LASTEXITCODE[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2390149Z [36;1m[ordered]@{[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2390352Z [36;1m  schema_version = 1[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2390578Z [36;1m  diagnostic_only = $true[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2390893Z [36;1m  diagnostic_cli = 'native-runtime-parity.mjs'[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2391301Z [36;1m  source_freeze_head = '7c6936b97a54f13d1ceb3272f810cf51d28a34f1'[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2391694Z [36;1m  release_acceptance = $false[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2391938Z [36;1m  head = $env:GITHUB_SHA[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2392182Z [36;1m  exit_code = $diagnosticExit[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2392475Z [36;1m  timestamp_utc = [DateTime]::UtcNow.ToString('o')[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2393122Z [36;1m} | ConvertTo-Json | Set-Content -Path 'docs/test-reports/windows-native-ci-20261008/diagnostic-result.json' -Encoding utf8NoBOM[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2393948Z [36;1mexit $diagnosticExit[0m
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2462462Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:14:08.2462814Z ##[endgroup]
+Read-only native Windows diagnosis	Run reviewed bounded runtime parity diagnostic CLI	2026-10-08T18:15:26.8948877Z {"outputDirectory":"native-output-parity-1791483248698","diagnosticCompleted":true,"releaseAcceptance":false}
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	﻿2026-10-08T18:15:27.0147641Z ##[group]Run actions/upload-artifact@v4
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0148024Z with:
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0148377Z   name: windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0149744Z   path: docs/test-reports/windows-native-ci-20261008/provenance.json
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	docs/test-reports/windows-native-ci-20261008/diagnostic-result.json
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	docs/test-reports/windows-release-diagnosis-20261008/native-output-*/*.json
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	docs/test-reports/windows-release-diagnosis-20261008/native-output-*/*.jsonl
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0171734Z   if-no-files-found: error
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0172027Z   retention-days: 7
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0172244Z   compression-level: 6
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0172467Z   overwrite: false
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0172675Z   include-hidden-files: false
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.0172903Z ##[endgroup]
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2215143Z (node:8740) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2216502Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2514170Z Multiple search paths detected. Calculating the least common ancestor of all paths
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2517393Z The least common ancestor is D:\a\tokenizer\tokenizer\docs\test-reports. This will be the root directory of the artifact
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2518615Z With the provided path, there will be 57 files uploaded
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2524574Z Artifact name is valid!
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.2526168Z Root directory input is valid!
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.5312660Z Beginning upload of artifact content to blob storage
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.6086902Z (node:8740) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.7508912Z Uploaded bytes 38672
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.7924742Z Finished uploading artifact content to blob storage!
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.7926064Z SHA256 digest of uploaded artifact zip is 389a8e138f61f47ae6c8c7170f55a39a165c8e4444fcc2705537e016ea134614
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:27.7928301Z Finalizing artifact upload
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:28.0191762Z Artifact windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711.zip successfully finalized. Artifact ID 11569558429
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:28.0193308Z Artifact windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711 has been successfully uploaded! Final size is 38672 bytes. Artifact ID is 11569558429
+Read-only native Windows diagnosis	Retain only scoped native diagnostic JSON evidence	2026-10-08T18:15:28.0204094Z Artifact download URL: https://github.com/tripplemay/tokenizer/actions/runs/37822555762/artifacts/11569558429
+Read-only native Windows diagnosis	Post Setup Node.js 22	﻿2026-10-08T18:15:28.0556576Z Post job cleanup.
+Read-only native Windows diagnosis	Post Setup Node.js 22	2026-10-08T18:15:28.2059528Z (node:7300) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Read-only native Windows diagnosis	Post Setup Node.js 22	2026-10-08T18:15:28.2060479Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	﻿2026-10-08T18:15:28.2358855Z Post job cleanup.
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.4412872Z [command]"C:\Program Files\Git\bin\git.exe" version
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.4721796Z git version 2.55.0.windows.5
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.4789147Z Temporarily overriding HOME='D:\a\_temp\783d10fe-56de-4df2-a2fa-db99bdce914e' before making global git config changes
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.4790487Z Adding repository directory to the temporary git global config as a safe directory
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.4801998Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.5130550Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:28.5451174Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:29.0831930Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:29.1126257Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:29.6505011Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Read-only native Windows diagnosis	Post Checkout immutable diagnostic commit	2026-10-08T18:15:29.6796381Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Read-only native Windows diagnosis	Complete job	﻿2026-10-08T18:15:30.2429128Z Cleaning up orphan processes
+Read-only native Windows diagnosis	Complete job	2026-10-08T18:15:30.2861682Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,125 @@
+{
+  "sourceFreezeHead": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "productBaseline": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "bounds": {
+    "totalMs": 600000,
+    "caseMs": 40000,
+    "cleanupMs": 3000,
+    "operationMs": 10000,
+    "smokeChildMs": 7000,
+    "smokePs": 38,
+    "totalPs": 76,
+    "outputBytes": 65536,
+    "traceBytes": 524288,
+    "attributeBytes": 16384
+  },
+  "selectedArms": {},
+  "optionalCombinedArmExecuted": false,
+  "commonBudgetGuardOn": true,
+  "offMeansOldTraceOffNotUninstrumented": true,
+  "E4IsBuiltinSystemModulePathNotFullMachineParity": true,
+  "usedPowerShell": {
+    "total": 20,
+    "smoke": 20
+  },
+  "counterEvidenceInvalid": false,
+  "cases": [
+    {
+      "id": "smoke-off-E0",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-off-E1",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-off-E2",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-off-E3",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-off-E4",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-on-E0",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-on-E1",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-on-E2",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-on-E3",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "smoke-on-E4",
+      "reached": true,
+      "diagnosticCompleted": true
+    },
+    {
+      "id": "downstream-off-parent",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-on-parent",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-off-confirmation",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-on-confirmation",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-off-binding",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-on-binding",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-off-healthy",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    },
+    {
+      "id": "downstream-on-healthy",
+      "reached": false,
+      "reason": "no-complete-P2-success-arm"
+    }
+  ],
+  "retainedRoots": [],
+  "diagnosticCompleted": true,
+  "releaseAcceptance": false,
+  "releaseReady": false
+}

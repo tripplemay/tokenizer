@@ -1,0 +1,77 @@
+{
+  "id": "smoke-on-E1",
+  "arm": "E1",
+  "oldTracePreload": "on",
+  "commonBudgetGuardOn": true,
+  "reached": true,
+  "rootProcessStarted": true,
+  "classification": "diagnostic-observation-complete-not-product-pass",
+  "productResultUnknown": false,
+  "abortProvenanceUnknown": false,
+  "diagnosticAbortReasons": [],
+  "changedFromE0Keys": [
+    "SystemDrive"
+  ],
+  "sourceFreezeHead": "7c6936b97a54f13d1ceb3272f810cf51d28a34f1",
+  "node": "v22.23.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "status": 0,
+  "signal": null,
+  "rootMetadataUnknown": false,
+  "stopped": false,
+  "stopReason": null,
+  "launchCode": null,
+  "stdoutBytes": 605,
+  "stderrBytes": 0,
+  "canaries": {
+    "rawContentFound": false,
+    "credentialFound": false,
+    "rawStderrFound": false
+  },
+  "canaryCoverageComplete": true,
+  "reported": {
+    "case": "smoke",
+    "arm": "E1",
+    "oldTracePreload": "on",
+    "commonBudgetGuardOn": true,
+    "operationBudgetMs": 10000,
+    "p2Succeeded": false,
+    "observations": [
+      {
+        "stage": "P0",
+        "reached": true,
+        "elapsedMs": 285.40419999999995,
+        "ok": true,
+        "value": {
+          "status": 0,
+          "signal": null,
+          "fixedMarkerMatched": true,
+          "stdoutBytes": 21,
+          "stderrBytes": 0
+        }
+      },
+      {
+        "stage": "P1",
+        "reached": true,
+        "elapsedMs": 7184.1126,
+        "ok": false,
+        "classification": "observed-native-or-product-refusal",
+        "errorClass": "BoundedSubprocessTimeoutError",
+        "code": null,
+        "refusalKind": "deadline"
+      },
+      {
+        "stage": "P2",
+        "reached": false,
+        "reason": "previous-smoke-did-not-complete"
+      }
+    ],
+    "releaseAcceptance": false
+  },
+  "protocolValid": true,
+  "outputBoundExceeded": false,
+  "guardAborts": [],
+  "diagnosticCompleted": true,
+  "releaseAcceptance": false
+}
