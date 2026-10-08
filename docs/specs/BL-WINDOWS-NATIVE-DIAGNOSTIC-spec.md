@@ -77,3 +77,17 @@ trace health are distinct fail-closed findings, not proof of product cleanup
 failure. Always upload only native-output-* JSON/JSONL and minimum provenance.
 Scope critic must review the committed new script/workflow before the next
 authorized non-main push. Never merge diagnostic workflow into release/main.
+
+### Counter/lifetime guard clarification
+
+The new CLI may self-preload the minimum common launch-budget/owned-lifetime
+guard needed to enforce these bounds inside product subprocess workers. This
+guard applies to both old-trace off/on arms, has no stream data observer, cannot
+swallow error events or replace normal native return values/exceptions, and
+reports its own budget abort as diagnostic-not-reached rather than product
+failure. No full-runner env inheritance or new code path outside this single CLI.
+Report "old trace off / common guard on", never "uninstrumented original CI".
+Admit cases only with worst-case remaining launch/time/cleanup allowances;
+budget exhaustion is explicit unknown, not permission to raise38/76 or600s.
+Prioritize both forms' parent gate before fairly admitting remaining analogs;
+complete analog coverage is not required for this supporting diagnostic.
