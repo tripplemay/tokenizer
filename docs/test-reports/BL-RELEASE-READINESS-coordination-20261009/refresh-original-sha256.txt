@@ -1,0 +1,4 @@
+d1431224c8aa4fe8bd7ca55c51ffb0b22886e497c8065b4ec912beda40a03539  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/environment-protection-refresh-original.json
+37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/environment-secret-names-refresh-original.json
+55799a5413dab5987b4d6f69896f9c82a344c973805171c115159a60d8cceefc  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/public-health-refresh-original.json
+f76f2442daeb98e6ac28d4f682ee917736c5c4012836444db1d822c40e18200c  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/repo-secret-names-refresh-original.json

@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-10-09T14:28:36Z",
+  "role": "Coordinator; transport and refreshed evidence, not acceptance",
+  "main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "main_push": false,
+  "production_app_database_or_app_config_mutation": false,
+  "public_health": {
+    "timestamp": "2026-10-09T14:20:44.667Z",
+    "ok": true,
+    "commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "boundary": "Public health only, not authenticated image provenance or deployment acceptance"
+  },
+  "protected_environment": {
+    "required_reviewer": "tripplemay",
+    "admin_bypass": false,
+    "environment_secret_name_count": 0,
+    "repository_secret_name_count": 11,
+    "POSTGRES_PASSWORD_present": false,
+    "values_read_or_written": false,
+    "originals": "*-refresh-original.json and refresh-original-sha256.txt"
+  },
+  "host_result": {
+    "run": 37844242857,
+    "source": "9966db19906fbe4b9b7aaeb53ba80e827b383aca",
+    "status": "completed/failure; retained actual human approval",
+    "reason": "compose_unavailable",
+    "probe": {"status":"invalid_version","pipeline_exit_status":0,"captured_bytes":27,"home_present":false},
+    "configuration_app_and_database_identity": "not reached",
+    "new_diagnosis": {
+      "spec": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+      "pre_scope": "774e4ab10f69330c98b93ab2906c040ec9fa36a8; PASS scope only",
+      "original_spec_blocker": "3405031 structural fixture conflict retained in 406c996 and 24e8797; explicitly adjudicated, not erased",
+      "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-20261009",
+      "state": "isolated Generator authorized; no source freeze or independent functional acceptance yet",
+      "limits": "same capture/query/acceptance/refusal/bounds; no raw value, extra host query or host mutation",
+      "publication": "not yet published or dispatched; exact new run still needs human protected review"
+    }
+  },
+  "windows": {
+    "repair_ci": "run37813254244 exactf754423 failed6; Ubuntu/macOS/PG16/browser passed; OCI/deploy skipped",
+    "P1": "run37822555762 diagnostic execution succeeded, all10 JSON smoke probes timed out; P2/downstream unreached",
+    "next": "independent staged-marker proposal in isolated supporting worktree; not code or CI acceptance"
+  },
+  "backup": "dmitsvr public age recipient/offline key custody unanswered; no encrypted backup, isolated recovery or bootstrap",
+  "password": "existing TCP password proof and protected Secret still open; no password rotation",
+  "parent": "building3/5; runtime/script/workflow/tests remain76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+  "canonical_main_batch": "BL-HOMEPAGE-FRESHNESS verifying; untouched",
+  "release_ready": false
+}
