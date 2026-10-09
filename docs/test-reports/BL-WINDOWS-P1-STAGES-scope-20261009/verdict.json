@@ -1,0 +1,166 @@
+{
+  "format": "independent-proposal-scope-review-v1",
+  "generated_at_utc": "2026-10-09T14:35:11Z",
+  "role": "independent supporting scope critic under harness-rules section 1.5",
+  "review_kind": "proposal-only; not functional acceptance or formal Evaluator signoff",
+  "source_commit": "23b9f1183eeb7615a62d1ef222831e5a01d7b558",
+  "planning_base": "570a16ed75717f8c107b4c99667227cc0c04b0d5",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-stage-plan-20261009",
+  "verdict": "no-proposal-safety-or-structural-blocker-found",
+  "scope_violation": false,
+  "blocked": false,
+  "issues": [],
+  "implementation_authorized": false,
+  "publication_authorized": false,
+  "native_execution_authorized": false,
+  "implementation_status": "not supplied; not classified as code failure",
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "reviewed_proposal": [
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "bytes": 24862,
+      "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+      "bytes": 11769,
+      "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/README.md",
+      "bytes": 4420,
+      "sha256": "4d22343ad068efa6d40148b29b0681c1da98b90aee954b6b671131b7e28a6af2"
+    }
+  ],
+  "artifact_evidence": {
+    "original_inventory": "docs/test-reports/windows-release-diagnosis-20261008/native-parity-findings-r2/original-sha256.json",
+    "original_inventory_hashes_independently_rechecked": 59,
+    "original_bytes_independently_rechecked": 121007,
+    "plan_source_and_facts_hashes_independently_rechecked": 9,
+    "original_native_directory": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698",
+    "original_run_id": 37822555762,
+    "original_job_id": 113467034986,
+    "original_execution_ref": "719c2df0d54f62b1b3b3e711a2045ffd8ea5e711",
+    "original_records_directly_parsed": {
+      "smoke_records": 10,
+      "P0_completed": 10,
+      "P1_timeout_error_records": 10,
+      "P2_called": 0,
+      "trace_on_records": 5,
+      "trace_worker_kinds_each": ["ok", "timeout"],
+      "trace_P1_stdout_or_stderr_byte_events": 0,
+      "powershell_counter_entries": 20,
+      "powershell_counter_kind": "smoke",
+      "downstream_records": 8,
+      "downstream_roots_started": 0,
+      "selected_arms": {},
+      "combined_arm_executed": false
+    },
+    "limit": "Direct checks bind current downloaded bytes and captured records only. They do not authenticate the remote run, re-observe remote processes, or execute this proposal. Existing r2 reports were treated as claims and checked against source and original records."
+  },
+  "checks": [
+    {
+      "topic": "timeout-prefix preservation",
+      "result": "coherent proposal",
+      "evidence": [
+        "src/cli/bounded-subprocess-worker.mjs:52-57,60-70,84-89",
+        "src/cli/bounded-subprocess.ts:70-82,101-111",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:19-22,124-135"
+      ],
+      "finding": "The frozen worker's successful timeout cleanup returns kind=timeout without stdout/stderr, and the synchronous caller throws. A worker-process guard listener can persist complete safe lines before that result; no worker output patch or polling of the blocked caller is required."
+    },
+    {
+      "topic": "owned-handle listener compatibility",
+      "result": "implementable in principle; not implemented or executed",
+      "evidence": [
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:179,217-247,260-262",
+        "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs:63-73,87",
+        "src/cli/bounded-subprocess-worker.mjs:72-89",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:31-38,126-128,133"
+      ],
+      "finding": "The guard wrapper obtains the owned ChildProcess before returning it. With guard imported before old trace, it can install additive Buffer data listeners before trace and worker listeners. The proposal forbids changing encoding, consuming/replacing listeners, or altering worker result/timer/cleanup. Recording must not write to worker stdout, whose PID-plus-JSON protocol stays unchanged."
+    },
+    {
+      "topic": "raw-output and event-schema safety",
+      "result": "conservative and explicit",
+      "evidence": [
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:73-133,265-278",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:69-85,120-135,143-158"
+      ],
+      "finding": "Old validators reject new events and remain frozen. Only a new exact executable/case/script/handle-bound line parser and strict rebuilt enum schema may admit stages. Unknown text, stderr, malformed order, raw canaries and output overflow cannot produce raw fallback artifacts or acceptance."
+    },
+    {
+      "topic": "EOF, cleanup and health uncertainty",
+      "result": "conservative",
+      "evidence": [
+        "src/cli/bounded-subprocess-worker.mjs:43-49,52-57",
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:477-531",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:65,130-141,149-155"
+      ],
+      "finding": "Forced cleanup destroys streams. The proposed recorder must distinguish observed EOF from close/destroy; a clean incomplete prefix is not success, and missing EOF/health remains unknown. Parser validity, guard/trace health and owned cleanup are independent and cannot be overridden by markers or sampled PID liveness."
+    },
+    {
+      "topic": "original guard, environment and budgets",
+      "result": "no scope expansion found",
+      "evidence": [
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:11-15,155-167,198-235,248-262,399-425",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:29-65",
+        "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json:54-81"
+      ],
+      "finding": "Only E0/old-trace-on/common-guard-on and fixed -Command deltas are proposed. Existing key set, executable/worker path, 7s child/10s operation/40s case/600s global deadlines, 3s cleanup allowance, 38/76 launch ceilings and byte caps stay fixed. No prefix renews a timer, adds a log allowance, bypasses accounting or authorizes retries."
+    },
+    {
+      "topic": "minimal experiments and conditional module scope",
+      "result": "initial slice bounded and separate refinement gate explicit",
+      "evidence": [
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:87-118,156-168",
+        "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json:77-101,131-154"
+      ],
+      "finding": "T0-T3 use at most four fresh single-launch cases, with T3 admitted only after a trustworthy incomplete T2 JSON envelope. T2 success, missing first marker or unknown health stops refinement; completed lookup with unresolved invoke does not justify discovery. T4/T5 are not authorized initial-scope cases; the six-launch ceiling is conditional, not permission. P2/downstream and product repair remain excluded."
+    },
+    {
+      "topic": "evidence independence and authority",
+      "result": "proposal boundary maintained",
+      "evidence": [
+        "harness-rules.md:49-59,147-162",
+        "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md:3-9,139-168",
+        "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/README.md:21-31"
+      ],
+      "finding": "Author-side checks, historical diagnostic success and this read-only scope review are not execution or product acceptance. The proposal explicitly requires an independently reviewed future diff and separate Coordinator publication authority. No root cause, repair, F005 or release PASS is selected."
+    }
+  ],
+  "required_before_any_implementation_or_publication": [
+    "Lock and approve exact new CLI/guard/check/output paths and changed-file allowlist. The current proposal intentionally does not name these files and approves no workflow edit.",
+    "Lock exact initial T0-T3 script constants, case identity, stage/stream/root schemas and selection state table. T4/T5 must stay non-admissible without separate pre-launch module-refinement approval; six script descriptions are not six authorized launches.",
+    "Review the actual additive listener diff for Buffer preservation, pre-return attachment, no read/pipe/setEncoding/destroy/listener replacement, no worker stdout contamination, and unchanged worker supervision/cleanup/accounting.",
+    "Implement and independently check bounded line handling, shared inclusive byte caps, safe enum-only persistence, complete-prefix handling, EOF/stream-error uncertainty and missing log/health fail-closed behavior. A copied pre-append size check alone must not be used as proof of a strict hard log cap; the existing strict reader/overflow suppression and declared cap checks must remain effective.",
+    "Run the proposed isolated synthetic/mocked negative checks with a separately reviewed diagnostic implementation; they are future obligations, not checks performed by this proposal review.",
+    "Obtain separate Coordinator-controlled non-main publication and native-run authorization. No worker pushes a branch or writes pending_gate.decision.",
+    "Preserve frozen originals and report new exact execution/source identities separately. Any functional/release acceptance still requires the applicable independent Evaluator process and outstanding Windows release gates."
+  ],
+  "performed": {
+    "offline_read_only_source_artifact_and_proposal_analysis": true,
+    "static_json_parse_and_hash_checks": true,
+    "source_commit_diff_check": true,
+    "native_execution": false,
+    "product_tests_or_recorder_negative_checks": false,
+    "ci_github_ssh_network_secrets_or_production": false,
+    "push": false,
+    "state_memory_original_source_test_or_workflow_edits": false
+  },
+  "source_commit_diff_check": {
+    "comparison": "570a16ed75717f8c107b4c99667227cc0c04b0d5..23b9f1183eeb7615a62d1ef222831e5a01d7b558",
+    "only_added_paths": [
+      "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+    ],
+    "protected_source_unchanged": true
+  },
+  "reviewer_only_outputs": [
+    "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+    "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/README.md"
+  ]
+}
