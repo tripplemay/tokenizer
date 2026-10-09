@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "task": "BL-COMPOSE-VERSION-SHAPE-20261009",
+  "role": "independent scope critic; not functional Evaluator",
+  "review_phase": "post-scope-r1",
+  "verdict": "PASS",
+  "scope_violation": false,
+  "blocked": false,
+  "issues": [],
+  "exact_base": "917b60c99af1f733103e307b41925d858b696bb4",
+  "exact_spec_sha": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+  "exact_source_sha": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "exact_source_parent": "007fd07941bad043025003ed0433ca079801e31d",
+  "original_blocked_source": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "release_ready": false,
+  "functional_acceptance": "not performed or granted",
+  "resolved_issue": {
+    "id": "POST-SCOPE-001",
+    "resolution": "Only the unauthorized extra zero-byte negative entry was removed from the old observability array, with its corresponding masking exemption removed from the new test source-pin normalization. The mandated new-file zero-byte rejection remains.",
+    "exact_repair_diff": "02-exact-repair-diff.patch",
+    "old_positive_expectations_and_adjudicated_fixtures": "unchanged from original implementation",
+    "old_negative_array_and_expectation": "restored to the frozen original",
+    "runtime_and_workflow": "byte-identical to65b10cb",
+    "original_blocked_verdict_and_52_controls": "unchanged; initial exit1 result remains committed under post-scope-65b10cb/"
+  },
+  "mechanical_controls": {
+    "program": "scope-controls-r1.mjs",
+    "original_output": "01-scope-controls-original.json",
+    "original_stderr": "01-scope-controls-original-stderr.txt",
+    "exit_status": 0,
+    "total": 52,
+    "passed": 52,
+    "failed": 0,
+    "source_and_primitive_controls": 18,
+    "actual_jq_filter_controls": 34,
+    "adaptation": "Original critic-owned immutable program from007fd079, with only the exact source SHA and restored-negative expectation adapted in memory; original program/output never written.",
+    "initial_inspection_failure": "00-initial-preservation-check.json retains the first exit1 comparison caused by using65b10cb before post-scope report creation; corrected007fd079 preservation comparison exits0."
+  },
+  "scope_proofs": {
+    "final_non_doc_changes_relative_to_spec": "exactly four authorized paths: script, workflow, old observability test, new shape test",
+    "repair_commit_changed_paths": ["tests/ci/vps-compose-version-shape.test.ts", "tests/ci/vps-host-preflight-observability.test.ts"],
+    "repair_commit_tag": "fix(BL-RELEASE-READINESS-F003)",
+    "feature_mapping": "F003 exists in exactsource features.json for read-only allowlisted host inventory; no state file changed",
+    "script_scope": "exact non-shape bytes frozen; new-query/capture-bound/regex/ambient-locale mutation controls reject drift",
+    "workflow_scope": "outside jq validator frozen; every old validator predicate preserved; transport-bound mutation rejected",
+    "metadata_scope": "fixed nine-key shape only, no raw/arbitrary value/path/code canary disclosure; pure shell and local C locale",
+    "old_tests": "all old tests outside the authorized observability file frozen, including original43 host; old diagnostic residual is now byte-frozen with preserved positive/negative assertions, caps/timeouts/counts",
+    "new_test_scope_pin": "the exemption that could conceal the unauthorized old negative addition is removed; new-file rejection control remains",
+    "runtime_workflow_spec_preservation_command": "git diff --quiet 65b10cb 5c5c283 -- scripts/ci/vps-host-preflight.sh .github/workflows/deploy-vps.yml docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md",
+    "runtime_workflow_spec_preservation_exit_status": 0,
+    "original_reports_preservation_command": "git diff --quiet 007fd079 5c5c283 -- original pre-scope, pre-scope-r1 and post-scope-65b10cb directories",
+    "original_reports_preservation_exit_status": 0
+  },
+  "excluded_mixed_commit": {
+    "sha": "7df39aa7b6d5039b75d98a1200502a2c89c23922",
+    "reported_provenance": "Coordinator shared-index commit mistakenly carried Generator-staged test repair along with dispatch-failure docs. The actor/index cause is recorded as supplied provenance, not inferred from git content.",
+    "mechanically_verified_contents": "Six changed paths: four dispatch-failure evidence files plus the same two test-repair files; therefore mixed docs/code despite a docs commit title.",
+    "ancestry_command": "git merge-base --is-ancestor 7df39aa7b6d5039b75d98a1200502a2c89c23922 5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+    "ancestry_exit_status": 1,
+    "ancestor_of_reviewed_source": false,
+    "actual_new_source_parent": "007fd07941bad043025003ed0433ca079801e31d",
+    "same_two_test_blobs_as_reisolated_source": "git diff --quiet7df39aa5c5c283 -- the two test files exits0",
+    "publication_boundary": "7df39aa is excluded from the reviewed publication lineage and must not be published as this source candidate. Its original object is preserved; no amend/reset/revert performed.",
+    "remote_publication_audited": false
+  },
+  "source_sha256": {
+    "scripts/ci/vps-host-preflight.sh": "36941c3cce1affd391b6fe78199e6c797d1a257798fd2feb11dce74236c24ee8",
+    ".github/workflows/deploy-vps.yml": "31d5cc2e41aaa3b71978ab19b7d9c2a28e8be15f17a47e75964f62e0419eebc5",
+    "tests/ci/vps-host-preflight-observability.test.ts": "13e6b5ac65db8743f18a89426003d6e84f13d90e520f75b1a273af5e7ec924a2",
+    "tests/ci/vps-compose-version-shape.test.ts": "161397d5084f6730c8bc9a6fdbdde46bc0e432aa99d97ec1b851dda4ac117964"
+  },
+  "execution_boundaries": {
+    "review_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-repair-20261009",
+    "only_written_directory": "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/",
+    "source_spec_tests_state_memory_edits": false,
+    "original_verdict_program_or_failed_output_edits": false,
+    "full_host_script_old_functional_suites_native_prod": false,
+    "real_docker_gh_ssh_credentials_push": false,
+    "acceptance_based_on_generator_narration": false,
+    "synthetic_execution": "Only critic-owned in-memory source mutations, isolated pure classifier and actual jq filter with minimal child environment."
+  },
+  "remaining_gates": [
+    "Fresh registered Kimi-family independent exactsource functional acceptance; no critic result substitutes for it.",
+    "Only Coordinator may publish the reviewed exact non-main lineage after supporting checks; each new protected host run needs new actual human approval.",
+    "All normal Verify/OCI/Deploy remain skipped for a diagnostic host operation; no main deployment or release acceptance."
+  ]
+}

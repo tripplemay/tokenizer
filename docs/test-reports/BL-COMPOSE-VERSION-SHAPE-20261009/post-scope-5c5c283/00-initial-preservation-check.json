@@ -1,0 +1,19 @@
+{
+  "role": "scope critic inspection provenance",
+  "initial_command": "git diff --quiet 65b10cbe3985d933e88eed6c29e7421748af36fd 5c5c283b08d225b42d8db19abcbe5d3c1f562ac4 -- scripts/ci/vps-host-preflight.sh .github/workflows/deploy-vps.yml docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope-r1 docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb",
+  "initial_exit_status": 1,
+  "initial_stdout": "",
+  "initial_stderr": "",
+  "diagnosis": "The comparison incorrectly starts before the original post-scope report existed. The only differing paths in this pathset are the five original post-scope report files added by007fd079; runtime, workflow and spec are unchanged. This is an inspection-baseline error, not evidence of rewritten historical reports.",
+  "differing_paths": [
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/01-scope-controls-original.json",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/02-exact-source-diff.patch",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/README.md",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/scope-controls.mjs",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/verdict.json"
+  ],
+  "corrected_baseline": "007fd07941bad043025003ed0433ca079801e31d",
+  "corrected_same_pathset_exit_status": 0,
+  "runtime_workflow_spec_only_65b10cb_to_new_exit_status": 0,
+  "historical_failure_result": "Original52 controls/exit1 and verdicts preserved unchanged. This initial inspection error is retained separately rather than silently replaced."
+}

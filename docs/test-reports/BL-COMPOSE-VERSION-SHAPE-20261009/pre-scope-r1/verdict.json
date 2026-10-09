@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task": "BL-COMPOSE-VERSION-SHAPE-20261009",
+  "role": "independent scope critic; not functional Evaluator",
+  "review_phase": "pre-scope-r1",
+  "verdict": "PASS",
+  "scope_violation": false,
+  "blocked": false,
+  "issues": [],
+  "exact_base": "917b60c99af1f733103e307b41925d858b696bb4",
+  "exact_spec_sha": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+  "spec_sha256": "26ad91ccf4c2e04aa5b334b573ee8c667a1b43d6beb55bfb5f9c79da1ebb1150",
+  "prior_blocked_spec_sha": "3405031799ec1da5ab1759be325e2041638a3dd8",
+  "prior_blocked_artifacts_preserved": true,
+  "release_ready": false,
+  "functional_acceptance": "not performed or granted",
+  "resolved_original_blocker": {
+    "id": "SCOPE-SPEC-001",
+    "resolution": "The new spec explicitly permits shape-only augmentation of the five existing synthetic metadata acceptance fixtures. Null is permitted for not_run/command_failed/output_bound_exceeded; consistent objects are permitted for ok/invalid_version. The sole old ok/captured_bytes=0 value may become the actual accepted version byte length. Existing expectations and all other old probe values are frozen. The former impossible combination must receive a new rejection control.",
+    "evidence": "docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md:21-33,77-88",
+    "new_rejection_control_location": "tests/ci/vps-compose-version-shape.test.ts; the old observability count remains 32"
+  },
+  "scope_contract_review": {
+    "safe_report_surface": "Only exact prefix/tail labels, bounded counts and five fixed Boolean flags; no raw or arbitrary strings, captures, paths, environment contents, byte codes, hashes or secrets.",
+    "capture_unchanged": "Same retained shell string, same pipeline argv/order and same refusal/version regex. Vendor prefix removal is permitted only for a local classification candidate, not the captured value or acceptance input.",
+    "relations_executable": "Exact keys/types/enums and bounded counts; absent core/null tail/not_parsed, present core/allowed prefix/non-null tail, zero tail iff empty, empty prefix/zero bytes/all flags false, nonempty prefix/nonzero bytes; null iff not_run/command_failed/overflow, object iff ok/invalid_version. For ok the declared accepted-prefix/core/legacy-tail/32-byte/no-flags/version-byte-count relations can all be enforced without exposing the invalid captured string.",
+    "shell_feasibility": "A locally scoped C-locale pure Bash classifier can inspect at most the existing retained cap, then return only fixed labels/counts/flags. No additional host query or ambient query locale change is needed. This is a design feasibility finding, not execution validation.",
+    "guard_and_bounds": "Old four-key probe, shared query, regex, reason/outcome, versions and 5s/16384/16385 plus 150s/65536 boundaries remain frozen. New metadata consistency checks do not relax accepted version syntax.",
+    "old_test_edit_claim": "Existing observability tests will change in the expressly adjudicated pins/stripping/five-fixture areas. A claim that no old diagnostic test changed would be false.",
+    "other_old_tests": "Original 43 host controls and all other old tests/fixtures/assertions remain frozen. Existing positive/negative expectations, test count, caps, timeouts and rejection cases remain unchanged except the explicitly adjudicated single synthetic ok byte-count value.",
+    "workflow": "All bytes outside the existing host report validator remain frozen.",
+    "forbidden_operations": "No new queries, HOME restoration, fallback, install, config/DB/container mutation, worker push, GH production API, SSH or credential access."
+  },
+  "static_checks": [
+    {
+      "command": "git show --stat --format=fuller 686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+      "exit_status": 0,
+      "result": "Only the spec is changed in the revision commit: 22 insertions and 6 deletions."
+    },
+    {
+      "command": "git diff --quiet 3405031799ec1da5ab1759be325e2041638a3dd8 686d3c6b7e9b7c43ba2d999c56d3435668d06352 -- scripts/ci/vps-host-preflight.sh .github/workflows/deploy-vps.yml tests progress.json features.json harness-rules.md CLAUDE.md AGENTS.md",
+      "exit_status": 0,
+      "result": "These source/test/state/rule paths are byte-unchanged between original and revised spec commits."
+    },
+    {
+      "command": "git diff --quiet 24e8797f10eb36b47c789b3dd89862fd8f26655d 686d3c6b7e9b7c43ba2d999c56d3435668d06352 -- docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009",
+      "exit_status": 0,
+      "result": "Original scope BLOCKED verdict/proof/log and original host failure evidence are unchanged."
+    }
+  ],
+  "retained_actual_result": {
+    "run_id": 37844242857,
+    "source_sha": "9966db19906fbe4b9b7aaeb53ba80e827b383aca",
+    "outcome": "refused",
+    "reason": "compose_unavailable",
+    "compose_probe": {"status": "invalid_version", "pipeline_exit_status": 0, "captured_bytes": 27, "home_present": false},
+    "raw_format_and_cause": "unknown; no vendor/distro/HOME/plugin/timeout inference"
+  },
+  "remaining_gates": [
+    "Exact implementation post-scope review, including mechanically frozen bytes and tightly bounded old-observability test diff.",
+    "Fresh registered Kimi-family exact-source independent functional controls, with original 43 host and 32 observability controls plus new shape controls and immutable initial failures.",
+    "Only Coordinator may publish the reviewed exact source to a non-main CI ref after supporting checks.",
+    "Every new protected host run requires separate actual human production-environment approval; normal Verify/OCI/Deploy stay skipped."
+  ],
+  "execution_boundaries": {
+    "report_directory_only": "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope-r1/",
+    "source_spec_tests_state_memory_edits": false,
+    "host_script_or_functional_suite_run": false,
+    "push_gh_ssh_or_credentials": false,
+    "production_or_release_authorization": false
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "source": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "tracked_changes_after_freeze": [
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/00-initial-preservation-check.json",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/01-scope-controls-original-stderr.txt",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/01-scope-controls-original.json",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/02-exact-repair-diff.patch",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/README.md",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/scope-controls-r1.mjs",
+    "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-5c5c283/verdict.json"
+  ]
+}
+
+all other tracked old tests unchanged: true

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task": "BL-COMPOSE-VERSION-SHAPE-20261009",
+  "role": "independent scope critic; not functional Evaluator",
+  "review_phase": "post-scope",
+  "verdict": "BLOCKED",
+  "scope_violation": true,
+  "blocked": true,
+  "exact_base": "917b60c99af1f733103e307b41925d858b696bb4",
+  "exact_spec_sha": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+  "exact_source_sha": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "release_ready": false,
+  "functional_acceptance": "not performed or granted; local critic controls are not a functionality verdict",
+  "issues": [
+    {
+      "id": "POST-SCOPE-001",
+      "severity": "blocking",
+      "title": "Old diagnostic negative fixture array changed outside authorized edit regions",
+      "file": "tests/ci/vps-host-preflight-observability.test.ts",
+      "source_lines": "268-272",
+      "added_expression": "{ ...good, status: 'ok', captured_bytes: 0 }",
+      "evidence": [
+        "Spec686d3c6 lines21-33 permits observability source pins, old-report comparison stripping and five synthetic acceptance fixtures; all other old tests/fixtures/assertions are frozen at lines35-37.",
+        "Exact65b10cb adds an entry to the existing bad negative fixture array, outside those allowed areas.",
+        "The independent exact-region comparison fails. Removing only the extra negative entry in memory makes all remaining old diagnostic bytes equal after the authorized regions are normalized.",
+        "The new shape test already contains the zero-byte accepted-status rejection case, so removal of this old-file addition would not remove the mandated new control."
+      ],
+      "not_a_weakening": "The extra negative is strengthening, not a relaxed assertion. It is still an unauthorized edit to a frozen region.",
+      "required_resolution": "In a new source commit remove only this additional entry from the old diagnostic negative array; retain the new-file rejection case and all other source/test behavior. Review the new exact source separately; do not amend this verdict or original failure."
+    }
+  ],
+  "mechanical_controls": {
+    "program": "scope-controls.mjs",
+    "original_output": "01-scope-controls-original.json",
+    "original_exit_status": 1,
+    "total": 52,
+    "passed": 51,
+    "failed": 1,
+    "sole_failure": "old-diagnostic-exact-authorized-regions-only",
+    "source_and_primitive_controls": 18,
+    "actual_jq_validator_controls": 34,
+    "result_boundary": "Scope/source mutation detection and isolated fixed-metadata validator controls only; no full host workflow or functional-suite acceptance."
+  },
+  "verified_scope_facts": {
+    "exact_four_non_doc_changed_paths": [
+      ".github/workflows/deploy-vps.yml",
+      "scripts/ci/vps-host-preflight.sh",
+      "tests/ci/vps-compose-version-shape.test.ts",
+      "tests/ci/vps-host-preflight-observability.test.ts"
+    ],
+    "script_outside_exact_shape_additions": "byte-equal to base after removing only the exact classifier/init block, one jq arg, one report field and one invocation",
+    "capture_query_regex_bounds_and_refusal": "unchanged by exact normalization; in-memory added query, capture bound drift, acceptance regex drift and ambient locale drift are all detected",
+    "classifier": "pure shell; local LC_ALL=C; fixed printf tuple only; no command substitution, external query or raw retained/candidate/tail serialization",
+    "workflow": "outside validator byte-equal; all old validator predicates byte-equal after removing only the new root field name and the new shape relation clause",
+    "old_host_and_other_tests": "all old tests except the explicitly editable observability file are unchanged across the full tests tree; original 43 host test file is frozen",
+    "old_observability_five_acceptance_cases": "all old probe values preserved except explicitly adjudicated ok count now Buffer.byteLength(body.versions.compose); all five positive exit0 expectations preserved",
+    "old_observability_expectations_caps_timeouts_counts": "no weakening found; test-call count unchanged and original parametrized fixtures preserved outside authorized five-case replacement; extra negative is the sole off-scope residual",
+    "new_test_review": "contains fixed-class/prefix/tail/flags, byte-locale, secret canary, baseline query/refusal, null/failure/overflow/hang, validator-negative and source-pin controls; no real host or credential integration is added",
+    "runtime_metadata_safety_controls": "isolated synthetic path/code canary is not emitted, shape has exact nine keys, multibyte tail counts two bytes, and classifier local locale does not alter the caller locale",
+    "validator_relations": "34 independent cases cover consistent shapes/null statuses and rejection of missing/extra/types/enums/core/tail/empty-prefix/status/count/flags/legacy-extra-field contradictions",
+    "original_pre_scope_and_live_failure": "untouched; original inventory SHA256 matches retained6aca2d8fe48c543aa3f5b5777703aa341030b9404d00b824c76c74edfac0798c"
+  },
+  "source_sha256": {
+    "scripts/ci/vps-host-preflight.sh": "36941c3cce1affd391b6fe78199e6c797d1a257798fd2feb11dce74236c24ee8",
+    ".github/workflows/deploy-vps.yml": "31d5cc2e41aaa3b71978ab19b7d9c2a28e8be15f17a47e75964f62e0419eebc5",
+    "tests/ci/vps-host-preflight-observability.test.ts": "0389322926ded3bd8a1dade70fad8209d8f5f757737238d67a361e5713408f93",
+    "tests/ci/vps-compose-version-shape.test.ts": "e47fd21971afb3ba3b858b0e15de0c79e46f9430650251d87bed68585d4d69f8"
+  },
+  "execution_boundaries": {
+    "only_written_directory": "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/post-scope-65b10cb/",
+    "evaluated_artifacts": "exact committed blobs and critic-owned synthetic values; no reliance on Generator handoff narration",
+    "host_script_executed": false,
+    "old_functional_suites_executed": false,
+    "real_docker_native_ci_gh_ssh_credentials": false,
+    "source_spec_tests_state_memory_edits": false,
+    "push": false,
+    "prior_verdicts_or_failures_rewritten": false
+  },
+  "remaining_gates": [
+    "New exact-source post-scope review after the single off-scope old-test addition is removed.",
+    "Fresh registered Kimi-family exact-source functional acceptance; scope controls are not a substitute.",
+    "Coordinator-only non-main publication after supporting gates, plus fresh actual human protected approval for each new host run; no main deployment/release permission."
+  ]
+}

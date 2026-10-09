@@ -1,0 +1,83 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-20261009
+
+ ❯ tests/ci/vps-compose-version-shape.test.ts (47 tests | 1 failed) 19712ms
+     × keeps all old report fields, query argv/order and refusal point byte-equivalent to the base 1227ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/vps-compose-version-shape.test.ts > independent retained Compose shape controls > keeps all old report fields, query argv/order and refusal point byte-equivalent to the base
+AssertionError: expected [ [ 'timeout', …(4) ], …(35) ] to deeply equal [ [ 'timeout', …(4) ], …(35) ]
+
+- Expected
++ Received
+
+@@ -134,41 +134,41 @@
+      "%a",
+      "--",
+      ".env",
+    ],
+    [
++     "head",
++     "-c",
++     "16385",
++   ],
++   [
+      "timeout",
+      "--signal=KILL",
+      "5s",
+      "sha256sum",
+      "--",
+      ".env",
+-   ],
+-   [
+-     "head",
+-     "-c",
+-     "16385",
+    ],
+    [
+      "sha256sum",
+      "--",
+      ".env",
++   ],
++   [
++     "head",
++     "-c",
++     "16385",
+    ],
+    [
+      "timeout",
+      "--signal=KILL",
+      "5s",
+      "stat",
+      "-c",
+      "%s",
+      "--",
+      "docker-compose.yml",
+-   ],
+-   [
+-     "head",
+-     "-c",
+-     "16385",
+    ],
+    [
+      "stat",
+      "-c",
+      "%s",
+
+ ❯ tests/ci/vps-compose-version-shape.test.ts:187:31
+    185|       const { timestamp: _oldTime, ...oldBody } = old.body;
+    186|       expect(body).toEqual(oldBody);
+    187|       expect(candidate.calls).toEqual(old.calls);
+       |                               ^
+    188|       expect(candidate.result.status).toBe(old.result.status);
+    189|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 46 passed (47)
+   Start at  21:36:21
+   Duration  19.90s (transform 27ms, setup 0ms, import 35ms, tests 19.71s, environment 0ms)
+

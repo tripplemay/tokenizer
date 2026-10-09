@@ -1,0 +1,19 @@
+{
+  "role": "Coordinator transport/receipt validation, not an Evaluator verdict",
+  "source": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "pre_scope": "774e4ab10f69330c98b93ab2906c040ec9fa36a8",
+  "post_scope": "eebea30b2aa63565a7d201b6364c48d2b19ba865; 52/52 scope-only PASS",
+  "generator_report": "81ec10ed420f967cd1cf6f12eb54e6fd56391761; development evidence only",
+  "task": "compose-version-shape-5c5c283-kimi-support-r1",
+  "receipt": {"outcome":"TIMEOUT","exit_code":124,"duration_s":1802,"effective_timeout_s":1800,"termination_reason":"deadline"},
+  "mechanical_validation": {"exit_code":4,"state":"CANCELED","allowed_redispatch_limit":1},
+  "original_verdict_exists": false,
+  "partial_actual_evidence": "fresh npmci; 122/122 existing controls; npm verify/lint exit0 present in original runtime; NOT final supporting acceptance",
+  "own_additive_controls": "40570-byte file written, never executed before deadline; archived unchanged as .ts.txt, not added to executable test collection",
+  "original_report_directory_compare_exit_status": 0,
+  "originals_rewritten": false,
+  "publication_or_protected_host_dispatch": false,
+  "main_push_or_production_mutation": false,
+  "next": "One new fresh exact-source r2 task with compact data-driven controls; criteria/source/1800s bound unchanged. A second runtime failure requires hard stop, not more retries or weakened gates.",
+  "release_ready": false
+}

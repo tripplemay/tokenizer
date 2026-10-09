@@ -1,0 +1,602 @@
+import { spawnSync } from 'node:child_process';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+// Independent supporting-evaluator controls for the fixed Compose retained-string
+// shape (F003), derived from docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md alone.
+// Existing Generator controls are treated as claims; every expectation below was
+// re-derived from the spec text and the frozen pre-feature base 917b60c.
+const BASE = '917b60c99af1f733103e307b41925d858b696bb4';
+const SHA = 'd'.repeat(40);
+const SCRIPT = 'scripts/ci/vps-host-preflight.sh';
+const WORKFLOW = '.github/workflows/deploy-vps.yml';
+const OBSERVABILITY = 'tests/ci/vps-host-preflight-observability.test.ts';
+const CANARY = 'EVALUATOR_CANARY_NEVER_SERIALIZE_9f3c';
+const HOME_CANARY = '/synthetic/EVALUATOR_HOME_CANARY_NEVER_SERIALIZE';
+const scriptNow = readFileSync(SCRIPT, 'utf8');
+const workflowNow = readFileSync(WORKFLOW, 'utf8');
+const observabilityNow = readFileSync(OBSERVABILITY, 'utf8');
+
+function atBase(path: string): string {
+  const result = spawnSync('git', ['show', `${BASE}:${path}`], { encoding: 'utf8' });
+  if (result.status !== 0) throw new Error(`git show ${BASE}:${path}: ${result.stderr}`);
+  return result.stdout;
+}
+
+function workflowValidator(source = workflowNow) {
+  const open = "          if ! jq -e --arg source \"$GITHUB_SHA\" '\n";
+  const close = "          ' \"$work/inventory.json\" >/dev/null 2>&1; then";
+  const start = source.indexOf(open) + open.length;
+  const end = source.indexOf(close, start);
+  if (start < open.length || end < start) throw new Error('real workflow validator not found');
+  return { jq: source.slice(start, end), outside: `${source.slice(0, start)}<VALIDATOR/>${source.slice(end)}` };
+}
+
+// Runs the real workflow jq filter against a candidate report body.
+function acceptedByRealValidator(body: unknown): boolean {
+  const result = spawnSync('jq', ['-e', '--arg', 'source', SHA, workflowValidator().jq], {
+    input: JSON.stringify(body), encoding: 'utf8', env: { PATH: '/usr/bin:/bin', NODE_ENV: 'test' }
+  });
+  if (result.status !== 0 && result.status !== 1) throw new Error(`jq failed: ${result.stderr}`);
+  return result.status === 0;
+}
+
+type Shape = {
+  prefix: string; core_present: boolean; tail_bytes: number | null; tail_charset: string;
+  has_cr: boolean; has_lf: boolean; has_horizontal_space: boolean; has_escape: boolean; has_non_ascii: boolean;
+};
+const expectShape = (prefix: string, core = false, tailBytes: number | null = null, charset = 'not_parsed', flags: Partial<Shape> = {}): Shape => ({
+  prefix, core_present: core, tail_bytes: tailBytes, tail_charset: charset,
+  has_cr: false, has_lf: false, has_horizontal_space: false, has_escape: false, has_non_ascii: false, ...flags
+});
+
+describe.skipIf(process.platform === 'win32')('producer controls: real script under fixture tools', () => {
+  let root: string, bin: string, deploy: string;
+
+  function fakeTool(name: string, js: string) {
+    const path = join(bin, name);
+    writeFileSync(path, `#!${process.execPath}\nconst fs=require('node:fs'),A=process.argv.slice(2),E=process.env;\nfs.appendFileSync(E.LOG,JSON.stringify([${JSON.stringify(name)},...A])+'\\n');fs.appendFileSync(E.LCLOG,JSON.stringify(E.LC_ALL??null)+'\\n');\n${js}\n`);
+    chmodSync(path, 0o755);
+  }
+
+  function deployTree(directory = deploy): unknown {
+    return readdirSync(directory).sort().map((name) => {
+      const path = join(directory, name), stat = statSync(path);
+      return [name, stat.mode & 0o7777, stat.isDirectory() ? deployTree(path) : readFileSync(path).toString('hex')];
+    });
+  }
+
+  type Run = { status: number | null; body: any; calls: string[][]; locales: unknown[]; elapsedMs: number };
+  function invoke(output: string, options: { exit?: number; override?: string; hang?: boolean; early?: string; locale?: string; home?: string; args?: string[] } = {}): Run {
+    const log = join(root, 'log'), lclog = join(root, 'lclog');
+    for (const file of [log, lclog]) if (existsSync(file)) rmSync(file);
+    const env: NodeJS.ProcessEnv = {
+      NODE_ENV: 'test', PATH: `${bin}:/usr/bin:/bin`, LOG: log, LCLOG: lclog,
+      OUT_B64: Buffer.from(output).toString('base64'), EXIT: String(options.exit ?? 0),
+      OVERRIDE: options.override ?? '', HANG: options.hang ? '1' : '', EARLY: options.early ?? '',
+      CANARY, LC_ALL: options.locale ?? 'en_US.UTF-8'
+    };
+    if (options.home !== undefined) env.HOME = options.home;
+    const before = deployTree();
+    const start = Date.now();
+    const result = spawnSync('/bin/bash', [join(process.cwd(), SCRIPT), ...(options.args ?? [deploy, SHA])], {
+      env, encoding: 'utf8', timeout: 15_000
+    });
+    const elapsedMs = Date.now() - start;
+    expect(result.error).toBeUndefined();
+    expect(result.stderr).toBe('');
+    expect(result.stdout).not.toContain(CANARY);
+    expect(result.stdout).not.toContain(HOME_CANARY);
+    expect(result.stdout).not.toContain(root);
+    expect(deployTree()).toEqual(before);
+    const body = JSON.parse(result.stdout);
+    expect(acceptedByRealValidator(body), result.stdout).toBe(true);
+    const calls = existsSync(log) ? readFileSync(log, 'utf8').trim().split('\n').map((line) => JSON.parse(line)) : [];
+    const locales = existsSync(lclog) ? readFileSync(lclog, 'utf8').trim().split('\n').map((line) => JSON.parse(line)) : [];
+    return { status: result.status, body, calls, locales, elapsedMs };
+  }
+
+  // The unchanged capture pipeline: exactly five bounded queries in fixed order,
+  // the Compose capture last, and no later or mutating query on refusal.
+  function expectUnchangedRefusal(run: Run, probe: Record<string, unknown>) {
+    expect(run.status).toBe(1);
+    expect(run.body.outcome).toBe('refused');
+    expect(run.body.reason).toBe('compose_unavailable');
+    expect(run.body.versions).toEqual({ docker: '29.1.3', compose: 'unknown' });
+    expect(run.body.compose_probe).toMatchObject(probe);
+    expect(run.calls.filter(([name]) => name === 'timeout')).toEqual([
+      ['timeout', '--signal=KILL', '5s', 'uname', '-s'],
+      ['timeout', '--signal=KILL', '5s', 'uname', '-m'],
+      ['timeout', '--signal=KILL', '5s', 'df', '-Pk', '--', deploy],
+      ['timeout', '--signal=KILL', '5s', 'docker', 'version', '--format', '{{.Server.Version}}'],
+      ['timeout', '--signal=KILL', '5s', 'docker', 'compose', 'version', '--short']
+    ]);
+    expect(run.calls.filter(([name]) => name === 'docker')).toEqual([
+      ['docker', 'version', '--format', '{{.Server.Version}}'], ['docker', 'compose', 'version', '--short']
+    ]);
+    expect(run.calls.filter(([name]) => name === 'head')).toEqual(Array.from({ length: 5 }, () => ['head', '-c', '16385']));
+    expect(run.calls.some(([name]) => ['stat', 'sha256sum', 'curl'].includes(name))).toBe(false);
+  }
+
+  function expectAcceptedCompose(run: Run, version: string) {
+    expect(run.status).toBe(1);
+    expect(run.body.reason).toBe('missing_or_multiple_app'); // the next unchanged gate
+    expect(run.body.compose_probe).toMatchObject({ status: 'ok', pipeline_exit_status: 0, captured_bytes: Buffer.byteLength(version) });
+    expect(run.body.versions.compose).toBe(version);
+  }
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'cvs-eval-')); bin = join(root, 'bin'); deploy = join(root, 'deploy');
+    mkdirSync(bin); mkdirSync(deploy);
+    writeFileSync(join(deploy, '.env'), `AUTH_SECRET=${CANARY}\n`);
+    writeFileSync(join(deploy, 'docker-compose.yml'), `# ${CANARY}\nservices: {}\n`);
+    fakeTool('timeout', `const {spawnSync}=require('node:child_process');
+      if(A.shift()!=='--signal=KILL'||A.shift()!=='5s')process.exit(97);
+      const cmd=A.shift(),r=spawnSync(cmd,A,{timeout:5000,killSignal:'SIGKILL'});
+      let code=r.error&&r.error.code==='ETIMEDOUT'?124:(r.status===null?1:r.status);
+      if(cmd==='docker'&&A[0]==='compose'&&E.OVERRIDE!=='')code=Number(E.OVERRIDE);
+      process.stdout.write(r.stdout||Buffer.alloc(0),()=>process.exit(code));`);
+    fakeTool('head', `if(A.length!==2||A[0]!=='-c'||A[1]!=='16385')process.exit(97);
+      const data=fs.readFileSync(0);process.stdout.write(data.subarray(0,16385),()=>process.exit(0));`);
+    fakeTool('uname', `if(E.EARLY==='uname')process.exit(4);process.stdout.write(A[0]==='-s'?'Linux\\n':'x86_64\\n');`);
+    fakeTool('df', `if(E.EARLY==='df'){process.stdout.write('invalid\\n');process.exit(0);}
+      process.stdout.write('Filesystem 1024-blocks Used Available Capacity Mounted on\\nfixture 100000 100 99900 1% /scope\\n');`);
+    fakeTool('stat', `const s=fs.statSync(A.at(-1));
+      process.stdout.write((A[1]==='%s'?String(s.size):(s.mode&0o7777).toString(8))+'\\n');`);
+    fakeTool('sha256sum', `process.stdout.write(require('node:crypto').createHash('sha256').update(fs.readFileSync(A.at(-1))).digest('hex')+'  fixture\\n');`);
+    fakeTool('curl', 'process.exit(97);');
+    fakeTool('docker', `process.stderr.write(E.CANARY);
+      if(A[0]==='version'&&A[1]==='--format'){if(E.EARLY==='docker')process.exit(3);process.stdout.write('29.1.3\\n');process.exit(0);}
+      if(A.join('|')==='compose|version|--short'){
+        if(E.HANG==='1'){setTimeout(()=>process.exit(0),60000);return;}
+        process.stdout.write(Buffer.from(E.OUT_B64,'base64'),()=>process.exit(Number(E.EXIT)));return;
+      }
+      if(A[0]==='ps')process.exit(0);
+      process.exit(97);`);
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+
+  it.each([
+    ['', expectShape('empty'), 0],
+    ['\n\n\n', expectShape('empty'), 0],
+    ['2', expectShape('numeric'), 1],
+    ['v2', expectShape('v_numeric'), 2],
+    ['2.35', expectShape('numeric'), 4],
+    ['Docker Compose version ', expectShape('docker_compose_version', false, null, 'not_parsed', { has_horizontal_space: true }), 22],
+    ['Docker Compose version', expectShape('other', false, null, 'not_parsed', { has_horizontal_space: true }), 21],
+    ['Docker Compose version invalid', expectShape('docker_compose_version', false, null, 'not_parsed', { has_horizontal_space: true }), 29],
+    ['Docker Compose version Docker Compose version 2.35.1', expectShape('docker_compose_version', false, null, 'not_parsed', { has_horizontal_space: true }), 50],
+    ['Version 2.35.1', expectShape('other', false, null, 'not_parsed', { has_horizontal_space: true }), 14],
+    ['V2.35.1', expectShape('other'), 7],
+    ['v 2.35.1', expectShape('other', false, null, 'not_parsed', { has_horizontal_space: true }), 8],
+    ['vé.35.1', expectShape('other', false, null, 'not_parsed', { has_non_ascii: true }), 8],
+    ['v٢.35.1', expectShape('other', false, null, 'not_parsed', { has_non_ascii: true }), 8],
+    [CANARY, expectShape('other'), Buffer.byteLength(CANARY)],
+    ['~2.35.1', expectShape('other'), 7],
+    ['latest', expectShape('other'), 6]
+  ])('classifies every fixed prefix class byte-exactly without acceptance (%#)', (output, shape, captured) => {
+    const run = invoke(output as string);
+    expect(run.body.compose_version_shape).toEqual(shape);
+    expectUnchangedRefusal(run, { status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: captured });
+  });
+
+  it.each([
+    ['2.35.1', expectShape('numeric', true, 0, 'empty'), true],
+    ['v2.35.1', expectShape('v_numeric', true, 0, 'empty'), true],
+    ['2.35.1.', expectShape('numeric', true, 1, 'legacy'), true],
+    ['02.35.01', expectShape('numeric', true, 0, 'empty'), true],
+    ['v10.20.30+a.b-c', expectShape('v_numeric', true, 6, 'legacy'), true],
+    ['2.35.1-rc.2+build', expectShape('numeric', true, 11, 'legacy'), true],
+    [`2.35.1${'a'.repeat(32)}`, expectShape('numeric', true, 32, 'legacy'), true],
+    [`2.35.1${'a'.repeat(33)}`, expectShape('numeric', true, 33, 'legacy'), false],
+    ['2.35.1~', expectShape('numeric', true, 1, 'legacy_plus_tilde'), false],
+    ['2.35.1~deb', expectShape('numeric', true, 4, 'legacy_plus_tilde'), false],
+    ['v2.35.1_', expectShape('v_numeric', true, 1, 'legacy_plus_underscore'), false],
+    ['2.35.1_build', expectShape('numeric', true, 6, 'legacy_plus_underscore'), false],
+    ['2.35.1~deb_build', expectShape('numeric', true, 10, 'legacy_plus_tilde_underscore'), false],
+    ['2.35.1!+~_', expectShape('numeric', true, 4, 'other'), false],
+    ['Docker Compose version v2.35.1', expectShape('docker_compose_version', true, 0, 'empty', { has_horizontal_space: true }), false],
+    ['Docker Compose version 2.35.1', expectShape('docker_compose_version', true, 0, 'empty', { has_horizontal_space: true }), false],
+    ['Docker Compose version v2.35.1~deb', expectShape('docker_compose_version', true, 4, 'legacy_plus_tilde', { has_horizontal_space: true }), false],
+    ['Docker Compose version V2.35.1', expectShape('docker_compose_version', false, null, 'not_parsed', { has_horizontal_space: true }), false]
+  ])('classifies core presence and every tail byte class without relaxing refusal (%#)', (output, shape, valid) => {
+    const run = invoke(output as string);
+    expect(run.body.compose_version_shape).toEqual(shape);
+    if (valid) expectAcceptedCompose(run, output as string);
+    else expectUnchangedRefusal(run, { status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: Buffer.byteLength(output as string) });
+  });
+
+  it.each([
+    ['2.35.1\r\n', expectShape('numeric', true, 1, 'other', { has_cr: true }), '2.35.1\r'],
+    ['2.35.1\nrest', expectShape('numeric', true, 5, 'other', { has_lf: true }), '2.35.1\nrest'],
+    ['2.35.1 rest', expectShape('numeric', true, 5, 'other', { has_horizontal_space: true }), '2.35.1 rest'],
+    ['2.35.1\t', expectShape('numeric', true, 1, 'other', { has_horizontal_space: true }), '2.35.1\t'],
+    ['2.35.1\x1b[0m', expectShape('numeric', true, 4, 'other', { has_escape: true }), '2.35.1\x1b[0m'],
+    ['2.35.1é', expectShape('numeric', true, 2, 'other', { has_non_ascii: true }), '2.35.1é'],
+    ['2.35.1€', expectShape('numeric', true, 3, 'other', { has_non_ascii: true }), '2.35.1€'],
+    ['2.35.1😀', expectShape('numeric', true, 4, 'other', { has_non_ascii: true }), '2.35.1😀'],
+    ['\x1b\té\r\nx', expectShape('other', false, null, 'not_parsed',
+      { has_cr: true, has_lf: true, has_horizontal_space: true, has_escape: true, has_non_ascii: true }), '\x1b\té\r\nx']
+  ])('flags CR/LF/space/tab/escape/non-ASCII over the retained bytes only (%#)', (output, shape, retained) => {
+    const run = invoke(output as string);
+    expect(run.body.compose_version_shape).toEqual(shape);
+    expectUnchangedRefusal(run, { status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: Buffer.byteLength(retained as string) });
+  });
+
+  it.each(['C', 'en_US.UTF-8', 'ja_JP.UTF-8'])('counts multibyte retained bytes identically under locale %s and never changes query locale', (locale) => {
+    const run = invoke(`2.35.1${'é'.repeat(8189)}\n\n`, { locale });
+    expect(run.body.compose_probe.captured_bytes).toBe(16384);
+    expect(run.body.compose_version_shape).toEqual(expectShape('numeric', true, 16378, 'other', { has_non_ascii: true }));
+    expectUnchangedRefusal(run, { status: 'invalid_version', pipeline_exit_status: 0 });
+    expect(run.locales.length).toBeGreaterThan(0);
+    expect(run.locales).toEqual(Array.from({ length: run.locales.length }, () => locale));
+  });
+
+  it('admits exactly 16384 retained bytes and classifies them; 16385 is overflow', () => {
+    const atCap = invoke(`2.35.1${'a'.repeat(16377)}`);
+    expect(atCap.body.compose_probe).toMatchObject({ status: 'invalid_version', captured_bytes: 16384 });
+    expect(atCap.body.compose_version_shape).toEqual(expectShape('numeric', true, 16377, 'legacy'));
+    const over = invoke(`2.35.1${'x'.repeat(16379)}`);
+    expect(over.body.compose_probe).toMatchObject({ status: 'output_bound_exceeded', pipeline_exit_status: 0, captured_bytes: 16385 });
+    expect(over.body.compose_version_shape).toBeNull();
+    expectUnchangedRefusal(over, {});
+  });
+
+  it.each(['0', '23', '141'])('prioritizes output overflow over pipeline status %s and keeps the shape null', (override) => {
+    const run = invoke('é'.repeat(10000), { override: override === '0' ? '' : override });
+    expect(run.body.compose_probe).toMatchObject({ status: 'output_bound_exceeded', pipeline_exit_status: Number(override), captured_bytes: 16385 });
+    expect(run.body.compose_version_shape).toBeNull();
+    expectUnchangedRefusal(run, {});
+  });
+
+  it.each(['1', '23', '124', '137', '141', '255'])('never classifies a failed bounded pipeline (status %s), whatever it printed', (override) => {
+    const run = invoke(CANARY, { override });
+    expect(run.body.compose_probe).toMatchObject({ status: 'command_failed', pipeline_exit_status: Number(override), captured_bytes: Buffer.byteLength(CANARY) });
+    expect(run.body.compose_version_shape).toBeNull();
+    expectUnchangedRefusal(run, {});
+  });
+
+  it('records a failed command even when its stdout is an allowlisted version', () => {
+    const run = invoke('v2.35.1\n', { exit: 7 });
+    expect(run.body.compose_probe).toMatchObject({ status: 'command_failed', pipeline_exit_status: 7, captured_bytes: 7 });
+    expect(run.body.compose_version_shape).toBeNull();
+    expectUnchangedRefusal(run, {});
+  });
+
+  it('bounds a hung Compose command at five seconds with a null shape', () => {
+    const run = invoke('', { hang: true });
+    expect(run.elapsedMs).toBeLessThan(9_000);
+    expect(run.body.compose_probe).toMatchObject({ status: 'command_failed', pipeline_exit_status: 124, captured_bytes: 0 });
+    expect(run.body.compose_version_shape).toBeNull();
+    expectUnchangedRefusal(run, {});
+  }, 20_000);
+
+  it('keeps the shape null before any capture: invalid input, platform, space and docker refusals', () => {
+    const invalid = invoke('v2.35.1\n', { args: ['/bad/../path', SHA] });
+    expect(invalid.body.reason).toBe('invalid_input');
+    expect(invalid.body.source_sha).toBe('unknown');
+    expect(invalid.body.compose_probe).toEqual({ status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: false });
+    expect(invalid.body.compose_version_shape).toBeNull();
+    expect(invalid.calls).toEqual([]);
+    for (const [early, reason] of [['uname', 'platform_unavailable'], ['df', 'space_unavailable'], ['docker', 'docker_unavailable']] as const) {
+      const run = invoke('v2.35.1\n', { early });
+      expect(run.body.reason).toBe(reason);
+      expect(run.body.compose_probe.status).toBe('not_run');
+      expect(run.body.compose_version_shape).toBeNull();
+      expect(run.calls.some((argv) => argv.includes('compose'))).toBe(false);
+    }
+  });
+
+  it('keeps the missing-jq minimal report byte-free of the new field', () => {
+    const date = join(bin, 'date');
+    writeFileSync(date, '#!/bin/bash\nprintf "2026-10-09T00:00:00Z\\n"\n');
+    chmodSync(date, 0o755);
+    const result = spawnSync('/bin/bash', [join(process.cwd(), SCRIPT), deploy, SHA], {
+      env: { NODE_ENV: 'test', PATH: bin }, encoding: 'utf8', timeout: 10_000
+    });
+    expect(result.status).toBe(1);
+    const body = JSON.parse(result.stdout);
+    expect(body).toEqual({ schema_version: 1, operation: 'host-preflight', outcome: 'refused', reason: 'missing_tools' });
+    expect('compose_version_shape' in body).toBe(false);
+    expect(acceptedByRealValidator(body)).toBe(false);
+  });
+
+  it('classifies the retained shell string, never the raw stdout: trailing newlines stripped, spaces and leading newlines kept', () => {
+    const stripped = invoke('v2.35.1\n\n\n');
+    expect(stripped.body.compose_probe.captured_bytes).toBe(7);
+    expect(stripped.body.compose_version_shape).toEqual(expectShape('v_numeric', true, 0, 'empty'));
+    expectAcceptedCompose(stripped, 'v2.35.1');
+    const spaced = invoke('2.35.1 \n');
+    expect(spaced.body.compose_version_shape).toEqual(expectShape('numeric', true, 1, 'other', { has_horizontal_space: true }));
+    expectUnchangedRefusal(spaced, { status: 'invalid_version', captured_bytes: 7 });
+    const leading = invoke('\nv2.35.1');
+    expect(leading.body.compose_version_shape).toEqual(expectShape('other', false, null, 'not_parsed', { has_lf: true }));
+    expectUnchangedRefusal(leading, { status: 'invalid_version', captured_bytes: 8 });
+  });
+
+  it('never serializes the matched core, tail content, environment, HOME or paths', () => {
+    const run = invoke(`2.35.1~${CANARY}`, { home: HOME_CANARY });
+    expect(run.body.compose_probe.home_present).toBe(true);
+    expect(run.body.compose_version_shape).toEqual(
+      expectShape('numeric', true, 1 + Buffer.byteLength(CANARY), 'legacy_plus_tilde_underscore'));
+    expect(JSON.stringify(run.body.compose_version_shape)).not.toContain(CANARY);
+    expect(JSON.stringify(run.body.compose_version_shape)).not.toContain('2.35.1');
+    expect(JSON.stringify(run.body)).not.toContain(HOME_CANARY);
+    expectUnchangedRefusal(run, { status: 'invalid_version' });
+  });
+
+  it('keeps the frozen old acceptance allowlist: formerly valid versions stay valid, formerly refused stay refused', () => {
+    for (const version of ['0.0.0', '2.35.1', 'v2.35.1', '02.35.01', 'v10.20.30+a.b-c', '2.35.1-rc.2+build', '2.35.1.', `2.35.1${'a'.repeat(32)}`]) {
+      expectAcceptedCompose(invoke(`${version}\n`), version);
+    }
+    for (const output of ['v', '2.35', '2.35.1~deb', '2.35.1_x', '2.35.1~deb_build', 'latest', '~2.35.1', '2.35.1!', 'Docker Compose version v2.35.1', 'v 2.35.1']) {
+      const run = invoke(output);
+      expect(run.body.versions.compose).toBe('unknown');
+      expectUnchangedRefusal(run, { status: 'invalid_version' });
+    }
+  });
+});
+
+describe('validator controls: the real workflow jq filter', () => {
+  // A synthetically constructed, internally consistent report per probe class,
+  // accepted by the real validator before mutation.
+  const shape = (prefix: string, core: boolean, tail: number | null, charset: string): Shape => expectShape(prefix, core, tail, charset);
+  const fullReport = (probe: Record<string, unknown>, shapeValue: unknown, compose = 'unknown') => ({
+    schema_version: 1, operation: 'host-preflight', source_sha: SHA, timestamp: '2026-10-09T00:00:00Z',
+    outcome: 'refused', reason: 'compose_unavailable', project: 'tokenizer', baseline: 'unknown',
+    platform: 'Linux/x86_64', free_kib: '99900',
+    versions: { docker: '29.1.3', compose },
+    compose_probe: { home_present: false, ...probe },
+    compose_version_shape: shapeValue,
+    settings: { GIT_COMMIT: 'unknown', APP_IMAGE: 'unknown', MIGRATE_IMAGE: 'unknown', APP_HOST_PORT: 'unknown' },
+    app: { id: 'unknown', status: 'unknown', health: 'unknown', image_id: 'unknown', revision: 'unknown', user: 'unknown', uid: 'unknown', port: 'unknown', network: 'unknown' },
+    postgres: { id: 'unknown', status: 'unknown', health: 'unknown', image_id: 'unknown', network: 'unknown', volume: 'unknown' },
+    storage: { network: 'tokenizer_default', network_driver: 'unknown', volume: 'tokenizer_postgres-data', volume_driver: 'unknown' },
+    files: {}
+  });
+  const okShape = shape('v_numeric', true, 0, 'empty');
+  const okBody = fullReport({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 7 }, okShape, 'v2.35.1');
+  const invalidShape = shape('numeric', true, 4, 'legacy_plus_tilde');
+  const invalidBody = fullReport({ status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 10 }, invalidShape);
+  const emptyBody = fullReport({ status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 0 }, shape('empty', false, null, 'not_parsed'));
+  const notRunBody = fullReport({ status: 'not_run', pipeline_exit_status: null, captured_bytes: null }, null);
+  const failedBody = fullReport({ status: 'command_failed', pipeline_exit_status: 23, captured_bytes: 7 }, null);
+  const overflowBody = fullReport({ status: 'output_bound_exceeded', pipeline_exit_status: 141, captured_bytes: 16385 }, null);
+
+  it('accepts one consistent report for each of the six probe/shape combinations', () => {
+    for (const body of [okBody, invalidBody, emptyBody, notRunBody, failedBody, overflowBody]) {
+      expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(true);
+    }
+  });
+
+  it('rejects a missing or extra shape key, a null shape on capture, and every wrong shape type', () => {
+    const withoutShape = { ...okBody } as Record<string, unknown>;
+    delete withoutShape.compose_version_shape;
+    const bad: unknown[] = [withoutShape, { ...okBody, evaluator_extra: true },
+      ...[null, [], 0, true, CANARY, {}].map((compose_version_shape) => ({ ...okBody, compose_version_shape })),
+      ...[null, [], 0, true, CANARY, {}].map((compose_version_shape) => ({ ...invalidBody, compose_version_shape })),
+      ...Object.keys(okShape).map((key) => ({ ...okBody, compose_version_shape: Object.fromEntries(Object.entries(okShape).filter(([name]) => name !== key)) })),
+      { ...okBody, compose_version_shape: { ...okShape, raw_retained: CANARY } }
+    ];
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+
+  it('rejects every wrong prefix/core/tail/charset/flag type, enum, fraction and range', () => {
+    const bad: unknown[] = [
+      ...[null, false, 0, [], '', 'v', 'numeric ', 'NUMERIC', 'docker', CANARY].map((prefix) => ({ ...okBody, compose_version_shape: { ...okShape, prefix } })),
+      ...[null, 'true', 1, 0, [], {}].map((core_present) => ({ ...okBody, compose_version_shape: { ...okShape, core_present } })),
+      ...[null, -1, 16385, 0.5, 1.5, '0', true, [], {}].map((tail_bytes) => ({ ...okBody, compose_version_shape: { ...okShape, tail_bytes } })),
+      ...[null, false, 1, [], 'LEGACY', 'legacy_plus_Tilde', 'none', '', CANARY].map((tail_charset) => ({ ...okBody, compose_version_shape: { ...okShape, tail_charset } }))
+    ];
+    for (const flag of ['has_cr', 'has_lf', 'has_horizontal_space', 'has_escape', 'has_non_ascii']) {
+      for (const value of [null, 0, 1, 'false', 'no', [], {}, CANARY]) bad.push({ ...okBody, compose_version_shape: { ...okShape, [flag]: value } });
+    }
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+
+  it('rejects inconsistent core/tail/prefix/captured relations in both directions', () => {
+    const bad = [
+      { ...invalidBody, compose_version_shape: { ...invalidShape, prefix: 'other' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, prefix: 'empty' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, core_present: false } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, core_present: false, tail_bytes: null, tail_charset: 'not_parsed' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_bytes: null } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_charset: 'not_parsed' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_bytes: 0 } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_bytes: 0, tail_charset: 'legacy' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_bytes: 4, tail_charset: 'empty' } },
+      { ...invalidBody, compose_version_shape: { ...invalidShape, tail_bytes: 11 } },
+      { ...invalidBody, compose_probe: { ...invalidBody.compose_probe, captured_bytes: 0 } },
+      { ...invalidBody, compose_version_shape: shape('empty', false, null, 'not_parsed') },
+      { ...emptyBody, compose_probe: { ...emptyBody.compose_probe, captured_bytes: 1 } },
+      ...['has_cr', 'has_lf', 'has_horizontal_space', 'has_escape', 'has_non_ascii'].map((flag) => ({
+        ...emptyBody, compose_version_shape: { ...emptyBody.compose_version_shape as object, [flag]: true }
+      })),
+      { ...emptyBody, compose_version_shape: shape('numeric', false, null, 'not_parsed') },
+      fullReport({ status: 'ok', pipeline_exit_status: 0, captured_bytes: 0 }, shape('empty', false, null, 'not_parsed'))
+    ];
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+
+  it('rejects a shape object on not_run/command_failed/output_bound_exceeded and null on ok/invalid_version', () => {
+    const bad = [
+      { ...notRunBody, compose_version_shape: shape('empty', false, null, 'not_parsed') },
+      { ...failedBody, compose_version_shape: shape('other', false, null, 'not_parsed') },
+      { ...overflowBody, compose_version_shape: invalidShape },
+      { ...okBody, compose_version_shape: null },
+      { ...invalidBody, compose_version_shape: null }
+    ];
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+
+  it('enforces every ok-status guard including the impossible ok-with-zero-capture combination', () => {
+    const probe = okBody.compose_probe;
+    const bad = [
+      { ...okBody, compose_probe: { ...probe, captured_bytes: 0 } },
+      { ...okBody, compose_probe: { ...probe, captured_bytes: 8 } },
+      { ...okBody, compose_probe: { ...probe, pipeline_exit_status: 1 } },
+      { ...okBody, versions: { ...okBody.versions, compose: 'unknown' } },
+      { ...okBody, versions: { ...okBody.versions, compose: 'v2.35.10' } },
+      { ...okBody, compose_version_shape: { ...okShape, prefix: 'docker_compose_version' } },
+      { ...okBody, compose_version_shape: { ...okShape, prefix: 'other' } },
+      { ...okBody, compose_version_shape: { ...okShape, core_present: false, tail_bytes: null, tail_charset: 'not_parsed' } },
+      { ...okBody, compose_version_shape: { ...okShape, tail_bytes: 33, tail_charset: 'legacy' } },
+      ...(['legacy_plus_tilde', 'legacy_plus_underscore', 'legacy_plus_tilde_underscore', 'other', 'not_parsed'] as const).map((tail_charset) => ({
+        ...okBody, compose_version_shape: { ...okShape, tail_bytes: tail_charset === 'not_parsed' ? 0 : 1, tail_charset }
+      })),
+      ...['has_cr', 'has_lf', 'has_horizontal_space', 'has_escape', 'has_non_ascii'].map((flag) => ({
+        ...okBody, compose_version_shape: { ...okShape, [flag]: true }
+      }))
+    ];
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+
+  it('rejects a foreign source and preserves every old allowlist rule', () => {
+    const bad = [
+      { ...okBody, source_sha: 'e'.repeat(40) },
+      { ...okBody, source_sha: CANARY },
+      { ...okBody, schema_version: 2 },
+      { ...okBody, operation: 'deploy' },
+      { ...okBody, timestamp: 'not-a-timestamp' },
+      { ...okBody, outcome: 'maybe' },
+      { ...okBody, reason: 'timeout' },
+      { ...okBody, project: 'other' },
+      { ...okBody, baseline: 'snapshot' },
+      { ...okBody, platform: 'Darwin/arm64' },
+      { ...okBody, free_kib: '12a' },
+      { ...okBody, versions: { docker: 'x', compose: 'v2.35.1' } },
+      { ...okBody, versions: { docker: '29.1.3', compose: '2.35.1~deb' } },
+      { ...okBody, settings: { ...okBody.settings, APP_HOST_PORT: '0.0.0.0:3010' } },
+      { ...okBody, app: { ...okBody.app, status: 'exited' } },
+      { ...okBody, app: { ...okBody.app, health: 'unhealthy' } },
+      { ...okBody, postgres: { ...okBody.postgres, volume: 'other_volume' } },
+      { ...okBody, storage: { ...okBody.storage, network_driver: 'overlay' } },
+      { ...okBody, files: { secret: { sha256: CANARY, mode: '600' } } },
+      { ...okBody, compose_probe: { ...okBody.compose_probe, status: 'missing_plugin' } },
+      { ...notRunBody, compose_probe: { ...notRunBody.compose_probe, captured_bytes: 5 } },
+      { ...overflowBody, compose_probe: { ...overflowBody.compose_probe, captured_bytes: 16386 } },
+      { ...failedBody, compose_probe: { ...failedBody.compose_probe, pipeline_exit_status: 0 } },
+      { ...invalidBody, compose_probe: { ...invalidBody.compose_probe, pipeline_exit_status: 1 } }
+    ];
+    for (const body of bad) expect(acceptedByRealValidator(body), JSON.stringify(body)).toBe(false);
+  });
+});
+
+describe('mechanical freeze controls: everything outside the permitted scope', () => {
+  it('limits the whole-tree diff vs base to the four scoped paths, the spec and its evidence', () => {
+    const diff = spawnSync('git', ['diff', '--name-only', `${BASE}..HEAD`], { encoding: 'utf8' });
+    expect(diff.status).toBe(0);
+    const paths = diff.stdout.trim().split('\n');
+    const exact = new Set([
+      '.github/workflows/deploy-vps.yml', SCRIPT,
+      'tests/ci/vps-compose-version-shape.test.ts', OBSERVABILITY,
+      'docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md'
+    ]);
+    for (const path of paths) {
+      expect(exact.has(path) || path.startsWith('docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/'), path).toBe(true);
+    }
+    for (const required of ['.github/workflows/deploy-vps.yml', SCRIPT, 'tests/ci/vps-compose-version-shape.test.ts', OBSERVABILITY]) {
+      expect(paths).toContain(required);
+    }
+  });
+
+  it('leaves the worktree clean apart from this evaluator batch\'s own new files', () => {
+    const status = spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8' });
+    expect(status.status).toBe(0);
+    const lines = status.stdout.trim().split('\n').filter(Boolean);
+    for (const line of lines) {
+      expect(line.startsWith('??'), line).toBe(true);
+      const path = line.slice(3);
+      expect(
+        path.startsWith('tests/evaluator/compose-version-shape-') ||
+        path.startsWith('docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-support-20261009/') ||
+        path === 'docs/test-reports/BL-COMPOSE-VERSION-SHAPE-SUPPORT-verdict.json', line).toBe(true);
+    }
+  });
+
+  it('adds only pure insertions to the script and normalizes back to the base bytes', () => {
+    const diff = spawnSync('git', ['diff', `${BASE}..HEAD`, '--', SCRIPT], { encoding: 'utf8' });
+    const deleted = diff.stdout.split('\n').filter((line) => line.startsWith('-') && !line.startsWith('---'));
+    expect(deleted).toEqual([]);
+    const cutStart = scriptNow.indexOf('compose_version_shape=null');
+    const cutEnd = scriptNow.indexOf('\nemit() {');
+    expect(cutStart).toBeGreaterThan(0);
+    expect(cutEnd).toBeGreaterThan(cutStart);
+    const normalized = scriptNow.slice(0, cutStart) + scriptNow.slice(cutEnd)
+      .replace('    --argjson compose_shape "$compose_version_shape" \\\n', '')
+      .replace('      compose_version_shape:$compose_shape,\n', '')
+      .replace('compose_version_shape="$(classify_compose_version "$value")"\n', '');
+    expect(normalized).toBe(atBase(SCRIPT));
+    // The frozen capture pipeline and acceptance regex survive verbatim, exactly once.
+    expect(scriptNow.split('timeout --signal=KILL 5s docker compose version --short 2>/dev/null | head -c 16385').length - 1).toBe(1);
+    expect(scriptNow).toContain('if ! [[ "$value" =~ ^v?[0-9]+\\.[0-9]+\\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]]; then');
+    expect(atBase(SCRIPT)).toContain('if ! [[ "$value" =~ ^v?[0-9]+\\.[0-9]+\\.[0-9]+([a-zA-Z0-9.+-]{0,32})?$ ]]; then');
+  });
+
+  it('changes nothing in the workflow outside the validator, and inside only the key list plus the shape block', () => {
+    expect(workflowValidator(workflowNow).outside).toBe(workflowValidator(atBase(WORKFLOW)).outside);
+    const oldKeys = '            exact(["schema_version","operation","source_sha","timestamp","outcome","reason","project","baseline","platform","free_kib","versions","compose_probe","settings","app","postgres","storage","files"]) and\n';
+    const newKeys = '            exact(["schema_version","operation","source_sha","timestamp","outcome","reason","project","baseline","platform","free_kib","versions","compose_probe","compose_version_shape","settings","app","postgres","storage","files"]) and\n';
+    const shapeOpen = '            (.compose_probe as $probe | .compose_version_shape as $shape |\n';
+    const shapeClose = '            (.settings | exact(';
+    const now = workflowValidator().jq;
+    expect(now).toContain(newKeys);
+    expect(now).not.toContain(oldKeys);
+    const blockStart = now.indexOf(shapeOpen);
+    const blockEnd = now.indexOf(shapeClose, blockStart);
+    expect(blockStart).toBeGreaterThan(0);
+    expect(blockEnd).toBeGreaterThan(blockStart);
+    const reverted = now.replace(newKeys, oldKeys).slice(0, now.replace(newKeys, oldKeys).indexOf(shapeOpen)) +
+      now.replace(newKeys, oldKeys).slice(now.replace(newKeys, oldKeys).indexOf(shapeClose));
+    expect(reverted).toBe(workflowValidator(atBase(WORKFLOW)).jq);
+  });
+
+  it('pins the old 43 host controls and frozen state/dependency/rule files to base blobs', () => {
+    for (const path of ['tests/ci/vps-host-preflight.test.ts', 'progress.json', 'features.json', 'harness-rules.md',
+      'AGENTS.md', 'CLAUDE.md', 'generator.md', 'package.json', 'package-lock.json', 'vitest.config.ts', 'prisma/schema.prisma']) {
+      expect(readFileSync(path, 'utf8'), path).toBe(atBase(path));
+    }
+  });
+
+  it('confines the observability edits to the four permitted regions and preserves count, caps, timeouts, probe data and the negative array', () => {
+    const base = atBase(OBSERVABILITY);
+    // Region 3 (five acceptance fixtures) is cut from both versions by shared anchors.
+    const fixturesOpen = "  it('validates each fixed classification";
+    const fixturesClose = "  it('rejects missing, extra";
+    const cut = (source: string) => {
+      const start = source.indexOf(fixturesOpen);
+      const end = source.indexOf(fixturesClose, start);
+      expect(start).toBeGreaterThan(0);
+      expect(end).toBeGreaterThan(start);
+      return { before: source.slice(0, start), block: source.slice(start, end), after: source.slice(end) };
+    };
+    const nowParts = cut(observabilityNow), baseParts = cut(base);
+    // The rejection battery (negative array) is byte-identical up to the scoped pin additions.
+    expect(nowParts.after).toBe(baseParts.after
+      .replace("      .replace('compose_probe_status=not_run", '      .replace(/compose_version_shape=null\\n\\nclassify_compose_version\\(\\) \\{[\\s\\S]*?\\n\\}\\n(?=\\nemit\\(\\))/, \'\')\n      .replace(\'compose_probe_status=not_run')
+      .replace("      .replace('      compose_probe:{status:$probe_status", "      .replace('    --argjson compose_shape \"$compose_version_shape\" \\\\\\n', '')\n      .replace('      compose_probe:{status:$probe_status")
+      .replace('      .replace(/compose_pipeline_exit_status=0', "      .replace('      compose_version_shape:$compose_shape,\\n', '')\n      .replace(/compose_pipeline_exit_status=0"));
+    // Regions 1-2 (comment and old-report stripping) revert to base wording.
+    const revertedBefore = nowParts.before
+      .replace('    // The baseline lacks both diagnostic fields, so it bypasses the new validator.\n',
+        '    // The baseline lacks compose_probe, so its report is not passed to the new validator.\n')
+      .replace('    const { compose_probe: _probe, compose_version_shape: _shape, timestamp: _timestamp, ...body } = candidate.body;\n',
+        '    const { compose_probe: _probe, timestamp: _timestamp, ...body } = candidate.body;\n');
+    expect(revertedBefore).toBe(baseParts.before);
+    // Test declaration count, caps and timeouts are preserved across the whole file.
+    const count = (source: string, token: string) => source.split(token).length - 1;
+    for (const token of ['10_000', '12_000', '16385', '16384', '5000', '9_000', "it('", 'it.each(']) {
+      expect(count(observabilityNow, token), token).toBe(count(base, token));
+    }
+    // The five fixture probes keep every old value except the single adjudicated ok count.
+    expect(nowParts.block).toContain("{ status: 'not_run', pipeline_exit_status: null, captured_bytes: null, home_present: false }");
+    expect(nowParts.block).toContain("{ status: 'ok', pipeline_exit_status: 0, captured_bytes: Buffer.byteLength(body.versions.compose), home_present: true }");
+    expect(nowParts.block).toContain("{ status: 'invalid_version', pipeline_exit_status: 0, captured_bytes: 16384, home_present: false }");
+    expect(nowParts.block).toContain("{ status: 'command_failed', pipeline_exit_status: 255, captured_bytes: 16384, home_present: false }");
+    expect(nowParts.block).toContain("{ status: 'output_bound_exceeded', pipeline_exit_status: 141, captured_bytes: 16385, home_present: true }");
+    expect(baseParts.block).toContain("{ status: 'ok', pipeline_exit_status: 0, captured_bytes: 0, home_present: true }");
+    expect(nowParts.block).not.toContain("captured_bytes: 0, home_present: true");
+  });
+});

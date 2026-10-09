@@ -1,0 +1,53 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-version-shape-5c5c283-kimi-support-r1
+
+ ✓ tests/ci/vps-host-preflight-observability.test.ts (32 tests) 14716ms
+     ✓ records HOME presence only, including empty HOME 0  616ms
+     ✓ records HOME presence only, including empty HOME 1  614ms
+     ✓ records HOME presence only, including empty HOME 2  621ms
+     ✓ bounds a hung Compose capture using the unchanged query argv  5235ms
+     ✓ preserves non-Compose query argv, redacted fields and no mutation against the base  1263ms
+     ✓ validates each fixed classification using the actual workflow filter  618ms
+     ✓ rejects missing, extra, wrong type, enum, range and null-relation metadata with the actual filter  771ms
+ ✓ tests/ci/vps-compose-version-shape.test.ts (47 tests) 20717ms
+     ✓ classifies each tail alphabet without relaxing acceptance 0  624ms
+     ✓ classifies each tail alphabet without relaxing acceptance 1  618ms
+     ✓ classifies each tail alphabet without relaxing acceptance 2  616ms
+     ✓ keeps all old report fields, query argv/order and refusal point byte-equivalent to the base  2120ms
+     ✓ keeps null shape on hung capture at the unchanged five-second bound  5249ms
+     ✓ uses the real workflow validator to reject every missing key, extra field and wrong type  855ms
+     ✓ rejects inconsistent core, tail, prefix, status and accepted-version relations  1201ms
+ ✓ tests/ci/vps-host-preflight.test.ts (43 tests) 35523ms
+     ✓ inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations  1448ms
+     ✓ reports a healthy legacy source image and missing ledger as legacy, never creates activation  1193ms
+     ✓ refuses missing-app without writes or disclosure  908ms
+     ✓ refuses duplicate-app without writes or disclosure  906ms
+     ✓ refuses wrong-project without writes or disclosure  960ms
+     ✓ refuses wrong-service without writes or disclosure  938ms
+     ✓ refuses stopped-app without writes or disclosure  905ms
+     ✓ refuses unhealthy-app without writes or disclosure  911ms
+     ✓ refuses wrong-port without writes or disclosure  1003ms
+     ✓ refuses wrong-image without writes or disclosure  947ms
+     ✓ refuses wrong-network without writes or disclosure  1060ms
+     ✓ refuses wrong-volume without writes or disclosure  1302ms
+     ✓ refuses unready without writes or disclosure  1455ms
+     ✓ refuses wrong-health-code without writes or disclosure  1331ms
+     ✓ refuses null-health-code without writes or disclosure  1328ms
+     ✓ refuses wrong-health-sha without writes or disclosure  1357ms
+     ✓ refuses health-failure without writes or disclosure  1359ms
+     ✓ refuses raw-user-canary without writes or disclosure  1025ms
+     ✓ bounds a hung query to five seconds and suppresses its failed stderr  5164ms
+     ✓ does not execute config content and clears Docker/Compose/proxy environment overrides  1348ms
+     ✓ refuses unsafe selected configuration: duplicate  573ms
+     ✓ refuses unsafe selected configuration: malicious-image  579ms
+     ✓ transports the exact reviewed script on stdin and uploads only validated JSON  1456ms
+     ✓ never retains unallowlisted or failed transport bytes: raw-stdout  1448ms
+     ✓ never retains unallowlisted or failed transport bytes: extra-key  1441ms
+     ✓ never retains unallowlisted or failed transport bytes: failed-transport  1444ms
+     ✓ retains a valid redacted refusal while returning nonzero  943ms
+
+ Test Files  3 passed (3)
+      Tests  122 passed (122)
+   Start at  21:56:48
+   Duration  35.64s (transform 117ms, setup 0ms, import 148ms, tests 70.96s, environment 0ms)
+

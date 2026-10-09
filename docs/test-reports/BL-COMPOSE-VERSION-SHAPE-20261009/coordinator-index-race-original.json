@@ -1,0 +1,28 @@
+{
+  "role": "Coordinator process-error record; not acceptance",
+  "original_source": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "original_scope_blocker_commit": "007fd07941bad043025003ed0433ca079801e31d",
+  "mixed_commit": "7df39aa7b6d5039b75d98a1200502a2c89c23922",
+  "cause": "Coordinator git commit captured two Generator-staged authorized test repairs alongside four Coordinator docs in a shared worktree index",
+  "not_docs_only": true,
+  "repair_author": "isolated compose_shape_generator; Coordinator did not manually author the test patch",
+  "mixed_commit_has_required_source_feature_tag": false,
+  "amend_revert_or_history_rewrite": false,
+  "mixed_commit_published": false,
+  "recovery": {
+    "new_isolated_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-repair-20261009",
+    "base": "007fd07941bad043025003ed0433ca079801e31d",
+    "generator_sourcefix": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+    "independent_generator_index": true,
+    "sourcefix_feature_tag": "BL-RELEASE-READINESS-F003",
+    "sourcefix_delta": "only two test files: delete unauthorized old-negative addition and its new-test normalization exemption; dedicated new rejection control retained",
+    "mixed_commit_is_sourcefix_ancestor": false,
+    "ancestry_check_exit_status": 1
+  },
+  "initial_cli_dispatch": "r0 exact65 adapter executable PATH preflight exit2, no Kimi runtime/verdict; original empty receipt/log/envelope retained in original worktree",
+  "new_fresh_cli_dispatch": "r1 exact5c5c283 with corrected known tool PATH; running, no verdict yet",
+  "generator_dependency_boundary": "original borrowed dependency cache was written by Vitest; disclosed, not rolled back; repaired worktree uses its own dependency copy and --no-cache",
+  "next": "serialize index ownership per worktree; require fresh post-scope and exact-source Kimi supporting verdict before any non-main publication",
+  "main_or_production_mutation": false,
+  "release_ready": false
+}

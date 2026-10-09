@@ -1,0 +1,23 @@
+{
+  "role": "independent scope critic, not functional Evaluator",
+  "exact_spec_sha": "3405031799ec1da5ab1759be325e2041638a3dd8",
+  "verdict": "BLOCKED",
+  "method": "static contract satisfiability check; no candidate validator or host script executed",
+  "original_fixture_statuses": [
+    "not_run",
+    "ok",
+    "invalid_version",
+    "command_failed",
+    "output_bound_exceeded"
+  ],
+  "default_retained_value_is_bounded_success": true,
+  "default_report_shape_required_to_be_nonnull": true,
+  "original_spread_retains_default_shape": true,
+  "original_positive_expectation": "validator exit 0",
+  "required_null_shape_statuses_in_frozen_positive_fixture": [
+    "not_run",
+    "command_failed",
+    "output_bound_exceeded"
+  ],
+  "contradiction": "The frozen positive fixture retains a nonnull shape where the new required relation mandates null."
+}

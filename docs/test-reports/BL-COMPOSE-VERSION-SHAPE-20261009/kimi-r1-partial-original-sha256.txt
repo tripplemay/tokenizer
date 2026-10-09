@@ -1,0 +1,4 @@
+16dddb9ace60c46a0ab47bf0339967c1b5407cc80620cd784556a8d3dbec649c  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r1-partial-original-20261009/logs/02-vitest-existing43-32-new.log
+6f72dd022c6c0b0b88bea54acd13e30e181426d7e1196d05cf385e554242d78c  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r1-partial-original-20261009/logs/04-npm-run-lint.log
+9ab777eb737b7daea5de1bd11a02c720d99d1f67133c4c1c6601282cede24847  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r1-partial-original-20261009/logs/01-npm-ci.log
+dd8bd5f4e4cdcf9f6608f01e324409f028fa4d10d860a75863a2b49df596b746  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r1-partial-original-20261009/logs/03-npm-run-verify.log

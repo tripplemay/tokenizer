@@ -1,0 +1,26 @@
+diff --git a/tests/ci/vps-compose-version-shape.test.ts b/tests/ci/vps-compose-version-shape.test.ts
+index 1f3912c..2b4e529 100644
+--- a/tests/ci/vps-compose-version-shape.test.ts
++++ b/tests/ci/vps-compose-version-shape.test.ts
+@@ -299,7 +299,6 @@ describe('mechanically frozen Compose shape scope', () => {
+         .replace(/    \/\/ The baseline lacks.*\n/, '')
+         .replace(/    const \{ compose_probe:.*candidate\.body;\n/, '<OLD-REPORT-STRIP>\n')
+         .replace(/  it\('validates each fixed classification[\s\S]*?(?=  it\('rejects missing, extra)/, '<FIVE-CONSISTENT-FIXTURES>\n')
+-        .replace(",\n      { ...good, status: 'ok', captured_bytes: 0 }", '')
+         .replace("      .replace(/compose_version_shape=null\\n\\nclassify_compose_version\\(\\) \\{[\\s\\S]*?\\n\\}\\n(?=\\nemit\\(\\))/, '')\n", '')
+         .replace("      .replace('    --argjson compose_shape \"$compose_version_shape\" \\\\\\n', '')\n", '')
+         .replace("      .replace('      compose_version_shape:$compose_shape,\\n', '')\n", '');
+diff --git a/tests/ci/vps-host-preflight-observability.test.ts b/tests/ci/vps-host-preflight-observability.test.ts
+index 603e5e2..b29128e 100644
+--- a/tests/ci/vps-host-preflight-observability.test.ts
++++ b/tests/ci/vps-host-preflight-observability.test.ts
+@@ -268,8 +268,7 @@ describe.skipIf(process.platform === 'win32')('fixed Compose-only preflight obse
+       { ...good, status: 'output_bound_exceeded' },
+       { ...good, status: 'output_bound_exceeded', captured_bytes: 16386 },
+       { ...good, status: 'output_bound_exceeded', captured_bytes: 16385, pipeline_exit_status: null },
+-      { ...good, status: 'invalid_version', pipeline_exit_status: 1 },
+-      { ...good, status: 'ok', captured_bytes: 0 }
++      { ...good, status: 'invalid_version', pipeline_exit_status: 1 }
+     ];
+     for (const compose_probe of bad) expect(gate({ ...body, compose_probe }).status, JSON.stringify(compose_probe)).not.toBe(0);
+     for (const addition of [{ ...body, secret }, { ...body, versions: { ...body.versions, secret } },

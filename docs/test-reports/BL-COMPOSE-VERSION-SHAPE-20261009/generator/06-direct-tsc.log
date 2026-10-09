@@ -1,0 +1,7 @@
+tests/ci/vps-compose-version-shape.test.ts(42,52): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PATH: string; }' but required in type 'ProcessEnv'.
+tests/ci/vps-compose-version-shape.test.ts(64,9): error TS2741: Property 'NODE_ENV' is missing in type '{ PATH: string; CALLS: string; LOCALES: string; CANARY: string; OUTPUT: string; CODE: string; PIPELINE_CODE: string; HANG: string; EARLY: string; LC_ALL: string; }' but required in type 'ProcessEnv'.
+tests/ci/vps-compose-version-shape.test.ts(220,42): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[], options?: SpawnSyncOptions): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PATH: string; CALLS: string; }' but required in type 'ProcessEnv'.

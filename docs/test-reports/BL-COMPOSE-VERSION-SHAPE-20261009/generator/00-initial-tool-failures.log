@@ -1,0 +1,22 @@
+Read-only preparation command; exit 1:
+ls -ld /Volumes/ORICO/project/.csg-20261009 /Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-20261009/node_modules /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node
+ls: /Volumes/ORICO/project/.csg-20261009: No such file or directory
+ls: /Volumes/ORICO/project/.worktrees/tokenizer-host-preflight-20261009/node_modules: No such file or directory
+-rwxr-xr-x  1 yixingzhou  staff  111673840 Jan 13  2026 /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node
+
+Read-only environment inspection command; exit 1:
+ls -l /usr/bin/jq /usr/bin/head /usr/bin/bash /bin/bash
+ls: /usr/bin/bash: No such file or directory
+-r-xr-xr-x  1 root  wheel  1290128 Aug 13 09:51 /bin/bash
+-rwxr-xr-x  1 root  wheel   101760 Aug 13 09:51 /usr/bin/head
+-rwxr-xr-x  1 root  wheel  1488016 Aug 13 09:51 /usr/bin/jq
+
+Read-only cache inspection command; exit 1:
+ls -ld node_modules/.vite node_modules/.cache node_modules/.vite/vitest
+ls: node_modules/.cache: No such file or directory
+drwxr-xr-x  3 yixingzhou  staff  96 Oct  9 03:40 node_modules/.vite
+drwxr-xr-x  3 yixingzhou  staff  96 Oct  9 03:40 node_modules/.vite/vitest
+
+Read-only Vitest source search command; exit 1:
+rg -n 'cacheDir|resultsCache|cache.*false|--cache' node_modules/vitest/dist/chunks/cac* node_modules/vitest/dist/chunks/cli-api* node_modules/vitest/dist/chunks/resolveConfig*
+zsh:1: no matches found: node_modules/vitest/dist/chunks/resolveConfig*

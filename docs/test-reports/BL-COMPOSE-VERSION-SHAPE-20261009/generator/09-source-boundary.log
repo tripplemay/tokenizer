@@ -1,0 +1,11 @@
+{
+  "base": "774e4ab10f69330c98b93ab2906c040ec9fa36a8",
+  "paths": [
+    ".github/workflows/deploy-vps.yml",
+    "scripts/ci/vps-host-preflight.sh",
+    "tests/ci/vps-host-preflight-observability.test.ts",
+    "tests/ci/vps-compose-version-shape.test.ts"
+  ]
+}
+
+all other tracked old tests unchanged: true

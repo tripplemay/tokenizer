@@ -1,0 +1,57 @@
+{
+  "artifact_type": "generator_supporting_handoff",
+  "feature_marker": "BL-RELEASE-READINESS-F003",
+  "canonical_feature": false,
+  "contract_sha": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+  "initial_source_sha": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "original_scope_blocked_commit": "007fd07941bad043025003ed0433ca079801e31d",
+  "mixed_index_race_commit_not_candidate": "7df39aa7b6d5039b75d98a1200502a2c89c23922",
+  "source_sha": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-repair-20261009",
+  "source_status": "frozen",
+  "functional_acceptance": "not_issued_by_generator",
+  "release_ready": false,
+  "dependency_validation": "independent_existing_dependency_copy_not_fresh_npm_ci",
+  "checks": {
+    "original_host_tests": { "count": 43, "passed": 43, "file_byte_unchanged": true },
+    "existing_observability_tests": { "count": 32, "passed": 32, "explicit_fixture_and_scope_updates": true, "negative_array_unchanged_after_repair": true },
+    "new_independent_shape_controls": { "count": 47, "passed": 47 },
+    "exact_source_serial_controls": { "count": 122, "passed": 122, "exit_code": 0, "cache_disabled": true },
+    "npm_verify": { "exit_code": 0, "prisma_generated_in_own_copied_dependencies": true },
+    "direct_tsc_no_incremental": { "exit_code": 0 },
+    "npm_lint": { "exit_code": 0 },
+    "targeted_test_lint": { "exit_code": 0 },
+    "source_boundary": { "exit_code": 0 },
+    "shell_syntax": { "exit_code": 0 },
+    "source_diff_check": { "exit_code": 0 },
+    "raw_artifact_staged_diff_check": { "exit_code": 2, "raw_whitespace_preserved": true }
+  },
+  "preserved_initial_failures": [
+    "01-host-43.log",
+    "04-shape-controls-initial.log",
+    "06-direct-tsc.log",
+    "00-initial-tool-failures.log",
+    "14-index-race-original.log",
+    "25-raw-artifact-staged-diff-check-original.log"
+  ],
+  "borrowed_dependency_boundary": {
+    "intended_read_only_was_violated_by_vitest_cache": true,
+    "observed_cache_relative_path": "node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+    "observed_mtime_epoch": 1791556965,
+    "old_cache_restored_or_deleted": false,
+    "zero_target_writes_claimed": false,
+    "subsequent_repair_dependency_copy_is_independent": true
+  },
+  "not_performed": [
+    "push",
+    "GH_operation",
+    "real_SSH",
+    "real_Docker",
+    "DB_operation",
+    "credential_access",
+    "user_queue_operation",
+    "fresh_npm_ci",
+    "functional_acceptance",
+    "release_signoff"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "original_generator_files": [
+    "00-initial-tool-failures.log",
+    "01-host-43.log",
+    "02-host-43-path-corrected.log",
+    "03-observability-32.log",
+    "04-shape-controls-initial.log",
+    "05-shape-controls-corrected.log",
+    "06-direct-tsc.log",
+    "07-direct-tsc-corrected.log",
+    "08-npm-lint.log",
+    "09-source-boundary.log",
+    "10-targeted-test-lint.log",
+    "11-exact-source-122-controls.log",
+    "source.diff"
+  ],
+  "transport_byte_identical": true
+}

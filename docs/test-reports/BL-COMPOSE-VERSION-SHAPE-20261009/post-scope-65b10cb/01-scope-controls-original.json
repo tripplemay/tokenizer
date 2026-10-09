@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "role": "scope critic controls, not functional acceptance",
+  "exact_base": "917b60c99af1f733103e307b41925d858b696bb4",
+  "exact_spec_sha": "686d3c6b7e9b7c43ba2d999c56d3435668d06352",
+  "exact_source_sha": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "results": [
+    {
+      "id": "source.changed-exact-four-nondoc-paths",
+      "passed": true
+    },
+    {
+      "id": "source.all-old-test-blobs-outside-allowlisted-file-frozen",
+      "passed": true
+    },
+    {
+      "id": "source.script-all-outside-exact-additions-frozen",
+      "passed": true
+    },
+    {
+      "id": "source.workflow-outside-validator-frozen",
+      "passed": true
+    },
+    {
+      "id": "source.workflow-all-old-validator-predicates-frozen",
+      "passed": true
+    },
+    {
+      "id": "source.classifier-pure-shell-local-locale-fixed-format",
+      "passed": true
+    },
+    {
+      "id": "mutant.new-query-rejected",
+      "passed": true
+    },
+    {
+      "id": "mutant.capture-bound-drift-rejected",
+      "passed": true
+    },
+    {
+      "id": "mutant.acceptance-regex-drift-rejected",
+      "passed": true
+    },
+    {
+      "id": "mutant.ambient-locale-drift-rejected",
+      "passed": true
+    },
+    {
+      "id": "mutant.workflow-transport-bound-drift-rejected",
+      "passed": true
+    },
+    {
+      "id": "old-five-fixture-values-and-positive-expectation-retained",
+      "passed": true
+    },
+    {
+      "id": "old-diagnostic-exact-authorized-regions-only",
+      "passed": false
+    },
+    {
+      "id": "old-diagnostic-only-extra-offscope-is-added-zero-byte-negative",
+      "passed": true
+    },
+    {
+      "id": "old-negative-expectation-and-count-not-weakened",
+      "passed": true
+    },
+    {
+      "id": "new-file-already-rejects-former-zero-byte-case",
+      "passed": true
+    },
+    {
+      "id": "primitive.synthetic-canary-no-arbitrary-value-emission",
+      "passed": true
+    },
+    {
+      "id": "primitive.multibyte-bytes-and-local-locale",
+      "passed": true
+    },
+    {
+      "id": "validator.synthetic-fixed-object-accepted",
+      "passed": true
+    },
+    {
+      "id": "validator.not_run-null-accepted",
+      "passed": true
+    },
+    {
+      "id": "validator.not_run-nonnull-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.command_failed-null-accepted",
+      "passed": true
+    },
+    {
+      "id": "validator.command_failed-nonnull-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.output_bound_exceeded-null-accepted",
+      "passed": true
+    },
+    {
+      "id": "validator.output_bound_exceeded-nonnull-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.synthetic-ok-consistent-shape-accepted",
+      "passed": true
+    },
+    {
+      "id": "validator.missing-shape-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.invalid-version-null-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.extra-secret-shape-key-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.wrong-prefix-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.wrong-prefix-enum-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.core-under-other-prefix-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.absent-core-with-tail-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.tail-over-captured-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.tail-fraction-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.tail-zero-nonempty-class-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.tail-positive-empty-class-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.parsed-core-not-parsed-class-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.empty-prefix-positive-bytes-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.extra-legacy-root-key-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.extra-old-probe-key-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.has_cr-wrong-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.ok-has_cr-true-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.has_lf-wrong-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.ok-has_lf-true-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.has_horizontal_space-wrong-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.ok-has_horizontal_space-true-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.has_escape-wrong-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.ok-has_escape-true-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.has_non_ascii-wrong-type-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.ok-has_non_ascii-true-rejected",
+      "passed": true
+    },
+    {
+      "id": "validator.old-impossible-ok-zero-byte-rejected",
+      "passed": true
+    }
+  ],
+  "total": 52,
+  "passed": 51,
+  "failures": [
+    {
+      "id": "old-diagnostic-exact-authorized-regions-only",
+      "passed": false
+    }
+  ],
+  "original_inventory_sha256": "6aca2d8fe48c543aa3f5b5777703aa341030b9404d00b824c76c74edfac0798c",
+  "source_sha256": {
+    "scripts/ci/vps-host-preflight.sh": "36941c3cce1affd391b6fe78199e6c797d1a257798fd2feb11dce74236c24ee8",
+    ".github/workflows/deploy-vps.yml": "31d5cc2e41aaa3b71978ab19b7d9c2a28e8be15f17a47e75964f62e0419eebc5",
+    "tests/ci/vps-host-preflight-observability.test.ts": "0389322926ded3bd8a1dade70fad8209d8f5f757737238d67a361e5713408f93",
+    "tests/ci/vps-compose-version-shape.test.ts": "e47fd21971afb3ba3b858b0e15de0c79e46f9430650251d87bed68585d4d69f8"
+  },
+  "execution": "In-memory source mutations and isolated pure classifier/jq filter only; no full host script, Docker, SSH, GH, credentials or old functional suites."
+}

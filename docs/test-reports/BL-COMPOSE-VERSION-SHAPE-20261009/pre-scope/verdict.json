@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task": "BL-COMPOSE-VERSION-SHAPE-20261009",
+  "role": "independent pre-scope critic; not functional Evaluator",
+  "review_phase": "pre-scope",
+  "verdict": "BLOCKED",
+  "scope_violation": false,
+  "scope_violation_meaning": "No implementation or out-of-scope source edit exists in the reviewed spec-only commit; the executable specification is blocked by a contract contradiction.",
+  "blocked": true,
+  "exact_base": "917b60c99af1f733103e307b41925d858b696bb4",
+  "exact_spec_sha": "3405031799ec1da5ab1759be325e2041638a3dd8",
+  "spec_sha256": "38c3dfadf5932c2dc16a873c21efe952c3fe9eee05181f9bb7b33565f85b1cda",
+  "release_ready": false,
+  "functional_acceptance": "not performed and not granted",
+  "issues": [
+    {
+      "id": "SCOPE-SPEC-001",
+      "severity": "blocking",
+      "title": "Frozen positive metadata fixtures contradict required shape/probe null relations",
+      "evidence": [
+        "docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md:21-26 permits only scope-normalization pins and old-report field stripping while freezing functional assertions and fixtures.",
+        "docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md:42-45 requires null shape before bounded success, on nonzero pipeline and on overflow.",
+        "docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md:70-72 requires rejection of inconsistent shape vs compose_probe.",
+        "tests/ci/vps-host-preflight-observability.test.ts:246-254 obtains body from run(), replaces only compose_probe for five synthetic positive fixtures and requires validator exit 0.",
+        "tests/ci/vps-host-preflight-observability.test.ts:61 defaults run() to v2.35.1 followed by LF. The retained bounded-success string therefore requires a nonnull shape.",
+        "The not_run, command_failed and output_bound_exceeded synthetic probe fixtures retain that nonnull shape through object spread. A conforming new validator must reject all three, contrary to their frozen positive expectations."
+      ],
+      "required_resolution": "A new adjudicated spec must explicitly allow only shape-field additions to the existing synthetic metadata fixture reports, with old compose_probe values, assertions, fixture count, caps, timeouts and rejection cases unchanged. Alternatively stop implementation. Do not relax null relations or silently rewrite old functional expectations."
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "SCOPE-CLARIFY-002",
+      "title": "Declare cross-field validator scope precisely without tightening legacy probe semantics",
+      "detail": "The old positive fixture includes status=ok and captured_bytes=0. The default nonnull parsed-core shape cannot satisfy the minimum byte count of a core at zero captured bytes. Explicitly authorize a shape-only fixture addition consistent with zero bytes and state whether legacy status=ok fixture permissiveness remains unchanged. If status=ok must itself prove a valid accepted version, this immutable old fixture has no solution. Minimum core and prefix byte-count feasibility, prefix empty iff captured bytes zero, vendor-prefix horizontal-space implications, tail empty/nonempty and charset/flag relations should be written as an exact finite relation table; metadata alone cannot prove the hidden invalid raw string."
+    },
+    {
+      "id": "SCOPE-CLARIFY-003",
+      "title": "Make vendor-prefix core offset and decimal alphabet explicit",
+      "detail": "Specify that the exact 22-byte Docker Compose version prefix is classified at byte zero and core parsing begins immediately after it; numeric/v_numeric core parsing starts at byte zero. State ASCII [0-9] and maximal leading core match, so shell implementations and validator controls do not infer different offsets or suffix splits."
+    }
+  ],
+  "verified_static_boundaries": {
+    "base_to_spec_changed_paths": ["docs/specs/BL-COMPOSE-VERSION-SHAPE-20261009.md"],
+    "fixed_labels_counts_flags_only": true,
+    "raw_or_arbitrary_prefix_tail_or_secret_emission_prohibited": true,
+    "new_host_queries_prohibited": true,
+    "old_acceptance_regex_and_failure_branch_frozen": true,
+    "old_capture_and_transport_bounds_frozen": true,
+    "old_observability_test_changes_explicitly_declared": true,
+    "old_host_test_source_unchanged_at_spec_commit": true,
+    "old_observability_source_unchanged_at_spec_commit": true,
+    "workflow_outside_validator_frozen": true,
+    "protected_human_approval_required_per_new_run": true,
+    "same_family_scope_review_not_functional_acceptance": true
+  },
+  "frozen_blobs_at_base_and_spec": {
+    "scripts/ci/vps-host-preflight.sh": "9f74a3740e6954a5ded23ccd4178d26c23496121",
+    ".github/workflows/deploy-vps.yml": "0964fc2f11bcd70aefb2ab938d9b13a7b4498596",
+    "tests/ci/vps-host-preflight.test.ts": "15cab7ffbfdd10e9676e29d64425a91cd2d9915a",
+    "tests/ci/vps-host-preflight-observability.test.ts": "1c169fe622de4a293089341096612049bb429321"
+  },
+  "retained_original_host_failure": {
+    "run_id": 37844242857,
+    "source_sha": "9966db19906fbe4b9b7aaeb53ba80e827b383aca",
+    "outcome": "refused",
+    "reason": "compose_unavailable",
+    "compose_probe": {"status": "invalid_version", "pipeline_exit_status": 0, "captured_bytes": 27, "home_present": false},
+    "normal_verify_oci_deploy_jobs": "skipped in retained completed original",
+    "retained_inventory_sha256": "6aca2d8fe48c543aa3f5b5777703aa341030b9404d00b824c76c74edfac0798c",
+    "original_artifact": "docs/test-reports/BL-HOST-PREFLIGHT-OBSERVABILITY-20261009/host-preflight-37844242857-artifacts-original/tokenizer-host-preflight-9966db19906fbe4b9b7aaeb53ba80e827b383aca/inventory.json",
+    "raw_format": "unknown; no prefix, suffix, HOME-cause, plugin absence or timeout inferred"
+  },
+  "execution_boundaries": {
+    "product_or_test_or_spec_edits": false,
+    "state_or_memory_edits": false,
+    "push_or_gh_or_ssh": false,
+    "host_script_executed": false,
+    "43_host_and_32_observability_functional_controls": "not run by scope critic; retained required counts are not a current test-pass claim",
+    "review_outputs_only": "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope/"
+  },
+  "structural_proof": {
+    "command": "node docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/pre-scope/contract-compatibility-proof.mjs",
+    "expected_original_exit_status": 1,
+    "meaning": "intentional BLOCKED structural counterexample, not functional test failure",
+    "original_log": "01-contract-proof-original.log"
+  }
+}

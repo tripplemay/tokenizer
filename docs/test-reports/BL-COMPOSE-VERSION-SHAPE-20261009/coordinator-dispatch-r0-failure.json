@@ -1,0 +1,16 @@
+{
+  "role": "Coordinator dispatch observation, not an Evaluator verdict",
+  "task_id": "compose-version-shape-65b10cb-kimi-support-r0",
+  "source": "65b10cbe3985d933e88eed6c29e7421748af36fd",
+  "command_exit_code": 2,
+  "state": "local-cli adapter executable preflight failed; Kimi runtime never started",
+  "cause": "Coordinator replaced PATH without /Users/yixingzhou/.kimi-code/bin",
+  "first_envelope": "supporting-evaluation-envelope-r0-65b10cb.json (unchanged bytes, renamed after failed dispatch)",
+  "dispatch_stderr_original": "kimi-support-r0-dispatch-original.log",
+  "receipt_original": "kimi-support-r0-receipt-original.json",
+  "receipt_bytes": 0,
+  "receipt_validation_or_functional_acceptance": false,
+  "concurrent_scope_result": "critic found unauthorized additional old-test negative fixture; original source65 must remain, Generator repair then fresh exact-source review",
+  "next": "New unique task only after repaired source and original scope blocker retained; corrected tool PATH; do not reuse or overwrite r0 evidence",
+  "release_ready": false
+}

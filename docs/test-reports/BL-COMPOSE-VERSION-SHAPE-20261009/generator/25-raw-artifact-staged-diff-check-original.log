@@ -1,0 +1,39 @@
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/01-host-43.log:134: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/02-host-43-path-corrected.log:9: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/03-observability-32.log:9: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/04-shape-controls-initial.log:83: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/05-shape-controls-corrected.log:9: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/11-exact-source-122-controls.log:9: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:7: trailing whitespace.
++  run [...filters]      
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:8: trailing whitespace.
++  related [...filters]  
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:9: trailing whitespace.
++  watch [...filters]    
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:10: trailing whitespace.
++  dev [...filters]      
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:11: trailing whitespace.
++  bench [...filters]    
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:12: trailing whitespace.
++  init <project>        
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:13: trailing whitespace.
++  list [...filters]     
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:14: trailing whitespace.
++  [...filters]          
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:15: trailing whitespace.
++  complete [shell]      
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/12-vitest-cache-help.log:30: trailing whitespace.
++  --cache                                                    Enable cache. Use '--help --cache' for more info. 
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/15-repair-exact-source-122-no-cache.log:9: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/17-repair-independent-copy-npm-verify.log:12: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/19-repair-npm-lint.log:4: new blank line at EOF.
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/repair-source.diff:8: trailing whitespace.
++    
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/source.diff:8: trailing whitespace.
++    
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/source.diff:94: trailing whitespace.
++ 
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/source.diff:460: trailing whitespace.
++ 
+docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/source.diff:479: trailing whitespace.
++ 

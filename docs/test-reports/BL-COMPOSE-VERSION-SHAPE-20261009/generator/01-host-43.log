@@ -1,0 +1,134 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-20261009
+
+ ❯ tests/ci/vps-host-preflight.test.ts (43 tests | 6 failed) 815ms
+     × inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations 20ms
+     × reports a healthy legacy source image and missing ledger as legacy, never creates activation 9ms
+     × bounds a hung query to five seconds and suppresses its failed stderr 9ms
+     × does not execute config content and clears Docker/Compose/proxy environment overrides 9ms
+     × transports the exact reviewed script on stdin and uploads only validated JSON 8ms
+     × retains a valid redacted refusal while returning nonzero 114ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:153:42
+    151|   it('inventories an activated digest baseline with hashes and no raw …
+    152|     const before = snapshot(), result = run();
+    153|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+    154|     const body = report(result);
+    155|     expect(body).toMatchObject({ outcome: 'observed', baseline: 'diges…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > reports a healthy legacy source image and missing ledger as legacy, never creates activation
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:168:42
+    166|     rmSync(join(deployPath, '.releases'), { recursive: true });
+    167|     const before = snapshot(), result = run();
+    168|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+    169|     expect(report(result)).toMatchObject({ baseline: 'legacy_or_unknow…
+    170|     expect(snapshot()).toEqual(before); assertReadOnly();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > bounds a hung query to five seconds and suppresses its failed stderr
+AssertionError: expected 'missing_tools' to be 'docker_unavailable' // Object.is equality
+
+Expected: "docker_unavailable"
+Received: "missing_tools"
+
+ ❯ tests/ci/vps-host-preflight.test.ts:186:35
+    184|     expect(result.status).not.toBe(0);
+    185|     expect(Date.now() - start).toBeLessThan(9_000);
+    186|     expect(report(result).reason).toBe('docker_unavailable');
+       |                                   ^
+    187|     expect(snapshot()).toEqual(before); assertReadOnly();
+    188|   }, 12_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > does not execute config content and clears Docker/Compose/proxy environment overrides
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:194:42
+    192|     const before = snapshot(), result = run({ DOCKER_HOST: 'tcp://secr…
+    193|       COMPOSE_PROJECT_NAME: canary, HTTP_PROXY: 'http://secret-canary'…
+    194|     expect(result.status, result.stderr).toBe(0);
+       |                                          ^
+    195|     report(result); expect(snapshot()).toEqual(before); assertReadOnly…
+    196|     expect(existsSync(join(deployPath, 'injected'))).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > transports the exact reviewed script on stdin and uploads only validated JSON
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/ci/vps-host-preflight.test.ts:221:49
+    219|
+    220|   it('transports the exact reviewed script on stdin and uploads only v…
+    221|     const remote = run(); expect(remote.status).toBe(0);
+       |                                                 ^
+    222|     const step = inventoryStep();
+    223|     const filter = step.slice(step.indexOf('def sha:')).split(/\n\s*' …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/ci/vps-host-preflight.test.ts > read-only allowlisted tokenizer host preflight > retains a valid redacted refusal while returning nonzero
+AssertionError: expected { schema_version: 1, …(17) } to match object { outcome: 'refused', …(1) }
+(45 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "outcome": "refused",
+-   "reason": "missing_or_multiple_app",
++   "reason": "missing_tools",
+  }
+
+ ❯ tests/ci/vps-host-preflight.test.ts:261:34
+    259|     const { result, artifact } = runWorkflow(remote.stdout, { SSH_STAT…
+    260|     expect(result.status).not.toBe(0);
+    261|     expect(JSON.parse(artifact)).toMatchObject({ outcome: 'refused', r…
+       |                                  ^
+    262|     expect(`${artifact}${result.stderr}`).not.toContain(canary);
+    263|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 37 passed (43)
+   Start at  21:34:00
+   Duration  937ms (transform 33ms, setup 0ms, import 43ms, tests 815ms, environment 0ms)
+

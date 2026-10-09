@@ -1,0 +1,25 @@
+Original worktree: /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-20261009
+Generator had staged only:
+tests/ci/vps-host-preflight-observability.test.ts
+tests/ci/vps-compose-version-shape.test.ts
+
+Command; exit 1:
+git commit -m 'fix(BL-RELEASE-READINESS-F003): restore frozen old negative fixtures' -m 'Apply the preserved post-scope BLOCKED adjudication: keep former impossible ok/zero-capture rejection only in the new shape suite; remove the old negative-array addition and the corresponding source-pin exemption. Preserve the original source commit and critic report; no functional acceptance or release readiness claim.'
+
+On branch codex/compose-shape-20261009
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/generator/
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+Decisive follow-up output:
+7df39aa docs: preserve failed evaluator executable preflight without verdict claims
+ .../coordinator-dispatch-r0-failure.json                 | 16 ++++++++++++++++
+ .../kimi-support-r0-dispatch-original.log                |  7 +++++++
+ .../kimi-support-r0-receipt-original.json                |  0
+ .../supporting-evaluation-envelope-r0-65b10cb.json       | 13 +++++++++++++
+ tests/ci/vps-compose-version-shape.test.ts               |  1 -
+ tests/ci/vps-host-preflight-observability.test.ts        |  3 +--
+ 6 files changed, 37 insertions(+), 3 deletions(-)

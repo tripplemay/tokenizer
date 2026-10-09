@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-20261009
+
+
+ Test Files  1 passed (1)
+      Tests  47 passed (47)
+   Start at  21:37:14
+   Duration  20.87s (transform 28ms, setup 0ms, import 37ms, tests 20.76s, environment 0ms)
+
