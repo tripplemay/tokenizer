@@ -1,0 +1,57 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-shape-5c5c283-kimi-support-r2-once
+
+ ✓ tests/ci/vps-host-preflight-observability.test.ts (32 tests) 14821ms
+     ✓ records HOME presence only, including empty HOME 0  614ms
+     ✓ records HOME presence only, including empty HOME 1  605ms
+     ✓ records HOME presence only, including empty HOME 2  597ms
+     ✓ counts UTF-8 retained bytes rather than characters under a multibyte locale  349ms
+     ✓ measures stripped retained bytes rather than total stdout at the cap  308ms
+     ✓ bounds a hung Compose capture using the unchanged query argv  5234ms
+     ✓ preserves non-Compose query argv, redacted fields and no mutation against the base  1253ms
+     ✓ validates each fixed classification using the actual workflow filter  605ms
+     ✓ rejects missing, extra, wrong type, enum, range and null-relation metadata with the actual filter  762ms
+ ✓ tests/ci/vps-compose-version-shape.test.ts (47 tests) 20800ms
+     ✓ classifies each tail alphabet without relaxing acceptance 0  614ms
+     ✓ classifies each tail alphabet without relaxing acceptance 1  614ms
+     ✓ classifies each tail alphabet without relaxing acceptance 2  624ms
+     ✓ classifies each tail alphabet without relaxing acceptance 7  344ms
+     ✓ classifies each tail alphabet without relaxing acceptance 8  314ms
+     ✓ keeps all old report fields, query argv/order and refusal point byte-equivalent to the base  2113ms
+     ✓ keeps null shape on hung capture at the unchanged five-second bound  5241ms
+     ✓ uses the real workflow validator to reject every missing key, extra field and wrong type  833ms
+     ✓ rejects inconsistent core, tail, prefix, status and accepted-version relations  1189ms
+ ✓ tests/ci/vps-host-preflight.test.ts (43 tests) 35970ms
+     ✓ inventories an activated digest baseline with hashes and no raw config, DB, stderr, or mutations  1434ms
+     ✓ reports a healthy legacy source image and missing ledger as legacy, never creates activation  1172ms
+     ✓ refuses missing-app without writes or disclosure  908ms
+     ✓ refuses duplicate-app without writes or disclosure  929ms
+     ✓ refuses wrong-project without writes or disclosure  942ms
+     ✓ refuses wrong-service without writes or disclosure  1125ms
+     ✓ refuses stopped-app without writes or disclosure  904ms
+     ✓ refuses unhealthy-app without writes or disclosure  904ms
+     ✓ refuses wrong-port without writes or disclosure  1008ms
+     ✓ refuses wrong-image without writes or disclosure  939ms
+     ✓ refuses wrong-network without writes or disclosure  1075ms
+     ✓ refuses wrong-volume without writes or disclosure  1288ms
+     ✓ refuses unready without writes or disclosure  1412ms
+     ✓ refuses wrong-health-code without writes or disclosure  1319ms
+     ✓ refuses null-health-code without writes or disclosure  1309ms
+     ✓ refuses wrong-health-sha without writes or disclosure  1314ms
+     ✓ refuses health-failure without writes or disclosure  1326ms
+     ✓ refuses raw-user-canary without writes or disclosure  1013ms
+     ✓ bounds a hung query to five seconds and suppresses its failed stderr  5164ms
+     ✓ does not execute config content and clears Docker/Compose/proxy environment overrides  1323ms
+     ✓ refuses unsafe selected configuration: duplicate  596ms
+     ✓ refuses unsafe selected configuration: malicious-image  622ms
+     ✓ transports the exact reviewed script on stdin and uploads only validated JSON  1461ms
+     ✓ never retains unallowlisted or failed transport bytes: raw-stdout  1500ms
+     ✓ never retains unallowlisted or failed transport bytes: extra-key  1505ms
+     ✓ never retains unallowlisted or failed transport bytes: failed-transport  1708ms
+     ✓ retains a valid redacted refusal while returning nonzero  990ms
+
+ Test Files  3 passed (3)
+      Tests  122 passed (122)
+   Start at  22:32:22
+   Duration  36.25s (transform 112ms, setup 0ms, import 140ms, tests 71.59s, environment 0ms)
+

@@ -1,0 +1,23 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-shape-5c5c283-kimi-support-r2-once
+
+ ✓ tests/evaluator/compose-shape-r2-support.test.ts (71 tests) 25215ms
+     ✓ keeps accepted own boundary versions observable 0  572ms
+     ✓ keeps accepted own boundary versions observable 1  578ms
+     ✓ keeps accepted own boundary versions observable 2  585ms
+     ✓ keeps accepted own boundary versions observable 3  585ms
+     ✓ keeps accepted own boundary versions observable 4  588ms
+     ✓ keeps accepted own boundary versions observable 5  612ms
+     ✓ keeps accepted own boundary versions observable 6  595ms
+     ✓ applies trailing-newline stripping but retains interior CR bytes 0  592ms
+     ✓ bounds a hung capture at five seconds with null shape and unchanged refusal  5234ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 0  482ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 1  487ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 2  501ms
+     ✓ prepares real bodies  1330ms
+
+ Test Files  1 passed (1)
+      Tests  71 passed (71)
+   Start at  22:47:37
+   Duration  25.35s (transform 27ms, setup 0ms, import 35ms, tests 25.21s, environment 0ms)
+

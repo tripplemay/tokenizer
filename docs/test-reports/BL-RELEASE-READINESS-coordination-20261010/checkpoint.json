@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-10T03:57:41Z",
+  "role": "Coordinator evidence transport and dispatch validation, not an Evaluator verdict",
+  "main": {
+    "local_and_fetched_origin": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "content_status": "clean when pre-existing file-mode differences are ignored",
+    "canonical_batch": "BL-HOMEPAGE-FRESHNESS verifying; unchanged",
+    "push_this_turn": false
+  },
+  "public_health": {
+    "original": "../BL-RELEASE-READINESS-coordination-20261009/public-health-20261010-original.json",
+    "timestamp": "2026-10-10T03:57:11.090Z",
+    "ok": true,
+    "commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "boundary": "Public HTTP health claim only; not authenticated image provenance, browser acceptance or deployment signoff"
+  },
+  "compose_shape": {
+    "source": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+    "pre_scope": "774e4ab10f69330c98b93ab2906c040ec9fa36a8",
+    "post_scope": "eebea30b2aa63565a7d201b6364c48d2b19ba865; scope-only PASS",
+    "generator_report": "81ec10ed420f967cd1cf6f12eb54e6fd56391761; development evidence only",
+    "r1": {"outcome":"TIMEOUT","exit_code":124,"duration_s":1802,"effective_timeout_s":1800},
+    "r2": {
+      "task_id": "compose-shape-5c5c283-kimi-support-r2-once",
+      "outcome": "TIMEOUT",
+      "exit_code": 124,
+      "duration_s": 2305,
+      "effective_timeout_s": 1800,
+      "descriptor_timeout_s": 2400,
+      "termination_reason": "deadline",
+      "mechanical_validation_exit": 4,
+      "mechanical_state": "CANCELED",
+      "original_verdict_exists": false,
+      "tracked_source_diff_empty": true,
+      "test_log_observations": {
+        "existing_controls": {"passed":122,"failed":0},
+        "own_initial": {"passed":10,"failed":61},
+        "own_corrected": {"passed":68,"failed":3},
+        "own_final": {"passed":70,"failed":1},
+        "own_final2": {"passed":71,"failed":0},
+        "verify_exit": 0,
+        "lint_exit": 0,
+        "limit": "Partial original log observations, not a completed independent supporting acceptance; every failed run is retained"
+      },
+      "transport": {
+        "log_directory": "../BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/",
+        "receipt_validation_runtime_dispatch_and_control_copy": "../BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-*",
+        "log_directory_compare_exit": 0,
+        "runtime_copy_compare_exit": 0,
+        "own_control_copy_compare_exit": 0,
+        "executable_control_added_to_parent_test_collection": false,
+        "originals_rewritten": false
+      }
+    },
+    "supporting_acceptance": false,
+    "dispatch_disposition": "HARD_STOP after the one allowed redispatch; no third runtime attempt, timeout extension or gate relaxation",
+    "duration_overrun_cause": "unknown; separate read-only runner evidence analysis commissioned, no framework fix authorized",
+    "non_main_publication_this_turn": false,
+    "new_protected_host_run": false,
+    "host_format_and_predecessor_identity": "still unresolved; original run37844242857 refused captured 27 bytes as invalid_version"
+  },
+  "backup": {
+    "selected_target": "dmitsvr",
+    "user_recipient_configuration_answer": "not configured",
+    "user_custody_choice": "no offline media yet; first complete other work not involving keys",
+    "recipient": null,
+    "private_key_custody": null,
+    "key_work": "deferred by user; not generated, read, installed, uploaded or invented",
+    "encrypted_real_backup_and_isolated_restore": "not performed",
+    "release_blocker": true
+  },
+  "non_key_work": {
+    "windows": "Existing T0-T3 proposal and scope report retained. Supporting Planner commissioned to bind exact new implementation paths, scripts and strict schemas; no implementation/native execution/publication yet.",
+    "runner": "Separate supporting read-only analysis of retained r1/r2 receipts, runtime and dispatcher; no third evaluation dispatch.",
+    "parent_runtime_src_app_scripts_workflow_tests_prisma_dependencies": "unchanged from76d916ba2e3a7147acda5ac9ef15fa70a9cd9958"
+  },
+  "protected_secret_snapshot": {
+    "as_of": "2026-10-09T14:28:36Z",
+    "required_reviewer": "tripplemay",
+    "admin_bypass": false,
+    "POSTGRES_PASSWORD_present": false,
+    "boundary": "Retained earlier names/protection observation, not rechecked at this checkpoint; no Secret values read or written"
+  },
+  "production_app_database_config_mutation": false,
+  "password_rotation": false,
+  "baseline_cutover": false,
+  "parent_status": "building3/5; pending_gate null; release_ready false; unchanged",
+  "release_ready": false
+}

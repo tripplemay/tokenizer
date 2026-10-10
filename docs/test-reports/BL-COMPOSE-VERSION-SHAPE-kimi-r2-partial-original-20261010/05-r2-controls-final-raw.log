@@ -1,0 +1,111 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-shape-5c5c283-kimi-support-r2-once
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts (71 tests | 1 failed) 24895ms
+     ✓ classifies own prefix/core boundary "v" 0 243ms
+     ✓ classifies own prefix/core boundary "vv2.35.1" 1 240ms
+     ✓ classifies own prefix/core boundary "v-2.35.1" 2 238ms
+     ✓ classifies own prefix/core boundary "docker compose version 2.35.1" 3 237ms
+     ✓ classifies own prefix/core boundary "Docker Compose version" 4 238ms
+     ✓ classifies own prefix/core boundary "Docker Compose version\t2.35.1" 5 237ms
+     ✓ classifies own prefix/core boundary "Docker Compose version  v2.35.1" 6 237ms
+     ✓ classifies own prefix/core boundary "Docker Compose version v" 7 236ms
+     ✓ classifies own prefix/core boundary "\r2.35.1" 8 240ms
+     ✓ classifies own prefix/core boundary " 2.35.1" 9 245ms
+     ✓ classifies own prefix/core boundary "2.35" 10 242ms
+     ✓ classifies own prefix/core boundary "2.35." 11 240ms
+     ✓ classifies own prefix/core boundary "2.35.x" 12 242ms
+     ✓ classifies own prefix/core boundary "v2.35" 13 239ms
+     ✓ classifies own prefix/core boundary "2..35.1" 14 239ms
+     ✓ classifies own prefix/core boundary "2.35.1.x y" 15 240ms
+     ✓ keeps accepted own boundary versions observable 0  567ms
+     ✓ keeps accepted own boundary versions observable 1  566ms
+     ✓ keeps accepted own boundary versions observable 2  571ms
+     ✓ keeps accepted own boundary versions observable 3  573ms
+     ✓ keeps accepted own boundary versions observable 4  574ms
+     × keeps accepted own boundary versions observable 5 590ms
+     ✓ keeps accepted own boundary versions observable 6  579ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 0 246ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 1 244ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 2 243ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 3 242ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 4 244ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 5 245ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 6 244ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 7 245ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 8 243ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 9 250ms
+     ✓ classifies own tail alphabet rows without relaxing refusal 10 245ms
+     ✓ flags own byte-edge rows over the retained string 0 247ms
+     ✓ flags own byte-edge rows over the retained string 1 246ms
+     ✓ flags own byte-edge rows over the retained string 2 244ms
+     ✓ flags own byte-edge rows over the retained string 3 245ms
+     ✓ flags own byte-edge rows over the retained string 4 244ms
+     ✓ flags own byte-edge rows over the retained string 5 251ms
+     ✓ flags own byte-edge rows over the retained string 6 249ms
+     ✓ flags own byte-edge rows over the retained string 7 248ms
+     ✓ counts multibyte tails in bytes under C with unchanged ambient query locale 246ms
+     ✓ counts multibyte tails in bytes under en_US.UTF-8 with unchanged ambient query locale 248ms
+     ✓ counts multibyte tails in bytes under zh_CN.UTF-8 with unchanged ambient query locale 253ms
+     ✓ counts multibyte tails in bytes under tr_TR.UTF-8 with unchanged ambient query locale 245ms
+     ✓ applies trailing-newline stripping but retains interior CR bytes 0  587ms
+     ✓ applies trailing-newline stripping but retains interior CR bytes 1 242ms
+     ✓ applies trailing-newline stripping but retains interior CR bytes 2 250ms
+     ✓ keeps null shape at the exact 16385-byte overflow boundary with a clean pipeline 244ms
+     ✓ keeps an at-boundary 16384-byte retained string classifiable without overflow 253ms
+     ✓ keeps null shape on own failed-pipeline code 2 250ms
+     ✓ keeps null shape on own failed-pipeline code 126 249ms
+     ✓ keeps null shape on own failed-pipeline code 130 248ms
+     ✓ keeps null shape on own failed-pipeline code 143 248ms
+     ✓ prioritizes the overflow detector over a failed pipeline and keeps null shape 252ms
+     ✓ bounds a hung capture at five seconds with null shape and unchanged refusal  5232ms
+     ✓ keeps the missing-jq minimal report byte-identical to the base with no shape key 63ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 0  504ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 1  492ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 2  503ms
+     ✓ prepares real bodies  1312ms
+     ✓ accepts own positive boundary rows through the real filter 16ms
+     ✓ rejects own enum/type negatives through the real filter 122ms
+     ✓ rejects own relation/canary negatives and preserves old allowlists 72ms
+     ✓ limits the exact source diff to the adjudicated scope paths 13ms
+     ✓ keeps frozen blobs byte-identical to the base commit 185ms
+     ✓ adds only classification lines to the script and deletes nothing 12ms
+     ✓ keeps the classifier pure: no subprocess, pipe, write or query 0ms
+     ✓ changes exactly one removed line in the workflow and pins all bytes outside the validator 22ms
+     ✓ pins frozen query argv, caps and the acceptance regex in the script 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 5
+AssertionError: expected { prefix: 'numeric', …(8) } to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected
++ Received
+
+@@ -4,8 +4,8 @@
+    "has_escape": false,
+    "has_horizontal_space": false,
+    "has_lf": false,
+    "has_non_ascii": false,
+    "prefix": "numeric",
+-   "tail_bytes": 14,
++   "tail_bytes": 12,
+    "tail_charset": "legacy",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:152:46
+    150|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    151|     const value = execute(output as string);
+    152|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    153|     expect(value.body.compose_probe.status).toBe('ok');
+    154|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 70 passed (71)
+   Start at  22:46:48
+   Duration  25.03s (transform 29ms, setup 0ms, import 37ms, tests 24.89s, environment 0ms)
+

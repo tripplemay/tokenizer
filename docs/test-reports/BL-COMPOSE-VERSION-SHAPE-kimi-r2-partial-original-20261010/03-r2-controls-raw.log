@@ -1,0 +1,1230 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-shape-5c5c283-kimi-support-r2-once
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts (71 tests | 61 failed) 1534ms
+     × classifies own prefix/core boundary "v" 0 23ms
+     × classifies own prefix/core boundary "vv2.35.1" 1 17ms
+     × classifies own prefix/core boundary "v-2.35.1" 2 16ms
+     × classifies own prefix/core boundary "docker compose version 2.35.1" 3 16ms
+     × classifies own prefix/core boundary "Docker Compose version" 4 16ms
+     × classifies own prefix/core boundary "Docker Compose version\t2.35.1" 5 16ms
+     × classifies own prefix/core boundary "Docker Compose version  v2.35.1" 6 16ms
+     × classifies own prefix/core boundary "Docker Compose version v" 7 16ms
+     × classifies own prefix/core boundary "\r2.35.1" 8 16ms
+     × classifies own prefix/core boundary " 2.35.1" 9 16ms
+     × classifies own prefix/core boundary "2.35" 10 16ms
+     × classifies own prefix/core boundary "2.35." 11 15ms
+     × classifies own prefix/core boundary "2.35.x" 12 17ms
+     × classifies own prefix/core boundary "v2.35" 13 17ms
+     × classifies own prefix/core boundary "2..35.1" 14 16ms
+     × classifies own prefix/core boundary "2.35.1.x y" 15 16ms
+     × keeps accepted own boundary versions observable 0 16ms
+     × keeps accepted own boundary versions observable 1 16ms
+     × keeps accepted own boundary versions observable 2 16ms
+     × keeps accepted own boundary versions observable 3 16ms
+     × keeps accepted own boundary versions observable 4 15ms
+     × keeps accepted own boundary versions observable 5 15ms
+     × keeps accepted own boundary versions observable 6 16ms
+     × classifies own tail alphabet rows without relaxing refusal 0 16ms
+     × classifies own tail alphabet rows without relaxing refusal 1 15ms
+     × classifies own tail alphabet rows without relaxing refusal 2 15ms
+     × classifies own tail alphabet rows without relaxing refusal 3 16ms
+     × classifies own tail alphabet rows without relaxing refusal 4 16ms
+     × classifies own tail alphabet rows without relaxing refusal 5 16ms
+     × classifies own tail alphabet rows without relaxing refusal 6 15ms
+     × classifies own tail alphabet rows without relaxing refusal 7 15ms
+     × classifies own tail alphabet rows without relaxing refusal 8 16ms
+     × classifies own tail alphabet rows without relaxing refusal 9 16ms
+     × classifies own tail alphabet rows without relaxing refusal 10 16ms
+     × flags own byte-edge rows over the retained string 0 16ms
+     × flags own byte-edge rows over the retained string 1 16ms
+     × flags own byte-edge rows over the retained string 2 16ms
+     × flags own byte-edge rows over the retained string 3 15ms
+     × flags own byte-edge rows over the retained string 4 16ms
+     × flags own byte-edge rows over the retained string 5 16ms
+     × flags own byte-edge rows over the retained string 6 15ms
+     × flags own byte-edge rows over the retained string 7 16ms
+     × counts multibyte tails in bytes under C with unchanged ambient query locale 15ms
+     × counts multibyte tails in bytes under en_US.UTF-8 with unchanged ambient query locale 18ms
+     × counts multibyte tails in bytes under zh_CN.UTF-8 with unchanged ambient query locale 17ms
+     × counts multibyte tails in bytes under tr_TR.UTF-8 with unchanged ambient query locale 18ms
+     × applies trailing-newline stripping but retains interior CR bytes 0 16ms
+     × applies trailing-newline stripping but retains interior CR bytes 1 16ms
+     × applies trailing-newline stripping but retains interior CR bytes 2 16ms
+     × keeps null shape at the exact 16385-byte overflow boundary with a clean pipeline 17ms
+     × keeps an at-boundary 16384-byte retained string classifiable without overflow 16ms
+     × keeps null shape on own failed-pipeline code 2 16ms
+     × keeps null shape on own failed-pipeline code 126 16ms
+     × keeps null shape on own failed-pipeline code 130 16ms
+     × keeps null shape on own failed-pipeline code 143 16ms
+     × prioritizes the overflow detector over a failed pipeline and keeps null shape 16ms
+     × bounds a hung capture at five seconds with null shape and unchanged refusal 15ms
+     ✓ keeps the missing-jq minimal report byte-identical to the base with no shape key 61ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 0 35ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 1 33ms
+     ✓ keeps argv/order/refusal byte-parity with the base for own row 2 33ms
+     ✓ prepares real bodies 56ms
+     × accepts own positive boundary rows through the real filter 15ms
+     × rejects own enum/type negatives through the real filter 110ms
+     × rejects own relation/canary negatives and preserves old allowlists 22ms
+     ✓ limits the exact source diff to the adjudicated scope paths 19ms
+     ✓ keeps frozen blobs byte-identical to the base commit 186ms
+     × adds only classification lines to the script and deletes nothing 12ms
+     ✓ keeps the classifier pure: no subprocess, pipe, write or query 0ms
+     ✓ changes exactly one removed line in the workflow and pins all bytes outside the validator 22ms
+     ✓ pins frozen query argv, caps and the acceptance regex in the script 11ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 61 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "v" 0
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "vv2.35.1" 1
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "v-2.35.1" 2
+AssertionError: expected null to deeply equal { prefix: 'other', …(8) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "other",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "docker compose version 2.35.1" 3
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "Docker Compose version" 4
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "Docker Compose version\t2.35.1" 5
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary " 2.35.1" 9
+AssertionError: expected null to deeply equal { prefix: 'other', …(8) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "other",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "Docker Compose version  v2.35.1" 6
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "Docker Compose version v" 7
+AssertionError: expected null to deeply equal { …(9) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "docker_compose_version",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "\r2.35.1" 8
+AssertionError: expected null to deeply equal { prefix: 'other', …(8) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": true,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "other",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "2.35" 10
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "2.35." 11
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "2.35.x" 12
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "2..35.1" 14
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "v2.35" 13
+AssertionError: expected null to deeply equal { prefix: 'v_numeric', …(8) }
+
+- Expected:
+{
+  "core_present": false,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "v_numeric",
+  "tail_bytes": null,
+  "tail_charset": "not_parsed",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own prefix/core boundary "2.35.1.x y" 15
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 4,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:135:46
+    133|   ])('classifies own prefix/core boundary %j %#', (output, expected) =…
+    134|     const value = execute(output as string);
+    135|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    136|     refused(value);
+    137|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 0
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 1
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 0,
+  "tail_charset": "empty",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:149:46
+    147|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    148|     const value = execute(output as string);
+    149|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    150|     expect(value.body.compose_probe.status).toBe('ok');
+    151|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 2
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 4
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "legacy",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:149:46
+    147|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    148|     const value = execute(output as string);
+    149|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    150|     expect(value.body.compose_probe.status).toBe('ok');
+    151|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 3
+AssertionError: expected null to deeply equal { prefix: 'v_numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "v_numeric",
+  "tail_bytes": 1,
+  "tail_charset": "legacy",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:149:46
+    147|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    148|     const value = execute(output as string);
+    149|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    150|     expect(value.body.compose_probe.status).toBe('ok');
+    151|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 5
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 14,
+  "tail_charset": "legacy",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:149:46
+    147|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    148|     const value = execute(output as string);
+    149|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    150|     expect(value.body.compose_probe.status).toBe('ok');
+    151|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps accepted own boundary versions observable 6
+AssertionError: expected null to deeply equal { prefix: 'v_numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "v_numeric",
+  "tail_bytes": 32,
+  "tail_charset": "legacy",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:149:46
+    147|   ])('keeps accepted own boundary versions observable %#', (output, ex…
+    148|     const value = execute(output as string);
+    149|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    150|     expect(value.body.compose_probe.status).toBe('ok');
+    151|     expect(value.body.versions.compose).toBe((output as string).replac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 0
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "legacy_plus_tilde",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 1
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 2,
+  "tail_charset": "legacy_plus_tilde",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 2
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 5,
+  "tail_charset": "legacy_plus_tilde",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 3
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "legacy_plus_underscore",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 4
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 3,
+  "tail_charset": "legacy_plus_underscore",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 5
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 6
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 2,
+  "tail_charset": "legacy_plus_tilde_underscore",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 7
+AssertionError: expected null to deeply equal { prefix: 'v_numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "v_numeric",
+  "tail_bytes": 9,
+  "tail_charset": "legacy_plus_tilde_underscore",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 8
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 9
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > classifies own tail alphabet rows without relaxing refusal 10
+AssertionError: expected null to deeply equal { …(9) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "docker_compose_version",
+  "tail_bytes": 5,
+  "tail_charset": "legacy_plus_tilde",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:169:46
+    167|   ])('classifies own tail alphabet rows without relaxing refusal %#', …
+    168|     const value = execute(output as string);
+    169|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    170|     refused(value);
+    171|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 0
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 1
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 2
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 3
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": true,
+  "prefix": "numeric",
+  "tail_bytes": 2,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 4
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 2,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 5
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": true,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 1,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 6
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": true,
+  "has_non_ascii": false,
+  "prefix": "numeric",
+  "tail_bytes": 7,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > flags own byte-edge rows over the retained string 7
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": true,
+  "has_escape": true,
+  "has_horizontal_space": true,
+  "has_lf": false,
+  "has_non_ascii": true,
+  "prefix": "numeric",
+  "tail_bytes": 8,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:185:46
+    183|     const value = execute(output as string);
+    184|     const expected = shape('numeric', true, Buffer.byteLength(output a…
+    185|     expect(value.body.compose_version_shape).toEqual(expected);
+       |                                              ^
+    186|     refused(value);
+    187|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > counts multibyte tails in bytes under C with unchanged ambient query locale
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > counts multibyte tails in bytes under en_US.UTF-8 with unchanged ambient query locale
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > counts multibyte tails in bytes under zh_CN.UTF-8 with unchanged ambient query locale
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > counts multibyte tails in bytes under tr_TR.UTF-8 with unchanged ambient query locale
+AssertionError: expected null to deeply equal { prefix: 'numeric', …(8) }
+
+- Expected:
+{
+  "core_present": true,
+  "has_cr": false,
+  "has_escape": false,
+  "has_horizontal_space": false,
+  "has_lf": false,
+  "has_non_ascii": true,
+  "prefix": "numeric",
+  "tail_bytes": 7,
+  "tail_charset": "other",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:191:46
+    189|   it.each(['C', 'en_US.UTF-8', 'zh_CN.UTF-8', 'tr_TR.UTF-8'])('counts …
+    190|     const value = execute('2.35.1éß中', { locale }); // 2+2+3 = 7 tail …
+    191|     expect(value.body.compose_version_shape).toEqual(shape('numeric', …
+       |                                              ^
+    192|     expect(value.body.compose_probe.captured_bytes).toBe(13);
+    193|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > applies trailing-newline stripping but retains interior CR bytes 0
+AssertionError: expected null to be 6 // Object.is equality
+
+- Expected:
+6
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:202:53
+    200|   ])('applies trailing-newline stripping but retains interior CR bytes…
+    201|     const value = execute(output as string);
+    202|     expect(value.body.compose_probe.captured_bytes).toBe(bytes);
+       |                                                     ^
+    203|     const v = (output as string).startsWith('v');
+    204|     expect(value.body.compose_version_shape).toEqual(shape(v ? 'v_nume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > applies trailing-newline stripping but retains interior CR bytes 1
+AssertionError: expected null to be 8 // Object.is equality
+
+- Expected:
+8
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:202:53
+    200|   ])('applies trailing-newline stripping but retains interior CR bytes…
+    201|     const value = execute(output as string);
+    202|     expect(value.body.compose_probe.captured_bytes).toBe(bytes);
+       |                                                     ^
+    203|     const v = (output as string).startsWith('v');
+    204|     expect(value.body.compose_version_shape).toEqual(shape(v ? 'v_nume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > applies trailing-newline stripping but retains interior CR bytes 2
+AssertionError: expected null to be 9 // Object.is equality
+
+- Expected:
+9
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:202:53
+    200|   ])('applies trailing-newline stripping but retains interior CR bytes…
+    201|     const value = execute(output as string);
+    202|     expect(value.body.compose_probe.captured_bytes).toBe(bytes);
+       |                                                     ^
+    203|     const v = (output as string).startsWith('v');
+    204|     expect(value.body.compose_version_shape).toEqual(shape(v ? 'v_nume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps null shape at the exact 16385-byte overflow boundary with a clean pipeline
+AssertionError: expected { status: 'not_run', …(3) } to match object { …(3) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "captured_bytes": 16385,
+-   "pipeline_exit_status": 0,
+-   "status": "output_bound_exceeded",
++   "captured_bytes": null,
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:211:38
+    209|   it('keeps null shape at the exact 16385-byte overflow boundary with …
+    210|     const value = execute('2.35.1' + 'é'.repeat(8189) + 'x'); // 6 + 1…
+    211|     expect(value.body.compose_probe).toMatchObject({ status: 'output_b…
+       |                                      ^
+    212|     expect(value.body.compose_version_shape).toBeNull();
+    213|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps an at-boundary 16384-byte retained string classifiable without overflow
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'invalid_version', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "captured_bytes": 16384,
+-   "status": "invalid_version",
++   "captured_bytes": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:218:38
+    216|   it('keeps an at-boundary 16384-byte retained string classifiable wit…
+    217|     const value = execute('2.35.1' + 'a'.repeat(16378));
+    218|     expect(value.body.compose_probe).toMatchObject({ status: 'invalid_…
+       |                                      ^
+    219|     expect(value.body.compose_version_shape).toEqual(shape('numeric', …
+    220|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps null shape on own failed-pipeline code 2
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'command_failed', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "pipeline_exit_status": 2,
+-   "status": "command_failed",
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:225:38
+    223|   it.each([2, 126, 130, 143])('keeps null shape on own failed-pipeline…
+    224|     const value = execute('v2.35.1+' + canary, { pipelineCode });
+    225|     expect(value.body.compose_probe).toMatchObject({ status: 'command_…
+       |                                      ^
+    226|     expect(value.body.compose_version_shape).toBeNull();
+    227|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps null shape on own failed-pipeline code 126
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'command_failed', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "pipeline_exit_status": 126,
+-   "status": "command_failed",
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:225:38
+    223|   it.each([2, 126, 130, 143])('keeps null shape on own failed-pipeline…
+    224|     const value = execute('v2.35.1+' + canary, { pipelineCode });
+    225|     expect(value.body.compose_probe).toMatchObject({ status: 'command_…
+       |                                      ^
+    226|     expect(value.body.compose_version_shape).toBeNull();
+    227|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps null shape on own failed-pipeline code 130
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'command_failed', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "pipeline_exit_status": 130,
+-   "status": "command_failed",
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:225:38
+    223|   it.each([2, 126, 130, 143])('keeps null shape on own failed-pipeline…
+    224|     const value = execute('v2.35.1+' + canary, { pipelineCode });
+    225|     expect(value.body.compose_probe).toMatchObject({ status: 'command_…
+       |                                      ^
+    226|     expect(value.body.compose_version_shape).toBeNull();
+    227|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > keeps null shape on own failed-pipeline code 143
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'command_failed', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "pipeline_exit_status": 143,
+-   "status": "command_failed",
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:225:38
+    223|   it.each([2, 126, 130, 143])('keeps null shape on own failed-pipeline…
+    224|     const value = execute('v2.35.1+' + canary, { pipelineCode });
+    225|     expect(value.body.compose_probe).toMatchObject({ status: 'command_…
+       |                                      ^
+    226|     expect(value.body.compose_version_shape).toBeNull();
+    227|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > prioritizes the overflow detector over a failed pipeline and keeps null shape
+AssertionError: expected { status: 'not_run', …(3) } to match object { …(3) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "captured_bytes": 16385,
+-   "pipeline_exit_status": 2,
+-   "status": "output_bound_exceeded",
++   "captured_bytes": null,
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:232:38
+    230|   it('prioritizes the overflow detector over a failed pipeline and kee…
+    231|     const value = execute('z'.repeat(20000), { pipelineCode: 2 });
+    232|     expect(value.body.compose_probe).toMatchObject({ status: 'output_b…
+       |                                      ^
+    233|     expect(value.body.compose_version_shape).toBeNull();
+    234|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 independent classification matrix > bounds a hung capture at five seconds with null shape and unchanged refusal
+AssertionError: expected { status: 'not_run', …(3) } to match object { status: 'command_failed', …(2) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "captured_bytes": 0,
+-   "pipeline_exit_status": 124,
+-   "status": "command_failed",
++   "captured_bytes": null,
++   "pipeline_exit_status": null,
++   "status": "not_run",
+  }
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:240:38
+    238|     const start = Date.now(), value = execute('', { hang: true });
+    239|     expect(Date.now() - start).toBeLessThan(9_000);
+    240|     expect(value.body.compose_probe).toMatchObject({ status: 'command_…
+       |                                      ^
+    241|     expect(value.body.compose_version_shape).toBeNull();
+    242|     refused(value);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 real jq validator data-driven matrix > accepts own positive boundary rows through the real filter
+AssertionError: expected null to match object { tail_bytes: 32, …(2) }
+
+- Expected:
+{
+  "prefix": "v_numeric",
+  "tail_bytes": 32,
+  "tail_charset": "legacy",
+}
+
++ Received:
+null
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:302:42
+    300|       expect(gate(body).status, JSON.stringify(body.compose_version_sh…
+    301|     }
+    302|     expect(okBody.compose_version_shape).toMatchObject({ tail_bytes: 3…
+       |                                          ^
+    303|     expect(vendorBody.compose_version_shape.prefix).toBe('docker_compo…
+    304|     expect(emptyBody.compose_version_shape.prefix).toBe('empty');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 real jq validator data-driven matrix > rejects own enum/type negatives through the real filter
+AssertionError: null/undefined shape on ok: expected +0 not to be +0 // Object.is equality
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:323:99
+    321|     }
+    322|     for (const compose_version_shape of [null, undefined]) {
+    323|       expect(gate({ ...okBody, compose_version_shape }).status, 'null/…
+       |                                                                                                   ^
+    324|       expect(gate({ ...vendorBody, compose_version_shape }).status, 'n…
+    325|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 real jq validator data-driven matrix > rejects own relation/canary negatives and preserves old allowlists
+AssertionError: {"schema_version":1,"operation":"host-preflight","source_sha":"dddddddddddddddddddddddddddddddddddddddd","timestamp":"2026-10-09T15:44:06Z","outcome":"refused","reason":"missing_tools","project":"toke: expected +0 not to be +0 // Object.is equality
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:345:110
+    343|       { ...okBody, storage: { ...okBody.storage, volume_driver: 'nfs' …
+    344|     ];
+    345|     for (const candidate of bad) expect(gate(candidate).status, JSON.s…
+       |                                                                                                              ^
+    346|     // Empty-prefix relation: any flag true or nonzero captured_bytes …
+    347|     for (const key of ['has_cr', 'has_lf', 'has_horizontal_space', 'ha…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/61]⎯
+
+ FAIL  tests/evaluator/compose-shape-r2-support.test.ts > r2 mechanical frozen boundaries > adds only classification lines to the script and deletes nothing
+AssertionError: expected 35 to be 34 // Object.is equality
+
+- Expected
++ Received
+
+- 34
++ 35
+
+ ❯ tests/evaluator/compose-shape-r2-support.test.ts:384:26
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/61]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  61 failed | 10 passed (71)
+   Start at  22:44:05
+   Duration  1.84s (transform 29ms, setup 0ms, import 38ms, tests 1.53s, environment 0ms)
+

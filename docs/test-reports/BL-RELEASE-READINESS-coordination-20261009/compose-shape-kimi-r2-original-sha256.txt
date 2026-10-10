@@ -1,0 +1,12 @@
+3b3c57729ecc847d9c35c4dd7963d0c1d7d45d36157f95b35a5d97e75a99c50d  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/01-existing-122-raw.log
+c8de62b54ff39f2b48283c9c960198e8e50533b0fcf9c4a00e5794825ec17387  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/02-verify-lint-raw.log
+6ed410573b1d5e2bf77ff784a6d347dbc34ce446e2ce1545c0f0a542e81bb909  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/03-r2-controls-raw.log
+bf24f1e0cc2b0cfe47472ef79896e374b89169647f073239b8ebd0dd3755e7c0  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/04-r2-controls-corrected-raw.log
+8e9b57e384f57d14a3a5e7d5465197b5073efe9b77d6c07db041bf766d70c94d  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/05-r2-controls-final-raw.log
+c7cf77414426616e2fb83bd2f697650922fa24ca2bf38953a955d3ac0ddc9d8e  docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010/06-r2-controls-final2-raw.log
+75bc1f6ecf59f6994d8bf172df433d4d33b0cd3fb872e6d487a29981871c30eb  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-receipt-original.json
+f3a9642d98899e1cf9441102197b084b0a733ee6257438b3c9974cbb25c3b93d  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-validation-original.txt
+bb9dfc87dedcc9fb1dd57486fc1e69fe43a24bf67131ab74aaefec6c73246f4c  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-runtime-original.log
+814af18b9d4c4b0562c58dd3cafe8a726d59acdf36ef506200f52d4eec7d1eb7  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-dispatch-original.log
+d84cd6e8a4e105a977676361b228807298636e003ddac2ee83c78ab55f431b27  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-kimi-r2-own-controls-original.ts.txt
+7d844eb00119a47a0964e0619da9327d1a5d63b5baeb6775c60a9e4141d29bca  docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/public-health-20261010-original.json
