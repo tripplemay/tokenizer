@@ -1,0 +1,164 @@
+{
+  "schema_version": "dispatch-timeout-findings/1",
+  "analyzed_at": "2026-10-10T09:45:38Z",
+  "task_type": "harness section 1.5 independent supporting read-only fault analysis, not Generator/Evaluator acceptance",
+  "analysis_status": "COMPLETE_WITH_UNKNOWN_CAUSE",
+  "release_ready": false,
+  "new_acceptance": "BLOCKED",
+  "stop_scope": "This supporting evaluation chain only; not the entire user goal.",
+  "own_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-dispatch-timeout-findings-20261010",
+  "own_branch": "codex/dispatch-timeout-findings-20261010",
+  "analysis_base": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "evaluation_source": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "roots": {
+    "P": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008",
+    "C": "P/docs/test-reports/BL-RELEASE-READINESS-coordination-20261009",
+    "R": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009",
+    "S": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-dispatch-state-20261009",
+    "T": "P/docs/test-reports/BL-COMPOSE-VERSION-SHAPE-kimi-r2-partial-original-20261010"
+  },
+  "known": [
+    "Both disk envelopes and receipts bind source 5c5c283b08d225b42d8db19abcbe5d3c1f562ac4, target local-cli--kimi--evaluator, descriptor cap 2400 and effective timeout 1800.",
+    "r1 receipt is TIMEOUT/124/deadline with duration_s=1802. r2 receipt is TIMEOUT/124/deadline with duration_s=2305. These values are retained, not normalized to 1800.",
+    "Both original external timeout sidecars independently contain reason=deadline and exit_code=124. Durable run-meta files exist in S and are semantically identical to the transported receipts; their different hashes are formatting differences.",
+    "The declared verdict file is absent in both retained evaluation worktrees. The stream ends without a verdict-write tool call. Receipt validation originals say CANCELED; the current validator's matching terminal branch returns 4.",
+    "r2 is the one allowed re-dispatch after r1. dispatch-mode.md:245-246 and validator:860 require hard stop after it still fails. No third evaluation dispatch is authorized.",
+    "The runner computes duration immediately after waiting for the helper, before usage extraction/meta writing. This 2305 cannot be attributed to those later stages from current code.",
+    "The local-cli runner redirects stdout/stderr directly to a regular log file. It has no outer tee/pipe drain. Pipes inside Kimi Bash tool commands are distinct and not evidence of outer-runner pipe delay.",
+    "All eight inspected current dispatch/registry files are byte-identical to the repair worktree disk and unchanged between evaluation source and analysis base. The seven dispatch files also match the framework template mirror. Historic helper argv/digest was not recorded, so this does not prove absence of a historic --timeout-helper override."
+  ],
+  "timing": {
+    "precision_note": "Filesystem timestamps are observed metadata, not explicit helper launch/deadline/signal events. Test Start at values have no timezone; they are preserved verbatim, not converted.",
+    "r1": {
+      "task_id": "compose-version-shape-5c5c283-kimi-support-r1",
+      "duration_s": 1802,
+      "effective_timeout_s": 1800,
+      "log_birthtime": "2026-10-09T14:51:41.579Z",
+      "last_log_mtime": "2026-10-09T15:17:48.608Z",
+      "timeout_status_birthtime": "2026-10-09T15:21:43.705Z",
+      "run_meta_mtime": "2026-10-09T15:21:43.811Z",
+      "integer_epoch_status_minus_log_birth_s": 1802,
+      "last_stream_event": "R/run-compose-version-shape-5c5c283-kimi-support-r1.log:553-554; Write own test, 40570 bytes; no execution of that test or verdict write follows",
+      "interpretation": "1802 is consistent with 1800 plus default 2-second TERM grace; exact trigger/kill timing is not recorded."
+    },
+    "r2": {
+      "task_id": "compose-shape-5c5c283-kimi-support-r2-once",
+      "duration_s": 2305,
+      "effective_timeout_s": 1800,
+      "observed_over_effective_s": 505,
+      "log_birthtime": "2026-10-09T15:27:43.756Z",
+      "last_log_mtime": "2026-10-09T15:48:48.596Z",
+      "timeout_status_birthtime": "2026-10-09T16:06:08.744Z",
+      "timeout_status_mtime": "2026-10-09T16:06:08.745Z",
+      "run_meta_mtime": "2026-10-09T16:06:08.851Z",
+      "integer_epoch_status_minus_log_birth_s": 2305,
+      "last_stream_event": "R/run-compose-shape-5c5c283-kimi-support-r2-once.log:767-768; grep recorded verify/lint exits=0; no verdict write follows",
+      "interpretation": "The observed 2305 is corroborated by filesystem timing and durable meta, not merely a receipt-copy typo. The last log write predates the nominal 1800-second bound. It does not show Kimi continuing to execute past that bound."
+    },
+    "unknown": [
+      "Exact parent START epoch, helper launch epoch/PID, computed deadline epoch, deadline-detected epoch, TERM/KILL/reap epochs and exit timestamps.",
+      "Whether host suspend, clock adjustment, scheduling delay, descendant inspection, process reaping or another mechanism produced r2's extra 505 seconds.",
+      "Whether the helper detected the deadline late versus detected it on time and spent the excess in cleanup/wait."
+    ]
+  },
+  "current_execution_trace": [
+    {
+      "source": ".agents-registry.json:25-40; .claude/dispatch/tool-catalog.py:653-654,1341-1365,1383-1403",
+      "fact": "Kimi integration local_cli uses adapter kimi and timeout_s=2400; catalog derives local-cli--kimi--evaluator."
+    },
+    {
+      "source": ".claude/dispatch/dispatch-run.sh:49-57,94-128,175-216",
+      "fact": "Envelope/repo/registry/active-mode checks, adapter resolution and target lookup precede local-cli exec into sandbox-profile.sh. There is no separate local-cli-runner.sh."
+    },
+    {
+      "source": ".claude/dispatch/dispatch_common.py:154-172; .claude/dispatch/sandbox-profile.sh:477-479,747,752-764",
+      "fact": "effective_timeout=min(deadline_s, descriptor cap)=1800; argv is rendered as kimi -p <one inline envelope JSON argument> --output-format stream-json."
+    },
+    {
+      "source": ".claude/dispatch/transports/adapters/kimi.json:5-12; .claude/dispatch/sandbox-profile.sh:785-839",
+      "fact": "Parent START=date +%s; helper argv contains --timeout 1800 --term-grace 2 --status-file <R/timeout-task.json> --cwd <evaluation worktree> -- env -i <allowlisted env> <Kimi argv>. argv delivery has stdin=/dev/null and direct >log 2>&1. Bash waits for the helper PID and duration is end date +%s minus START."
+    },
+    {
+      "source": ".claude/dispatch/process-timeout.py:26-30,51-72,105-123,158-160,173-203",
+      "fact": "Helper deadline uses time.time()+timeout, Popen starts a new session, polling is 20ms. Deadline calls descendant-group inspection, TERM, monotonic grace, KILL and reap. Status deadline/124 is written only after stop/reap returns. ps check_output has no timeout; the fallback proc.wait() also has no timeout. These are code-level unbounded cleanup points, not proven causes of this run."
+    },
+    {
+      "source": ".claude/dispatch/sandbox-profile.sh:843-853,970-1012; .claude/dispatch/validate-dispatch.sh:630-635,853-860",
+      "fact": "Only helper reason=deadline plus exit124 becomes TIMEOUT. The TIMEOUT branch wins before artifact existence checks; validator maps it to CANCELED and the terminal branch to exit4. Artifact absence was separately checked on disk."
+    }
+  ],
+  "partial_test_facts_not_acceptance": {
+    "r1": "Stream:489 preserves existing 122 passed, Start at 21:56:48, duration35.64s. Stream:549-550 shows lint/verify exits0. Own control file is written at553-554 but no own-control run/verdict is recorded.",
+    "r2_existing": "T/01-existing-122-raw.log:53-56 preserves 122 passed, Start at22:32:22, duration36.25s. T/02-verify-lint-raw.log:24,30 preserves exits0.",
+    "r2_initial": "T/03-r2-controls-raw.log:1226-1229 preserves 61 failed/10 passed, Start at22:44:05, duration1.84s. Initial facts include null-shape assertions, missing_tools and expected35 vs34; do not erase them.",
+    "r2_correction1": "T/04-r2-controls-corrected-raw.log:148-151 preserves 3 failed/68 passed, Start at22:45:42, duration24.84s. Failures include tail_bytes14 vs12,9 vs10 and frozen-boundary fi assertion.",
+    "r2_correction2": "T/05-r2-controls-final-raw.log:107-110 preserves 1 failed/70 passed, Start at22:46:48, duration25.03s; remaining tail_bytes14 vs12.",
+    "r2_later_pass": "T/06-r2-controls-final2-raw.log:19-22 preserves 71 passed, Start at22:47:37, duration25.35s. Stream Write/Edit calls show the evaluator's own test changed between runs. Later green is not a signed verdict, proof of correction legitimacy, or release acceptance.",
+    "log_completeness_limit": "r2 npm ci and initial verify/lint commands used tail -5; there is no separately retained complete initial npm-ci transcript in the inspected report directory. The six copied logs are hash-matched originals, not proof that every earlier command was fully captured."
+  },
+  "independent_runtime_meta_and_api": {
+    "durable_meta": "S contains both run-meta files, with unchanged receipt facts but no started_at/finished_at/deadline/signal/PID/monotonic fields. Timeout sidecars contain only reason and exit_code.",
+    "stream": "71 r1 and 76 r2 parseable JSON events; neither stream has event timestamps. Other physical lines are mixed tool output, not missing JSON evidence fabricated by this analysis.",
+    "api_code": "src/cli/harness-dispatch.ts:404-409 synthesizes finishedAt from file mtime and startedAt from finishedAt-duration when the original fields are absent. Lines443-458 scan only project-root .harness-dispatch, not custom S. app/api/harness/report/route.ts:798-834 persists client-reported values, not independent process timing.",
+    "boundary": "No API/network query was made. Historic server ingestion/records are unknown; API-shaped start/end values cannot supply independent timing here merely because their field names exist."
+  },
+  "fingerprints_sha256": {
+    "C/compose-shape-evaluation-envelope-r1.json": "65651b525ab1d4170461115327207d4c0ad29326f9af87230646b16c20697be9",
+    "C/compose-shape-evaluation-envelope-r2.json": "cc579be1ae0a4c9d59c619e5672448ec681301a5d29d3db33ba21d8db73f60d2",
+    "C/compose-shape-kimi-r1-receipt-original.json": "fbbf5c6e788f83996c273ccb7564896c84f2d9af4adb52dfde9aecfebc426898",
+    "C/compose-shape-kimi-r2-receipt-original.json": "75bc1f6ecf59f6994d8bf172df433d4d33b0cd3fb872e6d487a29981871c30eb",
+    "C/compose-shape-kimi-r1-validation-original.txt": "f9fd36af57e48a1f83c037890a1ff337c05cb10972f692febf8289b572022654",
+    "C/compose-shape-kimi-r2-validation-original.txt": "f3a9642d98899e1cf9441102197b084b0a733ee6257438b3c9974cbb25c3b93d",
+    "C/compose-shape-kimi-r1-dispatch-original.log": "fbd6bd66e477fcff4caffa9bd1cf1bf8bf32a7cffd2cdfe51688b3f7288b9eec",
+    "C/compose-shape-kimi-r2-dispatch-original.log": "814af18b9d4c4b0562c58dd3cafe8a726d59acdf36ef506200f52d4eec7d1eb7",
+    "C/compose-shape-kimi-r2-runtime-original.log": "bb9dfc87dedcc9fb1dd57486fc1e69fe43a24bf67131ab74aaefec6c73246f4c",
+    "C/compose-shape-kimi-r2-original-sha256.txt": "47021bad00d67e3c14643aafc145aed246faf50a03f580c0848ee242351dcafd",
+    "P/docs/test-reports/BL-COMPOSE-VERSION-SHAPE-20261009/kimi-r1-runtime-original.log": "3e9b06ed211e2f347c4ac5098aa3d14182d3fc9216716e703394884b17524c0c",
+    "R/run-compose-version-shape-5c5c283-kimi-support-r1.log": "3e9b06ed211e2f347c4ac5098aa3d14182d3fc9216716e703394884b17524c0c",
+    "R/run-compose-shape-5c5c283-kimi-support-r2-once.log": "bb9dfc87dedcc9fb1dd57486fc1e69fe43a24bf67131ab74aaefec6c73246f4c",
+    "R/timeout-compose-version-shape-5c5c283-kimi-support-r1.json": "7f45dce170b1822fc5323faedc5def5cf6925ce90ba57c578fdc068fcd26f688",
+    "R/timeout-compose-shape-5c5c283-kimi-support-r2-once.json": "7f45dce170b1822fc5323faedc5def5cf6925ce90ba57c578fdc068fcd26f688",
+    "S/run-meta-compose-version-shape-5c5c283-kimi-support-r1.json": "3e44e2c0ffaa144c8c2213d95e42c08b1c40654bdc4a86aceed90a4d802ba7b9",
+    "S/run-meta-compose-shape-5c5c283-kimi-support-r2-once.json": "86713d1f6dcd1f6ab441cfc7259547fe254bc85a07a09113e6c7e4bf4e435fa1",
+    "T/01-existing-122-raw.log": "3b3c57729ecc847d9c35c4dd7963d0c1d7d45d36157f95b35a5d97e75a99c50d",
+    "T/02-verify-lint-raw.log": "c8de62b54ff39f2b48283c9c960198e8e50533b0fcf9c4a00e5794825ec17387",
+    "T/03-r2-controls-raw.log": "6ed410573b1d5e2bf77ff784a6d347dbc34ce446e2ce1545c0f0a542e81bb909",
+    "T/04-r2-controls-corrected-raw.log": "bf24f1e0cc2b0cfe47472ef79896e374b89169647f073239b8ebd0dd3755e7c0",
+    "T/05-r2-controls-final-raw.log": "8e9b57e384f57d14a3a5e7d5465197b5073efe9b77d6c07db041bf766d70c94d",
+    "T/06-r2-controls-final2-raw.log": "c7cf77414426616e2fb83bd2f697650922fa24ca2bf38953a955d3ac0ddc9d8e",
+    "C/compose-shape-kimi-r2-own-controls-original.ts.txt": "d84cd6e8a4e105a977676361b228807298636e003ddac2ee83c78ab55f431b27",
+    ".claude/dispatch/dispatch-run.sh": "18cc397975697dbfc7ed8fdaf8384c2cc9854540457c79da13bba2ff91da71d4",
+    ".claude/dispatch/sandbox-profile.sh": "9c47ecd5600cca4b611a04d68df1025972d36cfccda3febfb330643e97e15353",
+    ".claude/dispatch/dispatch_common.py": "15fd195ba23a194e620499a8ea126266a39811ed34b672ff222d0fa27c95e1ca",
+    ".claude/dispatch/process-timeout.py": "60f0a9bc16cd2a51b448df4e2bd6ddb038e8ab7b83b17e504ea812f596c900fe",
+    ".claude/dispatch/tool-catalog.py": "b60cae4436ace6c0615ffa442705703463fbb5193ec960f7ae8250874b04ed37",
+    ".claude/dispatch/transports/adapters/kimi.json": "9c5093df0465e9e4f1734456872728ac119c23a2f60b444aad677f3f86fa6dfc",
+    ".claude/dispatch/validate-dispatch.sh": "c60cec714306475951b7216adc5f604a74a217332958e15959c01be07b341e6f",
+    ".agents-registry.json": "dfd179de1119198574556d555f97a3d520232f0bf0f78db99c80feb451d31a7f",
+    "src/cli/harness-dispatch.ts": "579f4a356e23cd2ee9749cd58580badb66436a731421c1612d741543c8c08eed",
+    "app/api/harness/report/route.ts": "2c8eacbe5932057b32129a788b1d5dd0fd930223f29888c87aa67f5810f526bc",
+    "framework/harness/dispatch-mode.md": "b406f1bf10296ab403e9c6b0b16db316b2978ce2c5da5a6ef4a279cdf4557659"
+  },
+  "hash_validation": {
+    "parent_vs_external_runtime_bytes": "Both r1 and r2 match exactly.",
+    "r2_manifest_selected_entries": "11 relevant entries checked PASS; unrelated public-health entry deliberately not read in this task. Coordinator added the dispatch-log hash during analysis; final snapshot uses committed 20bd3b2 manifest, not the earlier e2305a3b manifest.",
+    "durable_meta_vs_receipts": "Both JSON objects match exactly after parsing; receipt serialization differs."
+  },
+  "minimal_synthetic_replay_proposal": {
+    "executed": false,
+    "requires": "Separate authorization for a short local mock-only diagnostic; not permission for another model/evaluation dispatch or framework repair.",
+    "plan": [
+      "Use an owned temporary external-disk directory and standard-library-only mock; no registry/auth/model/dependencies/network. Test the direct helper's supported --timeout 1 or2, not a weakened production envelope bound.",
+      "Record wall and monotonic timestamps for mock launch, TERM receipt, exit, wrapper wait return and sidecar write; capture PID/PPID/PGID for only owned mock descendants. Use a separate short watchdog to avoid hanging diagnostics.",
+      "Case1: cooperative mock. Case2: mock ignores TERM with same-group and own-session descendants. Case3: separate descendant retains stdout, with direct regular-file redirection as in runner; compare with an explicitly piped variant to isolate pipe-drain behavior.",
+      "Case4: helper --clock-file hook advances past deadline, testing immediate detection after an artificial wall-clock jump without changing the host clock. Optional unit-level mocked ps/reap delays isolate the unbounded cleanup stages; they do not establish the historic r2 cause.",
+      "Compare unmodified helper and isolated instrumentation copy; originals and framework untouched. Preserve all failures, phase traces and SHA256s. Do not invoke Kimi, extend2400/1800, weaken deliverable/receipt gates, or reopen acceptance."
+    ],
+    "historical_resolution_limit": "Synthetic reproduction can expose a mechanism but cannot prove which mechanism occurred in r2 without contemporaneous phase/host evidence."
+  },
+  "not_performed": [
+    "No new model invocation, third evaluation, receipt re-acceptance, tests, long native run, API/network/production/SSH/Secrets/credentials/dependency access.",
+    "No framework, dispatch, product, state, memory, original-evidence edits; no push.",
+    "No release/readiness acceptance, root-cause claim or conversion of partial green logs into evaluator signoff."
+  ]
+}

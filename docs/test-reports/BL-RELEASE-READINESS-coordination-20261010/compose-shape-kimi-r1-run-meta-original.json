@@ -1,0 +1,27 @@
+{
+  "task_id": "compose-version-shape-5c5c283-kimi-support-r1",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-COMPOSE-VERSION-SHAPE-SUPPORT-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-COMPOSE-VERSION-SHAPE-SUPPORT",
+  "ref": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-version-shape-5c5c283-kimi-support-r1",
+  "artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/BL-COMPOSE-VERSION-SHAPE-SUPPORT-local-cli--kimi--evaluator-compose-version-shape-5c5c283-kimi-support-r1/docs/test-reports/BL-COMPOSE-VERSION-SHAPE-SUPPORT-verdict.json",
+  "log": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009/run-compose-version-shape-5c5c283-kimi-support-r1.log",
+  "envelope_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261009/compose-shape-evaluation-envelope-r1.json",
+  "outcome": "TIMEOUT",
+  "exit_code": 124,
+  "duration_s": 1802,
+  "effective_timeout_s": 1800,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "deadline",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

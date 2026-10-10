@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator transport and structural validation, not acceptance",
+  "original_author_commit": "a7154786bfb650d03d27d4cf39ba55d35216821f",
+  "original_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-dispatch-timeout-findings-20261010",
+  "original_outputs": [
+    "docs/test-reports/dispatch-timeout-findings-20261010/analysis.json",
+    "docs/test-reports/dispatch-timeout-findings-20261010/README.md"
+  ],
+  "report_directory_compare_exit": 0,
+  "copied_additional_originals": [
+    "compose-shape-kimi-r1-run-meta-original.json",
+    "compose-shape-kimi-r2-run-meta-original.json",
+    "compose-shape-kimi-r1-timeout-sidecar-original.json",
+    "compose-shape-kimi-r2-timeout-sidecar-original.json"
+  ],
+  "source_state_directory": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-dispatch-state-20261009",
+  "source_timeout_directory": "/Volumes/ORICO/project/.worktrees/tokenizer-compose-shape-evaluation-20261009",
+  "original_hash_manifest": "dispatch-findings-transport-sha256.txt",
+  "copied_report_and_metadata_hash_checks": "6/6 PASS",
+  "durable_run_meta_and_receipt_semantic_comparison": "r1 and r2 PASS",
+  "sidecar_validation": "both exactly reason=deadline and exit_code=124",
+  "analysis_conclusion_transport": "Original 2305-second observation corroborated; extra 505-second cause unknown. Current unbounded ps/reap points are code risks, not historic causation proof.",
+  "dispatch_chain": "HARD_STOP; no third runtime attempt",
+  "synthetic_replay": "proposed only; not executed or approved by this transport",
+  "framework_or_dispatch_source_edits": false,
+  "state_memory_or_human_decision_edits": false,
+  "push_or_production_mutation": false,
+  "release_ready": false
+}
