@@ -1,0 +1,22 @@
+{
+  "format":"windows-p1-prepare-plan-author-failure-ledger-v1",
+  "immutable_initial_failures":[
+    {
+      "type":"static-jq-compile-error",
+      "target_execution":false,
+      "workdir":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-failure-plan-20261011",
+      "command":"jq '{variants:[.cases[].variant],caseHashes:[.cases[].scriptSha256],pendingLineExpected:([.tokens[]|length]|max)+2,pendingLineBound:.bounds.pending_line_bytes,sourcePaths:([.future_added_source_paths[],\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\",.frozen_runtime_sources[].path]|sort),sourceCount:([.future_added_source_paths[],\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\",.frozen_runtime_sources[].path]|length),uploadCount:(.output.upload_files|length)}' docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "exit_code":3,
+      "error":"jq: error: syntax error, unexpected '+', expecting '}' (Unix shell quoting issues?) at <top-level>, line 1:\n{variants:[.cases[].variant],caseHashes:[.cases[].scriptSha256],pendingLineExpected:([.tokens[]|length]|max)+2,pendingLineBound:.bounds.pending_line_bytes,sourcePaths:([.future_added_source_paths[],\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\",.frozen_runtime_sources[].path]|sort),sourceCount:([.future_added_source_paths[],\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\",.frozen_runtime_sources[].path]|length),uploadCount:(.output.upload_files|length)}\n                                                                                                            \njq: 1 compile error\n",
+      "corrected_query_change":"Wrap the complete ([.tokens[]|length]|max)+2 object value in parentheses; no input modified",
+      "corrected_exit_code":0,
+      "corrected_result":{"variants":["T0","T1","T2","T3"],"pendingLineExpected":29,"pendingLineBound":29,"sourceCount":11,"uploadCount":16}
+    }
+  ],
+  "terminology_correction":{"initial_statement":"five keys misinterpreted as Git configuration pairs plus separate with inputs","corrected_statement":"C002 has five env entries representing two Git configuration pairs; with has three separate action inputs","actual_source_conflict":false,"file_mutation":false},
+  "display_limitations":["Initial broad static rg --files listing and combined large source/log reads exceeded output display budgets; focused reads were used subsequently","rg --files omitted ignored original logs; exact authorized basenames were supplied and read explicitly"],
+  "manual_path_error":false,
+  "all_apply_patch_paths_absolute":true,
+  "target_source_import_VM_CLI_tests_npm_native_PowerShell_git_fixture":false,
+  "network_state_registry_harness_memory_or_original_mutation":false
+}

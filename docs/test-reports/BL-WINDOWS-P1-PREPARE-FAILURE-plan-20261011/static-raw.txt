@@ -1,0 +1,70 @@
+Passive static captures only. No target import/CLI/tests/native execution.
+All command workdirs: /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-failure-plan-20261011
+Parent originals retain their original raw bytes; this file does not replace them.
+
+$ pwd -P
+/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-failure-plan-20261011
+[exit 0]
+$ git -c core.fileMode=false rev-parse HEAD
+61cf64e67a6fda231bb090e77c19d5ececb908af
+[exit 0]
+$ git -c core.fileMode=false status --short
+[empty stdout; exit 0 before report creation]
+
+SHA-256 capture stdout (shasum -a 256, exit0); paths shown relative to original directory:
+13e64bc0d8d05ad4dbde18bc5bf0418758bb6c210c0d15e6b83892dc2cc157bb  windows-binding-identity-native-run38160000449-final-original.json
+dc92f5d150a7c08ebbee610a66f1b2db8c2c88f5378ad00fa4468a662f4b9ce0  windows-binding-identity-native-run38160000449-jobs-original.json
+244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c  windows-binding-identity-native-run38160000449-artifacts-original.json
+7bd3bff940792b1fe8b4fa4de6df544b6e0f9f773b401bce2596fb9856230a6c  windows-binding-identity-native-run38160000449-full-original.log
+5d6a2062c162ba7688f54f61b9d4ad638ee0e0392798c8bc0daac054528b79f5  windows-binding-identity-native-run38160000449-transport-manifest.json
+94f90361b1aecdae5a84bd850b823411a8e1e9e0c43019bbf2e6178911360172  windows-binding-identity-native-run38160000449-coordinator-adjudication.json
+835421488f34972e3aa45a24bfad59151e6d4648fadfecdb775a9c5abbc70bdd  windows-binding-identity-61cf64e-publication-original.log
+dc0eb77c7159136449493826c3884f8193a047ca9cc6d267d45d8e830efeab45  windows-binding-identity-61cf64e-run-list-original.json
+
+Byte-count capture (wc -c, exit0), in the same order:
+12298
+3116
+32
+21556
+2045
+3295
+148
+283
+total 42773
+
+Four source61 Git blob SHA-256 stdout:
+$ git -c core.fileMode=false show 61cf64e67a6fda231bb090e77c19d5ececb908af:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs | shasum -a 256
+6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae  -
+$ git -c core.fileMode=false show 61cf64e67a6fda231bb090e77c19d5ececb908af:.github/workflows/windows-p1-stages-diagnostic.yml | shasum -a 256
+df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e  -
+$ git -c core.fileMode=false show 61cf64e67a6fda231bb090e77c19d5ececb908af:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json | shasum -a 256
+f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130  -
+$ git -c core.fileMode=false show 61cf64e67a6fda231bb090e77c19d5ececb908af:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md | shasum -a 256
+9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb  -
+[all exit0]
+
+Decoded script byte hashes, jq -rj '.cases[N].script' binding JSON | shasum -a256:
+N=0: 1e8f2a91c2b0f55d437927437d10578122b0fa0d7428f5c9cfcb56422104ad9e  -
+N=1: bf5ac3543468a01c9830a7d010aead5e46f80fdb2ce31750f03d672752c4b9f4  -
+N=2: ccea7ef7b73388f7bd45378e371ea78755ce035ffc5d95cce5eaabce8856bd98  -
+N=3: 82276a40828e48dd7ffed24d1f2cd374ae82929bb6a342818115c9eee34d2550  -
+[all exit0; no script execution]
+
+First jq aggregate query failed; exact command and original error retained in failure-ledger.json.
+Original error first/last lines:
+jq: error: syntax error, unexpected '+', expecting '}' (Unix shell quoting issues?) at <top-level>, line 1:
+jq: 1 compile error
+[exit3; no writes]
+Corrected independent static query output fields:
+variants: T0,T1,T2,T3
+pendingLineExpected:29
+pendingLineBound:29
+sourceCount:11
+uploadCount:16
+[exit0; no writes]
+
+$ jq -nr '"TW_P1_PREPARE_FAILURE_V1:P00\n" | utf8bytelength'
+29
+$ jq -nr '"windows-p1-initial diagnostic evidence unavailable\n" | utf8bytelength'
+51
+[both exit0; fixed literal lengths only]

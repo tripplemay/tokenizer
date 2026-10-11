@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T17:45:00Z",
+  "role": "Coordinator exact supporting Planner transport and passive pre-scope commission only",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "planner_commit": "22946b380fdf43109a30d7e69e87d5a9ab1dbd10",
+  "planner_original_verdict": "PLAN_ONLY_BLOCKED_PENDING_FRESH_PRE_SCOPE; root cause not uniquely identifiable",
+  "original_proposal_sha256": "7aae5b7b1d3d25751f32098e4631a18352c5bb073316a750cf1040905b0260e7",
+  "original_verdict_sha256": "c167c3a0a3a317aca6c22c23033406fe3a7c4e67da7cc85d8e36338955566c5b",
+  "transport": "Seven original report-only files byte-identical to Planner commit; transport manifest separate; no source changes",
+  "evidence_boundary": "Source control-flow inference indicates top-level binding load/hash/JSON parsing completed before generic main catch; no direct runner bytes/config observation and no individual prepare stage success proven",
+  "proposal": "New prepare-only fixed P00-P12 terminal observation, one29-byte line max plus unchanged51-byte generic/exit1. No added success/other-mode/stdout/raw-data/file/upload output; native and acceptance bounds remain frozen",
+  "pre_scope": {
+    "authorized": true,
+    "fresh_context": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-failure-pre-scope-20261011",
+    "start_commit": "22946b380fdf43109a30d7e69e87d5a9ab1dbd10",
+    "scope": "Passive independent specification/projection sufficiency, successor authority/confinement/privacy/error semantics review only. Block ambiguities rather than invent implementation or alter locked contracts",
+    "no_target_import_VM_CLI_tests_fixtures_npm_native_network": true,
+    "no_state_or_memory_or_pending_gate_writes": true
+  },
+  "Generator_implementation_authorized": false,
+  "publication_or_new_CI_or_source61_rerun_authorized": false,
+  "main_or_production_mutation": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "Deferred by user",
+  "release_ready": false
+}
