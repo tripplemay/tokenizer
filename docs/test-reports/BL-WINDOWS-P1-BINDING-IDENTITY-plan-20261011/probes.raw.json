@@ -1,0 +1,2203 @@
+{
+  "format": "windows-p1-binding-identity-planner-probe-v1",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "predecessor": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "sourceTree": "e29bf76487ec8dc7cca5e18392b2eaed3b1c1223",
+  "predecessorTree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+  "receipts": [
+    {
+      "path": "windows-checkout-native-run38153928452-final-original.json",
+      "bytes": 12289,
+      "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd",
+      "matchesTransportManifest": true
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d",
+      "matchesTransportManifest": true
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+      "matchesTransportManifest": true
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-full-original.log",
+      "bytes": 25522,
+      "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4",
+      "matchesTransportManifest": true
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-transport-manifest.json",
+      "bytes": 1564,
+      "sha256": "1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961",
+      "matchesTransportManifest": null
+    }
+  ],
+  "liveTrace": {
+    "runId": 38153928452,
+    "runAttempt": 1,
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "conclusion": "failure",
+    "jobId": 114512876414,
+    "branch": "codex/windows-p1-stages-ci-20261010",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Run actions/setup-node@v4",
+        "conclusion": "success"
+      },
+      {
+        "number": 4,
+        "name": "Prepare exact-candidate provenance",
+        "conclusion": "failure"
+      },
+      {
+        "number": 5,
+        "name": "Install locked dependencies",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 6,
+        "name": "Synthetic checks only",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 7,
+        "name": "INITIAL once",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 8,
+        "name": "Seal safe evidence",
+        "conclusion": "failure"
+      },
+      {
+        "number": 9,
+        "name": "Verify sealed files immediately",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 10,
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 19,
+        "name": "Post Run actions/setup-node@v4",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 20,
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "number": 21,
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "artifactCount": 0,
+    "actual": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+    "expected": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "diagnosticEntriesReached": false,
+    "WindowsBindingBytesCaptured": false,
+    "WindowsAutocrlfObserved": false
+  },
+  "sourceHashes": [
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "source": {
+        "bytes": 3228,
+        "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+      },
+      "predecessor": {
+        "bytes": 3103,
+        "sha256": "94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"
+      },
+      "workingBytesEqualSource": true
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "source": {
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+      },
+      "predecessor": {
+        "bytes": 34330,
+        "sha256": "ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"
+      },
+      "workingBytesEqualSource": true
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "source": {
+        "bytes": 22275,
+        "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+      },
+      "predecessor": {
+        "bytes": 19264,
+        "sha256": "bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"
+      },
+      "workingBytesEqualSource": true
+    },
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "source": {
+        "bytes": 73022,
+        "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+      },
+      "predecessor": {
+        "bytes": 73022,
+        "sha256": "3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b"
+      },
+      "workingBytesEqualSource": true
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "source": {
+        "bytes": 53608,
+        "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+      },
+      "predecessor": {
+        "bytes": 53608,
+        "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+      },
+      "workingBytesEqualSource": true
+    },
+    {
+      "path": ".gitattributes",
+      "source": {
+        "bytes": 682,
+        "sha256": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57"
+      },
+      "predecessor": {
+        "bytes": 682,
+        "sha256": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57"
+      },
+      "workingBytesEqualSource": true
+    }
+  ],
+  "frozenInputs": [
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790",
+      "bytes": 24862,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+      "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+      "bytes": 11769,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+      "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+      "bytes": 10792,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+      "bytes": 51907,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+      "bytes": 4921,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+      "bytes": 5545,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+      "bytes": 3012,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+      "bytes": 16801,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+      "bytes": 4389,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "bytes": 413776,
+      "sourceAndPredecessorAndWorkingBytesEqual": true
+    }
+  ],
+  "attributePaths": [
+    ".gitattributes"
+  ],
+  "attributes": "docs/test-reports/B05-tcp-readiness-independent-20261007/evidence/** -text\nscripts/test/b05-tcp-readiness-independent.mjs -text\ntests/evaluator/b05-tcp-readiness-independent.test.ts -text\n/tests/cli/b06-batch-failure-queue.test.ts -text\n/tests/cli/b06-partial-ack.test.ts -text\n/tests/ci/b06-obsolete-queue-test-archive.test.ts -text\n/docs/test-reports/** -text\n/tests/cli/agent-sync-checkpoint.test.ts -text\n/tests/evaluator/bl-homepage-freshness-f002-f003.test.ts -text\n/tests/cli/b03-fixed-*.test.ts -text\n/tests/cli/b03-round2-*.test.ts -text\n/tests/fixtures/b03-round2-git-timeout.ts -text\n/tests/cli/b07-prereview-*.test.ts -text\n/tests/fixtures/b07-prereview-worker.ts -text\n",
+  "bindingLineEndings": {
+    "lf": 219,
+    "cr": 0,
+    "utf8Bom": false
+  },
+  "transforms": [
+    {
+      "name": "unchanged-control",
+      "bytes": 34853,
+      "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+      "matchesCiActual": false
+    },
+    {
+      "name": "LF-to-CRLF-only",
+      "bytes": 35072,
+      "sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+      "matchesCiActual": true
+    },
+    {
+      "name": "prepend-UTF8-BOM-only",
+      "bytes": 34856,
+      "sha256": "c7809d81afa276c0d88553289d3a0e3c07cac6117903b781de7c72ef9d0719c8",
+      "matchesCiActual": false
+    },
+    {
+      "name": "remove-final-LF-only",
+      "bytes": 34852,
+      "sha256": "937eb0694920799cb17f4c833d2163ec9969d39362a0a87b33f74c93b57522ae",
+      "matchesCiActual": false
+    }
+  ],
+  "fixture": {
+    "root": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+    "environmentBoundary": {
+      "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/opt/homebrew/bin:/opt/homebrew/Caskroom/codex/0.160.1/codex-path:/Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll:/Users/yixingzhou/.kimi-code/bin:/Users/yixingzhou/.mimocode/bin:/opt/homebrew/sbin:/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/Users/yixingzhou/.local/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1cb-plan-20261011/home",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1cb-plan-20261011/home",
+      "TMP": "/Volumes/ORICO/project/.wp1cb-plan-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1cb-plan-20261011/tmp",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1cb-plan-20261011/tmp",
+      "XDG_CONFIG_HOME": "/Volumes/ORICO/project/.wp1cb-plan-20261011/xdg",
+      "GIT_CONFIG_GLOBAL": "/Volumes/ORICO/project/.wp1cb-plan-20261011/globalGit",
+      "GIT_CONFIG_NOSYSTEM": "1",
+      "GIT_TERMINAL_PROMPT": "0",
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "checks": [
+      {
+        "autocrlf": "true",
+        "files": [
+          {
+            "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+            "bytes": 3298,
+            "sha256": "4204652f20c50bed4150e9564af88137892eea1ff12649e97e502110f6c64b4f",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+            "bytes": 35072,
+            "sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": true
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+            "bytes": 22383,
+            "sha256": "c3f502f5f880cb7072c68cb89b0a8a3ca43c7fd81926fbe97c2e5d484b1936d8",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+            "bytes": 73022,
+            "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "tests/diagnostics/windows-p1-stages.test.ts",
+            "bytes": 54286,
+            "sha256": "d3d12e802f5573981dca9bfd5827ee42b9292dc0528f3b4f3ddab18c8c08a4e9",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": ".gitattributes",
+            "bytes": 696,
+            "sha256": "65c435ab89b4d651bac5b8521462d22ab87524e8769a9c05010906ecf57d1e4a",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+            "bytes": 25030,
+            "sha256": "d1bbd6df29824fc7454ae2d6bee0536e858bf8e139cf631aa262e56646c63373",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+            "bytes": 11769,
+            "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+            "bytes": 10792,
+            "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+            "bytes": 51907,
+            "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+            "bytes": 4921,
+            "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/bounded-subprocess.ts",
+            "bytes": 5657,
+            "sha256": "befee3cadae66c47a3a6b1395c8652c4e34aff2495b6919fd578f5ca832fb247",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/bounded-subprocess-worker.mjs",
+            "bytes": 3106,
+            "sha256": "8ceac7e661ed0e285255db9ee93c245d3951637fbab5e9c55d5837836330414b",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/replay.ts",
+            "bytes": 17209,
+            "sha256": "48fc0578a0a228ed3822b8113b0456a981a1ee4916c9da0873ba20e932b3f158",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": ".github/workflows/windows-release-diagnostics.yml",
+            "bytes": 4492,
+            "sha256": "e9a7defe399fe84ca4cb85a7dd6c0623c98094a92fd8ad5b13eea62c30ee9996",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          },
+          {
+            "path": "package-lock.json",
+            "bytes": 425529,
+            "sha256": "bcc537143496a7ce022fcea4d328467cf62babbdbc864fb31438186485a9ff13",
+            "matchesSourceRawBytes": false,
+            "matchesCiActual": null
+          }
+        ]
+      },
+      {
+        "autocrlf": "false",
+        "files": [
+          {
+            "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+            "bytes": 3228,
+            "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+            "bytes": 34853,
+            "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": false
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+            "bytes": 22275,
+            "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+            "bytes": 73022,
+            "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "tests/diagnostics/windows-p1-stages.test.ts",
+            "bytes": 53608,
+            "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": ".gitattributes",
+            "bytes": 682,
+            "sha256": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+            "bytes": 24862,
+            "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+            "bytes": 11769,
+            "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+            "bytes": 10792,
+            "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+            "bytes": 51907,
+            "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+            "bytes": 4921,
+            "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/bounded-subprocess.ts",
+            "bytes": 5545,
+            "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/bounded-subprocess-worker.mjs",
+            "bytes": 3012,
+            "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "src/cli/replay.ts",
+            "bytes": 16801,
+            "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": ".github/workflows/windows-release-diagnostics.yml",
+            "bytes": 4389,
+            "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          },
+          {
+            "path": "package-lock.json",
+            "bytes": 413776,
+            "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+            "matchesSourceRawBytes": true,
+            "matchesCiActual": null
+          }
+        ]
+      }
+    ],
+    "nativeWindowsAcceptance": false,
+    "disposableOwnedFixtureOnly": true
+  },
+  "projection": {
+    "id": "C002",
+    "proposedBindingRevision": 3,
+    "sourceBase": "221f2f87d94db1656e3000662796d79621b696f5",
+    "changes": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "replacements": [
+          {
+            "before": "          GIT_CONFIG_COUNT: '1'\n          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_VALUE_0: 'true'\n",
+            "after": "          GIT_CONFIG_COUNT: '2'\n          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n"
+          }
+        ]
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "replacements": [
+          {
+            "before": "  \"revision\": 2,\n",
+            "after": "  \"revision\": 3,\n"
+          },
+          {
+            "before": "  \"updated_at_utc\": \"2026-10-11T14:04:39Z\",\n",
+            "after": "  \"updated_at_utc\": \"2026-10-11T16:11:16Z\",\n"
+          },
+          {
+            "before": "  \"revision_scope\": \"C001 checkout-step-only long-path compatibility; explicit four-path exception and two CLI identity hashes only; B001 unchanged; fresh scope and Coordinator ruling required\",\n",
+            "after": "  \"revision_scope\": \"C002 checkout-step-only raw-byte identity by core.autocrlf=false; C001 longpaths retained; explicit four-path projection and two CLI identity hashes only; all native contracts unchanged; fresh scope and Coordinator ruling required\",\n"
+          },
+          {
+            "before": "    \"checkout_env\":{\"GIT_CONFIG_COUNT\":\"1\",\"GIT_CONFIG_KEY_0\":\"core.longpaths\",\"GIT_CONFIG_VALUE_0\":\"true\"},\n",
+            "after": "    \"checkout_env\":{\"GIT_CONFIG_COUNT\":\"2\",\"GIT_CONFIG_KEY_0\":\"core.longpaths\",\"GIT_CONFIG_VALUE_0\":\"true\",\"GIT_CONFIG_KEY_1\":\"core.autocrlf\",\"GIT_CONFIG_VALUE_1\":\"false\"},\n"
+          }
+        ]
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "append": "\n## 8. C002 checkout raw-byte identity successor scope (proposed 2026-10-11 UTC)\n\nRevision 3 is a proposal only. It grants no implementation, publication, native execution, native environment repair or release authority. C001 at source221 is the already frozen count1/three-key long-path fix; count2/five-key is a new C002 contract, not compliance with the old C001 map.\n\nSolely for the same four existing paths in section 7, C002 supersedes its exact three-key map and revision-1-to-2 wording: (1) change only the checkout action step env to GIT_CONFIG_COUNT=2, retain GIT_CONFIG_KEY_0=core.longpaths and GIT_CONFIG_VALUE_0=true, and add only GIT_CONFIG_KEY_1=core.autocrlf and GIT_CONFIG_VALUE_1=false; (2) append this section to this Markdown without changing any prior byte; (3) change adjacent JSON revision 2 to 3, updated_at_utc to 2026-10-11T16:11:16Z, revision_scope to the exact C002 proposal string and workflow.checkout_env to that exact five-key map, preserving all other bytes; (4) change only the two bindingHash/mdHash 64-character literals in p1-stages.mjs to SHA-256 of the revised JSON/Markdown raw bytes, preserving every other CLI byte. No new implementation file is admitted.\n\nThe five configuration env keys belong only to the checkout action step and its Git subprocess command scope. They are forbidden at workflow/job scope, in GITHUB_ENV, in later steps and in diagnostic owned children. No added command, retry, version query, config write, relocation, sparse checkout, omitted archive, Actions/Node version change or permission/Secrets change is allowed. This prevents checkout text conversion; it never normalizes a hash input or accepts a second identity. The existing raw-byte hash assertions, guards, B001, E0/native env allowlist, API/worker, selections, caps, bounds, commands, tests, required_future_controls, sourceFiles eleven-path set, uploads and original artifacts remain unchanged.\n\nThe CI actual JSON digest is exactly reproduced by the single LF-to-CRLF Buffer transform and by an owned local Git fixture with core.autocrlf=true; this is not observation of the Windows file bytes or its autocrlf setting. A local fixture with core.autocrlf=false preserves all sixteen inspected source blobs, but is not native acceptance. Windows checkout byte preservation and every later INITIAL/native/release gate remain unverified.\n\nA fresh independent supporting pre-scope review must accept this new exact projection before Generator work. Then require a fresh actual-diff/post-scope review, independent different-model-family Kimi supporting gate, and a separate Coordinator ruling before a single new-source non-main CI opportunity. Static positive/negative controls must reject wrong count/value/key, extra key, missing confinement, stale/one-sided hashes, any extra CLI byte and any other source/test/contract delta; the unchanged synthetic suite does not itself freeze this checkout env map. No source221 retry or automatic follow-up run is authorized by this proposal. Compose HARD_STOP/no third Compose, postponed key work, no backup/restore/baseline/password/deploy, release_ready=false and all other release boundaries remain in force.\n"
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "identityLiteralReplacementsOnly": [
+          {
+            "constant": "bindingHash",
+            "before": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+            "after": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130",
+            "derivesFrom": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+          },
+          {
+            "constant": "mdHash",
+            "before": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+            "after": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb",
+            "derivesFrom": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+          }
+        ]
+      }
+    ],
+    "candidateHashes": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "bytes": 3308,
+        "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "bytes": 34976,
+        "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "bytes": 25454,
+        "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "bytes": 73022,
+        "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+      }
+    ],
+    "candidateCliAfterMaskByteEqual": true,
+    "priorMarkdownBytesPreserved": true,
+    "changedBindingKeys": [
+      "revision",
+      "updated_at_utc",
+      "revision_scope",
+      "workflow"
+    ],
+    "changedWorkflowBindingKeys": [
+      "checkout_env"
+    ],
+    "implementationFilesWritten": false
+  },
+  "rawGitCommands": [
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-p1-stages-diagnostic.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3228,
+        "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 22275,
+        "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 73022,
+        "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-p1-stages-diagnostic.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3228,
+        "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 22275,
+        "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 73022,
+        "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:tests/diagnostics/windows-p1-stages.test.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 53608,
+        "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.gitattributes"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 682,
+        "sha256": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:.github/workflows/windows-p1-stages-diagnostic.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 3103,
+        "sha256": "94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 34330,
+        "sha256": "ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 19264,
+        "sha256": "bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 73022,
+        "sha256": "3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:tests/diagnostics/windows-p1-stages.test.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 53608,
+        "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:.gitattributes"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 682,
+        "sha256": "700d99f633c699c9f769c59ed7839438ba8bbbc091cb399bbc8c6661e1b16c57"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "ls-tree",
+        "-rz",
+        "--full-tree",
+        "221f2f87d94db1656e3000662796d79621b696f5"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 303618,
+        "sha256": "7f88d742ab78cf03b55a5fade7c899e83a9caa04218abfb444f8ad702274a06e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "746552ff2f6cf410ce422e8bebd8225bddabeab59c3a80b51a3129f5b8dd163e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,d48cfd627ac499b26913f200eb1cb7a4af2d8ac5,.github/workflows/windows-p1-stages-diagnostic.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "1adb0946bc41b03ccf17bea06dcf68c9a57b49a7d3688de231a39e5cd93fc12c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,d3fe2977bd81e0c71f47f4ca8205a32e4bfdffc3,docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "7eb793f2cd829d54a623b137270473ef4a905833d20cf351b9ce180ddd079870"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,98a08f8341abc0c9bafa0b5e8d21faf816973f67,docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "1ee626aab43e85bde79484f73c5d86838da17dfa6e7f7545ebf3b7bb936be29c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,0d5279e4cbd10189134cdd56bf1d1fafd7f784e7,docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "bd4e5ad0420017063fd12e16bb2a09b0cea790ea99ddad0f53e85efd3a3b211c"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,6accf2c875bc1e85e454c1931b05e0ef807aa39f,tests/diagnostics/windows-p1-stages.test.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "2eba8fcd99173ff68a223ed94562db983d0a93c4531419229bb9b860202f594a"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,be0f2f0b43fed934a092744f5225f00f8c44c1e4,.gitattributes"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "2730c4e1f66e6b06f9133e3195f86420734a856d41876229de1ad02fc3fca385"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,3cd616311b43c955399423a39188633486cefd42,docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "5dfeea53145c8510893743f5526cb706c316bf4006eef0ba0c150d53e699629e"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,63c7ebd6d729c4c59df99d32b2a261a21dd9fc32,docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "a8f0988bdd37b020d0eca6f7b84e043aa473e5e57f50fc6218cddee673d8325a"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,3b29f1d7001f877fd548a9e57b97d9b921bc4ab1,docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "bf98e5ff947678b12682ab698af3a0fe31125f15d55b46ee456feda759b0d233"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,06ce7b63e78735a9da75c800ccf91bd9cb9c679e,docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "1fc6dd0b08541ce7d62ff8b2736630533f5ae3bb4833529e9dd4410b17d47a58"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,d654d16301fcd9b0367c346ebc46ae383ffb2269,docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "cbd8fc8547d0d3eda97496d97f3007e66c95b0e159b5206b20b5a9a58d508ac9"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,bbd299acac8567db2f41c1cede3126361eb8cc58,src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "562773bdfebfdb5acb3595e08a8867731875be79ac8336eb7b2dc5db18956dd1"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,bce773e8023eb542f25d97723e2b3a13279bd3bd,src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "73ddac0b4736b965851d8fab3b15f154a21965ecbf8e26b32f7fee1ee87ccf51"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,bd09024aebc33bda5d848ffe48556abd3f7b00b8,src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "28cea4cc4bb7a7bd64c49c40c90747cb23269a587d7cce3ca3c39a7f97f409d2"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,0c033eea08bb19e9c7c69826621786d6480477f4,.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "4662868a1f5bc8f0eef84005636726cd2dd76bc40aa7c3e49981573e7d4c3830"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "100644,e524b93cf30dbf840aa10aab81f1cbdf7866cfd8,package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "checkout-index",
+        "--force",
+        "--all"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "true",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "checkout-index",
+        "--force",
+        "--all"
+      ],
+      "cwd": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "autocrlf": "false",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "rev-parse",
+        "221f2f87d94db1656e3000662796d79621b696f5^{tree}"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "d516a7478706280fc500e2b430bad651351c695e38d9435e9690efbb9da006bf"
+      },
+      "stderr": "",
+      "errorCode": null
+    },
+    {
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "rev-parse",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c^{tree}"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+      "autocrlf": null,
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "64db794092d5057c3d51a0fdd4bca9b1f66e46fcda6192a1f5fba70bb015524d"
+      },
+      "stderr": "",
+      "errorCode": null
+    }
+  ]
+}
