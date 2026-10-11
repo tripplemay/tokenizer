@@ -39,6 +39,22 @@ const canary = text => /TW_RAW_CONTENT_CANARY|RAW-STDERR-CANARY|PRIVATE|reader/.
 const original = Object.fromEntries(['mkdirSync', 'rmdirSync', 'lstatSync', 'fstatSync', 'openSync',
   'readFileSync', 'readSync', 'writeSync', 'writeFileSync', 'closeSync', 'appendFileSync', 'realpathSync',
   'readdirSync', 'rmSync'].map(k => [k, fs[k].bind(fs)]));
+let prepareFailurePhase = null;
+const prepareFailureLines = {
+  P00: 'TW_P1_PREPARE_FAILURE_V1:P00\n',
+  P01: 'TW_P1_PREPARE_FAILURE_V1:P01\n',
+  P02: 'TW_P1_PREPARE_FAILURE_V1:P02\n',
+  P03: 'TW_P1_PREPARE_FAILURE_V1:P03\n',
+  P04: 'TW_P1_PREPARE_FAILURE_V1:P04\n',
+  P05: 'TW_P1_PREPARE_FAILURE_V1:P05\n',
+  P06: 'TW_P1_PREPARE_FAILURE_V1:P06\n',
+  P07: 'TW_P1_PREPARE_FAILURE_V1:P07\n',
+  P08: 'TW_P1_PREPARE_FAILURE_V1:P08\n',
+  P09: 'TW_P1_PREPARE_FAILURE_V1:P09\n',
+  P10: 'TW_P1_PREPARE_FAILURE_V1:P10\n',
+  P11: 'TW_P1_PREPARE_FAILURE_V1:P11\n',
+  P12: 'TW_P1_PREPARE_FAILURE_V1:P12\n'
+};
 
 export function schemaMatches(schema, value) {
   if (schema.$ref) return schemaMatches(defs[schema.$ref.slice(8)], value);
@@ -691,11 +707,23 @@ function assertWindowsRunner() {
   assert(/^[a-f0-9]{40}$/.test(process.env.GITHUB_SHA ?? ''), 'expected SHA required');
 }
 function prepare() {
-  assertWindowsRunner(); validateBindings();
-  const executionSha = checkoutSha(); assert.equal(executionSha, process.env.GITHUB_SHA);
+  prepareFailurePhase = 'P01';
+  assertWindowsRunner();
+  prepareFailurePhase = 'P02';
+  validateBindings();
+  prepareFailurePhase = 'P03';
+  const executionSha = checkoutSha();
+  prepareFailurePhase = 'P04';
+  assert.equal(executionSha, process.env.GITHUB_SHA);
+  prepareFailurePhase = 'P05';
   const system = systemEnvironment(process.env);
+  prepareFailurePhase = 'P06';
   assert(/^[a-z]:[\\/]/i.test(system.SystemRoot ?? ''), 'local-drive SystemRoot required');
-  safeDirectory(dirname(scratch)); original.mkdirSync(scratch);
+  prepareFailurePhase = 'P07';
+  safeDirectory(dirname(scratch));
+  prepareFailurePhase = 'P08';
+  original.mkdirSync(scratch);
+  prepareFailurePhase = 'P09';
   const provenance = { format: 'windows-p1-initial-provenance-v1', executionSha, expectedSha: process.env.GITHUB_SHA,
     planningBase: BINDINGS.planning_base, timestampUtc: new Date().toISOString(), runId: process.env.GITHUB_RUN_ID,
     runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT), ref: process.env.GITHUB_REF,
@@ -703,8 +731,13 @@ function prepare() {
       osRelease: release(), imageOS: process.env.ImageOS, imageVersion: process.env.ImageVersion },
     sourceFiles: sourceFiles(), environmentKeyNames: sorted([...Object.keys(system), ...BINDINGS.environment.synthetic_keys]),
     extraEnvironmentKeys: [], provenanceUnknown: false, releaseReady: false, releaseAcceptance: false };
-  assert(validateProvenance(provenance, sourceFiles(), executionSha));
+  prepareFailurePhase = 'P10';
+  const prepareSourceFiles = sourceFiles();
+  prepareFailurePhase = 'P11';
+  assert(validateProvenance(provenance, prepareSourceFiles, executionSha));
+  prepareFailurePhase = 'P12';
   writeJson(join(scratch, 'provenance.json'), 'provenance', provenance);
+  prepareFailurePhase = null;
 }
 export function checksSummary(raw) {
   try {
@@ -1065,7 +1098,7 @@ if (new URL(import.meta.url).searchParams.get('guard') === '1') installGuard();
 else if (process.argv[1] && resolve(process.argv[1]) === self) {
   const args = process.argv.slice(2);
   try {
-    if (same(args, ['--prepare'])) prepare();
+    if (same(args, ['--prepare'])) { prepareFailurePhase = 'P00'; prepare(); }
     else if (same(args, ['--run'])) await runParent();
     else if (args.length === 2 && args[0] === '--probe' && CASES.some(c => c.variant === args[1])) { assertWindowsRunnerForProbe(); await runProbe(args[1]); }
     else if (same(args, ['--seal'])) seal();
@@ -1077,6 +1110,8 @@ else if (process.argv[1] && resolve(process.argv[1]) === self) {
       process.stdout.write(JSON.stringify({ format: 'windows-p1-initial-probe-v1', variant: c.variant, caseId: c.caseId,
         scriptSha256: c.scriptSha256, probeSetupComplete: false, native: unknownNative(), releaseAcceptance: false }) + '\n');
     } else process.stderr.write('windows-p1-initial diagnostic evidence unavailable\n');
+    if (prepareFailurePhase !== null) process.stderr.write(Object.hasOwn(prepareFailureLines, prepareFailurePhase) ?
+      prepareFailureLines[prepareFailurePhase] : prepareFailureLines.P00);
     process.exitCode = 1;
   }
 }
