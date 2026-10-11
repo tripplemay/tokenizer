@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T16:36:23Z",
+  "role": "Coordinator fresh scope transport and bounded Generator commission, not functional acceptance or human gate decision",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "planner": "13f750933f9917e147c0df9d930ed043b2ec374f",
+  "fresh_pre_scope": {
+    "commit": "88d07004466251be3076fc454699207d3879374f",
+    "verdict": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "dae79f5098bd0cc6bfd1748a2ad16e5588c85963a192fb16c81ba8dd6221b317",
+    "readme_sha256": "272df9f849640c5c2ddb2afd738b9bff5a84cd9cc9e03e3655ba42a12ae3003f",
+    "byte_equal_transport": true,
+    "controls": "One static positive and 57 counterfactual scope rejections; not product/runtime tests",
+    "operational_note": "Critic first used relative apply_patch paths, accidentally creating only its two new reports in original main worktree. Removed those authored files, reapplied absolute paths and disclosed absence of a pre-removal hash capture. Root independently confirmed main content clean; no source/state/original changes remain"
+  },
+  "generator": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+    "branch": "codex/windows-p1-binding-identity-generator-20261011",
+    "start_commit": "88d07004466251be3076fc454699207d3879374f",
+    "scope": "Only exact C002 four-file projection locked by Planner raw capture and fresh pre-scope; source commit before separate development-report commit",
+    "projected_hashes": {
+      ".github/workflows/windows-p1-stages-diagnostic.yml": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+    },
+    "development_checks": "Fresh owned npmci; unchanged81; verify/syntax/pure-import; all raw/status and initial failures preserved. Not independent acceptance",
+    "network": "Prior dependency-network clarification applies only to unchanged package-owned public lifecycle endpoints; no full egress isolation claim",
+    "edit_safety": "Every manual apply_patch path must be absolute; no relative paths, native Write/Edit or shell manual file writes",
+    "original_assertion_or_hash_normalization_change": false,
+    "worker_push": false
+  },
+  "fresh_actual_diff_and_different_family_supporting_gate": "Required, not performed or replaced by this scope PASS",
+  "new_publication_or_native_run_authorized": false,
+  "main_push_or_production_authorized": false,
+  "source_integrated_into_parent_runtime": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "Deferred by user",
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "release_ready": false
+}
