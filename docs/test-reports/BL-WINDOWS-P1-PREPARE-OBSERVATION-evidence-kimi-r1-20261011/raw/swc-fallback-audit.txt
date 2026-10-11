@@ -1,0 +1,92 @@
+=== swc-wasm-package-original.json (full, 390B) ===
+{
+  "name": "@swc/wasm",
+  "collaborators": [
+    "강동윤 <kdy1997.dev@gmail.com>"
+  ],
+  "description": "wasm module for swc",
+  "version": "1.16.13",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/swc-project/swc.git"
+  },
+  "files": [
+    "wasm_bg.wasm",
+    "wasm.js",
+    "wasm.d.ts"
+  ],
+  "main": "wasm.js",
+  "types": "wasm.d.ts"
+}
+=== swc-core package.json: name/version/scripts ===
+{
+ "name": "@swc/core",
+ "version": "1.16.13",
+ "scripts": {
+  "postinstall": "node postinstall.js",
+  "artifacts": "napi artifacts --npm-dir scripts/npm",
+  "pack": "wasm-pack",
+  "build:ts": "tsc -d",
+  "build:wasm": "npm-run-all \"pack -- build ../../bindings/binding_core_wasm --scope swc {1} -t {2} --features plugin\" --",
+  "build": "tsc -d && napi build --manifest-path ../../Cargo.toml --platform -p binding_core_node --js ./binding.js --dts ./binding.d.ts --release -o .",
+  "build:dev": "tsc -d && napi build --manifest-path ../../Cargo.toml --platform -p binding_core_node --js ./binding.js --dts ./binding.d.ts -o .",
+  "test": "rstest",
+  "version": "napi version --npm-dir scripts/npm"
+ },
+ "optionalDependencies": 5
+}
+=== postinstall.js: install command evidence (grep) ===
+36: * A postinstall script runs after `@swc/core` is installed.
+38: * It checks if corresponding optional dependencies for native binary is installed and can be loaded properly.
+39: * If it fails, it'll internally try to install `@swc/wasm` as fallback.
+64: * Trying to validate @swc/core's native binary installation, then installs if it is not supported.
+77:    // TODO: We do not take care of the case if user try to install with `--no-optional`.
+94:        console.warn(`@swc/core was not able to resolve native bindings installation. It'll try to use @swc/wasm as fallback instead.`);
+99:    // User choose to override the binary installation. Skip remanining validation.
+101:        console.warn(`@swc/core could not resolve native bindings installation, but found manual override config SWC_BINARY_PATH specified. Skipping remaning validation.`);
+104:    // Check if top-level package.json installs @swc/wasm separately already
+107:        wasmBinding = require.resolve(`@swc/wasm`);
+115:    // We want to place @swc/wasm next to the @swc/core as if normal installation was done,
+119:    const installDir = path.join(coreDir, "npm-install");
+121:        fs.mkdirSync(installDir);
+122:        fs.writeFileSync(path.join(installDir, "package.json"), "{}");
+123:        // Instead of carrying over own dependencies to download & resolve package which increases installation sizes of `@swc/core`,
+124:        // assume & relies on system's npm installation.
+125:        child_process.execSync(`npm install --no-save --loglevel=error --prefer-offline --no-audit --progress=false @swc/wasm@${version}`, { cwd: installDir, stdio: "pipe", env });
+126:        const installedBinPath = path.join(installDir, "node_modules", `@swc/wasm`);
+128:        fs.renameSync(installedBinPath, path.resolve(process.env.INIT_CWD, "node_modules", `@swc/wasm`));
+132:        console.error(`Failed to install fallback @swc/wasm@${version}. @swc/core will not properly.
+=== installed-lock-original.json @swc/wasm presence ===
+0
+grep-exit-1 (absent)
+"node_modules/@swc/core"
+"node_modules/@swc/core-darwin-arm64"
+"node_modules/@swc/counter"
+"node_modules/@swc/helpers"
+"node_modules/@swc/types"
+=== source712 committed package-lock.json @swc/wasm presence ===
+0
+grep-exit-1 (absent)
+"node_modules/@swc/core"
+"node_modules/@swc/core-darwin-arm64"
+"node_modules/@swc/core-darwin-x64"
+"node_modules/@swc/core-linux-arm-gnueabihf"
+"node_modules/@swc/core-linux-arm64-gnu"
+"node_modules/@swc/core-linux-arm64-musl"
+"node_modules/@swc/core-linux-ppc64-gnu"
+"node_modules/@swc/core-linux-s390x-gnu"
+"node_modules/@swc/core-linux-x64-gnu"
+"node_modules/@swc/core-linux-x64-musl"
+"node_modules/@swc/core-win32-arm64-msvc"
+"node_modules/@swc/core-win32-ia32-msvc"
+"node_modules/@swc/core-win32-x64-msvc"
+"node_modules/@swc/counter"
+"node_modules/@swc/helpers"
+"node_modules/@swc/types"
+=== installed-lock @swc/core version ===
+node_modules/@swc/core 1.16.13
+node_modules/@swc/core-darwin-arm64 1.16.13
+node_modules/@swc/counter 0.1.3
+node_modules/@swc/helpers 0.5.23
+node_modules/@swc/types 0.1.28

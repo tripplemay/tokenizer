@@ -1,0 +1,111 @@
+=== original test blob hash (712cf21 then 61cf64e) ===
+7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132  -
+7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132  -
+=== generator statuses (all exit 0) ===
+01-node-version exit=0
+02-npm-version exit=0
+03-npm-ci exit=0
+04-original81 exit=0
+05-verify exit=0
+06-syntax exit=0
+07-pure-import exit=0
+=== r0 raw statuses ===
+oldtest: OLDTEST_EXIT=0
+owntest-run1: OWNTEST_RUN1_EXIT=0
+verify: VERIFY_EXIT=0
+verify2: VERIFY2_EXIT=0
+npm-ci: NPM_CI_EXIT=0
+=== owntest tail ===
+      Tests  40 passed (40)
+   Start at  01:33:14
+   Duration  161ms (transform 28ms, setup 0ms, import 59ms, tests 40ms, environment 0ms)
+
+=== oldtest tail ===
+      Tests  81 passed (81)
+   Start at  01:21:02
+   Duration  1.29s (transform 83ms, setup 0ms, import 86ms, tests 953ms, environment 0ms)
+
+=== static-verify (initial, false checks) ===
+{
+ "literal_bytes": [
+  [
+   "P00",
+   29
+  ],
+  [
+   "P01",
+   29
+  ],
+  [
+   "P02",
+   29
+  ],
+  [
+   "P03",
+   29
+  ],
+  [
+   "P04",
+   29
+  ],
+  [
+   "P05",
+   29
+  ],
+  [
+   "P06",
+   29
+  ],
+  [
+   "P07",
+   29
+  ],
+  [
+   "P08",
+   29
+  ],
+  [
+   "P09",
+   29
+  ],
+  [
+   "P10",
+   29
+  ],
+  [
+   "P11",
+   29
+  ],
+  [
+   "P12",
+   29
+  ]
+ ],
+ "all_29": true,
+ "map_has_exactly_13": false,
+ "generic_bytes": 51,
+ "catch_max": 80,
+ "block_removal": "ok",
+ "recovered_equals_baseline_ws_stripped": false,
+ "leftover_prepareFailure_refs": 1,
+ "identity_literals_equal": true,
+ "identity_literal_count_cur": 2,
+ "crlf_in_new_regions": false,
+ "cur_bytes": 74301,
+ "base_bytes": 73022,
+ "delta_bytes": 1279
+}
+=== static-verify2 (corrected, ws-stripped) ===
+{
+ "map_entries": 13,
+ "block_removed": false,
+ "leftover_refs": 0,
+ "recovered_equals_baseline_ws_stripped": true
+}
+=== author-probe-original.txt (9B) ===
+probe-ok
+=== run-meta duration/exit ===
+"outcome": "RETURNED"
+"exit_code": 0
+"duration_s": 1294
+"termination_reason": "process_exit"

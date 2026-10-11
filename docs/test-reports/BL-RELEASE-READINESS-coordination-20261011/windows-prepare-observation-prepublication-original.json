@@ -1,0 +1,42 @@
+{
+  "observed_at": "2026-10-11T18:55:51.298Z",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "source_worktree_head": "afcb16911fff74bc14e9233303a709ac9c36e000",
+  "source_status": "",
+  "remote_refs": "61cf64e67a6fda231bb090e77c19d5ececb908af\trefs/heads/codex/windows-p1-stages-ci-20261010\n2074991717abaf3cb34d9aad894bcd4357fefbc3\trefs/heads/main\n",
+  "fast_forward_from_remote_source": true,
+  "source_delta": "A\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/README.md\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/SHA256SUMS\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/evidence.json\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/failure-ledger.json\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/proposal.json\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/static-raw.txt\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/verdict.json\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md\nA\tdocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json\nM\tdocs/test-reports/windows-p1-stages-20261010/p1-stages.mjs\n",
+  "identities": [
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 74301,
+      "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+      "raw_equals_source": true
+    },
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3308,
+      "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e",
+      "raw_equals_source": true
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34976,
+      "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130",
+      "raw_equals_source": true
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 25454,
+      "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb",
+      "raw_equals_source": true
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+      "raw_equals_source": true
+    }
+  ],
+  "root_action_scope": "Mechanical publication preflight, not functional acceptance; exactly source712 to approved non-main ref only; no report HEAD/main push/state/production operation"
+}

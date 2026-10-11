@@ -1,0 +1,14 @@
+{
+  "candidate_sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+  "candidate_bytes": 74301,
+  "candidate_matches_source712": true,
+  "baseline61_sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae",
+  "baseline61_bytes": 73022,
+  "output_sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae",
+  "output_bytes": 73022,
+  "output_equals_baseline61_buffer": true,
+  "slots_applied": 20,
+  "bytes_removed_net": 1279,
+  "residual_observation_tokens": [],
+  "whitespace_normalization_used": false
+}

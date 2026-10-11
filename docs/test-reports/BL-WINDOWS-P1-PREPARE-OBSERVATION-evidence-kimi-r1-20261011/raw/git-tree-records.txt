@@ -1,0 +1,24 @@
+=== git show --raw 712cf21 (candidate commit tree records) ===
+712cf210b089dc71f3a6e6ed2e19e1de7fee57da parents=27dd6bcec281fa7bd0c8ca14fce9749b40be1735 subject=fix(diagnostics): add fixed prepare failure phase observation
+
+:100644 100644 311d04a 8e1b80f M	docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+
+=== git diff --name-status 61cf64e..712cf21 ===
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/README.md
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/SHA256SUMS
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/evidence.json
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/failure-ledger.json
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/proposal.json
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/static-raw.txt
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/verdict.json
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md
+A	docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json
+M	docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+
+=== git log --oneline 61cf64e..712cf21 ===
+712cf21 fix(diagnostics): add fixed prepare failure phase observation
+27dd6bc docs: record passive prepare failure pre-scope verdict
+22946b3 docs(BL-RELEASE-READINESS-F004): plan minimal prepare failure observation
+
+=== worktree status of candidate path ===
+(empty = clean)

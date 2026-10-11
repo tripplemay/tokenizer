@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T18:55:51Z",
+  "role": "Coordinator immutable artifact/mechanical gates and bounded publication authority, not functional self-evaluation",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "runtime_baseline": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "independent_support": {
+    "fresh_pre_and_post_scope": "PASS_SCOPE_ONLY, no blocking findings",
+    "kimi_r0_original": "OFFLINE supporting PASS; unchanged81, own40 actual-source-slice VM/static, verify2 exit0; original limitations/deviations remain unrewritten",
+    "kimi_r0_verdict_sha256": "e44448af82c920711e24283924ce7ca837b75ffb2dae1659532260b5e264c8de",
+    "kimi_r1_original": "PASSIVE evidence/scope supporting PASS, not new functional acceptance",
+    "kimi_r1_verdict_sha256": "c3d7f8b1f08642c95f267c5846d9e6d95f00a483c48b1ac31ce050e132370a4c",
+    "r1_receipt": {"exit_code":0,"duration_s":708,"effective_timeout_s":900,"descriptor_timeout_s":2400,"termination_reason":"process_exit","mechanical_validation_exit":0},
+    "r1_original_transport": {"files":15,"bytes":323383,"manifest_sha256":"de715292ea534e11662ed0ab4f8297b69a21ee162358fe1fc5d6ee1d17b199b2"},
+    "missing_proof_closed": "Independent Kimi own read-only reversible20-slot transform compares exact Buffer74301->73022 and SHA6548ea1c... unchanged baseline61, without whitespace normalization. Independently rehashes39/49/9 originals and committed blobs, discloses actual package-owned lock-absent SWC wasm1.16.13 fallback and seven-high warning",
+    "scope": "Narrow offline observation-support evidence is sufficient only for one new-source diagnostic CI opportunity; no native/formal F004/F005/dependency-security/full-release acceptance"
+  },
+  "operational_deviations_retained_not_authorized": [
+    "r0 two cat-authored HOME analyst scripts, out-of-whitelist HOME probe, weaker whitespace proof and retrospective provisional timeline remain original failures/deviations, not silently repaired",
+    "r1 README says manual files via absolute apply_patch, but runtime Bash14/15/23 uses relative File paths through correctly scoped child Bash. That absolute-path claim is rejected. All resulting authored files are confined to this evaluator worktree's allowed report/verdict paths; no source/state/parent/main write observed. Original report/runtime remain unchanged",
+    "r1 Bash8 apply_patch --help returns Invalid patch first-line error but echo reports pipeline status0; not an evidence pass. Bash14 first transform patch invalid last line, exit1; Bash15 repaired patch framing exit0, original error retained in runtime; final own read-only exact transform exit0 is separate",
+    "r1 no separate provisional PARTIAL artifact observed; final708 is later than700 aim but within hard900. Relative timeline and absolute-edit compliance are not adopted as gate evidence"
+  ],
+  "prepublication": {
+    "capture": "windows-prepare-observation-prepublication-original.json",
+    "observed_at": "2026-10-11T18:55:51.298Z",
+    "source_worktree_clean": true,
+    "four_frozen_projection_identities_and_old_test_match": true,
+    "source61_delta": "Only one authorized CLI modification and nine Planner/pre-scope docs additions",
+    "remote_main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "remote_diagnostic": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+    "fast_forward_source61_to_source712": true,
+    "workflow": "Unchanged push-only exact approved non-main branch, contents:read, no production deploy or Secrets values"
+  },
+  "publication": {
+    "authorized": true,
+    "actor": "Root Coordinator only, per explicit user diagnostic publication approval",
+    "exact_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "destination": "refs/heads/codex/windows-p1-stages-ci-20261010",
+    "method": "One ordinary non-force fast-forward exact source SHA push, never report HEAD or main",
+    "native_opportunity": "One new-source workflow attempt1 only, not source61 rerun; preserve full run/jobs/log/artifact listing and exact fixed phase bytes; no rerun/delete/guard/env/schema/timeout repair",
+    "unknowns": "P00/invalid/missing/truncated stays unknown; a valid phase brackets the attempted operation only, not a unique cause or passed phase",
+    "no_further_kimi_source712_dispatch": true
+  },
+  "originals_not_rewritten_or_source_runtime_integrated_into_parent": true,
+  "main_push_or_production_or_state_transition": false,
+  "prepare_root_cause": "Still unknown before new observation",
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}
