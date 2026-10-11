@@ -1,0 +1,66 @@
+name: Windows P1 INITIAL diagnostic
+
+on:
+  push:
+    branches: [codex/windows-p1-stages-ci-20261010]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-p1-initial-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  p1-initial-diagnostic:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/windows-p1-stages-ci-20261010'
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare exact-candidate provenance
+        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Synthetic checks only
+        run: node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=docs/test-reports/windows-p1-stages-20261010/.scratch/checks.raw.json
+      - name: INITIAL once
+        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run
+      - name: Seal safe evidence
+        id: seal
+        if: always()
+        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal
+      - name: Verify sealed files immediately
+        id: verify_upload
+        if: always() && steps.seal.outcome == 'success'
+        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --verify-upload
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.seal.outcome == 'success' && steps.verify_upload.outcome == 'success'
+        with:
+          name: windows-p1-initial-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            docs/test-reports/windows-p1-stages-20261010/upload/provenance.json
+            docs/test-reports/windows-p1-stages-20261010/upload/checks-summary.json
+            docs/test-reports/windows-p1-stages-20261010/upload/summary.json
+            docs/test-reports/windows-p1-stages-20261010/upload/T0.case.json
+            docs/test-reports/windows-p1-stages-20261010/upload/T1.case.json
+            docs/test-reports/windows-p1-stages-20261010/upload/T2.case.json
+            docs/test-reports/windows-p1-stages-20261010/upload/T3.case.json
+            docs/test-reports/windows-p1-stages-20261010/upload/T0.guard.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T1.guard.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T2.guard.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T3.guard.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T0.trace.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T1.trace.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T2.trace.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/T3.trace.jsonl
+            docs/test-reports/windows-p1-stages-20261010/upload/manifest.json
