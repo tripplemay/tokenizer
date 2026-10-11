@@ -2,7 +2,15 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 18:15 UTC
+## Latest checkpoint: 19:00 UTC
+
+- Fresh Kimi r0 returned1294/1800 seconds with original OFFLINE supporting PASS: unchanged81, own40 actual-source-slice VM/static controls, verify before/after exit0. The sole passive Kimi supplement returned708/900 with exact Buffer baseline restoration and independent39/49/9 original verification. SWC wasm1.16.13 lock-absent fallback, raw seven-high warning, manual edit/provisional timeline deviations and initial author failures remain explicitly separate; original verdicts are unrewritten. No third source712 dispatch.
+- Coordinator published only exact source712 to approved non-main ref. [Run38165950837](https://github.com/tripplemay/tokenizer/actions/runs/38165950837), attempt1: checkout/setup-node success; prepare fails with **TW_P1_PREPARE_FAILURE_V1:P11**, localizing the attempted `validateProvenance` assertion interval without a unique underlying predicate/cause. Install/synthetic/INITIAL skipped, seal failed generic, artifacts0. No rerun or native API/T0-T3 result.
+- `windows-prepare-observation-native-run38165950837-coordinator-adjudication.json` retains seven CI originals and commissions fresh passive Planner for the P11 validator boundary only. No new repair, schema/environment widening, source publication or CI is yet authorized.
+- Fresh18:59 remote main207/non-main712 and public HTTP200/ok=true still production92. Main is clean and unpushed; canonical/parent state unchanged. Root discovered its own earlier transported test copy under `tests/` was not inert, moved those same bytes to the docs evidence namespace, and removed only that mistaken copy; original evaluator/historical commits/manifests remain intact. Fresh19:00:30 parent runtime diff is empty after this disclosed correction.
+- Production is not deployed. Compose HARD_STOP, user key deferral and all formal release/recovery gates remain; `release_ready=false`.
+
+## Historical checkpoint: 18:15 UTC
 
 - NEW prepare-observation source `712cf210b089dc71f3a6e6ed2e19e1de7fee57da` changes only the authorized CLI observation slots. Fresh pre-scope and actual-diff post-scope are PASS_SCOPE_ONLY; the 47 Generator development files and two post-scope originals are byte-identically transported in `6bb1c14`, with a 49-file/1,225,388-byte manifest. Source runtime is not integrated into this parent.
 - Generator development reports unchanged81/81 and verify/syntax/pure-import exit0. One owned npmci retains seven-high warnings and package-owned lock-absent SWC wasm fallback; full staged whitespace check exit2 from the original verify-log EOF blank line is preserved, not trimmed or called green. This is not independent acceptance.

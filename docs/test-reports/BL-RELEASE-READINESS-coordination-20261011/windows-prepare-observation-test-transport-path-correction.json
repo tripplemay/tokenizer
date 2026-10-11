@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator original-byte artifact path correction; no source or original evaluation rewrite",
+  "discovered_by": "coordinator-boundary-20261011T1900Z-original.json raw scoped diff",
+  "error": "Coordinator transport copied the own evaluator test into parent tests/evaluator rather than the inert evidence namespace. Calling it inert in earlier transport/authority was incorrect because the normal Vitest test discovery can see that path",
+  "original_source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0/tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts",
+  "historical_transport_path": "tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts",
+  "historical_parent_commit": "7b8d399",
+  "new_inert_path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-kimi-r0-original/own-test-original.ts",
+  "bytes": 21246,
+  "sha256": "88d82b5c10ac98e6561fd8d95e46ca0e1c7f256670f5d0eedf3501a44a4efbad",
+  "correction": "Compare current old path to immutable manifest hash and evaluator original, copy byte-identically to docs evidence namespace, remove only Coordinator's own mistaken parent copy using apply_patch. Original evaluator source/test/report/verdict/runtime and historical manifests/commits remain intact",
+  "historical_39_entry_manifest_interpretation": "Original path identity describes the historical transport at7b8d399/8b54fe1, not the final parent location; use this mapping for current copies. Independent r1 verified the historical copy before correction",
+  "candidate_source712_published_from_generator_not_parent": true,
+  "parent_tests_not_executed_after_wrong_copy": true,
+  "main_production_or_canonical_state_changed": false,
+  "no_amend_or_other_user_file_revert": true,
+  "release_ready": false
+}

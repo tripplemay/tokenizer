@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-11T18:59:19.335Z",
+  "main_status": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "main_head": {
+    "exit_code": 0,
+    "stdout": "2074991717abaf3cb34d9aad894bcd4357fefbc3\n",
+    "stderr": ""
+  },
+  "parent_runtime_diff": {
+    "exit_code": 0,
+    "stdout": "A\ttests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts\n",
+    "stderr": ""
+  },
+  "parent_status": "building",
+  "parent_completed": 3,
+  "parent_total": 5,
+  "parent_pending_gate": null,
+  "canonical_status": "verifying",
+  "canonical_pending_gate": null,
+  "release_ready": false
+}

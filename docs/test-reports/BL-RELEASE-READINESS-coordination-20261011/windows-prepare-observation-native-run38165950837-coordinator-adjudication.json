@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T19:00:30Z",
+  "role": "Coordinator captured runtime result and fresh Planner commission; no functional self-evaluation",
+  "published_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "published_ref": "refs/heads/codex/windows-p1-stages-ci-20261010",
+  "publication_exit_code": 0,
+  "run": {
+    "id": 38165950837,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/38165950837",
+    "attempt": 1,
+    "event": "push",
+    "conclusion": "failure",
+    "created_at": "2026-10-11T18:57:01Z",
+    "job": 114548428887,
+    "job_started_at": "2026-10-11T18:57:03Z",
+    "job_completed_at": "2026-10-11T18:57:27Z",
+    "checkout_setup_node": "success; Node22.23.3/npm10.9.9",
+    "prepare": "failure exit1 with original generic plus exactly one fixed observed P11 payload",
+    "observed_phase": "TW_P1_PREPARE_FAILURE_V1:P11",
+    "phase_log_line": 147,
+    "operation_interval": "assert(validateProvenance(provenance, prepareSourceFiles, executionSha))",
+    "not_unique_cause": "Does not distinguish internal validator throw from false return/assertion or any individual schema/field predicate; no raw provenance or environment values were emitted",
+    "earlier_phase_interpretation": "Exact-source control-flow inference only: reached P11 after earlier operations returned; not direct Windows raw hashes/config/environment observation or separate passing-stage acceptance",
+    "install_synthetic_INITIAL": "skipped",
+    "seal": "failure same original generic, no new prepare observation",
+    "verify_upload": "skipped",
+    "artifacts": 0,
+    "native_T0_T1_T2_T3_API_worker_EOF_cleanup_E0_evidence": false,
+    "rerun": false
+  },
+  "original_transport": {
+    "files": 7,
+    "bytes": 37590,
+    "manifest_sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+    "originals_not_rewritten": true,
+    "limit": "Timestamped GH log payload equality, not a raw OS stderr delivery guarantee"
+  },
+  "fresh_supporting_Planner": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-failure-plan-20261011",
+    "branch": "docs/windows-p1-provenance-failure-plan-20261011",
+    "start_commit": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "scope": "Passive exact-source P11 validator/rebuild/schema call-flow and seven captured native originals. Determine proven/refuted/unknown predicates without running candidate/proposal/tests/VM/fixtures. If unique cause not supported, propose one minimal fixed-enum privacy-preserving successor observation and finite source projection for fresh scope gates",
+    "allowed_outputs": "Only docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/ originals and scoped local report commit; all manual edits absolute apply_patch",
+    "forbidden": "No source/workflow/spec/test/limit/env/schema/hash change or relaxation, no target execution/import/VM/install/probe/native/CI/network/push/main/state/features/pending_gate/memory/registry/harness/keys/backup/restore/baseline/password work",
+    "successor_gate": "Fresh passive pre-scope and exact-source Generator/post-scope/different-family support would be required for any later change; Planner grants no implementation/publication/retry",
+    "no_source712_rerun_or_further_Kimi_dispatch": true
+  },
+  "production_boundary": {
+    "fresh_health": "2026-10-11T18:59:19.424Z HTTP200 ok=true production92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "remote_main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "remote_diagnostic": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "main_clean_not_pushed": true,
+    "parent_runtime_after_root_copy_correction": "19:00:30 scoped diff empty; see separate original-byte transport path correction, historical parent test copy was not inert and is no longer present",
+    "canonical_or_parent_state_written": false,
+    "app_DB_service_config_keys_changed": false
+  },
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}

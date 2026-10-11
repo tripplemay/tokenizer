@@ -1,0 +1,168 @@
+p1-initial-diagnostic	Set up job	﻿2026-10-11T18:57:04.7832234Z Current runner version: '2.337.0'
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7883635Z ##[group]Runner Image Provisioner
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7884651Z Hosted Compute Agent
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7885442Z Version: 20260901.588
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7886126Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7886803Z Build Date: 2026-09-01T19:56:44Z
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7887476Z Worker ID: {fd78d1e1-4f21-4d9e-8ce5-1aa285f3f740}
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7888213Z Azure Region: centralus
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7888811Z ##[endgroup]
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7890413Z ##[group]Operating System
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7891027Z Microsoft Windows Server 2025
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7891700Z 10.0.26100
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7892197Z Datacenter
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7892712Z ##[endgroup]
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7893232Z ##[group]Runner Image
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7893775Z Image: windows-2025-vs2026
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7894379Z Version: 20260925.250.1
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7895426Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7897542Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7898422Z ##[endgroup]
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7899523Z ##[group]GITHUB_TOKEN Permissions
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7901455Z Contents: read
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7902023Z Metadata: read
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7902549Z ##[endgroup]
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7904405Z Secret source: Actions
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7905348Z Cache mode: write
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.7906269Z Prepare workflow directory
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.8245387Z Prepare all required actions
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:04.8291147Z Getting action download info
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:05.0585311Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:05.1763018Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:05.5818817Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+p1-initial-diagnostic	Set up job	2026-10-11T18:57:05.9777890Z Complete job name: p1-initial-diagnostic
+p1-initial-diagnostic	Run actions/checkout@v4	﻿2026-10-11T18:57:06.8870960Z ##[group]Run actions/checkout@v4
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8878704Z with:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8881836Z   ref: 712cf210b089dc71f3a6e6ed2e19e1de7fee57da
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8882950Z   fetch-depth: 1
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8883760Z   persist-credentials: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8884532Z   repository: tripplemay/tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8888672Z   token: ***
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8889422Z   ssh-strict: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8890078Z   ssh-user: git
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8890827Z   clean: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8891512Z   sparse-checkout-cone-mode: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8892210Z   fetch-tags: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8892896Z   show-progress: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8893609Z   lfs: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8894309Z   submodules: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8894981Z   set-safe-directory: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8895930Z   allow-unsafe-pr-checkout: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8897308Z env:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8897942Z   GIT_CONFIG_COUNT: 2
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8898723Z   GIT_CONFIG_KEY_0: core.longpaths
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8899715Z   GIT_CONFIG_VALUE_0: true
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8900525Z   GIT_CONFIG_KEY_1: core.autocrlf
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8901356Z   GIT_CONFIG_VALUE_1: false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:06.8902153Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:09.1574136Z Syncing repository: tripplemay/tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:09.1575864Z ##[group]Getting Git version info
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:09.1576486Z Working directory is 'D:\a\tokenizer\tokenizer'
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:09.7855944Z [command]"C:\Program Files\Git\bin\git.exe" version
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.7899693Z git version 2.55.0.windows.5
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.7961438Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.7983298Z Temporarily overriding HOME='D:\a\_temp\3d376705-faf5-40ba-bb7d-094710ab5985' before making global git config changes
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.7984196Z Adding repository directory to the temporary git global config as a safe directory
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.7994669Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.8648653Z Deleting the contents of 'D:\a\tokenizer\tokenizer'
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.8654549Z ##[group]Initializing the repository
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.8662559Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\tokenizer\tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.9832857Z Initialized empty Git repository in D:/a/tokenizer/tokenizer/.git/
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:10.9880062Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/tripplemay/tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0443784Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0444778Z ##[group]Disabling automatic garbage collection
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0454084Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0738341Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0739057Z ##[group]Setting up auth
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.0756326Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:11.1052287Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:12.7220902Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:12.7492856Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.2569087Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.2855875Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.7973552Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.8264127Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.8265104Z ##[group]Fetching the repository
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:13.8275842Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 712cf210b089dc71f3a6e6ed2e19e1de7fee57da
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3725469Z From https://github.com/tripplemay/tokenizer
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3726766Z  * branch            712cf210b089dc71f3a6e6ed2e19e1de7fee57da -> FETCH_HEAD
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3780521Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3781352Z ##[group]Determining the checkout info
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3783408Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.3808458Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.4250909Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.4569991Z ##[group]Checking out the ref
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.4579294Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 712cf210b089dc71f3a6e6ed2e19e1de7fee57da
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9921026Z Note: switching to '712cf210b089dc71f3a6e6ed2e19e1de7fee57da'.
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9921662Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9922026Z You are in 'detached HEAD' state. You can look around, make experimental
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9922691Z changes and commit them, and you can discard any commits you make in this
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9923408Z state without impacting any branches by switching back to a branch.
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9923862Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9924201Z If you want to create a new branch to retain commits you create, you may
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9924858Z do so (now or later) by using -c with the switch command. Example:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9925189Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9925434Z   git switch -c <new-branch-name>
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9926753Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9926954Z Or undo this operation with:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9927160Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9927326Z   git switch -
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9927615Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9927972Z Turn off this advice by setting config variable advice.detachedHead to false
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9928313Z 
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:15.9928679Z HEAD is now at 712cf21 fix(diagnostics): add fixed prepare failure phase observation
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.0048780Z ##[endgroup]
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.0470659Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.0735261Z 712cf210b089dc71f3a6e6ed2e19e1de7fee57da
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.0778981Z ##[group]Removing auth
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.0787442Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.1058572Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.6374144Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.6759984Z http.https://github.com/.extraheader
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.6826828Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:16.7299907Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:17.2434372Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:17.2821347Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+p1-initial-diagnostic	Run actions/checkout@v4	2026-10-11T18:57:17.7836756Z ##[endgroup]
+p1-initial-diagnostic	Run actions/setup-node@v4	﻿2026-10-11T18:57:17.8279429Z ##[group]Run actions/setup-node@v4
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8279957Z with:
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8280250Z   node-version: 22
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8280558Z   always-auth: false
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8280849Z   check-latest: false
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8282982Z   token: ***
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:17.8283280Z ##[endgroup]
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:18.0094501Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:18.0102532Z (node:8580) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:18.0103725Z (Use `node --trace-deprecation ...` to show where the warning was created)
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:18.0105694Z ##[group]Environment details
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:22.6817926Z node: v22.23.3
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:22.6818872Z npm: 10.9.9
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:22.6819188Z yarn: 1.22.22
+p1-initial-diagnostic	Run actions/setup-node@v4	2026-10-11T18:57:22.6820584Z ##[endgroup]
+p1-initial-diagnostic	Prepare exact-candidate provenance	﻿2026-10-11T18:57:22.7172001Z ##[group]Run node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:22.7173134Z [36;1mnode docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare[0m
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:22.7731734Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:22.7732186Z ##[endgroup]
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:23.7242542Z windows-p1-initial diagnostic evidence unavailable
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:23.7243380Z TW_P1_PREPARE_FAILURE_V1:P11
+p1-initial-diagnostic	Prepare exact-candidate provenance	2026-10-11T18:57:23.8589599Z ##[error]Process completed with exit code 1.
+p1-initial-diagnostic	Seal safe evidence	﻿2026-10-11T18:57:23.8782341Z ##[group]Run node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal
+p1-initial-diagnostic	Seal safe evidence	2026-10-11T18:57:23.8783049Z [36;1mnode docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal[0m
+p1-initial-diagnostic	Seal safe evidence	2026-10-11T18:57:23.8850444Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+p1-initial-diagnostic	Seal safe evidence	2026-10-11T18:57:23.8850966Z ##[endgroup]
+p1-initial-diagnostic	Seal safe evidence	2026-10-11T18:57:24.2126502Z windows-p1-initial diagnostic evidence unavailable
+p1-initial-diagnostic	Seal safe evidence	2026-10-11T18:57:24.3142073Z ##[error]Process completed with exit code 1.
+p1-initial-diagnostic	Post Run actions/checkout@v4	﻿2026-10-11T18:57:24.3389829Z Post job cleanup.
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5143181Z [command]"C:\Program Files\Git\bin\git.exe" version
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5430075Z git version 2.55.0.windows.5
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5508374Z Temporarily overriding HOME='D:\a\_temp\9ca86674-633a-4f2e-9d06-a52419bb0af1' before making global git config changes
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5509707Z Adding repository directory to the temporary git global config as a safe directory
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5519928Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\tokenizer\tokenizer
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.5855894Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:24.6145813Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:25.1518202Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:25.1834753Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:25.7166320Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+p1-initial-diagnostic	Post Run actions/checkout@v4	2026-10-11T18:57:25.7458497Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+p1-initial-diagnostic	Complete job	﻿2026-10-11T18:57:26.2801654Z Cleaning up orphan processes
+p1-initial-diagnostic	Complete job	2026-10-11T18:57:26.3313411Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
