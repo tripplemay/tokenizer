@@ -1,0 +1,436 @@
+{
+  "format": "windows-p1-binding-identity-fresh-supporting-pre-scope-v1",
+  "created_at_utc": "2026-10-11T16:29:06Z",
+  "role": "fresh supporting pre-scope critic; harness-rules.md section 1.5; not functional Evaluator/Generator/Coordinator",
+  "verdict": "PASS_SCOPE_ONLY",
+  "blocking_findings": [],
+  "authority": {
+    "implementation_authorized": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "functional_acceptance": false,
+    "release_ready": false,
+    "state_transition": false,
+    "worker_push": false
+  },
+  "reviewed_freeze": {
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-pre-scope-20261011",
+    "branch": "docs/windows-p1-binding-identity-pre-scope-20261011",
+    "head": "13f750933f9917e147c0df9d930ed043b2ec374f",
+    "source221": "221f2f87d94db1656e3000662796d79621b696f5",
+    "source221_tree": "e29bf76487ec8dc7cca5e18392b2eaed3b1c1223",
+    "predecessor888": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "predecessor888_tree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+    "progress_status": "building",
+    "progress_release_ready": false,
+    "initial_worktree_clean": true
+  },
+  "findings": [
+    {
+      "id": "S001",
+      "classification": "confirmed-static",
+      "result": "PASS",
+      "summary": "Captured run 38153928452 checkout/setup-node succeeded, then prepare and seal failed at module-top-level raw JSON identity assertion p1-stages.mjs:20:8. npm ci, synthetic checks, INITIAL, verify/upload skipped; artifacts 0. No later Windows/provenance/native path was reached.",
+      "evidence": [
+        "Five actual original receipts independently size/SHA256 checked",
+        "p1-stages.mjs:14-21,76-85,690-706"
+      ]
+    },
+    {
+      "id": "S002",
+      "classification": "narrow-inference-only",
+      "result": "PASS_WITH_LIMITATION",
+      "summary": "Pure LF-to-CRLF transform alone reproduces actual481e1496...; BOM-only/final-LF removal do not. Planner capture coherently contains one local owned Git fixture, two checkout-index controls and sixteen files. The fixture was not executed by this reviewer. Windows file/config/attribute/filter state is unobserved; hash equality does not prove that cause."
+    },
+    {
+      "id": "S003",
+      "classification": "confirmed-static-scope",
+      "result": "PASS",
+      "summary": "C002 explicitly replaces C001 count1/three-key and revision wording only for the same four paths. It is a new exact count2/five-key contract, not a reuse of old C001 PASS. Exact appended MD section 8 retains every source221 prefix byte; JSON changes only revision, updated_at_utc, revision_scope and workflow.checkout_env."
+    },
+    {
+      "id": "S004",
+      "classification": "confirmed-static-projection",
+      "result": "PASS",
+      "summary": "Seven replacements are unique; all four candidate full hashes independently reproduced in memory. Workflow has exactly one env node, owned by checkout@v4. Its five string values exactly equal bindings.workflow.checkout_env. CLI only replaces two 64-character identity literals; every other byte and all raw hash assertions/guards are unchanged."
+    },
+    {
+      "id": "S005",
+      "classification": "confirmed-static-freeze",
+      "result": "PASS",
+      "summary": "All 2457 source221 tracked mode/type/object/path rows survive at review HEAD; sole additions are four Planner report files. Ten inputs independently match frozen raw hashes and predecessor objects. Fifty-seven historical raw archive files independently hash equal source221. Original test SHA256 is unchanged; no test was run and old 81 tests do not cover this new checkout env contract."
+    }
+  ],
+  "planner_inputs": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+      "sha256": "9b5e0b20d9aec8fa39ff794661fbcb76d19933575ca78655f574b02660a66f6d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "sha256": "98e65d55a81f6ba5b8f78d9929290af743295384d9f1cebf82fa310d9274cf0f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "sha256": "58ac7237c757bee331017a7dc1065ae85931115d20be331c381b36a5aefd25e1"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "bytes": 72541,
+      "sha256": "d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4"
+    }
+  ],
+  "actual_originals": {
+    "directory": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "entries": [
+      {
+        "path": "windows-checkout-native-run38153928452-final-original.json",
+        "bytes": 12289,
+        "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd"
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-jobs-original.json",
+        "bytes": 3116,
+        "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d"
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+        "bytes": 32,
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-full-original.log",
+        "bytes": 25522,
+        "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4"
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-transport-manifest.json",
+        "bytes": 1564,
+        "sha256": "1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961"
+      }
+    ],
+    "four_receipt_entries_match_transport_manifest": true,
+    "manifest_itself_independently_hashed": true,
+    "other_three_manifest_publication_entries_reauthenticated": false,
+    "modified_or_copied": false
+  },
+  "live_trace": {
+    "run_id": 38153928452,
+    "run_attempt": 1,
+    "job_id": 114512876414,
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "conclusion": "failure",
+    "checkout": "success",
+    "setup_node": "success",
+    "first_failure": "Prepare exact-candidate provenance: p1-stages.mjs:20:8 raw binding identity",
+    "actual_sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+    "expected_sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "npm_ci": "skipped",
+    "synthetic": "skipped; no executed 81-test result",
+    "INITIAL": "skipped",
+    "seal": "same import-time assertion failure",
+    "verify_upload": "skipped",
+    "artifacts": 0
+  },
+  "in_memory_projection": {
+    "id": "C002",
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "path_aliases": {
+      ".github/workflows/windows-p1-stages-diagnostic.yml": "workflow",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json": "bindings_json",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md": "bindings_md",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs": "cli"
+    },
+    "source_hashes": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "bytes": 3228,
+        "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "bytes": 22275,
+        "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "bytes": 73022,
+        "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+      }
+    ],
+    "candidate_hashes": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "bytes": 3308,
+        "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "bytes": 34976,
+        "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "bytes": 25454,
+        "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "bytes": 73022,
+        "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+      }
+    ],
+    "unique_replacements": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "constant": "bindingHash",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "constant": "mdHash",
+        "occurrences": 1
+      }
+    ],
+    "changed_json_fields": [
+      "revision",
+      "updated_at_utc",
+      "revision_scope",
+      "workflow.checkout_env"
+    ],
+    "all_other_json_bytes_unchanged": true,
+    "markdown_prior_prefix_bytes": 22275,
+    "markdown_append_bytes": 3179,
+    "markdown_prior_prefix_byte_equal": true,
+    "explicit_c001_local_supersession": true,
+    "cli_two_identity_spans_total_bytes": 128,
+    "cli_all_other_bytes_equal": true,
+    "rawhash_normalization_or_multi_hash_acceptance_change": false,
+    "candidate_files_written": false
+  },
+  "static_controls": {
+    "classification": "restricted structural/AST-shaped read and exact raw-byte projection oracle only; no language/target evaluation",
+    "oracle": "Accept iff changed path set is exactly the four aliases with original 100644 modes, each complete byte string equals independently reconstructed C002 projection, checkout env is one unique five-key/string-value map under checkout@v4, JSON checkout_env matches it, MD exact append and only two SHA-linked CLI literals hold. Every other tracked row must stay source221-identical. Projection is fixed, not a generic YAML security validator.",
+    "positive": {
+      "input": "independently reconstructed actual workflow plus bindings/MD/CLI projection",
+      "result": "ACCEPT",
+      "checkout_env": {
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "core.longpaths",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "core.autocrlf",
+        "GIT_CONFIG_VALUE_1": "false"
+      },
+      "env_nodes": 1,
+      "env_owner": "jobs.p1-initial-diagnostic.steps[0] (actions/checkout@v4)",
+      "ordered_commands_equal_bindings": true,
+      "explicit_upload_paths": 16
+    },
+    "negative_cases_count": 57,
+    "all_negative_cases_rejected": true,
+    "cases_executed_as": "single in-memory mutations of the projection; exact inequality is decisive; never executed as Git/Actions/native behavior",
+    "original_81_tests_run": false,
+    "original_81_env_coverage_claim": false
+  },
+  "source_freeze": {
+    "sourceEntryCount": 2457,
+    "reviewEntryCount": 2461,
+    "allExistingModeTypeObjectPathRowsIdentical": true,
+    "soleAdditions": [
+      "100644 blob 7d6cac0743513520a444a728a97bea0c58ecc4fc\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "100644 blob a97bf93558da9b4f7a56f0c0b2796e3df603288a\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "100644 blob f357c04585b2ff6f3dbe04ade9c5f9faeb8a11dd\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "100644 blob 28b42bb040c5b89d48401c08c5890a3636aaa02b\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json"
+    ],
+    "ten_frozen_inputs": [
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790",
+        "bytes": 24862
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+        "bytes": 11769
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+        "bytes": 10792
+      },
+      {
+        "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+        "bytes": 51907
+      },
+      {
+        "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+        "bytes": 4921
+      },
+      {
+        "path": "src/cli/bounded-subprocess.ts",
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+        "bytes": 5545
+      },
+      {
+        "path": "src/cli/bounded-subprocess-worker.mjs",
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+        "bytes": 3012
+      },
+      {
+        "path": "src/cli/replay.ts",
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+        "bytes": 16801
+      },
+      {
+        "path": ".github/workflows/windows-release-diagnostics.yml",
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+        "bytes": 4389
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+        "bytes": 413776
+      }
+    ],
+    "ten_source_working_raw_hashes_equal": true,
+    "ten_source_predecessor_objects_equal": true,
+    "archive": {
+      "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original",
+      "entries": 57,
+      "sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+      "format": "git ls-tree -r source221; filter runtime-parity-run-37822555762-original/; LF after each row",
+      "currentBytesSha256EqualSource221": true
+    },
+    "original_test": {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+      "unchanged": true,
+      "executed": false
+    },
+    "unmodified_contracts": [
+      "all tests/assertions",
+      "single raw-byte hash guards; no normalization",
+      "API/worker/native E0 env allowlist/B001",
+      "eleven source paths",
+      "sixteen upload paths",
+      "selection/caps/budgets/commands",
+      "Actions v4 and Node22",
+      "all originals and other tracked records"
+    ]
+  },
+  "unresolved": [
+    "Actual Windows binding/Markdown/frozen-input bytes, BOM/line counts, Git core.autocrlf/config provenance and runner global/system/info attributes/filters were not captured.",
+    "Checkout-only static structure does not prove actual action Git subprocess behavior or native child env confinement.",
+    "Native PowerShell/internal cause, process-tree absence, INITIAL observation, provider/functionality, F004/F005 and release readiness remain unverified.",
+    "Future Generator actual diff/whole-tree/raw-byte proof does not exist yet; this report cannot replace post-scope or Kimi review."
+  ],
+  "not_executed": [
+    "Planner probe or local Git fixture",
+    "target module import, runtime, VM, npm, tests or diagnostic CLI",
+    "native/PowerShell/live PID/kill",
+    "system/global Git config query or write",
+    "network, new CI, provider, SSH, DB or keys",
+    "source/test/state/progress/features/pending_gate/memory/registry/harness edit",
+    "publication, main/prod/deploy or push"
+  ],
+  "next_gates": [
+    "Separate authority before Generator applies only this exact four-file projection in isolation; no worker push.",
+    "Fresh independent actual-diff/post-scope and different-model-family Kimi supporting gate, retaining originals unchanged.",
+    "Only a separate Coordinator ruling after those gates may authorize one new exact source on locked non-main branch and one CI opportunity; no source221 retry or automatic follow-up.",
+    "Any other key/path/delta, ineffective Windows byte preservation or new guard failure: HARD_STOP, return to fresh Planner, do not normalize/remove/broaden assertions."
+  ],
+  "retained_hard_stops": [
+    "Compose HARD_STOP; no third Compose",
+    "user-postponed keys; no backup/restore/baseline/password/deployment",
+    "no new implementation/publication/CI/main/prod authority",
+    "building and release_ready=false remain; no human gate decision"
+  ],
+  "negative_cases": [
+    {"id":"W-wrong-count","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_COUNT: '2'\n","after":"          GIT_CONFIG_COUNT: '1'\n","result":"REJECT"},
+    {"id":"J-wrong-count","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_COUNT\":\"2\"","after":"\"GIT_CONFIG_COUNT\":\"1\"","result":"REJECT"},
+    {"id":"W-missing-key1","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_KEY_1: core.autocrlf\n","after":"","result":"REJECT"},
+    {"id":"J-missing-key1","group":"checkout-map","target":"bindings_json","before":",\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"","after":"","result":"REJECT"},
+    {"id":"W-missing-value1","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_VALUE_1: 'false'\n","after":"","result":"REJECT"},
+    {"id":"J-missing-value1","group":"checkout-map","target":"bindings_json","before":",\"GIT_CONFIG_VALUE_1\":\"false\"","after":"","result":"REJECT"},
+    {"id":"W-non-string-count","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_COUNT: '2'\n","after":"          GIT_CONFIG_COUNT: 2\n","result":"REJECT"},
+    {"id":"J-non-string-count","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_COUNT\":\"2\"","after":"\"GIT_CONFIG_COUNT\":2","result":"REJECT"},
+    {"id":"W-non-string-value1","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_VALUE_1: 'false'\n","after":"          GIT_CONFIG_VALUE_1: false\n","result":"REJECT"},
+    {"id":"J-non-string-value1","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_VALUE_1\":\"false\"","after":"\"GIT_CONFIG_VALUE_1\":false","result":"REJECT"},
+    {"id":"W-wrong-value0","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_VALUE_0: 'true'\n","after":"          GIT_CONFIG_VALUE_0: 'false'\n","result":"REJECT"},
+    {"id":"J-wrong-value0","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_VALUE_0\":\"true\"","after":"\"GIT_CONFIG_VALUE_0\":\"false\"","result":"REJECT"},
+    {"id":"W-wrong-key0","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_KEY_0: core.longpaths\n","after":"          GIT_CONFIG_KEY_0: core.autocrlf\n","result":"REJECT"},
+    {"id":"J-wrong-key0","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_KEY_0\":\"core.longpaths\"","after":"\"GIT_CONFIG_KEY_0\":\"core.autocrlf\"","result":"REJECT"},
+    {"id":"W-wrong-key1","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_KEY_1: core.autocrlf\n","after":"          GIT_CONFIG_KEY_1: core.eol\n","result":"REJECT"},
+    {"id":"J-wrong-key1","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"","after":"\"GIT_CONFIG_KEY_1\":\"core.eol\"","result":"REJECT"},
+    {"id":"W-wrong-value1","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_VALUE_1: 'false'\n","after":"          GIT_CONFIG_VALUE_1: 'true'\n","result":"REJECT"},
+    {"id":"J-wrong-value1","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_VALUE_1\":\"false\"","after":"\"GIT_CONFIG_VALUE_1\":\"true\"","result":"REJECT"},
+    {"id":"W-extra-key","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_VALUE_1: 'false'\n","after":"          GIT_CONFIG_VALUE_1: 'false'\n          GIT_CONFIG_KEY_2: core.eol\n","result":"REJECT"},
+    {"id":"J-extra-key","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_VALUE_1\":\"false\"","after":"\"GIT_CONFIG_VALUE_1\":\"false\",\"GIT_CONFIG_KEY_2\":\"core.eol\"","result":"REJECT"},
+    {"id":"W-duplicate-key","group":"checkout-map","target":"workflow","before":"          GIT_CONFIG_KEY_1: core.autocrlf\n","after":"          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_KEY_1: core.autocrlf\n","result":"REJECT"},
+    {"id":"J-duplicate-key","group":"checkout-map","target":"bindings_json","before":"\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"","after":"\"GIT_CONFIG_KEY_1\":\"core.autocrlf\",\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"","result":"REJECT"},
+    {"id":"J-missing-revision","group":"binding-contract","target":"bindings_json","before":"\"revision\": 3","after":"\"revision\": 2","result":"REJECT"},
+    {"id":"J-extra-field-delta","group":"binding-contract","target":"bindings_json","before":"\"release_ready\": false","after":"\"release_ready\": true","result":"REJECT"},
+    {"id":"J-change-allowlist","group":"binding-contract","target":"bindings_json","before":"\"synthetic_keys\":[\"HOME\"","after":"\"synthetic_keys\":[\"GIT_CONFIG_COUNT\",\"GIT_CONFIG_KEY_1\",\"HOME\"","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_0-workflow-propagation","group":"confinement","target":"workflow","before":"jobs:\n","after":"env:\n  GIT_CONFIG_KEY_0: core.longpaths\n\njobs:\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_0-job-propagation","group":"confinement","target":"workflow","before":"    steps:\n","after":"    env:\n      GIT_CONFIG_KEY_0: core.longpaths\n    steps:\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_0-later-propagation","group":"confinement","target":"workflow","before":"      - uses: actions/setup-node@v4\n","after":"      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_KEY_0: core.longpaths\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_0-GITHUB_ENV-propagation","group":"confinement","target":"workflow","before":"      - name: Prepare exact-candidate provenance\n","after":"      - run: echo GIT_CONFIG_KEY_0=core.longpaths >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_1-workflow-propagation","group":"confinement","target":"workflow","before":"jobs:\n","after":"env:\n  GIT_CONFIG_KEY_1: core.autocrlf\n\njobs:\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_1-job-propagation","group":"confinement","target":"workflow","before":"    steps:\n","after":"    env:\n      GIT_CONFIG_KEY_1: core.autocrlf\n    steps:\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_1-later-propagation","group":"confinement","target":"workflow","before":"      - uses: actions/setup-node@v4\n","after":"      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_KEY_1: core.autocrlf\n","result":"REJECT"},
+    {"id":"GIT_CONFIG_KEY_1-GITHUB_ENV-propagation","group":"confinement","target":"workflow","before":"      - name: Prepare exact-candidate provenance\n","after":"      - run: echo GIT_CONFIG_KEY_1=core.autocrlf >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n","result":"REJECT"},
+    {"id":"persistent-config-write","group":"forbidden-surface","target":"workflow","before":"      - name: Prepare exact-candidate provenance\n","after":"      - run: git config --global core.autocrlf false\n      - name: Prepare exact-candidate provenance\n","result":"REJECT"},
+    {"id":"sparse-checkout","group":"forbidden-surface","target":"workflow","before":"          fetch-depth: 1\n","after":"          fetch-depth: 1\n          sparse-checkout: docs/specs\n","result":"REJECT"},
+    {"id":"checkout-path","group":"forbidden-surface","target":"workflow","before":"          fetch-depth: 1\n","after":"          fetch-depth: 1\n          path: short\n","result":"REJECT"},
+    {"id":"new-command","group":"forbidden-surface","target":"workflow","before":"      - name: Prepare exact-candidate provenance\n","after":"      - run: git --version\n      - name: Prepare exact-candidate provenance\n","result":"REJECT"},
+    {"id":"permission-escalation","group":"forbidden-surface","target":"workflow","before":"  contents: read\n","after":"  contents: write\n","result":"REJECT"},
+    {"id":"Secret","group":"forbidden-surface","target":"workflow","before":"          persist-credentials: false\n","after":"          persist-credentials: false\n          token: ${{ secrets.PAT }}\n","result":"REJECT"},
+    {"id":"retry","group":"forbidden-surface","target":"workflow","before":"      - name: INITIAL once\n","after":"      - name: INITIAL repeat\n        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run\n      - name: INITIAL once\n","result":"REJECT"},
+    {"id":"Actions-version","group":"forbidden-surface","target":"workflow","before":"uses: actions/checkout@v4","after":"uses: actions/checkout@v5","result":"REJECT"},
+    {"id":"Node-version","group":"forbidden-surface","target":"workflow","before":"          node-version: '22'\n","after":"          node-version: '24'\n","result":"REJECT"},
+    {"id":"stale-bindingHash","group":"identity-linkage","target":"cli","before":"const bindingHash = 'f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130';","after":"const bindingHash = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';","result":"REJECT"},
+    {"id":"stale-mdHash","group":"identity-linkage","target":"cli","before":"const mdHash = '9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb';","after":"const mdHash = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';","result":"REJECT"},
+    {"id":"CLI-extra-byte","group":"identity-linkage","target":"cli","before":"const repo = resolve(dirname(self), '../../..');","after":"const repo = resolve(dirname(self), '../../..'); ","result":"REJECT"},
+    {"id":"CLI-normalization","group":"identity-linkage","target":"cli","before":"assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');","after":"assert.equal(sha256(bindingBytes.toString().replace(/\\r\\n/g, '\\n')), bindingHash, 'binding identity');","result":"REJECT"},
+    {"id":"CLI-second-accepted-hash","group":"identity-linkage","target":"cli","before":"assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');","after":"assert([bindingHash, '481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e'].includes(sha256(bindingBytes)));","result":"REJECT"},
+    {"id":"MD-old-prefix-rewrite","group":"markdown-append","target":"bindings_md","before":"Revision 2 is a proposal only.","after":"Revision 2 is now obsolete.","result":"REJECT"},
+    {"id":"MD-no-explicit-supersession","group":"markdown-append","target":"bindings_md","before":"C002 supersedes its exact three-key map and revision-1-to-2 wording","after":"C002 reuses C001","result":"REJECT"},
+    {"id":"MD-stale-old-only","group":"markdown-append","target":"bindings_md","before":"\n## 8. C002 checkout raw-byte identity successor scope (proposed 2026-10-11 UTC)\n\nRevision 3 is a proposal only. It grants no implementation, publication, native execution, native environment repair or release authority. C001 at source221 is the already frozen count1/three-key long-path fix; count2/five-key is a new C002 contract, not compliance with the old C001 map.\n\nSolely for the same four existing paths in section 7, C002 supersedes its exact three-key map and revision-1-to-2 wording: (1) change only the checkout action step env to GIT_CONFIG_COUNT=2, retain GIT_CONFIG_KEY_0=core.longpaths and GIT_CONFIG_VALUE_0=true, and add only GIT_CONFIG_KEY_1=core.autocrlf and GIT_CONFIG_VALUE_1=false; (2) append this section to this Markdown without changing any prior byte; (3) change adjacent JSON revision 2 to 3, updated_at_utc to 2026-10-11T16:11:16Z, revision_scope to the exact C002 proposal string and workflow.checkout_env to that exact five-key map, preserving all other bytes; (4) change only the two bindingHash/mdHash 64-character literals in p1-stages.mjs to SHA-256 of the revised JSON/Markdown raw bytes, preserving every other CLI byte. No new implementation file is admitted.\n\nThe five configuration env keys belong only to the checkout action step and its Git subprocess command scope. They are forbidden at workflow/job scope, in GITHUB_ENV, in later steps and in diagnostic owned children. No added command, retry, version query, config write, relocation, sparse checkout, omitted archive, Actions/Node version change or permission/Secrets change is allowed. This prevents checkout text conversion; it never normalizes a hash input or accepts a second identity. The existing raw-byte hash assertions, guards, B001, E0/native env allowlist, API/worker, selections, caps, bounds, commands, tests, required_future_controls, sourceFiles eleven-path set, uploads and original artifacts remain unchanged.\n\nThe CI actual JSON digest is exactly reproduced by the single LF-to-CRLF Buffer transform and by an owned local Git fixture with core.autocrlf=true; this is not observation of the Windows file bytes or its autocrlf setting. A local fixture with core.autocrlf=false preserves all sixteen inspected source blobs, but is not native acceptance. Windows checkout byte preservation and every later INITIAL/native/release gate remain unverified.\n\nA fresh independent supporting pre-scope review must accept this new exact projection before Generator work. Then require a fresh actual-diff/post-scope review, independent different-model-family Kimi supporting gate, and a separate Coordinator ruling before a single new-source non-main CI opportunity. Static positive/negative controls must reject wrong count/value/key, extra key, missing confinement, stale/one-sided hashes, any extra CLI byte and any other source/test/contract delta; the unchanged synthetic suite does not itself freeze this checkout env map. No source221 retry or automatic follow-up run is authorized by this proposal. Compose HARD_STOP/no third Compose, postponed key work, no backup/restore/baseline/password/deploy, release_ready=false and all other release boundaries remain in force.\n","after":"","result":"REJECT"},
+    {"id":"fifth-file","group":"closed-four-path-set","target":"src/cli/bounded-subprocess-worker.mjs","result":"REJECT"},
+    {"id":"missing-MD-file","group":"closed-four-path-set","target":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","result":"REJECT"},
+    {"id":"source-mode-delta","group":"closed-four-path-set","target":"cli","mode":"100755","result":"REJECT"},
+    {"id":"all-five-workflow-propagation","group":"confinement","target":"workflow","before":"jobs:\n","after":"env:\n  GIT_CONFIG_COUNT: '2'\n  GIT_CONFIG_KEY_0: core.longpaths\n  GIT_CONFIG_VALUE_0: 'true'\n  GIT_CONFIG_KEY_1: core.autocrlf\n  GIT_CONFIG_VALUE_1: 'false'\n\njobs:\n","result":"REJECT"},
+    {"id":"all-five-job-propagation","group":"confinement","target":"workflow","before":"    steps:\n","after":"    env:\n      GIT_CONFIG_COUNT: '2'\n      GIT_CONFIG_KEY_0: core.longpaths\n      GIT_CONFIG_VALUE_0: 'true'\n      GIT_CONFIG_KEY_1: core.autocrlf\n      GIT_CONFIG_VALUE_1: 'false'\n    steps:\n","result":"REJECT"},
+    {"id":"all-five-later-propagation","group":"confinement","target":"workflow","before":"      - uses: actions/setup-node@v4\n","after":"      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_COUNT: '2'\n          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n","result":"REJECT"},
+    {"id":"all-five-GITHUB_ENV-propagation","group":"confinement","target":"workflow","before":"      - name: Prepare exact-candidate provenance\n","after":"      - run: |\n          echo GIT_CONFIG_COUNT=2 >> $GITHUB_ENV\n          echo GIT_CONFIG_KEY_0=core.longpaths >> $GITHUB_ENV\n          echo GIT_CONFIG_VALUE_0=true >> $GITHUB_ENV\n          echo GIT_CONFIG_KEY_1=core.autocrlf >> $GITHUB_ENV\n          echo GIT_CONFIG_VALUE_1=false >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n","result":"REJECT"}
+  ],
+  "operational_note": "First report apply_patch used a relative path and temporarily created only these two new reports in /Volumes/ORICO/project/tokenizer rather than the isolated worktree. The mistaken files were removed using apply_patch and the reports added with absolute isolated-worktree paths. No source/state/original was edited; final commit contains only the two intended report files. Before deletion, ls sizes were 9890/33016 bytes, matching the just-issued patch payload; no separate SHA256 was captured at the mistaken path. After recovery the original main HEAD is 2074991717abaf3cb34d9aad894bcd4357fefbc3 and git status is clean; the empty mistaken directory was removed. This records observed recovery, not an invented pre-task main snapshot."
+}
