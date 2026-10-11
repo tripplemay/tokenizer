@@ -1,0 +1,6 @@
+{
+  "started_at": "2026-10-11T18:15:54.526Z",
+  "observed_at": "2026-10-11T18:15:55.966Z",
+  "http_status": 200,
+  "body": "{\"ok\":true,\"timestamp\":\"2026-10-11T18:15:56.055Z\",\"commit\":\"92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1\"}"
+}

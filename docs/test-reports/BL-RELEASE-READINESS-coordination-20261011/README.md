@@ -2,7 +2,14 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 17:45 UTC
+## Latest checkpoint: 18:15 UTC
+
+- NEW prepare-observation source `712cf210b089dc71f3a6e6ed2e19e1de7fee57da` changes only the authorized CLI observation slots. Fresh pre-scope and actual-diff post-scope are PASS_SCOPE_ONLY; the 47 Generator development files and two post-scope originals are byte-identically transported in `6bb1c14`, with a 49-file/1,225,388-byte manifest. Source runtime is not integrated into this parent.
+- Generator development reports unchanged81/81 and verify/syntax/pure-import exit0. One owned npmci retains seven-high warnings and package-owned lock-absent SWC wasm fallback; full staged whitespace check exit2 from the original verify-log EOF blank line is preserved, not trimmed or called green. This is not independent acceptance.
+- `windows-prepare-observation-kimi-r0-dispatch-adjudication.json` commissions registered different-family Kimi supporting r0 at the unchanged1800-second cap. Its fresh own actual-source-slice offline controls are running; no result yet. No new source publication, CI, source61 rerun or production operation is authorized.
+- Fresh18:15 remote main207/non-main61 and public health HTTP200/ok=true still report production92. Filename token1817 is a label; the original actual timestamp is authoritative. Main is clean; parent runtime diff and canonical/parent state are unchanged. Compose HARD_STOP, key deferral, formal release/recovery gates and `release_ready=false` remain.
+
+## Historical checkpoint: 17:45 UTC
 
 - Fresh supporting Planner `22946b380fdf43109a30d7e69e87d5a9ab1dbd10` cannot establish a unique prepare failure cause. Source control flow narrows successful top-level loading, not any prepare substage or direct runner file/config observation. Seven report-only originals are transported byte-identically, including the original static jq failure ledger.
 - New proposal adds only one fixed29-byte prepare failure phase line P00-P12, no raw data or success/other-mode output, no guard/schema/hash relaxation. `windows-prepare-failure-plan-and-prescope-adjudication.json` commissions fresh passive pre-scope to judge specification/projection and successor authority; not implementation/publication/CI approval.

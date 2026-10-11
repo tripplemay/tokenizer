@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator operational error ledger, not an acceptance finding",
+  "tool_chunk": "276a42",
+  "command": "git -c core.fileMode=false commit --only -m 'docs(release): record active prepare observation independent gate and production boundary' -- README and three new original capture paths",
+  "exit_code": 1,
+  "original_errors": [
+    "error: pathspec 'docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/remote-refs-20261011T1817Z-original.json' did not match any file(s) known to git",
+    "error: pathspec 'docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/public-health-20261011T1817Z-original.json' did not match any file(s) known to git",
+    "error: pathspec 'docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/coordinator-boundary-20261011T1817Z-original.json' did not match any file(s) known to git"
+  ],
+  "cause": "New original capture files were not yet git-added before commit --only",
+  "correction": "Stage only exact five intended checkpoint paths, then commit --only those paths; no original bytes or source changed, no failed acceptance test hidden"
+}

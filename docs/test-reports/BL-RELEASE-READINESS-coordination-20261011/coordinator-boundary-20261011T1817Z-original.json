@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-11T18:15:55.969Z",
+  "parent_head": {
+    "exit_code": 0,
+    "stdout": "6bb1c143806558ef35576403c01b75ed46776fe0\n",
+    "stderr": ""
+  },
+  "parent_runtime_diff": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "main_status": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "main_head": {
+    "exit_code": 0,
+    "stdout": "2074991717abaf3cb34d9aad894bcd4357fefbc3\n",
+    "stderr": ""
+  },
+  "parent_status": "building",
+  "parent_completed": 3,
+  "parent_total": 5,
+  "parent_pending_gate": null,
+  "parent_role_assignments": null,
+  "canonical_status": "verifying",
+  "canonical_pending_gate": null,
+  "canonical_role_assignments": null,
+  "release_ready": false
+}
