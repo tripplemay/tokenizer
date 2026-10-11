@@ -1,0 +1,132 @@
+{
+  "authorityCommit": "1cc8e459daf04d5592f7590638028457046a0946",
+  "authoritySha256": "eff55506431d36701f2a0aabac7378105efc8d51c5c87ee575d9340e8ff2c876",
+  "scripts": [
+    {
+      "path": "node_modules/better-sqlite3/package.json",
+      "sha256": "d1db58a099dfdef5d10253e873e358eb1e9e2ebb01fa6ef0d40150e37cef6317",
+      "selectedLines": [
+        {
+          "line": 5,
+          "text": "  \"homepage\": \"http://github.com/WiseLibs/better-sqlite3\","
+        },
+        {
+          "line": 7,
+          "text": "  \"repository\": {"
+        },
+        {
+          "line": 9,
+          "text": "    \"url\": \"git://github.com/WiseLibs/better-sqlite3.git\""
+        },
+        {
+          "line": 41,
+          "text": "    \"install\": \"prebuild-install || node-gyp rebuild --release\","
+        }
+      ]
+    },
+    {
+      "path": "node_modules/prebuild-install/util.js",
+      "sha256": "587f23cf9216dfa7e162d83d9760a2daf2744623c38f5576fb3e5ef6d21d6c6c",
+      "selectedLines": [
+        {
+          "line": 60,
+          "text": "  return github(opts.pkg) + '/releases/download/{tag_prefix}{version}/' + packageName"
+        }
+      ]
+    },
+    {
+      "path": "node_modules/prebuild-install/bin.js",
+      "sha256": "27e6a2d2e63549eb0b3c2d9a9067b7646f9157a120b7f345a12a1e20c997a998",
+      "selectedLines": [
+        {
+          "line": 67,
+          "text": "if (opts.token) {"
+        },
+        {
+          "line": 74,
+          "text": "    startDownload(util.getAssetUrl(opts, assetId))"
+        },
+        {
+          "line": 77,
+          "text": "  startDownload(util.getDownloadUrl(opts))"
+        }
+      ]
+    },
+    {
+      "path": "node_modules/@prisma/engines/scripts/postinstall.js",
+      "sha256": "c4219fdab06232498675a5372968a9eed209696a1a825c88ccc4f247a922f1b0",
+      "selectedLines": [
+        {
+          "line": 28,
+          "text": "require(postInstallScriptPath)"
+        }
+      ]
+    },
+    {
+      "path": "node_modules/@prisma/engines/dist/scripts/postinstall.js",
+      "sha256": "81fbf4bc8b69cbdf023f6ba0ef168e4eeb1cfff7bd070793ae7c63fd015bd1c8",
+      "selectedLines": [
+        {
+          "line": 27,
+          "text": "var import_engines_version3 = require(\"@prisma/engines-version\");"
+        },
+        {
+          "line": 34,
+          "text": "var import_engines_version = require(\"@prisma/engines-version\");"
+        },
+        {
+          "line": 37,
+          "text": "var import_engines_version2 = require(\"@prisma/engines-version\");"
+        },
+        {
+          "line": 78,
+          "text": "var debug2 = (0, import_debug2.default)(\"prisma:download\");"
+        },
+        {
+          "line": 80,
+          "text": "var lockFile = import_path2.default.join(baseDir, \"download-lock\");"
+        },
+        {
+          "line": 84,
+          "text": "    debug2(`Lock file already exists, so we're skipping the download of the prisma binaries`);"
+        },
+        {
+          "line": 96,
+          "text": "    await (0, import_fetch_engine2.download)({"
+        },
+        {
+          "line": 98,
+          "text": "      version: import_engines_version3.enginesVersion,"
+        }
+      ]
+    },
+    {
+      "path": "node_modules/@prisma/fetch-engine/dist/chunk-FQ2BOR66.js",
+      "sha256": "9d1f2d90111d6b1ec2c942c67518cb069666c4319b0236c3f67f54b013b8d45c",
+      "selectedLines": [
+        {
+          "line": 2428,
+          "text": "  const baseUrl = process.env.PRISMA_BINARIES_MIRROR || // TODO: remove this"
+        },
+        {
+          "line": 2429,
+          "text": "  process.env.PRISMA_ENGINES_MIRROR || \"https://binaries.prisma.sh\";"
+        },
+        {
+          "line": 2437,
+          "text": "  return `${baseUrl}/${channel}/${version}/${binaryTarget}/${binaryName}${finalExtension}`;"
+        }
+      ]
+    }
+  ],
+  "observedHTTPLogLines": 683,
+  "observedOrigins": [
+    "https://registry.npmjs.org"
+  ],
+  "ownedPrebuildCache": [],
+  "installCommandUnchanged": true,
+  "packageOwnedBinaryDownloadsPermitted": true,
+  "prismaOrGitHubBinaryRequestURLsActuallyLogged": false,
+  "externalBinaryRequestsPacketCaptured": false,
+  "boundary": "Static package references and owned cache artifacts are not HTTP traces. No install rerun, manual download, authenticated API, credentials or arbitrary egress performed."
+}

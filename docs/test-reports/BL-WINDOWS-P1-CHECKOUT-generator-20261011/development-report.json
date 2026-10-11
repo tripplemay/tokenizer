@@ -1,0 +1,129 @@
+{
+  "format": "windows-p1-checkout-generator-development-report-v1",
+  "role": "Codex-family supporting Generator; harness-rules.md section 1.5; not Evaluator or Coordinator",
+  "model_family": "codex",
+  "result": "EXACT_C001_CANDIDATE_AND_DEVELOPMENT_CHECKS_COMPLETED_REQUIRES_INDEPENDENT_ACCEPTANCE",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011",
+  "branch": "codex/windows-p1-checkout-generator-20261011",
+  "source888": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "source_commit": "221f2f87d94db1656e3000662796d79621b696f5",
+  "source_commit_parent": "54af183617ed06c18edd42632326dbfd09451456",
+  "report_commit_identity": "Resolve HEAD after the separate report-only commit; its parent must equal source_commit. The post-commit 99-final-evidence records the full report SHA without a circular self-reference.",
+  "authority": {
+    "exact_C001_implementation_commit": "77b00b16e5490db4bd2f860209d8e30b601cb2c4",
+    "file": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-plan-and-generator-adjudication.json",
+    "package_owned_public_binary_download_clarification_commit": "1cc8e459daf04d5592f7590638028457046a0946",
+    "pre_scope_verdict": "PASS_SCOPE_ONLY",
+    "pre_scope_is_functional_acceptance": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "native_environment_repair_authorized": false
+  },
+  "source_changed_paths": [
+    ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+  ],
+  "source_delta": {
+    "workflow": "Only four added lines; checkout-step env contains exactly three string-valued GIT_CONFIG keys",
+    "bindings_json": "Exactly the five unique byte replacements specified by proposal.json",
+    "bindings_markdown": "Only the exact proposal appendix; all previous bytes preserved",
+    "cli": "Only bindingHash and mdHash literal values; masking precisely those two literals equals source888 bytes",
+    "new_implementation_paths": [],
+    "manual_source_edit_tool": "apply_patch",
+    "additional_source_edits_after_source_commit": false,
+    "hashes_match_planner_and_parent_projection": true
+  },
+  "source_sha256": {
+    ".github/workflows/windows-p1-stages-diagnostic.yml": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+  },
+  "owned_development_environment": {
+    "node": "v22.22.0",
+    "npm": "10.9.4",
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_bin": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin",
+    "HOME_and_USERPROFILE": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "tmp": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "npm_cache": "/Volumes/ORICO/project/.wp1cg-20261011/npm-cache",
+    "registry": "https://registry.npmjs.org/",
+    "node_modules_was_absent_before_install": true,
+    "fresh_npm_ci_runs": 1,
+    "node_modules_real_directory_in_own_worktree": true,
+    "borrowed_dependencies_or_symlink_root": false,
+    "user_home_temp_or_real_queue_used": false
+  },
+  "development_checks": [
+    {"name":"exact-source888/baseline/candidate projection and inventories", "exit_code":0, "evidence":"raw/02-before-evidence-r1.stdout.log; raw/03-after-evidence.stdout.log; raw/08-source-evidence.stdout.log; raw/17-post-development-evidence.stdout.log"},
+    {"name":"node syntax", "exit_code":0, "evidence":"raw/04-node-syntax.status.json"},
+    {"name":"pure import with spawn/write/mkdir/process.kill blocked; validateBindings; checkout-key filtering", "exit_code":0, "evidence":"raw/06-pure-import.stdout.log"},
+    {"name":"fresh locked npm ci", "exit_code":0, "evidence":"raw/10-npm-ci.stdout.log; raw/10-npm-ci.stderr.log; raw/10-npm-ci.status.json"},
+    {"name":"unchanged original synthetic/mock suite", "exit_code":0, "passed":81, "failed":0, "skipped":0, "files":1, "original_groups":14, "evidence":"raw/11-unchanged-synthetic-suite.stdout.log; raw/11-checks.raw.json"},
+    {"name":"npm run verify: prisma generate and tsc --noEmit", "exit_code":0, "evidence":"raw/12-npm-verify.stdout.log; raw/12-npm-verify.status.json"},
+    {"name":"real own dependency root", "exit_code":0, "evidence":"raw/09-fresh-dependency-baseline.stdout.log; raw/18-dependency-real-root.stdout.log"},
+    {"name":"installed package network references and visible npm HTTP origins", "exit_code":0, "evidence":"raw/21-network-scope-evidence.stdout.log"}
+  ],
+  "preservation": {
+    "original_synthetic_test_sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+    "original_control_declarations_and_all_tests_fixtures_unchanged": true,
+    "frozen_runtime_files": 7,
+    "prior_inputs": 3,
+    "all_ten_locked_hashes_match": true,
+    "archive57_mode_type_path_blob_and_materialized_bytes_identical": true,
+    "archive57_ls_tree_rz_sha256": "52ac3b835b45e6aa3c54ea72f57180421822c5719d2a9e9bca0d2abbbf0a0721",
+    "source888_tracked_paths": 2453,
+    "source888_ls_tree_rz_sha256": "af29538927397b7ec48c261ca047616d9a18617a65f767165b61105d396d1a23",
+    "all_other_base_mode_type_path_blob_records_unchanged": true,
+    "original_failure_run38145284914_files_hash_checked_unchanged": true,
+    "historical59_runtime_inventory_reauthenticated": false,
+    "report_only_additions_root": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/"
+  },
+  "failures_and_warnings": {
+    "initial_report_tool_failure": {"exit_code":1, "evidence":"raw/01-before-evidence.stderr.log; raw/01-before-evidence.status.json", "cause":"SyntaxError in report-owned verify-evidence.mjs regular-expression template", "correction":"Report-only syntax and proposal property-name corrections using apply_patch; new 02 capture, never overwrite 01; no source feasibility or candidate change"},
+    "transient_report_path_typo": "bootstrap-command-transcript.json was briefly untracked at repository root, then moved by apply_patch into this admitted report directory before staging; no root file committed",
+    "source_or_synthetic_or_verify_failures": [],
+    "npm_ci_raw_security_warning": "7 high severity vulnerabilities",
+    "npm_audit_fix_performed": false,
+    "dependency_or_lockfile_change": false,
+    "npm_deprecated_warnings": ["prebuild-install@7.1.3", "eslint@9.39.5"],
+    "npm_install_lifecycle": "Original locked scripts ran unchanged, including successful better-sqlite3/Prisma/SWC lifecycle and a package-owned @swc/wasm public-registry fallback. Complete npm debug originals retained.",
+    "actual_logged_HTTP_origins": ["https://registry.npmjs.org"],
+    "binary_host_static_references": ["https://binaries.prisma.sh", "github.com/WiseLibs/better-sqlite3/releases/download"],
+    "actual_Prisma_or_GitHub_binary_request_URLs_or_redirects_observable": false,
+    "network_packet_capture_or_full_egress_confinement_claim": false
+  },
+  "raw_evidence": {
+    "full_stdout_stderr_status_and_command_metadata": "raw/<capture-id>.stdout.log, .stderr.log, .combined.log, .status.json, .command.json; exclusive creation prevents overwrite",
+    "raw_manifest": "raw-manifest.json",
+    "raw_manifest_sha256": "b6c1a40e4785ed92e3f45a306006804d017f251d73a9527642790c73ec7e908f",
+    "manifest_scope": "119 raw files through capture22; capture23 and subsequent report-only validation files intentionally outside this earlier snapshot but retained as full original files",
+    "bootstrap_commit_tool_outputs": "bootstrap-command-transcript.json; explicitly transcribed tool outputs rather than original separated process pipes",
+    "report_stage_and_commit_original_logs": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.*; 98-report-commit.*",
+    "post_report_commit_final_evidence": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.stdout.log",
+    "post_report_commit_status": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.status.json"
+  },
+  "not_performed": [
+    "independent actual-diff acceptance or different-model-family supporting acceptance",
+    "Git command-scope model or persistent Git config write",
+    "PowerShell/native INITIAL/prepare/run/probe/seal/verify-upload CLI modes",
+    "real process.kill or production/Docker/SSH/DB/keys/GitHub authenticated CLI/API/CI/push/service/Secrets",
+    "native environment/guard/API/worker/schema/budget/selection/required controls/dependency/config changes",
+    "state/harness/registry/pending_gate.decision or memory edits"
+  ],
+  "remaining_boundaries": {
+    "checkout_success_or_Windows_feasibility_demonstrated": false,
+    "native_INITIAL_completeness_accepted": false,
+    "whole_process_tree_absence_proven": false,
+    "Compose": "HARD_STOP; no third attempt",
+    "parent_F004_F005": "unresolved",
+    "keys": "deferred by user",
+    "release_ready": false,
+    "release_acceptance": false,
+    "formal_F005_claim": false
+  },
+  "handoff": "Stop after source commit plus separate report-only commit and final clean/index-empty checks. Root must arrange fresh exact-candidate actual-diff scope and registered different-family offline supporting acceptance; any later non-main publication/native opportunity requires a separate Coordinator ruling."
+}

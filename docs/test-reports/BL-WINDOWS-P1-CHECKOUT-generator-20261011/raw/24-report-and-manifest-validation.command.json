@@ -1,0 +1,24 @@
+{
+  "command": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "args": [
+    "--input-type=module",
+    "-e",
+    "import fs from 'node:fs'; import assert from 'node:assert/strict'; import {createHash} from 'node:crypto'; const root='docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011'; const hash=b=>createHash('sha256').update(b).digest('hex'); const report=JSON.parse(fs.readFileSync(root+'/development-report.json')); const manifest=JSON.parse(fs.readFileSync(root+'/raw-manifest.json')); for(const f of manifest.files){ const b=fs.readFileSync(root+'/'+f.path); assert.equal(b.length,f.bytes); assert.equal(hash(b),f.sha256); } for(const file of fs.readdirSync(root).filter(p=>/\\.(json|mjs|md)$/.test(p))){ const b=fs.readFileSync(root+'/'+file); assert(!b.some(v=>v>127),file); if(file.endsWith('.json'))JSON.parse(b); } assert.equal(fs.existsSync('bootstrap-command-transcript.json'),false); assert.equal(report.source_commit,'221f2f87d94db1656e3000662796d79621b696f5'); console.log(JSON.stringify({manifestFiles:manifest.files.length,allRawHashesMatch:true,reportJSONValid:true,manualReportsASCII:true,rootTranscriptAbsent:true,sourceCommit:report.source_commit,releaseReady:false},null,2));"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TEMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "NPM_CONFIG_CACHE": "/Volumes/ORICO/project/.wp1cg-20261011/npm-cache",
+    "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
+    "NPM_CONFIG_USERCONFIG": "/Volumes/ORICO/project/.wp1cg-20261011/absent-npmrc",
+    "CI": "true",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "startedAt": "2026-10-11T14:42:17.911Z"
+}

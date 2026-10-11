@@ -1,0 +1,13 @@
+commit 221f2f87d94db1656e3000662796d79621b696f5
+Author:     tripplemay <tripllezhou@gmail.com>
+AuthorDate: Sun Oct 11 21:33:26 2026 +0700
+Commit:     tripplemay <tripllezhou@gmail.com>
+CommitDate: Sun Oct 11 21:33:26 2026 +0700
+
+    fix(BL-WINDOWS-P1-CHECKOUT-C001): apply exact checkout-only projection
+
+ .github/workflows/windows-p1-stages-diagnostic.yml        |  4 ++++
+ docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json   | 10 ++++++----
+ docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md     | 15 +++++++++++++++
+ .../test-reports/windows-p1-stages-20261010/p1-stages.mjs |  4 ++--
+ 4 files changed, 27 insertions(+), 6 deletions(-)

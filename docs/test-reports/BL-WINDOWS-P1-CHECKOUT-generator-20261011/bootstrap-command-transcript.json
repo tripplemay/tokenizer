@@ -1,0 +1,31 @@
+{
+  "format": "generator-bootstrap-tool-output-transcript-v1",
+  "boundary": "Transcribed exact command tool outputs before raw capture tooling existed, not reconstructed raw process pipes. Later checks use full immutable stdout/stderr/status captures. This report transcript was briefly created untracked at repository root by a report-path typo, then moved here with apply_patch before staging; no root file was committed.",
+  "commands": [
+    {
+      "command": "git -c core.fileMode=false worktree add -b codex/windows-p1-checkout-generator-20261011 /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011 54af183617ed06c18edd42632326dbfd09451456",
+      "exit_code": 0,
+      "combined_tool_output": "Preparing worktree (new branch 'codex/windows-p1-checkout-generator-20261011')\nHEAD is now at 54af183 docs(BL-WINDOWS-P1-CHECKOUT): record independent pre-scope verdict\n"
+    },
+    {
+      "command": "git -c core.fileMode=false add -- .github/workflows/windows-p1-stages-diagnostic.yml docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "exit_code": 0,
+      "combined_tool_output": ""
+    },
+    {
+      "command": "git -c core.fileMode=false diff --cached --stat",
+      "exit_code": 0,
+      "combined_tool_output": " .github/workflows/windows-p1-stages-diagnostic.yml        |  4 ++++\n docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json   | 10 ++++++----\n docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md     | 15 +++++++++++++++\n .../test-reports/windows-p1-stages-20261010/p1-stages.mjs |  4 ++--\n 4 files changed, 27 insertions(+), 6 deletions(-)\n"
+    },
+    {
+      "command": "git -c core.fileMode=false commit -m \"fix(BL-WINDOWS-P1-CHECKOUT-C001): apply exact checkout-only projection\"",
+      "exit_code": 0,
+      "combined_tool_output": "[codex/windows-p1-checkout-generator-20261011 221f2f8] fix(BL-WINDOWS-P1-CHECKOUT-C001): apply exact checkout-only projection\n 4 files changed, 27 insertions(+), 6 deletions(-)\n"
+    },
+    {
+      "command": "git -c core.fileMode=false rev-parse HEAD",
+      "exit_code": 0,
+      "combined_tool_output": "221f2f87d94db1656e3000662796d79621b696f5\n"
+    }
+  ]
+}

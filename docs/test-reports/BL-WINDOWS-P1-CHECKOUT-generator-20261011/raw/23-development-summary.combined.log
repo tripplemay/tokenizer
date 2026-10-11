@@ -1,0 +1,244 @@
+{
+  "statuses": [
+    {
+      "path": "raw/00-runtime.status.json",
+      "startedAt": "2026-10-11T14:31:58.050Z",
+      "completedAt": "2026-10-11T14:31:58.071Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/01-before-evidence.status.json",
+      "startedAt": "2026-10-11T14:31:58.100Z",
+      "completedAt": "2026-10-11T14:31:58.122Z",
+      "code": 1,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/02-before-evidence-r1.status.json",
+      "startedAt": "2026-10-11T14:32:13.358Z",
+      "completedAt": "2026-10-11T14:32:14.375Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/03-after-evidence.status.json",
+      "startedAt": "2026-10-11T14:32:52.341Z",
+      "completedAt": "2026-10-11T14:32:53.255Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/04-node-syntax.status.json",
+      "startedAt": "2026-10-11T14:32:53.285Z",
+      "completedAt": "2026-10-11T14:32:53.305Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/05-exact-diff.status.json",
+      "startedAt": "2026-10-11T14:32:53.353Z",
+      "completedAt": "2026-10-11T14:32:53.370Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/06-pure-import.status.json",
+      "startedAt": "2026-10-11T14:33:26.622Z",
+      "completedAt": "2026-10-11T14:33:26.655Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/07-source-diff-check.status.json",
+      "startedAt": "2026-10-11T14:33:26.705Z",
+      "completedAt": "2026-10-11T14:33:26.731Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/08-source-evidence.status.json",
+      "startedAt": "2026-10-11T14:33:51.120Z",
+      "completedAt": "2026-10-11T14:33:51.977Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/09-fresh-dependency-baseline.status.json",
+      "startedAt": "2026-10-11T14:33:52.006Z",
+      "completedAt": "2026-10-11T14:33:52.028Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/10-npm-ci.status.json",
+      "startedAt": "2026-10-11T14:33:52.079Z",
+      "completedAt": "2026-10-11T14:35:21.958Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/11-unchanged-synthetic-suite.status.json",
+      "startedAt": "2026-10-11T14:35:34.204Z",
+      "completedAt": "2026-10-11T14:35:35.720Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/12-npm-verify.status.json",
+      "startedAt": "2026-10-11T14:35:35.346Z",
+      "completedAt": "2026-10-11T14:35:40.539Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/13-inventory-source888.status.json",
+      "startedAt": "2026-10-11T14:36:02.055Z",
+      "completedAt": "2026-10-11T14:36:02.111Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/14-inventory-base.status.json",
+      "startedAt": "2026-10-11T14:36:02.162Z",
+      "completedAt": "2026-10-11T14:36:02.177Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/15-inventory-candidate.status.json",
+      "startedAt": "2026-10-11T14:36:02.227Z",
+      "completedAt": "2026-10-11T14:36:02.242Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/16-source-commit.status.json",
+      "startedAt": "2026-10-11T14:36:02.291Z",
+      "completedAt": "2026-10-11T14:36:02.308Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/17-post-development-evidence.status.json",
+      "startedAt": "2026-10-11T14:36:21.054Z",
+      "completedAt": "2026-10-11T14:36:21.896Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/18-dependency-real-root.status.json",
+      "startedAt": "2026-10-11T14:36:21.922Z",
+      "completedAt": "2026-10-11T14:36:21.944Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/19-npm-ci-debug-original.status.json",
+      "startedAt": "2026-10-11T14:36:21.993Z",
+      "completedAt": "2026-10-11T14:36:22.000Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/20-swc-npm-debug-original.status.json",
+      "startedAt": "2026-10-11T14:36:22.049Z",
+      "completedAt": "2026-10-11T14:36:22.052Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/21-network-scope-evidence.status.json",
+      "startedAt": "2026-10-11T14:37:51.908Z",
+      "completedAt": "2026-10-11T14:37:51.986Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "path": "raw/22-verify-npm-debug-original.status.json",
+      "startedAt": "2026-10-11T14:39:13.778Z",
+      "completedAt": "2026-10-11T14:39:13.785Z",
+      "code": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "testCounts": {
+    "total": 81,
+    "passed": 81,
+    "failed": 0,
+    "skipped": 0,
+    "files": 1,
+    "groups": 14
+  },
+  "originalControlGroups": [
+    "all-token-chunk-splits-and-LF-CRLF",
+    "timeout-prefix-immediate-safe-persistence",
+    "missing-EOF-event-health-or-stream-error",
+    "unsafe-bytes-canaries-stderr-and-order",
+    "handle-pid-case-script-identity",
+    "all-inclusive-caps-and-plus-one",
+    "concurrent-append-and-lock-failure",
+    "counter-and-clock-admission-boundaries",
+    "cleanup-trace-provenance-independent-unknown",
+    "every-selection-row-zero-skipped-launches",
+    "strict-extra-key-rejection",
+    "import-without-side-effects",
+    "exact-source-workflow-and-upload-file-set",
+    "B001-actual-API-source-return-throw-and-owned-native-exit-close-counterexamples-at-T1-T2"
+  ],
+  "requiredControlDeclarationUnchanged": true,
+  "sourceCommit": "221f2f87d94db1656e3000662796d79621b696f5",
+  "sourceParent": "54af183617ed06c18edd42632326dbfd09451456",
+  "fileHashes": [
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3228,
+      "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 22275,
+      "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34853,
+      "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+    },
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 73022,
+      "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+    }
+  ],
+  "rawManifestFiles": 119,
+  "rawManifestSha256": "b6c1a40e4785ed92e3f45a306006804d017f251d73a9527642790c73ec7e908f",
+  "npmHighSeverityCount": 7,
+  "auditFixPerformed": false,
+  "independentAcceptance": false,
+  "nativeExecution": false,
+  "releaseReady": false
+}

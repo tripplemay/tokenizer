@@ -1,0 +1,89 @@
+diff --git a/.github/workflows/windows-p1-stages-diagnostic.yml b/.github/workflows/windows-p1-stages-diagnostic.yml
+index 85f3bc2..d48cfd6 100644
+--- a/.github/workflows/windows-p1-stages-diagnostic.yml
++++ b/.github/workflows/windows-p1-stages-diagnostic.yml
+@@ -18,6 +18,10 @@ jobs:
+     timeout-minutes: 12
+     steps:
+       - uses: actions/checkout@v4
++        env:
++          GIT_CONFIG_COUNT: '1'
++          GIT_CONFIG_KEY_0: core.longpaths
++          GIT_CONFIG_VALUE_0: 'true'
+         with:
+           ref: ${{ github.sha }}
+           fetch-depth: 1
+diff --git a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
+index b70e26a..d3fe297 100644
+--- a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
++++ b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
+@@ -1,9 +1,9 @@
+ {
+   "format": "windows-p1-initial-bindings-v1",
+   "created_at_utc": "2026-10-11T03:43:34Z",
+-  "revision": 1,
+-  "updated_at_utc": "2026-10-11T05:49:43Z",
+-  "revision_scope": "B001 native tuple/source closure only; original BLOCKED report preserved; fresh review still required",
++  "revision": 2,
++  "updated_at_utc": "2026-10-11T14:04:39Z",
++  "revision_scope": "C001 checkout-step-only long-path compatibility; explicit four-path exception and two CLI identity hashes only; B001 unchanged; fresh scope and Coordinator ruling required",
+   "role": "supporting Planner; harness-rules section 1.5",
+   "status": "proposal-requires-fresh-independent-pre-scope",
+   "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
+@@ -15,7 +15,7 @@
+   "formal_F005_claim": false,
+   "delivery_paths": ["docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"],
+   "future_added_source_paths": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs", "tests/diagnostics/windows-p1-stages.test.ts", ".github/workflows/windows-p1-stages-diagnostic.yml"],
+-  "existing_file_edits_allowed": [],
++  "existing_file_edits_allowed": [".github/workflows/windows-p1-stages-diagnostic.yml", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json", "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"],
+   "prior_inputs": [
+     {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+     {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+@@ -92,6 +92,8 @@
+     "job_if":"github.event_name == 'push' && github.ref == 'refs/heads/codex/windows-p1-stages-ci-20261010'",
+     "permissions":{"contents":"read"},"concurrency_cancel_in_progress":false,"runs_on":"windows-latest","node_version":"22","timeout_minutes":12,
+     "checkout":{"ref":"${{ github.sha }}","fetch-depth":1,"persist-credentials":false},
++    "checkout_env":{"GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true"},
++    "checkout_env_scope":"checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation",
+     "secrets":[],"environment":null,
+     "ordered_commands":["node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare","npm ci","node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=docs/test-reports/windows-p1-stages-20261010/.scratch/checks.raw.json","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --verify-upload"],
+     "seal_if":"always()","upload_if":"always() && steps.seal.outcome == 'success' && steps.verify_upload.outcome == 'success'",
+diff --git a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
+index b244f1f..98a08f8 100644
+--- a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
++++ b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
+@@ -91,3 +91,18 @@ There is no unresolved *path/script/schema/selection binding* deferred to implem
+ 
+ Author-side static result (2026-10-11 UTC): JSON parses; all four script hashes, ten referenced input hashes, frozen safe code/signal/abort enums, local schema references and exact required-key sets agree; three implementation paths and sixteen upload paths are distinct and consistent. These checks assess document consistency only, not functional correctness or independent scope acceptance.
+ Revision-1 author-side schema-only check: canonical normal return/timeout tuples satisfy the written native definition; eight contradictory source/error/status/signal tuples do not. This is document counterexample evaluation, not execution of the future B001 functional controls or independent review of this revision.
++
++## 7. C001 checkout-only successor scope (proposed 2026-10-11 UTC)
++
++Revision 2 is a proposal only. It does not grant implementation, publication, native execution, native environment repair or release authority. All earlier B001, E0, guard, API, worker, selection, budget, schema, output, source-provenance and release constraints remain unchanged.
++
++This section explicitly supersedes section 1's additions-only and no-existing-file-edit wording solely for the following four existing paths and exact restrictions. No other existing path and no new implementation path is admitted:
++
++1. `.github/workflows/windows-p1-stages-diagnostic.yml`: add only the checkout action step's `env` map, exactly `GIT_CONFIG_COUNT: '1'`, `GIT_CONFIG_KEY_0: core.longpaths`, `GIT_CONFIG_VALUE_0: 'true'`; every other workflow byte stays unchanged.
++2. This Markdown: append this C001 section only; preserve all prior text.
++3. Adjacent JSON: revision 1 to 2, updated timestamp to `2026-10-11T14:04:39Z`, C001 revision scope, the four-path `existing_file_edits_allowed` exception, and `workflow.checkout_env` plus `workflow.checkout_env_scope` only. All other bytes and native contracts stay unchanged.
++4. `docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs`: replace only the two `bindingHash` and `mdHash` string literals with SHA-256 of the revised JSON and Markdown. Preserve every other byte, all assertion/validator/guard/CLI behavior and all imported frozen sources. Do not remove, bypass or broaden an identity check.
++
++Checkout configuration is process command-scope only. The three keys are forbidden at workflow/job scope, in `GITHUB_ENV`, in later step env maps, and in any diagnostic owned child. No global/system/local/worktree config write, extra command, short-path relocation, sparse checkout, omitted archive, permission/Secrets change, retry, native probe or version query is admitted. The JSON checkout input map, ordered commands, required synthetic controls and all upload/schema/provenance rules remain unchanged. Existing sourceFiles still contains exactly eleven paths; its current hashes and the strict bindingHash check must match the new exact candidate.
++
++Fresh independent supporting pre-scope and actual-diff reviews must inspect both binding documents and the two identity literals. Checkout env confinement requires separate static positive/negative supporting controls: the existing synthetic suite does not itself lock this env map. Do not change its source or required_future_controls to manufacture coverage. Independent different-model-family supporting acceptance and an explicit Coordinator publication/execution ruling are required before one new exact-source INITIAL workflow opportunity on the already-locked non-main branch; no automatic retries or native environment repair. Preserve the original failure run, all old originals, historical inventories and frozen files. Checkout success alone is not INITIAL observation completeness, product acceptance, F005 or release readiness.
+diff --git a/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs b/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+index 4c75193..0d5279e 100644
+--- a/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
++++ b/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+@@ -12,9 +12,9 @@ import { evidenceEvent as baselineEvent, safeCode, rootMetadata } from '../windo
+ const self = fileURLToPath(new URL('./p1-stages.mjs', import.meta.url));
+ const repo = resolve(dirname(self), '../../..');
+ const bindingPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
+-const bindingHash = 'ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc';
++const bindingHash = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';
+ const mdPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
+-const mdHash = 'bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c';
++const mdHash = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';
+ export const sha256 = value => createHash('sha256').update(value).digest('hex');
+ const bindingBytes = fs.readFileSync(join(repo, bindingPath));
+ assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');

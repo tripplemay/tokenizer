@@ -1,0 +1,8 @@
+{
+  "nodeModules": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/node_modules",
+  "realPath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/node_modules",
+  "symlink": false,
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "arch": "arm64"
+}

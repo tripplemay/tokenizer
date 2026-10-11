@@ -1,0 +1,930 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T14:45:10.596Z",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "report_commit": "74d09fa48245e3a5a5ceab4d88e8f1f87a7aa95d",
+  "source_and_materialized_four_hashes_match": true,
+  "generator_content_clean": true,
+  "original_report_files": 138,
+  "external_final_originals": 15,
+  "artifacts": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/README.md",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/README.md",
+      "bytes": 5068,
+      "sha256": "1ffed4543c42c0a0a4b0061ecd32e834446c4c70ea81bc18088e2bb10ecceffa"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/bootstrap-command-transcript.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/bootstrap-command-transcript.json",
+      "bytes": 2297,
+      "sha256": "25af74e64e73242deed9207df4eb745f65c36b3c487c9802b5da61ff217c8017"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/capture-command.mjs",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/capture-command.mjs",
+      "bytes": 2660,
+      "sha256": "b6c6a86f092efa2ce351f2adfeb6e556d5bd7294c3364ee74c32bda210ea8479"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/development-report.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/development-report.json",
+      "bytes": 9792,
+      "sha256": "802394ec4d287306798d3ce9c6c888d428192456f3c16ac9590971d5c9aa5d88"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/inspect-installed-network.mjs",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/inspect-installed-network.mjs",
+      "bytes": 2961,
+      "sha256": "c9b4b49e065b49a83f7b3af4e3ab22f4996430cace1f6ec010697adbc30e1d9a"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/pure-import.mjs",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/pure-import.mjs",
+      "bytes": 1771,
+      "sha256": "3b1c758eb1497dffaf001743739319ca4636877e7506a08219728d9fdc67fbbb"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.combined.log",
+      "bytes": 9,
+      "sha256": "c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.command.json",
+      "bytes": 915,
+      "sha256": "8c7b61904d3e44cc74313d864e5e29fea94fd9d60f95e2c2ddd3d65f21291080"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.status.json",
+      "bytes": 139,
+      "sha256": "ad2d158a4bb63a9a4fc71eac67d93f4cdce6f41d88a4e4bd45d7b72fad36fa9d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/00-runtime.stdout.log",
+      "bytes": 9,
+      "sha256": "c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.combined.log",
+      "bytes": 972,
+      "sha256": "9e93fdaf55a9d1465555aaf883001ebeab5320801dacecf266042f27fe2a8c4f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.command.json",
+      "bytes": 999,
+      "sha256": "a401fe0a11bf0b3737f7b3234e6a7e00aa8279d9314ff186043eaa14c63a1609"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.status.json",
+      "bytes": 139,
+      "sha256": "1df5cc2be4612333362ffc9b799b4a8377bdf2c074109ea0bdf6475e5ed676de"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.stderr.log",
+      "bytes": 972,
+      "sha256": "9e93fdaf55a9d1465555aaf883001ebeab5320801dacecf266042f27fe2a8c4f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/01-before-evidence.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.combined.log",
+      "bytes": 2853,
+      "sha256": "37aafa04e66fc870d02d293591de2c8cfe1bef3e6d0a4ed23b11cac9bcde0611"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.command.json",
+      "bytes": 999,
+      "sha256": "72016146f6ec31d642c5fc73a298dfafd3624948cbb04adaa3d28f10e858d1e6"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.status.json",
+      "bytes": 139,
+      "sha256": "24bcba4b943340c6e0be1213d646087da8cd01dd92f593197c341481b102e56b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/02-before-evidence-r1.stdout.log",
+      "bytes": 2853,
+      "sha256": "37aafa04e66fc870d02d293591de2c8cfe1bef3e6d0a4ed23b11cac9bcde0611"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.combined.log",
+      "bytes": 3102,
+      "sha256": "39c337ac166f73762250e6889947e81b2a741d5c8746cfc795909e8e89f0b1fa"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.command.json",
+      "bytes": 998,
+      "sha256": "14671b1dfb04a0eb8b7249f207c626908c1d403ae3a7aa498e8d925b0311c0af"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.status.json",
+      "bytes": 139,
+      "sha256": "cb9ca6bdb9c8ac30c4de6aa6ef2ee9d164168a240eb80c3388e599092ab597c7"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/03-after-evidence.stdout.log",
+      "bytes": 3102,
+      "sha256": "39c337ac166f73762250e6889947e81b2a741d5c8746cfc795909e8e89f0b1fa"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.combined.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.command.json",
+      "bytes": 979,
+      "sha256": "70eaedbce139c731518ceb8563d43da198b476730c9b423a55e83c788b8aa5e0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.status.json",
+      "bytes": 139,
+      "sha256": "dea27ce3a92063a990f7fb75534a887c2fd162fdcca44263991286afcf94a6e5"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/04-node-syntax.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.combined.log",
+      "bytes": 9221,
+      "sha256": "e9d7ff82f9f825355fb330bddbccd7f1c6cd5cc7fab7c8a7b6f9f9e6d128e0bf"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.command.json",
+      "bytes": 1154,
+      "sha256": "27bd26ca9d217614f2e565930a8e35a194b0d0c954e9aadca07ca9cb81326a46"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.status.json",
+      "bytes": 139,
+      "sha256": "32c43f558beedca24ac463c8e03b8b7ac5b3ae3853d2e43f900e4e03599d3414"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/05-exact-diff.stdout.log",
+      "bytes": 9221,
+      "sha256": "e9d7ff82f9f825355fb330bddbccd7f1c6cd5cc7fab7c8a7b6f9f9e6d128e0bf"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.combined.log",
+      "bytes": 275,
+      "sha256": "954318f0a9aa44e06f5b69ad7629a33b92bce55c48530f1e93f1fe5a4c64eb0b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.command.json",
+      "bytes": 981,
+      "sha256": "0bcc5c6bc1c9d9255148e6ab3dae8591998ad032a19fffbb3ab13243dad65328"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.status.json",
+      "bytes": 139,
+      "sha256": "5cd64789c5938172cf32bf3e7d7843f83d051cd45433b5fdd999fb24154be117"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/06-pure-import.stdout.log",
+      "bytes": 275,
+      "sha256": "954318f0a9aa44e06f5b69ad7629a33b92bce55c48530f1e93f1fe5a4c64eb0b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.combined.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.command.json",
+      "bytes": 911,
+      "sha256": "af5ea31cdecdcf957f5cf69c9f3727717d4380e276e5ef40f3818e3253f57928"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.status.json",
+      "bytes": 139,
+      "sha256": "a4478bfa724aa1f2dbd1e968dbabc136f1d2abdb58b58732a89913248a6d2b87"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/07-source-diff-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.combined.log",
+      "bytes": 3260,
+      "sha256": "ca955703213b59f62cb27888113c4df9a341cbe081e1c9ef7a4fd009c2e0679e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.command.json",
+      "bytes": 999,
+      "sha256": "8c8652d5d67140ea11bfbcf5a83137408495269c1802450cc46ce56c7c0942ad"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.status.json",
+      "bytes": 139,
+      "sha256": "70c8c48d8f2d2faa7e3dba69aac3841e48886854467f1c808cd7e420fe7cd090"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/08-source-evidence.stdout.log",
+      "bytes": 3260,
+      "sha256": "ca955703213b59f62cb27888113c4df9a341cbe081e1c9ef7a4fd009c2e0679e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.combined.log",
+      "bytes": 620,
+      "sha256": "c8ae4dcca71e4e6505fe3376d63e20483a5b32f71efeba10e5fe1691de477d3d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.command.json",
+      "bytes": 1392,
+      "sha256": "db145dd0be9eacf90622e55772095b3c8e8e39aea409b5d0bdae6cad2cfe8afa"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.status.json",
+      "bytes": 139,
+      "sha256": "d0e356da4f3f2401b10dd2c2693aa3b5ecaacda7fbf7a26f1cbcd33c380976d5"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/09-fresh-dependency-baseline.stdout.log",
+      "bytes": 620,
+      "sha256": "c8ae4dcca71e4e6505fe3376d63e20483a5b32f71efeba10e5fe1691de477d3d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.combined.log",
+      "bytes": 551,
+      "sha256": "230418c7e1f7ff40a9de3c6f2ae2e55aafdf0e7f9b498a9d67bd52c9754483a8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.command.json",
+      "bytes": 907,
+      "sha256": "3a5f6a49f63447de70ecc09f99dfd177c482558b92c0abf297d1bf87654d3e67"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.status.json",
+      "bytes": 139,
+      "sha256": "f535f5db3f642f9bf387e79c9f8205c590194d38ddd4baaefb78604c1d1302a3"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.stderr.log",
+      "bytes": 287,
+      "sha256": "ec01f2db995a6e1fa0e6240419d5677e6138a93d5dae4bf48056e1b4f4213dd0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/10-npm-ci.stdout.log",
+      "bytes": 264,
+      "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-checks.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-checks.raw.json",
+      "bytes": 31020,
+      "sha256": "26257e8c2dad204cf58d3c927cbe3fdb6bd82e93c478fa9dcb1a00e23b4f008c"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.combined.log",
+      "bytes": 18717,
+      "sha256": "0d5b2857a281b7160cc223f5e1bf986547f2453c953bf16a36ca241bebe3a320"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.command.json",
+      "bytes": 1155,
+      "sha256": "0944ceab617e99f21fb0337086029bb84552430507bba97ca6a2e9c0cb0d601e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.status.json",
+      "bytes": 139,
+      "sha256": "91f302d4ab182cb5b57c70e92e9feb906bfd2f02e18c16e1affc2df02917bceb"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/11-unchanged-synthetic-suite.stdout.log",
+      "bytes": 18717,
+      "sha256": "0d5b2857a281b7160cc223f5e1bf986547f2453c953bf16a36ca241bebe3a320"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.combined.log",
+      "bytes": 401,
+      "sha256": "30157cdb91cd1228b848515f28c4c7004fb3cf4e90a992d50ea436e86d575ce8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.command.json",
+      "bytes": 922,
+      "sha256": "6ecf4aa21951e74ff6f54a1cb9b98c7107c70795b18fca603a6f84d9c9409006"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.status.json",
+      "bytes": 139,
+      "sha256": "a0cbb6f4dddfd5fbed892517dc8563a9819fbc7bbbec4ffd7612483cf2791bd0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/12-npm-verify.stdout.log",
+      "bytes": 401,
+      "sha256": "30157cdb91cd1228b848515f28c4c7004fb3cf4e90a992d50ea436e86d575ce8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.combined.log",
+      "bytes": 303129,
+      "sha256": "af29538927397b7ec48c261ca047616d9a18617a65f767165b61105d396d1a23"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.command.json",
+      "bytes": 977,
+      "sha256": "e27594247f9886f4e3d1e3bb91705a426d795d4288bf0791213fef0655056df2"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.status.json",
+      "bytes": 139,
+      "sha256": "5f09972d8b46c42ea026ff456e0193464020029b3df2786346ab40033809ba8a"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/13-inventory-source888.stdout.log",
+      "bytes": 303129,
+      "sha256": "af29538927397b7ec48c261ca047616d9a18617a65f767165b61105d396d1a23"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.combined.log",
+      "bytes": 303618,
+      "sha256": "e8b80a08b7226297b219f98a8eb283bf7d7edc7da85ba91c9ccba075971af1df"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.command.json",
+      "bytes": 977,
+      "sha256": "938a7792dfc1004fb5ea31080032f08a29e8f905513763aeb62fe691742e8aee"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.status.json",
+      "bytes": 139,
+      "sha256": "55a3febbbb7c89de9a6db67d5c99e73f1c29ced4549abd0c2824df727e2bed9b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/14-inventory-base.stdout.log",
+      "bytes": 303618,
+      "sha256": "e8b80a08b7226297b219f98a8eb283bf7d7edc7da85ba91c9ccba075971af1df"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.combined.log",
+      "bytes": 303618,
+      "sha256": "7f88d742ab78cf03b55a5fade7c899e83a9caa04218abfb444f8ad702274a06e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.command.json",
+      "bytes": 977,
+      "sha256": "ef2606ae5b4471411aa1d0c8b5d44c4792cde716747f0d1b11189b25eba13c89"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.status.json",
+      "bytes": 139,
+      "sha256": "1d93b053890f58ba3876f6346dbec7e2a376f1a0f2e0d4f71d897135c8f33f1f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/15-inventory-candidate.stdout.log",
+      "bytes": 303618,
+      "sha256": "7f88d742ab78cf03b55a5fade7c899e83a9caa04218abfb444f8ad702274a06e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.combined.log",
+      "bytes": 649,
+      "sha256": "929c6666da6c30a954636c887f45650c9042d27beec4235aceb9b48a232dc524"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.command.json",
+      "bytes": 998,
+      "sha256": "430155a9a6d039df647e545b5af7e2fed4d428745464e604646d10c439b29f4f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.status.json",
+      "bytes": 139,
+      "sha256": "61db1a6e1612bc317eff16270d3eb2a85a576f3b579f79620c5cc4ce67a8ed52"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/16-source-commit.stdout.log",
+      "bytes": 649,
+      "sha256": "929c6666da6c30a954636c887f45650c9042d27beec4235aceb9b48a232dc524"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.combined.log",
+      "bytes": 3260,
+      "sha256": "ca955703213b59f62cb27888113c4df9a341cbe081e1c9ef7a4fd009c2e0679e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.command.json",
+      "bytes": 999,
+      "sha256": "5108f3e05a0455e1ee6db10b4cc27976aa256d056107c39bc154dc77f7925a38"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.status.json",
+      "bytes": 139,
+      "sha256": "163a1667380cf325acabb5ebc95cbddcebbafd8ffbd2ccdfaf92a6f1f336411b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/17-post-development-evidence.stdout.log",
+      "bytes": 3260,
+      "sha256": "ca955703213b59f62cb27888113c4df9a341cbe081e1c9ef7a4fd009c2e0679e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.combined.log",
+      "bytes": 317,
+      "sha256": "42946206923e34dd2106fd230398d76e782351b0c1f4a5e03ae180f185134ccd"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.command.json",
+      "bytes": 1376,
+      "sha256": "8983f1b87c9a9f5e1230f4f579db1b5180860f0a027fcf75f914721cfac4af81"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.status.json",
+      "bytes": 139,
+      "sha256": "1410eef11b67fb649feb2b2fa4acad986ddb06a73a3197b72fad667d8abccb4e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/18-dependency-real-root.stdout.log",
+      "bytes": 317,
+      "sha256": "42946206923e34dd2106fd230398d76e782351b0c1f4a5e03ae180f185134ccd"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.combined.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.command.json",
+      "bytes": 1055,
+      "sha256": "c494095a2d25bbadd83cd151c1a249eb1988d52b2b39444f733e13b7f8c0d376"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.log",
+      "bytes": 381639,
+      "sha256": "028549440068571eae4d52d0c1fd1e04bb15e34af99c1785994747df8afa9d5d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.status.json",
+      "bytes": 139,
+      "sha256": "5393e7dd631dda7c4f15974bdede0963c5ace4ce093e255637b81d3ebeb0a53f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/19-npm-ci-debug-original.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.combined.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.command.json",
+      "bytes": 1056,
+      "sha256": "59012ad9172b1f8b7e4eb28ba254c4acd179834238d4778cabe69b24d30e3911"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.log",
+      "bytes": 2123,
+      "sha256": "42c68c9985b0d98035b74c3311414b5eeb12ad96d14bc5b953efef2ff6890305"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.status.json",
+      "bytes": 139,
+      "sha256": "0f9d0bf7b8568879586cd634f5430a4e2be213cd17ca855b1c6ad819372cb1dc"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/20-swc-npm-debug-original.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.combined.log",
+      "bytes": 4309,
+      "sha256": "cb8627fe4a85a14f3ed4d536a64f9b9e60db90fa853bae619e721a388b6237b8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.command.json",
+      "bytes": 995,
+      "sha256": "892869e7e355f918b53b7c3a047733bc0c157a28674663517b2e5c9e0b82f9ce"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.status.json",
+      "bytes": 139,
+      "sha256": "2207f82beef23b602154ef052470f933c676335c474f8a5ea17d42c30a7197d5"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/21-network-scope-evidence.stdout.log",
+      "bytes": 4309,
+      "sha256": "cb8627fe4a85a14f3ed4d536a64f9b9e60db90fa853bae619e721a388b6237b8"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.combined.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.command.json",
+      "bytes": 1059,
+      "sha256": "3eb98ed9eacb1467dec3439407e0b5d903b4971b2d74a26aeeedbb8f2ef40ab2"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.log",
+      "bytes": 1077,
+      "sha256": "b82f92fab8d57f5a2353507c2da0b396b793605491f086badbc632457f63322f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.status.json",
+      "bytes": 139,
+      "sha256": "419eb1a2807061a3e3773f3aca5c07fcc9d16ee2f2ca5707daa1d2685d0b1095"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/22-verify-npm-debug-original.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.combined.log",
+      "bytes": 7163,
+      "sha256": "d77435d3d03e462d6f303264e1190c79bab8091edd8c766bcedbef50a93edd93"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.command.json",
+      "bytes": 991,
+      "sha256": "039124bab1394679cde7909bab93c052dcac576a028417cd0d37e7809375d7fc"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.status.json",
+      "bytes": 139,
+      "sha256": "aa537f9dbd0d88f76e5e60b0988f89600f0f117903b0d9748ca52e2d434748a0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/23-development-summary.stdout.log",
+      "bytes": 7163,
+      "sha256": "d77435d3d03e462d6f303264e1190c79bab8091edd8c766bcedbef50a93edd93"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.combined.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.combined.log",
+      "bytes": 232,
+      "sha256": "74524171b794ebc6ef2a78235be689b6eed0aec54d83cdbe46b3c7c269a6c666"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.command.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.command.json",
+      "bytes": 2037,
+      "sha256": "9fa79e02189313b385600de340e437a0cd4d0073b5137da636ce8b47c81391e6"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.status.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.status.json",
+      "bytes": 139,
+      "sha256": "0b5c3d1f79286797ee3f82ed4f8845061dabe237afef9e883595eefa547a1c03"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw/24-report-and-manifest-validation.stdout.log",
+      "bytes": 232,
+      "sha256": "74524171b794ebc6ef2a78235be689b6eed0aec54d83cdbe46b3c7c269a6c666"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw-manifest.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/raw-manifest.json",
+      "bytes": 20275,
+      "sha256": "b6c1a40e4785ed92e3f45a306006804d017f251d73a9527642790c73ec7e908f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/summarize-development.mjs",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/summarize-development.mjs",
+      "bytes": 2692,
+      "sha256": "edbccad984d7bf3917ba9e5ff01005f212e657dd0bdfd20107f1a51535523a48"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/verify-evidence.mjs",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/verify-evidence.mjs",
+      "bytes": 8323,
+      "sha256": "65f084ed8b53551951fa45d543858b328fab476a962c21f78467207f96fbbe20"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/97-staged-report-paths.combined.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.combined.log",
+      "bytes": 13546,
+      "sha256": "3fa3a78ba34403f7c81b5fcfaa3a073a8dc0e99a0b72dec0464267bb74eafed2"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/97-staged-report-paths.command.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.command.json",
+      "bytes": 933,
+      "sha256": "f5d09aa916a30773a449b7aed954d60a3ab76c060ee9c5b09496bcdc0b227150"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/97-staged-report-paths.status.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.status.json",
+      "bytes": 139,
+      "sha256": "51cf1f7f5f7eaf9303a7dbacb8c9ce7f35915b8bef37c56b349559b8abd2ba37"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/97-staged-report-paths.stderr.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/97-staged-report-paths.stdout.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/97-staged-report-paths.stdout.log",
+      "bytes": 13546,
+      "sha256": "3fa3a78ba34403f7c81b5fcfaa3a073a8dc0e99a0b72dec0464267bb74eafed2"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/98-report-commit.combined.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/98-report-commit.combined.log",
+      "bytes": 16210,
+      "sha256": "5c5208175f52967e5d1c314176a60ed8fe914030b38e60643cf6a279fa672569"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/98-report-commit.command.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/98-report-commit.command.json",
+      "bytes": 1089,
+      "sha256": "46f65f974edf8e03e6f70303931962f39d448462859da82a5e86ce6dddf66385"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/98-report-commit.status.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/98-report-commit.status.json",
+      "bytes": 139,
+      "sha256": "2e8ad8b4663a4bd8ef118a11701edc47b074f19dbffef646be6b08a6292dfff0"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/98-report-commit.stderr.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/98-report-commit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/98-report-commit.stdout.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/98-report-commit.stdout.log",
+      "bytes": 16210,
+      "sha256": "5c5208175f52967e5d1c314176a60ed8fe914030b38e60643cf6a279fa672569"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/99-final-evidence.combined.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.combined.log",
+      "bytes": 17539,
+      "sha256": "8b7f15de9ccc0f98089b583eb220ff34426f29857adba414b45be869ea90572a"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/99-final-evidence.command.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.command.json",
+      "bytes": 998,
+      "sha256": "48911022919d9b901ec2fa2e61e690e42ac600d7d4b5af29014acc5b722334c4"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/99-final-evidence.status.json",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.status.json",
+      "bytes": 139,
+      "sha256": "1a1f43f075fe7726e0a51329229f393b50477e986de7d7ffd1bb2af24ac82026"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/99-final-evidence.stderr.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-checkout-generator-final-original/99-final-evidence.stdout.log",
+      "original": "/Volumes/ORICO/project/.wp1cg-20261011/final-evidence/99-final-evidence.stdout.log",
+      "bytes": 17539,
+      "sha256": "8b7f15de9ccc0f98089b583eb220ff34426f29857adba414b45be869ea90572a"
+    }
+  ]
+}

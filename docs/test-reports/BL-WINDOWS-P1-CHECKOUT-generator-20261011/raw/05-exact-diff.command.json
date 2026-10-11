@@ -1,0 +1,29 @@
+{
+  "command": "git",
+  "args": [
+    "-c",
+    "core.fileMode=false",
+    "diff",
+    "--",
+    ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TEMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "NPM_CONFIG_CACHE": "/Volumes/ORICO/project/.wp1cg-20261011/npm-cache",
+    "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
+    "NPM_CONFIG_USERCONFIG": "/Volumes/ORICO/project/.wp1cg-20261011/absent-npmrc",
+    "CI": "true",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "startedAt": "2026-10-11T14:32:53.353Z"
+}

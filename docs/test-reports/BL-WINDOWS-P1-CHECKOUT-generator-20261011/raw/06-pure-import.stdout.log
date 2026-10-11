@@ -1,0 +1,15 @@
+{
+  "pureImport": true,
+  "calls": [],
+  "validateBindings": true,
+  "cases": 4,
+  "checkoutConfigKeysInSystemEnvironment": [],
+  "survivingSystemKeys": [
+    "PATH",
+    "SystemRoot",
+    "WINDIR",
+    "ComSpec",
+    "PATHEXT"
+  ],
+  "functionalOrNativeAcceptance": false
+}

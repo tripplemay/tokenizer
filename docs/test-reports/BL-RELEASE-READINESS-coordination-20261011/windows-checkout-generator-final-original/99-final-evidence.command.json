@@ -1,0 +1,23 @@
+{
+  "command": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "args": [
+    "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/verify-evidence.mjs",
+    "final"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TEMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "TMP": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "NPM_CONFIG_CACHE": "/Volumes/ORICO/project/.wp1cg-20261011/npm-cache",
+    "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
+    "NPM_CONFIG_USERCONFIG": "/Volumes/ORICO/project/.wp1cg-20261011/absent-npmrc",
+    "CI": "true",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "startedAt": "2026-10-11T14:43:21.015Z"
+}

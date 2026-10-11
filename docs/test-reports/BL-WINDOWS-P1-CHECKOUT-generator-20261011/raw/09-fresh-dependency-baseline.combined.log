@@ -1,0 +1,26 @@
+{
+  "node": "v22.22.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "nodeModulesExists": false,
+  "home": "/Volumes/ORICO/project/.wp1cg-20261011",
+  "userprofile": "/Volumes/ORICO/project/.wp1cg-20261011",
+  "tmpdir": "/Volumes/ORICO/project/.wp1cg-20261011/tmp",
+  "npmCache": "/Volumes/ORICO/project/.wp1cg-20261011/npm-cache",
+  "registry": "https://registry.npmjs.org/",
+  "envKeys": [
+    "CI",
+    "HOME",
+    "LANG",
+    "NPM_CONFIG_CACHE",
+    "NPM_CONFIG_REGISTRY",
+    "NPM_CONFIG_USERCONFIG",
+    "PATH",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+    "TZ",
+    "USERPROFILE",
+    "__CF_USER_TEXT_ENCODING"
+  ]
+}
