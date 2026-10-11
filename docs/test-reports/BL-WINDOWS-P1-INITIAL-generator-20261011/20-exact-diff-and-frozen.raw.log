@@ -1,0 +1,11 @@
+Code commit 0f02b81c72fc399cae6826d4d49418b96ff23e15
+Branch codex/windows-p1-initial-generator-20261011
+A	.github/workflows/windows-p1-stages-diagnostic.yml
+A	docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+A	tests/diagnostics/windows-p1-stages.test.ts
+
+{"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","bytes":72114,"sha256":"55d709464b793a578fcf0d6a1a96da0482873ce4d040af8bc671e89d64d686d0"}
+{"path":"tests/diagnostics/windows-p1-stages.test.ts","bytes":43773,"sha256":"b7e7dce2ddf532cc25326d802db0eb8ca4c84d71eafd3ecef56bb6023a5f3c50"}
+{"path":".github/workflows/windows-p1-stages-diagnostic.yml","bytes":3103,"sha256":"94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"}
+Fresh own node_modules is a directory, not a borrowed symlink.
+Existing tracked file edits: none in source diff; frozen bindings verified; no native mode executed.

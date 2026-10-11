@@ -1,0 +1,2 @@
+{"format":"windows-p1-initial-checks-v1","testPath":"tests/diagnostics/windows-p1-stages.test.ts","exitCode":0,"passed":62,"failed":0,"skipped":0,"allRequiredControlsPassed":true,"rawReportSuppressed":true,"releaseAcceptance":false}
+Pure import/bindings/report reconstruction complete; no guard/native/main.

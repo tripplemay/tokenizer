@@ -1,0 +1,5 @@
+[codex/windows-p1-initial-generator-20261011 0f02b81] feat(BL-RELEASE-READINESS-F004): add bounded Windows P1 INITIAL diagnostic
+ 3 files changed, 1694 insertions(+)
+ create mode 100644 .github/workflows/windows-p1-stages-diagnostic.yml
+ create mode 100644 docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+ create mode 100644 tests/diagnostics/windows-p1-stages.test.ts

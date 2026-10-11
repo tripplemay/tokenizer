@@ -1,0 +1,498 @@
+{
+  "format": "windows-p1-initial-generator-development-v1",
+  "observed_at_utc": "2026-10-11T12:49:25Z",
+  "role": "isolated supporting Generator; harness-rules section 1.5; not Coordinator, scope critic or functional Evaluator",
+  "feature_context": "BL-RELEASE-READINESS F004 supporting implementation; no feature/status completion claim",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011",
+  "base": "cb198045498bb5561d1465808365a78424839755",
+  "branch": "codex/windows-p1-initial-generator-20261011",
+  "code_commit": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+  "report_commit_identity": "Self: git log -1 --format=%H -- docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011; final handoff also supplies the exact report commit.",
+  "authority_artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-r1-scope-and-generator-adjudication.json",
+  "specification": {
+    "md": {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "sha256": "bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"
+    },
+    "json": {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "sha256": "ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"
+    },
+    "original_blocked_commit": "11c32d5806372ef3f7a7e9285d40f3b9c9e24a9b; unchanged",
+    "fresh_pre_scope_commit": "cb198045498bb5561d1465808365a78424839755; scope-only PASS; not functional acceptance",
+    "mechanically_verified_inputs": 10,
+    "mechanically_verified_fixed_script_hashes": 4,
+    "local_schema_references_and_closed_required_keys_checked": true,
+    "historical_59_file_native_inventory_reauthenticated": false
+  },
+  "source_files": [
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 72114,
+      "sha256": "55d709464b793a578fcf0d6a1a96da0482873ce4d040af8bc671e89d64d686d0"
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 43773,
+      "sha256": "b7e7dce2ddf532cc25326d802db0eb8ca4c84d71eafd3ecef56bb6023a5f3c50"
+    },
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3103,
+      "sha256": "94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"
+    }
+  ],
+  "actual_source_diff": {
+    "comparison": "cb198045498bb5561d1465808365a78424839755..0f02b81c72fc399cae6826d4d49418b96ff23e15",
+    "added_paths": 3,
+    "existing_tracked_file_edits": 0,
+    "diff_check_exit_code": 0,
+    "independent_actual_diff_scope_review": false
+  },
+  "implementation_surfaces": [
+    "Fixed T0-T3 script bindings only; parent and fresh probe/bounded worker for admitted cases; E0/old-trace-on/common-guard-on only.",
+    "Guard exact owned worker payload/argv/case/root/positive-handle identity, synchronous additive Buffer stage persistence, strict line/parser caps, separate actual stdout/stderr EOF flags.",
+    "Saved pre-trace filesystem primitives, atomic mkdir lock, identity checks, inclusive aggregate append cap and complete write verification; counter read/check/append is one locked transaction; exact-path old-trace append capture.",
+    "Actual runBoundedSubprocess return/catch metadata source; owning worker kind from original trace; all four guard/trace native exit/close tuples and ownership reconciled before selection.",
+    "Conservative selection, separate completion flags, bounded live-owned-handle cleanup and sampled-PID uncertainty, original release/whole-tree-absence flags remain false.",
+    "Strict safe core/JSONL rebuild, missing post-crash nullable records, candidate/frozen source provenance, sealed 16-file/15-entry verification, fixed non-main workflow and explicit upload paths."
+  ],
+  "observation_io_delta": {
+    "explicitly_approved_not_parity_free": [
+      "Additive worker-process Buffer listeners and synchronous safe stage/end event writes.",
+      "Atomic per-file mkdir/rmdir locks plus saved-primitive lstat/open/fstat/read/write identity and aggregate-size validation, outside old trace FS instrumentation.",
+      "Strict safe snapshots/core reconstruction/sealing inside the separate INITIAL scratch/upload boundaries."
+    ],
+    "perturbation_measured": false,
+    "deadline_extensions_or_native_retries": 0,
+    "worker_source_or_protocol_edits": 0
+  },
+  "environment": {
+    "node": "v22.22.0",
+    "uv": "1.51.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_path": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin",
+    "owned_home": "/Volumes/ORICO/project/.wp1g-20261011/home",
+    "owned_userprofile": "/Volumes/ORICO/project/.wp1g-20261011/home",
+    "owned_tmpdir": "/Volumes/ORICO/project/.wp1g-20261011/tmp",
+    "owned_npm_cache": "/Volumes/ORICO/project/.wp1g-20261011/cache",
+    "dependency_install": "Fresh npm ci in this worktree; no borrowed/symlink node_modules; lock file hash unchanged.",
+    "npm_ci_exit_code": 0,
+    "npm_ci_complete_stdout_stderr": "01-npm-ci.raw.log",
+    "npm_audit_install_summary": "7 high severity vulnerabilities reported by npm ci. No audit fix, dependency/configuration edit or second install.",
+    "node_downloaded": false
+  },
+  "attempts": [
+    {
+      "id": "01",
+      "command": "npm ci",
+      "exit_code": 0
+    },
+    {
+      "id": "02",
+      "command": "builtins-only binding/hash/schema local-reference/exact-key checks",
+      "exit_code": 0
+    },
+    {
+      "id": "03",
+      "command": "node --check new CLI; initial version",
+      "exit_code": 0
+    },
+    {
+      "id": "04",
+      "command": "scoped Vitest; initial version",
+      "exit_code": 1,
+      "passed": 54,
+      "failed": 1,
+      "skipped": 0
+    },
+    {
+      "id": "05",
+      "command": "npm run verify; initial version",
+      "exit_code": 0
+    },
+    {
+      "id": "06",
+      "command": "scoped Vitest after BOM fix and additional sealing controls",
+      "exit_code": 1,
+      "passed": 60,
+      "failed": 1,
+      "skipped": 0
+    },
+    {
+      "id": "07",
+      "command": "scoped Vitest verbose + JSON; intermediate version",
+      "exit_code": 0,
+      "passed": 62,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "id": "08",
+      "command": "pure import/checks-summary/binding reconstruction; intermediate version",
+      "exit_code": 0
+    },
+    {
+      "id": "09",
+      "command": "npm run verify; intermediate version",
+      "exit_code": 0
+    },
+    {
+      "id": "10",
+      "command": "node --check; intermediate version",
+      "exit_code": 0
+    },
+    {
+      "id": "11",
+      "command": "scoped Vitest verbose + JSON; root protocol control added",
+      "exit_code": 0,
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "id": "12",
+      "command": "pure import/report/binding reconstruction; intermediate version",
+      "exit_code": 0
+    },
+    {
+      "id": "13",
+      "command": "npm run verify; intermediate version",
+      "exit_code": 0
+    },
+    {
+      "id": "14",
+      "command": "scoped Vitest verbose + JSON; exact source candidate",
+      "exit_code": 0,
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "id": "15",
+      "command": "npm run lint",
+      "exit_code": 0,
+      "coverage_boundary": "eslint app src; does not lint the new docs CLI/workflow/test file"
+    },
+    {
+      "id": "16",
+      "command": "npm run verify; exact source candidate",
+      "exit_code": 0,
+      "coverage_boundary": "Prisma generation + repository tsc. No DB, service, build, E2E or native operation."
+    },
+    {
+      "id": "17",
+      "command": "pure import/final scoped report/14 declared control groups/frozen bindings/source hashes",
+      "exit_code": 0
+    },
+    {
+      "id": "18",
+      "command": "node --check; exact source candidate",
+      "exit_code": 0
+    },
+    {
+      "id": "19",
+      "command": "git commit --only three exact new source paths",
+      "exit_code": 0
+    },
+    {
+      "id": "20",
+      "command": "local exact source commit/diff/frozen hashes/own node_modules identity",
+      "exit_code": 0
+    },
+    {
+      "id": "21",
+      "command": "git diff --cached --check on the separately staged raw development report artifacts",
+      "exit_code": 2,
+      "coverage_boundary": "Six immutable raw logs end with blank lines. No source whitespace failure; raw stdout/stderr is intentionally not trimmed or rewritten."
+    }
+  ],
+  "preserved_initial_failures": [
+    {
+      "attempt": "04",
+      "log": "04-scoped-initial.raw.log",
+      "test": "strict-extra-key-rejection rejects every closed schema extra key and malformed raw event/line",
+      "cause": "TextDecoder default BOM handling removed the BOM before the explicit startsWith check.",
+      "correction": "Use fatal UTF-8 decoding with ignoreBOM:true and explicit BOM rejection; native Buffer parser unchanged.",
+      "rerun_is_functional_acceptance": false
+    },
+    {
+      "attempt": "06",
+      "log": "06-scoped-after-bom-and-sealing.raw.log",
+      "test": "exact-source-workflow-and-upload-file-set rejects malformed core/provenance and candidate hashes",
+      "cause": "Synthetic provenance sourceFiles and verifier expected files shared the same array, so the mutation changed both sides of the assertion.",
+      "correction": "Synthetic provenance now takes clone(files); candidate verifier remains bound to independently supplied current source hashes.",
+      "rerun_is_functional_acceptance": false
+    }
+  ],
+  "final_development_checks": {
+    "exact_source_candidate": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+    "scoped_file": "tests/diagnostics/windows-p1-stages.test.ts",
+    "passed": 64,
+    "failed": 0,
+    "skipped": 0,
+    "all_14_declared_control_group_names_present_and_passed": true,
+    "mock_and_owned_temp_only": true,
+    "future_native_or_cross_family_acceptance": false
+  },
+  "non_execution": {
+    "powershell_exe": 0,
+    "old_diagnostic_modes": 0,
+    "new_run_or_probe_modes": 0,
+    "GitHub_or_SSH_operations": 0,
+    "real_Docker_DB_service_or_production_operations": 0,
+    "push": 0,
+    "pending_gate_decision_writes": 0,
+    "state_or_memory_or_harness_edits": 0
+  },
+  "blockers_returned": [],
+  "unverified_boundaries": [
+    "Independent actual-diff scope review and applicable different-model-family functional Evaluator acceptance.",
+    "Actual Windows Node22 x64 runner/preload/PowerShell execution, native EOF/guard/trace/cleanup behavior and candidate CI artifact.",
+    "Additive observation/atomic-lock perturbation and actual PowerShell internals; synthetic controls cannot substitute.",
+    "Entire process-tree absence, deployment/production and all outstanding release gates.",
+    "Historical run 37822555762 is reference-only; it was not re-run or re-authenticated."
+  ],
+  "functional_acceptance": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "publication_authorized_by_this_report": false,
+  "native_execution_authorized_by_this_report": false,
+  "evidence_files": [
+    {
+      "path": "01-npm-ci.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "01-npm-ci.raw.log",
+      "bytes": 759,
+      "sha256": "9ab777eb737b7daea5de1bd11a02c720d99d1f67133c4c1c6601282cede24847"
+    },
+    {
+      "path": "02-binding-hashes.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "02-binding-hashes.raw.log",
+      "bytes": 1724,
+      "sha256": "9dc297e1002dc0e6ccbb4129abe964c18289eea9484a469db62b5b8d0acc0b3c"
+    },
+    {
+      "path": "03-syntax-initial.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "03-syntax-initial.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "04-scoped-initial.exit.log",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "04-scoped-initial.raw.log",
+      "bytes": 10598,
+      "sha256": "232cb7194c82302810d1520a3b38c4b229a69ba270500034c9d05440efc1ee07"
+    },
+    {
+      "path": "05-verify-initial.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "05-verify-initial.raw.log",
+      "bytes": 402,
+      "sha256": "a57280d47d7c8583dd07be1cef337abce44b44c7f67ee14be882be6658a5a9f6"
+    },
+    {
+      "path": "06-scoped-after-bom-and-sealing.exit.log",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "06-scoped-after-bom-and-sealing.raw.log",
+      "bytes": 11808,
+      "sha256": "0eda786afc8ce6927b1219219917e19ddc7bf992d4b704fe306d7420c03033db"
+    },
+    {
+      "path": "07-scoped-controls.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "07-scoped-controls.raw.json",
+      "bytes": 23401,
+      "sha256": "d4c270d55b68f289178c5fb239949fc5dcb51e47db440d9b35c81f40e00c69f5"
+    },
+    {
+      "path": "07-scoped-controls.raw.log",
+      "bytes": 11125,
+      "sha256": "9cee8df9933b074c51bc4c59b2edd76534845314b1898320f3396122c99383e5"
+    },
+    {
+      "path": "08-pure-import-checks-summary.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "08-pure-import-checks-summary.raw.log",
+      "bytes": 308,
+      "sha256": "c0190c0d07c0dca4740bd5fe4af8a1f724412fd031c87ad6dfba3b4ffd4e9ab4"
+    },
+    {
+      "path": "09-verify-final.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "09-verify-final.raw.log",
+      "bytes": 1262,
+      "sha256": "ce5d0e4d22d944ce66ec98431e518638a367ed27e898f9bc740f939b4ba041ed"
+    },
+    {
+      "path": "10-syntax-final.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "10-syntax-final.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "11-scoped-final.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "11-scoped-final.raw.json",
+      "bytes": 23750,
+      "sha256": "3da991129c2c115438a725a7cb46b2b8fa260e63a8a1cec490472b76887e0eb0"
+    },
+    {
+      "path": "11-scoped-final.raw.log",
+      "bytes": 11296,
+      "sha256": "af6e9796cdebbceb3ee29ae534b51b76191e9e64a83c4617e593af6ad368699c"
+    },
+    {
+      "path": "12-pure-import-final.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "12-pure-import-final.raw.log",
+      "bytes": 324,
+      "sha256": "b1aa6541732305256316725943dbb3093c484f8889c7f6964b2072c9bfc4fd70"
+    },
+    {
+      "path": "13-verify-code-candidate.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "13-verify-code-candidate.raw.log",
+      "bytes": 402,
+      "sha256": "ab661334dabc7f5b3a850abe7826a427d3bba890f72464901738c83dc1521449"
+    },
+    {
+      "path": "14-scoped-exact-candidate.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "14-scoped-exact-candidate.raw.json",
+      "bytes": 24163,
+      "sha256": "25e387d1a686514ebadab5662ed203d686cc02bff2fdd06c2f43af01bf4fce27"
+    },
+    {
+      "path": "14-scoped-exact-candidate.raw.log",
+      "bytes": 11496,
+      "sha256": "079e9d5a8a0c7811a8ce2ae94956187f0880ef0e0971c7fb69df7704c49491a6"
+    },
+    {
+      "path": "15-lint.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "15-lint.raw.log",
+      "bytes": 59,
+      "sha256": "6f72dd022c6c0b0b88bea54acd13e30e181426d7e1196d05cf385e554242d78c"
+    },
+    {
+      "path": "16-verify-exact-candidate.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "16-verify-exact-candidate.raw.log",
+      "bytes": 402,
+      "sha256": "7ead4dcd850118e651a4aab3dd1656f578cdd206304d444c5bba91a4ba6dc200"
+    },
+    {
+      "path": "17-pure-exact-candidate.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "17-pure-exact-candidate.raw.log",
+      "bytes": 723,
+      "sha256": "1420927dee40e1ce39d65f9d881580745ab4ccef1e573ee91c3b8e1ab17fa4a8"
+    },
+    {
+      "path": "18-final-syntax.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "18-final-syntax.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "19-source-commit.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "19-source-commit.raw.log",
+      "bytes": 380,
+      "sha256": "349d05cc53839f6017ad7239a92752d1d83cc3700a063f941f1bc3c2e735f3fa"
+    },
+    {
+      "path": "20-exact-diff-and-frozen.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "20-exact-diff-and-frozen.raw.log",
+      "bytes": 885,
+      "sha256": "559d222e5a6b7216979118898d6e363b7dfa21726e3fd49b381b9f066f00ea1f"
+    },
+    {
+      "path": "21-report-whitespace.exit.log",
+      "bytes": 2,
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "21-report-whitespace.raw.log",
+      "bytes": 690,
+      "sha256": "4f0d49651ebb284eca451f92c9687559b23f98ccf09a1ec77ae83b823a1e83f5"
+    }
+  ],
+  "handoff": "Coordinator must transport exact commits/artifacts and obtain independent actual-diff scope plus different-model-family functional acceptance. Do not publish or run native on the strength of these development checks.",
+  "report_artifact_whitespace": {
+    "exit_code": 2,
+    "log": "21-report-whitespace.raw.log",
+    "reason": "Preserved immutable tool output contains blank EOF lines in 04/05/06/13/15/16 raw logs.",
+    "source_diff_check_exit_code": 0,
+    "raw_logs_modified_to_hide_failure": false
+  }
+}
