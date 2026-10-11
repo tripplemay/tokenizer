@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-11T16:06:44.138Z",
+  "role": "Coordinator immutable CI receipt capture",
+  "run_id": 38153928452,
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "run_attempt": 1,
+  "entries": [
+    {
+      "path": "windows-checkout-221f2f8-publication-original.log",
+      "bytes": 148,
+      "sha256": "14bb38b336e65c16c67613de0eaa3484edabbb4a29595e91d15db1715b38153b"
+    },
+    {
+      "path": "windows-checkout-221f2f8-run-list-original.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "windows-checkout-221f2f8-run-list-30s-original.json",
+      "bytes": 335,
+      "sha256": "a8b8115bbe41f414ead8301de15997d4ee8da993300457478196521e975799e4"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-final-original.json",
+      "bytes": 12289,
+      "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-full-original.log",
+      "bytes": 25522,
+      "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4"
+    }
+  ]
+}

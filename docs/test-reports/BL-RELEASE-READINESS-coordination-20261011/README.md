@@ -2,7 +2,14 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 15:27 UTC
+## Latest checkpoint: 16:08 UTC
+
+- Fresh Kimi r1 returned before the hard deadline (1790/1800 seconds), mechanical COMPLETED, original **OFFLINE supporting PASS**: unchanged81 + own59, final verify exit0. The 35 byte-equal originals include complete runtime/npm/status logs and both original own-test type failures. Commit `71893b5` preserves the verdict and bounded publication authority; this is not formal F004/F005/native/release acceptance.
+- Coordinator published only frozen `221f2f87d94db1656e3000662796d79621b696f5` by fast-forward to the approved non-main diagnostic branch. [Run 38153928452](https://github.com/tripplemay/tokenizer/actions/runs/38153928452), attempt1: **checkout and setup-node succeeded**; the earlier long-path barrier did not recur. Earliest new failure is module-load `binding identity` at `p1-stages.mjs:20:8` (actual JSON hash `481e1496...659c0e`, expected `652a1117...ed1922d`). npmci, synthetic checks and INITIAL were skipped; seal failed at the same assertion, artifacts0. No rerun.
+- `windows-checkout-native-run38153928452-coordinator-adjudication.json` is the current detailed checkpoint; all seven publication/CI originals and their hashes are retained. A fresh supporting Planner is independently locating this byte-identity mismatch; no new repair, normalization/validator relaxation, CI or publication is authorized yet.
+- Fresh main still `2074991717abaf3cb34d9aad894bcd4357fefbc3`; non-main diagnostic ref is now `221f2f87d94db1656e3000662796d79621b696f5`. Public health at `2026-10-11T16:08:08.798Z` remains `ok=true`, production `92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1`. No main push or production mutation. Parent runtime/state unchanged, `release_ready=false`; Compose HARD_STOP and all key/recovery/formal release gates remain open.
+
+## Historical checkpoint: 15:27 UTC
 
 - Checkout-only C001 candidate `221f2f87d94db1656e3000662796d79621b696f5` is frozen. Exact four-file projection and fresh actual-diff scope PASS are preserved; Generator's unchanged 81 controls and verify passed. Candidate source has not been integrated, published or executed on Windows.
 - New Kimi supporting r0 hit the fixed 1800-second deadline (receipt duration1803, exit124, mechanical CANCELED) without a verdict. Complete runtime, durable metadata, all 11 partial report files, unexecuted own-test text and captured receipts are preserved as 17 byte-equal originals. Partial 81-pass/verify/static-probe results do not close the new gate; initial probe failures remain intact.

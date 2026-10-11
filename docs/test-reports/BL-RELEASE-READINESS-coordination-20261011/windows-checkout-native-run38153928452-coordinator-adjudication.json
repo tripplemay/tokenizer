@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T16:08:08.798Z",
+  "role": "Coordinator CI receipt transport and next supporting planning boundary, not an Evaluator verdict or human gate decision",
+  "publication": {
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "destination": "refs/heads/codex/windows-p1-stages-ci-20261010",
+    "previous_ref": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "exit_code": 0,
+    "force": false,
+    "original": "windows-checkout-221f2f8-publication-original.log",
+    "report_commit_pushed": false,
+    "main_pushed": false
+  },
+  "ci": {
+    "run_id": 38153928452,
+    "url": "https://github.com/tripplemay/tokenizer/actions/runs/38153928452",
+    "run_attempt": 1,
+    "head_sha": "221f2f87d94db1656e3000662796d79621b696f5",
+    "event": "push",
+    "workflow": "Windows P1 INITIAL diagnostic",
+    "conclusion": "failure",
+    "job_id": 114512876414,
+    "job_started_at": "2026-10-11T16:04:30Z",
+    "job_completed_at": "2026-10-11T16:04:57Z",
+    "checkout": "SUCCESS; exact source HEAD checkout reached. The former Filename-too-long barrier did not recur in this run",
+    "checkout_action_sha": "11d5960a326750d5838078e36cf38b85af677262",
+    "git": "2.55.0.windows.5",
+    "runner_image": "windows-2025-vs2026 20260925.250.1",
+    "setup_node": "SUCCESS, v22.23.3/npm10.9.9; not the local v22.22.0/npm10.9.4 test runtime",
+    "earliest_failure": "Prepare exact-candidate provenance, module-load binding identity assertion at p1-stages.mjs:20:8, exit1",
+    "actual_binding_json_sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+    "expected_binding_json_sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "npm_ci": "SKIPPED",
+    "synthetic_controls": "SKIPPED",
+    "initial_diagnostic": "SKIPPED; no T0/T1/T2/T3 result",
+    "always_seal": "FAILURE at the same module-load identity assertion, exit1",
+    "verify_upload": "SKIPPED",
+    "upload": "SKIPPED",
+    "artifact_count": 0,
+    "rerun_requested": false,
+    "not_a_product_or_powershell_probe_result": true,
+    "native_acceptance": false
+  },
+  "original_transport": {
+    "manifest": "windows-checkout-native-run38153928452-transport-manifest.json",
+    "original_files": 7,
+    "initial_run_list": "The first post-push query returned []; this original is retained along with the later query, not overwritten",
+    "full_log_bytes": 25522,
+    "all_original_failures_preserved": true
+  },
+  "next_supporting_work": {
+    "role": "Fresh Planner only, independently inspect raw trace and frozen source",
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011",
+    "branch": "docs/windows-p1-binding-identity-plan-20261011",
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "scope": "Locate the earliest raw-byte identity mismatch; small offline single-variable transform or owned Git fixture allowed, preserve originals",
+    "cause_status": "No actual Windows file bytes or autocrlf config captured; source-materialization causes remain hypotheses until independent probe evidence",
+    "implementation_authorized": false,
+    "new_native_run_or_publication_authorized": false,
+    "requirements": "Any new workflow/binding revision needs explicit locked projection, fresh pre-scope, Generator, actual-diff post-scope and different-family supporting gate; never normalize or weaken identity checks or frozen diagnostic constraints"
+  },
+  "current_remote_refs": {
+    "original": "remote-refs-20261011T1608Z-original.txt",
+    "main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "nonmain_ci": "221f2f87d94db1656e3000662796d79621b696f5"
+  },
+  "public_health": {
+    "original": "public-health-20261011T1608Z-original.json",
+    "ok": true,
+    "timestamp": "2026-10-11T16:08:08.798Z",
+    "reported_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "boundary": "Public health only, not authenticated OCI provenance or browser acceptance"
+  },
+  "parent_runtime_diff_from_76d916b_exit_code": 0,
+  "source_integrated_into_parent_runtime": false,
+  "compose": "HARD_STOP unchanged; no third attempt",
+  "keys": "Deferred by user; no key/backup/restore/baseline/password work",
+  "pending_gate_written": false,
+  "state_or_memory_written": false,
+  "production_mutation": false,
+  "release_ready": false
+}
