@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T14:01:20.251Z",
+  "run_id": 38145284914,
+  "run_attempt": 1,
+  "source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "conclusion": "failure",
+  "diagnostic_step": "skipped",
+  "artifact_count": 0,
+  "artifacts": [
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-native-run38145284914-start-original.json",
+      "bytes": 12339,
+      "sha256": "a801a6dbda7f2eed3cc7be6280830540b5cc20e3fae04472e0c0085a5666c3ad"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-native-run38145284914-final-original.json",
+      "bytes": 12339,
+      "sha256": "a801a6dbda7f2eed3cc7be6280830540b5cc20e3fae04472e0c0085a5666c3ad"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-native-run38145284914-jobs-original.json",
+      "bytes": 2944,
+      "sha256": "4320e6204f4ea41da2aec74e436cb229c8d9793f6070306e6c576b1cd9a13d44"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-native-run38145284914-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-native-run38145284914-full-original.log",
+      "bytes": 18378,
+      "sha256": "725070982a434eb7421b339d6fc5886d76f7f7a631a4a381a9c95a79bcbdcd8e"
+    }
+  ],
+  "checked_in_paths_under_failing_archive": 57,
+  "longest_matching_checked_in_path": {
+    "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-confirmation.json",
+    "relative_characters": 256,
+    "runner_full_characters": 281
+  }
+}
