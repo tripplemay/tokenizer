@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-10-11T19:42:42.454Z",
+  "parent_head": {
+    "exit_code": 0,
+    "stdout": "c0f289998b3f625b72d524546c5c24a2542ae562\n",
+    "stderr": ""
+  },
+  "main_status": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "main_head": {
+    "exit_code": 0,
+    "stdout": "2074991717abaf3cb34d9aad894bcd4357fefbc3\n",
+    "stderr": ""
+  },
+  "parent_runtime_diff": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "new_originals_committed_raw_equal": 126,
+  "parent_status": "building",
+  "parent_completed": 3,
+  "parent_total": 5,
+  "parent_pending_gate": null,
+  "canonical_status": "verifying",
+  "canonical_pending_gate": null,
+  "source62_not_published": true,
+  "source712_diagnostic_current": true,
+  "inert_test": "own-test-original.ts under docs/test-reports excluded from tsconfig and not Vitest *.test pattern, no parent test runtime integration",
+  "release_ready": false
+}

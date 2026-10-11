@@ -2,7 +2,15 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 19:00 UTC
+## Latest checkpoint: 19:42 UTC
+
+- Fresh Planner and pre-scope preserve source712's old80 contract; the separately commissioned NEW `PREPARE_P11_REASON_V1_84` adds one fixed4-byte V00-V17 line only after unchanged generic/P11 on exact prepare-P11 failure. No schema/environment/hash/guard/native-budget widening or root-cause claim.
+- Source `62d419b2a419b685542efaaf047b8a749839d493` is frozen, one CLI path only. Generator unchanged81/verify/syntax/pureimport passed; fresh passive actual-diff scope is PASS_SCOPE_ONLY and restores all baseline712 CLI bytes exactly. 123 Generator + 3 post-scope originals (1,686,610 bytes) are transported and independently rechecked against current parent Git blobs. Source CLI remains unintegrated and unpublished.
+- `windows-provenance-observation-kimi-r0-dispatch-adjudication.json` commissions fresh registered Kimi different-family offline support at1800s. Actual-source-slice controls must independently verify caught-schema/clone, false/in-flight intervals, privacy, call/short-circuit preservation and P12/V17 isolation. No result yet; no new CI/publication or source712 rerun authorized.
+- All initial Generator/critic/root report/staging errors and package-owned SWC lock-absent fallback/seven-high warning remain explicit original evidence, not hidden or called release success. Root first non-log add missed captured nested node_modules originals, then a malformed ignore query failed; corrected exact ignore classification committed all126 raw originals, with no blanket force-add or source change.
+- Fresh19:42 public HTTP200/ok=true still production92, remote main207/non-main712; main clean, parent runtime diff empty, state unchanged. Capture filename token1946 is only a label, actual timestamps authoritative. Docs evidence test copy is excluded by tsconfig and not a Vitest test filename. Production not deployed; Compose HARD_STOP/key deferral/formal release-recovery gates remain, `release_ready=false`.
+
+## Historical checkpoint: 19:00 UTC
 
 - Fresh Kimi r0 returned1294/1800 seconds with original OFFLINE supporting PASS: unchanged81, own40 actual-source-slice VM/static controls, verify before/after exit0. The sole passive Kimi supplement returned708/900 with exact Buffer baseline restoration and independent39/49/9 original verification. SWC wasm1.16.13 lock-absent fallback, raw seven-high warning, manual edit/provisional timeline deviations and initial author failures remain explicitly separate; original verdicts are unrewritten. No third source712 dispatch.
 - Coordinator published only exact source712 to approved non-main ref. [Run38165950837](https://github.com/tripplemay/tokenizer/actions/runs/38165950837), attempt1: checkout/setup-node success; prepare fails with **TW_P1_PREPARE_FAILURE_V1:P11**, localizing the attempted `validateProvenance` assertion interval without a unique underlying predicate/cause. Install/synthetic/INITIAL skipped, seal failed generic, artifacts0. No rerun or native API/T0-T3 result.
