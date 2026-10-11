@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-11",
+  "role": "Coordinator clarification of owned fresh npmci development network scope; not functional acceptance or publication authority",
+  "task": "windows_p1_checkout_generator",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "trigger": "Generator noted that locked npm package lifecycle scripts may retrieve their public prebuilt binaries; no actual forbidden request or network error was established by that message",
+  "registry": "https://registry.npmjs.org/",
+  "clarification": "The explicitly authorized fresh locked npmci includes package-owned public prebuilt binary downloads required by the unchanged locked dependencies, not arbitrary egress or authenticated GitHub operations",
+  "additional_public_downloads_allowed": [
+    "Prisma engines required by locked @prisma/engines lifecycle from binaries.prisma.sh",
+    "Locked better-sqlite3 prebuild release download from github.com/WiseLibs/better-sqlite3/releases/download and its public release-asset CDN redirects"
+  ],
+  "requirements": ["Verify package-owned install script references before relying on these hosts", "Retain complete original installation output/status and state whether URLs were actually observable", "Owned worktree, HOME/cache/tmp only; no borrowed node_modules", "No manual download, global installation, credential/config-store inspection, dependency edit or auditfix", "Unknown host or need for authenticated request: stop and report, not broaden the allowlist"],
+  "github_boundary": "No authenticated GitHub CLI/API, Actions/CI trigger or rerun, branch push, Secrets/protected environment or production access by worker",
+  "implementation_scope_change": false,
+  "diagnostic_environment_or_budget_change": false,
+  "new_native_execution_authorized": false,
+  "publication_authorized": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "release_ready": false
+}
