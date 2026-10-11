@@ -1,0 +1,27 @@
+{
+  "format": "original-byte-copy-path-map-v1",
+  "external_originals_changed": false,
+  "entries": [
+    {
+      "original_name": "windows-prepare-observation-publication-original.log",
+      "copy_name": "windows-prepare-observation-publication-original.txt",
+      "bytes": 148,
+      "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564",
+      "unchanged": true
+    },
+    {
+      "original_name": "windows-prepare-observation-native-run38165950837-watch-original.log",
+      "copy_name": "windows-prepare-observation-native-run38165950837-watch-original.txt",
+      "bytes": 85,
+      "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b",
+      "unchanged": true
+    },
+    {
+      "original_name": "windows-prepare-observation-native-run38165950837-full-original.log",
+      "copy_name": "windows-prepare-observation-native-run38165950837-full-original.txt",
+      "bytes": 21659,
+      "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954",
+      "unchanged": true
+    }
+  ]
+}

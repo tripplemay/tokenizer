@@ -1,0 +1,104 @@
+{
+  "format": "windows-p1-provenance-failure-observation-proposal-v1",
+  "analysis_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "outcome": "PLAN_ONLY",
+  "implementation_authorized": false,
+  "publication_authorized": false,
+  "ci_authorized": false,
+  "native_authorized": false,
+  "preferred_existing_contract": {
+    "maximum_bytes": 80,
+    "generic_bytes_with_lf": 51,
+    "existing_phase_bytes_with_lf": 29,
+    "free_bytes": 0,
+    "disposition": "Keep unchanged; no reason line, no phase replacement/extension/reuse, no new observation under old authorization"
+  },
+  "optional_independent_contract_requiring_new_authorization": {
+    "name": "PREPARE_P11_REASON_V1_84",
+    "relation_to_old_contract": "A new independently approved maximum, not an exception implicitly granted by the old 80-byte contract",
+    "only_mode": "exact existing --prepare dispatch, terminal caught failure, prepareFailurePhase === P11",
+    "channel": "existing parent stderr only",
+    "order": ["unchanged generic 51-byte line", "unchanged existing P11 29-byte line", "one fixed four-byte V00-V17 line"],
+    "maximum_terminal_bytes": 84,
+    "reason_line_bytes_with_lf": 4,
+    "maximum_reason_lines": 1,
+    "successful_prepare_added_bytes": 0,
+    "other_failure_phases_added_bytes": 0,
+    "other_modes_import_guard_probe_added_bytes": 0,
+    "new_stdout_bytes": 0,
+    "new_persisted_fields_files_or_uploads": 0,
+    "exit_code": "unchanged 1",
+    "literal_lookup_only": true,
+    "invalid_unassigned_state": "V00",
+    "missing_truncated_duplicate_or_nonmember_observation": "unknown; no inferred passing predicate"
+  },
+  "allowed_candidate_path_if_new_contract_separately_approved": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+  "finite_allowed_slots": [
+    {"slot":"S1","source_lines":"42-57 adjacent module-local observation declarations","projection":"Add non-exported inactive P11-only observation state and exactly eighteen literal four-byte lines. No data-derived strings, getters, error binding or state persisted."},
+    {"slot":"S2","source_lines":"89-91 rebuild body only","projection":"For active exact prepare P11 and name === provenance only, observe existing schema call and existing JSON clone using a fixed schema/clone local stage. Split original ternary into a local schema result and equivalent branch, once each schemaMatches(defs[name], value), JSON.stringify(value), JSON.parse(existing stringify result). Preserve catch returning null and no caught error binding. Inactive calls have identical behavior and no output."},
+    {"slot":"S3","source_lines":"694-703 validateProvenance body only","projection":"Assignments immediately before existing operation groups; latch fixed false enum immediately before each original false return; final return may use one local result with original expression, latch false or true, return same result. Do not reorder/split individual predicates of existing compound expressions; preserve their short-circuit evaluation, all original calls/arguments and all reads. No extra validator/schema/comparison/environment/sourceFiles calls."},
+    {"slot":"S4","source_lines":"1101 exact existing prepare dispatch arm","projection":"Activate observation inactive/unknown immediately before unchanged prepare invocation; no argv/env/data rereads, no extra arguments, no other arm activation."},
+    {"slot":"S5","source_lines":"740 adjacent successful prepare deactivation","projection":"Deactivate state after the unchanged successful write, without output or other effect; P00-P12 assignments retain positions and meaning."},
+    {"slot":"S6","source_lines":"1112-1115 terminal catch after existing phase output","projection":"Only active exact prepare P11 failure may append one allowlisted literal four-byte reason line after unchanged generic and original phase output. Original exit1 retained. No new catch/rethrow/swallow/retry/fallback/serialization/error inspection."}
+  ],
+  "reason_codebook": [
+    {"code":"V00","meaning":"unknown/unassigned/invalid observation; do not infer a predicate"},
+    {"code":"V01","meaning":"rebuild call in flight without a classified result; unknown external escape"},
+    {"code":"V02","meaning":"existing schemaMatches returned false; no individual field is identified"},
+    {"code":"V03","meaning":"existing rebuild catch ran while schema stage active; caught exception, no error properties"},
+    {"code":"V04","meaning":"existing rebuild catch ran while JSON clone stage active; caught exception, no error properties"},
+    {"code":"V05","meaning":"rebuilt value exists, first aggregate semantic guard in flight; escaping exception interval"},
+    {"code":"V06","meaning":"first aggregate semantic guard returned false after valid rebuild; SHA relations or full sourceFiles comparison, not a unique predicate"},
+    {"code":"V07","meaning":"existing paths construction in flight; escaping exception interval"},
+    {"code":"V08","meaning":"existing source path comparison in flight; escaping exception interval"},
+    {"code":"V09","meaning":"existing source path comparison returned false"},
+    {"code":"V10","meaning":"existing frozen source iteration/check in flight; escaping exception interval"},
+    {"code":"V11","meaning":"existing frozen source check returned false; no path/hash/index disclosed"},
+    {"code":"V12","meaning":"existing binding source check in flight; escaping exception interval"},
+    {"code":"V13","meaning":"existing binding source check returned false"},
+    {"code":"V14","meaning":"existing presentSystem filter in flight; escaping exception interval"},
+    {"code":"V15","meaning":"existing final environment predicate in flight; escaping exception interval"},
+    {"code":"V16","meaning":"existing final environment predicate returned false; no key/value disclosed"},
+    {"code":"V17","meaning":"validator returned true but P11 operation did not complete; assertion/observation anomaly remains unknown, not an error-type claim"}
+  ],
+  "classification_rules": [
+    "rebuild tracks schema versus clone stage using fixed module-local literals; caught exception remains null exactly as before",
+    "schema false/caught exception latched V02/V03/V04 must survive the existing !v false guard; do not overwrite with V06",
+    "after non-null rebuild, set V05 before the unchanged compound first if; latch V06 only inside its false-return branch",
+    "uncaught validator operation leaves its preceding in-flight enum; distinguish from a latched false, never inspect thrown value",
+    "final expression once, same short-circuit and argument values; latch V16 on false and V17 on true before returning unchanged value",
+    "activation/state assignments only: no new source/schema/env/property probing; unknown never a pass; enums identify intervals, not repairs"
+  ],
+  "preserved_invariants": [
+    "All original call counts/order/arguments including schemaMatches, rebuild, JSON clone, comparisons, Git and both sourceFiles passes",
+    "Unchanged assert(validateProvenance(provenance, prepareSourceFiles, executionSha)) at P11; no split or cached validator invocation",
+    "All P00-P12 literals, assignments, generic message, failure exit and original P11 interpretation",
+    "All bindings/md/hash literals, schemaMatches implementation, schemas, frozen raw-byte/hash checks, environment allowlists and guards",
+    "Owned-file/directory identity, caps/timeouts/counts, E0, B001 native tuple, worker, EOF, cleanup, atomic append, T0-T3 scripts and selection",
+    "11 sourceFiles paths, 16 upload paths, package lock, tests/specs/workflows/old diagnostics and all original artifacts",
+    "No successful/other-mode/import/guard/probe new output, no dynamic/raw env names/values/paths/errors/name/code/stack/hash/content, no new storage/upload"
+  ],
+  "unapproved_alternatives_rejected": [
+    "Append reason while claiming 80-byte compliance",
+    "Shorten/change generic or replace/extend/reinterpret P11/P00-P12 to free bytes",
+    "Recompute validation/serialize provenance/inspect error or raw env to infer reason",
+    "Widen imageOS/schema, change runner/Node/env/hash/budget/guard, remove a sourceFiles pass, retry source712",
+    "Use synthetic fixture/provenance output as real Windows evidence"
+  ],
+  "next_gates": [
+    "Fresh passive pre-scope must first decide whether any independent 84-byte contract is permissible; otherwise stop unchanged at 80",
+    "Separate Coordinator ruling and exact Generator commission covering only S1-S6; no implementation by this Planner",
+    "Fresh exact-diff post-scope verifies all finite slots, call/argument/order/count and output/privacy invariants against source712",
+    "Fresh different-family supporting gate for the exact new source, only if separately commissioned; source712 sole Kimi supplement is spent",
+    "Only a separate later Coordinator ruling can authorize one exact new-source non-main observation; no automatic CI/rerun/publication/release"
+  ],
+  "future_gate_negative_controls_not_executed_here": [
+    "False versus caught schema/clone versus uncaught validator versus unknown must stay distinct without error inspection",
+    "Reject extra/reordered/repeated calls, changed arguments/short-circuit expression or either merged/missing sourceFiles pass",
+    "Reject reason emission outside exact prepare P11, duplicate/dynamic/nonmember/CRLF/over-four-byte reason or success output",
+    "Reject changed old marker/generic/exit, missing observer deactivation, persisted state/upload or old80 claim for84",
+    "Reject schema/env/hash/guard/cap/test/spec/workflow/native/product/state/registry/harness/memory delta"
+  ],
+  "release_ready": false,
+  "release_acceptance": false
+}

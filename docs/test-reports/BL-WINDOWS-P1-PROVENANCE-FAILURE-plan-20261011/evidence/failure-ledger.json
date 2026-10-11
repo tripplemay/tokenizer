@@ -1,0 +1,39 @@
+{
+  "format": "supporting-planner-first-error-ledger-v1",
+  "first_error": {
+    "command_prefix": "git -c core.fileMode=false add --",
+    "exact_path_arguments_in_order": [
+      "README.md", "verdict.json", "proposal.json", "evidence/git-readonly-record.json", "evidence/input-ledger.json", "evidence/passive-audit-command-output.json",
+      "evidence/originals/windows-prepare-observation-publication-original.log",
+      "evidence/originals/windows-prepare-observation-run-list-original.json",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.log",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-final-original.json",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-jobs-original.json",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-full-original.log",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-transport-manifest.json",
+      "evidence/originals/windows-prepare-observation-native-run38165950837-coordinator-adjudication.json",
+      "manifest.json", "SHA256SUMS"
+    ],
+    "each_path_argument_prefix": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/",
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-failure-plan-20261011",
+    "exit_code": 1,
+    "complete_output": "The following paths are ignored by one of your .gitignore files:\ndocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-full-original.log\ndocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.log\ndocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-publication-original.log\nhint: Use -f if you really want to add them.\nhint: Disable this message with \"git config set advice.addIgnoredFile false\"\n"
+  },
+  "continuation": {
+    "description": "The orchestrated sequence continued to cached diff and local commit after add exit1; this is recorded, not hidden as success of the failed add.",
+    "commit_command": "git -c core.fileMode=false commit --only docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/ -m 'docs(windows): plan P11 provenance failure observation without authorization'",
+    "exit_code": 0,
+    "commit_abbrev": "f348b4d",
+    "files_committed": 14,
+    "missing_files": "three ignored original-byte log copies"
+  },
+  "repair": {
+    "scope": "Only self-generated report copies, copy mapping and report manifest/README/error ledger",
+    "strategy": "Rename three copies to .txt without changing bytes, preserve initial manifest, then a second scoped report-only commit",
+    "force_add_or_force_push": false,
+    "amend": false,
+    "external_originals_rewritten": false,
+    "candidate_test_or_CI_retry": false
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "format": "coordinator-native-original-transport-v1",
+  "observed_at": "2026-10-11T18:58:49.278Z",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "run": 38165950837,
+  "attempt": 1,
+  "event": "push",
+  "conclusion": "failure",
+  "publication_exit_code": 0,
+  "watch_exit_code": 1,
+  "read_only_capture_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "exact_phase_payload": "TW_P1_PREPARE_FAILURE_V1:P11\n",
+  "payload_ascii_bytes": 29,
+  "observed_matching_log_records": 1,
+  "log_record_without_payload": "p1-initial-diagnostic\tPrepare exact-candidate provenance\t2026-10-11T18:57:23.7243380Z ",
+  "limits": "GitHub timestamped log record is not a raw Windows stderr archive or delivery guarantee; exact payload text verified, operation interval only; no root-cause/native acceptance",
+  "files": 7,
+  "total_bytes": 37590,
+  "entries": [
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-publication-original.log",
+      "bytes": 148,
+      "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-run-list-original.json",
+      "bytes": 279,
+      "sha256": "3a1e0e5098f52471525781e1fad296861a3cbf3f38ae0087ce3cbc5231fa8b9a"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-watch-original.log",
+      "bytes": 85,
+      "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-final-original.json",
+      "bytes": 12271,
+      "sha256": "763f71b3ae2d2efc1ac9c41503698597442ac2832a85d95f7c0cb19e30203e31"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "89c6aa8889abe2bed7b9bc25731d0f294602e749cba3d902998b46cc837c63a7"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-full-original.log",
+      "bytes": 21659,
+      "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954"
+    }
+  ]
+}

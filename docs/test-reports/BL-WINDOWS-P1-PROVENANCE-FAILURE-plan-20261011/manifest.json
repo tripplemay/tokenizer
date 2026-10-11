@@ -1,0 +1,101 @@
+{
+  "format": "report-payload-manifest-v1",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "outcome": "PLAN_ONLY",
+  "self_hashed": false,
+  "supersedes": "evidence/manifest-before-ignore-repair.json",
+  "files": 18,
+  "total_bytes": 91697,
+  "entries": [
+    {
+      "path": "README.md",
+      "bytes": 8521,
+      "sha256": "cd817b301c84c0672b8bcb596d34b27f80116df3ff22cfb35a677fdbc179bdff"
+    },
+    {
+      "path": "evidence/failure-ledger.json",
+      "bytes": 3084,
+      "sha256": "54e02f8a4d4fc564e9b01756a67ebe33df919967743a87e1320da99e14dad39f"
+    },
+    {
+      "path": "evidence/git-readonly-record.json",
+      "bytes": 1056,
+      "sha256": "a7b71478c93fd641c1f1df7fb816cafe0cd38fb0a7ef8f129f9df7fcc72d0953"
+    },
+    {
+      "path": "evidence/input-ledger.json",
+      "bytes": 12123,
+      "sha256": "cf4dd54b0eb634253012d4487e7c449cbd7fb7324447b81d735b5009c8b77863"
+    },
+    {
+      "path": "evidence/manifest-before-ignore-repair.json",
+      "bytes": 3136,
+      "sha256": "d7ee863dd3c85b48bbc2846f205d34a962cc5a59445dd46de59a9902c13f2294"
+    },
+    {
+      "path": "evidence/original-copy-map.json",
+      "bytes": 1055,
+      "sha256": "05f254f93f9eb19838ff7ccd7c2594e8a81e5d1a968a7d376ef0b4a08d496781"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-coordinator-adjudication.json",
+      "bytes": 4154,
+      "sha256": "ad75c9bcc132bed54a8d4ba252bb4976132bdbe44dd1dd29ce259a92ba1ba9a1"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-final-original.json",
+      "bytes": 12271,
+      "sha256": "763f71b3ae2d2efc1ac9c41503698597442ac2832a85d95f7c0cb19e30203e31"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-full-original.txt",
+      "bytes": 21659,
+      "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "89c6aa8889abe2bed7b9bc25731d0f294602e749cba3d902998b46cc837c63a7"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-transport-manifest.json",
+      "bytes": 2678,
+      "sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.txt",
+      "bytes": 85,
+      "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-publication-original.txt",
+      "bytes": 148,
+      "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564"
+    },
+    {
+      "path": "evidence/originals/windows-prepare-observation-run-list-original.json",
+      "bytes": 279,
+      "sha256": "3a1e0e5098f52471525781e1fad296861a3cbf3f38ae0087ce3cbc5231fa8b9a"
+    },
+    {
+      "path": "evidence/passive-audit-command-output.json",
+      "bytes": 7079,
+      "sha256": "3c080707e606ed013bc8f1dd4f4befd2aa0b95483c96e46268206ac6095da2bd"
+    },
+    {
+      "path": "proposal.json",
+      "bytes": 9716,
+      "sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92"
+    },
+    {
+      "path": "verdict.json",
+      "bytes": 1505,
+      "sha256": "3eac8293e6f8d687356d758de3efba6fe7f3ab2c93e3d9c60b06058c616fb5d6"
+    }
+  ]
+}

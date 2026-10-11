@@ -1,0 +1,19 @@
+{
+  "format": "supporting-planner-readonly-git-record-v1",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-failure-plan-20261011",
+  "initial": [
+    {"command":"git -c core.fileMode=false status --short --branch","exit_code":0,"complete_output":"## docs/windows-p1-provenance-failure-plan-20261011\n"},
+    {"command":"git -c core.fileMode=false rev-parse HEAD","exit_code":0,"complete_output":"712cf210b089dc71f3a6e6ed2e19e1de7fee57da\n"}
+  ],
+  "precommit_source_freeze": {
+    "command": "git -c core.fileMode=false diff --name-only 712cf210b089dc71f3a6e6ed2e19e1de7fee57da -- . :!docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011",
+    "exit_code": 0,
+    "complete_output": ""
+  },
+  "first_error": null,
+  "candidate_execution": false,
+  "tests_executed": false,
+  "network_or_CI_calls": false,
+  "git_pull_skipped": "Explicit frozen-source/no-network support task; no synchronization mutation",
+  "memory_and_state_updates_skipped": "Explicit section1.5 report-only scope; status remains building"
+}

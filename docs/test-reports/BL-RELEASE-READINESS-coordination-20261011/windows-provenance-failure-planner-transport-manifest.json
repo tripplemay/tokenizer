@@ -1,0 +1,176 @@
+{
+  "format": "coordinator-original-byte-transport-v1",
+  "observed_at": "2026-10-11T19:11:54.074Z",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "planner_report_commits": [
+    "f348b4de2661f18b6faa9fdd840808975969afd3",
+    "719660c10805b5ab0d4e56e6b8317283c95c37b2"
+  ],
+  "files": 20,
+  "total_bytes": 97696,
+  "entries": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/README.md",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 8521,
+      "sha256": "cd817b301c84c0672b8bcb596d34b27f80116df3ff22cfb35a677fdbc179bdff",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/SHA256SUMS",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 2293,
+      "sha256": "8f7b99169a60f2a676f67a41f7e240a77e9f7463d9f9647098eb9b1d454a50a7",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/failure-ledger.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 3084,
+      "sha256": "54e02f8a4d4fc564e9b01756a67ebe33df919967743a87e1320da99e14dad39f",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/git-readonly-record.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 1056,
+      "sha256": "a7b71478c93fd641c1f1df7fb816cafe0cd38fb0a7ef8f129f9df7fcc72d0953",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/input-ledger.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 12123,
+      "sha256": "cf4dd54b0eb634253012d4487e7c449cbd7fb7324447b81d735b5009c8b77863",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/manifest-before-ignore-repair.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 3136,
+      "sha256": "d7ee863dd3c85b48bbc2846f205d34a962cc5a59445dd46de59a9902c13f2294",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/original-copy-map.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 1055,
+      "sha256": "05f254f93f9eb19838ff7ccd7c2594e8a81e5d1a968a7d376ef0b4a08d496781",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-coordinator-adjudication.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 4154,
+      "sha256": "ad75c9bcc132bed54a8d4ba252bb4976132bdbe44dd1dd29ce259a92ba1ba9a1",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-final-original.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 12271,
+      "sha256": "763f71b3ae2d2efc1ac9c41503698597442ac2832a85d95f7c0cb19e30203e31",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-full-original.txt",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 21659,
+      "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-jobs-original.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 3116,
+      "sha256": "89c6aa8889abe2bed7b9bc25731d0f294602e749cba3d902998b46cc837c63a7",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-transport-manifest.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 2678,
+      "sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.txt",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 85,
+      "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-publication-original.txt",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 148,
+      "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-run-list-original.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 279,
+      "sha256": "3a1e0e5098f52471525781e1fad296861a3cbf3f38ae0087ce3cbc5231fa8b9a",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/passive-audit-command-output.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 7079,
+      "sha256": "3c080707e606ed013bc8f1dd4f4befd2aa0b95483c96e46268206ac6095da2bd",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/manifest.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 3706,
+      "sha256": "e56238264aa944bb69229ccef5a493524ccd7fd534f85813b0ec5eb7dc4fbdf2",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 9716,
+      "sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/verdict.json",
+      "source_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+      "bytes": 1505,
+      "sha256": "3eac8293e6f8d687356d758de3efba6fe7f3ab2c93e3d9c60b06058c616fb5d6",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    }
+  ],
+  "originals_not_rewritten": true,
+  "source_runtime_not_integrated_into_parent": true,
+  "scope": "PLAN_ONLY passive originals, not functional acceptance or new output contract authorization"
+}

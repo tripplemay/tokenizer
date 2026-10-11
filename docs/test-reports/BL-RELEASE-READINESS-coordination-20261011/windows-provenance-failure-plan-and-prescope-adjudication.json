@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T19:12:17Z",
+  "role": "Coordinator Planner transport and fresh passive pre-scope commission, not product planning or functional evaluation",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "observed_runtime": "Run38165950837 attempt1 prepare fixed P11 interval; no underlying predicate/error; install/synthetic/native skipped, artifacts0",
+  "planner": {
+    "report_commits": ["f348b4de2661f18b6faa9fdd840808975969afd3","719660c10805b5ab0d4e56e6b8317283c95c37b2"],
+    "result": "PLAN_ONLY; not-uniquely-identifiable",
+    "original_files": 20,
+    "bytes": 97696,
+    "transport_manifest_sha256": "ff3b4d2c5922201fe34ccc0aadcd0e768f7c1f435bd2049045955f519935ab23",
+    "proposal_sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92",
+    "verdict_sha256": "3eac8293e6f8d687356d758de3efba6fe7f3ab2c93e3d9c60b06058c616fb5d6",
+    "original_byte_copy_matches_final_committed_blobs": true,
+    "author_ledger": "Initial git add ignored3logs exit1 and first14-file commit retained; before clarification three self-created raw copies migrated byte-identically to .txt, original manifest/path mapping and final18-payload manifest retained in second scoped commit; no external original/source rewrite or amend"
+  },
+  "old_contract": "Keep source712 and its maximum80-byte output unchanged; generic51+P11line29 has no free bytes. No extra reason, shortened/reinterpreted marker or output under existing approval",
+  "optional_new_contract": {
+    "name": "PREPARE_P11_REASON_V1_84",
+    "status": "Unapproved proposal only, not implicit exception to old80",
+    "finite_projection": "One existing CLI path, S1-S6 only; non-exported inactive prepare-P11 observer, existing rebuild schema/clone stage, existing validateProvenance operation/false-result latches, activation/reset, one fixed4-byte V00-V17 terminal line after unchanged generic and P11",
+    "scope_to_judge": "All original calls/arguments/order/short-circuit and two sourceFiles passes, original catch-null semantics, unchanged P11 assertion and meaning, enums/no error inspection or revalidation, max84 not80, zero success/otherphase/nonprepare/import/guard/probe output/files/uploads, every guard/schema/env/hash/native boundary"
+  },
+  "fresh_passive_pre_scope": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-failure-pre-scope-20261011",
+    "branch": "docs/windows-p1-provenance-failure-pre-scope-20261011",
+    "start": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+    "role": "Fresh supporting passive scope/spec critic, not Planner/Generator/functional Evaluator",
+    "deliverable": "Only own docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-pre-scope-20261011/ verdict.json and README.md plus explicit own raw ledger if needed, scoped local report commit",
+    "decision": "PASS_SCOPE_ONLY or BLOCKED; identify ambiguity/contradictions/changed-observation effects before any Generator authority; no candidate/import/VM/tests/fixtures/probe/native/network/state writes",
+    "manual_edit_boundary": "All apply_patch File paths absolute to this critic worktree. Exact own original-log add-f allowed, not force push; no source or other original edit"
+  },
+  "implementation_or_new84_contract_accepted": false,
+  "new_source_publication_or_CI_authorized": false,
+  "source712_rerun_or_further_Kimi_dispatch_authorized": false,
+  "parent_runtime_scoped_diff": "Empty after disclosed root inert-test path correction; no diagnostic source CLI integrated",
+  "main_production_or_state_transition": false,
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}

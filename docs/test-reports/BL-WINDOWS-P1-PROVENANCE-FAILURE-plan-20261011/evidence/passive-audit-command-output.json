@@ -1,0 +1,80 @@
+{
+  "command": [
+    "/opt/homebrew/Cellar/node/25.7.0/bin/node",
+    "-e",
+    "const fs=require(\"node:fs\"),crypto=require(\"node:crypto\"),path=require(\"node:path\");const root=process.cwd(),out=path.join(root,\"docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011\"),base=\"/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008\",prefix=\"docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/\",stem=\"windows-prepare-observation-native-run38165950837\",manifestName=stem+\"-transport-manifest.json\",adjName=stem+\"-coordinator-adjudication.json\",names=[\"windows-prepare-observation-publication-original.log\",\"windows-prepare-observation-run-list-original.json\",stem+\"-watch-original.log\",stem+\"-final-original.json\",stem+\"-jobs-original.json\",stem+\"-artifacts-original.json\",stem+\"-full-original.log\"],hash=b=>crypto.createHash(\"sha256\").update(b).digest(\"hex\");fs.mkdirSync(path.join(out,\"evidence/originals\"),{recursive:true});const rows=[],read=(full,rel,expected)=>{const bytes=fs.readFileSync(full),r={path:rel,bytes:bytes.length,sha256:hash(bytes),expected:expected??null};if(expected)r.matches=bytes.length===expected.bytes&&r.sha256===expected.sha256;rows.push(r);return bytes;};const mb=read(path.join(base,prefix,manifestName),prefix+manifestName),manifest=JSON.parse(mb);if(manifest.entries.length!==7||manifest.entries.some((e,i)=>e.path!==prefix+names[i]))throw new Error(\"not exact seven allowlisted entries\");for(const [i,name]of names.entries()){const bytes=read(path.join(base,prefix,name),prefix+name,manifest.entries[i]);fs.writeFileSync(path.join(out,\"evidence/originals\",name),bytes,{flag:\"wx\"});}for(const name of [manifestName,adjName]){const bytes=name===manifestName?mb:read(path.join(base,prefix,name),prefix+name);fs.writeFileSync(path.join(out,\"evidence/originals\",name),bytes,{flag:\"wx\"});}const bindingsPath=\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\",bindingsBytes=read(path.join(root,bindingsPath),bindingsPath),bindings=JSON.parse(bindingsBytes);const sourcePaths=[...bindings.future_added_source_paths,bindingsPath,...bindings.frozen_runtime_sources.map(s=>s.path)].sort(),sourceRows=[];for(const rel of [...new Set([...sourcePaths,\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md\",...bindings.prior_inputs.map(s=>s.path)])]){if(!/^(docs\\/|tests\\/|src\\/|\\.github\\/|package-lock.json$)/.test(rel)||rel.includes(\"..\"))throw new Error(\"unsafe local path\");const expected=[...bindings.frozen_runtime_sources,...bindings.prior_inputs].find(e=>e.path===rel);const b=fs.readFileSync(path.join(root,rel));sourceRows.push({path:rel,bytes:b.length,sha256:hash(b),expected_sha256:expected?.sha256??null,matches_expected:expected?hash(b)===expected.sha256:null});}const full=fs.readFileSync(path.join(out,\"evidence/originals\",stem+\"-full-original.log\"),\"utf8\"),lines=full.split(\"\\n\"),p11=lines.map((s,i)=>({line:i+1,text:s})).filter(e=>e.text.includes(\"TW_P1_PREPARE_FAILURE_V1:\")),jobs=JSON.parse(fs.readFileSync(path.join(out,\"evidence/originals\",stem+\"-jobs-original.json\"))),final=JSON.parse(fs.readFileSync(path.join(out,\"evidence/originals\",stem+\"-final-original.json\"))),artifacts=JSON.parse(fs.readFileSync(path.join(out,\"evidence/originals\",stem+\"-artifacts-original.json\")));const ledger={format:\"passive-byte-ledger-v1\",source:\"712cf210b089dc71f3a6e6ed2e19e1de7fee57da\",candidate_or_fixture_execution:false,original_entries:rows,exact7_total_bytes:rows.slice(1,8).reduce((n,e)=>n+e.bytes,0),exact7_all_match:rows.slice(1,8).every(e=>e.matches),manifest_hash_matches_adjudication:hash(mb)===\"038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea\",local_source_files:sourceRows,sourceFiles_count:sourcePaths.length,bindings_actual_hash:hash(bindingsBytes),runtime_schema_patterns_as_data:Object.fromEntries(Object.entries(bindings.schemas.$defs.runtime.properties).filter(([k,v])=>v.pattern).map(([k,v])=>[k,{text:v.pattern,utf8_hex:Buffer.from(v.pattern).toString(\"hex\")}])),p11_log_records:p11,run:{id:final.id,attempt:final.run_attempt,source:final.head_sha,conclusion:final.conclusion,job:jobs.jobs[0].id,steps:jobs.jobs[0].steps.map(s=>({name:s.name,conclusion:s.conclusion})),artifacts:artifacts.total_count},limits:\"timestamped transport only; not raw Windows stderr, actual provenance/env/hashes or native acceptance\",failure_ledger:{first_error:null,attempts:1,exit_code:0,retry:false}};fs.writeFileSync(path.join(out,\"evidence/input-ledger.json\"),JSON.stringify(ledger,null,2)+\"\\n\",{flag:\"wx\"});const summary={exact7:ledger.exact7_all_match,bytes:ledger.exact7_total_bytes,manifest_sha256:hash(mb),source_files:sourcePaths.length,p11_records:p11.length,local_expected_hashes_match:sourceRows.filter(e=>e.expected_sha256).every(e=>e.matches_expected),run:ledger.run};const raw={command:[process.execPath,...process.execArgv],cwd:root,exit_code:0,complete_output:summary,first_error:null};fs.writeFileSync(path.join(out,\"evidence/passive-audit-command-output.json\"),JSON.stringify(raw,null,2)+\"\\n\",{flag:\"wx\"});console.log(JSON.stringify(summary));"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-failure-plan-20261011",
+  "exit_code": 0,
+  "complete_output": {
+    "exact7": true,
+    "bytes": 37590,
+    "manifest_sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+    "source_files": 11,
+    "p11_records": 1,
+    "local_expected_hashes_match": true,
+    "run": {
+      "id": 38165950837,
+      "attempt": 1,
+      "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+      "conclusion": "failure",
+      "job": 114548428887,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare exact-candidate provenance",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Install locked dependencies",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Synthetic checks only",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "INITIAL once",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Seal safe evidence",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Verify sealed files immediately",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": 0
+    }
+  },
+  "first_error": null
+}
