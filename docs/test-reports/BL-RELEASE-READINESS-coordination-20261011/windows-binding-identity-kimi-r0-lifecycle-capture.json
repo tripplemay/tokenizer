@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-11T17:21:20.320Z",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "role": "Coordinator passive package byte capture only",
+  "lock_has_wasm": false,
+  "entries": [
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/node_modules/@swc/core/package.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/package-lifecycle/swc-core-package-original.json",
+      "bytes": 3285,
+      "sha256": "30f810ddf7edf85604db4ea5f577fcd4b506cbeb6065e31d35629ef6b17a1f65"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/node_modules/@swc/core/postinstall.js",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/package-lifecycle/swc-core-postinstall-original.js.txt",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/node_modules/@swc/wasm/package.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/package-lifecycle/swc-wasm-package-original.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+    }
+  ],
+  "initial_capture_error": "Assumed fallback stayed in @swc/core/npm-install/node_modules/@swc/wasm; ENOENT after two successful original copies. Read captured postinstall: it moves fallback to INIT_CWD/node_modules/@swc/wasm and removes npm-install. Original two files preserved and byte-verified, third correct location captured; no source/lifecycle rerun"
+}

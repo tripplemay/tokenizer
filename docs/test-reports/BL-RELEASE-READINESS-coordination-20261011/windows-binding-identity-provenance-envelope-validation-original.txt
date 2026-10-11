@@ -1,0 +1,1 @@
+[dispatch] ✓ 信封合法（task=windows-p1-binding-identity-61cf64e-provenance-kimi-r1 batch=BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT role=evaluator）

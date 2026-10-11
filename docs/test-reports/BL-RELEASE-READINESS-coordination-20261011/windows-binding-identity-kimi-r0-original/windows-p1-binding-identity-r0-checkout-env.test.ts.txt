@@ -1,0 +1,286 @@
+import { afterAll, describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import cp from 'node:child_process';
+import vm from 'node:vm';
+import { join } from 'node:path';
+import { createHash } from 'node:crypto';
+
+// Fresh independent supporting-evaluator controls for the C002 checkout raw-byte identity successor
+// (batch BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT, F004). Offline only: no CI, no native Windows claim.
+// Pure module import doubles as the binding-identity positive (import-time hash assertions unchanged).
+import * as p1 from '../../docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+
+const SRC221 = '221f2f87d94db1656e3000662796d79621b696f5';
+const WF = '.github/workflows/windows-p1-stages-diagnostic.yml';
+const JS = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
+const MD = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
+const CLI = 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+const HASHES: Record<string, string> = {
+  [WF]: 'df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e',
+  [JS]: 'f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130',
+  [MD]: '9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb',
+  [CLI]: '6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae',
+};
+const OLD_BINDING = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';
+const OLD_MD = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';
+const SCOPE = 'C002 checkout-step-only raw-byte identity by core.autocrlf=false; C001 longpaths retained; explicit four-path projection and two CLI identity hashes only; all native contracts unchanged; fresh scope and Coordinator ruling required';
+const CONFINEMENT = 'checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation';
+const sha256 = (b: Buffer | string) => createHash('sha256').update(b).digest('hex');
+const oldBlob = (p: string) => cp.execFileSync('git', ['show', `${SRC221}:${p}`]);
+const ENV_LINES = [
+  "          GIT_CONFIG_COUNT: '2'",
+  '          GIT_CONFIG_KEY_0: core.longpaths',
+  "          GIT_CONFIG_VALUE_0: 'true'",
+  '          GIT_CONFIG_KEY_1: core.autocrlf',
+  "          GIT_CONFIG_VALUE_1: 'false'",
+];
+const FIVE = { GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true', GIT_CONFIG_KEY_1: 'core.autocrlf', GIT_CONFIG_VALUE_1: 'false' };
+const THREE = { GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true' };
+
+// Strict exact-byte scope oracle for the checkout-step env map (not a YAML parser, not a runtime validator).
+function checkoutEnvOracle(text: string): string[] {
+  const violations: string[] = [];
+  const lines = text.split('\n');
+  const checkout = lines.findIndex(l => l.trim() === '- uses: actions/checkout@v4');
+  if (checkout < 0) return ['no checkout step'];
+  const envAt = lines.findIndex((l, i) => i > checkout && l === '        env:');
+  if (envAt !== checkout + 1) violations.push('checkout env not immediately under the checkout step');
+  if (JSON.stringify(lines.slice(envAt + 1, envAt + 1 + ENV_LINES.length)) !== JSON.stringify(ENV_LINES)) violations.push('checkout env is not the exact ordered five-line map');
+  if (lines[envAt + 1 + ENV_LINES.length] !== '        with:') violations.push('env block not closed by with:');
+  if (lines.filter(l => /GIT_CONFIG/.test(l)).length !== 5) violations.push('GIT_CONFIG line count != 5 (leakage or missing)');
+  if (/GITHUB_ENV/.test(text)) violations.push('GITHUB_ENV leakage');
+  return violations;
+}
+function bindingOracle(j: any): string[] {
+  const v: string[] = [];
+  if (j.revision !== 3) v.push('revision');
+  if (j.updated_at_utc !== '2026-10-11T16:11:16Z') v.push('updated_at_utc');
+  if (j.revision_scope !== SCOPE) v.push('revision_scope');
+  if (JSON.stringify(j.workflow?.checkout_env) !== JSON.stringify(FIVE)) v.push('checkout_env');
+  if (j.workflow?.checkout_env_scope !== CONFINEMENT) v.push('checkout_env_scope');
+  return v;
+}
+
+describe('C002 real-candidate positives (exact bytes)', () => {
+  it('four projected files hash to the exact declared digests', () => {
+    for (const [p, h] of Object.entries(HASHES)) expect(sha256(fs.readFileSync(p)), p).toBe(h);
+  });
+  it('workflow equals source221 with ONLY count1->count2 plus KEY_1/VALUE_1 splice', () => {
+    const o = oldBlob(WF).toString('utf8');
+    const expected = o.replace("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '2'")
+      .replace("          GIT_CONFIG_VALUE_0: 'true'\n", "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n");
+    expect(fs.readFileSync(WF, 'utf8')).toBe(expected);
+    expect(checkoutEnvOracle(expected)).toEqual([]);
+  });
+  it('workflow keeps permissions/read-only, no secrets/retry/sparse/config-write/extra commands, sixteen uploads', () => {
+    const t = fs.readFileSync(WF, 'utf8');
+    expect(t).toContain('permissions:\n  contents: read\n');
+    for (const bad of ['git config ', 'secrets.', 'sparse-checkout', 'retry', 'GIT_CONFIG_GLOBAL', 'GIT_CONFIG_SYSTEM']) expect(t, bad).not.toContain(bad);
+    expect(t.split('path: |')[1].trim().split('\n').length).toBe(16);
+    expect((t.match(/run: /g) || []).length).toBe(6);
+  });
+  it('MD is append-only over source221 and appends exactly one section 8', () => {
+    const o = oldBlob(MD), n = fs.readFileSync(MD);
+    expect(n.subarray(0, o.length).equals(o)).toBe(true);
+    const appended = n.subarray(o.length).toString('utf8');
+    expect(appended.startsWith('\n## 8. C002 checkout raw-byte identity successor scope')).toBe(true);
+    expect((appended.match(/^## /gm) || []).length).toBe(1);
+    expect(appended).toContain('not compliance with the old C001');
+  });
+  it('CLI masking the two new 64hex literals recovers ALL source221 bytes (and reverse)', () => {
+    const o = oldBlob(CLI).toString('utf8'), n = fs.readFileSync(CLI, 'utf8');
+    expect(n.replace(HASHES[JS], OLD_BINDING).replace(HASHES[MD], OLD_MD)).toBe(o);
+    expect(o.replace(OLD_BINDING, HASHES[JS]).replace(OLD_MD, HASHES[MD])).toBe(n);
+    expect(n).not.toContain(OLD_BINDING);
+    expect(n).not.toContain(OLD_MD);
+    expect(HASHES[JS]).toBe(sha256(fs.readFileSync(JS)));
+    expect(HASHES[MD]).toBe(sha256(fs.readFileSync(MD)));
+  });
+  it('whole tree equals source221 except the four projected files and six declared report additions', () => {
+    const out = cp.execFileSync('git', ['diff', '--name-status', SRC221, 'HEAD']).toString('utf8').trim().split('\n').sort();
+    expect(out).toEqual([
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md',
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs',
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json',
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json',
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/README.md',
+      'A\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/verdict.json',
+      `M\t${WF}`, `M\t${JS}`, `M\t${MD}`, `M\t${CLI}`,
+    ].sort());
+  });
+  it('unchanged synthetic suite byte identity (7718..)', () => {
+    expect(sha256(fs.readFileSync('tests/diagnostics/windows-p1-stages.test.ts'))).toBe('7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132');
+  });
+});
+
+describe('checkout env oracle negatives (table-driven mutants of the real workflow)', () => {
+  const real = fs.readFileSync(WF, 'utf8');
+  const mutants: [string, (t: string) => string][] = [
+    ['wrong count 1 (old C001 map is not C002)', t => t.replace("GIT_CONFIG_COUNT: '2'", "GIT_CONFIG_COUNT: '1'")],
+    ['wrong count 3', t => t.replace("GIT_CONFIG_COUNT: '2'", "GIT_CONFIG_COUNT: '3'")],
+    ['non-string count', t => t.replace("GIT_CONFIG_COUNT: '2'", 'GIT_CONFIG_COUNT: 2')],
+    ['wrong VALUE_1', t => t.replace("GIT_CONFIG_VALUE_1: 'false'", "GIT_CONFIG_VALUE_1: 'true'")],
+    ['wrong VALUE_0', t => t.replace("GIT_CONFIG_VALUE_0: 'true'", "GIT_CONFIG_VALUE_0: 'false'")],
+    ['wrong KEY_1', t => t.replace('GIT_CONFIG_KEY_1: core.autocrlf', 'GIT_CONFIG_KEY_1: core.autocrlf2')],
+    ['wrong KEY_0', t => t.replace('GIT_CONFIG_KEY_0: core.longpaths', 'GIT_CONFIG_KEY_0: core.longPaths')],
+    ['swapped key order', t => t.replace('GIT_CONFIG_KEY_0: core.longpaths', 'GIT_CONFIG_KEY_0: core.autocrlf').replace('GIT_CONFIG_KEY_1: core.autocrlf', 'GIT_CONFIG_KEY_1: core.longpaths')],
+    ['missing KEY_1/VALUE_1', t => t.replace("          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n", '')],
+    ['extra KEY_2', t => t.replace('        with:', "          GIT_CONFIG_KEY_2: core.fsmonitor\n          GIT_CONFIG_VALUE_2: 'true'\n        with:")],
+    ['duplicate KEY_1', t => t.replace("          GIT_CONFIG_VALUE_1: 'false'\n", "          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n")],
+    ['workflow-scope env leakage', t => t.replace('on:\n', "env:\n  GIT_CONFIG_COUNT: '2'\non:\n")],
+    ['job-scope env leakage', t => t.replace('    steps:', "    env:\n      GIT_CONFIG_KEY_1: core.autocrlf\n    steps:")],
+    ['later-step env leakage', t => t.replace('      - name: INITIAL once', "      - name: INITIAL once\n        env:\n          GIT_CONFIG_COUNT: '2'")],
+    ['GITHUB_ENV leakage', t => t.replace('      - uses: actions/setup-node@v4', "      - run: echo GIT_CONFIG_COUNT=2 >> $GITHUB_ENV\n      - uses: actions/setup-node@v4")],
+    ['env block displaced from checkout step', t => t.replace('        env:\n', '')],
+  ];
+  for (const [name, mutate] of mutants) {
+    it(`rejects ${name}`, () => {
+      const m = mutate(real);
+      expect(m).not.toBe(real);
+      expect(checkoutEnvOracle(m).length).toBeGreaterThan(0);
+    });
+  }
+  it('rejects the old C001 three-key map as stale under C002', () => {
+    const c001 = real.replace("GIT_CONFIG_COUNT: '2'", "GIT_CONFIG_COUNT: '1'")
+      .replace("          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n", '');
+    expect(checkoutEnvOracle(c001).length).toBeGreaterThan(0);
+  });
+});
+
+describe('binding JSON oracle positives and negatives', () => {
+  const real = JSON.parse(fs.readFileSync(JS, 'utf8'));
+  it('accepts the real revision-3 bindings', () => expect(bindingOracle(real)).toEqual([]));
+  it('raw JSON names each of the five keys exactly once', () => {
+    const raw = fs.readFileSync(JS, 'utf8');
+    for (const k of Object.keys(FIVE)) expect(raw.split(`"${k}"`).length - 1, k).toBe(1);
+  });
+  const negatives: [string, (j: any) => void][] = [
+    ['stale revision 2', j => { j.revision = 2; }],
+    ['stale updated_at_utc', j => { j.updated_at_utc = '2026-10-11T14:04:39Z'; }],
+    ['old-source relabel of revision_scope', j => { j.revision_scope = 'C001 checkout-step-only long-path compatibility; explicit four-path exception and two CLI identity hashes only; B001 unchanged; fresh scope and Coordinator ruling required'; }],
+    ['old C001 three-key checkout_env relabeled revision 3', j => { j.workflow.checkout_env = { ...THREE }; }],
+    ['missing KEY_1', j => { delete j.workflow.checkout_env.GIT_CONFIG_KEY_1; delete j.workflow.checkout_env.GIT_CONFIG_VALUE_1; j.workflow.checkout_env.GIT_CONFIG_COUNT = '1'; }],
+    ['extra KEY_2', j => { j.workflow.checkout_env.GIT_CONFIG_KEY_2 = 'x'; }],
+    ['non-string VALUE_1', j => { j.workflow.checkout_env.GIT_CONFIG_VALUE_1 = false; }],
+    ['one-sided revision without scope', j => { j.revision_scope = 'C001'; }],
+    ['weakened confinement string', j => { j.workflow.checkout_env_scope = 'workflow'; }],
+  ];
+  for (const [name, mutate] of negatives) {
+    it(`rejects ${name}`, () => {
+      const j = JSON.parse(fs.readFileSync(JS, 'utf8'));
+      mutate(j);
+      expect(bindingOracle(j).length).toBeGreaterThan(0);
+    });
+  }
+  it('eleven-path provenance sourceFiles schema and frozen inputs unchanged vs source221', () => {
+    const old = JSON.parse(oldBlob(JS).toString('utf8'));
+    const strip = (o: any) => { const c = JSON.parse(JSON.stringify(o)); delete c.revision; delete c.revision_scope; delete c.updated_at_utc; delete c.workflow.checkout_env; return c; };
+    expect(strip(real)).toEqual(strip(old));
+    expect(p1.BINDINGS.schemas.$defs.provenance.properties.sourceFiles.minItems).toBe(11);
+    expect(p1.BINDINGS.schemas.$defs.provenance.properties.sourceFiles.maxItems).toBe(11);
+  });
+});
+
+describe('CLI identity negatives', () => {
+  const n = fs.readFileSync(CLI, 'utf8');
+  const o = oldBlob(CLI).toString('utf8');
+  it('rejects one-sided identity (only one literal replaced)', () => {
+    expect(n.replace(HASHES[JS], OLD_BINDING)).not.toBe(o);
+    expect(n.replace(HASHES[MD], OLD_MD)).not.toBe(o);
+  });
+  it('rejects stale literals and one extra byte', () => {
+    expect(n.includes(OLD_BINDING) || n.includes(OLD_MD)).toBe(false);
+    expect(sha256(n + 'x')).not.toBe(HASHES[CLI]);
+    expect(sha256(n.slice(0, -1))).not.toBe(HASHES[CLI]);
+  });
+  it('rejects relabel with wrong 64hex literals', () => {
+    const zero = '0'.repeat(64);
+    expect(n.replace(HASHES[JS], zero).replace(HASHES[MD], zero)).not.toBe(o);
+  });
+});
+
+describe('actual unchanged systemEnvironment (pure import of the real module)', () => {
+  it('admits declared system keys case-insensitively', () => {
+    expect(p1.BINDINGS.environment.system_keys).toEqual(['PATH', 'SystemRoot', 'WINDIR', 'ComSpec', 'PATHEXT']);
+    const base: Record<string, string | undefined> = { path: '/owned-path', SYSTEMROOT: 'C:\\Windows', ComSpec: 'C:\\Windows\\system32\\cmd.exe' };
+    expect(p1.systemEnvironment(base)).toEqual({ PATH: '/owned-path', SystemRoot: 'C:\\Windows', ComSpec: 'C:\\Windows\\system32\\cmd.exe' });
+  });
+  it('rejects ambiguous duplicate-cased keys and non-string ProcessEnv values', () => {
+    expect(() => p1.systemEnvironment({ Path: 'a', PATH: 'b' })).toThrow();
+    expect(() => p1.systemEnvironment({ PATH: undefined })).toThrow();
+  });
+  it('rejects ALL FIVE checkout keys: none pass the system filter', () => {
+    const base: Record<string, string | undefined> = { PATH: '/owned', GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true', GIT_CONFIG_KEY_1: 'core.autocrlf', GIT_CONFIG_VALUE_1: 'false' };
+    const out = p1.systemEnvironment(base);
+    expect(out).toEqual({ PATH: '/owned' });
+    for (const k of Object.keys(FIVE)) expect(Object.keys(out)).not.toContain(k);
+  });
+});
+
+describe('fixedEnvironment / guard extra-key closure (labeled static/pure/mock controls)', () => {
+  const source = fs.readFileSync(CLI, 'utf8');
+  const start = source.indexOf('function fixedEnvironment(');
+  const end = source.indexOf('export function systemEnvironment', start);
+  it('static: diagnostic child env builder carries none of the five checkout keys', () => {
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    expect(source.slice(start, end)).not.toMatch(/GIT_CONFIG_(COUNT|KEY|VALUE)/);
+  });
+  it('mock: fixedEnvironment spreads whatever system map it is given (closure lives in systemEnvironment+guard)', () => {
+    const context: any = vm.createContext({ join, guardUrl: { href: 'file:///owned/guard' }, traceUrl: 'file:///owned/trace' });
+    vm.runInContext(source.slice(start, end), context, { filename: 'fixedEnvironment-mock-slice.mjs' });
+    const env = context.fixedEnvironment({ PATH: '/p', EXTRA_KEY: 'leak' }, '/root', '/root/run', 1, 2);
+    expect(env.EXTRA_KEY).toBe('leak');
+    expect(env.HOME).toBe(join('/root', 'home'));
+    expect(env.GIT_CONFIG_NOSYSTEM).toBe('1');
+    expect(env.GIT_CONFIG_GLOBAL).toBe(join('/root', 'home', 'empty-gitconfig'));
+  });
+  it('static: guard closes over extra keys by exact key-set equality', () => {
+    expect(source).toContain('assert.deepEqual(sorted(Object.keys(env)), sorted(Object.keys(expected)));');
+  });
+});
+
+describe('owned disposable Git fixture (local transform evidence, NOT Windows observation)', () => {
+  const tmp = process.env.TMPDIR;
+  if (!tmp) throw new Error('owned TMPDIR required');
+  const root = fs.mkdtempSync(join(tmp, 'wp1cb-r0-git-'));
+  const home = join(root, 'home'), xdgtmp = join(root, 'xdg'), repoA = join(root, 'repo-a');
+  fs.mkdirSync(home, { recursive: true }); fs.mkdirSync(xdgtmp); fs.mkdirSync(repoA);
+  fs.writeFileSync(join(home, 'empty-gitconfig'), '');
+  const baseEnv: Record<string, string | undefined> = {
+    PATH: process.env.PATH, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: xdgtmp, TMPDIR: tmp,
+    GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: join(home, 'empty-gitconfig'), GIT_TERMINAL_PROMPT: '0',
+    GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t',
+  };
+  const FIVE_ENV = { GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true', GIT_CONFIG_KEY_1: 'core.autocrlf', GIT_CONFIG_VALUE_1: 'false' };
+  const git = (args: string[], env: Record<string, string | undefined> = {}) =>
+    cp.execFileSync('git', args, { cwd: repoA, env: { ...baseEnv, ...env } as any });
+  const sourceBytes = fs.readFileSync(JS);
+  afterAll(() => fs.rmSync(root, { recursive: true, force: true }));
+  it('command-scope five keys (longpaths=true autocrlf=false) preserve raw source JSON bytes', () => {
+    git(['init', '-q']);
+    fs.writeFileSync(join(repoA, 'bindings.json'), sourceBytes);
+    git(['-c', 'core.autocrlf=false', 'add', 'bindings.json']);
+    git(['-c', 'core.autocrlf=false', 'commit', '-q', '-m', 'fixture']);
+    fs.rmSync(join(repoA, 'bindings.json'));
+    git(['checkout-index', '-f', '-a'], FIVE_ENV);
+    expect(fs.readFileSync(join(repoA, 'bindings.json')).equals(sourceBytes)).toBe(true);
+  });
+  it('one-variable counterfactual: autocrlf=true produces exactly the LF->CRLF transform', () => {
+    fs.rmSync(join(repoA, 'bindings.json'));
+    git(['checkout-index', '-f', '-a'], { ...FIVE_ENV, GIT_CONFIG_VALUE_1: 'true' });
+    const out = fs.readFileSync(join(repoA, 'bindings.json'));
+    const crlf = Buffer.from(sourceBytes.toString('utf8').replace(/\n/g, '\r\n'));
+    expect(out.equals(crlf)).toBe(true);
+    expect(out.equals(sourceBytes)).toBe(false);
+    expect(sha256(out)).toBe(sha256(crlf));
+  });
+  it('sibling without the five keys shows no persistence and default LF bytes', () => {
+    fs.rmSync(join(repoA, 'bindings.json'));
+    git(['checkout-index', '-f', '-a']);
+    expect(fs.readFileSync(join(repoA, 'bindings.json')).equals(sourceBytes)).toBe(true);
+    const local = git(['config', '--local', '--list']).toString('utf8');
+    expect(local).not.toContain('autocrlf');
+    expect(local).not.toContain('longpaths');
+  });
+});

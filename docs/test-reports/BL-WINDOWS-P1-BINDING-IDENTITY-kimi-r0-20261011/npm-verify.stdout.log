@@ -1,0 +1,14 @@
+=== npm run verify start: 2026-10-11T17:05:48Z ===
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 101ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
+
+=== verify exit: 0 at 2026-10-11T17:05:53Z ===

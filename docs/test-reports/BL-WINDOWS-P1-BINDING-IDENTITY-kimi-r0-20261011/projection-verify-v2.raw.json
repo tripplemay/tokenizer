@@ -1,0 +1,39 @@
+{
+ "checks": [
+  {
+   "name": "json deep-equal after stripping four declared fields",
+   "ok": true
+  },
+  {
+   "name": "json old checkout_env was exactly C001 three-key map",
+   "ok": true
+  },
+  {
+   "name": "json new checkout_env exactly five-key map",
+   "ok": true
+  },
+  {
+   "name": "provenance sourceFiles schema holds eleven paths",
+   "ok": true,
+   "detail": "{\"type\":\"array\",\"minItems\":11,\"maxItems\":11,\"items\":{\"$ref\":\"#/$defs/sourceFile\"}}"
+  },
+  {
+   "name": "all eleven-string arrays identical old vs new",
+   "ok": true,
+   "detail": "[\"schemas.$defs.root.required\"]"
+  },
+  {
+   "name": "prior_inputs and frozen_runtime_sources unchanged",
+   "ok": true
+  },
+  {
+   "name": "native/E0/bounds/selection/caps unchanged",
+   "ok": true
+  },
+  {
+   "name": "workflow non-checkout-env fields unchanged",
+   "ok": true
+  }
+ ],
+ "fail": 0
+}

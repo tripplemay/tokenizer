@@ -1,0 +1,22 @@
+=== verify-rerun start: 2026-10-11T17:13:44Z ===
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 99ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(205,11): error TS2741: Property 'NODE_ENV' is missing in type '{ path: string; SYSTEMROOT: string; ComSpec: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(213,11): error TS2741: Property 'NODE_ENV' is missing in type '{ PATH: string; GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; GIT_CONFIG_VALUE_1: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(250,9): error TS2741: Property 'NODE_ENV' is missing in type '{ PATH: string; HOME: string; USERPROFILE: string; XDG_CONFIG_HOME: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; GIT_TERMINAL_PROMPT: string; GIT_AUTHOR_NAME: string; GIT_AUTHOR_EMAIL: string; GIT_COMMITTER_NAME: string; GIT_COMMITTER_EMAIL: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(256,32): error TS2741: Property 'NODE_ENV' is missing in type '{}' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(266,41): error TS2345: Argument of type '{ GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; GIT_CONFIG_VALUE_1: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Property 'NODE_ENV' is missing in type '{ GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; GIT_CONFIG_VALUE_1: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(271,41): error TS2345: Argument of type '{ GIT_CONFIG_VALUE_1: string; GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Property 'NODE_ENV' is missing in type '{ GIT_CONFIG_VALUE_1: string; GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; }' but required in type 'ProcessEnv'.
+=== verify-rerun exit: 2 at 2026-10-11T17:13:47Z ===

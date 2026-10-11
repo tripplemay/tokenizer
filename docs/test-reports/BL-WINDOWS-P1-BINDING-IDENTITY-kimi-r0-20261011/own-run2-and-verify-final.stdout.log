@@ -1,0 +1,20 @@
+=== own tests run2 start: 2026-10-11T17:14:20Z ===
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run2.raw.json
+=== own tests run2 exit: 0 ===
+=== verify-final start: 2026-10-11T17:14:21Z ===
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 112ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
+
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(205,11): error TS2741: Property 'NODE_ENV' is missing in type '{ path: string; SYSTEMROOT: string; ComSpec: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(213,11): error TS2741: Property 'NODE_ENV' is missing in type '{ PATH: string; GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; GIT_CONFIG_KEY_1: string; GIT_CONFIG_VALUE_1: string; }' but required in type 'ProcessEnv'.
+tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts(250,9): error TS2741: Property 'NODE_ENV' is missing in type '{ PATH: string; HOME: string; USERPROFILE: string; XDG_CONFIG_HOME: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; GIT_TERMINAL_PROMPT: string; GIT_AUTHOR_NAME: string; GIT_AUTHOR_EMAIL: string; GIT_COMMITTER_NAME: string; GIT_COMMITTER_EMAIL: string; }' but required in type 'ProcessEnv'.
+=== verify-final exit: 2 at 2026-10-11T17:14:23Z ===

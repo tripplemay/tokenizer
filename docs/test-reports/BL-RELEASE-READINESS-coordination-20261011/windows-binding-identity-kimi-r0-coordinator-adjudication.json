@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T17:19:36Z",
+  "role": "Coordinator receipt/raw evidence audit and hold, not rewritten Evaluator verdict",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "task_id": "windows-p1-binding-identity-61cf64e-kimi-r0",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 907,
+  "effective_timeout_s": 1800,
+  "descriptor_timeout_s": 2400,
+  "mechanical_state": "COMPLETED",
+  "original_verdict": "PASS; OFFLINE supporting only",
+  "original_verdict_sha256": "0c6cb5f27fb9f4af566f5ca5ea2e31b4f44a37ad6e8a41a17f2b2edb0bab3f30",
+  "raw_results": "Unchanged81/81; own48/48 in each of three test runs; final verify0. Two earlier own-test ProcessEnv typing failures retained, own-test-only annotation fixes; no failed behavioral test rerun to green",
+  "controls_boundary": "Exact byte/static/pure/mock controls, not YAML parser/runtime contract enforcement. Owned ephemeral Git fixture assertions are recorded in full test/runtime/raw JSON, not separate raw per-Git-call outputs; fixture removed by own afterAll. No native/Windows conclusion",
+  "transport": {
+    "manifest": "windows-binding-identity-kimi-r0-transport-manifest.json",
+    "originals": 37,
+    "bytes": 723482,
+    "manifest_sha256": "48401429a3075868fd8afb76df57d7b60ac22e156c4d57c9ee62548786614d80",
+    "separate_package_lifecycle_capture": "windows-binding-identity-kimi-r0-lifecycle-capture.json",
+    "own_test": "Inert .ts.txt, not executable parent test integration",
+    "full_runtime_and_all_npm_debug_preserved": true
+  },
+  "process_observations": {
+    "tool_counts": "Bash35 Read8 Glob1 Grep7, no native Write/Edit; authored test/verdict and two typing fixes through absolute apply_patch",
+    "partial_delivery": "No early PARTIAL artifact; final at907s safely before1800s cap",
+    "npm": "One actual npmci0; seven-high warning remains; no agent manual extra install or auditfix",
+    "scope": "Tracked content diff empty, HEAD exact61; no source/state/original mutation",
+    "root_lookup_errors": "Absent local-cli.sh lookup and overly broad *log* filename inventory caused a failed/truncated read only, not execution or candidate defect; fallback capture path mistake retained in lifecycle capture"
+  },
+  "material_report_conflict": {
+    "original_claim": "No lock-absent installs were needed; no SWC/wasm fallback observed",
+    "contradicting_evidence": "Owned npm-debug 2026-10-11T17_04_21_017Z-debug-0.log records package-owned npm install @swc/wasm@1.16.13, registry GET200, exit0, cwd @swc/core/npm-install; installed wasm package captured at top-level and absent original lock",
+    "original_report_changed": false,
+    "gate": "HOLD pending independent different-family evidence-only supplemental adjudication. Do not adopt incorrect no-fallback/all-lock-only or native-install claim",
+    "behavioral_results_overridden": false
+  },
+  "supplemental_commission": {
+    "authorized": true,
+    "task_id": "windows-p1-binding-identity-61cf64e-provenance-kimi-r1",
+    "scope": "Fresh Kimi independent passive original-evidence audit only. Append new immutable verdict; no test/install rerun, no modifying r0 conclusion, no replacing original81/48 acceptance with narration",
+    "maximum_deadline_s": 900,
+    "separately_adjudicated_followup_slots_consumed": 1,
+    "further_C002_redispatch_or_family_fallback_authorized": false
+  },
+  "source_publication_or_native_run_authorized": false,
+  "main_push_or_production_mutation": false,
+  "source_integrated_into_parent_runtime": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "Deferred by user",
+  "release_ready": false
+}

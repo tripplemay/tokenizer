@@ -1,0 +1,17 @@
+=== own tests run3: 2026-10-11T17:14:49Z ===
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run3.raw.json
+=== own tests run3 exit: 0 ===
+=== verify-final2: 2026-10-11T17:14:50Z ===
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 106ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+=== verify-final2 exit: 0 at 2026-10-11T17:14:52Z ===

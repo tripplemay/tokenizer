@@ -1,0 +1,121 @@
+{
+ "checks": [
+  {
+   "name": "workflow sha256",
+   "ok": true,
+   "detail": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+  },
+  {
+   "name": "json sha256",
+   "ok": true,
+   "detail": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+  },
+  {
+   "name": "md sha256",
+   "ok": true,
+   "detail": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+  },
+  {
+   "name": "cli sha256",
+   "ok": true,
+   "detail": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+  },
+  {
+   "name": "old synthetic test sha256 unchanged",
+   "ok": true
+  },
+  {
+   "name": "workflow == old with ONLY count1->2 + KEY_1/VALUE_1 splice",
+   "ok": true
+  },
+  {
+   "name": "workflow five exact strings",
+   "ok": true,
+   "detail": "\"env:\\n          GIT_CONFIG_COUNT: '2'\\n          GIT_CONFIG_KEY_0: core.longpaths\\n          GIT_CONFIG_VALUE_0: 'true'\\n          GIT_CONFIG_KEY_1: core.autocrlf\\n          GIT_CONFIG_VALUE_1: 'false'\\n\""
+  },
+  {
+   "name": "workflow count of GIT_CONFIG_KEY_ occurrences == 2",
+   "ok": true
+  },
+  {
+   "name": "workflow no GITHUB_ENV",
+   "ok": true
+  },
+  {
+   "name": "workflow GIT_CONFIG only inside checkout env block",
+   "ok": true
+  },
+  {
+   "name": "json changed fields exactly the four declared",
+   "ok": false,
+   "detail": "[\"revision\",\"revision_scope\",\"updated_at_utc\",\"workflow.checkout_env (keys)\"]"
+  },
+  {
+   "name": "json revision 2->3",
+   "ok": true
+  },
+  {
+   "name": "json updated_at_utc exact",
+   "ok": true
+  },
+  {
+   "name": "json revision_scope exact C002 string",
+   "ok": true
+  },
+  {
+   "name": "json checkout_env exact five-key map",
+   "ok": true
+  },
+  {
+   "name": "json checkout_env_scope unchanged",
+   "ok": true
+  },
+  {
+   "name": "json eleven sourceFiles unchanged",
+   "ok": false,
+   "detail": "count=0"
+  },
+  {
+   "name": "md old bytes are exact prefix of new (append-only)",
+   "ok": true
+  },
+  {
+   "name": "md appended starts with section8 header",
+   "ok": true,
+   "detail": "\"\\n## 8. C002 checkout raw-byte identity successor scope (proposed 2026-10-11 UTC)\""
+  },
+  {
+   "name": "md appended mentions supersede only C001 count1/three-key",
+   "ok": true
+  },
+  {
+   "name": "md appended declares five keys checkout-step only",
+   "ok": true
+  },
+  {
+   "name": "cli new contains both new literals",
+   "ok": true
+  },
+  {
+   "name": "cli masking new literals with old recovers ALL source221 bytes",
+   "ok": true
+  },
+  {
+   "name": "cli old literals absent from new",
+   "ok": true
+  },
+  {
+   "name": "cli exactly two literal diffs (reverse direction)",
+   "ok": true
+  },
+  {
+   "name": "cli new literals are exactly 64hex",
+   "ok": true
+  },
+  {
+   "name": "cli new literals equal actual file hashes",
+   "ok": true
+  }
+ ],
+ "fail": 2
+}

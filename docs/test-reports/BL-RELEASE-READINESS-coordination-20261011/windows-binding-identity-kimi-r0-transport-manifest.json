@@ -1,0 +1,317 @@
+{
+  "observed_at": "2026-10-11T17:18:50.011Z",
+  "role": "Coordinator exact byte transport and raw metadata audit only",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "count": 37,
+  "total_bytes": 723482,
+  "entries": [
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-ci.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-ci.stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-ci.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-ci.stdout.log",
+      "bytes": 370,
+      "sha256": "4ab33c3d911cb82219d72037df082751b0fa1773089d94db32eda774b82ba059",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify-rerun.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify-rerun.stderr.log",
+      "bytes": 868,
+      "sha256": "65ed862b7d81f7e78d0d7d99b1340f614f25a8022688a4f3b3508589a6121cc7",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify-rerun.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify-rerun.stdout.log",
+      "bytes": 2701,
+      "sha256": "7411ac4a64255379e5b7059efcd5296bd5b8cff454557250bbeb6f4b1e60710e",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/npm-verify.stdout.log",
+      "bytes": 490,
+      "sha256": "55f4a525b054ae70a03eb747b9047cad008476a7596772fda4547a7c38714187",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.raw.json",
+      "bytes": 31132,
+      "sha256": "a3189589137f5897a17e0e9fadd6503a7ea0e3ebcb4abf59400467be7b12a548",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/original81.stdout.log",
+      "bytes": 387,
+      "sha256": "f324341af4d0d901725983d1a74ad6792d4e1f7267afea09f538c852bcc8ef69",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run2-and-verify-final.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run2-and-verify-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run2-and-verify-final.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run2-and-verify-final.stdout.log",
+      "bytes": 1863,
+      "sha256": "24bfde88325a12ba69709624d013e9c57ccb8959bb44ca982467511ced7d4407",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run3-and-verify-final2.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run3-and-verify-final2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run3-and-verify-final2.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-run3-and-verify-final2.stdout.log",
+      "bytes": 871,
+      "sha256": "c58eabe32c4d08ebc5874528c14956dd5504486fba78bfc1fd72c52abaea1c90",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.raw.json",
+      "bytes": 17675,
+      "sha256": "931c57bfc6037c98eb58e67ff1041c1eb4f9c975ff0919cb3014465a121f519e",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.stdout.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run1.stdout.log",
+      "bytes": 399,
+      "sha256": "73b7668300e91bec6435303e67fef14022b3717a6f7f63160ba86c614e5fab5b",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run2.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run2.raw.json",
+      "bytes": 17679,
+      "sha256": "10aa8546b0d9c68026e47af447cd81365cc47c757b4ed74a595f8353ad3a6426",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run3.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/own-tests-run3.raw.json",
+      "bytes": 17659,
+      "sha256": "6848eb8896425cac5c424a805316c567d9b2260df5099ed4f547a5fea58afbff",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify-v2.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify-v2.raw.json",
+      "bytes": 869,
+      "sha256": "2becd5f9a10c2fcce03bcc2856799472216f7e39251c0c39162ebd76c96e2a1f",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify.raw.json",
+      "bytes": 2803,
+      "sha256": "f338f8c6e2b0f8685ebadfc3296bbc2cb4de64e56cff00fa0a4c81ddb2961a57",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify.stderr.log",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-kimi-r0-20261011/projection-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-verdict.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-verdict.json",
+      "bytes": 6174,
+      "sha256": "0c6cb5f27fb9f4af566f5ca5ea2e31b4f44a37ad6e8a41a17f2b2edb0bab3f30",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/windows-p1-binding-identity-r0-checkout-env.test.ts.txt",
+      "bytes": 18713,
+      "sha256": "84c0671bfb2869c706e64e3814bfc52023d9c8b0385b091928fd74838b103db0",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/run-windows-p1-binding-identity-61cf64e-kimi-r0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/runtime-original.log",
+      "bytes": 178271,
+      "sha256": "78496f41a770b367104b4cc72ef17a7b48121eec277d6b7c4bf3003e23dc7b85",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-dispatch-state-20261011/run-meta-windows-p1-binding-identity-61cf64e-kimi-r0.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/run-meta-original.json",
+      "bytes": 1538,
+      "sha256": "182b3de9b47c9396a59c061df8dda8e90a421d041223fe07a3bc46182dbfc640",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_03_07_814Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_03_07_814Z-debug-0.log",
+      "bytes": 410874,
+      "sha256": "011428ba8cf45cef90f9347871992117948f505b79167842ee535cf0273d8539",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_04_21_017Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_04_21_017Z-debug-0.log",
+      "bytes": 2323,
+      "sha256": "e788123d473b318e556133d3b8614b12fba62fefe19f6176d75c4b6499fe3a8b",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_05_48_278Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_05_48_278Z-debug-0.log",
+      "bytes": 1277,
+      "sha256": "7d73079277d4f4d42dbed9e4177a80994a3be51806f2f45546480b82ece92cc9",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_13_44_957Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_13_44_957Z-debug-0.log",
+      "bytes": 1284,
+      "sha256": "b5a16074064c5ff1899c7fabe964ed68de6a594986009b85e2c686ba92ae047a",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_14_21_300Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_14_21_300Z-debug-0.log",
+      "bytes": 1284,
+      "sha256": "3f13c0b1be3b7e69cc41353b3e9ea43132bc64e0ed0a18a000c384ee9c419630",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_14_50_162Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/npm-debug/2026-10-11T17_14_50_162Z-debug-0.log",
+      "bytes": 1277,
+      "sha256": "08052c09c66a4e68497a4c906972dc753cddfaf81ee79111a80c8e18e3db032e",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-binding-identity-support-l_413b3c048ec5/session_2fdb3168-0385-4777-9389-c7556ce77d46/agents/main/tasks/bash-88fhhuen/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/task-output/bash-88fhhuen-output-original.log",
+      "bytes": 33,
+      "sha256": "158c267f0633a45ce247fe0c01d6176787d523d81988475423a2b4fc93cd8b2f",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-binding-identity-support-l_413b3c048ec5/session_2fdb3168-0385-4777-9389-c7556ce77d46/agents/main/tasks/bash-8rhsph60/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/task-output/bash-8rhsph60-output-original.log",
+      "bytes": 26,
+      "sha256": "6bce271e97c2a600cbb65ab19ae50ed2b397297e6a1de9a18fbb8d0de08c1525",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-binding-identity-support-l_413b3c048ec5/session_2fdb3168-0385-4777-9389-c7556ce77d46/agents/main/tasks/bash-v7irp54m/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-original/task-output/bash-v7irp54m-output-original.log",
+      "bytes": 22,
+      "sha256": "392ff59c9370d32eac55e5d5f3d7b2dc8e80310e7f63866e30eb2274ef47d6ba",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-returned-receipt-original.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-returned-receipt-original.json",
+      "bytes": 1479,
+      "sha256": "d16a86258cffffe8eef98ba3bf2b065df46d9a8c7a081af20de9468f9b8bc179",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-launch-original.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-launch-original.log",
+      "bytes": 1131,
+      "sha256": "3160c8d12963df3ce51db6dc3921e70553db07496132f36441afb05ea826f669",
+      "byte_equal": true
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-validation-original.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-kimi-r0-validation-original.txt",
+      "bytes": 1515,
+      "sha256": "e5a70e9ec91e3f911f935934fa4c5121c6ea40d5f0a208df0e6a8182ff9d774b",
+      "byte_equal": true
+    }
+  ],
+  "tools": {
+    "Bash": 35,
+    "Read": 8,
+    "Glob": 1,
+    "Grep": 7
+  },
+  "patch_paths": [
+    "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts",
+    "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts",
+    "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/tests/evaluator/windows-p1-binding-identity-r0-checkout-env.test.ts",
+    "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-verdict.json"
+  ],
+  "tests": [
+    {
+      "name": "original81.raw.json",
+      "total": 81,
+      "passed": 81,
+      "failed": 0,
+      "pending": 0,
+      "success": true
+    },
+    {
+      "name": "own-tests-run1.raw.json",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "pending": 0,
+      "success": true
+    },
+    {
+      "name": "own-tests-run2.raw.json",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "pending": 0,
+      "success": true
+    },
+    {
+      "name": "own-tests-run3.raw.json",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "pending": 0,
+      "success": true
+    }
+  ],
+  "tracked_diff": "",
+  "evaluator_head": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "claim_conflict": "Original verdict says no SWC/wasm fallback observed/no lock-absent installs needed; owned npm debug proves package-owned @swc/wasm@1.16.13 install exit0 in @swc/core/npm-install. Original verdict is immutable, supplemental adjudication required"
+}

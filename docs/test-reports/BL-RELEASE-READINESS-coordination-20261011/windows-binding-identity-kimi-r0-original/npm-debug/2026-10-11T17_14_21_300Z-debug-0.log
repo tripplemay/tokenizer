@@ -1,0 +1,18 @@
+0 verbose cli /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/npm
+1 info using npm@10.9.4
+2 info using node@v22.22.0
+3 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0/.npmrc
+5 silly config load:file:/Volumes/ORICO/project/.wp1cbe-r0-20261011/.npmrc
+6 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/etc/npmrc
+7 verbose title npm run verify
+8 verbose argv "run" "verify"
+9 verbose logfile logs-max:10 dir:/Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_14_21_300Z-
+10 verbose logfile /Volumes/ORICO/project/.wp1cbe-r0-20261011/npm-cache/_logs/2026-10-11T17_14_21_300Z-debug-0.log
+11 silly logfile done cleaning log files
+12 verbose cwd /Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-kimi-r0
+13 verbose os Darwin 25.6.0
+14 verbose node v22.22.0
+15 verbose npm  v10.9.4
+16 verbose exit 2
+17 verbose code 2
