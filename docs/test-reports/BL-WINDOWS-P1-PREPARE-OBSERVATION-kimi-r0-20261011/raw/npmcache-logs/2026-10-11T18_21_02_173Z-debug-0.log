@@ -1,0 +1,18 @@
+0 verbose cli /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node /Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@10.9.4
+2 info using node@v22.22.0
+3 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0/.npmrc
+5 silly config load:file:/Volumes/ORICO/project/.wp1poe-r0-20261011/.npmrc
+6 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/etc/npmrc
+7 verbose title npm exec vitest run tests/diagnostics/windows-p1-stages.test.ts --reporter=verbose
+8 verbose argv "exec" "--" "vitest" "run" "tests/diagnostics/windows-p1-stages.test.ts" "--reporter=verbose"
+9 verbose logfile logs-max:10 dir:/Volumes/ORICO/project/.wp1poe-r0-20261011/npmcache/_logs/2026-10-11T18_21_02_173Z-
+10 verbose logfile /Volumes/ORICO/project/.wp1poe-r0-20261011/npmcache/_logs/2026-10-11T18_21_02_173Z-debug-0.log
+11 silly logfile done cleaning log files
+12 verbose cwd /Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0
+13 verbose os Darwin 25.6.0
+14 verbose node v22.22.0
+15 verbose npm  v10.9.4
+16 verbose exit 0
+17 info ok

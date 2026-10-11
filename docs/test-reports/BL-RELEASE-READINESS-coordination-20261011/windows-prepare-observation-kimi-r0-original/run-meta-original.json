@@ -1,0 +1,27 @@
+{
+  "task_id": "windows-p1-prepare-observation-712cf21-kimi-r0",
+  "agent_id": "local-cli--kimi--evaluator",
+  "adapter": "kimi",
+  "model_family": "kimi",
+  "role": "evaluator",
+  "deliverable": {
+    "artifact": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-verdict.json",
+    "schema": ".claude/autonomous/verdict-artifact.schema.json",
+    "commit_to": null
+  },
+  "batch": "BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT",
+  "ref": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0",
+  "artifact": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0/docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-verdict.json",
+  "log": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/run-windows-p1-prepare-observation-712cf21-kimi-r0.log",
+  "envelope_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-evaluation-envelope-r0.json",
+  "outcome": "RETURNED",
+  "exit_code": 0,
+  "duration_s": 1294,
+  "effective_timeout_s": 1800,
+  "descriptor_timeout_s": 2400,
+  "termination_reason": "process_exit",
+  "transport": "local-cli",
+  "usage": null,
+  "usage_capture": "attribution_only"
+}

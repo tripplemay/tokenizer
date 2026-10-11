@@ -1,0 +1,49 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0
+
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > static-byte-controls-vs-baseline61 > pins candidate and baseline sha256 identities 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > static-byte-controls-vs-baseline61 > accepts the pinned candidate with zero violations across all static controls 3ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > static-byte-controls-vs-baseline61 > fixes byte math: 13x29-byte lines, 51-byte generic, 80-byte terminal maximum 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P01: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P02: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P03: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P04: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 2ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P05: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P06: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P07: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P08: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P09: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P10: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P11: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 3ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P12: forced synthetic throw emits generic+exact fixed line, max 80 bytes, exit 1, no leak 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-prepare-failure-phases > P10 proves both source read passes retained: second pass fails after first succeeded 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-success-and-other-modes > success: full call order, zero added bytes, phase reset to null, exit code untouched 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-success-and-other-modes > non-prepare modes (--run/--seal/unknown): original generic only, no observation line 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-success-and-other-modes > probe failure mode: original stdout JSON only, no stderr observation 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-success-and-other-modes > import/guard path: dispatch never entered, state stays inactive, zero output 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > invalid/unassigned state "P99" maps only to fixed P00 (unknown) 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > invalid/unassigned state "" maps only to fixed P00 (unknown) 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > invalid/unassigned state "p00" maps only to fixed P00 (unknown) 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > invalid/unassigned state "P1" maps only to fixed P00 (unknown) 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > invalid/unassigned state "P00 " maps only to fixed P00 (unknown) 0ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > actual-source-slice-VM-unknown-and-invalid-state > valid P00 state emits the P00 line exactly once 2ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: reordered phases 2ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: phase after operation 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: 28-byte literal 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: CRLF literal 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: real CR byte 2ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: duplicate catch line 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: extra P13 phase 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: dynamic catch content 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: missing success reset 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: P00 outside prepare branch 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: removed second source pass 2ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: changed identity literal 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: altered generic message 1ms
+ ✓ tests/evaluator/windows-p1-prepare-observation-r0-prepare-phase.test.ts > negative-mutant-controls-must-be-rejected > rejects: widened stdout output 1ms
+
+ Test Files  1 passed (1)
+      Tests  40 passed (40)
+   Start at  01:33:14
+   Duration  161ms (transform 28ms, setup 0ms, import 59ms, tests 40ms, environment 0ms)
+

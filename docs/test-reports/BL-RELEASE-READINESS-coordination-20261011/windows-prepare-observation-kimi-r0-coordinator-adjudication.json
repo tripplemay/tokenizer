@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T18:40:08Z",
+  "role": "Coordinator mechanical artifact audit and bounded supplementary commission, not functional self-evaluation",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "receipt": {
+    "task": "windows-p1-prepare-observation-712cf21-kimi-r0",
+    "exit_code": 0,
+    "duration_s": 1294,
+    "effective_timeout_s": 1800,
+    "descriptor_timeout_s": 2400,
+    "termination_reason": "process_exit",
+    "mechanical_validation_exit_code": 0,
+    "original_verdict": "PASS, OFFLINE supporting only",
+    "original_verdict_sha256": "e44448af82c920711e24283924ce7ca837b75ffb2dae1659532260b5e264c8de"
+  },
+  "transport": {
+    "files": 39,
+    "bytes": 1026146,
+    "manifest_sha256": "576962d123289e4297174e775579ed8d564a27f03ce14e660217c52e6538ec5e",
+    "scope": "All25 original report/raw files, immutable verdict, inert own test, full runtime/durable metadata, two original author scripts/probe, four installed lifecycle/lock originals, receipt/launch/validation",
+    "originals_not_rewritten": true
+  },
+  "retained_functional_evidence_claims": "Unchanged81, own40 actual-source-slice VM/static controls first and sole own run, verify before/after exit0; only mock/offline supporting evidence, no native/formal acceptance",
+  "publication_gate": "HOLD pending fresh evidence/scope supplement, not automatic rejection or acceptance of the original PASS",
+  "gaps_and_deviations_not_softened": [
+    "Evaluator explicitly proves whitespace-stripped baseline restoration, not required entire byte equality. Fresh same-family post-scope proves exact raw restoration separately, but different-family requirement remains incomplete",
+    "All six owned npm debug originals match archived bytes. 18_19_59_609Z proves package-owned npm install --no-save @swc/wasm@1.16.13 in own @swc/core/npm-install, registry tarball GET200 and exit0. Installed wasm1.16.13 is absent original lock. Original report avoids a false no-fallback claim but does not explicitly identify this fallback or capture lifecycle package/version references; four originals are now captured separately without executing them",
+    "Runtime Bash12/Bash13 manually authored two analyst scripts via cat redirection in own HOME, contrary to apply_patch-only instructions. Bash22 added an apply_patch probe in own HOME outside authored report/test/verdict paths. These originals are retained, not retrospectively authorized; own test/README/verdict used absolute apply_patch, no native Write/Edit calls",
+    "Initial static JSON false checks and pre-run own-test syntax/literal-check corrections remain in full runtime and both original static scripts/results. The sole behavioral40 run was green; this does not erase initial author mistakes",
+    "README provisional timeline note was authored in final report, not a separately persisted provisional PARTIAL at900s. Final receipt1294s is within1500/1800; claimed relative timeline is approximate, not authoritative"
+  ],
+  "sole_fresh_supplement": {
+    "authorized": true,
+    "task": "windows-p1-prepare-observation-712cf21-evidence-kimi-r1",
+    "target": "local-cli--kimi--evaluator",
+    "family": "kimi",
+    "deadline_s": 900,
+    "scope": "Independent passive raw-evidence/provenance audit and byte-exact permitted-slot reconstruction with own read-only analyst transform; no target imports/VM/tests/install or new functional acceptance",
+    "obligations": "Distinguish supported40/81 evidence from static coverage gaps, prove whole remaining bytes without whitespace normalization, explicitly disclose SWC fallback/lock absence and author/timeline deviations, judge narrow diagnostic-publication evidence sufficiency without granting publication",
+    "no_more_attempts": "This consumes the sole supplementary/redispatch opportunity for new observation source712. No third attempt, family fallback, deadline extension or source61 retry"
+  },
+  "coordinator_operational_error_ledger": [
+    {"tool_chunk":"f8a3b5","exit_code":2,"error":"rg report directory absent during active task; not an evaluation failure, no file altered"},
+    {"tool_chunk":"2069d7","exit_code":2,"error":"rg included nonexistent dispatch-local.sh; corrected to actual sandbox-profile.sh, no file altered"}
+  ],
+  "CI_main_production_or_state_transition_authorized": false,
+  "prepare_root_cause": "Still unknown",
+  "source_runtime_integrated_into_parent": false,
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred; no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}

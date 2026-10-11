@@ -1,0 +1,69 @@
+{
+ "literal_bytes": [
+  [
+   "P00",
+   29
+  ],
+  [
+   "P01",
+   29
+  ],
+  [
+   "P02",
+   29
+  ],
+  [
+   "P03",
+   29
+  ],
+  [
+   "P04",
+   29
+  ],
+  [
+   "P05",
+   29
+  ],
+  [
+   "P06",
+   29
+  ],
+  [
+   "P07",
+   29
+  ],
+  [
+   "P08",
+   29
+  ],
+  [
+   "P09",
+   29
+  ],
+  [
+   "P10",
+   29
+  ],
+  [
+   "P11",
+   29
+  ],
+  [
+   "P12",
+   29
+  ]
+ ],
+ "all_29": true,
+ "map_has_exactly_13": false,
+ "generic_bytes": 51,
+ "catch_max": 80,
+ "block_removal": "ok",
+ "recovered_equals_baseline_ws_stripped": false,
+ "leftover_prepareFailure_refs": 1,
+ "identity_literals_equal": true,
+ "identity_literal_count_cur": 2,
+ "crlf_in_new_regions": false,
+ "cur_bytes": 74301,
+ "base_bytes": 73022,
+ "delta_bytes": 1279
+}

@@ -1,0 +1,1 @@
+[dispatch] ✓ 信封合法（task=windows-p1-prepare-observation-712cf21-evidence-kimi-r1 batch=BL-WINDOWS-P1-PREPARE-OBSERVATION-EVIDENCE-SUPPORT role=evaluator）

@@ -1,0 +1,8 @@
+[dispatch] ✓ 信封合法（task=windows-p1-prepare-observation-712cf21-kimi-r0 batch=BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT role=evaluator）
+[dispatch] ✓ CLI integration 注册表合法（15 个角色能力）
+[dispatch-run] transport=local-cli → 本机沙箱
+[dispatch] ✓ 信封合法（task=windows-p1-prepare-observation-712cf21-kimi-r0 batch=BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT role=evaluator）
+[sandbox] worktree: /Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0 @ 712cf210b089
+[sandbox] 专用 HOME: /Users/yixingzhou/.harness-sandbox/kimi（已确认无 shell 初始化文件）
+[sandbox] outcome=RETURNED exit=0 1294s · log=/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/run-windows-p1-prepare-observation-712cf21-kimi-r0.log
+[sandbox] 取证后清理：git worktree remove --force '/Volumes/ORICO/project/.worktrees/tokenizer-wp1po-evaluation-20261011/BL-WINDOWS-P1-PREPARE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-prepare-observation-712cf21-kimi-r0'
