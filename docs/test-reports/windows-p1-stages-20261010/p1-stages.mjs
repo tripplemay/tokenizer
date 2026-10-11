@@ -12,9 +12,9 @@ import { evidenceEvent as baselineEvent, safeCode, rootMetadata } from '../windo
 const self = fileURLToPath(new URL('./p1-stages.mjs', import.meta.url));
 const repo = resolve(dirname(self), '../../..');
 const bindingPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
-const bindingHash = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';
+const bindingHash = 'f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130';
 const mdPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
-const mdHash = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';
+const mdHash = '9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb';
 export const sha256 = value => createHash('sha256').update(value).digest('hex');
 const bindingBytes = fs.readFileSync(join(repo, bindingPath));
 assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');
