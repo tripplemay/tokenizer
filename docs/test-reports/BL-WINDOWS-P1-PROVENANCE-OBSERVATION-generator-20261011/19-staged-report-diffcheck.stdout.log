@@ -1,0 +1,6 @@
+docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/05-npm-verify.raw.log:12: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/05-npm-verify.stdout.log:12: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@prisma/client/scripts/postinstall.js:301: trailing whitespace.
++  npm_config_argv` is not officially documented so here are our research notes 
+docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/core/index.js:362: trailing whitespace.
++        return bindings.transformFileSync(path, 

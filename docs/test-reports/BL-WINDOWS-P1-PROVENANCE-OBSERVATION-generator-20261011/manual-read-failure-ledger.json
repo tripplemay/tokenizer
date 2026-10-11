@@ -1,0 +1,28 @@
+{
+  "format": "manual-read-initial-failure-ledger-v1",
+  "source": "Exact tool call command/output/status from the original first invocations; not a rerun or a saved shell raw log",
+  "failures": [
+    {
+      "command": "rg --files docs/test-reports | rg 'provenance-observation|p1-stages-20261010/(proposal|.*scope)|windows-p1.*scope'",
+      "chunk_id": "f5ffe3",
+      "status": 1,
+      "output": "",
+      "cause": "Search pattern did not match tracked capitalized PROVENANCE-FAILURE proposal paths; followed with git ls-files"
+    },
+    {
+      "command": "rg --files -uuu docs/test-reports | rg 'provenance-observation|p1-stages-20261010/(proposal|.*scope)'",
+      "chunk_id": "8761e7",
+      "status": 1,
+      "output": "",
+      "cause": "Same unmatched lowercase pattern; no candidate execution or file mutation"
+    }
+  ],
+  "first_subsequent_saved_command_error": "03-static-audit.stderr.log and 03-static-audit.result.json preserve the original TypeError; static-audit-failed-original.mjs preserves the actual failed script before one corrected passive audit",
+  "second_saved_report_error": "12-capture-install.stderr.log/result.json and capture-install-failed-original.mjs preserve ENOENT at guessed temporary wasm location; own package postinstall proves the move to root node_modules and temporary cleanup; correction does not reinstall or recreate absent temporary files",
+  "original_raw_blankline_failure": "15-raw-blankline-diffcheck exit3 retains exact new blank line at EOF output for 05-npm-verify.stdout.log; original raw logs are not trimmed",
+  "staged_report_diffcheck": "19-staged-report-diffcheck exit2 preserves two verify raw/stdout new blank line at EOF findings and original package-owned Prisma postinstall/SWC index trailing whitespace; original artifact bytes remain unchanged",
+  "report_assembly_path_error": "20-final-integrity exit1 preserves MODULE_NOT_FOUND: the manual absolute patch initially placed verify-handoff.mjs at own worktree root, outside the report namespace. It was immediately moved with absolute apply_patch into the allowed report namespace; no root path was staged or committed and no source/state file changed. This transient report-scope mistake is disclosed, not hidden.",
+  "candidate_diagnostic_failures": [],
+  "install_retries": 0,
+  "source712_reruns": 0
+}

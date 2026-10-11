@@ -1,0 +1,524 @@
+{
+  "format": "owned-single-npmci-install-evidence-v1",
+  "node": "v22.22.0",
+  "npm_ci_once": true,
+  "npm_ci_status": 0,
+  "home": "/Volumes/ORICO/project/.wp1provog-20261011",
+  "npmcache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+  "cache_logs_copied": 3,
+  "high_severity_reported": 7,
+  "audit_fix_or_retry_or_manual_extra_install": false,
+  "swc_package_owned_registry_fallback": true,
+  "core_version": "1.16.13",
+  "wasm_version": "1.16.13",
+  "fallback_invocation": "npm install --no-save --loglevel error --prefer-offline --no-audit --progress false @swc/wasm@1.16.13",
+  "fallback_owned_cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/core/npm-install",
+  "wasm_absent_from_root_lock": true,
+  "installed_lock_wasm_present": false,
+  "removed_temporary_install_files": "The package-owned postinstall renames @swc/wasm to root node_modules, then recursively deletes npm-install. Absent temporary files are explicitly recorded, not recreated.",
+  "root_lock_unchanged": true,
+  "root_lock_sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+  "originals": [
+    {
+      "source": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache/_logs/2026-10-11T19_25_57_863Z-debug-0.log",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/npm-debug/2026-10-11T19_25_57_863Z-debug-0.log",
+      "bytes": 386185,
+      "sha256": "96a460c3dcc38cf22b3f4836f2ab0bcfd70b310589e8f8fad565bf899b2be182"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache/_logs/2026-10-11T19_27_10_850Z-debug-0.log",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/npm-debug/2026-10-11T19_27_10_850Z-debug-0.log",
+      "bytes": 2161,
+      "sha256": "c90b5b2abe3ca9489ec4da61a0af48a4ac192917cc600a29ce6d7ad649a9573a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache/_logs/2026-10-11T19_27_51_357Z-debug-0.log",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/npm-debug/2026-10-11T19_27_51_357Z-debug-0.log",
+      "bytes": 1115,
+      "sha256": "0849cb55de7572eae71219e7115a9aaef8a816b1f14109d92d2edd3dc0766b4a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/package.json",
+      "bytes": 2113,
+      "sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/package-lock.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/.package-lock.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/.package-lock.json",
+      "bytes": 336103,
+      "sha256": "0dca40c5127a35ed48d716b950033f013531c4ff6ec0509ebdbd926d69885a15"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/core/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/core/package.json",
+      "bytes": 3285,
+      "sha256": "30f810ddf7edf85604db4ea5f577fcd4b506cbeb6065e31d35629ef6b17a1f65"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/core/index.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/core/index.js",
+      "bytes": 19067,
+      "sha256": "613bbdb22f2f18799afe935656ecec6654362809f1df91d08b83b2afc684696f"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/core/binding.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/core/binding.js",
+      "bytes": 9462,
+      "sha256": "46163ee878019eb5ddb6d6783d925b6fedaa1f9dbd3c587b96dee3e5631cc72c"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/core/postinstall.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/core/postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@swc/wasm/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@swc/wasm/package.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@prisma/client/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@prisma/client/package.json",
+      "bytes": 8156,
+      "sha256": "2efa3f7c0f05cf2bd4b681b71dd0e7a197006a3c29f2acdb5f88d5e7bc9bb2e3"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@prisma/client/scripts/postinstall.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@prisma/client/scripts/postinstall.js",
+      "bytes": 13100,
+      "sha256": "d74f4d6b63eb274012518b87504b47e0be2e13d946527723770009ccb29dd804"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@prisma/engines/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@prisma/engines/package.json",
+      "bytes": 1088,
+      "sha256": "eaa81442c1a545b8fb22720a6b50fb4d7e354608590ef0c9384f18755fdfc465"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@prisma/engines/scripts/postinstall.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/@prisma/engines/scripts/postinstall.js",
+      "bytes": 1092,
+      "sha256": "c4219fdab06232498675a5372968a9eed209696a1a825c88ccc4f247a922f1b0"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/prisma/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/prisma/package.json",
+      "bytes": 3520,
+      "sha256": "01c1aa746e5b0aebf01b38ec1aaffaebc098bacfe93b2f413fd4112de9251ae3"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/prisma/scripts/preinstall-entry.js",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/prisma/scripts/preinstall-entry.js",
+      "bytes": 144,
+      "sha256": "d6385b9abaee148d114260990efb85507429831b8e57ad7610d7afed08831dda"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/better-sqlite3/package.json",
+      "archived": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules/better-sqlite3/package.json",
+      "bytes": 1436,
+      "sha256": "d1db58a099dfdef5d10253e873e358eb1e9e2ebb01fa6ef0d40150e37cef6317"
+    }
+  ],
+  "absent": [
+    "node_modules/@swc/core/npm-install/package.json",
+    "node_modules/@swc/core/npm-install/package-lock.json",
+    "node_modules/@swc/core/npm-install/node_modules/.package-lock.json",
+    "node_modules/@swc/core/npm-install/node_modules/@swc/wasm/package.json"
+  ],
+  "wasmFiles": [
+    {
+      "path": "node_modules/@swc/wasm/LICENSE",
+      "bytes": 10836,
+      "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91"
+    },
+    {
+      "path": "node_modules/@swc/wasm/package.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+    },
+    {
+      "path": "node_modules/@swc/wasm/wasm.d.ts",
+      "bytes": 63719,
+      "sha256": "b1de197bf9dc08cd7cc9d62606c82fd6bda13023861001b320b7143e074620f7"
+    },
+    {
+      "path": "node_modules/@swc/wasm/wasm.js",
+      "bytes": 22820,
+      "sha256": "f6226f999d7e34f8e14f31fba9b7a983b8f7e5f699b4802c8f66104b96d7d0cf"
+    },
+    {
+      "path": "node_modules/@swc/wasm/wasm_bg.wasm",
+      "bytes": 18159975,
+      "sha256": "9f73ceb7776dcd5d6f67676daf1fe58ff08c365147e2b05c179942296ea2bad7"
+    }
+  ],
+  "links": [
+    {
+      "path": "node_modules/.bin/acorn",
+      "target": "../acorn/bin/acorn",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/acorn/bin/acorn",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/autoprefixer",
+      "target": "../autoprefixer/bin/autoprefixer",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/autoprefixer/bin/autoprefixer",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/baseline-browser-mapping",
+      "target": "../baseline-browser-mapping/dist/cli.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/baseline-browser-mapping/dist/cli.cjs",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/browserslist",
+      "target": "../browserslist/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/browserslist/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/cssesc",
+      "target": "../cssesc/bin/cssesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/cssesc/bin/cssesc",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/esbuild",
+      "target": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/esbuild/bin/esbuild",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/eslint",
+      "target": "../eslint/bin/eslint.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/eslint/bin/eslint.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/jiti",
+      "target": "../jiti/bin/jiti.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/jiti/bin/jiti.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/js-yaml",
+      "target": "../js-yaml/bin/js-yaml.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/js-yaml/bin/js-yaml.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/jsesc",
+      "target": "../jsesc/bin/jsesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/jsesc/bin/jsesc",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/json5",
+      "target": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/json5/lib/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/loose-envify",
+      "target": "../loose-envify/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/loose-envify/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/nanoid",
+      "target": "../nanoid/bin/nanoid.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/nanoid/bin/nanoid.cjs",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/napi-postinstall",
+      "target": "../napi-postinstall/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/napi-postinstall/lib/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/next",
+      "target": "../next/dist/bin/next",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/next/dist/bin/next",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/node-which",
+      "target": "../which/bin/node-which",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/which/bin/node-which",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/parser",
+      "target": "../@babel/parser/bin/babel-parser.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@babel/parser/bin/babel-parser.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/playwright",
+      "target": "../@playwright/test/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@playwright/test/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/playwright-core",
+      "target": "../playwright-core/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/playwright-core/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/prebuild-install",
+      "target": "../prebuild-install/bin.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/prebuild-install/bin.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/prisma",
+      "target": "../prisma/build/index.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/prisma/build/index.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/rc",
+      "target": "../rc/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/rc/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/resolve",
+      "target": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/resolve/bin/resolve",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/rollup",
+      "target": "../rollup/dist/bin/rollup",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/rollup/dist/bin/rollup",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/sucrase",
+      "target": "../sucrase/bin/sucrase",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/sucrase/bin/sucrase",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/sucrase-node",
+      "target": "../sucrase/bin/sucrase-node",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/sucrase/bin/sucrase-node",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/tailwind",
+      "target": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/tailwindcss/lib/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/tailwindcss",
+      "target": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/tailwindcss/lib/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/tsc",
+      "target": "../typescript/bin/tsc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/typescript/bin/tsc",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/tsserver",
+      "target": "../typescript/bin/tsserver",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/typescript/bin/tsserver",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/tsx",
+      "target": "../tsx/dist/cli.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/tsx/dist/cli.mjs",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/update-browserslist-db",
+      "target": "../update-browserslist-db/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/update-browserslist-db/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/vite",
+      "target": "../vite/bin/vite.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/vite/bin/vite.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/vitest",
+      "target": "../vitest/vitest.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/vitest/vitest.mjs",
+      "owned": true
+    },
+    {
+      "path": "node_modules/.bin/why-is-node-running",
+      "target": "../why-is-node-running/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/why-is-node-running/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/json5",
+      "target": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@babel/core/node_modules/json5/lib/cli.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@babel/core/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/@babel/helper-compilation-targets/node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/@babel/helper-compilation-targets/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/.bin/resolve",
+      "target": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/babel-plugin-macros/node_modules/resolve/bin/resolve",
+      "owned": true
+    },
+    {
+      "path": "node_modules/braces",
+      "target": "../vendor/braces",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/vendor/braces",
+      "owned": true
+    },
+    {
+      "path": "node_modules/eslint-plugin-import/node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/eslint-plugin-import/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/eslint-plugin-react/node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/eslint-plugin-react/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/node-exports-info/node_modules/.bin/semver",
+      "target": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/node-exports-info/node_modules/semver/bin/semver.js",
+      "owned": true
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/.bin/resolve",
+      "target": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/postcss-import/node_modules/resolve/bin/resolve",
+      "owned": true
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/.bin/resolve",
+      "target": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/tailwindcss/node_modules/resolve/bin/resolve",
+      "owned": true
+    },
+    {
+      "path": "node_modules/vite/node_modules/.bin/esbuild",
+      "target": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/node_modules/vite/node_modules/esbuild/bin/esbuild",
+      "owned": true
+    }
+  ],
+  "vendor": [
+    {
+      "path": "vendor/braces/LICENSE",
+      "bytes": 1091,
+      "sha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/PATCH-MANIFEST.json",
+      "bytes": 2920,
+      "sha256": "490c19b12fd2d250839d3f3cb6f978da9c3716fd72afea7cab162c001467b098",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/README.md",
+      "bytes": 21505,
+      "sha256": "947b0fc3cc12eaaa070207126213fbdf9ab2bf8cd13dcc6e4007b36b79309866",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/TOKENIZER-BACKPORT.md",
+      "bytes": 2680,
+      "sha256": "3dec07468060c1720c5e181d74a0d82bfa4744536ed8d54e0be1d1822acd97c3",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/index.js",
+      "bytes": 4380,
+      "sha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/compile.js",
+      "bytes": 1569,
+      "sha256": "4cbe77e7c8524e8f9e22da0d18fe74de5bb27fe79df65d86091de68e1cb8bc5a",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/constants.js",
+      "bytes": 1611,
+      "sha256": "8d0bfdb50bb1e5267facef720ba09179634761165e3d6e13ad512ed10d6c180c",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/expand.js",
+      "bytes": 2865,
+      "sha256": "52b24562f623cb001cf4ffbba19634ab18dc1f12731004fbe54b2bf848090031",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/parse.js",
+      "bytes": 7009,
+      "sha256": "7efb28a66017d64eb8f5e294912a419cfb256a0b6a62fce8c2a138c36d9116cb",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/stringify.js",
+      "bytes": 779,
+      "sha256": "ed9e51c800917eadf765ad2813341b3971725ccc9311abb597e5a603c2543c18",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/lib/utils.js",
+      "bytes": 2795,
+      "sha256": "bee434526678796192f57fc13b2c7547c9ae69b21b200ac1dccf8eccc3e16623",
+      "baseline_equal": true
+    },
+    {
+      "path": "vendor/braces/package.json",
+      "bytes": 1509,
+      "sha256": "50c1f7dbca9fd2a3ef90239ac5a22177cb9aa48807e5efbbaafd609f7f372f05",
+      "baseline_equal": true
+    }
+  ],
+  "lifecycle_not_native_P1_execution": true,
+  "development_only": true
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator exact-source fresh passive actual-diff commission, not acceptance",
+  "baseline": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "source": "62d419b2a419b685542efaaf047b8a749839d493",
+  "source_parent": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+  "CLI_path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+  "CLI_sha256": "411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1",
+  "CLI_bytes": 77285,
+  "Generator_report": "Pending original handoff, development claims are not acceptance",
+  "fresh_actual_diff_critic": {
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-post-scope-20261011",
+    "branch": "docs/windows-p1-provenance-observation-post-scope-20261011",
+    "authorized": true,
+    "scope": "One-path S1-S6 actual diff and source712 whole-byte/mode freeze, no execution. Exact prepare/P11-qualified all observer writes, V02/V03/V04 preservation, P12 isolation, original call/count/order/arguments/short-circuit/return/catch-null semantics and two sourceFiles passes, oldP00-P12, generic/exit,18 literal4-byte lines/new84 notold80, all native/binding/workflow/test/schema/env caps frozen",
+    "result": "PASS_SCOPE_ONLY or BLOCKED with exact findings, not implementation/publication/CI/native/functional authority",
+    "only_authored_paths": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-post-scope-20261011/",
+    "no_execution": "No target imports/VM/tests/fixtures/probe/native/install/network/state writes; own read-only inline byte/hash/git string analysis only, no existing analyst script execution",
+    "manual_files_absolute_apply_patch_only": true
+  },
+  "different_family_supporting_gate": "Still required after original Generator handoff and scope result",
+  "new_source_CI_or_publication_authorized": false,
+  "source712_rerun_or_further_Kimi_source712_dispatch": false,
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "main_production_or_state_transition": false,
+  "release_ready": false
+}

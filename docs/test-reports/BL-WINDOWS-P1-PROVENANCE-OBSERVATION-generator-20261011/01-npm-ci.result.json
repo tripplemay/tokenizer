@@ -1,0 +1,25 @@
+{
+  "id": "01-npm-ci",
+  "command": "npm",
+  "args": [
+    "ci",
+    "--registry=https://registry.npmjs.org"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+  "env": {
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+    "npm_config_registry": "https://registry.npmjs.org",
+    "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+    "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+  },
+  "started": "2026-10-11T19:25:57.786Z",
+  "ended": "2026-10-11T19:27:26.868Z",
+  "status": 0,
+  "signal": null
+}

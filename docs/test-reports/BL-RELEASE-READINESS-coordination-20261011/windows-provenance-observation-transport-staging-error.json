@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator exact original-artifact staging error ledger, not an acceptance failure",
+  "tool_chunk": "03b1c4",
+  "exit_code": 1,
+  "attempt": "Ordinary git add of the exact non-.log manifest paths before log-only exact force-add and commit",
+  "original_stdout_stderr": "The following paths are ignored by one of your .gitignore files:\ndocs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/install-originals/node_modules\nhint: Use -f if you really want to add them.\nhint: Disable this message with \"git config set advice.addIgnoredFile false\"\n",
+  "cause": "Captured package originals live in a nested node_modules evidence namespace ignored regardless of non-.log extension; the earlier .log-only staging split was insufficient",
+  "correction": "Use git check-ignore --no-index on exact original manifest paths, add only explicit nonignored paths ordinarily and exact ignored original paths with add -f. Preserve byte/hash/path originals, no blanket force-add, no dependency/source integration, no amend/push",
+  "first_attempt_did_not_commit": true,
+  "correction_first_author_error": {
+    "tool_chunk": "922ad3",
+    "exit_code": 1,
+    "command": "git -c core.fileMode=false check-ignore --no-index -z -- followed by exact133 intended paths",
+    "original_git_stderr": "fatal: -z only makes sense with --stdin\n",
+    "original_node_error": "Error: fatal: -z only makes sense with --stdin",
+    "node_version": "v25.7.0; Coordinator byte transport only, no target/product execution",
+    "correction": "Use --stdin -z and NUL-framed exact path input; first failed query made no add/commit/source change"
+  },
+  "exact_expanded_paths_source": "windows-provenance-observation-generator-and-postscope-transport-manifest.json plus the six explicit commission/envelope paths in tool03b1c4",
+  "release_ready": false
+}

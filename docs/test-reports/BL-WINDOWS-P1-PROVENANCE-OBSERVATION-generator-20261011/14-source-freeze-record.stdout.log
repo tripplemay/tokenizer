@@ -1,0 +1,10 @@
+commit 62d419b2a419b685542efaaf047b8a749839d493
+Author:     Codex <codex@local.invalid>
+AuthorDate: Mon Oct 12 02:28:33 2026 +0700
+Commit:     Codex <codex@local.invalid>
+CommitDate: Mon Oct 12 02:28:33 2026 +0700
+
+    feat: bounded P11 provenance observation under independent 84-byte contract
+
+ .../windows-p1-stages-20261010/p1-stages.mjs       | 60 +++++++++++++++++++---
+ 1 file changed, 53 insertions(+), 7 deletions(-)

@@ -1,0 +1,30 @@
+{
+  "id": "19-staged-report-diffcheck",
+  "command": "git",
+  "args": [
+    "-c",
+    "core.fileMode=false",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+  "env": {
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+    "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+    "npm_config_registry": "https://registry.npmjs.org",
+    "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+    "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+  },
+  "started": "2026-10-11T19:32:41.593Z",
+  "ended": "2026-10-11T19:32:41.609Z",
+  "status": 2,
+  "signal": null
+}

@@ -1,0 +1,583 @@
+[
+  {
+    "id": "02-node-check",
+    "command": "node",
+    "args": [
+      "--check",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:26:16.537Z",
+    "ended": "2026-10-11T19:26:16.563Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "01-npm-ci",
+    "command": "npm",
+    "args": [
+      "ci",
+      "--registry=https://registry.npmjs.org"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:25:57.786Z",
+    "ended": "2026-10-11T19:27:26.868Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "03-static-audit",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/static-audit.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:27:34.409Z",
+    "ended": "2026-10-11T19:27:34.457Z",
+    "status": 1,
+    "signal": null
+  },
+  {
+    "id": "04-original-81-tests",
+    "command": "node",
+    "args": [
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "tests/diagnostics/windows-p1-stages.test.ts",
+      "--reporter=default",
+      "--reporter=json",
+      "--outputFile=docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/original-81-tests.json"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:27:50.152Z",
+    "ended": "2026-10-11T19:27:51.655Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "05-npm-verify",
+    "command": "npm",
+    "args": [
+      "run",
+      "verify"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:27:51.304Z",
+    "ended": "2026-10-11T19:27:56.494Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "06-static-audit-corrected",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/static-audit.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:08.355Z",
+    "ended": "2026-10-11T19:28:09.192Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "07-normal-pure-import",
+    "command": "node",
+    "args": [
+      "--input-type=module",
+      "-e",
+      "await import('./docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs');"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:09.219Z",
+    "ended": "2026-10-11T19:28:09.244Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "08-final-node-check",
+    "command": "node",
+    "args": [
+      "--check",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:09.294Z",
+    "ended": "2026-10-11T19:28:09.313Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "09-source-diff-check",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "diff",
+      "--check",
+      "--",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:33.279Z",
+    "ended": "2026-10-11T19:28:33.293Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "10-source-add",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "add",
+      "-f",
+      "--",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:33.348Z",
+    "ended": "2026-10-11T19:28:33.363Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "11-source-commit",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "-c",
+      "user.name=Codex",
+      "-c",
+      "user.email=codex@local.invalid",
+      "commit",
+      "--only",
+      "-m",
+      "feat: bounded P11 provenance observation under independent 84-byte contract",
+      "--",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:28:33.412Z",
+    "ended": "2026-10-11T19:28:33.457Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "12-capture-install",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/capture-install.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:29:38.361Z",
+    "ended": "2026-10-11T19:29:38.754Z",
+    "status": 1,
+    "signal": null
+  },
+  {
+    "id": "13-capture-install-corrected",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/capture-install.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:30:07.414Z",
+    "ended": "2026-10-11T19:30:07.732Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "14-source-freeze-record",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "show",
+      "--format=fuller",
+      "--stat",
+      "HEAD"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:30:07.759Z",
+    "ended": "2026-10-11T19:30:07.772Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "15-raw-blankline-diffcheck",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "diff",
+      "--no-index",
+      "--check",
+      "--",
+      "/dev/null",
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/05-npm-verify.stdout.log"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:31:43.346Z",
+    "ended": "2026-10-11T19:31:43.360Z",
+    "status": 3,
+    "signal": null
+  },
+  {
+    "id": "16-source-frozen-paths",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "diff-tree",
+      "--no-commit-id",
+      "--name-status",
+      "-r",
+      "62d419b2a419b685542efaaf047b8a749839d493"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:32:19.300Z",
+    "ended": "2026-10-11T19:32:19.313Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "17-source-clean-status",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "status",
+      "--porcelain",
+      "--untracked-files=all",
+      "--",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "package.json",
+      "package-lock.json",
+      "vendor",
+      "tests",
+      "progress.json",
+      "features.json",
+      ".auto-memory",
+      ".agents-registry.json",
+      "framework",
+      "harness-rules.md"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:32:19.364Z",
+    "ended": "2026-10-11T19:32:19.379Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "18-report-add",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "add",
+      "-f",
+      "--",
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:32:41.496Z",
+    "ended": "2026-10-11T19:32:41.543Z",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "id": "19-staged-report-diffcheck",
+    "command": "git",
+    "args": [
+      "-c",
+      "core.fileMode=false",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:32:41.593Z",
+    "ended": "2026-10-11T19:32:41.609Z",
+    "status": 2,
+    "signal": null
+  },
+  {
+    "id": "20-final-integrity",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/verify-handoff.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:33:32.938Z",
+    "ended": "2026-10-11T19:33:32.959Z",
+    "status": 1,
+    "signal": null
+  },
+  {
+    "id": "21-final-integrity-corrected",
+    "command": "node",
+    "args": [
+      "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-generator-20261011/verify-handoff.mjs"
+    ],
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "env": {
+      "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+      "HOME": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "USERPROFILE": "/Volumes/ORICO/project/.wp1provog-20261011",
+      "TMPDIR": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "TEMP": "/Volumes/ORICO/project/.wp1provog-20261011/tmp",
+      "npm_config_cache": "/Volumes/ORICO/project/.wp1provog-20261011/npmcache",
+      "npm_config_registry": "https://registry.npmjs.org",
+      "npm_config_userconfig": "/Volumes/ORICO/project/.wp1provog-20261011/.npmrc",
+      "npm_config_globalconfig": "/Volumes/ORICO/project/.wp1provog-20261011/empty-global-npmrc"
+    },
+    "started": "2026-10-11T19:34:02.574Z",
+    "ended": "2026-10-11T19:34:02.665Z",
+    "status": 0,
+    "signal": null
+  }
+]

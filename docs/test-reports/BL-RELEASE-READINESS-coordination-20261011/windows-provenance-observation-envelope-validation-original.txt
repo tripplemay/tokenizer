@@ -1,0 +1,1 @@
+[dispatch] ✓ 信封合法（task=windows-p1-provenance-observation-62d419b-kimi-r0 batch=BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT role=evaluator）

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T19:38:36Z",
+  "role": "Coordinator immutable byte transport/mechanical gates and fresh different-family commission, not functional self-evaluation",
+  "source": "62d419b2a419b685542efaaf047b8a749839d493",
+  "runtime_baseline": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "source_sha256": "411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1",
+  "source_bytes": 77285,
+  "new84_contract": "Explicit new independent PREPARE_P11_REASON_V1_84, not old80 compliance; unchanged generic51/P11line29 plus one fixedV00-V17line4 only exactprepareP11 terminal failure, no other behavior/guard/budget relaxation",
+  "generator": {
+    "report_commit": "285c40a863f8079092a2c9c701d1a67489714896",
+    "original_files": 123,
+    "original_bytes": 1608556,
+    "payload_files": 121,
+    "payload_bytes": 1573604,
+    "manifest_sha256": "d8b97b6912d66af91cf23482633307fbf4b0aeabc5f654a16e7995d08fcf3ba6",
+    "claims_not_acceptance": "One own fresh npmci0, unchanged81/verify/syntax/pureimport0;3owneddebug/18installedoriginals/47internalownlinks; package-owned wasm1.16.13 fallback and lockabsence/seven-high explicitly retained",
+    "author_failures": "Initial report-script TypeError/ENOENT and wrong-root report-script MODULE_NOT_FOUND full originals/status retained; transient own-root report script removed via absolute patch before staging, no source/state/parent writes. Raw log/package whitespace failures kept without trimming or all-green claim"
+  },
+  "fresh_actual_diff_scope": {
+    "report_commit": "0f7df1442d4b2ea5ad307e2d39ba2b43436d63fd",
+    "result": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "12dc4bc26baa1376dc712af6353c678c3ea0eda012f65b97d0ee1db7e5bd623f",
+    "readme_sha256": "65dd4e17fea521a79d15c63d88c20f7f985af5f10a21e613154cd5152a054bc3",
+    "original_files": 3,
+    "original_bytes": 78054,
+    "limits": "Static exact18-slot byte restoration/2495paths rawmode freeze and20/3/7 original validation, no execution/functionality; initial read-only count assertion error retained"
+  },
+  "transport": {
+    "original_files": 126,
+    "bytes": 1686610,
+    "manifest_sha256": "5ffc881632d85b640a4e9477a26818bab04d2fe4f948b4e677429401bbad9249",
+    "raw_equals_source_report_commits_and_destination": true,
+    "no_runtime_source_integrated_into_parent": true
+  },
+  "fresh_offline_supporting_evaluator": {
+    "authorized": true,
+    "task": "windows-p1-provenance-observation-62d419b-kimi-r0",
+    "target": "local-cli--kimi--evaluator",
+    "family": "kimi",
+    "envelope": "windows-provenance-observation-evaluation-envelope-r0.json",
+    "execution_provenance_sha256": "bf87fcda2da33def23c799ddf0d0c9a9626ef8ca7889a95fbe4d19313a1fb410",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "effective_deadline_s": 1800,
+    "descriptor_timeout_s": 2400,
+    "scope": "New exact-source actual-slice fullystubbed observation controls/original81/verify and byteexact freeze only, fresh owned single install/provenance. All original errors retained. No old evaluator tests/results reused",
+    "restrictions": "Absolute apply_patch all authored files including analyst scripts, no HOMEprobe/cat edit/NativeWriteEdit; actual target/diagnostic/native/network-production/keys prohibited",
+    "redispatch": "None authorized now; at most one separately adjudicated if necessary, never automatic/no family fallback or cap extension"
+  },
+  "new_source_CI_or_publication_authorized": false,
+  "source712_rerun_or_further_Kimi_source712_dispatch": false,
+  "main_production_or_state_transition": false,
+  "prepare_root_cause": "P11 interval only, no unique predicate or native acceptance",
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}
