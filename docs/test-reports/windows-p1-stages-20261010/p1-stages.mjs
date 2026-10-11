@@ -554,7 +554,8 @@ export function evaluateCase({ variant, probe, root, health, guard, trace, launc
     native, root: safeRoot, health: safeHealth, prefix_protocol_valid: stage.valid,
     native_completed: closure.valid && native.outcome === 'completed' && markerComplete,
     diagnostic_observation_complete: complete, releaseReady: false, releaseAcceptance: false };
-  if (!closure.valid || !identityOK || !processIdentity || !stage.stream || stage.stream.state === 'unknown') {
+  if (!closure.valid || !identityOK || !processIdentity || !stage.stream || stage.stream.state === 'unknown' ||
+    !stage.stream.stdoutEofObserved || !stage.stream.stderrEofObserved || !stage.stream.eofObserved) {
     if (record.health) {
       if (!closure.valid || !identityOK || !processIdentity) record.health.provenanceUnknown = true;
       record.health.cleanupUnknown = true; record.health.rootRetained = true;
@@ -807,13 +808,13 @@ async function runRoot(c, root, env, caseDeadline, totalDeadline) {
     child.on('error', finish); child.on('close', finish);
   });
 }
-async function runCase(c, runRoot, deadline, system) {
-  const counter = join(runRoot, 'counter.jsonl');
+async function runCase(c, runDirectory, deadline, system) {
+  const counter = join(runDirectory, 'counter.jsonl');
   let before;
   try { before = counterState(readOwned(counter, BOUNDS.counter_bytes)); }
   catch { return unknownCase(c.variant, 'budget-admission-denied'); }
   if (!caseAdmission({ now: Date.now(), deadline, usedTotal: before.total, usedSmoke: before.smoke })) return skippedCase(c.variant, 'budget-admission-denied');
-  const root = join(runRoot, c.caseId); original.mkdirSync(root);
+  const root = join(runDirectory, c.caseId); original.mkdirSync(root);
   for (const dir of ['home', 'tmp', 'appdata', 'localappdata', 'guard-health', 'trace-health']) original.mkdirSync(join(root, dir));
   for (const file of ['guard.jsonl', 'trace.jsonl', 'home/empty-gitconfig']) original.writeFileSync(join(root, file), '', { flag: 'wx' });
   const latest = counterState(readOwned(counter, BOUNDS.counter_bytes));
@@ -821,13 +822,17 @@ async function runCase(c, runRoot, deadline, system) {
     original.rmSync(root, { recursive: true }); return skippedCase(c.variant, 'budget-admission-denied');
   }
   const caseDeadline = Math.min(Date.now() + BOUNDS.case_ms, deadline - BOUNDS.cleanup_ms);
-  const env = fixedEnvironment(system, root, runRoot, caseDeadline, deadline);
+  const env = fixedEnvironment(system, root, runDirectory, caseDeadline, deadline);
   original.writeFileSync(join(scratch, c.variant + '.started'), '', { flag: 'wx' });
   const ownedStarted = performance.now();
   const result = await runRoot(c, root, env, caseDeadline, deadline);
   const guard = readRows(join(root, 'guard.jsonl'), 'guard'), trace = readRows(join(root, 'trace.jsonl'), 'trace');
   const processes = expectedProcesses(guard.rows, trace.rows, result.root?.pid);
-  const sample = () => processes.observed.filter(p => { try { process.kill(p, 0); return true; } catch { return false; } });
+  let samplingUnknown = false;
+  const sample = () => processes.observed.filter(p => {
+    try { process.kill(p, 0); return true; }
+    catch (error) { if (error?.code !== 'ESRCH') samplingUnknown = true; return false; }
+  });
   const liveAtReturn = sample();
   if (liveAtReturn.length) await new Promise(done => setTimeout(done, Math.max(0, Math.min(
     BOUNDS.case_ms + BOUNDS.cleanup_ms - (performance.now() - ownedStarted), Math.min(caseDeadline + BOUNDS.cleanup_ms, deadline) - Date.now()))));
@@ -836,7 +841,7 @@ async function runCase(c, runRoot, deadline, system) {
   const aborts = sorted([...guard.rows.filter(e => e.event === 'diagnostic-budget-abort').map(e => e.reason),
     ...(result.root?.stopped ? [result.root.stopReason] : []), ...(result.root?.status === 92 ? ['owned-lifetime-expired'] : [])]);
   const provenanceUnknown = guard.invalid || trace.invalid || !guard.rows.length || !trace.rows.length || processes.unknown || !gh.complete || !th.complete;
-  const cleanupUnknown = Boolean(provenanceUnknown || liveAfter.length || !result.root || result.root.metadataUnknown || result.root.stopped || result.root.status === null || aborts.length);
+  const cleanupUnknown = Boolean(samplingUnknown || provenanceUnknown || liveAfter.length || !result.root || result.root.metadataUnknown || result.root.stopped || result.root.status === null || aborts.length);
   const health = { expectedPids: processes.expected, guardComplete: gh.complete, traceComplete: th.complete,
     guardInvalid: guard.invalid || gh.invalid, traceInvalid: trace.invalid || th.invalid, diagnosticAbortReasons: aborts,
     provenanceUnknown, cleanupUnknown, possibleLiveAtReturn: liveAtReturn, possibleLiveAfterOwnedCap: liveAfter,
@@ -941,7 +946,7 @@ export function validateSequence(records) {
   }
   return true;
 }
-function loadCaseEvidence(base, variant, absentUnknown = false) {
+function loadScratchCaseEvidence(base, variant, absentUnknown = false) {
   const path = join(base, variant + '.case.json');
   let record;
   try { original.lstatSync(path); record = readJson(path, 'caseRecord'); }
@@ -968,11 +973,23 @@ function loadCaseEvidence(base, variant, absentUnknown = false) {
   }
   return { record, guard, trace };
 }
+function loadSealedCaseEvidence(base, variant) {
+  const record = readJson(join(base, variant + '.case.json'), 'caseRecord');
+  const streams = {};
+  for (const family of ['guard', 'trace']) {
+    const bytes = readOwned(join(base, variant + '.' + family + '.jsonl'), BOUNDS.guard_bytes);
+    const stream = parseRows(bytes, family);
+    assert(!stream.invalid && bytes.equals(Buffer.from(stream.text)), 'public stream must be actual canonical bytes');
+    if (record.decision === 'skipped') assert.equal(bytes.length, 0, 'skipped public stream must be actual empty bytes');
+    streams[family] = stream;
+  }
+  return { record, ...streams };
+}
 function seal() {
   assertWindowsRunner(); validateBindings();
   const provenance = readJson(join(scratch, 'provenance.json'), 'provenance'), checks = readChecks();
   assert(validateProvenance(provenance, sourceFiles(), checkoutSha()));
-  const evidence = CASES.map(c => loadCaseEvidence(scratch, c.variant, true));
+  const evidence = CASES.map(c => loadScratchCaseEvidence(scratch, c.variant, true));
   let counterPath = join(scratch, 'run-root/counter.jsonl');
   try { original.lstatSync(counterPath); }
   catch (error) { if (error?.code !== 'ENOENT') throw error; counterPath = join(scratch, 'counter.jsonl'); }
@@ -1020,7 +1037,7 @@ export function verifySealedDirectory(directory, files, executionSha) {
     const bytes = readOwned(join(directory, entry.path), entry.path.endsWith('.jsonl') ? BOUNDS.guard_bytes : BINDINGS.output.json_max_bytes);
     assert(entry.bytes === bytes.length && entry.sha256 === sha256(bytes), 'sealed digest');
   }
-  const evidence = CASES.map(c => loadCaseEvidence(directory, c.variant));
+  const evidence = CASES.map(c => loadSealedCaseEvidence(directory, c.variant));
   assert(evidence.every(e => !e.guard.invalid && !e.trace.invalid), 'public streams must be canonical');
   const records = evidence.map(e => e.record), known = summary.totalNativeLaunches !== null;
   for (const e of evidence) assert(validateCaseRecord(e.record, e.guard.rows, e.trace.rows, known));

@@ -4,6 +4,8 @@ import cp from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
 import * as p1 from '../../docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
 
 type Row = Record<string, any>;
@@ -72,6 +74,46 @@ const io = () => Object.fromEntries(['mkdirSync', 'rmdirSync', 'lstatSync', 'fst
   'writeSync', 'writeFileSync', 'closeSync', 'appendFileSync', 'realpathSync', 'readdirSync', 'rmSync'].map(k => [k, (fs as any)[k].bind(fs)]));
 const admitted = () => ({ event: 'powershell-admission', kind: 'smoke' });
 
+async function actualCaseWithMocks(f: any, errorFor: (pid: number, sample: number) => unknown) {
+  const output = directory(), runDirectory = join(output, 'run-root');
+  fs.mkdirSync(runDirectory); fs.writeFileSync(join(runDirectory, 'counter.jsonl'), '');
+  const c = p1.CASES.find(c => c.variant === f.variant)!;
+  const source = fs.readFileSync(join(repo, 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs'), 'utf8');
+  const start = source.indexOf('async function runCase('), end = source.indexOf('function retainedRoots(', start);
+  const processesStart = source.indexOf('function expectedProcesses('), processesEnd = source.indexOf('async function runRoot(', processesStart);
+  expect(start).toBeGreaterThanOrEqual(0); expect(end).toBeGreaterThan(start);
+  expect(processesStart).toBeGreaterThanOrEqual(0); expect(processesEnd).toBeGreaterThan(processesStart);
+  const query = vi.fn((pid: number, signal: number) => {
+    expect(signal).toBe(0);
+    const error = errorFor(pid, Math.floor((query.mock.calls.length - 1) / 3));
+    if (error) throw error;
+    return true;
+  });
+  const remove = vi.fn(fs.rmSync.bind(fs));
+  const launch = vi.fn(async (_case: any, root: string) => {
+    fs.writeFileSync(join(root, 'guard.jsonl'), jsonl(f.guard)); fs.writeFileSync(join(root, 'trace.jsonl'), jsonl(f.trace));
+    fs.appendFileSync(join(runDirectory, 'counter.jsonl'), jsonl([admitted()]));
+    return { root: f.root, probe: f.probe };
+  });
+  const environment = vi.fn((_system: Row, _root: string, _runDirectory: string, _caseDeadline: number, _deadline: number) => ({}));
+  // Dependencies are injected only in the test VM; the actual runCase body is evaluated without transformation.
+  const context = vm.createContext({ join, assert, Date: { now: () => 1 }, Math, Boolean, performance: { now: () => 0 },
+    setTimeout: (done: () => void) => done(), BOUNDS: p1.BOUNDS, scratch: output,
+    original: { ...io(), rmSync: remove }, process: { kill: query }, runRoot: launch, fixedEnvironment: environment,
+    pid: (p: number) => Number.isSafeInteger(p) && p > 0 && p <= 0xffffffff,
+    readOwned: (path: string, cap: number) => { const bytes = fs.readFileSync(path); assert(bytes.length <= cap); return bytes; },
+    readRows: (path: string, family: string) => p1.parseRows(fs.readFileSync(path), family,
+      family === 'counter' ? p1.BOUNDS.counter_bytes : p1.BOUNDS.guard_bytes),
+    healthStates: () => ({ complete: true, invalid: false }), sorted: (values: string[]) => [...new Set(values)].sort(),
+    counterState: p1.counterState, caseAdmission: p1.caseAdmission, evaluateCase: p1.evaluateCase,
+    unknownCase: p1.unknownCase, skippedCase: p1.skippedCase,
+    writeText: (path: string, text: string) => fs.writeFileSync(path, text) });
+  vm.runInContext(source.slice(processesStart, processesEnd) + source.slice(start, end), context,
+    { filename: 'unchanged-actual-runCase-test-vm.mjs' });
+  const record = await context.runCase(c, runDirectory, 600001, {});
+  return { record, query, launch, remove, environment, root: join(runDirectory, c.caseId), output, runDirectory };
+}
+
 describe('all-token-chunk-splits-and-LF-CRLF', () => {
   it('accepts every split of every complete fixed sequence and byte-at-a-time coalescing', () => {
     for (const c of p1.CASES) for (const newline of ['\n', '\r\n']) {
@@ -132,6 +174,15 @@ describe('missing-EOF-event-health-or-stream-error', () => {
     ]) {
       const f = fixture('T1', 'timeout', 0); mutate(f);
       const r = p1.evaluateCase(f); expect(r.diagnostic_observation_complete).toBe(false); expect(p1.selection(r).action).toBe('stop-unknown');
+    }
+  });
+  it.each(['stdout', 'stderr'])('retains parser invalidity and actual missing %s EOF as separate facts', missing => {
+    for (const [bytes, reason] of [[Buffer.from('\n'), 'unexpected-bytes'], [Buffer.alloc(16385, 65), 'native-output-cap']] as const) {
+      const r = p1.createRecorder('T1', () => {}, () => 1);
+      r.feed('stdout', bytes); r.end(missing === 'stdout' ? 'stderr' : 'stdout');
+      const end = r.finish();
+      expect(end.state).toBe('invalid'); expect(end.reason).toBe(reason); expect(end.eofObserved).toBe(false);
+      expect(end.stdoutEofObserved).toBe(missing !== 'stdout'); expect(end.stderrEofObserved).toBe(missing !== 'stderr');
     }
   });
 });
@@ -341,6 +392,41 @@ describe('cleanup-trace-provenance-independent-unknown', () => {
       (f: any) => { f.counterKnown = false; }, (f: any) => { f.launches = null; }
     ]) { const f = fixture(); mutate(f); expect(p1.evaluateCase(f).diagnostic_observation_complete).toBe(false); }
   });
+  it.each(['T1', 'T2'])('actual %s case reaches the owned launcher once and accepts only ESRCH as known absence', async variant => {
+    const s = await actualCaseWithMocks(fixture(variant, 'refused', variant === 'T1' ? 0 : 1), () => ({ code: 'ESRCH' }));
+    expect(s.launch).toHaveBeenCalledOnce(); expect(s.query.mock.calls.map(([pid, signal]) => [pid, signal])).toEqual(
+      [[100, 0], [200, 0], [300, 0], [100, 0], [200, 0], [300, 0]]);
+    expect(s.environment.mock.calls[0][2]).toBe(s.runDirectory);
+    expect(s.record.diagnostic_observation_complete).toBe(true);
+    expect(p1.selection(s.record).action).toBe(variant === 'T1' ? 'run-T2' : 'run-T3');
+    expect(s.record.health.cleanupUnknown).toBe(false); expect(s.remove).toHaveBeenCalledOnce(); expect(fs.existsSync(s.root)).toBe(false);
+  });
+  it.each(['T1', 'T2'])('actual %s cleanup retains every non-absence sampling error at either sample without extra queries', async variant => {
+    for (const code of ['EPERM', 'EACCES', 'ENOSYS', 'UNKNOWN', undefined]) for (const uncertainSample of [0, 1]) {
+      const s = await actualCaseWithMocks(fixture(variant, 'refused', variant === 'T1' ? 0 : 1),
+        (pid, sample) => ({ code: pid === 300 && sample === uncertainSample ? code : 'ESRCH' }));
+      expect(s.query).toHaveBeenCalledTimes(6); expect(s.query.mock.calls.every(([pid, signal]) => [100, 200, 300].includes(pid) && signal === 0)).toBe(true);
+      expect(s.launch).toHaveBeenCalledOnce(); expect(s.record.health.cleanupUnknown).toBe(true);
+      expect(s.record.health.rootRetained).toBe(true); expect(s.record.health.provenanceUnknown).toBe(false);
+      expect(s.record.diagnostic_observation_complete).toBe(false); expect(p1.selection(s.record).action).toBe('stop-unknown');
+      expect(s.remove).not.toHaveBeenCalled(); expect(fs.existsSync(s.root)).toBe(true);
+    }
+  });
+  it.each(['T1', 'T2'])('actual %s cleanup retains independent missing EOF without erasing invalid/overflow parser facts', async variant => {
+    for (const reason of ['unexpected-bytes', 'native-output-cap']) for (const missing of ['stdout', 'stderr']) {
+      const f = fixture(variant, 'refused', variant === 'T1' ? 0 : 1);
+      const stream = f.guard.find((e: Row) => e.event === 'native-fixed-stream-end');
+      Object.assign(stream, { state: 'invalid', reason, stdoutEofObserved: missing !== 'stdout', stderrEofObserved: missing !== 'stderr', eofObserved: false });
+      if (reason === 'native-output-cap') Object.assign(stream, { stdoutBytes: 16384, stderrBytes: 1, combinedBytes: 16385 });
+      else { stream.stdoutBytes++; stream.combinedBytes++; }
+      const originalStream = clone(stream);
+      const s = await actualCaseWithMocks(f, () => ({ code: 'ESRCH' }));
+      expect(s.record.stream).toEqual(originalStream); expect(s.record.stream.state).toBe('invalid'); expect(s.record.stream.reason).toBe(reason);
+      expect(s.record.health.cleanupUnknown).toBe(true); expect(s.record.health.rootRetained).toBe(true);
+      expect(s.record.diagnostic_observation_complete).toBe(false); expect(p1.selection(s.record).action).toBe('stop-unknown');
+      expect(s.query).toHaveBeenCalledTimes(6); expect(s.launch).toHaveBeenCalledOnce(); expect(s.remove).not.toHaveBeenCalled(); expect(fs.existsSync(s.root)).toBe(true);
+    }
+  });
 });
 
 describe('every-selection-row-zero-skipped-launches', () => {
@@ -418,7 +504,7 @@ describe('import-without-side-effects', () => {
 });
 
 describe('exact-source-workflow-and-upload-file-set', () => {
-  function sealed(): any {
+  function sealed(skipAll = false): any {
     const dir = directory(), executionSha = 'a'.repeat(40);
     const files = [...p1.BINDINGS.future_added_source_paths, 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json',
       ...p1.BINDINGS.frozen_runtime_sources.map(s => s.path)].sort().map(path => ({ path, sha256: p1.sha256(fs.readFileSync(join(repo, path))) }));
@@ -428,16 +514,17 @@ describe('exact-source-workflow-and-upload-file-set', () => {
         osRelease: '10.0.1', imageOS: 'win25', imageVersion: '20261011.1.0' }, sourceFiles: clone(files),
       environmentKeyNames: [...p1.BINDINGS.environment.system_keys, ...p1.BINDINGS.environment.synthetic_keys].sort(),
       extraEnvironmentKeys: [], provenanceUnknown: false, releaseReady: false, releaseAcceptance: false };
-    const first = fixture('T0'), second = fixture('T1'), records = [p1.evaluateCase(first), p1.evaluateCase(second),
+    const first = fixture('T0'), second = fixture('T1'), records = skipAll ? p1.CASES.map(c => p1.skippedCase(c.variant, 'synthetic-checks-not-passed')) : [p1.evaluateCase(first), p1.evaluateCase(second),
       p1.skippedCase('T2', 'original-p1-complete-no-reproduction'), p1.skippedCase('T3', 'original-p1-complete-no-reproduction')];
-    const summary = p1.makeSummary(provenance, records, [admitted(), admitted()], 0, 'original-p1-complete-no-reproduction', true);
+    const summary = p1.makeSummary(provenance, records, skipAll ? [] : [admitted(), admitted()], skipAll ? 1 : 0,
+      skipAll ? 'synthetic-checks-not-passed' : 'original-p1-complete-no-reproduction', true);
     const checks = { format: 'windows-p1-initial-checks-v1', testPath: 'tests/diagnostics/windows-p1-stages.test.ts', exitCode: 0, passed: 14,
       failed: 0, skipped: 0, allRequiredControlsPassed: true, rawReportSuppressed: true, releaseAcceptance: false };
     fs.writeFileSync(join(dir, 'provenance.json'), JSON.stringify(provenance)); fs.writeFileSync(join(dir, 'summary.json'), JSON.stringify(summary));
     fs.writeFileSync(join(dir, 'checks-summary.json'), JSON.stringify(checks));
     for (const r of records) fs.writeFileSync(join(dir, r.variant + '.case.json'), JSON.stringify(r));
     for (const c of p1.CASES) for (const family of ['guard', 'trace'])
-      fs.writeFileSync(join(dir, c.variant + '.' + family + '.jsonl'), c.variant === 'T0' ? jsonl(first[family]) : c.variant === 'T1' ? jsonl(second[family]) : '');
+      fs.writeFileSync(join(dir, c.variant + '.' + family + '.jsonl'), skipAll ? '' : c.variant === 'T0' ? jsonl(first[family]) : c.variant === 'T1' ? jsonl(second[family]) : '');
     const rehash = () => {
       const entries = p1.BINDINGS.output.upload_files.filter(p => p !== 'manifest.json').sort().map(path => {
         const bytes = fs.readFileSync(join(dir, path)); return { path, bytes: bytes.length, sha256: p1.sha256(bytes) };
@@ -492,6 +579,37 @@ describe('exact-source-workflow-and-upload-file-set', () => {
     ]) { const s = sealed(); mutate(s); s.rehash(); expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toThrow(); }
     const s = sealed(), manifest = JSON.parse(fs.readFileSync(join(s.dir, 'manifest.json'), 'utf8')); manifest.files[1] = manifest.files[0];
     fs.writeFileSync(join(s.dir, 'manifest.json'), JSON.stringify(manifest)); expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toThrow();
+  });
+  it.each(p1.CASES.flatMap(c => ['guard', 'trace'].map(family => [c.variant, family])))('rejects actual skipped %s.%s bytes after manifest refresh without rewriting any sealed file', (variant, family) => {
+    const row = fixture(variant)[family][0];
+    const payloads = [Buffer.from('RAW-STDERR-CANARY\n'), Buffer.from('TW_RAW_CONTENT_CANARY\n'), Buffer.from('\uFEFF'),
+      Buffer.from('\n'), Buffer.from(' ' + JSON.stringify(row) + '\n'), jsonl([row]), Buffer.from([0xff, 10])];
+    for (const bytes of payloads) {
+      const s = sealed(true); expect(p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toBe(true);
+      const path = join(s.dir, variant + '.' + family + '.jsonl'); fs.writeFileSync(path, bytes); s.rehash();
+      const before = p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)));
+      expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toThrow();
+      expect(p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)))).toEqual(before);
+    }
+  });
+  it('keeps scratch skipped-stream safe reconstruction separate from immutable sealed verification', () => {
+    const source = fs.readFileSync(join(repo, 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs'), 'utf8');
+    const start = source.indexOf('function loadScratchCaseEvidence('), end = source.indexOf('function loadSealedCaseEvidence(', start);
+    expect(start).toBeGreaterThanOrEqual(0); expect(end).toBeGreaterThan(start);
+    for (const c of p1.CASES) {
+      const dir = directory(), record = p1.skippedCase(c.variant, 'synthetic-checks-not-passed');
+      fs.writeFileSync(join(dir, c.variant + '.case.json'), JSON.stringify(record));
+      for (const family of ['guard', 'trace']) fs.writeFileSync(join(dir, c.variant + '.' + family + '.jsonl'), 'RAW-STDERR-CANARY\n');
+      const context = vm.createContext({ join, assert, original: io(), readJson: () => clone(record),
+        readRows: (path: string, family: string) => p1.parseRows(fs.readFileSync(path), family) });
+      vm.runInContext(source.slice(start, end), context);
+      const evidence = context.loadScratchCaseEvidence(dir, c.variant);
+      expect(evidence.record).toEqual(record);
+      for (const family of ['guard', 'trace']) {
+        expect(evidence[family]).toEqual({ rows: [], text: '', invalid: false });
+        expect(fs.readFileSync(join(dir, c.variant + '.' + family + '.jsonl'), 'utf8')).toBe('RAW-STDERR-CANARY\n');
+      }
+    }
   });
   it('keeps missing post-crash results nullable unknown in a valid typed incomplete sealed artifact', () => {
     const s = sealed(), records = p1.CASES.map(c => p1.unknownCase(c.variant));
