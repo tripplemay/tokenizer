@@ -1,0 +1,1204 @@
+{
+  "format": "windows-p1-C002-owned-dependency-provenance-v1",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "observed_at_utc": "2026-10-11T16:50:29.254Z",
+  "classification": "read-only owned dependency evidence; not install security or functional acceptance",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "GIT_CONFIG_GLOBAL": "/Volumes/ORICO/project/.wp1cbg-20261011/config/gitconfig",
+    "GIT_CONFIG_NOSYSTEM": "1"
+  },
+  "authority": {
+    "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-owned-vendor-dependency-clarification.json",
+    "bytes": 1994,
+    "sha256": "22c8f2d2b59cffe08b137338448dfeb534edf2f4779db407124ce5543faea15c",
+    "commit": "4d938c8",
+    "observed_at": "2026-10-11T16:46:16Z"
+  },
+  "vendor_link": {
+    "path": "node_modules/braces",
+    "link": "../vendor/braces",
+    "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/vendor/braces",
+    "npm_owned_fresh_install": true,
+    "preexisting_dependency_root": false,
+    "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011"
+  },
+  "vendor_files": [
+    {
+      "path": "vendor/braces/LICENSE",
+      "bytes": 1091,
+      "sha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2",
+      "source_tree_row": "100644 blob 9af4a67d206f24ecdbb5fdff2839041ca0bbd346\tvendor/braces/LICENSE"
+    },
+    {
+      "path": "vendor/braces/PATCH-MANIFEST.json",
+      "bytes": 2920,
+      "sha256": "490c19b12fd2d250839d3f3cb6f978da9c3716fd72afea7cab162c001467b098",
+      "source_tree_row": "100644 blob 3476222a9e11de9e860a00333ee073881a6189da\tvendor/braces/PATCH-MANIFEST.json"
+    },
+    {
+      "path": "vendor/braces/README.md",
+      "bytes": 21505,
+      "sha256": "947b0fc3cc12eaaa070207126213fbdf9ab2bf8cd13dcc6e4007b36b79309866",
+      "source_tree_row": "100644 blob f59dd604566f1239274c4caf6d88b90b4ddeb25d\tvendor/braces/README.md"
+    },
+    {
+      "path": "vendor/braces/TOKENIZER-BACKPORT.md",
+      "bytes": 2680,
+      "sha256": "3dec07468060c1720c5e181d74a0d82bfa4744536ed8d54e0be1d1822acd97c3",
+      "source_tree_row": "100644 blob d7a7f41baff37d112f3faed7f468cc34034ce0e1\tvendor/braces/TOKENIZER-BACKPORT.md"
+    },
+    {
+      "path": "vendor/braces/index.js",
+      "bytes": 4380,
+      "sha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4",
+      "source_tree_row": "100644 blob d222c13b579d2d476dc26d692219dbaee1665b88\tvendor/braces/index.js"
+    },
+    {
+      "path": "vendor/braces/lib/compile.js",
+      "bytes": 1569,
+      "sha256": "4cbe77e7c8524e8f9e22da0d18fe74de5bb27fe79df65d86091de68e1cb8bc5a",
+      "source_tree_row": "100644 blob 027ebf637d34b2018bef30dabcf6584d16c7e790\tvendor/braces/lib/compile.js"
+    },
+    {
+      "path": "vendor/braces/lib/constants.js",
+      "bytes": 1611,
+      "sha256": "8d0bfdb50bb1e5267facef720ba09179634761165e3d6e13ad512ed10d6c180c",
+      "source_tree_row": "100644 blob cd71fdb5a374f6d6c26a1fdc7b0dac13bcd2aca2\tvendor/braces/lib/constants.js"
+    },
+    {
+      "path": "vendor/braces/lib/expand.js",
+      "bytes": 2865,
+      "sha256": "52b24562f623cb001cf4ffbba19634ab18dc1f12731004fbe54b2bf848090031",
+      "source_tree_row": "100644 blob af0660f67f7ac6216efb55e9d5f5f54980aa6bf0\tvendor/braces/lib/expand.js"
+    },
+    {
+      "path": "vendor/braces/lib/parse.js",
+      "bytes": 7009,
+      "sha256": "7efb28a66017d64eb8f5e294912a419cfb256a0b6a62fce8c2a138c36d9116cb",
+      "source_tree_row": "100644 blob fb0bf547c875b1dfc47c3e6cdbea4e805395abf9\tvendor/braces/lib/parse.js"
+    },
+    {
+      "path": "vendor/braces/lib/stringify.js",
+      "bytes": 779,
+      "sha256": "ed9e51c800917eadf765ad2813341b3971725ccc9311abb597e5a603c2543c18",
+      "source_tree_row": "100644 blob 73457cc9898ce1611e95b5953946b1c8f3196808\tvendor/braces/lib/stringify.js"
+    },
+    {
+      "path": "vendor/braces/lib/utils.js",
+      "bytes": 2795,
+      "sha256": "bee434526678796192f57fc13b2c7547c9ae69b21b200ac1dccf8eccc3e16623",
+      "source_tree_row": "100644 blob e54eb687952cad733c665ac82eb5fa51f14d3800\tvendor/braces/lib/utils.js"
+    },
+    {
+      "path": "vendor/braces/package.json",
+      "bytes": 1509,
+      "sha256": "50c1f7dbca9fd2a3ef90239ac5a22177cb9aa48807e5efbbaafd609f7f372f05",
+      "source_tree_row": "100644 blob 105f5eef57f54fa115ca96f351b87deaa2142aac\tvendor/braces/package.json"
+    }
+  ],
+  "all_installed_symlinks": [
+    {
+      "path": "node_modules/.bin/acorn",
+      "link": "../acorn/bin/acorn",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/acorn/bin/acorn"
+    },
+    {
+      "path": "node_modules/.bin/autoprefixer",
+      "link": "../autoprefixer/bin/autoprefixer",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/autoprefixer/bin/autoprefixer"
+    },
+    {
+      "path": "node_modules/.bin/baseline-browser-mapping",
+      "link": "../baseline-browser-mapping/dist/cli.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/baseline-browser-mapping/dist/cli.cjs"
+    },
+    {
+      "path": "node_modules/.bin/browserslist",
+      "link": "../browserslist/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/browserslist/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/cssesc",
+      "link": "../cssesc/bin/cssesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/cssesc/bin/cssesc"
+    },
+    {
+      "path": "node_modules/.bin/esbuild",
+      "link": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/esbuild/bin/esbuild"
+    },
+    {
+      "path": "node_modules/.bin/eslint",
+      "link": "../eslint/bin/eslint.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint/bin/eslint.js"
+    },
+    {
+      "path": "node_modules/.bin/jiti",
+      "link": "../jiti/bin/jiti.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/jiti/bin/jiti.js"
+    },
+    {
+      "path": "node_modules/.bin/js-yaml",
+      "link": "../js-yaml/bin/js-yaml.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/js-yaml/bin/js-yaml.js"
+    },
+    {
+      "path": "node_modules/.bin/jsesc",
+      "link": "../jsesc/bin/jsesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/jsesc/bin/jsesc"
+    },
+    {
+      "path": "node_modules/.bin/json5",
+      "link": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/json5/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/loose-envify",
+      "link": "../loose-envify/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/loose-envify/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/nanoid",
+      "link": "../nanoid/bin/nanoid.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/nanoid/bin/nanoid.cjs"
+    },
+    {
+      "path": "node_modules/.bin/napi-postinstall",
+      "link": "../napi-postinstall/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/napi-postinstall/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/next",
+      "link": "../next/dist/bin/next",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/next/dist/bin/next"
+    },
+    {
+      "path": "node_modules/.bin/node-which",
+      "link": "../which/bin/node-which",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/which/bin/node-which"
+    },
+    {
+      "path": "node_modules/.bin/parser",
+      "link": "../@babel/parser/bin/babel-parser.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/parser/bin/babel-parser.js"
+    },
+    {
+      "path": "node_modules/.bin/playwright",
+      "link": "../@playwright/test/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@playwright/test/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/playwright-core",
+      "link": "../playwright-core/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/playwright-core/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/prebuild-install",
+      "link": "../prebuild-install/bin.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prebuild-install/bin.js"
+    },
+    {
+      "path": "node_modules/.bin/prisma",
+      "link": "../prisma/build/index.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prisma/build/index.js"
+    },
+    {
+      "path": "node_modules/.bin/rc",
+      "link": "../rc/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/rc/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/.bin/rollup",
+      "link": "../rollup/dist/bin/rollup",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/rollup/dist/bin/rollup"
+    },
+    {
+      "path": "node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/.bin/sucrase",
+      "link": "../sucrase/bin/sucrase",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/sucrase/bin/sucrase"
+    },
+    {
+      "path": "node_modules/.bin/sucrase-node",
+      "link": "../sucrase/bin/sucrase-node",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/sucrase/bin/sucrase-node"
+    },
+    {
+      "path": "node_modules/.bin/tailwind",
+      "link": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/tailwindcss",
+      "link": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/tsc",
+      "link": "../typescript/bin/tsc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/typescript/bin/tsc"
+    },
+    {
+      "path": "node_modules/.bin/tsserver",
+      "link": "../typescript/bin/tsserver",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/typescript/bin/tsserver"
+    },
+    {
+      "path": "node_modules/.bin/tsx",
+      "link": "../tsx/dist/cli.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tsx/dist/cli.mjs"
+    },
+    {
+      "path": "node_modules/.bin/update-browserslist-db",
+      "link": "../update-browserslist-db/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/update-browserslist-db/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/vite",
+      "link": "../vite/bin/vite.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vite/bin/vite.js"
+    },
+    {
+      "path": "node_modules/.bin/vitest",
+      "link": "../vitest/vitest.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vitest/vitest.mjs"
+    },
+    {
+      "path": "node_modules/.bin/why-is-node-running",
+      "link": "../why-is-node-running/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/why-is-node-running/cli.js"
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/json5",
+      "link": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/core/node_modules/json5/lib/cli.js"
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/core/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/@babel/helper-compilation-targets/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/helper-compilation-targets/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/babel-plugin-macros/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/braces",
+      "link": "../vendor/braces",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/vendor/braces"
+    },
+    {
+      "path": "node_modules/eslint-plugin-import/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint-plugin-import/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/eslint-plugin-react/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint-plugin-react/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/node-exports-info/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/node-exports-info/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/postcss-import/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/vite/node_modules/.bin/esbuild",
+      "link": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vite/node_modules/esbuild/bin/esbuild"
+    }
+  ],
+  "no_installed_symlink_target_outside_owned_worktree": true,
+  "normal_bin_links": [
+    {
+      "path": "node_modules/.bin/acorn",
+      "link": "../acorn/bin/acorn",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/acorn/bin/acorn"
+    },
+    {
+      "path": "node_modules/.bin/autoprefixer",
+      "link": "../autoprefixer/bin/autoprefixer",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/autoprefixer/bin/autoprefixer"
+    },
+    {
+      "path": "node_modules/.bin/baseline-browser-mapping",
+      "link": "../baseline-browser-mapping/dist/cli.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/baseline-browser-mapping/dist/cli.cjs"
+    },
+    {
+      "path": "node_modules/.bin/browserslist",
+      "link": "../browserslist/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/browserslist/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/cssesc",
+      "link": "../cssesc/bin/cssesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/cssesc/bin/cssesc"
+    },
+    {
+      "path": "node_modules/.bin/esbuild",
+      "link": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/esbuild/bin/esbuild"
+    },
+    {
+      "path": "node_modules/.bin/eslint",
+      "link": "../eslint/bin/eslint.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint/bin/eslint.js"
+    },
+    {
+      "path": "node_modules/.bin/jiti",
+      "link": "../jiti/bin/jiti.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/jiti/bin/jiti.js"
+    },
+    {
+      "path": "node_modules/.bin/js-yaml",
+      "link": "../js-yaml/bin/js-yaml.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/js-yaml/bin/js-yaml.js"
+    },
+    {
+      "path": "node_modules/.bin/jsesc",
+      "link": "../jsesc/bin/jsesc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/jsesc/bin/jsesc"
+    },
+    {
+      "path": "node_modules/.bin/json5",
+      "link": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/json5/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/loose-envify",
+      "link": "../loose-envify/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/loose-envify/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/nanoid",
+      "link": "../nanoid/bin/nanoid.cjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/nanoid/bin/nanoid.cjs"
+    },
+    {
+      "path": "node_modules/.bin/napi-postinstall",
+      "link": "../napi-postinstall/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/napi-postinstall/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/next",
+      "link": "../next/dist/bin/next",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/next/dist/bin/next"
+    },
+    {
+      "path": "node_modules/.bin/node-which",
+      "link": "../which/bin/node-which",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/which/bin/node-which"
+    },
+    {
+      "path": "node_modules/.bin/parser",
+      "link": "../@babel/parser/bin/babel-parser.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/parser/bin/babel-parser.js"
+    },
+    {
+      "path": "node_modules/.bin/playwright",
+      "link": "../@playwright/test/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@playwright/test/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/playwright-core",
+      "link": "../playwright-core/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/playwright-core/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/prebuild-install",
+      "link": "../prebuild-install/bin.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prebuild-install/bin.js"
+    },
+    {
+      "path": "node_modules/.bin/prisma",
+      "link": "../prisma/build/index.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prisma/build/index.js"
+    },
+    {
+      "path": "node_modules/.bin/rc",
+      "link": "../rc/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/rc/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/.bin/rollup",
+      "link": "../rollup/dist/bin/rollup",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/rollup/dist/bin/rollup"
+    },
+    {
+      "path": "node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/.bin/sucrase",
+      "link": "../sucrase/bin/sucrase",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/sucrase/bin/sucrase"
+    },
+    {
+      "path": "node_modules/.bin/sucrase-node",
+      "link": "../sucrase/bin/sucrase-node",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/sucrase/bin/sucrase-node"
+    },
+    {
+      "path": "node_modules/.bin/tailwind",
+      "link": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/tailwindcss",
+      "link": "../tailwindcss/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/lib/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/tsc",
+      "link": "../typescript/bin/tsc",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/typescript/bin/tsc"
+    },
+    {
+      "path": "node_modules/.bin/tsserver",
+      "link": "../typescript/bin/tsserver",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/typescript/bin/tsserver"
+    },
+    {
+      "path": "node_modules/.bin/tsx",
+      "link": "../tsx/dist/cli.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tsx/dist/cli.mjs"
+    },
+    {
+      "path": "node_modules/.bin/update-browserslist-db",
+      "link": "../update-browserslist-db/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/update-browserslist-db/cli.js"
+    },
+    {
+      "path": "node_modules/.bin/vite",
+      "link": "../vite/bin/vite.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vite/bin/vite.js"
+    },
+    {
+      "path": "node_modules/.bin/vitest",
+      "link": "../vitest/vitest.mjs",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vitest/vitest.mjs"
+    },
+    {
+      "path": "node_modules/.bin/why-is-node-running",
+      "link": "../why-is-node-running/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/why-is-node-running/cli.js"
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/json5",
+      "link": "../json5/lib/cli.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/core/node_modules/json5/lib/cli.js"
+    },
+    {
+      "path": "node_modules/@babel/core/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/core/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/@babel/helper-compilation-targets/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@babel/helper-compilation-targets/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/babel-plugin-macros/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/eslint-plugin-import/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint-plugin-import/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/eslint-plugin-react/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/eslint-plugin-react/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/node-exports-info/node_modules/.bin/semver",
+      "link": "../semver/bin/semver.js",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/node-exports-info/node_modules/semver/bin/semver.js"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/postcss-import/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/.bin/resolve",
+      "link": "../resolve/bin/resolve",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/tailwindcss/node_modules/resolve/bin/resolve"
+    },
+    {
+      "path": "node_modules/vite/node_modules/.bin/esbuild",
+      "link": "../esbuild/bin/esbuild",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/vite/node_modules/esbuild/bin/esbuild"
+    }
+  ],
+  "owned_npm_debug_originals": [
+    {
+      "path": "npm-debug-2026-10-11T16_46_05_128Z-debug-0.log",
+      "bytes": 384401,
+      "sha256": "b743bbdf6162ddfc4a045eb0d2bd9efdaa117e2d6806eb6cab4cc04c97e83024",
+      "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_46_05_128Z-debug-0.log"
+    },
+    {
+      "path": "npm-debug-2026-10-11T16_47_27_357Z-debug-0.log",
+      "bytes": 2145,
+      "sha256": "25b9deb4b2d1f15db3fd4f253ec7ebfcd2ad21df8e0547d527d78cca87cd5ef9",
+      "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_47_27_357Z-debug-0.log"
+    },
+    {
+      "path": "npm-debug-2026-10-11T16_47_32_055Z-debug-0.log",
+      "bytes": 1128,
+      "sha256": "4ca9d2ca0aa68574d46b5ef9eb1e7a88779c5c76552dff747fea4f9c62a0b9cf",
+      "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_47_32_055Z-debug-0.log"
+    }
+  ],
+  "authorization_order": {
+    "npm_ci_started_at_utc": "2026-10-11T16:46:05.092Z",
+    "clarification_observed_at_utc": "2026-10-11T16:46:16Z",
+    "npm_started_before_narrow_clarification_was_landed": true,
+    "no_precreated_or_borrowed_links": true
+  },
+  "install_limitations": {
+    "npm_ci_status": 0,
+    "npm_high_warning": 7,
+    "swc_native_cache_validation_error_logged": true,
+    "fallback_package": {
+      "name": "@swc/wasm",
+      "version": "1.16.13",
+      "parent_locked_version": "1.16.13",
+      "lock_entry_present": false,
+      "package": {
+        "path": "node_modules/@swc/wasm/package.json",
+        "bytes": 390,
+        "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+      }
+    },
+    "fallback_source": {
+      "path": "node_modules/@swc/core/postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    "fallback_source_lines": [
+      {
+        "line": 39,
+        "text": " * If it fails, it'll internally try to install `@swc/wasm` as fallback."
+      },
+      {
+        "line": 94,
+        "text": "        console.warn(`@swc/core was not able to resolve native bindings installation. It'll try to use @swc/wasm as fallback instead.`);"
+      },
+      {
+        "line": 104,
+        "text": "    // Check if top-level package.json installs @swc/wasm separately already"
+      },
+      {
+        "line": 107,
+        "text": "        wasmBinding = require.resolve(`@swc/wasm`);"
+      },
+      {
+        "line": 115,
+        "text": "    // We want to place @swc/wasm next to the @swc/core as if normal installation was done,"
+      },
+      {
+        "line": 119,
+        "text": "    const installDir = path.join(coreDir, \"npm-install\");"
+      },
+      {
+        "line": 121,
+        "text": "        fs.mkdirSync(installDir);"
+      },
+      {
+        "line": 122,
+        "text": "        fs.writeFileSync(path.join(installDir, \"package.json\"), \"{}\");"
+      },
+      {
+        "line": 124,
+        "text": "        // assume & relies on system's npm installation."
+      },
+      {
+        "line": 125,
+        "text": "        child_process.execSync(`npm install --no-save --loglevel=error --prefer-offline --no-audit --progress=false @swc/wasm@${version}`, { cwd: installDir, stdio: \"pipe\", env });"
+      },
+      {
+        "line": 126,
+        "text": "        const installedBinPath = path.join(installDir, \"node_modules\", `@swc/wasm`);"
+      },
+      {
+        "line": 128,
+        "text": "        fs.renameSync(installedBinPath, path.resolve(process.env.INIT_CWD, \"node_modules\", `@swc/wasm`));"
+      },
+      {
+        "line": 132,
+        "text": "        console.error(`Failed to install fallback @swc/wasm@${version}. @swc/core will not properly."
+      },
+      {
+        "line": 133,
+        "text": "Please install @swc/wasm manually, or retry whole installation."
+      },
+      {
+        "line": 138,
+        "text": "            removeRecursive(installDir);"
+      }
+    ],
+    "fallback_kind": "unchanged locked package lifecycle launched npm install @swc/wasm at exact parent version; no agent manual install, override, retry or permission repair",
+    "observed_registry_fallback_fetch": "own npm debug 2026-10-11T16_47_27_357Z-debug-0.log records GET 200 registry.npmjs.org wasm metadata and tarball",
+    "native_binding_success_claimed": false,
+    "dependency_security_acceptance": false,
+    "lifecycle_public_binary_hosts_directly_observed": false,
+    "complete_egress_isolation_claimed": false
+  },
+  "machine_generated_ignored_state": "!! node_modules/\n!! tsconfig.tsbuildinfo\n",
+  "ok": true,
+  "commands": [
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 41,
+        "sha256": "ca3b2511844a130160afe873f1141244501f065ce6c2cea397acac8fe14c24f4"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "4d938c8:docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-owned-vendor-dependency-clarification.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1994,
+        "sha256": "22c8f2d2b59cffe08b137338448dfeb534edf2f4779db407124ce5543faea15c"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "ls-tree",
+        "-r",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af",
+        "--",
+        "vendor/braces"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 975,
+        "sha256": "1c4b214cf9f441fa1cf0485fd1765a54abc69a7d35e6bf03b0305aecf734c6ae"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/LICENSE"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1091,
+        "sha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/LICENSE"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1091,
+        "sha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/PATCH-MANIFEST.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2920,
+        "sha256": "490c19b12fd2d250839d3f3cb6f978da9c3716fd72afea7cab162c001467b098"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/PATCH-MANIFEST.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2920,
+        "sha256": "490c19b12fd2d250839d3f3cb6f978da9c3716fd72afea7cab162c001467b098"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/README.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 21505,
+        "sha256": "947b0fc3cc12eaaa070207126213fbdf9ab2bf8cd13dcc6e4007b36b79309866"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/README.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 21505,
+        "sha256": "947b0fc3cc12eaaa070207126213fbdf9ab2bf8cd13dcc6e4007b36b79309866"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/TOKENIZER-BACKPORT.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2680,
+        "sha256": "3dec07468060c1720c5e181d74a0d82bfa4744536ed8d54e0be1d1822acd97c3"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/TOKENIZER-BACKPORT.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2680,
+        "sha256": "3dec07468060c1720c5e181d74a0d82bfa4744536ed8d54e0be1d1822acd97c3"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/index.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4380,
+        "sha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/index.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4380,
+        "sha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/compile.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1569,
+        "sha256": "4cbe77e7c8524e8f9e22da0d18fe74de5bb27fe79df65d86091de68e1cb8bc5a"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/compile.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1569,
+        "sha256": "4cbe77e7c8524e8f9e22da0d18fe74de5bb27fe79df65d86091de68e1cb8bc5a"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/constants.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1611,
+        "sha256": "8d0bfdb50bb1e5267facef720ba09179634761165e3d6e13ad512ed10d6c180c"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/constants.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1611,
+        "sha256": "8d0bfdb50bb1e5267facef720ba09179634761165e3d6e13ad512ed10d6c180c"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/expand.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2865,
+        "sha256": "52b24562f623cb001cf4ffbba19634ab18dc1f12731004fbe54b2bf848090031"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/expand.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2865,
+        "sha256": "52b24562f623cb001cf4ffbba19634ab18dc1f12731004fbe54b2bf848090031"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/parse.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 7009,
+        "sha256": "7efb28a66017d64eb8f5e294912a419cfb256a0b6a62fce8c2a138c36d9116cb"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/parse.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 7009,
+        "sha256": "7efb28a66017d64eb8f5e294912a419cfb256a0b6a62fce8c2a138c36d9116cb"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/stringify.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 779,
+        "sha256": "ed9e51c800917eadf765ad2813341b3971725ccc9311abb597e5a603c2543c18"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/stringify.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 779,
+        "sha256": "ed9e51c800917eadf765ad2813341b3971725ccc9311abb597e5a603c2543c18"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/lib/utils.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2795,
+        "sha256": "bee434526678796192f57fc13b2c7547c9ae69b21b200ac1dccf8eccc3e16623"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/lib/utils.js"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2795,
+        "sha256": "bee434526678796192f57fc13b2c7547c9ae69b21b200ac1dccf8eccc3e16623"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af:vendor/braces/package.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1509,
+        "sha256": "50c1f7dbca9fd2a3ef90239ac5a22177cb9aa48807e5efbbaafd609f7f372f05"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:vendor/braces/package.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1509,
+        "sha256": "50c1f7dbca9fd2a3ef90239ac5a22177cb9aa48807e5efbbaafd609f7f372f05"
+      },
+      "stderr": ""
+    },
+    {
+      "executable": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "status",
+        "--ignored",
+        "--short",
+        "--",
+        "node_modules",
+        "tsconfig.tsbuildinfo",
+        ".next"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 41,
+        "sha256": "25aba9c305d8cc321f4e56fb36366847fd3523ce3c1d338e1fdf825160f59265"
+      },
+      "stderr": ""
+    }
+  ]
+}

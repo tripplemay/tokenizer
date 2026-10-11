@@ -1,0 +1,546 @@
+{
+  "format": "windows-p1-C002-supporting-generator-development-handoff-v1",
+  "observed_at_utc": "2026-10-11T16:53:48.709Z",
+  "outcome": "EXACT_C002_IMPLEMENTED_SCOPED_DEVELOPMENT_COMPLETED_WITH_RETAINED_INSTALL_AND_OPERATIONAL_LIMITATIONS",
+  "role": "supporting Generator; section 1.5; not independent Evaluator/Coordinator",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "source_tree": "f83ae75d895dbd2f784eeb6992d8471dc6e562d8",
+  "source_parent": "88d07004466251be3076fc454699207d3879374f",
+  "source_commit_paths": [
+    ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+  ],
+  "projected_file_hashes": [
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3308,
+      "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34976,
+      "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 25454,
+      "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+    },
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 73022,
+      "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+    }
+  ],
+  "report_commit": "Separate later report-only local commit; SHA supplied at handoff to avoid self-reference",
+  "report_path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011",
+  "frozen_tree_proof": {
+    "source_entries": 2457,
+    "start_entries": 2463,
+    "disk_entries_checked": 2463,
+    "all_other_raw_blob_ids_unchanged": true,
+    "all_tracked_modes_and_types_preserved": true,
+    "source_inventory_sha256": "93a70a1a37a49c6d3f442ff67902c15004307caff3a7d29f3a5fdac34526da3f",
+    "start_inventory_sha256": "fdbc1eae377df857e6744ea397eec0c03c9fc39878424e855fc6c594023e11aa",
+    "head_inventory_sha256": "73c6e9c22b5f3439b0dd1ca8f7718ed0983fb1113b1be0045be3445f0bf90e7d"
+  },
+  "frozen_inputs": [
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "bytes": 24862,
+      "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+      "bytes": 11769,
+      "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+      "bytes": 10792,
+      "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "bytes": 51907,
+      "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "bytes": 4921,
+      "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "bytes": 5545,
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "bytes": 3012,
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "bytes": 16801,
+      "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+    },
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "bytes": 4389,
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+    }
+  ],
+  "original_archive": {
+    "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/",
+    "entries": 57,
+    "inventory_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+    "raw_hashes": "postdevelopment.raw.json#/original_archive/entries"
+  },
+  "original_test": {
+    "path": "tests/diagnostics/windows-p1-stages.test.ts",
+    "bytes": 53608,
+    "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+  },
+  "parent_original_receipts": [
+    {
+      "path": "windows-checkout-native-run38153928452-final-original.json",
+      "bytes": 12289,
+      "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-full-original.log",
+      "bytes": 25522,
+      "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-transport-manifest.json",
+      "bytes": 1564,
+      "sha256": "1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961"
+    }
+  ],
+  "initial_driver_failure": {
+    "status": 1,
+    "install_attempts": 0,
+    "failure": {
+      "name": "AssertionError",
+      "message": "non-public-registry locked package",
+      "stack": "AssertionError [ERR_ASSERTION]: non-public-registry locked package\n    at file:///Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development.mjs:69:5\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+    },
+    "first_script": "development.initial.mjs",
+    "output": "development.raw.json",
+    "source_or_assertions_changed": false
+  },
+  "development_checks": [
+    {
+      "label": "01-node-version",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "--version"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:46:04.988Z",
+      "finished_at_utc": "2026-10-11T16:46:05.001Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "01-node-version.stdout.log",
+        "bytes": 9,
+        "sha256": "c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a"
+      },
+      "stderr": {
+        "path": "01-node-version.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "02-npm-version",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js",
+        "--version"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:46:05.001Z",
+      "finished_at_utc": "2026-10-11T16:46:05.092Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "02-npm-version.stdout.log",
+        "bytes": 7,
+        "sha256": "1affb8f29ea203d9dc22f77b58c55ccff5317a28ca336aac0cd9a89aea9eb1fb"
+      },
+      "stderr": {
+        "path": "02-npm-version.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "03-npm-ci",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js",
+        "ci",
+        "--foreground-scripts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:46:05.092Z",
+      "finished_at_utc": "2026-10-11T16:47:30.475Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "03-npm-ci.stdout.log",
+        "bytes": 1198,
+        "sha256": "1960d0ec8d2230e5f2457bca5003a6674d0cbf41dd6b20de93e982605e4fbeed"
+      },
+      "stderr": {
+        "path": "03-npm-ci.stderr.log",
+        "bytes": 6594,
+        "sha256": "67c2435343bc8f3c2e1b47949c44354a8356c0cde500218433ba3155bb8010a6"
+      }
+    },
+    {
+      "label": "05-syntax",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "--check",
+        "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:47:30.481Z",
+      "finished_at_utc": "2026-10-11T16:47:30.500Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "05-syntax.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "05-syntax.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "06-pure-import",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/pure-import.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:47:30.500Z",
+      "finished_at_utc": "2026-10-11T16:47:30.531Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "06-pure-import.stdout.log",
+        "bytes": 225,
+        "sha256": "db6c526231a0061e380e6d51c73689a17b64305e9bf19d1e75a2c793431fecf7"
+      },
+      "stderr": {
+        "path": "06-pure-import.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "07-original81",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/diagnostics/windows-p1-stages.test.ts",
+        "--reporter=json",
+        "--outputFile=/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.raw.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:47:30.531Z",
+      "finished_at_utc": "2026-10-11T16:47:32.017Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "07-original81.stdout.log",
+        "bytes": 205,
+        "sha256": "3911f3f5eac683d662eb810cd4c943b111ce4f9ab724df16f7fb5bb1f6c17920"
+      },
+      "stderr": {
+        "path": "07-original81.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "08-verify",
+      "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+      "args": [
+        "/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "verify"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "env_metadata": "development-after-local-preflight.raw.json#/env",
+      "started_at_utc": "2026-10-11T16:47:32.018Z",
+      "finished_at_utc": "2026-10-11T16:47:37.197Z",
+      "status": 0,
+      "signal": null,
+      "spawn_error": null,
+      "stdout": {
+        "path": "08-verify.stdout.log",
+        "bytes": 402,
+        "sha256": "d680da3da854d8cd5fa86bd85101b3c9edf659383d7c41ba626d6be6cade31b1"
+      },
+      "stderr": {
+        "path": "08-verify.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "original81": {
+    "path": "07-original81.raw.json",
+    "bytes": 31053,
+    "sha256": "453e2da76956c475a0ca19e4e056c16b59c78b15b7f081286239b42cbdcb6bf7",
+    "numTotalTests": 81,
+    "numPassedTests": 81,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": true,
+    "unchanged_source_sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+    "checkout_five_key_confinement_coverage_claimed": false
+  },
+  "runtime_env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "TEMP": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "TMP": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "XDG_CACHE_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/cache",
+    "XDG_CONFIG_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/config",
+    "XDG_DATA_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/data",
+    "NPM_CONFIG_CACHE": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm",
+    "NPM_CONFIG_USERCONFIG": "/Volumes/ORICO/project/.wp1cbg-20261011/config/npmrc",
+    "NPM_CONFIG_GLOBALCONFIG": "/Volumes/ORICO/project/.wp1cbg-20261011/config/npmrc-global",
+    "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/Volumes/ORICO/project/.wp1cbg-20261011/config/gitconfig",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "PRISMA_HIDE_UPDATE_MESSAGE": "1",
+    "TZ": "UTC",
+    "LANG": "en_US.UTF-8"
+  },
+  "no_ambient_credentials_inherited": true,
+  "dependency_provenance": {
+    "vendor_link": {
+      "path": "node_modules/braces",
+      "link": "../vendor/braces",
+      "realpath": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/vendor/braces",
+      "npm_owned_fresh_install": true,
+      "preexisting_dependency_root": false,
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011"
+    },
+    "vendor_files": 12,
+    "installed_symlinks": 47,
+    "all_targets_inside_owned_worktree": true
+  },
+  "authorization_order": {
+    "npm_ci_started_at_utc": "2026-10-11T16:46:05.092Z",
+    "clarification_observed_at_utc": "2026-10-11T16:46:16Z",
+    "npm_started_before_narrow_clarification_was_landed": true,
+    "no_precreated_or_borrowed_links": true
+  },
+  "install_limitations": {
+    "npm_ci_status": 0,
+    "npm_high_warning": 7,
+    "swc_native_cache_validation_error_logged": true,
+    "fallback_package": {
+      "name": "@swc/wasm",
+      "version": "1.16.13",
+      "parent_locked_version": "1.16.13",
+      "lock_entry_present": false,
+      "package": {
+        "path": "node_modules/@swc/wasm/package.json",
+        "bytes": 390,
+        "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+      }
+    },
+    "fallback_source": {
+      "path": "node_modules/@swc/core/postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    "fallback_source_lines": [
+      {
+        "line": 39,
+        "text": " * If it fails, it'll internally try to install `@swc/wasm` as fallback."
+      },
+      {
+        "line": 94,
+        "text": "        console.warn(`@swc/core was not able to resolve native bindings installation. It'll try to use @swc/wasm as fallback instead.`);"
+      },
+      {
+        "line": 104,
+        "text": "    // Check if top-level package.json installs @swc/wasm separately already"
+      },
+      {
+        "line": 107,
+        "text": "        wasmBinding = require.resolve(`@swc/wasm`);"
+      },
+      {
+        "line": 115,
+        "text": "    // We want to place @swc/wasm next to the @swc/core as if normal installation was done,"
+      },
+      {
+        "line": 119,
+        "text": "    const installDir = path.join(coreDir, \"npm-install\");"
+      },
+      {
+        "line": 121,
+        "text": "        fs.mkdirSync(installDir);"
+      },
+      {
+        "line": 122,
+        "text": "        fs.writeFileSync(path.join(installDir, \"package.json\"), \"{}\");"
+      },
+      {
+        "line": 124,
+        "text": "        // assume & relies on system's npm installation."
+      },
+      {
+        "line": 125,
+        "text": "        child_process.execSync(`npm install --no-save --loglevel=error --prefer-offline --no-audit --progress=false @swc/wasm@${version}`, { cwd: installDir, stdio: \"pipe\", env });"
+      },
+      {
+        "line": 126,
+        "text": "        const installedBinPath = path.join(installDir, \"node_modules\", `@swc/wasm`);"
+      },
+      {
+        "line": 128,
+        "text": "        fs.renameSync(installedBinPath, path.resolve(process.env.INIT_CWD, \"node_modules\", `@swc/wasm`));"
+      },
+      {
+        "line": 132,
+        "text": "        console.error(`Failed to install fallback @swc/wasm@${version}. @swc/core will not properly."
+      },
+      {
+        "line": 133,
+        "text": "Please install @swc/wasm manually, or retry whole installation."
+      },
+      {
+        "line": 138,
+        "text": "            removeRecursive(installDir);"
+      }
+    ],
+    "fallback_kind": "unchanged locked package lifecycle launched npm install @swc/wasm at exact parent version; no agent manual install, override, retry or permission repair",
+    "observed_registry_fallback_fetch": "own npm debug 2026-10-11T16_47_27_357Z-debug-0.log records GET 200 registry.npmjs.org wasm metadata and tarball",
+    "native_binding_success_claimed": false,
+    "dependency_security_acceptance": false,
+    "lifecycle_public_binary_hosts_directly_observed": false,
+    "complete_egress_isolation_claimed": false
+  },
+  "lifecycle_requests": {
+    "npm_debug_originals": [
+      {
+        "path": "npm-debug-2026-10-11T16_46_05_128Z-debug-0.log",
+        "bytes": 384401,
+        "sha256": "b743bbdf6162ddfc4a045eb0d2bd9efdaa117e2d6806eb6cab4cc04c97e83024",
+        "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_46_05_128Z-debug-0.log"
+      },
+      {
+        "path": "npm-debug-2026-10-11T16_47_27_357Z-debug-0.log",
+        "bytes": 2145,
+        "sha256": "25b9deb4b2d1f15db3fd4f253ec7ebfcd2ad21df8e0547d527d78cca87cd5ef9",
+        "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_47_27_357Z-debug-0.log"
+      },
+      {
+        "path": "npm-debug-2026-10-11T16_47_32_055Z-debug-0.log",
+        "bytes": 1128,
+        "sha256": "4ca9d2ca0aa68574d46b5ef9eb1e7a88779c5c76552dff747fea4f9c62a0b9cf",
+        "original_path": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm/_logs/2026-10-11T16_47_32_055Z-debug-0.log"
+      }
+    ],
+    "package_reference_capture": "04-package-lifecycle-references.json",
+    "public_binary_host_requests_directly_instrumented": false,
+    "full_egress_isolation": false
+  },
+  "operational_path_errors": [
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/development.tmp",
+      "bytes": 85,
+      "sha256": "2ab096a8df3c5946189e3fedc602b0644d3e5502be4d9c1d3fe27871f04d8217",
+      "kind": "accidental untracked report draft outside reportdir; no source/state/original/parent edits",
+      "recovery": "size/hash captured then absolute apply_patch deletion; not committed"
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/capture-dependency-provenance.tmp",
+      "bytes": 87,
+      "sha256": "a0408d9317f96e067f78eef65f6c3706cad3ee7a9a64dcb658e8f1b68d6eddee",
+      "kind": "accidental untracked report draft outside reportdir; no source/state/original/parent edits",
+      "recovery": "size/hash captured then absolute apply_patch deletion; git diff --exit-code=0; not committed"
+    }
+  ],
+  "untouched": [
+    "original tests/assertions/raw hash guards/normalization policy",
+    "B001/E0/API/worker/native env allowlist",
+    "eleven sources/sixteen uploads/selection/caps/bounds/commands/permissions/Secrets/retry",
+    "Actions v4/Node22/archive/ten inputs/all other tracked bytes and modes",
+    "Compose HARD_STOP/no third Compose",
+    "deferred keys/backup/recovery/baseline/password",
+    "progress/features/pending_gate/memory/registry/harness"
+  ],
+  "acceptance": {
+    "independent_scope": false,
+    "different_family_Kimi": false,
+    "Windows_checkout_bytes": false,
+    "INITIAL_native": false,
+    "functionality": false,
+    "F004_F005_closed": false,
+    "release_ready": false
+  },
+  "publication": {
+    "worker_push": false,
+    "source_integrated_into_parent_runtime": false,
+    "CI_or_native_run": false,
+    "main_or_prod": false,
+    "human_gate_decision": false
+  },
+  "next": [
+    "Fresh independent actual-diff/post-scope",
+    "Different-family Kimi supporting gate",
+    "Only separate Coordinator ruling may authorize new exact-source non-main publication/native opportunity; no retry"
+  ],
+  "artifact_manifest": "artifact-manifest.json; includes all report files except the manifest itself"
+}

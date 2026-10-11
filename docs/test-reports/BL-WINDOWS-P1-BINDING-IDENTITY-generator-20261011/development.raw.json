@@ -1,0 +1,120 @@
+{
+  "format": "windows-p1-C002-owned-generator-development-v1",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "observed_at_utc": "2026-10-11T16:45:07.988Z",
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+  "role": "supporting Generator development; not independent acceptance",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "TEMP": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "TMP": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "XDG_CACHE_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/cache",
+    "XDG_CONFIG_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/config",
+    "XDG_DATA_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/data",
+    "NPM_CONFIG_CACHE": "/Volumes/ORICO/project/.wp1cbg-20261011/cache/npm",
+    "NPM_CONFIG_USERCONFIG": "/Volumes/ORICO/project/.wp1cbg-20261011/config/npmrc",
+    "NPM_CONFIG_GLOBALCONFIG": "/Volumes/ORICO/project/.wp1cbg-20261011/config/npmrc-global",
+    "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/Volumes/ORICO/project/.wp1cbg-20261011/config/gitconfig",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "PRISMA_HIDE_UPDATE_MESSAGE": "1",
+    "TZ": "UTC",
+    "LANG": "en_US.UTF-8"
+  },
+  "inherited_ambient_env": false,
+  "reused_dependencies": false,
+  "install_attempts": 0,
+  "native_diagnostic_modes_authorized_or_executed": false,
+  "publication_or_push": false,
+  "lifecycle_network_limit": "Only public registry and unchanged package-owned Prisma/better-sqlite3 lifecycle endpoints authorized; no full egress isolation or host-observation claim",
+  "commands": [],
+  "before": {
+    "node_modules_absent": true,
+    "package_lock": {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+    },
+    "package_json": {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/package.json",
+      "bytes": 2113,
+      "sha256": "b0349effd309116f5e4efadf15877cd9249ae70e98aa4f9d5d1b672be5b36b8a"
+    },
+    "home_exists": true,
+    "tmp_realpath": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp",
+    "npm_cache_absent": true
+  },
+  "locked_lifecycle_packages": [
+    {
+      "path": "node_modules/@parcel/watcher",
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher/-/watcher-2.6.0.tgz",
+      "integrity": "sha512-7FNeNl8NCE7aINx7WXiKQrPYZWC/hvrTsmk6zmxbI7LTXE7hVek/n8AfVgpe2y82zl3w0HvCHN0bVKMBoJcC0w=="
+    },
+    {
+      "path": "node_modules/@prisma/client",
+      "version": "5.22.0",
+      "resolved": "https://registry.npmjs.org/@prisma/client/-/client-5.22.0.tgz",
+      "integrity": "sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA=="
+    },
+    {
+      "path": "node_modules/@prisma/engines",
+      "version": "5.22.0",
+      "resolved": "https://registry.npmjs.org/@prisma/engines/-/engines-5.22.0.tgz",
+      "integrity": "sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA=="
+    },
+    {
+      "path": "node_modules/@swc/core",
+      "version": "1.16.13",
+      "resolved": "https://registry.npmjs.org/@swc/core/-/core-1.16.13.tgz",
+      "integrity": "sha512-k4uUsIMS0IwOKVsrQs48IZK75O4roV3FnuJEdL7ES+DFESftdgvz73QBqN3VUAbUmUr78We4tzG0kgYj36M22Q=="
+    },
+    {
+      "path": "node_modules/better-sqlite3",
+      "version": "12.10.0",
+      "resolved": "https://registry.npmjs.org/better-sqlite3/-/better-sqlite3-12.10.0.tgz",
+      "integrity": "sha512-CyzaZRQKyHkB2ZInfTTl2nvT33EbDpjkLEbE8/Zck3Ll6O0qqvuGdrJ45HgtH+HykRg88ITY3AdreBGN70aBSQ=="
+    },
+    {
+      "path": "node_modules/esbuild",
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
+      "integrity": "sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA=="
+    },
+    {
+      "path": "node_modules/fsevents",
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="
+    },
+    {
+      "path": "node_modules/prisma",
+      "version": "5.22.0",
+      "resolved": "https://registry.npmjs.org/prisma/-/prisma-5.22.0.tgz",
+      "integrity": "sha512-vtpjW3XuYCSnMsNVBjLMNkTj6OZbudcPPTPYHqX0CJfpcdWciI1dM8uHETwmDxxiqEwCIE6WvXucWUetJgfu/A=="
+    },
+    {
+      "path": "node_modules/unrs-resolver",
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/unrs-resolver/-/unrs-resolver-1.11.1.tgz",
+      "integrity": "sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg=="
+    },
+    {
+      "path": "node_modules/vite/node_modules/esbuild",
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz",
+      "integrity": "sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg=="
+    }
+  ],
+  "ok": false,
+  "failure": {
+    "name": "AssertionError",
+    "message": "non-public-registry locked package",
+    "stack": "AssertionError [ERR_ASSERTION]: non-public-registry locked package\n    at file:///Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development.mjs:69:5\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+  },
+  "finished_at_utc": "2026-10-11T16:45:07.992Z"
+}

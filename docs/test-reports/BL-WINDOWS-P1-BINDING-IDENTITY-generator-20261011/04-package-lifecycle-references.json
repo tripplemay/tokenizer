@@ -1,0 +1,74 @@
+{
+  "classification": "installed unchanged package source references; not actual host/egress capture",
+  "references": [
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@prisma/fetch-engine/dist/chunk-MX3HXAU2.js",
+      "bytes": 1888,
+      "sha256": "d37645fdc975e90c053f6007361e148e8c04dab7b6bb80e220fe8481645b3801",
+      "lines": []
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/better-sqlite3/package.json",
+      "bytes": 1436,
+      "sha256": "d1db58a099dfdef5d10253e873e358eb1e9e2ebb01fa6ef0d40150e37cef6317",
+      "lines": [
+        {
+          "line": 5,
+          "text": "  \"homepage\": \"http://github.com/WiseLibs/better-sqlite3\","
+        },
+        {
+          "line": 9,
+          "text": "    \"url\": \"git://github.com/WiseLibs/better-sqlite3.git\""
+        },
+        {
+          "line": 23,
+          "text": "    \"prebuild-install\": \"^7.1.1\""
+        },
+        {
+          "line": 41,
+          "text": "    \"install\": \"prebuild-install || node-gyp rebuild --release\","
+        },
+        {
+          "line": 42,
+          "text": "    \"build-release\": \"node-gyp rebuild --release\","
+        }
+      ]
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prebuild-install/download.js",
+      "bytes": 4098,
+      "sha256": "91663d22ce22740be17b6f22868e3d2687ea5a759c50b75322f597f0f6ccfb15",
+      "lines": []
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/prebuild-install/util.js",
+      "bytes": 4280,
+      "sha256": "587f23cf9216dfa7e162d83d9760a2daf2744623c38f5576fb3e5ef6d21d6c6c",
+      "lines": [
+        {
+          "line": 16,
+          "text": "    prerelease: opts.pkg.version.split('-')[1],"
+        },
+        {
+          "line": 31,
+          "text": "  return github(opts.pkg).replace('github.com', 'api.github.com/repos') + '/releases'"
+        },
+        {
+          "line": 60,
+          "text": "  return github(opts.pkg) + '/releases/download/{tag_prefix}{version}/' + packageName"
+        }
+      ]
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/node_modules/@prisma/fetch-engine/dist/chunk-FQ2BOR66.js",
+      "bytes": 87678,
+      "sha256": "9d1f2d90111d6b1ec2c942c67518cb069666c4319b0236c3f67f54b013b8d45c",
+      "lines": [
+        {
+          "line": 2429,
+          "text": "  process.env.PRISMA_ENGINES_MIRROR || \"https://binaries.prisma.sh\";"
+        }
+      ]
+    }
+  ]
+}

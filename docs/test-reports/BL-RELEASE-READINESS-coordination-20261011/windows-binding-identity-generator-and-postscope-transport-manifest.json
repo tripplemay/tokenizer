@@ -1,0 +1,425 @@
+{
+  "observed_at": "2026-10-11T16:58:25.110Z",
+  "role": "Coordinator byte transport only",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "count": 52,
+  "total_bytes": 1009297,
+  "entries": [
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/00-development-driver.status.json",
+      "bytes": 729,
+      "sha256": "a8ebf20e416ba1ce116b0652379bf5220acb3fe73b28b0d9fb9ac2c8f86dcb19",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/00-development-driver.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/00-development-driver.stdout.log",
+      "bytes": 701,
+      "sha256": "cc5d78471788e717dd1027b7d17e134e7f2fa1dc80e5b72f67c255580d3d585d",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/01-node-version.status.json",
+      "bytes": 781,
+      "sha256": "e144ed74aa9018e7c49635d56c625c83b7720a6fedb9d89aea95df012305f552",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/01-node-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/01-node-version.stdout.log",
+      "bytes": 9,
+      "sha256": "c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/02-npm-version.status.json",
+      "bytes": 867,
+      "sha256": "334f73edf022f7cccc4ae1f6085a51cefb11c09133ba39599943b47e53d36c54",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/02-npm-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/02-npm-version.stdout.log",
+      "bytes": 7,
+      "sha256": "1affb8f29ea203d9dc22f77b58c55ccff5317a28ca336aac0cd9a89aea9eb1fb",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/03-npm-ci.status.json",
+      "bytes": 879,
+      "sha256": "77f4482e844bdd87cc58f260adbf65fe68aac0f00c5d67cba77bc2ee25e30802",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/03-npm-ci.stderr.log",
+      "bytes": 6594,
+      "sha256": "67c2435343bc8f3c2e1b47949c44354a8356c0cde500218433ba3155bb8010a6",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/03-npm-ci.stdout.log",
+      "bytes": 1198,
+      "sha256": "1960d0ec8d2230e5f2457bca5003a6674d0cbf41dd6b20de93e982605e4fbeed",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/04-package-lifecycle-references.json",
+      "bytes": 2744,
+      "sha256": "d188729c768cb2436d510577c446f899d1940d7492eb6c1b4bb1aeff85c13276",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/05-syntax.status.json",
+      "bytes": 827,
+      "sha256": "e6a408f83b20f4bdf9eb152fcc9dd21dc598a148637eeab4c9063616987f3675",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/05-syntax.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/05-syntax.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/06-pure-import.status.json",
+      "bytes": 854,
+      "sha256": "00c726f11f77aafcf4307fb81006f8da37b454719c6a534274e3a91239837f34",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/06-pure-import.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/06-pure-import.stdout.log",
+      "bytes": 225,
+      "sha256": "db6c526231a0061e380e6d51c73689a17b64305e9bf19d1e75a2c793431fecf7",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.raw.json",
+      "bytes": 31053,
+      "sha256": "453e2da76956c475a0ca19e4e056c16b59c78b15b7f081286239b42cbdcb6bf7",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.status.json",
+      "bytes": 1085,
+      "sha256": "c15817909e9da93fa58eea268fd326eb05b267c26bd0a72a2a6e2c9c056762e3",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.stdout.log",
+      "bytes": 205,
+      "sha256": "3911f3f5eac683d662eb810cd4c943b111ce4f9ab724df16f7fb5bb1f6c17920",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/08-verify.status.json",
+      "bytes": 862,
+      "sha256": "1755f8b07564cea393a3aad7bb27a4f00cb949134032773e20bae81274d212b4",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/08-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/08-verify.stdout.log",
+      "bytes": 402,
+      "sha256": "d680da3da854d8cd5fa86bd85101b3c9edf659383d7c41ba626d6be6cade31b1",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/09-development-driver.status.json",
+      "bytes": 729,
+      "sha256": "c9de3fed9e8421518fa5ae7a1cf878f5527fa0e052706f0e1783cc528350943e",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/09-development-driver.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/09-development-driver.stdout.log",
+      "bytes": 2846,
+      "sha256": "d6e2a79d5f95e7a4d365ce54feae5813cd194b1a0e97fb8e73247f5f17e0c9e3",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/README.md",
+      "bytes": 10779,
+      "sha256": "b132931b2ef045d01b5f933a0def7d67f0bc4ded795dfad5cb3317ea0021d9c9",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/artifact-manifest.json",
+      "bytes": 11517,
+      "sha256": "a2477fe6cce66dcb558b098eaa15b65ebc008c5848f8f85f6f0eb622c4275a56",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/capture-dependency-provenance.mjs",
+      "bytes": 7811,
+      "sha256": "269c19202149dc0fff8918b0cb278833aa528daf66def890478288a46bd856c9",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/capture-static.mjs",
+      "bytes": 10884,
+      "sha256": "1d5959573397a1a1762953f5ec2ca4e8a92a82a0b7ff9819c6e43c508a03d8d9",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/dependency-provenance.raw.json",
+      "bytes": 48642,
+      "sha256": "904dbb4ecb3cfaf8d541a30cfcd62540caf37916e6dfccc61fc41e6e688a719d",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development-after-local-preflight.raw.json",
+      "bytes": 14011,
+      "sha256": "e10788b0e3a5411a8260e2fb32cf3181e1c2fd04604474cbbc1ee9793b80dffc",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development.initial.mjs",
+      "bytes": 8761,
+      "sha256": "51b1f7b706bbb80ded52f23b0bd6988b6aa43e43468329e3f10337cdd51db0a8",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development.mjs",
+      "bytes": 9296,
+      "sha256": "dc8d6ab7cb8777753519daddea29393c291587e42796b17ac4b347d18b5f7c57",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/development.raw.json",
+      "bytes": 6139,
+      "sha256": "7227392eee13f8316011de93119e82fcc959bc25c265bebdb8821c8aa8174eaf",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/generator-report.json",
+      "bytes": 22589,
+      "sha256": "b72f3edf12543131a92f0a08ce33c772421c1f1d4fdbfaaa2d2bf9cc1e6537ad",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/npm-debug-2026-10-11T16_46_05_128Z-debug-0.log",
+      "bytes": 384401,
+      "sha256": "b743bbdf6162ddfc4a045eb0d2bd9efdaa117e2d6806eb6cab4cc04c97e83024",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/npm-debug-2026-10-11T16_47_27_357Z-debug-0.log",
+      "bytes": 2145,
+      "sha256": "25b9deb4b2d1f15db3fd4f253ec7ebfcd2ad21df8e0547d527d78cca87cd5ef9",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/npm-debug-2026-10-11T16_47_32_055Z-debug-0.log",
+      "bytes": 1128,
+      "sha256": "4ca9d2ca0aa68574d46b5ef9eb1e7a88779c5c76552dff747fea4f9c62a0b9cf",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/postcommit.raw.json",
+      "bytes": 95978,
+      "sha256": "f4304eea638041621cd3c083d7979d96a5afa30ad7a4a20fb0beeefe6d670696",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/postcommit.source.diff",
+      "bytes": 9430,
+      "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/postdevelopment.raw.json",
+      "bytes": 97964,
+      "sha256": "3e6fef533aeb2fc2e51c68c02cf9fc44fed9b6e6ba9f9e1831fa8dddecc0c46e",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/postdevelopment.source.diff",
+      "bytes": 9430,
+      "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/precommit.raw.json",
+      "bytes": 94655,
+      "sha256": "60e31019fb84601d24f9a20cb1247a52d89aa2a42be781843573a038d522f951",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/precommit.source.diff",
+      "bytes": 9430,
+      "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/pure-import.mjs",
+      "bytes": 1956,
+      "sha256": "b202fb9ef7eea291107677c3852f72d7f07439cc7e6954b522462ddc87fa712b",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "source_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/summarize.mjs",
+      "bytes": 6745,
+      "sha256": "5973f8611495adf134b31cc42eb7719c85f0ad71e24d614ec80f379435892a23",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-post-scope-20261011",
+      "source_commit": "23c97c15fed90b993713650af085006297a0bd5c",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-post-scope-20261011/README.md",
+      "bytes": 12144,
+      "sha256": "e847fd4fa13d0b0a592c0d8fa58c9bd032a2d741c5dd1b36e4f84b1172854ca8",
+      "byte_equal": true
+    },
+    {
+      "source_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-post-scope-20261011",
+      "source_commit": "23c97c15fed90b993713650af085006297a0bd5c",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-post-scope-20261011/verdict.json",
+      "bytes": 79865,
+      "sha256": "17afb1b712243522f80fb270df1f9fc8432df074ce8a208f47f00393759bfaf3",
+      "byte_equal": true
+    }
+  ]
+}

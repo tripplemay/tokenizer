@@ -1,0 +1,1 @@
+[dispatch] ✓ 信封合法（task=windows-p1-binding-identity-61cf64e-kimi-r0 batch=BL-WINDOWS-P1-BINDING-IDENTITY-SUPPORT role=evaluator）

@@ -1,0 +1,2261 @@
+{
+  "format": "windows-p1-C002-generator-static-capture-v1",
+  "phase": "postcommit",
+  "observed_at_utc": "2026-10-11T16:42:33.988Z",
+  "role": "supporting Generator; not independent acceptance",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "start": "88d07004466251be3076fc454699207d3879374f",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1cbg-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1cbg-20261011/tmp/",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin",
+    "XDG_CACHE_HOME": "/Volumes/ORICO/project/.wp1cbg-20261011/cache",
+    "GIT_CONFIG_GLOBAL": "/Volumes/ORICO/project/.wp1cbg-20261011/config/gitconfig",
+    "GIT_CONFIG_NOSYSTEM": "1"
+  },
+  "head": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "branch": "codex/windows-p1-binding-identity-generator-20261011",
+  "authority": {
+    "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-generator-adjudication.json",
+    "bytes": 3099,
+    "sha256": "d283f9297134f3fc2c688bf5d797a3bdde0a514cbedf9e0bcc21a3177fb47945"
+  },
+  "frozen_reports": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+      "bytes": 13149,
+      "sha256": "9b5e0b20d9aec8fa39ff794661fbcb76d19933575ca78655f574b02660a66f6d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "bytes": 8014,
+      "sha256": "98e65d55a81f6ba5b8f78d9929290af743295384d9f1cebf82fa310d9274cf0f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "bytes": 15916,
+      "sha256": "58ac7237c757bee331017a7dc1065ae85931115d20be331c381b36a5aefd25e1"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "bytes": 72541,
+      "sha256": "d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/verdict.json",
+      "bytes": 33779,
+      "sha256": "dae79f5098bd0cc6bfd1748a2ad16e5588c85963a192fb16c81ba8dd6221b317"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/README.md",
+      "bytes": 10589,
+      "sha256": "272df9f849640c5c2ddb2afd738b9bff5a84cd9cc9e03e3655ba42a12ae3003f"
+    }
+  ],
+  "projection": [
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3308,
+      "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34976,
+      "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 25454,
+      "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+    },
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 73022,
+      "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+    }
+  ],
+  "cli_only_two_identity_literals": true,
+  "markdown_original_prefix_preserved": true,
+  "changed_json_keys": [
+    "revision",
+    "updated_at_utc",
+    "revision_scope",
+    "workflow.checkout_env"
+  ],
+  "start_additions": [
+    "100644 blob 7d6cac0743513520a444a728a97bea0c58ecc4fc\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+    "100644 blob a97bf93558da9b4f7a56f0c0b2796e3df603288a\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+    "100644 blob f357c04585b2ff6f3dbe04ade9c5f9faeb8a11dd\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+    "100644 blob 28b42bb040c5b89d48401c08c5890a3636aaa02b\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+    "100644 blob e209ad2c660f93bad786d7a5a62a29f36ee5ecbd\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/README.md",
+    "100644 blob 138399ca441c02385e160122febda0de97188157\tdocs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/verdict.json"
+  ],
+  "whole_tree": {
+    "source_entries": 2457,
+    "start_entries": 2463,
+    "disk_entries_checked": 2463,
+    "all_other_raw_blob_ids_unchanged": true,
+    "all_tracked_modes_and_types_preserved": true,
+    "source_inventory_sha256": "93a70a1a37a49c6d3f442ff67902c15004307caff3a7d29f3a5fdac34526da3f",
+    "start_inventory_sha256": "fdbc1eae377df857e6744ea397eec0c03c9fc39878424e855fc6c594023e11aa",
+    "head_inventory_sha256": "73c6e9c22b5f3439b0dd1ca8f7718ed0983fb1113b1be0045be3445f0bf90e7d"
+  },
+  "ten_inputs": [
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "bytes": 24862,
+      "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+      "bytes": 11769,
+      "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+      "bytes": 10792,
+      "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "bytes": 51907,
+      "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "bytes": 4921,
+      "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "bytes": 5545,
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "bytes": 3012,
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "bytes": 16801,
+      "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+    },
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "bytes": 4389,
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+    }
+  ],
+  "original_archive": {
+    "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/",
+    "inventory_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+    "entries": [
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/diagnostic-result.json",
+        "bytes": 334,
+        "sha256": "7e80803b4f784383f0bb827c9ffdccfca8c70a6d3ac722aff7e92846a112d6aa"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/provenance.json",
+        "bytes": 738,
+        "sha256": "ffb7f63533353470de872494f8d2321079db38f733645699255ec7518b374c85"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-binding.json",
+        "bytes": 278,
+        "sha256": "335e310ec0c9c170b3a31d50508fff378c95911ea8e9b53594b4b23d861c8923"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-confirmation.json",
+        "bytes": 283,
+        "sha256": "91892d09fcde4c5788116a92ff015c359429263f9c88e9d381c39fa4e92de1cf"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-healthy.json",
+        "bytes": 278,
+        "sha256": "90719c2b8b9cbb0ab21595af583de600a47b28b8e85c9cacd4cfa40407b47bc5"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-parent.json",
+        "bytes": 277,
+        "sha256": "c5d36b08ef90d95e2d0b8e545daf06266186b42c8fee0563923ed7babef6d75e"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-binding.json",
+        "bytes": 276,
+        "sha256": "0dfd8aca5af3f4457e5c82ea907bc9ade1fa3ccf790a98bd62dfb7ead4b13a8b"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-confirmation.json",
+        "bytes": 281,
+        "sha256": "d69288e32df13a87802002b8021fc4ebe04095dc5d79bd653587766c042ef841"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-healthy.json",
+        "bytes": 276,
+        "sha256": "8df7b804cc186d7edcdb9e9197b61322b11830b6cc12129de3040d04080a06d1"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-parent.json",
+        "bytes": 275,
+        "sha256": "864f984ff4a7afc20eac89e8691cd66873c490f3fccffac8713bfd0d88cd8b07"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/parity-summary.json",
+        "bytes": 2813,
+        "sha256": "31ab1ecd90897983a1dd6a2200a3bc7adc2f772ff197e347009903604029645d"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/powershell-counter.jsonl",
+        "bytes": 960,
+        "sha256": "30ff911eab45b6697e0b3876f07d3a9e5c170eff821097d9132bb5f7620299fd"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.cleanup.json",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.guard.jsonl",
+        "bytes": 1843,
+        "sha256": "2e57450baa2f965e8fb9b1b8b316657026afc49cbcb6042fed5c484260608020"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.health.json",
+        "bytes": 386,
+        "sha256": "cc2ee7e5efc6bd6328e319a1e10c20f12540f792beef3f921d1e6005c201933b"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.json",
+        "bytes": 1868,
+        "sha256": "52263991851deee7ae486a73639c0619fc903a2d85007dd1ff009d0f12d7c8b5"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.cleanup.json",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.guard.jsonl",
+        "bytes": 1843,
+        "sha256": "c7b3298fc983348b90058230b8889c065489bc206e15ce466c49218a7335de22"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.health.json",
+        "bytes": 386,
+        "sha256": "2c286515e5a2a889feb530608ca0c5ba10eb75fedf73f70bfe0cfbc2da93bc0e"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.json",
+        "bytes": 1890,
+        "sha256": "ee8343f3b57afa723459041d6e282dd1e873267aaccfeb62a0c7fc02f6c6a96c"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.cleanup.json",
+        "bytes": 341,
+        "sha256": "79007f407a20e0ca50acf63e29f5ba169f67668c01008ab4381084d959f3b776"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.guard.jsonl",
+        "bytes": 1848,
+        "sha256": "cb5dfd358a01d2895a7bb552d3f1973691826ddf586cb1e00874d1e42a433841"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.health.json",
+        "bytes": 388,
+        "sha256": "7756d6df0edbcd0ffc8c92bb77417c27c8ed3e8e990e67991fd778bb15b888b1"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.json",
+        "bytes": 1896,
+        "sha256": "77155aec4f1836301a6fec3b7a04b93362ccf7bbe2ed06011c5e1c3c1ca3b008"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.cleanup.json",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.guard.jsonl",
+        "bytes": 1843,
+        "sha256": "d1e070dd1d605d5f49e1ebc0f689a4409bec2189b82166e994cbc758143b8b0c"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.health.json",
+        "bytes": 386,
+        "sha256": "710771496c76d54be455508a265b83a567a36514e680c1916cd04818eb660174"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.json",
+        "bytes": 1901,
+        "sha256": "fc92edd9428223fbc383000106a8d414df914d4cae5558af43ed4d5fed1acb54"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.cleanup.json",
+        "bytes": 341,
+        "sha256": "1fe61ec181cc51d412096c96407dd37fc9b50fd02c7dc99f03a5b194eda56fc9"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.guard.jsonl",
+        "bytes": 1837,
+        "sha256": "bdf0c5f1b01f2adc9140efeeaade9c20ba72f3ec876fa8e5efdc97e8ee73d2b5"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.health.json",
+        "bytes": 384,
+        "sha256": "c1c23b539d65e3a3b0e4005e150fd0358efd4d121c0b5880113e06d413e9695a"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.json",
+        "bytes": 1901,
+        "sha256": "90c74286bc1883c82b5cce8ad00039ca93150677afa996ef039ae03cb8f761b8"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.cleanup.json",
+        "bytes": 344,
+        "sha256": "b82550494699884b41408fd3f24dbbc32da5090e57fde59a9522164c5d6a280a"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.guard.jsonl",
+        "bytes": 1840,
+        "sha256": "83cc8bf14e853c1d90bc493d2ed6a767ed75f2a3a31a9934d01e8ba49b684b47"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.health.json",
+        "bytes": 522,
+        "sha256": "3d962d86ea55adbf251d3f729871ae9f5c6763381273a07a9fcbe08c9b610faf"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.json",
+        "bytes": 1884,
+        "sha256": "bc41bdf59da722084e5349df77bb5144ef2577d256c6025f41418b169ac3c02b"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.trace.jsonl",
+        "bytes": 5474,
+        "sha256": "59b2d620c57bfed74e630a492de781ab99ade7c1483555636610d1cca3c8e7ba"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.cleanup.json",
+        "bytes": 344,
+        "sha256": "8a84414ca1a67c67e7dde2ebe29f7717f4d54c5e440e421e65b1707032f76447"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.guard.jsonl",
+        "bytes": 1832,
+        "sha256": "0074a5b09a298fc878b6ae8607ab19d2c069149539a9d1842d593d51bac87b01"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.health.json",
+        "bytes": 519,
+        "sha256": "f4bc38228a11bcf3a000ef693b570275f9bad3638b80bbfafaa17b6abb9de652"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.json",
+        "bytes": 1897,
+        "sha256": "af448893c6a61eaba067fede78b0f4478492bf962ff99d644ceb35efeb8da54b"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.trace.jsonl",
+        "bytes": 5473,
+        "sha256": "bc95df63d3cef2ba6ba8e12d65c5b21f8ef569f4b6a42223b7aa8aa62b81f27f"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.cleanup.json",
+        "bytes": 344,
+        "sha256": "3628c4702290904824ee0c0881180edb420787bb871e42f6bae402c34851b025"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.guard.jsonl",
+        "bytes": 1840,
+        "sha256": "3bce4e8bfb1b6c22738ba746bfb77b316674938b6c1303e00377986efa1170bb"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.health.json",
+        "bytes": 522,
+        "sha256": "b8b912764b5a34e3a6dadaf46d15ac006fadbb62d04ef471f8624a874f2c2377"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.json",
+        "bytes": 1902,
+        "sha256": "edc7896db02e0b2a675b51bb2c250f4bfaa1deaaf52cfd7305ca9950413a77c5"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.trace.jsonl",
+        "bytes": 5481,
+        "sha256": "728afed35c3ff72d4b8a26c9923818c05632f6b9776436a7926bf7c0e9f0ce7e"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.cleanup.json",
+        "bytes": 344,
+        "sha256": "9c9733aade03cb4789df2a80f1d91044ecab769ec7a47653cdf04bf48d58d585"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.guard.jsonl",
+        "bytes": 1845,
+        "sha256": "44dd0b553b23ad3d55f99a0e3fbbcc1d2e4517d88422806e8c74ca685e4cde1f"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.health.json",
+        "bytes": 525,
+        "sha256": "d20db36c136a9acfc5f3494c71a21010d1f114402f86659e3889816a337ca2d5"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.json",
+        "bytes": 1888,
+        "sha256": "e0455cc08bb095acc43147612930d6d39b59a97124093d8d4394cbd4a1e3e856"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.trace.jsonl",
+        "bytes": 5495,
+        "sha256": "f4c86f0521b43c82dbbdc5f20ec439a4d1ed1b6bdfb1d75fc2dcc036a15b972b"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.cleanup.json",
+        "bytes": 344,
+        "sha256": "adcbf22ccdc10994bc4f0e62919b1ba9cd06aa797cf7af961537a6e4d26ec898"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.guard.jsonl",
+        "bytes": 1840,
+        "sha256": "ab29110b1456460d0efbaa2fbb995691f5fbc0a6d3afb162b11ff3e6e02ed967"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.health.json",
+        "bytes": 522,
+        "sha256": "6125849c8fc71a2288e9340dbf74b143fea6a5e3c1a9f286d6ea5e460fe58ca1"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.json",
+        "bytes": 1897,
+        "sha256": "b1fe0bdd89670e33fc5ca16acd9c8d97333e75fd2feb43cdfe86563ec65ab98f"
+      },
+      {
+        "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.trace.jsonl",
+        "bytes": 5459,
+        "sha256": "aada80b11ad4d5b48a326415c3a392aec04a2373a9cf04f0b7b5ac762b62c7fb"
+      }
+    ]
+  },
+  "original_test": {
+    "path": "tests/diagnostics/windows-p1-stages.test.ts",
+    "bytes": 53608,
+    "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+  },
+  "parent_original_receipts": [
+    {
+      "path": "windows-checkout-native-run38153928452-final-original.json",
+      "bytes": 12289,
+      "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-full-original.log",
+      "bytes": 25522,
+      "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4"
+    },
+    {
+      "path": "windows-checkout-native-run38153928452-transport-manifest.json",
+      "bytes": 1564,
+      "sha256": "1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961"
+    }
+  ],
+  "source_delta_from_start": [
+    ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+  ],
+  "commit_paths": [
+    ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+  ],
+  "diff": {
+    "path": "postcommit.source.diff",
+    "bytes": 9430,
+    "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907"
+  },
+  "status": "?? docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/capture-static.mjs\n?? docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/postcommit.source.diff\n?? docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/precommit.raw.json\n?? docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/precommit.source.diff\n",
+  "ok": true,
+  "commands": [
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 41,
+        "sha256": "ca3b2511844a130160afe873f1141244501f065ce6c2cea397acac8fe14c24f4"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 53,
+        "sha256": "d9d87fc30eff0c1d05bb7dc6cbd1902c3137ac0f55b63cf54ea8b367a6f83fa0"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "d071207:docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-generator-adjudication.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 3099,
+        "sha256": "d283f9297134f3fc2c688bf5d797a3bdde0a514cbedf9e0bcc21a3177fb47945"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-p1-stages-diagnostic.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 3228,
+        "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 22275,
+        "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 73022,
+        "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "ls-tree",
+        "-r",
+        "221f2f87d94db1656e3000662796d79621b696f5"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 303618,
+        "sha256": "93a70a1a37a49c6d3f442ff67902c15004307caff3a7d29f3a5fdac34526da3f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "ls-tree",
+        "-r",
+        "88d07004466251be3076fc454699207d3879374f"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 304397,
+        "sha256": "fdbc1eae377df857e6744ea397eec0c03c9fc39878424e855fc6c594023e11aa"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "ls-tree",
+        "-r",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 304397,
+        "sha256": "73c6e9c22b5f3439b0dd1ca8f7718ed0983fb1113b1be0045be3445f0bf90e7d"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/bounded-subprocess.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/bounded-subprocess-worker.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:src/cli/replay.ts"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:.github/workflows/windows-release-diagnostics.yml"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c:package-lock.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/diagnostic-result.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 334,
+        "sha256": "7e80803b4f784383f0bb827c9ffdccfca8c70a6d3ac722aff7e92846a112d6aa"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/provenance.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 738,
+        "sha256": "ffb7f63533353470de872494f8d2321079db38f733645699255ec7518b374c85"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-binding.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 278,
+        "sha256": "335e310ec0c9c170b3a31d50508fff378c95911ea8e9b53594b4b23d861c8923"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-confirmation.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 283,
+        "sha256": "91892d09fcde4c5788116a92ff015c359429263f9c88e9d381c39fa4e92de1cf"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-healthy.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 278,
+        "sha256": "90719c2b8b9cbb0ab21595af583de600a47b28b8e85c9cacd4cfa40407b47bc5"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-parent.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 277,
+        "sha256": "c5d36b08ef90d95e2d0b8e545daf06266186b42c8fee0563923ed7babef6d75e"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-binding.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 276,
+        "sha256": "0dfd8aca5af3f4457e5c82ea907bc9ade1fa3ccf790a98bd62dfb7ead4b13a8b"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-confirmation.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 281,
+        "sha256": "d69288e32df13a87802002b8021fc4ebe04095dc5d79bd653587766c042ef841"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-healthy.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 276,
+        "sha256": "8df7b804cc186d7edcdb9e9197b61322b11830b6cc12129de3040d04080a06d1"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-parent.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 275,
+        "sha256": "864f984ff4a7afc20eac89e8691cd66873c490f3fccffac8713bfd0d88cd8b07"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/parity-summary.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 2813,
+        "sha256": "31ab1ecd90897983a1dd6a2200a3bc7adc2f772ff197e347009903604029645d"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/powershell-counter.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 960,
+        "sha256": "30ff911eab45b6697e0b3876f07d3a9e5c170eff821097d9132bb5f7620299fd"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1843,
+        "sha256": "2e57450baa2f965e8fb9b1b8b316657026afc49cbcb6042fed5c484260608020"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 386,
+        "sha256": "cc2ee7e5efc6bd6328e319a1e10c20f12540f792beef3f921d1e6005c201933b"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1868,
+        "sha256": "52263991851deee7ae486a73639c0619fc903a2d85007dd1ff009d0f12d7c8b5"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1843,
+        "sha256": "c7b3298fc983348b90058230b8889c065489bc206e15ce466c49218a7335de22"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 386,
+        "sha256": "2c286515e5a2a889feb530608ca0c5ba10eb75fedf73f70bfe0cfbc2da93bc0e"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1890,
+        "sha256": "ee8343f3b57afa723459041d6e282dd1e873267aaccfeb62a0c7fc02f6c6a96c"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 341,
+        "sha256": "79007f407a20e0ca50acf63e29f5ba169f67668c01008ab4381084d959f3b776"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1848,
+        "sha256": "cb5dfd358a01d2895a7bb552d3f1973691826ddf586cb1e00874d1e42a433841"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 388,
+        "sha256": "7756d6df0edbcd0ffc8c92bb77417c27c8ed3e8e990e67991fd778bb15b888b1"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1896,
+        "sha256": "77155aec4f1836301a6fec3b7a04b93362ccf7bbe2ed06011c5e1c3c1ca3b008"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 341,
+        "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1843,
+        "sha256": "d1e070dd1d605d5f49e1ebc0f689a4409bec2189b82166e994cbc758143b8b0c"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 386,
+        "sha256": "710771496c76d54be455508a265b83a567a36514e680c1916cd04818eb660174"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1901,
+        "sha256": "fc92edd9428223fbc383000106a8d414df914d4cae5558af43ed4d5fed1acb54"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 341,
+        "sha256": "1fe61ec181cc51d412096c96407dd37fc9b50fd02c7dc99f03a5b194eda56fc9"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1837,
+        "sha256": "bdf0c5f1b01f2adc9140efeeaade9c20ba72f3ec876fa8e5efdc97e8ee73d2b5"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 384,
+        "sha256": "c1c23b539d65e3a3b0e4005e150fd0358efd4d121c0b5880113e06d413e9695a"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1901,
+        "sha256": "90c74286bc1883c82b5cce8ad00039ca93150677afa996ef039ae03cb8f761b8"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 344,
+        "sha256": "b82550494699884b41408fd3f24dbbc32da5090e57fde59a9522164c5d6a280a"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1840,
+        "sha256": "83cc8bf14e853c1d90bc493d2ed6a767ed75f2a3a31a9934d01e8ba49b684b47"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 522,
+        "sha256": "3d962d86ea55adbf251d3f729871ae9f5c6763381273a07a9fcbe08c9b610faf"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1884,
+        "sha256": "bc41bdf59da722084e5349df77bb5144ef2577d256c6025f41418b169ac3c02b"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.trace.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5474,
+        "sha256": "59b2d620c57bfed74e630a492de781ab99ade7c1483555636610d1cca3c8e7ba"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 344,
+        "sha256": "8a84414ca1a67c67e7dde2ebe29f7717f4d54c5e440e421e65b1707032f76447"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1832,
+        "sha256": "0074a5b09a298fc878b6ae8607ab19d2c069149539a9d1842d593d51bac87b01"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 519,
+        "sha256": "f4bc38228a11bcf3a000ef693b570275f9bad3638b80bbfafaa17b6abb9de652"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1897,
+        "sha256": "af448893c6a61eaba067fede78b0f4478492bf962ff99d644ceb35efeb8da54b"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.trace.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5473,
+        "sha256": "bc95df63d3cef2ba6ba8e12d65c5b21f8ef569f4b6a42223b7aa8aa62b81f27f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 344,
+        "sha256": "3628c4702290904824ee0c0881180edb420787bb871e42f6bae402c34851b025"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1840,
+        "sha256": "3bce4e8bfb1b6c22738ba746bfb77b316674938b6c1303e00377986efa1170bb"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 522,
+        "sha256": "b8b912764b5a34e3a6dadaf46d15ac006fadbb62d04ef471f8624a874f2c2377"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1902,
+        "sha256": "edc7896db02e0b2a675b51bb2c250f4bfaa1deaaf52cfd7305ca9950413a77c5"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.trace.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5481,
+        "sha256": "728afed35c3ff72d4b8a26c9923818c05632f6b9776436a7926bf7c0e9f0ce7e"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 344,
+        "sha256": "9c9733aade03cb4789df2a80f1d91044ecab769ec7a47653cdf04bf48d58d585"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1845,
+        "sha256": "44dd0b553b23ad3d55f99a0e3fbbcc1d2e4517d88422806e8c74ca685e4cde1f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 525,
+        "sha256": "d20db36c136a9acfc5f3494c71a21010d1f114402f86659e3889816a337ca2d5"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1888,
+        "sha256": "e0455cc08bb095acc43147612930d6d39b59a97124093d8d4394cbd4a1e3e856"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.trace.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5495,
+        "sha256": "f4c86f0521b43c82dbbdc5f20ec439a4d1ed1b6bdfb1d75fc2dcc036a15b972b"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.cleanup.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 344,
+        "sha256": "adcbf22ccdc10994bc4f0e62919b1ba9cd06aa797cf7af961537a6e4d26ec898"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.guard.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1840,
+        "sha256": "ab29110b1456460d0efbaa2fbb995691f5fbc0a6d3afb162b11ff3e6e02ed967"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.health.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 522,
+        "sha256": "6125849c8fc71a2288e9340dbf74b143fea6a5e3c1a9f286d6ea5e460fe58ca1"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.json"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 1897,
+        "sha256": "b1fe0bdd89670e33fc5ca16acd9c8d97333e75fd2feb43cdfe86563ec65ab98f"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "show",
+        "221f2f87d94db1656e3000662796d79621b696f5:docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.trace.jsonl"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 5459,
+        "sha256": "aada80b11ad4d5b48a326415c3a392aec04a2373a9cf04f0b7b5ac762b62c7fb"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "diff",
+        "--name-only",
+        "88d07004466251be3076fc454699207d3879374f"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 220,
+        "sha256": "11493abe33d1e2cdc60d909828eae75ecb9314743d711f0b95ebb4731d4a90f3"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "61cf64e67a6fda231bb090e77c19d5ececb908af"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 220,
+        "sha256": "11493abe33d1e2cdc60d909828eae75ecb9314743d711f0b95ebb4731d4a90f3"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "diff",
+        "88d07004466251be3076fc454699207d3879374f",
+        "--",
+        ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 9430,
+        "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907"
+      },
+      "stderr": "",
+      "error": null
+    },
+    {
+      "command": "/usr/bin/git",
+      "args": [
+        "-c",
+        "core.fileMode=false",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+      "status": 0,
+      "signal": null,
+      "stdout": {
+        "path": "stdout",
+        "bytes": 367,
+        "sha256": "b7e20c61e8ab66eb772a8f134592d69c86c28695041fd50ac0be6306c5d4436a"
+      },
+      "stderr": "",
+      "error": null
+    }
+  ]
+}

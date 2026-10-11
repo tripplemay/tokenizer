@@ -1,0 +1,1484 @@
+{
+  "format": "windows-p1-binding-identity-fresh-supporting-actual-diff-scope-v1",
+  "created_at_utc": "2026-10-11T16:48:37.235Z",
+  "role": "fresh supporting actual-diff scope critic; harness-rules section 1.5; not Generator/functional Evaluator/Coordinator",
+  "verdict": "PASS_SCOPE_ONLY",
+  "blocking_findings": [],
+  "authority": {
+    "implementation_authorized": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "functional_acceptance": false,
+    "release_ready": false,
+    "state_transition": false,
+    "worker_push": false
+  },
+  "reviewed_freeze": {
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-post-scope-20261011",
+    "branch": "docs/windows-p1-binding-identity-post-scope-20261011",
+    "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+    "parent": "88d07004466251be3076fc454699207d3879374f",
+    "source221": "221f2f87d94db1656e3000662796d79621b696f5",
+    "source221_tree": "e29bf76487ec8dc7cca5e18392b2eaed3b1c1223",
+    "candidate_tree": "f83ae75d895dbd2f784eeb6992d8471dc6e562d8",
+    "progress_status": "building",
+    "progress_release_ready": false,
+    "initial_worktree_clean": true
+  },
+  "supporting_inputs": {
+    "classification": "claims independently checked, not native/functional acceptance; no C001 PASS borrowed",
+    "entries": [
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+        "bytes": 8014,
+        "sha256": "98e65d55a81f6ba5b8f78d9929290af743295384d9f1cebf82fa310d9274cf0f",
+        "same_object_as_parent": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+        "bytes": 15916,
+        "sha256": "58ac7237c757bee331017a7dc1065ae85931115d20be331c381b36a5aefd25e1",
+        "same_object_as_parent": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+        "bytes": 72541,
+        "sha256": "d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4",
+        "same_object_as_parent": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+        "bytes": 13149,
+        "sha256": "9b5e0b20d9aec8fa39ff794661fbcb76d19933575ca78655f574b02660a66f6d",
+        "same_object_as_parent": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/README.md",
+        "bytes": 10589,
+        "sha256": "272df9f849640c5c2ddb2afd738b9bff5a84cd9cc9e03e3655ba42a12ae3003f",
+        "same_object_as_parent": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/verdict.json",
+        "bytes": 33779,
+        "sha256": "dae79f5098bd0cc6bfd1748a2ad16e5588c85963a192fb16c81ba8dd6221b317",
+        "same_object_as_parent": true
+      }
+    ],
+    "pre_scope_verdict_read": "PASS_SCOPE_ONLY",
+    "planner_commit": "13f750933f9917e147c0df9d930ed043b2ec374f"
+  },
+  "actual_diff": {
+    "parent_to_source_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "parent_to_source_additions": 0,
+    "source221_to_candidate_changed_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "source221_to_candidate_added_paths": [
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-pre-scope-20261011/verdict.json"
+    ],
+    "four_full_hashes": [
+      {
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "source": {
+          "bytes": 3228,
+          "sha256": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771"
+        },
+        "candidate": {
+          "bytes": 3308,
+          "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+        },
+        "mode": "100644",
+        "actual_equals_projection": true,
+        "working_equals_committed": true
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "source": {
+          "bytes": 34853,
+          "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"
+        },
+        "candidate": {
+          "bytes": 34976,
+          "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+        },
+        "mode": "100644",
+        "actual_equals_projection": true,
+        "working_equals_committed": true
+      },
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "source": {
+          "bytes": 22275,
+          "sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+        },
+        "candidate": {
+          "bytes": 25454,
+          "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+        },
+        "mode": "100644",
+        "actual_equals_projection": true,
+        "working_equals_committed": true
+      },
+      {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "source": {
+          "bytes": 73022,
+          "sha256": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+        },
+        "candidate": {
+          "bytes": 73022,
+          "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+        },
+        "mode": "100644",
+        "actual_equals_projection": true,
+        "working_equals_committed": true
+      }
+    ],
+    "sequential_unique_replacements": 7,
+    "markdown_prefix_bytes": 22275,
+    "markdown_append_bytes": 3179,
+    "markdown_prefix_sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+    "markdown_append_sha256": "db9b5ea07088e44774351a02cb56d9c3277ca368b2f98a95ec931598f4b81377",
+    "CLI_two_64_char_literals_only": true,
+    "CLI_after_mask_every_byte_equal_source221": true,
+    "JSON_only_revision_time_scope_checkout_env": true,
+    "exact_git_patch": {
+      "command": "git -c core.fileMode=false diff --no-ext-diff --binary 88d07004466251be3076fc454699207d3879374f 61cf64e67a6fda231bb090e77c19d5ececb908af",
+      "bytes": 9430,
+      "sha256": "933b428ac2f08db683da0375f3bef8a841c8d7e23c85b2e5871aebd837640907"
+    }
+  },
+  "static_workflow": {
+    "classification": "restricted literal shape read, not generic YAML/product validator or environment execution",
+    "valid": true,
+    "env_nodes": 1,
+    "owner": "first checkout@v4 step only",
+    "entries": [
+      [
+        "GIT_CONFIG_COUNT",
+        "2"
+      ],
+      [
+        "GIT_CONFIG_KEY_0",
+        "core.longpaths"
+      ],
+      [
+        "GIT_CONFIG_VALUE_0",
+        "true"
+      ],
+      [
+        "GIT_CONFIG_KEY_1",
+        "core.autocrlf"
+      ],
+      [
+        "GIT_CONFIG_VALUE_1",
+        "false"
+      ]
+    ],
+    "map": {
+      "GIT_CONFIG_COUNT": "2",
+      "GIT_CONFIG_KEY_0": "core.longpaths",
+      "GIT_CONFIG_VALUE_0": "true",
+      "GIT_CONFIG_KEY_1": "core.autocrlf",
+      "GIT_CONFIG_VALUE_1": "false"
+    },
+    "commands": [
+      "node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare",
+      "npm ci",
+      "node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=docs/test-reports/windows-p1-stages-20261010/.scratch/checks.raw.json",
+      "node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run",
+      "node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal",
+      "node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --verify-upload"
+    ],
+    "uploads": [
+      "docs/test-reports/windows-p1-stages-20261010/upload/provenance.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/checks-summary.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/summary.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T0.case.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T1.case.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T2.case.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T3.case.json",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T0.guard.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T1.guard.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T2.guard.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T3.guard.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T0.trace.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T1.trace.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T2.trace.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/T3.trace.jsonl",
+      "docs/test-reports/windows-p1-stages-20261010/upload/manifest.json"
+    ],
+    "JSON_exact_map_equal": true,
+    "source_file_count": 11,
+    "source_file_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      ".github/workflows/windows-release-diagnostics.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "package-lock.json",
+      "src/cli/bounded-subprocess-worker.mjs",
+      "src/cli/bounded-subprocess.ts",
+      "src/cli/replay.ts",
+      "tests/diagnostics/windows-p1-stages.test.ts"
+    ],
+    "uploads_exact_order_equal": true,
+    "manifest_entries": 15
+  },
+  "whole_tree": {
+    "source221_entries": 2457,
+    "candidate_entries": 2463,
+    "source221_unchanged_rows": 2453,
+    "source221_inventory_sha256": "93a70a1a37a49c6d3f442ff67902c15004307caff3a7d29f3a5fdac34526da3f",
+    "candidate_inventory_sha256": "73c6e9c22b5f3439b0dd1ca8f7718ed0983fb1113b1be0045be3445f0bf90e7d",
+    "unchanged_inventory_sha256": "ecae953c5468f385a6eac55ac4c208e5047be7e242c9f899f0a07bb4c7793b0a",
+    "all_other_mode_type_object_path_rows_equal": true,
+    "all_candidate_tracked_raw_working_bytes_equal_HEAD": true,
+    "working_mismatches": [],
+    "only_six_plan_prescope_added": true,
+    "all_six_added_objects_equal_parent": true,
+    "frozen_inputs": [
+      {
+        "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+        "bytes": 24862,
+        "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+        "bytes": 11769,
+        "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+        "bytes": 10792,
+        "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+        "bytes": 51907,
+        "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+        "bytes": 4921,
+        "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "src/cli/bounded-subprocess.ts",
+        "bytes": 5545,
+        "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "src/cli/bounded-subprocess-worker.mjs",
+        "bytes": 3012,
+        "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "src/cli/replay.ts",
+        "bytes": 16801,
+        "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": ".github/workflows/windows-release-diagnostics.yml",
+        "bytes": 4389,
+        "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+        "source_predecessor_candidate_working_equal": true
+      },
+      {
+        "path": "package-lock.json",
+        "bytes": 413776,
+        "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+        "source_predecessor_candidate_working_equal": true
+      }
+    ],
+    "test": {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+      "unchanged": true,
+      "executed": false
+    },
+    "historical_archive": {
+      "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/",
+      "count": 57,
+      "LF_delimited_source_rows_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+      "all_raw_working_source221_candidate_equal": true,
+      "entries": [
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/diagnostic-result.json",
+          "bytes": 334,
+          "sha256": "7e80803b4f784383f0bb827c9ffdccfca8c70a6d3ac722aff7e92846a112d6aa"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-native-ci-20261008/provenance.json",
+          "bytes": 738,
+          "sha256": "ffb7f63533353470de872494f8d2321079db38f733645699255ec7518b374c85"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-binding.json",
+          "bytes": 278,
+          "sha256": "335e310ec0c9c170b3a31d50508fff378c95911ea8e9b53594b4b23d861c8923"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-confirmation.json",
+          "bytes": 283,
+          "sha256": "91892d09fcde4c5788116a92ff015c359429263f9c88e9d381c39fa4e92de1cf"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-healthy.json",
+          "bytes": 278,
+          "sha256": "90719c2b8b9cbb0ab21595af583de600a47b28b8e85c9cacd4cfa40407b47bc5"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-parent.json",
+          "bytes": 277,
+          "sha256": "c5d36b08ef90d95e2d0b8e545daf06266186b42c8fee0563923ed7babef6d75e"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-binding.json",
+          "bytes": 276,
+          "sha256": "0dfd8aca5af3f4457e5c82ea907bc9ade1fa3ccf790a98bd62dfb7ead4b13a8b"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-confirmation.json",
+          "bytes": 281,
+          "sha256": "d69288e32df13a87802002b8021fc4ebe04095dc5d79bd653587766c042ef841"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-healthy.json",
+          "bytes": 276,
+          "sha256": "8df7b804cc186d7edcdb9e9197b61322b11830b6cc12129de3040d04080a06d1"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-on-parent.json",
+          "bytes": 275,
+          "sha256": "864f984ff4a7afc20eac89e8691cd66873c490f3fccffac8713bfd0d88cd8b07"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/parity-summary.json",
+          "bytes": 2813,
+          "sha256": "31ab1ecd90897983a1dd6a2200a3bc7adc2f772ff197e347009903604029645d"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/powershell-counter.jsonl",
+          "bytes": 960,
+          "sha256": "30ff911eab45b6697e0b3876f07d3a9e5c170eff821097d9132bb5f7620299fd"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.cleanup.json",
+          "bytes": 341,
+          "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.guard.jsonl",
+          "bytes": 1843,
+          "sha256": "2e57450baa2f965e8fb9b1b8b316657026afc49cbcb6042fed5c484260608020"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.health.json",
+          "bytes": 386,
+          "sha256": "cc2ee7e5efc6bd6328e319a1e10c20f12540f792beef3f921d1e6005c201933b"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E0.json",
+          "bytes": 1868,
+          "sha256": "52263991851deee7ae486a73639c0619fc903a2d85007dd1ff009d0f12d7c8b5"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.cleanup.json",
+          "bytes": 341,
+          "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.guard.jsonl",
+          "bytes": 1843,
+          "sha256": "c7b3298fc983348b90058230b8889c065489bc206e15ce466c49218a7335de22"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.health.json",
+          "bytes": 386,
+          "sha256": "2c286515e5a2a889feb530608ca0c5ba10eb75fedf73f70bfe0cfbc2da93bc0e"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E1.json",
+          "bytes": 1890,
+          "sha256": "ee8343f3b57afa723459041d6e282dd1e873267aaccfeb62a0c7fc02f6c6a96c"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.cleanup.json",
+          "bytes": 341,
+          "sha256": "79007f407a20e0ca50acf63e29f5ba169f67668c01008ab4381084d959f3b776"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.guard.jsonl",
+          "bytes": 1848,
+          "sha256": "cb5dfd358a01d2895a7bb552d3f1973691826ddf586cb1e00874d1e42a433841"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.health.json",
+          "bytes": 388,
+          "sha256": "7756d6df0edbcd0ffc8c92bb77417c27c8ed3e8e990e67991fd778bb15b888b1"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E2.json",
+          "bytes": 1896,
+          "sha256": "77155aec4f1836301a6fec3b7a04b93362ccf7bbe2ed06011c5e1c3c1ca3b008"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.cleanup.json",
+          "bytes": 341,
+          "sha256": "aa9fc9ddd7854ab696e9fc7c0762200358727c7b752cae5fa0b12765556755de"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.guard.jsonl",
+          "bytes": 1843,
+          "sha256": "d1e070dd1d605d5f49e1ebc0f689a4409bec2189b82166e994cbc758143b8b0c"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.health.json",
+          "bytes": 386,
+          "sha256": "710771496c76d54be455508a265b83a567a36514e680c1916cd04818eb660174"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E3.json",
+          "bytes": 1901,
+          "sha256": "fc92edd9428223fbc383000106a8d414df914d4cae5558af43ed4d5fed1acb54"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.cleanup.json",
+          "bytes": 341,
+          "sha256": "1fe61ec181cc51d412096c96407dd37fc9b50fd02c7dc99f03a5b194eda56fc9"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.guard.jsonl",
+          "bytes": 1837,
+          "sha256": "bdf0c5f1b01f2adc9140efeeaade9c20ba72f3ec876fa8e5efdc97e8ee73d2b5"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.health.json",
+          "bytes": 384,
+          "sha256": "c1c23b539d65e3a3b0e4005e150fd0358efd4d121c0b5880113e06d413e9695a"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-off-E4.json",
+          "bytes": 1901,
+          "sha256": "90c74286bc1883c82b5cce8ad00039ca93150677afa996ef039ae03cb8f761b8"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.cleanup.json",
+          "bytes": 344,
+          "sha256": "b82550494699884b41408fd3f24dbbc32da5090e57fde59a9522164c5d6a280a"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.guard.jsonl",
+          "bytes": 1840,
+          "sha256": "83cc8bf14e853c1d90bc493d2ed6a767ed75f2a3a31a9934d01e8ba49b684b47"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.health.json",
+          "bytes": 522,
+          "sha256": "3d962d86ea55adbf251d3f729871ae9f5c6763381273a07a9fcbe08c9b610faf"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.json",
+          "bytes": 1884,
+          "sha256": "bc41bdf59da722084e5349df77bb5144ef2577d256c6025f41418b169ac3c02b"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E0.trace.jsonl",
+          "bytes": 5474,
+          "sha256": "59b2d620c57bfed74e630a492de781ab99ade7c1483555636610d1cca3c8e7ba"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.cleanup.json",
+          "bytes": 344,
+          "sha256": "8a84414ca1a67c67e7dde2ebe29f7717f4d54c5e440e421e65b1707032f76447"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.guard.jsonl",
+          "bytes": 1832,
+          "sha256": "0074a5b09a298fc878b6ae8607ab19d2c069149539a9d1842d593d51bac87b01"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.health.json",
+          "bytes": 519,
+          "sha256": "f4bc38228a11bcf3a000ef693b570275f9bad3638b80bbfafaa17b6abb9de652"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.json",
+          "bytes": 1897,
+          "sha256": "af448893c6a61eaba067fede78b0f4478492bf962ff99d644ceb35efeb8da54b"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E1.trace.jsonl",
+          "bytes": 5473,
+          "sha256": "bc95df63d3cef2ba6ba8e12d65c5b21f8ef569f4b6a42223b7aa8aa62b81f27f"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.cleanup.json",
+          "bytes": 344,
+          "sha256": "3628c4702290904824ee0c0881180edb420787bb871e42f6bae402c34851b025"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.guard.jsonl",
+          "bytes": 1840,
+          "sha256": "3bce4e8bfb1b6c22738ba746bfb77b316674938b6c1303e00377986efa1170bb"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.health.json",
+          "bytes": 522,
+          "sha256": "b8b912764b5a34e3a6dadaf46d15ac006fadbb62d04ef471f8624a874f2c2377"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.json",
+          "bytes": 1902,
+          "sha256": "edc7896db02e0b2a675b51bb2c250f4bfaa1deaaf52cfd7305ca9950413a77c5"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E2.trace.jsonl",
+          "bytes": 5481,
+          "sha256": "728afed35c3ff72d4b8a26c9923818c05632f6b9776436a7926bf7c0e9f0ce7e"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.cleanup.json",
+          "bytes": 344,
+          "sha256": "9c9733aade03cb4789df2a80f1d91044ecab769ec7a47653cdf04bf48d58d585"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.guard.jsonl",
+          "bytes": 1845,
+          "sha256": "44dd0b553b23ad3d55f99a0e3fbbcc1d2e4517d88422806e8c74ca685e4cde1f"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.health.json",
+          "bytes": 525,
+          "sha256": "d20db36c136a9acfc5f3494c71a21010d1f114402f86659e3889816a337ca2d5"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.json",
+          "bytes": 1888,
+          "sha256": "e0455cc08bb095acc43147612930d6d39b59a97124093d8d4394cbd4a1e3e856"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E3.trace.jsonl",
+          "bytes": 5495,
+          "sha256": "f4c86f0521b43c82dbbdc5f20ec439a4d1ed1b6bdfb1d75fc2dcc036a15b972b"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.cleanup.json",
+          "bytes": 344,
+          "sha256": "adcbf22ccdc10994bc4f0e62919b1ba9cd06aa797cf7af961537a6e4d26ec898"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.guard.jsonl",
+          "bytes": 1840,
+          "sha256": "ab29110b1456460d0efbaa2fbb995691f5fbc0a6d3afb162b11ff3e6e02ed967"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.health.json",
+          "bytes": 522,
+          "sha256": "6125849c8fc71a2288e9340dbf74b143fea6a5e3c1a9f286d6ea5e460fe58ca1"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.json",
+          "bytes": 1897,
+          "sha256": "b1fe0bdd89670e33fc5ca16acd9c8d97333e75fd2feb43cdfe86563ec65ab98f"
+        },
+        {
+          "path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/smoke-on-E4.trace.jsonl",
+          "bytes": 5459,
+          "sha256": "aada80b11ad4d5b48a326415c3a392aec04a2373a9cf04f0b7b5ac762b62c7fb"
+        }
+      ]
+    }
+  },
+  "immutable_originals": {
+    "directory": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "entries": [
+      {
+        "path": "windows-checkout-native-run38153928452-final-original.json",
+        "bytes": 12289,
+        "sha256": "3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd",
+        "manifest_match": true
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-jobs-original.json",
+        "bytes": 3116,
+        "sha256": "60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d",
+        "manifest_match": true
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-artifacts-original.json",
+        "bytes": 32,
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+        "manifest_match": true
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-full-original.log",
+        "bytes": 25522,
+        "sha256": "e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4",
+        "manifest_match": true
+      },
+      {
+        "path": "windows-checkout-native-run38153928452-transport-manifest.json",
+        "bytes": 1564,
+        "sha256": "1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961",
+        "manifest_match": "manifest independently hashed"
+      }
+    ],
+    "four_raw_entries_match_actual_manifest": true,
+    "manifest_independently_hashed": true,
+    "other_three_manifest_publication_entries_reauthenticated": false,
+    "originals_modified_or_copied": false
+  },
+  "original_failures": {
+    "run_id": 38153928452,
+    "run_attempt": 1,
+    "job_id": 114512876414,
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "conclusion": "failure",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-node@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prepare exact-candidate provenance",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Install locked dependencies",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Synthetic checks only",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "INITIAL once",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Seal safe evidence",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Verify sealed files immediately",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Post Run actions/setup-node@v4",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "first_failure": "Prepare exact-candidate provenance: module-top-level p1-stages.mjs:20:8 raw JSON binding identity",
+    "actual_sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+    "expected_sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "npm_ci_synthetic_INITIAL": "skipped; no executed original 81-test result or INITIAL observation",
+    "seal": "same import-time assertion failure",
+    "verify_upload": "skipped",
+    "artifact_count": 0,
+    "no_new_native_observation": true
+  },
+  "inference": {
+    "classification": "pure-memory transform only; not Windows file/config/attribute/filter observation",
+    "transforms": [
+      {
+        "id": "raw",
+        "bytes": 34853,
+        "sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+        "matches_original_actual": false
+      },
+      {
+        "id": "LF-to-CRLF-only",
+        "bytes": 35072,
+        "sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+        "matches_original_actual": true
+      },
+      {
+        "id": "prepend-BOM-only",
+        "bytes": 34856,
+        "sha256": "c7809d81afa276c0d88553289d3a0e3c07cac6117903b781de7c72ef9d0719c8",
+        "matches_original_actual": false
+      },
+      {
+        "id": "remove-final-LF-only",
+        "bytes": 34852,
+        "sha256": "937eb0694920799cb17f4c833d2163ec9969d39362a0a87b33f74c93b57522ae",
+        "matches_original_actual": false
+      }
+    ],
+    "planner_fixture": "read retained source/capture claims; not executed or replayed",
+    "unobserved": [
+      "Windows binding raw bytes/BOM/line counts",
+      "Windows autocrlf/config source/attribute/filter state",
+      "Windows byte preservation on C002",
+      "every later INITIAL/native/functional/release gate"
+    ],
+    "retained_capture_checks": {
+      "fixture_capture_structure_coherent": true,
+      "commands_captured": 84,
+      "false_control_16_raw_match_claims_coherent": true,
+      "reviewer_fixture_executed": false
+    }
+  },
+  "static_controls": {
+    "oracle": "exact complete-byte four-path projection equality and original 100644 modes, supplemented by restricted workflow/map shape and CLI hash-mask check; not product validator test",
+    "positive": {
+      "id": "actual-source61-four-file-projection",
+      "result": "ACCEPT",
+      "actual_workflow_result": "ACCEPT"
+    },
+    "negative_count": 70,
+    "groups": {
+      "map": 18,
+      "binding-map": 10,
+      "binding-contract": 2,
+      "confinement": 20,
+      "forbidden-surface": 9,
+      "identity": 5,
+      "MD": 3,
+      "closed-path/mode": 3
+    },
+    "all_negative_rejected": true,
+    "cases": [
+      {
+        "id": "workflow-missing-GIT_CONFIG_COUNT",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_COUNT: '2'\n",
+        "after": "",
+        "mutated_sha256": "4cb9278c2b989d778541d8eefe72b6f044fef449e004fc0348884057b3936bbb",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-duplicate-GIT_CONFIG_COUNT",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_COUNT: '2'\n",
+        "after": "          GIT_CONFIG_COUNT: '2'\n          GIT_CONFIG_COUNT: '2'\n",
+        "mutated_sha256": "0a6519116f2722b5dc68a2d8fb9d5073316a972381921e909ea549e506ccde28",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-wrong-GIT_CONFIG_COUNT",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_COUNT: '2'\n",
+        "after": "          GIT_CONFIG_COUNT: 'wrong'\n",
+        "mutated_sha256": "a47fab6321ea3f1c54268f97aebf849e8ba34ed82d2c755bafacee7eb2f97ab2",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-missing-GIT_CONFIG_KEY_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_0: core.longpaths\n",
+        "after": "",
+        "mutated_sha256": "f44b881697a5b1a09122f621f8f66930cec0e41ac44617b6eb1f2fd9d2eeff3a",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-duplicate-GIT_CONFIG_KEY_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_0: core.longpaths\n",
+        "after": "          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_KEY_0: core.longpaths\n",
+        "mutated_sha256": "e15cedc5686cd976948d5b4c9b603016a933eb9483c6907fefd91395e4827ebe",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-wrong-GIT_CONFIG_KEY_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_0: core.longpaths\n",
+        "after": "          GIT_CONFIG_KEY_0: 'wrong'\n",
+        "mutated_sha256": "4e0370deae1783fa94ab22fa40eba0f538706eb64a3f9bbbcebaee7d4356bf7f",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-missing-GIT_CONFIG_VALUE_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_0: 'true'\n",
+        "after": "",
+        "mutated_sha256": "f6496eade1794bff47f6ac8ff0edc8774cc774e1840600eb7bde0763463403d3",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-duplicate-GIT_CONFIG_VALUE_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_0: 'true'\n",
+        "after": "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_VALUE_0: 'true'\n",
+        "mutated_sha256": "939354b8b4de0c9b7385a4e04b1ad46bafe966cce91ed4cc06e8cf92c507d5eb",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-wrong-GIT_CONFIG_VALUE_0",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_0: 'true'\n",
+        "after": "          GIT_CONFIG_VALUE_0: 'wrong'\n",
+        "mutated_sha256": "20397bd4eaed6f8f0865ce7877c00169499b862cc75ebebb0527b4537225487f",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-missing-GIT_CONFIG_KEY_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_1: core.autocrlf\n",
+        "after": "",
+        "mutated_sha256": "c7862c15cccf88ceea9e2d58462f22ce825da7ba4762247044e6130931202dca",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-duplicate-GIT_CONFIG_KEY_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_1: core.autocrlf\n",
+        "after": "          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_KEY_1: core.autocrlf\n",
+        "mutated_sha256": "8252d4bd985195fe3499954869baa8a32d1aa2808c8f503d02db55b0b367e9af",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-wrong-GIT_CONFIG_KEY_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_KEY_1: core.autocrlf\n",
+        "after": "          GIT_CONFIG_KEY_1: 'wrong'\n",
+        "mutated_sha256": "d10b96244ab24231cafd7d906fa01e645e7c4baf008f45cdcc3666e77f9a66cd",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-missing-GIT_CONFIG_VALUE_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_1: 'false'\n",
+        "after": "",
+        "mutated_sha256": "362fcdb9e73da92d943ee76be02dfd1186a63b6d8951392c552448333aa123db",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-duplicate-GIT_CONFIG_VALUE_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_1: 'false'\n",
+        "after": "          GIT_CONFIG_VALUE_1: 'false'\n          GIT_CONFIG_VALUE_1: 'false'\n",
+        "mutated_sha256": "9fa03fa7f3e6edc0f9ea43b28a286fa67bade340392b064582422cf2880074b3",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-wrong-GIT_CONFIG_VALUE_1",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_1: 'false'\n",
+        "after": "          GIT_CONFIG_VALUE_1: 'wrong'\n",
+        "mutated_sha256": "a9c02e3cea417e29df8653481c5d7475b98b09b1379f8235e044b19d71f759fa",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-nonstring-count",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_COUNT: '2'\n",
+        "after": "          GIT_CONFIG_COUNT: 2\n",
+        "mutated_sha256": "e798a4117a3876540a55e52ac516de0f666e146d97db379ac1c758647be311ff",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-nonstring-false",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          GIT_CONFIG_VALUE_1: 'false'\n",
+        "after": "          GIT_CONFIG_VALUE_1: false\n",
+        "mutated_sha256": "bc6d3f2e551b5295da56b00ba9dce87abb85e3ea4f586bdff7532ec920f882eb",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-extra-key",
+        "group": "map",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "        env:\n",
+        "after": "        env:\n          GIT_CONFIG_KEY_2: core.safecrlf\n",
+        "mutated_sha256": "bb3c549c89b0870774b034096017c3b0f34fa5ca160ee2a22b769160a016cd74",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-wrong-GIT_CONFIG_COUNT",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_COUNT\":\"2\"",
+        "after": "\"GIT_CONFIG_COUNT\":\"wrong\"",
+        "mutated_sha256": "29a23bb15166b40bb4c0d96b3b659902b9ebffead0fcad0b279762a4c4b25097",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-wrong-GIT_CONFIG_KEY_0",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_KEY_0\":\"core.longpaths\"",
+        "after": "\"GIT_CONFIG_KEY_0\":\"wrong\"",
+        "mutated_sha256": "b3606736244e0352cff9b69981e3750a5ce7ce206577abe748bbebf40d91a912",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-wrong-GIT_CONFIG_VALUE_0",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_VALUE_0\":\"true\"",
+        "after": "\"GIT_CONFIG_VALUE_0\":\"wrong\"",
+        "mutated_sha256": "9abf00abeb57925e4e1b0918e888ee28681170ec7e078b05a5eb7eeb9b90cb39",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-wrong-GIT_CONFIG_KEY_1",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"",
+        "after": "\"GIT_CONFIG_KEY_1\":\"wrong\"",
+        "mutated_sha256": "3336f9526d731050d610b6cc8b59e79f4ed1021c62e3ad56c7aa980d6b304dfb",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-wrong-GIT_CONFIG_VALUE_1",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_VALUE_1\":\"false\"",
+        "after": "\"GIT_CONFIG_VALUE_1\":\"wrong\"",
+        "mutated_sha256": "43fa4c51464ae09c8168b7a68c89353e8c0c56dbf2c7554814cc512286658461",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-nonstring-count",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_COUNT\":\"2\"",
+        "after": "\"GIT_CONFIG_COUNT\":2",
+        "mutated_sha256": "b75473c3f93a4c196b02ff232d9cc8e10d8232c35fc14e07025cc2e0ddfb6daa",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-nonstring-false",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_VALUE_1\":\"false\"",
+        "after": "\"GIT_CONFIG_VALUE_1\":false",
+        "mutated_sha256": "a1cc5cff32c12a616dcb8166922155df4b58d12d70e11be1b43dc0bdf3b869ab",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-duplicate-key",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"",
+        "after": "\"GIT_CONFIG_KEY_1\":\"core.autocrlf\",\"GIT_CONFIG_KEY_1\":\"core.autocrlf\"",
+        "mutated_sha256": "ff8705f81ed08cd0ad7ede9e45470b54d6e86f30fcec88a1e7657dbcc003155d",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-extra-key",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"checkout_env\":{",
+        "after": "\"checkout_env\":{\"GIT_CONFIG_KEY_2\":\"core.safecrlf\",",
+        "mutated_sha256": "96d8f7ff035b879906edbda22762f9d987f0d3cfafe10714234b5bcb5500c8b8",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-missing-key",
+        "group": "binding-map",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": ",\"GIT_CONFIG_VALUE_1\":\"false\"",
+        "after": "",
+        "mutated_sha256": "37f1dab86a5e0ad8a67b2e08c82c0e089b113f2c210f04544b7bbc73a6d8f473",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-stale-revision",
+        "group": "binding-contract",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "  \"revision\": 3,\n",
+        "after": "  \"revision\": 2,\n",
+        "mutated_sha256": "0f8fde611742aee71f3c5d232b13e6d12eea36d9e61b923b1d5981311a6cbc54",
+        "result": "REJECT"
+      },
+      {
+        "id": "JSON-native-child-env-key",
+        "group": "binding-contract",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+        "before": "\"synthetic_keys\":[\"HOME\"",
+        "after": "\"synthetic_keys\":[\"GIT_CONFIG_COUNT\",\"HOME\"",
+        "mutated_sha256": "153df78d7c49424a05feb2939898469bbcd3b341ce5aa6b04284e71899c3245c",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-scope-GIT_CONFIG_COUNT",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "jobs:\n",
+        "after": "env:\n  GIT_CONFIG_COUNT: '2'\n\njobs:\n",
+        "mutated_sha256": "34d55d7aaed1cecedaa835f9e012fb693b81eb7eab75ee10cfc470d802a79185",
+        "result": "REJECT"
+      },
+      {
+        "id": "job-scope-GIT_CONFIG_COUNT",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "    steps:\n",
+        "after": "    env:\n      GIT_CONFIG_COUNT: '2'\n    steps:\n",
+        "mutated_sha256": "c4515effcbc120ece8dcbf95ed67f4a81c1e2ee520151ad22a68dfded9b1c3e9",
+        "result": "REJECT"
+      },
+      {
+        "id": "later-step-GIT_CONFIG_COUNT",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/setup-node@v4\n",
+        "after": "      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_COUNT: '2'\n",
+        "mutated_sha256": "f4325c5f45c44bc47c6a899ae1ecdd1bf06df51c295af733d8313a755c960bbc",
+        "result": "REJECT"
+      },
+      {
+        "id": "GITHUB_ENV-GIT_CONFIG_COUNT",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: echo GIT_CONFIG_COUNT=2 >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "0120985f50ba87eeaefb778a997924bd4e8e40ecc7c76e0ebfc51566276fe332",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-scope-GIT_CONFIG_KEY_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "jobs:\n",
+        "after": "env:\n  GIT_CONFIG_KEY_0: core.longpaths\n\njobs:\n",
+        "mutated_sha256": "c5f7bcef34b6a56d59ed9600b76d69cebbf8c2dc44edd7ef3e0762cb1b0ca96b",
+        "result": "REJECT"
+      },
+      {
+        "id": "job-scope-GIT_CONFIG_KEY_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "    steps:\n",
+        "after": "    env:\n      GIT_CONFIG_KEY_0: core.longpaths\n    steps:\n",
+        "mutated_sha256": "90752a1e4e3054e04fd4013eb7cdef18081577e93bfb85173e0deb7ff958e339",
+        "result": "REJECT"
+      },
+      {
+        "id": "later-step-GIT_CONFIG_KEY_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/setup-node@v4\n",
+        "after": "      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_KEY_0: core.longpaths\n",
+        "mutated_sha256": "d94ddb36c0565481461912ea7072dd26d11fed5c25467576236bdae8c461b569",
+        "result": "REJECT"
+      },
+      {
+        "id": "GITHUB_ENV-GIT_CONFIG_KEY_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: echo GIT_CONFIG_KEY_0=core.longpaths >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "ad89598da8c6a8ec115bf848a634d581e73f3ddad6ae354bcf8cef1126cfd46b",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-scope-GIT_CONFIG_VALUE_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "jobs:\n",
+        "after": "env:\n  GIT_CONFIG_VALUE_0: 'true'\n\njobs:\n",
+        "mutated_sha256": "6cd9978eea73949a7dad4ffa6ecb3b052cdb381662f7bc0ab2c1d3faaa22fad3",
+        "result": "REJECT"
+      },
+      {
+        "id": "job-scope-GIT_CONFIG_VALUE_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "    steps:\n",
+        "after": "    env:\n      GIT_CONFIG_VALUE_0: 'true'\n    steps:\n",
+        "mutated_sha256": "7cd71e353862b28858e0e5c487f879bafb89cca474a54bdaa1295b8c658022e2",
+        "result": "REJECT"
+      },
+      {
+        "id": "later-step-GIT_CONFIG_VALUE_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/setup-node@v4\n",
+        "after": "      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_VALUE_0: 'true'\n",
+        "mutated_sha256": "b24c5481dabb799edd39ac72f0f3856d7fafeb81d2fff5e5a7f8023814b5699c",
+        "result": "REJECT"
+      },
+      {
+        "id": "GITHUB_ENV-GIT_CONFIG_VALUE_0",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: echo GIT_CONFIG_VALUE_0=true >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "965e5a27f62a8c5718a5698182f1f44cb4e682851bda6e13c961044b9fe8daea",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-scope-GIT_CONFIG_KEY_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "jobs:\n",
+        "after": "env:\n  GIT_CONFIG_KEY_1: core.autocrlf\n\njobs:\n",
+        "mutated_sha256": "931dc82234f0a8326dc64ca3a849d969284a2ad21ca5cb6616188e1831098978",
+        "result": "REJECT"
+      },
+      {
+        "id": "job-scope-GIT_CONFIG_KEY_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "    steps:\n",
+        "after": "    env:\n      GIT_CONFIG_KEY_1: core.autocrlf\n    steps:\n",
+        "mutated_sha256": "376e8887128289870377e28d7af76371894522774bc8e3be32f0c6bb8873551d",
+        "result": "REJECT"
+      },
+      {
+        "id": "later-step-GIT_CONFIG_KEY_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/setup-node@v4\n",
+        "after": "      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_KEY_1: core.autocrlf\n",
+        "mutated_sha256": "70be372de27b193e64b375bf5ef10a3e518f610f463c0af09cf02955a3205c7b",
+        "result": "REJECT"
+      },
+      {
+        "id": "GITHUB_ENV-GIT_CONFIG_KEY_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: echo GIT_CONFIG_KEY_1=core.autocrlf >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "10d6f5499989a0e63aae368764076496ce4307488b8f588fb0952a29a32e8f2d",
+        "result": "REJECT"
+      },
+      {
+        "id": "workflow-scope-GIT_CONFIG_VALUE_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "jobs:\n",
+        "after": "env:\n  GIT_CONFIG_VALUE_1: 'false'\n\njobs:\n",
+        "mutated_sha256": "67bd3675eb291085bfcbe4f046a91a11bfa622a508de692845a2a366e23d8165",
+        "result": "REJECT"
+      },
+      {
+        "id": "job-scope-GIT_CONFIG_VALUE_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "    steps:\n",
+        "after": "    env:\n      GIT_CONFIG_VALUE_1: 'false'\n    steps:\n",
+        "mutated_sha256": "e3873ac11ccedf93bad23c65f82175a61379be53e52caccb4f4e6c31c08f2750",
+        "result": "REJECT"
+      },
+      {
+        "id": "later-step-GIT_CONFIG_VALUE_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/setup-node@v4\n",
+        "after": "      - uses: actions/setup-node@v4\n        env:\n          GIT_CONFIG_VALUE_1: 'false'\n",
+        "mutated_sha256": "d5f13b513158f572050b5417aa9a2bdb659a0f8a236a23db0999477991b992a9",
+        "result": "REJECT"
+      },
+      {
+        "id": "GITHUB_ENV-GIT_CONFIG_VALUE_1",
+        "group": "confinement",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: echo GIT_CONFIG_VALUE_1=false >> $GITHUB_ENV\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "a2d473852a3a0ed7307e8c1e2dc24601e74116294301183b00f6f9d8eb373307",
+        "result": "REJECT"
+      },
+      {
+        "id": "config-write",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: git config --global core.autocrlf false\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "89187262c96d992a02816419504a08fe3dd08f99c6b8faee43281d8944f6444a",
+        "result": "REJECT"
+      },
+      {
+        "id": "sparse-checkout",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          fetch-depth: 1\n",
+        "after": "          fetch-depth: 1\n          sparse-checkout: docs/specs\n",
+        "mutated_sha256": "b0e151854786b109189264b0bd417c113ad5c75726a7b573c1600e85d45c9494",
+        "result": "REJECT"
+      },
+      {
+        "id": "checkout-path",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          fetch-depth: 1\n",
+        "after": "          fetch-depth: 1\n          path: short\n",
+        "mutated_sha256": "4e6e64fa158d69fa68d295d3069b599abfa18b57c3c302312bc705f8e08ec6cd",
+        "result": "REJECT"
+      },
+      {
+        "id": "new-command",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: Prepare exact-candidate provenance\n",
+        "after": "      - run: git --version\n      - name: Prepare exact-candidate provenance\n",
+        "mutated_sha256": "fce175de4e2cf3bd282f2efbcb68b9ebd67fb202f233df51049c6e527c4ad69b",
+        "result": "REJECT"
+      },
+      {
+        "id": "Secrets",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          persist-credentials: false\n",
+        "after": "          persist-credentials: false\n          token: ${{ secrets.PAT }}\n",
+        "mutated_sha256": "cc3559c5da5b01927233f8da0887e613498593bc3961bbbb47523512b6dd579c",
+        "result": "REJECT"
+      },
+      {
+        "id": "permissions",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "  contents: read\n",
+        "after": "  contents: write\n",
+        "mutated_sha256": "03fd2f9acdd43ffc4f26d69b5d1f03dbea0e463a4431b01c76c1aaf2b783b4cf",
+        "result": "REJECT"
+      },
+      {
+        "id": "retry",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - name: INITIAL once\n",
+        "after": "      - name: INITIAL repeat\n        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run\n      - name: INITIAL once\n",
+        "mutated_sha256": "96222be829912b13df66dfa87c9aaf2d0810723a9cc31d6f80e8064ef28830bf",
+        "result": "REJECT"
+      },
+      {
+        "id": "Node-change",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "          node-version: '22'\n",
+        "after": "          node-version: '24'\n",
+        "mutated_sha256": "ded5601c64f01fa85949a8ae1c618a0a7f1c3ae14d9dc8d124edf66a99110748",
+        "result": "REJECT"
+      },
+      {
+        "id": "Actions-change",
+        "group": "forbidden-surface",
+        "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+        "before": "      - uses: actions/checkout@v4\n",
+        "after": "      - uses: actions/checkout@v5\n",
+        "mutated_sha256": "490842ca704381f0f87a7e0cd98312e7abe7b8095849f05476ccc4f1b6f5aaf2",
+        "result": "REJECT"
+      },
+      {
+        "id": "one-sided-stale-bindingHash",
+        "group": "identity",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "before": "const bindingHash = 'f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130';",
+        "after": "const bindingHash = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';",
+        "mutated_sha256": "dece825340af4557dbbc9cba1d5487910aa0393f0512173de4d3aeef76be5ff0",
+        "result": "REJECT"
+      },
+      {
+        "id": "one-sided-stale-mdHash",
+        "group": "identity",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "before": "const mdHash = '9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb';",
+        "after": "const mdHash = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';",
+        "mutated_sha256": "4f241649fbd31097851776dd8c696de796a6dead3a7d49ebf0c458025bee3441",
+        "result": "REJECT"
+      },
+      {
+        "id": "CLI-extra-byte",
+        "group": "identity",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "before": "const repo = resolve(dirname(self), '../../..');",
+        "after": "const repo = resolve(dirname(self), '../../..'); ",
+        "mutated_sha256": "800881899e3ab5fe009ebf0247ca08556ad5547058b2b676fda0a37785a646a3",
+        "result": "REJECT"
+      },
+      {
+        "id": "CLI-normalization",
+        "group": "identity",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "before": "assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');",
+        "after": "assert.equal(sha256(bindingBytes.toString().replace(/\\r\\n/g, '\\n')), bindingHash, 'binding identity');",
+        "mutated_sha256": "34ae5257fd9ebcc87c381cc262dc47f42c532015b5fa5d3015efb30e3c7cb6a7",
+        "result": "REJECT"
+      },
+      {
+        "id": "CLI-second-hash",
+        "group": "identity",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "before": "assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');",
+        "after": "assert([bindingHash, '481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e'].includes(sha256(bindingBytes)));",
+        "mutated_sha256": "36c75405ef3a5b48b58dc356b224b93986dd431456614e74af91cb6a9de29f81",
+        "result": "REJECT"
+      },
+      {
+        "id": "MD-prefix-rewrite",
+        "group": "MD",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "before": "Revision 2 is a proposal only.",
+        "after": "Revision 2 is obsolete.",
+        "mutated_sha256": "28e05c6d94ba6c704e8609d7e591a90da2a56684c1a9b1054db3bd301aba375a",
+        "result": "REJECT"
+      },
+      {
+        "id": "MD-missing-explicit-C002-supersession",
+        "group": "MD",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "before": "C002 supersedes its exact three-key map and revision-1-to-2 wording",
+        "after": "C002 reuses C001",
+        "mutated_sha256": "6e76a6af3bd0414b3e8cf2635cef9fe7dbd76fa7c1e12ecb068c974b317d2b10",
+        "result": "REJECT"
+      },
+      {
+        "id": "MD-missing-append",
+        "group": "MD",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "before": "\n## 8. C002 checkout raw-byte identity successor scope (proposed 2026-10-11 UTC)\n\nRevision 3 is a proposal only. It grants no implementation, publication, native execution, native environment repair or release authority. C001 at source221 is the already frozen count1/three-key long-path fix; count2/five-key is a new C002 contract, not compliance with the old C001 map.\n\nSolely for the same four existing paths in section 7, C002 supersedes its exact three-key map and revision-1-to-2 wording: (1) change only the checkout action step env to GIT_CONFIG_COUNT=2, retain GIT_CONFIG_KEY_0=core.longpaths and GIT_CONFIG_VALUE_0=true, and add only GIT_CONFIG_KEY_1=core.autocrlf and GIT_CONFIG_VALUE_1=false; (2) append this section to this Markdown without changing any prior byte; (3) change adjacent JSON revision 2 to 3, updated_at_utc to 2026-10-11T16:11:16Z, revision_scope to the exact C002 proposal string and workflow.checkout_env to that exact five-key map, preserving all other bytes; (4) change only the two bindingHash/mdHash 64-character literals in p1-stages.mjs to SHA-256 of the revised JSON/Markdown raw bytes, preserving every other CLI byte. No new implementation file is admitted.\n\nThe five configuration env keys belong only to the checkout action step and its Git subprocess command scope. They are forbidden at workflow/job scope, in GITHUB_ENV, in later steps and in diagnostic owned children. No added command, retry, version query, config write, relocation, sparse checkout, omitted archive, Actions/Node version change or permission/Secrets change is allowed. This prevents checkout text conversion; it never normalizes a hash input or accepts a second identity. The existing raw-byte hash assertions, guards, B001, E0/native env allowlist, API/worker, selections, caps, bounds, commands, tests, required_future_controls, sourceFiles eleven-path set, uploads and original artifacts remain unchanged.\n\nThe CI actual JSON digest is exactly reproduced by the single LF-to-CRLF Buffer transform and by an owned local Git fixture with core.autocrlf=true; this is not observation of the Windows file bytes or its autocrlf setting. A local fixture with core.autocrlf=false preserves all sixteen inspected source blobs, but is not native acceptance. Windows checkout byte preservation and every later INITIAL/native/release gate remain unverified.\n\nA fresh independent supporting pre-scope review must accept this new exact projection before Generator work. Then require a fresh actual-diff/post-scope review, independent different-model-family Kimi supporting gate, and a separate Coordinator ruling before a single new-source non-main CI opportunity. Static positive/negative controls must reject wrong count/value/key, extra key, missing confinement, stale/one-sided hashes, any extra CLI byte and any other source/test/contract delta; the unchanged synthetic suite does not itself freeze this checkout env map. No source221 retry or automatic follow-up run is authorized by this proposal. Compose HARD_STOP/no third Compose, postponed key work, no backup/restore/baseline/password/deploy, release_ready=false and all other release boundaries remain in force.\n",
+        "after": "",
+        "mutated_sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+        "result": "REJECT"
+      },
+      {
+        "id": "fifth-file",
+        "group": "closed-path/mode",
+        "path": "src/cli/bounded-subprocess-worker.mjs",
+        "counterfactual": "add fifth file entry, bytes UTF8 extra",
+        "result": "REJECT"
+      },
+      {
+        "id": "missing-MD-path",
+        "group": "closed-path/mode",
+        "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+        "counterfactual": "delete candidate map entry",
+        "result": "REJECT"
+      },
+      {
+        "id": "source-mode-change",
+        "group": "closed-path/mode",
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "counterfactual": "mode 100644 -> 100755",
+        "result": "REJECT"
+      }
+    ],
+    "unchanged_synthetic_suite": "unchanged source read at lines506-551; commands/ref/uploads coverage is not exact C002 env confinement coverage; never executed"
+  },
+  "untouched_contracts": [
+    "raw Buffer hash assertions and single accepted identity/no normalization",
+    "10 frozen inputs and 57 historical archive originals",
+    "native E0/env allowlist/B001/API/worker/selection/caps/budgets/tests/required_future_controls",
+    "11 sourceFiles/16 uploads/6 commands/ref/permissions/Secrets",
+    "Actions v4/Node22/retry and all other source221 tracked bytes/modes/types/objects/paths"
+  ],
+  "not_executed": [
+    "Planner probe/local Git fixture",
+    "target module imports/VM/runtime or product validator",
+    "tests/npm/dependencies/diagnostic CLI (old/new)",
+    "native/PowerShell/PID/kill",
+    "system/global Git config query/write",
+    "network/new CI/provider/SSH/DB/key/backup/restore/baseline/password/deployment",
+    "push/state/features/pending_gate/memory/registry/harness writes"
+  ],
+  "unresolved_boundaries": [
+    "Different-model-family Kimi supporting gate still required; this same-family supporting critic is not functional Evaluator",
+    "Separate Coordinator ruling required before any one new exact-source locked non-main CI opportunity; no source221 retry/automatic run/publication authority here",
+    "Any other key/path/delta or native ineffective byte preservation/new guard failure: HARD_STOP and return to fresh Planner; no guard normalization/removal/broadening",
+    "Compose HARD_STOP/no third Compose",
+    "User-postponed keys; no backup/restore/baseline/password/main/prod/deployment",
+    "Windows/INITIAL/F004/F005/functional/provider acceptance and release_ready=false remain open"
+  ],
+  "performed": "Passive source/git-object/raw receipt reads and hashes; builtins-only transient static inspection; pure-memory transforms/counterfactuals. No source/spec/test/original/state edits. Only two new report files may be committed locally.",
+  "static_inspector_operational_failure": {
+    "classification": "reviewer transient static-inspection construction error; not product/runtime/test result",
+    "first_attempt": "Node v25.7.0 SyntaxError: Unterminated string constant before inspection. String.replace replacement-string $' metasequence corrupted the Secret counterfactual literal.",
+    "correction": "Changed only the in-memory reviewer script literal. No target module imported or file written. Full static inspection rerun once.",
+    "first_exit_code": 1
+  },
+  "findings": [
+    {
+      "id": "S001",
+      "result": "PASS",
+      "classification": "confirmed-static-actual-diff",
+      "summary": "Commit source61 versus parent88 changes exactly the four permitted paths. Each actual full-byte blob equals independently recomputed C002 projection from source221 and the SHA-bound Planner capture; all supplied exact hashes match."
+    },
+    {
+      "id": "S002",
+      "result": "PASS",
+      "classification": "confirmed-static-contract",
+      "summary": "C002 revision3 explicitly supersedes only old C001 count1/three-key wording for the same four paths. Workflow has exactly one checkout-step env, exact five string values/count2 and both Git pairs. JSON/Markdown contracts agree. No old C001 or pre-scope PASS substitutes for this actual-diff finding."
+    },
+    {
+      "id": "S003",
+      "result": "PASS",
+      "classification": "confirmed-static-confinement",
+      "summary": "JSON changes only revision/time/scope/checkout_env; Markdown retains the 22275-byte prefix plus exact 3179-byte append. CLI has only two derived 64-character literal replacements; every other byte equals source221. Six commands, sixteen ordered uploads, eleven sourceFiles, permissions/Secrets/ref/versions/native contracts and all raw identity guards are unchanged."
+    },
+    {
+      "id": "S004",
+      "result": "PASS",
+      "classification": "confirmed-static-whole-tree",
+      "summary": "All 2453 non-exception source221 mode/type/object/path rows survive unchanged; four exception paths preserve modes/types. Candidate has only six plan/pre-scope report additions. All 2463 tracked raw working bytes/type checks match committed objects. Ten frozen inputs, original test and all 57 raw historical archive files remain equal."
+    },
+    {
+      "id": "S005",
+      "result": "PASS_WITH_LIMITATION",
+      "classification": "captured-original-failure-and-narrow-inference",
+      "summary": "Run38153928452/source221 succeeded checkout/setup-node but prepare/seal failed top-level raw binding identity before later INITIAL/native gates. npm/synthetic/INITIAL and verify/upload skipped, zero artifacts. Pure-memory LF-to-CRLF reproduces the old actual digest, but neither that match nor the retained local fixture observes Windows cause or proves C002 native byte preservation."
+    },
+    {
+      "id": "S006",
+      "result": "PASS_SCOPE_ONLY",
+      "classification": "independent-static-controls-not-product-tests",
+      "summary": "Actual four-file candidate accepted by closed exact-byte scope oracle and restricted workflow read. Seventy one-variable counterfactuals rejected; source/mode closure, maps, propagation, extra commands/permissions/Secrets/retries, stale hashes, MD rewrites and extra CLI bytes covered. No functional test, product validator or native execution was run."
+    }
+  ]
+}

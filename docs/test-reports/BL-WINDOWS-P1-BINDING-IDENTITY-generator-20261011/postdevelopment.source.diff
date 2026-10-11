@@ -1,0 +1,79 @@
+diff --git a/.github/workflows/windows-p1-stages-diagnostic.yml b/.github/workflows/windows-p1-stages-diagnostic.yml
+index d48cfd6..5de6101 100644
+--- a/.github/workflows/windows-p1-stages-diagnostic.yml
++++ b/.github/workflows/windows-p1-stages-diagnostic.yml
+@@ -19,9 +19,11 @@ jobs:
+     steps:
+       - uses: actions/checkout@v4
+         env:
+-          GIT_CONFIG_COUNT: '1'
++          GIT_CONFIG_COUNT: '2'
+           GIT_CONFIG_KEY_0: core.longpaths
+           GIT_CONFIG_VALUE_0: 'true'
++          GIT_CONFIG_KEY_1: core.autocrlf
++          GIT_CONFIG_VALUE_1: 'false'
+         with:
+           ref: ${{ github.sha }}
+           fetch-depth: 1
+diff --git a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
+index d3fe297..172e33a 100644
+--- a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
++++ b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json
+@@ -1,9 +1,9 @@
+ {
+   "format": "windows-p1-initial-bindings-v1",
+   "created_at_utc": "2026-10-11T03:43:34Z",
+-  "revision": 2,
+-  "updated_at_utc": "2026-10-11T14:04:39Z",
+-  "revision_scope": "C001 checkout-step-only long-path compatibility; explicit four-path exception and two CLI identity hashes only; B001 unchanged; fresh scope and Coordinator ruling required",
++  "revision": 3,
++  "updated_at_utc": "2026-10-11T16:11:16Z",
++  "revision_scope": "C002 checkout-step-only raw-byte identity by core.autocrlf=false; C001 longpaths retained; explicit four-path projection and two CLI identity hashes only; all native contracts unchanged; fresh scope and Coordinator ruling required",
+   "role": "supporting Planner; harness-rules section 1.5",
+   "status": "proposal-requires-fresh-independent-pre-scope",
+   "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
+@@ -92,7 +92,7 @@
+     "job_if":"github.event_name == 'push' && github.ref == 'refs/heads/codex/windows-p1-stages-ci-20261010'",
+     "permissions":{"contents":"read"},"concurrency_cancel_in_progress":false,"runs_on":"windows-latest","node_version":"22","timeout_minutes":12,
+     "checkout":{"ref":"${{ github.sha }}","fetch-depth":1,"persist-credentials":false},
+-    "checkout_env":{"GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true"},
++    "checkout_env":{"GIT_CONFIG_COUNT":"2","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true","GIT_CONFIG_KEY_1":"core.autocrlf","GIT_CONFIG_VALUE_1":"false"},
+     "checkout_env_scope":"checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation",
+     "secrets":[],"environment":null,
+     "ordered_commands":["node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare","npm ci","node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=docs/test-reports/windows-p1-stages-20261010/.scratch/checks.raw.json","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --verify-upload"],
+diff --git a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
+index 98a08f8..e913631 100644
+--- a/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
++++ b/docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md
+@@ -106,3 +106,15 @@ This section explicitly supersedes section 1's additions-only and no-existing-fi
+ Checkout configuration is process command-scope only. The three keys are forbidden at workflow/job scope, in `GITHUB_ENV`, in later step env maps, and in any diagnostic owned child. No global/system/local/worktree config write, extra command, short-path relocation, sparse checkout, omitted archive, permission/Secrets change, retry, native probe or version query is admitted. The JSON checkout input map, ordered commands, required synthetic controls and all upload/schema/provenance rules remain unchanged. Existing sourceFiles still contains exactly eleven paths; its current hashes and the strict bindingHash check must match the new exact candidate.
+ 
+ Fresh independent supporting pre-scope and actual-diff reviews must inspect both binding documents and the two identity literals. Checkout env confinement requires separate static positive/negative supporting controls: the existing synthetic suite does not itself lock this env map. Do not change its source or required_future_controls to manufacture coverage. Independent different-model-family supporting acceptance and an explicit Coordinator publication/execution ruling are required before one new exact-source INITIAL workflow opportunity on the already-locked non-main branch; no automatic retries or native environment repair. Preserve the original failure run, all old originals, historical inventories and frozen files. Checkout success alone is not INITIAL observation completeness, product acceptance, F005 or release readiness.
++
++## 8. C002 checkout raw-byte identity successor scope (proposed 2026-10-11 UTC)
++
++Revision 3 is a proposal only. It grants no implementation, publication, native execution, native environment repair or release authority. C001 at source221 is the already frozen count1/three-key long-path fix; count2/five-key is a new C002 contract, not compliance with the old C001 map.
++
++Solely for the same four existing paths in section 7, C002 supersedes its exact three-key map and revision-1-to-2 wording: (1) change only the checkout action step env to GIT_CONFIG_COUNT=2, retain GIT_CONFIG_KEY_0=core.longpaths and GIT_CONFIG_VALUE_0=true, and add only GIT_CONFIG_KEY_1=core.autocrlf and GIT_CONFIG_VALUE_1=false; (2) append this section to this Markdown without changing any prior byte; (3) change adjacent JSON revision 2 to 3, updated_at_utc to 2026-10-11T16:11:16Z, revision_scope to the exact C002 proposal string and workflow.checkout_env to that exact five-key map, preserving all other bytes; (4) change only the two bindingHash/mdHash 64-character literals in p1-stages.mjs to SHA-256 of the revised JSON/Markdown raw bytes, preserving every other CLI byte. No new implementation file is admitted.
++
++The five configuration env keys belong only to the checkout action step and its Git subprocess command scope. They are forbidden at workflow/job scope, in GITHUB_ENV, in later steps and in diagnostic owned children. No added command, retry, version query, config write, relocation, sparse checkout, omitted archive, Actions/Node version change or permission/Secrets change is allowed. This prevents checkout text conversion; it never normalizes a hash input or accepts a second identity. The existing raw-byte hash assertions, guards, B001, E0/native env allowlist, API/worker, selections, caps, bounds, commands, tests, required_future_controls, sourceFiles eleven-path set, uploads and original artifacts remain unchanged.
++
++The CI actual JSON digest is exactly reproduced by the single LF-to-CRLF Buffer transform and by an owned local Git fixture with core.autocrlf=true; this is not observation of the Windows file bytes or its autocrlf setting. A local fixture with core.autocrlf=false preserves all sixteen inspected source blobs, but is not native acceptance. Windows checkout byte preservation and every later INITIAL/native/release gate remain unverified.
++
++A fresh independent supporting pre-scope review must accept this new exact projection before Generator work. Then require a fresh actual-diff/post-scope review, independent different-model-family Kimi supporting gate, and a separate Coordinator ruling before a single new-source non-main CI opportunity. Static positive/negative controls must reject wrong count/value/key, extra key, missing confinement, stale/one-sided hashes, any extra CLI byte and any other source/test/contract delta; the unchanged synthetic suite does not itself freeze this checkout env map. No source221 retry or automatic follow-up run is authorized by this proposal. Compose HARD_STOP/no third Compose, postponed key work, no backup/restore/baseline/password/deploy, release_ready=false and all other release boundaries remain in force.
+diff --git a/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs b/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+index 0d5279e..311d04a 100644
+--- a/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
++++ b/docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+@@ -12,9 +12,9 @@ import { evidenceEvent as baselineEvent, safeCode, rootMetadata } from '../windo
+ const self = fileURLToPath(new URL('./p1-stages.mjs', import.meta.url));
+ const repo = resolve(dirname(self), '../../..');
+ const bindingPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
+-const bindingHash = '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d';
++const bindingHash = 'f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130';
+ const mdPath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
+-const mdHash = 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6';
++const mdHash = '9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb';
+ export const sha256 = value => createHash('sha256').update(value).digest('hex');
+ const bindingBytes = fs.readFileSync(join(repo, bindingPath));
+ assert.equal(sha256(bindingBytes), bindingHash, 'binding identity');

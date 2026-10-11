@@ -2,7 +2,14 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 16:22 UTC
+## Latest checkpoint: 16:58 UTC
+
+- C002 source `61cf64e67a6fda231bb090e77c19d5ececb908af` is frozen, exact four-file projection only. Independent pre-scope and actual-diff post-scope are **PASS_SCOPE_ONLY**, not functional acceptance. Fifty Generator development files and two actual-diff reports are transported byte-identically with a hash manifest.
+- Generator development: one actual fresh npmci exit0, unchanged81/81 and verify/syntax/pure-import exit0. Raw seven-high warnings, SWC native cache failure/package-owned lock-absent wasm fallback, first driver preflight STOP and operational path/time deviations are retained explicitly. No all-lock-only/native-install claim.
+- `windows-binding-identity-source-and-evaluation-adjudication.json` commissions fresh different-family Kimi OFFLINE supporting r0 at1800 seconds. The new five-key checkout/env confinement and byte identity must be independently exercised; old C001 results cannot close C002. No new publication or native run is authorized yet.
+- Main/production and parent runtime/state remain unchanged; last remote/public checks are historical16:08 originals. Compose HARD_STOP, user key deferral and all formal release gates remain open.
+
+## Historical checkpoint: 16:22 UTC
 
 - Fresh supporting Planner commit `13f750933f9917e147c0df9d930ed043b2ec374f` independently traced the module-load hash failure. Source221 JSON LF-to-CRLF alone exactly reproduces the CI actual digest; one owned Git fixture confirms that transform and that disabling conversion preserves 16 selected source blobs. This is narrow local inference, not observed Windows file bytes or runner configuration.
 - A new C002 proposal freezes an exact four-file projection: retain checkout longpaths, add checkout-only autocrlf false with count2/five string keys, explicit new JSON/MD contract and only the two CLI identity literals. It is not compliant with old C001 count1/three keys. Raw identity guards, original tests and diagnostic limits may not be relaxed.

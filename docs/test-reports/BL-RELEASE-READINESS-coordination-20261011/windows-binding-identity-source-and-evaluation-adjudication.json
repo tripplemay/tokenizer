@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T16:58:38Z",
+  "role": "Coordinator transport and bounded supporting commission, not functional acceptance or human gate decision",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "source_parent": "88d07004466251be3076fc454699207d3879374f",
+  "source_tree": "f83ae75d895dbd2f784eeb6992d8471dc6e562d8",
+  "generator_report_commit": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+  "generator_development_claim": "One actual fresh npmci exit0; unchanged81/81, verify/syntax/pure-import exit0. Not five-key checkout/Windows/native acceptance",
+  "generator_retained_limitations": [
+    "First owned driver stopped before any install due to its incorrect locked-vendor preflight; immutable original retained",
+    "Actual install started before later written root vendor clarification, time order disclosed",
+    "Raw seven-high warnings remain; SWC native cache validation/load failed; package-owned fallback installs @swc/wasm@1.16.13 absent original lock, so final dependencies are not all lock-only or native-accepted",
+    "Two own report drafts mistakenly outside reportdir were hash-recorded then removed with absolute apply_patch; neither entered source/report commit"
+  ],
+  "fresh_actual_diff_scope": {
+    "commit": "23c97c15fed90b993713650af085006297a0bd5c",
+    "verdict": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "17afb1b712243522f80fb270df1f9fc8432df074ce8a208f47f00393759bfaf3",
+    "controls": "One static positive plus70 counterfactual rejections, no runtime/native tests",
+    "operational_note": "Transient in-memory inspector construction SyntaxError occurred before inspection and is retained; no source correction or probe execution"
+  },
+  "transport": {
+    "files": 52,
+    "bytes": 1009297,
+    "byte_equal_to_source_commits": true,
+    "manifest": "windows-binding-identity-generator-and-postscope-transport-manifest.json",
+    "manifest_sha256": "8bec460a39a87ad6994c3254373970e949705facd3d055f06e35289c105fd7a4"
+  },
+  "supporting_evaluation": {
+    "authorized": true,
+    "task_id": "windows-p1-binding-identity-61cf64e-kimi-r0",
+    "target_id": "local-cli--kimi--evaluator",
+    "generator_family": "codex",
+    "evaluator_family": "kimi",
+    "execution_provenance_sha256": "bf87fcda2da33def23c799ddf0d0c9a9626ef8ca7889a95fbe4d19313a1fb410",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "effective_deadline_s": 1800,
+    "descriptor_timeout_s": 2400,
+    "scope": "Fresh independent offline C002 support only; exact source, owned dependencies/tests/fixture, no old acceptance reused",
+    "retry": "No automatic redispatch. At most one separately adjudicated fresh redispatch; no source/test dimension relaxation, family fallback or cap extension",
+    "source_publication_or_native_run_authorized": false
+  },
+  "root_read_error": "Initial envelope lookup used nonexistent windows-checkout-kimi-r1-envelope.json; inventory found existing windows-checkout-evaluation-envelope-r1.json. No product/runtime error",
+  "source_integrated_into_parent_runtime": false,
+  "main_push_or_production_mutation": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "Deferred by user",
+  "release_ready": false
+}

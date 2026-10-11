@@ -1,0 +1,25 @@
+{
+  "label": "02-npm-version",
+  "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node",
+  "args": [
+    "/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js",
+    "--version"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011",
+  "env_metadata": "development-after-local-preflight.raw.json#/env",
+  "started_at_utc": "2026-10-11T16:46:05.001Z",
+  "finished_at_utc": "2026-10-11T16:46:05.092Z",
+  "status": 0,
+  "signal": null,
+  "spawn_error": null,
+  "stdout": {
+    "path": "02-npm-version.stdout.log",
+    "bytes": 7,
+    "sha256": "1affb8f29ea203d9dc22f77b58c55ccff5317a28ca336aac0cd9a89aea9eb1fb"
+  },
+  "stderr": {
+    "path": "02-npm-version.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
