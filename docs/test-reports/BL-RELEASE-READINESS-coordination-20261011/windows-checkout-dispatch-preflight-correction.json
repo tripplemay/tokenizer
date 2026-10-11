@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T14:46:43Z",
+  "role": "Coordinator dispatch invocation correction; not model retry or acceptance",
+  "task_id": "windows-p1-checkout-221f2f8-kimi-r0",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "first_invocation": {
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008",
+    "exit_code": 2,
+    "log": "windows-checkout-kimi-r0-dispatch-original.log",
+    "receipt": "windows-checkout-kimi-r0-receipt-original.json",
+    "receipt_bytes": 0,
+    "failure": "Local repo.url must equal invocation worktree root, not merely share the Git repository; repository preflight refused before dispatch",
+    "envelope_validation": "passed",
+    "model_launched": false,
+    "deliverable_or_model_receipt": false
+  },
+  "correction": {
+    "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-generator-20261011",
+    "envelope": "Same immutable envelope via absolute parent artifact path",
+    "registry": "Invocation source worktree's non-symlink .agents-registry.json, mechanically re-resolved",
+    "new_log": "windows-checkout-kimi-r0-launch-original.log",
+    "new_receipt": "windows-checkout-kimi-r0-returned-receipt-original.json",
+    "task_source_scope_deadline_or_target_change": false,
+    "original_failed_files_overwritten": false,
+    "classification": "Correcting the earliest input/cwd identity error; not a second model attempt, native rerun or Compose redispatch"
+  },
+  "publication_or_native_execution_authorized": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "release_ready": false
+}
