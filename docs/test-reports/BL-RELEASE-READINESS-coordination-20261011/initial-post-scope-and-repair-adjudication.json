@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T13:02:36Z",
+  "role": "Coordinator transport and bounded repair adjudication; not functional Evaluator or human gate decision",
+  "source": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+  "generator_report": {
+    "commit": "13f4802ebba124fe84500954087fbb91c09cee11",
+    "transport_directory_compare_exit": 0,
+    "report_sha256": "e125c99f84d49fb3bf86abc88ac6c65d12dd4f0642797262a07455f410245c6e",
+    "readme_sha256": "0f1cceeb3c3208cf0b4f96f62a51a276b1f2b71eaefb2486e481b79fa21f03ba",
+    "files": 47,
+    "scoped_development_tests": "64 passed / 0 failed / 0 skipped; two initial failed test runs preserved",
+    "npm_ci": "fresh own dependencies; full original log retained",
+    "lint_limit": "app/src only, not the new diagnostic files",
+    "report_whitespace": "exit2 from six raw logs' EOF blank lines; not trimmed; source whitespace exit0",
+    "functional_acceptance": false
+  },
+  "actual_diff_scope": {
+    "original_report_commit": "93af1d0143d302bcd86da9ad9ac860e1f38d80c3",
+    "eof_format_tip": "936ddd277a233b834d2b422e0be22c77cb882f47",
+    "verdict": "BLOCKED",
+    "transport_directory_compare_exit": 0,
+    "verdict_sha256": "cd8d4e1edcbb69a6702932baba9fd74f9b2b927b6156141cd99b50f5e6be3406",
+    "readme_sha256": "0f726a7a6255a5bc9d471bce2bee2de057d903287eb00331a44c39e9c59f49c6",
+    "issues": [
+      "PS001: invalid skipped-case sealed JSONL can be treated as canonical empty while unsafe bytes remain in the upload file",
+      "PS002: non-absence owned-PID sampling errors can be treated as known death, allowing progression and root deletion",
+      "PS003: parser-invalid stream can mask independent missing EOF and permit root deletion"
+    ],
+    "evidence_kind": "Static source-path counterexamples; not native reproduction or functional acceptance",
+    "original_conclusions_rewritten": false
+  },
+  "repair_authority": {
+    "authorized": true,
+    "base": "13f4802ebba124fe84500954087fbb91c09cee11",
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011",
+    "source_edit_allowlist": [
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "tests/diagnostics/windows-p1-stages.test.ts"
+    ],
+    "scope": "PS001-PS003 minimum corrections and additive diagnostic-local mocked regression controls only",
+    "requirements": [
+      "Sealed verification rejects actual invalid/noncanonical/nonempty skipped streams even after manifest refresh; never rewrites or launders sealed bytes. Scratch reconstruction remains separately safe.",
+      "Only a recognized absent-process result is known absence; any unsupported or permission sampling error preserves independent cleanup unknown, blocks T1/T2 progression and retains roots without extra queries.",
+      "Missing actual EOF remains independent uncertainty for retention even when stream parser state is invalid/overflow; preserve invalid state and actual flags.",
+      "No source/spec/workflow/worker/dependency/environment/deadline/launch-cap/cleanup-budget relaxation or additional native query. No fourth source file."
+    ],
+    "development_report_directory": "docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/",
+    "existing_reports_or_logs_mutable": false,
+    "tests": "Offline synthetic/mocked only, preserving initial failures under distinct logs; reuse own prior dependency install truthfully if unchanged"
+  },
+  "next_gate": "Fresh exact-source actual-diff scope review, then applicable different-model-family functional acceptance; no publication from development or scope claims alone",
+  "source_integrated_into_parent_runtime": false,
+  "native_execution_authorized": false,
+  "publication_authorized_by_this_artifact": false,
+  "main_push_or_production_mutation": false,
+  "compose_third_attempt": false,
+  "key_work": "deferred by user",
+  "pending_gate_written": false,
+  "release_ready": false
+}

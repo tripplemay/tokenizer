@@ -1,0 +1,6 @@
+{"format":"windows-p1-initial-checks-v1","testPath":"tests/diagnostics/windows-p1-stages.test.ts","exitCode":0,"passed":64,"failed":0,"skipped":0,"allRequiredControlsPassed":true,"rawReportSuppressed":true,"releaseAcceptance":false}
+docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs 72114 55d709464b793a578fcf0d6a1a96da0482873ce4d040af8bc671e89d64d686d0
+tests/diagnostics/windows-p1-stages.test.ts 43773 b7e7dce2ddf532cc25326d802db0eb8ca4c84d71eafd3ecef56bb6023a5f3c50
+.github/workflows/windows-p1-stages-diagnostic.yml 3103 94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b
+Node v22.22.0 uv 1.51.0 platform darwin arch arm64
+Exact byte identities; pure import only, no guard/native/main execution.

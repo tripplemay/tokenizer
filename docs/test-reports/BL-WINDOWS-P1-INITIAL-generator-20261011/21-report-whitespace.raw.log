@@ -1,0 +1,6 @@
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/04-scoped-initial.raw.log:87: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/05-verify-initial.raw.log:12: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/06-scoped-after-bom-and-sealing.raw.log:86: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/13-verify-code-candidate.raw.log:12: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/15-lint.raw.log:4: new blank line at EOF.
+docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/16-verify-exact-candidate.raw.log:12: new blank line at EOF.
