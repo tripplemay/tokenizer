@@ -1,0 +1,10 @@
+Observed unchanged actual runCase rejection:
+TypeError: runRoot is not a function
+    at Object.runCase (docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs:18:24)
+    at file:///Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/[eval1]:21:21
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:272:26)
+    at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:268:20)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+{"check":"offline-vm-unchanged-actual-runCase-shadowing","sourceSha256":"55d709464b793a578fcf0d6a1a96da0482873ce4d040af8bc671e89d64d686d0","node":"v22.22.0","calls":{"mockedMkdir":7,"mockedWrite":4,"nativeRootFunction":0,"nativeQueries":0},"assertion":"expected existing failure reproduced; no native or filesystem setup calls performed"}

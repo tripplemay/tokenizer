@@ -1,0 +1,52 @@
+{
+  "format": "windows-p1-initial-generator-repair-development-v1",
+  "observed_at_utc": "2026-10-11T13:05:39Z",
+  "role": "supporting Generator; harness-rules section 1.5; not Coordinator or Evaluator",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011",
+  "starting_head": "13f4802ebba124fe84500954087fbb91c09cee11",
+  "starting_clean": true,
+  "previous_source_commit": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+  "authority": {
+    "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-post-scope-and-repair-adjudication.json",
+    "sha256": "160196daa3d0f4470bbb54faaf41cd3d7944656fe1f634d705b1668fae7759a7",
+    "scope": ["PS001", "PS002", "PS003"],
+    "source_edit_allowlist": [
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "tests/diagnostics/windows-p1-stages.test.ts"
+    ]
+  },
+  "original_scope_report": {
+    "decision": "BLOCKED",
+    "verdict_sha256": "cd8d4e1edcbb69a6702932baba9fd74f9b2b927b6156141cd99b50f5e6be3406",
+    "readme_sha256": "0f726a7a6255a5bc9d471bce2bee2de057d903287eb00331a44c39e9c59f49c6",
+    "read_complete": true,
+    "rewritten": false
+  },
+  "checkpoint": "source-work-stopped-for-out-of-scope-callable-shadowing-blocker",
+  "blocker": {
+    "classification": "existing actual runCase cannot reach sampling or cleanup boundary",
+    "evidence": [
+      "p1-stages.mjs:764 declares async function runRoot",
+      "p1-stages.mjs:810 uses runRoot as a path parameter of runCase",
+      "p1-stages.mjs:827 calls the shadowing parameter as a function",
+      "p1-stages.mjs:887 constructs runRoot as a path string",
+      "p1-stages.mjs:894 passes that string to runCase"
+    ],
+    "static_result": "TypeError before the two owned-PID samples and cleanup; parent catch records unknown",
+    "current_authority_covers_fix": false,
+    "coordinator_notified": true,
+    "source_fix_attempted": false,
+    "ps001_ps002_ps003_corrected": false
+  },
+  "dependencies": "Prior own fresh npm ci installation available for reuse; no fresh installation this round",
+  "source_edits": [],
+  "functional_acceptance": false,
+  "native_acceptance": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "publication_authorized": false,
+  "native_run_or_probe_executed": false,
+  "network_or_service_or_key_action": false,
+  "state_memory_or_pending_gate_written": false,
+  "push": false
+}

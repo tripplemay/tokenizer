@@ -1,0 +1,169 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011
+
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-token-chunk-splits-and-LF-CRLF > accepts every split of every complete fixed sequence and byte-at-a-time coalescing 15ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-token-chunk-splits-and-LF-CRLF > keeps arrival ordinals monotonic, enum-only and within the fixed lifetime 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > timeout-prefix-immediate-safe-persistence > persists a prefix synchronously before a mock worker timeout discards stdout 2ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > timeout-prefix-immediate-safe-persistence > does not duplicate stream-end at close and safe finalization 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > missing-EOF-event-health-or-stream-error > requires actual stdout end rather than close or destroy 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > missing-EOF-event-health-or-stream-error > requires actual stderr end rather than close or destroy 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > missing-EOF-event-health-or-stream-error > preserves stream errors even with complete markers and both EOFs 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > missing-EOF-event-health-or-stream-error > missing stream-end and either health stream block progression independently 14ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "﻿" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "\n" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal " " without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "RAW-STDERR-CANARY" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "TW_RAW_CONTENT_CANARY" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "PRIVATE-reader" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "é" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "\u0000" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unsafe literal "\r" without a raw fallback 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects unterminated, duplicate, reordered and wrong-variant tokens 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > counts all rejected bytes and stderr, stops accepting later markers and retains the first violation 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > unsafe-bytes-canaries-stderr-and-order > rejects non-Buffer chunks and oversized pending lines without unbounded accumulation 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > handle-pid-case-script-identity > matches only exact worker/script/case/options/positive owned PID 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > handle-pid-case-script-identity > attaches additive Buffer listeners before returning without touching existing listeners or worker stdout 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > uses native combined overflow sentinel and independent saturated counts including rejected bytes 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > keeps exact root/native inclusive count and +1 semantics 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > checks exact guard read cap and cap+1, rather than a pre-append size check 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > checks exact trace read cap and cap+1, rather than a pre-append size check 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > checks exact counter read cap and cap+1, rather than a pre-append size check 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > allows exact aggregate append size and refuses a candidate crossing it 3ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > enforces the actual 524288-byte guard cap with canonical rows 51ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > all-inclusive-caps-and-plus-one > enforces the actual 524288-byte trace cap with canonical rows 49ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > atomic mkdir contention aborts once, does not wait/retry and does not remove another writer lock 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > reentrant aggregate writer cannot slip past the held lock 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > fails closed on partial evidence IO with no retry 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > fails closed on release evidence IO with no retry 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > fails closed on identity evidence IO with no retry 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > fails closed on symlink evidence IO with no retry 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > fails closed on read evidence IO with no retry 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > keeps counter parsing, limits and append inside the same exact-path transaction 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > concurrent-append-and-lock-failure > old trace captures the installed exact-path append gate while unrelated targets remain untouched 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > counter-and-clock-admission-boundaries > requires 43000ms case and 10000ms native remaining, exact 7000ms child budget and no unknown clock 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > counter-and-clock-admission-boundaries > preserves 38/76 frozen counters, four INITIAL admissions and rejects corrupt/missing/oversized rows 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > a cleanupUnknown flag cannot be overridden by a complete terminal 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > a provenanceUnknown flag cannot be overridden by a complete terminal 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > a guardInvalid flag cannot be overridden by a complete terminal 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > a traceInvalid flag cannot be overridden by a complete terminal 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > a rootRetained flag cannot be overridden by a complete terminal 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > forced roots, canaries, stderr, possible-live samples and unknown counters independently block 1ms
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 case reaches the owned launcher once and accepts only ESRCH as known absence 3ms
+   → runRoot is not a function
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 case reaches the owned launcher once and accepts only ESRCH as known absence 1ms
+   → runRoot is not a function
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 cleanup retains every non-absence sampling error at either sample without extra queries 1ms
+   → runRoot is not a function
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 cleanup retains every non-absence sampling error at either sample without extra queries 1ms
+   → runRoot is not a function
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 cleanup retains independent missing EOF without erasing invalid/overflow parser facts 1ms
+   → runRoot is not a function
+ × tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 cleanup retains independent missing EOF without erasing invalid/overflow parser facts 1ms
+   → runRoot is not a function
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > every-selection-row-zero-skipped-launches > uses conservative T0/T1/T2 stop/continue rows and terminal T3 once 2ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > every-selection-row-zero-skipped-launches > never launches a skipped case and never fabricates zero/start=false for a missing outcome 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > every-selection-row-zero-skipped-launches > retains safe unknown root-launch metadata without inventing a root PID or a native return 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > strict-extra-key-rejection > rejects every closed schema extra key and malformed raw event/line before rebuilding 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > strict-extra-key-rejection > validates all case cross fields and rejects a terminal-only invented success 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > strict-extra-key-rejection > requires one canonical root object with no BOM, duplicate key, extra object or raw canary 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > import-without-side-effects > a fresh test import performs no spawn, append, mkdir, guard installation or diagnostic main 17ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > locks original hashes, four scripts and E0 environment with no repairs or extra selector 6ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > uses only the locked job/ref/commands and 16 explicit upload paths, not dispatch, secrets or globs 1ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > requires every declared control and rejects absent, skipped, wrong-scope and inconsistent test reports 0ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > verifies all 16 owned sealed files and 15 digest entries, rejects extras, altered bytes and alias roots 12ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects malformed core/provenance, changed candidate hashes, unsafe public evidence and manifest laundering 32ms
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T0.guard bytes after manifest refresh without rewriting any sealed file 8ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T0.trace bytes after manifest refresh without rewriting any sealed file 7ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T1.guard bytes after manifest refresh without rewriting any sealed file 7ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T1.trace bytes after manifest refresh without rewriting any sealed file 6ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T2.guard bytes after manifest refresh without rewriting any sealed file 7ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T2.trace bytes after manifest refresh without rewriting any sealed file 7ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T3.guard bytes after manifest refresh without rewriting any sealed file 6ms
+   → expected [Function] to throw an error
+ × tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T3.trace bytes after manifest refresh without rewriting any sealed file 6ms
+   → expected [Function] to throw an error
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > keeps missing post-crash results nullable unknown in a valid typed incomplete sealed artifact 6ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > allows the exact 65536-byte JSON artifact bound but refuses +1 even with a refreshed manifest 7ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > B001-actual-API-source-return-throw-and-owned-native-exit-close-counterexamples-at-T1-T2 > rejects contradictory actual source/error/owned tuples at T1 before any next launch 4ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > B001-actual-API-source-return-throw-and-owned-native-exit-close-counterexamples-at-T1-T2 > rejects contradictory actual source/error/owned tuples at T2 before any next launch 4ms
+ ✓ tests/diagnostics/windows-p1-stages.test.ts > B001-actual-API-source-return-throw-and-owned-native-exit-close-counterexamples-at-T1-T2 > derives API source only from actual return/catch instances, never error text or Node spawn-sync status 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 case reaches the owned launcher once and accepts only ESRCH as known absence
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 case reaches the owned launcher once and accepts only ESRCH as known absence
+TypeError: runRoot is not a function
+ ❯ Object.runCase unchanged-actual-runCase-test-vm.mjs:36:24
+ ❯ actualCaseWithMocks tests/diagnostics/windows-p1-stages.test.ts:113:32
+    111|   vm.runInContext(source.slice(processesStart, processesEnd) + source.…
+    112|     { filename: 'unchanged-actual-runCase-test-vm.mjs' });
+    113|   const record = await context.runCase(c, runDirectory, 600001, {});
+       |                                ^
+    114|   return { record, query, launch, remove, environment, root: join(runD…
+    115| }
+ ❯ tests/diagnostics/windows-p1-stages.test.ts:387:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 cleanup retains every non-absence sampling error at either sample without extra queries
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 cleanup retains every non-absence sampling error at either sample without extra queries
+TypeError: runRoot is not a function
+ ❯ Object.runCase unchanged-actual-runCase-test-vm.mjs:36:24
+ ❯ actualCaseWithMocks tests/diagnostics/windows-p1-stages.test.ts:113:32
+    111|   vm.runInContext(source.slice(processesStart, processesEnd) + source.…
+    112|     { filename: 'unchanged-actual-runCase-test-vm.mjs' });
+    113|   const record = await context.runCase(c, runDirectory, 600001, {});
+       |                                ^
+    114|   return { record, query, launch, remove, environment, root: join(runD…
+    115| }
+ ❯ tests/diagnostics/windows-p1-stages.test.ts:397:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T1 cleanup retains independent missing EOF without erasing invalid/overflow parser facts
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > cleanup-trace-provenance-independent-unknown > actual T2 cleanup retains independent missing EOF without erasing invalid/overflow parser facts
+TypeError: runRoot is not a function
+ ❯ Object.runCase unchanged-actual-runCase-test-vm.mjs:36:24
+ ❯ actualCaseWithMocks tests/diagnostics/windows-p1-stages.test.ts:113:32
+    111|   vm.runInContext(source.slice(processesStart, processesEnd) + source.…
+    112|     { filename: 'unchanged-actual-runCase-test-vm.mjs' });
+    113|   const record = await context.runCase(c, runDirectory, 600001, {});
+       |                                ^
+    114|   return { record, query, launch, remove, environment, root: join(runD…
+    115| }
+ ❯ tests/diagnostics/windows-p1-stages.test.ts:414:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T0.guard bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T0.trace bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T1.guard bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T1.trace bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T2.guard bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T2.trace bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T3.guard bytes after manifest refresh without rewriting any sealed file
+ FAIL  tests/diagnostics/windows-p1-stages.test.ts > exact-source-workflow-and-upload-file-set > rejects actual skipped T3.trace bytes after manifest refresh without rewriting any sealed file
+AssertionError: expected [Function] to throw an error
+ ❯ tests/diagnostics/windows-p1-stages.test.ts:582:78
+    580|       const path = join(s.dir, variant + '.' + family + '.jsonl'); fs.…
+    581|       const before = p1.BINDINGS.output.upload_files.map(name => fs.re…
+    582|       expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executio…
+       |                                                                              ^
+    583|       expect(p1.BINDINGS.output.upload_files.map(name => fs.readFileSy…
+    584|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 64 passed (78)
+   Start at  20:09:54
+   Duration  499ms (transform 89ms, setup 0ms, import 97ms, tests 326ms, environment 0ms)
+
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/02-pre-repair-controls.raw.json

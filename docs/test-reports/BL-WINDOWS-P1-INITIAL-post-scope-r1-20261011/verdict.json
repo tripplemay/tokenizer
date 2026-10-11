@@ -1,0 +1,195 @@
+{
+  "format": "independent-windows-p1-initial-actual-diff-scope-r1-review-v1",
+  "generated_at_utc": "2026-10-11T13:19:35Z",
+  "role": "fresh independent supporting actual-diff scope critic; harness-rules section 1.5",
+  "review_kind": "read-only source and static structure review of four narrowly authorized repairs; not Generator or functional Evaluator",
+  "source_commit": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "source_parent": "13f4802ebba124fe84500954087fbb91c09cee11",
+  "source_tree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+  "original_source_commit": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+  "original_source_parent": "cb198045498bb5561d1465808365a78424839755",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-post-scope-r1-20261011",
+  "branch": "codex/windows-p1-initial-post-scope-r1-20261011",
+  "initial_worktree_clean": true,
+  "pre_report_worktree_clean": true,
+  "progress_status": "building",
+  "current_sprint": "BL-RELEASE-READINESS",
+  "verdict": "PASS",
+  "verdict_scope": "scope-only: PS001-PS003 and GEN-R1-BLOCKER-001 minimum static source-path closure and two-path repair boundary",
+  "blocked": false,
+  "scope_only_pass": true,
+  "blocking_issue_count": 0,
+  "issues": [],
+  "source_diff_scope_violation": false,
+  "specification_preservation_violation": false,
+  "functional_acceptance": false,
+  "different_model_family_functional_acceptance": false,
+  "synthetic_controls_independently_executed": false,
+  "native_acceptance": false,
+  "ci_acceptance": false,
+  "native_execution_authorized": false,
+  "publication_authorized": false,
+  "main_push_authorized": false,
+  "production_mutation_authorized": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "authority": {
+    "sole_repair_authority_inputs": [
+      {
+        "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-post-scope-and-repair-adjudication.json",
+        "bytes": 3945,
+        "sha256": "160196daa3d0f4470bbb54faaf41cd3d7944656fe1f634d705b1668fae7759a7",
+        "evidence_lines": "33-50,52-60"
+      },
+      {
+        "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-repair-addendum-root-symbol.json",
+        "bytes": 2529,
+        "sha256": "b671095384fceb2224269750ae9d93455680f17c1930ca0275d10fc6e989d70f",
+        "evidence_lines": "7-30"
+      }
+    ],
+    "base_and_two_source_allowlists_match": true,
+    "this_verdict_grants_no_execution_or_publication_authority": true
+  },
+  "scope_accounting": {
+    "parent_to_source": {
+      "changed_paths": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs", "tests/diagnostics/windows-p1-stages.test.ts"],
+      "status_each": "M",
+      "insertions": 149,
+      "deletions": 14,
+      "whitespace_check_exit": 0,
+      "new_source_paths": 0
+    },
+    "original_source_to_parent": {
+      "added_files": 47,
+      "directory": "docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/",
+      "all_status_A": true,
+      "feature_source_delta": false,
+      "interpretation": "Original development evidence commit only, not 47 new source files. All 47 remain unchanged by the repair diff. Raw log content was not trimmed or re-certified."
+    },
+    "full_feature_code_from_original_source_parent": {
+      "added_paths": [".github/workflows/windows-p1-stages-diagnostic.yml", "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs", "tests/diagnostics/windows-p1-stages.test.ts"],
+      "count": 3,
+      "other_changes": "Only the 47 original development evidence additions described above; no original existing-file modification."
+    },
+    "frozen_runtime_hashes_matched": 7,
+    "prior_input_hashes_matched": 3,
+    "binding_pair_byte_equal_original_source": true,
+    "workflow_byte_equal_original_source": true,
+    "preserved": ["original source/worker/tests/workflows/dependencies/configuration", "old evidence/spec/state/harness/memory/pending_gate", "T0-T3 scripts, hashes, tokens and native command/argv", "E0 system/synthetic keys and import order", "deadlines, cleanup budgets, launch/query counts and byte caps", "strict append guard API and four native exit/close reconciliation", "selection and 16-file/15-manifest upload boundary"],
+    "new_runtime_DI_environment_or_CLI_bypass": false
+  },
+  "resolved_issues": [
+    {
+      "id": "PS001",
+      "resolution": "CLOSED-static-source-path-only",
+      "evidence": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs:949-986,992,1011-1025,1027-1043", "tests/diagnostics/windows-p1-stages.test.ts:507-534,583-613", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:81-83"],
+      "decisive_path": "seal exclusively uses loadScratchCaseEvidence; verifySealedDirectory exclusively uses loadSealedCaseEvidence. The sealed loader reads actual bounded owned bytes, asserts parse validity and byte equality to canonical rebuilt text, then requires zero actual bytes for every skipped guard/trace. It returns the original strict case record and contains no write/rebuild-recovery operation. Manifest equality remains independently required.",
+      "static_counterexample_reassessment": "The original refreshed-manifest T2.trace canary fails the strict parse assertion rather than becoming empty. Noncanonical UTF-8/BOM/blank/whitespace fails validity or byte equality. A canonical nonempty skipped row fails bytes.length===0. These checks apply identically to all eight T0-T3 guard/trace paths. Refreshing SHA/size cannot bypass them, and verifier rejection does not rewrite sealed bytes.",
+      "declared_controls_not_run": "Eight skipped paths times seven unsafe/noncanonical/nonempty payloads with manifest refresh and all-16-file before/after comparison; separate scratch recovery control. Source declarations inspected only."
+    },
+    {
+      "id": "PS002",
+      "resolution": "CLOSED-static-source-path-only",
+      "evidence": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs:529-531,548-549,566-577,830-856", "tests/diagnostics/windows-p1-stages.test.ts:77-114,395-414", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:44,48,64"],
+      "decisive_path": "samplingUnknown is initialized once and only moves to true. Only error.code===ESRCH leaves it false for a failed signal-0 query. Any other, absent or unsupported code at either existing sample makes cleanupUnknown true independently of provenanceUnknown; rootRetained is true, healthTrust false, observation incomplete, selection stop-unknown and root deletion withheld.",
+      "static_counterexample_reassessment": "Canonical T1 empty-prefix or T2 json-enter refusal plus one EPERM/EACCES/ENOSYS/UNKNOWN/missing-code sample can no longer become trusted cleanup absence. A later ESRCH cannot clear prior uncertainty. Successful queries remain possibly-live. There are still precisely two sample passes, one signal-0 query per observed PID in each, the unchanged conditional wait and no new signal/query/timer.",
+      "declared_controls_not_run": "Actual runCase body in test-only VM; T1/T2 canonical ESRCH positives and five uncertain categories at either sample; one mock launch and six signal-0 mock calls for the three fixture PIDs. No real PID query executed."
+    },
+    {
+      "id": "PS003",
+      "resolution": "CLOSED-static-source-path-only",
+      "evidence": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs:272-281,495-513,537-564,852-856", "tests/diagnostics/windows-p1-stages.test.ts:179-187,415-429", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:38-44,48,64"],
+      "decisive_path": "The evaluator now independently checks stdoutEofObserved, stderrEofObserved and eofObserved in its retention condition, regardless of invalid/overflow parser state. Missing stream or unknown state still retains. The stream object, invalid state, first reason/overflow priority, marker facts and actual EOF flags are not changed.",
+      "static_counterexample_reassessment": "The original invalid/unexpected-bytes with stdout EOF false remains invalid and incomplete but now forces cleanupUnknown/rootRetained; runCase cannot take the deletion branch. The same applies to either missing EOF and native-output-cap. stage.valid is already false for these states, so the pre-retention completeness calculation cannot become true.",
+      "declared_controls_not_run": "T1/T2 actual-case VM controls over invalid/overflow and either missing EOF plus recorder-level checks. No parser, VM or cleanup control executed in this review."
+    },
+    {
+      "id": "GEN-R1-BLOCKER-001",
+      "resolution": "CLOSED-static-symbol-and-test-boundary-only",
+      "evidence": ["13f4802:p1-stages.mjs:764,810,827,887,894", "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs:765-828,892-900", "tests/diagnostics/windows-p1-stages.test.ts:77-114,395-429"],
+      "decisive_path": "runCase now binds the pathname as runDirectory and updates only its path/environment references. The unchanged runRoot owned-launch function remains lexically callable at line 828; the parent still passes the pathname string. No actual launcher change, added mode, selector, runtime injection or retry was introduced.",
+      "static_counterexample_reassessment": "The previous string-as-function TypeError path is eliminated by the distinct local symbol. Tests slice exact current expectedProcesses/runCase bodies, evaluate them without rewriting in a test-local VM, and call runCase with a pathname string. Mock launcher/liveness/filesystem/health/clock bindings exist only in tests; they do not prove real native launcher/timer behavior.",
+      "pre_repair_artifact_limit": "The separate blocker MD/JSON exists and its exact hashes are recorded below. Its before-edit timing and retained failed control logs are Generator provenance claims, not independently replayed or chronologically authenticated here."
+    }
+  ],
+  "prior_decisions": {
+    "original_pre_scope": "BLOCKED B001; original report preserved",
+    "revision_1_pre_scope": "PASS for minimum written B001 only; not implementation or runtime acceptance",
+    "original_actual_diff": {
+      "verdict": "BLOCKED",
+      "original_report_commit": "93af1d0143d302bcd86da9ad9ac860e1f38d80c3",
+      "README_eof_format_tip": "936ddd277a233b834d2b422e0be22c77cb882f47",
+      "current_pair_matches_those_committed_blobs_and_authority_hashes": true,
+      "rewritten": false
+    },
+    "generator_r1_report_commit": "b34dd77fbf13e737032887cdaab23b3dc851c310",
+    "generator_81_green_claim": "Read as development narrative only; no raw report/log inventory re-certified, no controls independently executed and no acceptance inferred."
+  },
+  "actual_checks": [
+    {"id":"C01","method":"Current AGENTS/harness/CLAUDE/progress/features/T0 and evaluator role-context read; explicit section 1.5 supporting role","result":"PASS-boundary","observed":"building, F004/F005 pending, release_ready=false. Offline assignment: no pull, role transition, state/memory update or pending_gate write."},
+    {"id":"C02","method":"git -c core.fileMode=false status --short --branch; rev-parse HEAD HEAD^ HEAD^{tree}","result":"PASS","observed":"Exact source/parent/tree and clean start plus clean immediately before report creation."},
+    {"id":"C03","method":"git -c core.fileMode=false diff --name-status/--stat/--check parent source; original source parent; original source parent-to-current source; full unified repair diff read","result":"PASS-scope-only","observed":"Exactly two modified approved files, 149+/14-, whitespace exit0. Original-to-parent only 47 report additions; full feature code only original three additions."},
+    {"id":"C04","method":"First inline builtins-only Node JSON/hash/static checker","result":"FAILED-reviewer-script-syntax","exit_code":1,"observed":"Extra right parenthesis in checker line 29: SyntaxError: Unexpected token ')'. Node rejected before any checker body or diagnostic execution. Corrected locally in next inline invocation; no file was written."},
+    {"id":"C05","method":"Corrected inline Node fs/crypto/assert/child_process checker; read-only git show/diff calls each with -c core.fileMode=false; no diagnostic import or function evaluation","result":"PASS-static-only","exit_code":0,"observed":{"host_node":"v25.7.0; builtins-only static inspection, not target Node22 testing","repair_paths":2,"upstream_evidence_additions":47,"full_feature_paths":3,"frozen_hashes":7,"prior_hashes":3,"script_hashes":4,"sensitive_source_blocks_byte_equal":6,"workflow_commands":6,"upload_paths":16,"manifest_entries":15,"provenance_source_set":11,"original_actual_diff_report_commit_and_hash_match":true}},
+    {"id":"C06","method":"Read full 1085-line current CLI, 678-line current test and 66-line workflow; both bindings, original BLOCKED/written-r1 PASS and complete original actual-diff report; current authority artifacts and Generator r1 narrative","result":"PASS-static-four-repair-closure","observed":"Source-path counterexamples assessed above, not executed. Exact mocked regression declarations are present; no runtime DI/bypass in CLI."},
+    {"id":"C07","method":"Builtins-only hash/JSON check of original/r1 development report pairs and separate pre-repair blocker pair; git log -1 --format=%H on r1 report path","result":"PASS-identity-only","exit_code":0,"observed":"Original report pair hashes match authority; current Generator r1 report commit/hashes recorded. No 47/32-log inventory or chronological development claim certified."}
+  ],
+  "source_and_binding_hashes": [
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","bytes":73022,"sha256":"3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","bytes":53608,"sha256":"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"},
+    {"path":".github/workflows/windows-p1-stages-diagnostic.yml","bytes":3103,"sha256":"94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","bytes":19264,"sha256":"bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json","bytes":34330,"sha256":"ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs","bytes":51907,"sha256":"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs","bytes":4921,"sha256":"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"},
+    {"path":"src/cli/bounded-subprocess.ts","bytes":5545,"sha256":"26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"},
+    {"path":"src/cli/bounded-subprocess-worker.mjs","bytes":3012,"sha256":"02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"},
+    {"path":"src/cli/replay.ts","bytes":16801,"sha256":"6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"},
+    {"path":".github/workflows/windows-release-diagnostics.yml","bytes":4389,"sha256":"34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"},
+    {"path":"package-lock.json","bytes":413776,"sha256":"7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"}
+  ],
+  "additional_input_hashes": [
+    {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","bytes":24862,"sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","bytes":11769,"sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json","bytes":10792,"sha256":"dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/verdict.json","bytes":14478,"sha256":"33e1da3a7a239aa8ab8c63e26537257befcd87b0c875dfe32ae82ec1da64c604"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/README.md","bytes":7642,"sha256":"f52cfb976275179a2b36053c46dd0003de2f5ee694c93e3f3dcfd0bcba6711d6"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json","bytes":13167,"sha256":"7eceec16fb8fa55529f87734099ea476825b65f92eba3dbf5c0ed6d567a925ee"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md","bytes":7383,"sha256":"b636ad343720f1ea0c60e82d0a3b51c983ba0caf40603c208189f6a313e72725"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-post-scope-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-post-scope-20261011/verdict.json","bytes":23876,"sha256":"cd8d4e1edcbb69a6702932baba9fd74f9b2b927b6156141cd99b50f5e6be3406"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-post-scope-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-post-scope-20261011/README.md","bytes":9876,"sha256":"0f726a7a6255a5bc9d471bce2bee2de057d903287eb00331a44c39e9c59f49c6"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/report.json","bytes":18887,"sha256":"e125c99f84d49fb3bf86abc88ac6c65d12dd4f0642797262a07455f410245c6e"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/README.md","bytes":4650,"sha256":"0f1cceeb3c3208cf0b4f96f62a51a276b1f2b71eaefb2486e481b79fa21f03ba"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/report.json","bytes":19381,"sha256":"71bbc932bd8d158f2117d38921b28acb9d7bf30cc5b7f5c3ec650ecc600dcc0e"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/README.md","bytes":5695,"sha256":"53a3e83654403028a4eee85a7f87cbd295cd5fd8fbe7d63aecd16cbe59ebab4a"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/pre-repair-blocker.json","bytes":2495,"sha256":"f6617f393bf980e37290efa4dcd940b5311780cbf414673c1de73186f62bdce7"},
+    {"path":"/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011/docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/pre-repair-blocker.md","bytes":2526,"sha256":"9da2c955f27e3c1e470ed0376a8592de4adda34d7680da8a89421a0a1470508f"}
+  ],
+  "remaining_gates": [
+    "Applicable fresh different-model-family functional Evaluator must independently execute and assess exact-source synthetic/mocked controls; this static PASS and Generator 81-green narrative do not perform that gate.",
+    "Actual native launcher/API/worker/health-writer/append-lock behavior, real EOF availability, Windows error semantics, owned cleanup/timer ordering, observer perturbation and runner provenance remain unproved here.",
+    "Exact-candidate native Windows/CI evidence requires separate Coordinator execution/publication authority. No workflow run or remote evidence was observed here.",
+    "INITIAL remains a bounded diagnostic, not a product P1 repair or closure of original Windows failures. Other release/Compose/provider/backup-recovery/deployment and F004/F005 gates remain open.",
+    "No main push, production mutation, pending_gate decision or release-ready transition follows from this report."
+  ],
+  "historical_evidence_limit": "No original 59-file Windows native/log inventory was authenticated, no historical process/signature/remote run re-observed. Bound source/spec/report hashes identify artifacts only; prior failure evidence and the original BLOCKED conclusion remain preserved. User-memory lookup was not authority or acceptance evidence.",
+  "performed": {
+    "read_only_actual_source_and_diff_review": true,
+    "short_local_git_hash_JSON_structure_checks": true,
+    "static_counterexample_path_analysis": true,
+    "new_module_import": false,
+    "source_function_or_test_VM_evaluation": false,
+    "synthetic_or_product_tests": false,
+    "native_PowerShell_or_run_or_probe_execution": false,
+    "real_PID_query": false,
+    "dependency_install": false,
+    "network_GitHub_CI_SSH_service_DB_keys_or_production": false,
+    "push": false,
+    "source_test_workflow_spec_state_harness_memory_or_old_evidence_edit": false,
+    "pending_gate_decision_write": false
+  },
+  "reviewer_only_outputs": ["docs/test-reports/BL-WINDOWS-P1-INITIAL-post-scope-r1-20261011/verdict.json", "docs/test-reports/BL-WINDOWS-P1-INITIAL-post-scope-r1-20261011/README.md"],
+  "report_integrity": "Report pair size/SHA-256, exact-path report-only commit and final clean status are delivered after writing/committing, outside self-referential bytes. No index writes after final commit."
+}

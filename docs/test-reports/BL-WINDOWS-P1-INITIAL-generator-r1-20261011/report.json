@@ -1,0 +1,498 @@
+{
+  "format": "windows-p1-initial-generator-repair-development-v1",
+  "observed_at_utc": "2026-10-11T13:14:12Z",
+  "role": "supporting Generator; harness-rules section 1.5; not Coordinator or Evaluator",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011",
+  "branch": "codex/windows-p1-initial-generator-20261011",
+  "starting_head": "13f4802ebba124fe84500954087fbb91c09cee11",
+  "starting_clean": true,
+  "original_source_commit": "0f02b81c72fc399cae6826d4d49418b96ff23e15",
+  "source_commit": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "source_commit_parent": "13f4802ebba124fe84500954087fbb91c09cee11",
+  "report_commit_identity": "The unique report-only commit containing this path is delivered after committing; git log -1 --format=%H -- docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-r1-20261011/report.json resolves it without self-reference.",
+  "authority": [
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-post-scope-and-repair-adjudication.json",
+      "sha256": "160196daa3d0f4470bbb54faaf41cd3d7944656fe1f634d705b1668fae7759a7",
+      "parent_commit": "b759f2a",
+      "scope": [
+        "PS001",
+        "PS002",
+        "PS003"
+      ]
+    },
+    {
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/initial-repair-addendum-root-symbol.json",
+      "sha256": "b671095384fceb2224269750ae9d93455680f17c1930ca0275d10fc6e989d70f",
+      "parent_commit": "b2d77bc",
+      "scope": [
+        "GEN-R1-BLOCKER-001 local path symbol rename",
+        "test-local actual runCase mock control"
+      ]
+    }
+  ],
+  "source_edit_allowlist": [
+    "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+    "tests/diagnostics/windows-p1-stages.test.ts"
+  ],
+  "source_diff": {
+    "changed_paths": 2,
+    "insertions": 149,
+    "deletions": 14,
+    "whitespace_exit": 0,
+    "extra_source_file": false,
+    "workflow_change": false,
+    "original_runtime_or_worker_change": false
+  },
+  "source_files": [
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 73022,
+      "sha256": "3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b",
+      "changed": true
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+      "changed": true
+    },
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3103,
+      "sha256": "94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b",
+      "changed": false
+    }
+  ],
+  "original_scope_report": {
+    "decision": "BLOCKED",
+    "original_commit": "93af1d0143d302bcd86da9ad9ac860e1f38d80c3",
+    "readme_eof_only_tip": "936ddd277a233b834d2b422e0be22c77cb882f47",
+    "verdict_sha256": "cd8d4e1edcbb69a6702932baba9fd74f9b2b927b6156141cd99b50f5e6be3406",
+    "readme_sha256": "0f726a7a6255a5bc9d471bce2bee2de057d903287eb00331a44c39e9c59f49c6",
+    "read_complete_before_edit": true,
+    "rewritten": false,
+    "new_scope_verdict_claimed": false
+  },
+  "preserved_pre_repair_blocker": {
+    "id": "GEN-R1-BLOCKER-001",
+    "finding": "The runCase runRoot path parameter shadows the actual launcher function; the parent passes a string, causing TypeError before sampling/cleanup.",
+    "reported_before_source_edits": true,
+    "artifacts_written_before_repair": true,
+    "files": [
+      "pre-repair-blocker.md",
+      "pre-repair-blocker.json",
+      "01-run-case-shadowing.raw.log",
+      "01-run-case-shadowing.exit.log"
+    ],
+    "unchanged_hashes_rechecked": true,
+    "evidence_kind": "Static actual-source path plus offline VM evaluation of unchanged actual runCase with mocked setup; expected failure, no native execution.",
+    "expected_failure": "TypeError: runRoot is not a function",
+    "originally_outside_authority": true,
+    "separately_authorized_before_fix": true,
+    "correction": "Rename only the local path parameter and its path/environment references; preserve the existing real launcher call.",
+    "launch_delta_acknowledgment": "The original symbol bug prevented the normal launcher from being callable. The approved rename restores that original intended call; no new case, launch mode, selector, retry or admission is added."
+  },
+  "repair_implementation": {
+    "status": "Implemented development candidate, independently unaccepted",
+    "PS001": "Distinct scratch and sealed loaders. Strict sealed loader reads actual bounded owned bytes, rejects invalid/noncanonical bytes before reconstruction and requires skipped guard/trace length=0. It never changes bytes or reconstructs a sealed case record.",
+    "PS002": "Both existing owned PID signal-0 samples retain monotonic samplingUnknown; only ESRCH is known absence. Every non-absence/unsupported/missing-code failure forces independent cleanupUnknown/rootRetained and incomplete observation. No extra queries or wait condition.",
+    "PS003": "evaluateCase tests actual stdout/stderr/combined EOF independently of parser state; missing EOF forces cleanupUnknown/rootRetained even for invalid or overflow. Original invalid state/reason/flags remain unchanged.",
+    "additional_helper_file_or_source_path_added": false,
+    "runtime_dependency_injection_added": false,
+    "cli_or_environment_selector_added": false,
+    "deadlines_scripts_bounds_environment_and_native_API_preserved": true
+  },
+  "environment": {
+    "node": "v22.22.0",
+    "uv": "1.51.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_bin": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin",
+    "home_and_userprofile": "/Volumes/ORICO/project/.wp1g-20261011/home",
+    "temporary": "/Volumes/ORICO/project/.wp1g-20261011/tmp",
+    "npm_cache": "/Volumes/ORICO/project/.wp1g-20261011/cache",
+    "path_contains_usr_sbin_and_sbin": true,
+    "dependencies": "Reused this same worktree's previous own fresh npm ci installation. No new npm ci or fresh-install claim in this round.",
+    "borrowed_or_symlink_modules": false,
+    "node_download": false,
+    "dependency_or_lockfile_edit": false
+  },
+  "development_attempts": [
+    {
+      "id": "01-run-case-shadowing",
+      "exit": 0,
+      "result": "Expected unchanged actual runCase TypeError reproduced by offline VM; stubbed 7 mkdir/4 write setup calls, 0 real setup I/O, 0 launcher calls, 0 PID queries."
+    },
+    {
+      "id": "02-pre-repair-controls",
+      "exit": 1,
+      "result": "64 passed, 14 failed, 0 skipped. Six actual-case controls stopped at original shadow TypeError; eight skipped-stream verifier controls exposed unsafe acceptance."
+    },
+    {
+      "id": "03-after-symbol-controls",
+      "exit": 1,
+      "result": "66 passed, 12 failed, 0 skipped. Positive actual-case controls now pass; PS002 and PS003 each fail at both T1/T2 boundaries; eight skipped-stream controls still fail."
+    },
+    {
+      "id": "04-after-safety-controls",
+      "exit": 0,
+      "result": "78 passed, 0 failed, 0 skipped after PS001-PS003 correction."
+    },
+    {
+      "id": "05-verify-initial",
+      "exit": 2,
+      "result": "Prisma generate succeeded; TypeScript TS2493 on test-only zero-argument vi.fn tuple access. Corrected test mock signature only; failure log retained."
+    },
+    {
+      "id": "06-exact-candidate-controls",
+      "exit": 0,
+      "result": "81 passed, 0 failed, 0 skipped; exact final source bytes.",
+      "command": "node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=verbose --reporter=json --outputFile=<unique r1 raw JSON path>"
+    },
+    {
+      "id": "07-exact-candidate-verify",
+      "exit": 0,
+      "result": "npm run verify: Prisma generate and tsc --noEmit; no database connection or migration."
+    },
+    {
+      "id": "08-pure-identity",
+      "exit": 0,
+      "result": "Pure import: spawn/spawnSync/append/mkdir/kill all zero. 81/0/0 checks summary, 14 required groups, 10 frozen/prior inputs, source/workflow/spec and preserved blocker/report hashes matched."
+    },
+    {
+      "id": "09-syntax",
+      "exit": 0,
+      "result": "node --check new CLI."
+    },
+    {
+      "id": "10-source-commit",
+      "exit": 0,
+      "result": "Independent --only commit for exactly the two approved source paths."
+    },
+    {
+      "id": "11-actual-diff-frozen",
+      "exit": 0,
+      "result": "Exact HEAD/parent, two-path source delta, source diff-check exit0, empty tracked/index diff, frozen inputs/workflow/spec/state preserved, all 47 original development files byte-equal to starting commit."
+    },
+    {
+      "id": "12-report-whitespace",
+      "exit": 2,
+      "result": "Documentation-only staged diff-check reports one raw Prisma/verify EOF blank line. Raw bytes deliberately preserved, not trimmed; source diff-check exit0."
+    }
+  ],
+  "measured_test_reports": [
+    {
+      "id": "02-pre-repair-controls",
+      "passed": 64,
+      "failed": 14,
+      "skipped": 0,
+      "total": 78
+    },
+    {
+      "id": "03-after-symbol-controls",
+      "passed": 66,
+      "failed": 12,
+      "skipped": 0,
+      "total": 78
+    },
+    {
+      "id": "04-after-safety-controls",
+      "passed": 78,
+      "failed": 0,
+      "skipped": 0,
+      "total": 78
+    },
+    {
+      "id": "06-exact-candidate-controls",
+      "passed": 81,
+      "failed": 0,
+      "skipped": 0,
+      "total": 81
+    }
+  ],
+  "measured_exit_logs": [
+    {
+      "id": "01-run-case-shadowing",
+      "exit": 0
+    },
+    {
+      "id": "02-pre-repair-controls",
+      "exit": 1
+    },
+    {
+      "id": "03-after-symbol-controls",
+      "exit": 1
+    },
+    {
+      "id": "04-after-safety-controls",
+      "exit": 0
+    },
+    {
+      "id": "05-verify-initial",
+      "exit": 2
+    },
+    {
+      "id": "06-exact-candidate-controls",
+      "exit": 0
+    },
+    {
+      "id": "07-exact-candidate-verify",
+      "exit": 0
+    },
+    {
+      "id": "08-pure-identity",
+      "exit": 0
+    },
+    {
+      "id": "09-syntax",
+      "exit": 0
+    },
+    {
+      "id": "10-source-commit",
+      "exit": 0
+    },
+    {
+      "id": "11-actual-diff-frozen",
+      "exit": 0
+    },
+    {
+      "id": "12-report-whitespace",
+      "exit": 2
+    }
+  ],
+  "final_control_detail": {
+    "total_tests": 81,
+    "passed": 81,
+    "failed": 0,
+    "skipped": 0,
+    "original_tests": 64,
+    "additive_tests": 17,
+    "required_control_groups": 14,
+    "sealed_skipped_paths": 8,
+    "payloads_per_skipped_path": 7,
+    "refreshed_manifest_negative_cases": 56,
+    "sealed_no_rewrite_assertion": "All 16 file bytes compared before and after each verifier rejection.",
+    "actual_case_boundary": "Exact current runCase and expectedProcesses bodies evaluated without transformation in a test-local VM, with owned temporary filesystem and synthetic PID/mock launcher/health/read/clock dependencies only.",
+    "positive_absence_controls": 2,
+    "unknown_sample_controls": 20,
+    "unknown_error_categories": [
+      "EPERM",
+      "EACCES",
+      "ENOSYS",
+      "UNKNOWN",
+      "missing code"
+    ],
+    "samples_per_case": 2,
+    "synthetic_observed_pids": [
+      100,
+      200,
+      300
+    ],
+    "signal": 0,
+    "total_mock_queries_per_actual_case": 6,
+    "mock_launches_per_actual_case": 1,
+    "invalid_plus_missing_EOF_case_controls": 8,
+    "parser_invalid_missing_EOF_controls": 4,
+    "scratch_separate_reconstruction": "All four skipped variants, both guard/trace unsafe scratch streams reconstruct to safe empty public representation without rewriting scratch; sealed rejects their actual bytes.",
+    "mock_limits": "Actual native launcher/timers/OS process behavior and real health-writer execution are not tested by this VM."
+  },
+  "original_evidence_preservation": {
+    "original_development_directory": "docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/",
+    "original_development_report_commit": "13f4802ebba124fe84500954087fbb91c09cee11",
+    "files_byte_compared": 47,
+    "old_logs_and_failed_runs_overwritten": false,
+    "raw_EOF_blank_lines_preserved": true,
+    "binding_md_sha256": "bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c",
+    "binding_json_sha256": "ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc",
+    "frozen_and_prior_inputs_matched": 10,
+    "old_windows_native_inventory_reauthenticated": false
+  },
+  "evidence_inventory_excludes_self": true,
+  "evidence_inventory": [
+    {
+      "path": "01-run-case-shadowing.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "01-run-case-shadowing.raw.log",
+      "bytes": 1026,
+      "sha256": "e13c25c2e1cb1a24ef6428000bee53fdf9cd059dba1ad50af64f79485c6320fe"
+    },
+    {
+      "path": "02-pre-repair-controls.exit.log",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "02-pre-repair-controls.raw.json",
+      "bytes": 50379,
+      "sha256": "d5d8471d719a86816e1076f4f01aa2d68817bdd97a216a442c102719a2651cb9"
+    },
+    {
+      "path": "02-pre-repair-controls.raw.log",
+      "bytes": 20194,
+      "sha256": "8d505b96c5376463b478087bf8ef9ef13c5320925b09f14fc8a5d0cfc9316ab1"
+    },
+    {
+      "path": "03-after-symbol-controls.exit.log",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "03-after-symbol-controls.raw.json",
+      "bytes": 43758,
+      "sha256": "5a350b6fdf7085b698bc0d0b7a0a53f4b8eb1f26f6a315605d0e7b3d4900b035"
+    },
+    {
+      "path": "03-after-symbol-controls.raw.log",
+      "bytes": 19277,
+      "sha256": "9e5ee965e7da7ee1c8ab9336ece4c26424305f3c0be5d36b9a33ff80371037de"
+    },
+    {
+      "path": "04-after-safety-controls.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "04-after-safety-controls.raw.json",
+      "bytes": 29897,
+      "sha256": "0e05ccb1c12af40c8fba009553dea3f9c7dd9bb1b5a89ea21ef8bdee2e291bfc"
+    },
+    {
+      "path": "04-after-safety-controls.raw.log",
+      "bytes": 14233,
+      "sha256": "4fbafac11791bcc7cce13795df8170c2ef70abd1c91044b8a384be33ba3026c8"
+    },
+    {
+      "path": "05-verify-initial.exit.log",
+      "bytes": 2,
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "05-verify-initial.raw.log",
+      "bytes": 520,
+      "sha256": "3b6e28e2915e500580c655739927758e82183a860dab3dd7bdb2e2695081b44e"
+    },
+    {
+      "path": "06-exact-candidate-controls.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "06-exact-candidate-controls.raw.json",
+      "bytes": 31029,
+      "sha256": "17786feeb0f411afbde2ec1bba9a8ee3658f7127b054c9546b66a88877694f9f"
+    },
+    {
+      "path": "06-exact-candidate-controls.raw.log",
+      "bytes": 14772,
+      "sha256": "edba45f5b06616dfeb50f33a815869e08c92d385b6272704ae306a33c7c1e082"
+    },
+    {
+      "path": "07-exact-candidate-verify.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "07-exact-candidate-verify.raw.log",
+      "bytes": 394,
+      "sha256": "5b345ef2754f7090932a44866e84dcb085c72d065765e997a315b2ea4412f057"
+    },
+    {
+      "path": "08-pure-identity.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "08-pure-identity.raw.log",
+      "bytes": 1423,
+      "sha256": "b0e8bbb51fa031895594db8ab13376a9dd016cfbb6306e8fde0ce7afc95f4e6f"
+    },
+    {
+      "path": "09-syntax.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "09-syntax.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "10-source-commit.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "10-source-commit.raw.log",
+      "bytes": 179,
+      "sha256": "35d6852db9dd2423d1f64f37443a3f7128b6a6b8b9d60dc9d693eaf74e6dd313"
+    },
+    {
+      "path": "11-actual-diff-frozen.exit.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "11-actual-diff-frozen.raw.log",
+      "bytes": 5952,
+      "sha256": "8969adb687a680cbf808c482a65f29b409b1cbabc277e07e1d9085590a878292"
+    },
+    {
+      "path": "12-report-whitespace.exit.log",
+      "bytes": 2,
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "12-report-whitespace.raw.log",
+      "bytes": 123,
+      "sha256": "a5f3e2698e9ddddbe62d3c05cc29824b66b35aa952820e77cc6bdb953b656c9d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5695,
+      "sha256": "53a3e83654403028a4eee85a7f87cbd295cd5fd8fbe7d63aecd16cbe59ebab4a"
+    },
+    {
+      "path": "pre-repair-blocker.json",
+      "bytes": 2495,
+      "sha256": "f6617f393bf980e37290efa4dcd940b5311780cbf414673c1de73186f62bdce7"
+    },
+    {
+      "path": "pre-repair-blocker.md",
+      "bytes": 2526,
+      "sha256": "9da2c955f27e3c1e470ed0376a8592de4adda34d7680da8a89421a0a1470508f"
+    }
+  ],
+  "expected_final_report_file_count": 32,
+  "untested_boundaries": [
+    "No native PowerShell, old diagnostic, new --run/--probe, Windows runner or CI execution.",
+    "No real process.kill PID query or native cleanup/absence evidence.",
+    "No full --seal/--verify-upload CLI execution; sealed helper controls and scratch helper mocking only.",
+    "No actual API/native launcher production flow, real lifetime/timer ordering or observation perturbation measurement.",
+    "No dependency reinstall or new audit; prior fresh npm ci remains historical evidence.",
+    "Lint not rerun; previous lint covered app/src only.",
+    "No fresh independent exact-source scope verdict or different-model-family functional acceptance yet."
+  ],
+  "performed": {
+    "offline_synthetic_mock_tests": true,
+    "pure_import_and_syntax": true,
+    "verify_prisma_generate_tsc": true,
+    "read_only_local_git_hash_checks": true,
+    "native_or_run_or_probe": false,
+    "network_github_ssh_ci_service_docker_DB_keys": false,
+    "push_or_production": false,
+    "state_harness_memory_or_pending_gate_write": false
+  },
+  "functional_acceptance": false,
+  "native_acceptance": false,
+  "ci_acceptance": false,
+  "publication_authorized": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "required_next_gate": "Fresh independent exact-source actual-diff scope for 888a5acd including PS001-PS003 and symbol repair; applicable different-model-family functional acceptance, independent native/publication/release authority.",
+  "final_clean_status_delivery": "Read-only final HEAD/parent/status and report SHA256 are delivered after exact-path report commit. No source changes after source commit; index writes stop after report commit."
+}
