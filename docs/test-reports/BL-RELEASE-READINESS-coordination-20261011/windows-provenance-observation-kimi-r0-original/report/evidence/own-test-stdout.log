@@ -1,0 +1,59 @@
+
+ RUN  v4.1.11 /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0
+
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > pins the CLI, original 81-test file and proposal by sha256, size and LF-only bytes 2ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > has exactly eighteen fixed four-byte LF reason lines V00-V17 and no dynamic reason text 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > keeps emission order generic then phase then at most one reason, stderr only, exit 1 retained 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > activates observation only in the exact --prepare arm with V00 reset and deactivates after success 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > latches fixed enums immediately before original operations and false returns, never after 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > pins and static negative controls > preserves original call counts, catch semantics and adds no schema/env/error/property reads 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > schema true returns deep clone, calls schema then stringify then parse exactly once, no latch 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > schema false returns null and latches V02, clone never attempted 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > caught schema escape returns null and latches V03 without inspecting the thrown value 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > caught primitive escape also classifies V03 and never serializes the primitive 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > caught clone escape returns null and latches V04, stringify attempted exactly once 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > rebuild slice: schema/clone stage classification with exact call order and counts > inactive observer (not exact prepare P11, or non-provenance name) changes nothing and emits nothing 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V01: rebuild in flight external escape leaves the in-flight enum (anomalous interval, stubbed dependency) 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V02: schema false -> validator false, latch survives the !v guard, 84-byte terminal 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V03: caught schema escape -> validator false, not overwritten by V06 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V04: caught clone escape -> validator false, thrown toJSON value never inspected or emitted 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V05: first aggregate guard escape interval stays distinct from latched false V06 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V06: first aggregate guard false after valid rebuild, schema false never reaches it 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V07: paths construction escape interval 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V08: source path comparison escape interval 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V09: source path comparison false 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V10: frozen source iteration escape interval 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V11: frozen source check false without path/hash disclosure 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V12: binding source check escape interval (stubbed dependency for the plain-clone gap) 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V13: binding source check false 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V14: presentSystem filter escape interval 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V15: final environment predicate escape interval 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V16: final environment predicate false without key/value disclosure 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V17: validator true but P11 operation does not complete; anomaly stays unknown 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validateProvenance slice: all eighteen fixed codes distinguished > V00: unassigned/invalid observation emits fixed V00 unknown, nonmember falls back to V00 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validator call order, arguments, short-circuit and property reads > happy path: true result, exact same() argument sequence, sorted once, no reason emission on success path 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validator call order, arguments, short-circuit and property reads > short-circuit: second predicate true skips the third and same() entirely 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validator call order, arguments, short-circuit and property reads > reads only the original five properties; canary members are never read 1ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > validator call order, arguments, short-circuit and property reads > original clone reads each enumerable getter exactly once, observer adds no further reads 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > successful prepare: zero stdout/stderr, no exit code, both sourceFiles passes, observer deactivated 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > activation reset: a failed run leaves state, next --prepare arm resets V00 before prepare 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P01 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P02 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P03 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P04 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P05 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P06 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P07 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P08 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P09 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P10 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > failure at P12 emits only generic+phase (80 bytes), no reason, exit 1 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > nonmember phase falls back to fixed P00 line; null phase emits generic only (51 bytes) 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > non-P11 phases with active observation never emit a reason (P12 writeJson/rebuild leave observer unchanged) 0ms
+ ✓ tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts > prepare dispatch: success silence/reset, old P00-P12 output and generic exit > other modes stay silent: --run, --seal, --verify-upload, unknown mode, probe success and probe failure 1ms
+
+ Test Files  1 passed (1)
+      Tests  50 passed (50)
+   Start at  03:06:31
+   Duration  121ms (transform 28ms, setup 0ms, import 36ms, tests 23ms, environment 0ms)
+

@@ -1,0 +1,572 @@
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import vm from 'node:vm';
+import { join, resolve } from 'node:path';
+
+// Independent evaluator (kimi-r0): ACTUAL source slices of the pinned new CLI
+// 62d419b evaluated in a test-local vm with fully stubbed pure mocks.
+// No real fs/child/OS/worker/kill/native effects; the CLI is never spawned.
+const repo = resolve('.');
+const cliPath = join(repo, 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs');
+const cliSource = readFileSync(cliPath, 'utf8');
+const CLI_SHA256 = '411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1';
+const ORIG_TEST_SHA256 = '7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132';
+const PROPOSAL_SHA256 = 'f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92';
+const GENERIC = 'windows-p1-initial diagnostic evidence unavailable\n';
+const P_LINE = (p: string) => `TW_P1_PREPARE_FAILURE_V1:${p}\n`;
+const sha = (s: string) => createHash('sha256').update(s).digest('hex');
+
+const grab = (start: string, end: string): string => {
+  const i = cliSource.indexOf(start), j = cliSource.indexOf(end);
+  if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);
+  return cliSource.slice(i, j);
+};
+const grabFrom = (start: string, end: string): string => {
+  const i = cliSource.indexOf(start), j = cliSource.indexOf(end, i + start.length);
+  if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);
+  return cliSource.slice(i, j);
+};
+const declSlice = grab('let prepareFailurePhase = null;', 'export function schemaMatches');
+const schemaSlice = grab('export function schemaMatches(schema, value) {', 'export function rebuild(name, value) {');
+const rebuildSlice = grab('export function rebuild(name, value) {', 'export function validateBindings').replace(/^export /, '');
+const validateSlice = grab('export function validateProvenance(value, files, executionSha) {', 'function assertWindowsRunner()').replace(/^export /, '');
+const prepareSlice = grab('function prepare() {', 'export function checksSummary');
+const dispatchSlice = grab('const args = process.argv.slice(2);', 'function assertWindowsRunnerForProbe').replace(/\}\s*$/, '');
+const catchSlice = dispatchSlice.slice(dispatchSlice.indexOf('catch {'));
+const provenanceSlice = grab('const provenance = {', "prepareFailurePhase = 'P10';");
+
+const A40 = 'a'.repeat(40);
+const VALID_FILES = [
+  { path: 'binding.json', sha256: 'hb' },
+  { path: 'fr.ts', sha256: 'hfr' },
+  { path: 'fut.ts', sha256: 'hf' }
+];
+const validProvenance = (): any => ({
+  format: 'windows-p1-initial-provenance-v1', executionSha: A40, expectedSha: A40,
+  sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SystemRoot'],
+  // matches default stub system_keys (SystemRoot, SYS_A) + synthetic SYN_A so the original final env predicate passes
+  extraEnvironmentKeys: [], runId: '1', secret: 'CANARY-NEVER-READ'
+});
+
+function build(overrides: Record<string, any> = {}, opts: { rebuildSource?: string } = {}) {
+  const stderr: string[] = [], stdout: string[] = [];
+  const calls: Record<string, number> = { schema: 0, stringify: 0, parse: 0, same: 0, sorted: 0, sourceFiles: 0, writeJson: 0 };
+  const order: string[] = [];
+  const sameArgs: any[][] = [];
+  const realJson = JSON;
+  const sandbox: Record<string, any> = {
+    schemaResult: true,
+    schemaMatches: (_s: any, _v: any) => { calls.schema++; order.push('schema'); return sandbox.schemaResult; },
+    defs: { provenance: { stub: true } },
+    JSON: {
+      stringify: (v: any) => { calls.stringify++; order.push('stringify'); return realJson.stringify(v); },
+      parse: (v: string) => { calls.parse++; order.push('parse'); return realJson.parse(v); }
+    },
+    same: (a: any, b: any) => { calls.same++; sameArgs.push([a, b]); return realJson.stringify(a) === realJson.stringify(b); },
+    sorted: (vs: string[]) => { calls.sorted++; return [...new Set(vs)].sort(); },
+    BINDINGS: {
+      planning_base: 'base', future_added_source_paths: ['fut.ts'],
+      frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }],
+      environment: { system_keys: ['SystemRoot', 'SYS_A'], synthetic_keys: ['SYN_A'] }
+    },
+    bindingPath: 'binding.json', bindingHash: 'hb',
+    assert: Object.assign((cond: any) => { if (!cond) throw new Error('assertion'); }, {
+      equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); }
+    }),
+    assertWindowsRunner: () => {}, validateBindings: () => {}, checkoutSha: () => A40,
+    systemEnvironment: () => ({ SystemRoot: 'C:\\Windows' }), safeDirectory: () => {},
+    original: { mkdirSync: () => {} },
+    sourceFiles: () => { calls.sourceFiles++; return realJson.parse(realJson.stringify(VALID_FILES)); },
+    writeJson: () => { calls.writeJson++; },
+    release: () => '10.0.22631', scratch: 'scratch-dir',
+    join: (...parts: string[]) => parts.join('/'), dirname: (p: string) => p,
+    process: {
+      argv: ['node', 'p1-stages.mjs', '--prepare'],
+      env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF: 'refs/heads/main', GITHUB_SHA: A40, GITHUB_RUN_ID: '1', GITHUB_RUN_ATTEMPT: '1', ImageOS: 'win', ImageVersion: '1' },
+      version: 'v22.22.0', versions: { uv: '1.51.0' }, platform: 'win32', arch: 'x64',
+      stderr: { write: (s: any) => { stderr.push(String(s)); return true; } },
+      stdout: { write: (s: any) => { stdout.push(String(s)); return true; } },
+      exitCode: undefined as any
+    },
+    runParent: async () => {}, runProbe: async () => {}, seal: () => {}, verifyUpload: () => {},
+    assertWindowsRunnerForProbe: () => {},
+    CASES: [{ variant: 'T1', caseId: 'case-t1', scriptSha256: 'sh', sequence: [] }],
+    caseFor: (v: string) => sandbox.CASES.find((c: any) => c.variant === v),
+    unknownNative: () => ({ unknown: true })
+  };
+  Object.assign(sandbox, overrides);
+  const ctx = vm.createContext(sandbox);
+  vm.runInContext(
+    declSlice + (opts.rebuildSource ?? rebuildSlice) + validateSlice + prepareSlice +
+    '\nglobalThis.__dispatch = async () => { ' + dispatchSlice + '\n};\n' +
+    'globalThis.__terminal = () => { const args = process.argv.slice(2); try { throw 0; } ' + catchSlice + '\n};\n' +
+    'globalThis.__state = () => ({ phase: prepareFailurePhase, active: prepareProvenanceObservationActive, reason: prepareProvenanceReason });\n' +
+    'globalThis.__set = (p, a, r) => { prepareFailurePhase = p; prepareProvenanceObservationActive = a; prepareProvenanceReason = r; };\n' +
+    'globalThis.__fns = { rebuild, validateProvenance, prepare };',
+    ctx);
+  const run = (code: string) => vm.runInContext(code, ctx);
+  return {
+    sandbox, stderr, stdout, calls, order, sameArgs,
+    dispatch: async () => { await run('__dispatch()'); },
+    terminal: () => run('__terminal()'),
+    state: () => run('__state()'),
+    set: (p: any, a: boolean, r: string) => run(`__set(${realJson.stringify(p)},${a},${realJson.stringify(r)})`),
+    fns: () => run('__fns'),
+    stderrText: () => stderr.join(''),
+    stdoutText: () => stdout.join('')
+  };
+}
+type H = ReturnType<typeof build>;
+
+const expectTerminal = (h: H, phase: string | null, reason: string | null) => {
+  const expected = GENERIC + (phase ? P_LINE(phase) : '') + (reason ? `${reason}\n` : '');
+  expect(h.stderrText()).toBe(expected);
+  expect(h.stdoutText()).toBe('');
+  expect(h.sandbox.process.exitCode).toBe(1);
+};
+const validateAtP11 = (h: H, value: any, files: any, sha: string) => {
+  h.set('P11', true, 'V00');
+  let thrown: any = null, result: any = null;
+  try { result = h.fns().validateProvenance(value, files, sha); } catch (e) { thrown = e; }
+  h.terminal();
+  return { thrown, result };
+};
+
+describe('pins and static negative controls', () => {
+  it('pins the CLI, original 81-test file and proposal by sha256, size and LF-only bytes', () => {
+    expect(sha(cliSource)).toBe(CLI_SHA256);
+    expect(Buffer.byteLength(cliSource)).toBe(77285);
+    expect(cliSource.includes('\r')).toBe(false);
+    expect(sha(readFileSync(join(repo, 'tests/diagnostics/windows-p1-stages.test.ts'), 'utf8'))).toBe(ORIG_TEST_SHA256);
+    expect(sha(readFileSync(join(repo, 'docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json'), 'utf8'))).toBe(PROPOSAL_SHA256);
+  });
+  it('has exactly eighteen fixed four-byte LF reason lines V00-V17 and no dynamic reason text', () => {
+    const table = grabFrom('const prepareProvenanceReasonLines = {', '};');
+    const entries = [...table.matchAll(/(V\d{2}): '(V\d{2}\\n)'/g)];
+    expect(entries.map(e => e[1])).toEqual(Array.from({ length: 18 }, (_, i) => `V${String(i).padStart(2, '0')}`));
+    for (const e of entries) { expect(e[1]).toBe(e[2].slice(0, 3)); expect(Buffer.byteLength(e[2].replace('\\n', '\n'))).toBe(4); }
+    expect(table).not.toContain('`');
+    expect(table).not.toContain('\r');
+    expect(Buffer.byteLength(GENERIC)).toBe(51);
+    for (let i = 0; i <= 12; i++) expect(Buffer.byteLength(P_LINE(`P${String(i).padStart(2, '0')}`))).toBe(29);
+    expect(51 + 29 + 4).toBe(84);
+    expect(84).toBeGreaterThan(80); // 84 is a new contract, never an old-80 claim
+  });
+  it('keeps emission order generic then phase then at most one reason, stderr only, exit 1 retained', () => {
+    const g = cliSource.indexOf(`process.stderr.write('windows-p1-initial diagnostic evidence unavailable\\n')`);
+    const p = cliSource.indexOf('process.stderr.write(Object.hasOwn(prepareFailureLines');
+    const r = cliSource.indexOf('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines');
+    expect(g).toBeGreaterThan(-1); expect(p).toBeGreaterThan(g); expect(r).toBeGreaterThan(p);
+    expect(cliSource.split('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines').length - 1).toBe(1);
+    expect(cliSource.split('process.stdout.write(Object.hasOwn(prepareProvenanceReasonLines').length - 1).toBe(0);
+    const emission = grabFrom('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines', 'process.exitCode = 1;');
+    expect(emission).not.toContain('stdout');
+    expect(emission).toContain('prepareProvenanceReasonLines.V00'); // nonmember/invalid -> V00 unknown
+    expect(cliSource.indexOf('process.exitCode = 1;', r)).toBeGreaterThan(r); // earlier original exitCode paths exist
+  });
+  it('activates observation only in the exact --prepare arm with V00 reset and deactivates after success', () => {
+    expect(cliSource.split('prepareProvenanceObservationActive = true').length - 1).toBe(1);
+    const arm = cliSource.indexOf("same(args, ['--prepare'])");
+    const act = cliSource.indexOf('prepareProvenanceObservationActive = true');
+    const reset = cliSource.indexOf("prepareProvenanceReason = 'V00';", act);
+    expect(act).toBeGreaterThan(arm);
+    expect(reset).toBeGreaterThan(act);
+    expect(reset).toBeLessThan(cliSource.indexOf('prepare();', arm));
+    expect(cliSource.split('prepareProvenanceObservationActive = false').length - 1).toBe(2); // declaration + success
+    const write = cliSource.indexOf("writeJson(join(scratch, 'provenance.json'), 'provenance', provenance);");
+    const deact = cliSource.indexOf('prepareProvenanceObservationActive = false;', write);
+    expect(deact).toBeGreaterThan(write);
+    expect(cliSource).toContain("searchParams.get('guard') === '1') installGuard()");
+  });
+  it('latches fixed enums immediately before original operations and false returns, never after', () => {
+    const at = (s: string) => validateSlice.indexOf(s);
+    expect(at("prepareProvenanceReason = 'V01'")).toBeLessThan(at('const v = rebuild'));
+    expect(at("prepareProvenanceReason = 'V05'")).toBeLessThan(at('if (!v ||'));
+    expect(at("prepareProvenanceReason = 'V06'")).toBeLessThan(at("prepareProvenanceReason = 'V06'") + 1);
+    expect(at("prepareProvenanceReason = 'V06'")).toBeGreaterThan(at('if (!v ||'));
+    expect(at("prepareProvenanceReason = 'V07'")).toBeLessThan(at('const paths ='));
+    expect(at("prepareProvenanceReason = 'V08'")).toBeLessThan(at('if (!same(v.sourceFiles.map'));
+    expect(at("prepareProvenanceReason = 'V10'")).toBeLessThan(at('for (const frozen'));
+    expect(at("prepareProvenanceReason = 'V12'")).toBeLessThan(at('if (v.sourceFiles.find(s => s.path === bindingPath)'));
+    expect(at("prepareProvenanceReason = 'V14'")).toBeLessThan(at('const presentSystem'));
+    expect(at("prepareProvenanceReason = 'V15'")).toBeLessThan(at('const valid ='));
+    expect(at("'V17' : 'V16'")).toBeLessThan(at('return valid;'));
+    for (const code of ['V06', 'V09', 'V11', 'V13']) {
+      const latch = at(`prepareProvenanceReason = '${code}';`);
+      expect(validateSlice.indexOf('return false;', latch)).toBe(latch + `prepareProvenanceReason = '${code}';`.length + '\n    '.length);
+    }
+    expect(validateSlice).toContain("&& v) prepareProvenanceReason = 'V05'");
+    expect(validateSlice).toContain("&& v) prepareProvenanceReason = 'V06'"); // V02/V03/V04 survive !v
+  });
+  it('preserves original call counts, catch semantics and adds no schema/env/error/property reads', () => {
+    expect(rebuildSlice.split('schemaMatches(').length - 1).toBe(1);
+    expect(rebuildSlice.split('JSON.stringify(').length - 1).toBe(1);
+    expect(rebuildSlice.split('JSON.parse(').length - 1).toBe(1);
+    expect(rebuildSlice).toContain('catch {'); // no caught error binding retained
+    expect(rebuildSlice).not.toMatch(/catch \(/);
+    expect((rebuildSlice.match(/return null;/g) ?? []).length).toBe(2); // split-ternary schema-false null + caught null both retained
+    expect(validateSlice.split('same(').length - 1).toBe(3);
+    expect(validateSlice.split('rebuild(').length - 1).toBe(1);
+    expect(validateSlice.split('sorted(').length - 1).toBe(1);
+    expect(validateSlice.split('.find(').length - 1).toBe(2);
+    expect(validateSlice.split('.filter(').length - 1).toBe(1);
+    for (const slice of [declSlice, rebuildSlice, validateSlice]) {
+      expect(slice).not.toContain('process.env');
+      expect(slice).not.toMatch(/\.(message|stack|name|code)\b/);
+      expect(slice).not.toContain('\r');
+    }
+    expect(schemaSlice).not.toContain('prepareProvenance'); // schema untouched
+    expect(validateSlice).not.toContain('schemaMatches('); // no extra validator/schema call
+    expect(provenanceSlice).not.toContain('Observation'); // no new persisted fields
+    expect(declSlice + rebuildSlice + validateSlice).not.toContain('80'); // no old-80 claim
+    expect(rebuildSlice).not.toContain('Object.hasOwn(prepareProvenanceReasonLines'); // reason text only at terminal
+  });
+});
+
+describe('rebuild slice: schema/clone stage classification with exact call order and counts', () => {
+  it('schema true returns deep clone, calls schema then stringify then parse exactly once, no latch', () => {
+    const h = build();
+    h.set('P11', true, 'V00');
+    const value = validProvenance();
+    const out = h.fns().rebuild('provenance', value);
+    expect(out).toEqual(value);
+    expect(out).not.toBe(value);
+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 1 });
+    expect(h.order).toEqual(['schema', 'stringify', 'parse']);
+    expect(h.state().reason).toBe('V00'); // rebuild alone never emits/latches success
+  });
+  it('schema false returns null and latches V02, clone never attempted', () => {
+    const h = build({ schemaResult: false });
+    h.set('P11', true, 'V00');
+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);
+    expect(h.state().reason).toBe('V02');
+    expect(h.calls).toMatchObject({ schema: 1, stringify: 0, parse: 0 });
+  });
+  it('caught schema escape returns null and latches V03 without inspecting the thrown value', () => {
+    const err = new Error('hidden');
+    Object.defineProperty(err, 'message', { get() { throw new Error('MESSAGE-READ-CANARY'); } });
+    let schemaCalls = 0;
+    const h = build({ schemaMatches: () => { schemaCalls++; throw err; } });
+    h.set('P11', true, 'V00');
+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);
+    expect(h.state().reason).toBe('V03');
+    expect(schemaCalls).toBe(1);
+    expect(h.calls).toMatchObject({ stringify: 0, parse: 0 });
+  });
+  it('caught primitive escape also classifies V03 and never serializes the primitive', () => {
+    const h = build({ schemaMatches: () => { throw 'PRIMITIVE-CANARY'; } });
+    h.set('P11', true, 'V00');
+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);
+    expect(h.state().reason).toBe('V03');
+  });
+  it('caught clone escape returns null and latches V04, stringify attempted exactly once', () => {
+    let toJson = 0;
+    const value = { ...validProvenance(), toJSON() { toJson++; throw new Error('TOJSON-SECRET'); } };
+    const h = build();
+    h.set('P11', true, 'V00');
+    expect(h.fns().rebuild('provenance', value)).toBe(null);
+    expect(h.state().reason).toBe('V04');
+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 0 });
+    expect(toJson).toBe(1); // original single stringify behaviour preserved, not suppressed/duplicated
+  });
+  it('inactive observer (not exact prepare P11, or non-provenance name) changes nothing and emits nothing', () => {
+    for (const [phase, active, name] of [['P11', false, 'provenance'], ['P12', true, 'provenance'], [null, true, 'provenance'], ['P11', true, 'other']] as any[]) {
+      const h = build({ schemaResult: false });
+      h.set(phase, active, 'V00');
+      expect(h.fns().rebuild(name, validProvenance())).toBe(null); // identical original behaviour
+      expect(h.state().reason).toBe('V00');
+      expect(h.calls.schema).toBe(1);
+    }
+  });
+});
+
+describe('validateProvenance slice: all eighteen fixed codes distinguished', () => {
+  it('V01: rebuild in flight external escape leaves the in-flight enum (anomalous interval, stubbed dependency)', () => {
+    const h = build({}, { rebuildSource: "function rebuild() { throw new Error('EXTERNAL-ESCAPE-CANARY'); }" });
+    const { thrown } = validateAtP11(h, validProvenance(), VALID_FILES, A40);
+    expect(thrown).toBeTruthy();
+    expect(h.state().reason).toBe('V01');
+    expectTerminal(h, 'P11', 'V01');
+    expect(h.stderrText()).not.toContain('EXTERNAL-ESCAPE-CANARY');
+  });
+  it('V02: schema false -> validator false, latch survives the !v guard, 84-byte terminal', async () => {
+    const h = build({ schemaResult: false });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V02');
+    expectTerminal(h, 'P11', 'V02');
+    expect(Buffer.byteLength(h.stderrText())).toBe(84);
+    expect(h.stderr.length).toBe(3); // generic + phase + at most one reason
+  });
+  it('V03: caught schema escape -> validator false, not overwritten by V06', async () => {
+    const h = build({ schemaMatches: () => { throw new Error('schema-x'); } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V03');
+    expectTerminal(h, 'P11', 'V03');
+    expect(Buffer.byteLength(h.stderrText())).toBe(84);
+  });
+  it('V04: caught clone escape -> validator false, thrown toJSON value never inspected or emitted', () => {
+    const value = { ...validProvenance(), toJSON() { throw new Error('TOJSON-SECRET'); } };
+    const h = build();
+    const { result } = validateAtP11(h, value, VALID_FILES, A40);
+    expect(result).toBe(false);
+    expect(h.state().reason).toBe('V04');
+    expectTerminal(h, 'P11', 'V04');
+    expect(h.stderrText()).not.toContain('TOJSON-SECRET');
+  });
+  it('V05: first aggregate guard escape interval stays distinct from latched false V06', async () => {
+    const same = (a: any, b: any) => {
+      if (Array.isArray(a) && a[0] && typeof a[0] === 'object') throw new Error('GUARD-ESCAPE-CANARY');
+      return JSON.stringify(a) === JSON.stringify(b);
+    };
+    const h = build({ same });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V05');
+    expectTerminal(h, 'P11', 'V05');
+    expect(h.stderrText()).not.toContain('GUARD-ESCAPE-CANARY');
+  });
+  it('V06: first aggregate guard false after valid rebuild, schema false never reaches it', () => {
+    const h = build();
+    const bad = { ...validProvenance(), executionSha: 'b'.repeat(40), expectedSha: 'b'.repeat(40) };
+    const { result } = validateAtP11(h, bad, VALID_FILES, A40);
+    expect(result).toBe(false);
+    expect(h.state().reason).toBe('V06');
+    expectTerminal(h, 'P11', 'V06');
+    expect(h.calls.same).toBe(0); // short-circuit: same() never called after SHA predicate failed
+  });
+  it('V07: paths construction escape interval', async () => {
+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: 42, frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V07');
+    expectTerminal(h, 'P11', 'V07');
+  });
+  it('V08: source path comparison escape interval', async () => {
+    const same = (a: any, b: any) => {
+      if (Array.isArray(b) && b.includes('fr.ts')) throw new Error('PATHS-ESCAPE-CANARY'); // exactly the paths comparison
+      return JSON.stringify(a) === JSON.stringify(b);
+    };
+    const h = build({ same });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V08');
+    expectTerminal(h, 'P11', 'V08');
+    expect(h.stderrText()).not.toContain('PATHS-ESCAPE-CANARY');
+  });
+  it('V09: source path comparison false', async () => {
+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'OTHER.ts', sha256: 'ho' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V09');
+    expectTerminal(h, 'P11', 'V09');
+  });
+  it('V10: frozen source iteration escape interval', async () => {
+    const frozen = { map: (fn: any) => [{ path: 'fr.ts', sha256: 'hfr' }].map(fn), [Symbol.iterator]: () => { throw new Error('ITER-ESCAPE-CANARY'); } };
+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: frozen, environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V10');
+    expectTerminal(h, 'P11', 'V10');
+    expect(h.stderrText()).not.toContain('ITER-ESCAPE-CANARY');
+  });
+  it('V11: frozen source check false without path/hash disclosure', async () => {
+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'DIFFERENT' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V11');
+    expectTerminal(h, 'P11', 'V11');
+    expect(h.stderrText()).not.toContain('DIFFERENT');
+  });
+  it('V12: binding source check escape interval (stubbed dependency for the plain-clone gap)', async () => {
+    const real = JSON.stringify(validProvenance());
+    const files = JSON.stringify(VALID_FILES);
+    const rebuildSource = `function rebuild() { const v = JSON.parse(${JSON.stringify(real)}); let findN = 0;
+      v.sourceFiles = { map: fn => ['binding.json','fr.ts','fut.ts'].map(p => fn({ path: p })),
+        find: fn => { findN++; if (findN === 2) throw new Error('FIND-ESCAPE-CANARY'); return JSON.parse(${JSON.stringify(files)}).find(fn); },
+        toJSON: () => JSON.parse(${JSON.stringify(files)}) };
+      return v; }`;
+    const h = build({}, { rebuildSource });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V12');
+    expectTerminal(h, 'P11', 'V12');
+    expect(h.stderrText()).not.toContain('FIND-ESCAPE-CANARY');
+  });
+  it('V13: binding source check false', async () => {
+    const h = build({ bindingHash: 'DIFFERENT' });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V13');
+    expectTerminal(h, 'P11', 'V13');
+    expect(h.stderrText()).not.toContain('DIFFERENT');
+  });
+  it('V14: presentSystem filter escape interval', async () => {
+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }], environment: { system_keys: { includes: () => { throw new Error('ENV-ESCAPE-CANARY'); } }, synthetic_keys: ['SYN_A'] } } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V14');
+    expectTerminal(h, 'P11', 'V14');
+    expect(h.stderrText()).not.toContain('ENV-ESCAPE-CANARY');
+  });
+  it('V15: final environment predicate escape interval', async () => {
+    let sortedCalls = 0;
+    const h = build({ sorted: (vs: string[]) => { sortedCalls++; if (sortedCalls === 2) throw new Error('SORT-ESCAPE-CANARY'); return [...new Set(vs)].sort(); } });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V15');
+    expectTerminal(h, 'P11', 'V15');
+    expect(h.stderrText()).not.toContain('SORT-ESCAPE-CANARY');
+  });
+  it('V16: final environment predicate false without key/value disclosure', async () => {
+    const h = build({ systemEnvironment: () => ({ SystemRoot: 'C:\\Windows', EXTRA_SYS: '1' }) });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V16');
+    expectTerminal(h, 'P11', 'V16');
+    expect(h.stderrText()).not.toContain('EXTRA_SYS');
+  });
+  it('V17: validator true but P11 operation does not complete; anomaly stays unknown', async () => {
+    let assertCalls = 0;
+    const anomaly = Object.assign((cond: any) => { assertCalls++; if (assertCalls === 2) throw new Error('ASSERT-ANOMALY-CANARY'); if (!cond) throw new Error('assertion'); },
+      { equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); } });
+    const h = build({ assert: anomaly });
+    await h.dispatch();
+    expect(h.state().reason).toBe('V17');
+    expectTerminal(h, 'P11', 'V17');
+    expect(h.stderrText()).not.toContain('ASSERT-ANOMALY-CANARY');
+  });
+  it('V00: unassigned/invalid observation emits fixed V00 unknown, nonmember falls back to V00', () => {
+    const h = build();
+    h.set('P11', true, 'V00'); // phase reached P11 but no classification ever ran
+    h.terminal();
+    expectTerminal(h, 'P11', 'V00');
+    expect(Buffer.byteLength(h.stderrText())).toBe(84);
+    const h2 = build();
+    h2.set('P11', true, 'V99'); // nonmember observation -> unknown, never a passing predicate
+    h2.terminal();
+    expectTerminal(h2, 'P11', 'V00');
+    expect(h2.stderrText()).not.toContain('V99');
+  });
+});
+
+describe('validator call order, arguments, short-circuit and property reads', () => {
+  it('happy path: true result, exact same() argument sequence, sorted once, no reason emission on success path', () => {
+    const h = build();
+    h.set('P11', true, 'V00');
+    const value = validProvenance(), files = JSON.parse(JSON.stringify(VALID_FILES));
+    expect(h.fns().validateProvenance(value, files, A40)).toBe(true);
+    expect(h.state().reason).toBe('V17');
+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 1, same: 3, sorted: 1 });
+    expect(h.sameArgs[0]).toEqual([value.sourceFiles, files]);
+    expect(h.sameArgs[1]).toEqual([['binding.json', 'fr.ts', 'fut.ts'], ['binding.json', 'fr.ts', 'fut.ts']]);
+    expect(h.sameArgs[2]).toEqual([['SYN_A', 'SystemRoot'], ['SYN_A', 'SystemRoot']]);
+  });
+  it('short-circuit: second predicate true skips the third and same() entirely', () => {
+    const h = build();
+    const value = { ...validProvenance(), expectedSha: 'c'.repeat(40) };
+    expect(h.fns().validateProvenance(value, VALID_FILES, A40)).toBe(false);
+    expect(h.calls.same).toBe(0);
+  });
+  it('reads only the original five properties; canary members are never read', () => {
+    const reads: string[] = [];
+    const data = validProvenance();
+    const prox = new Proxy(data, { get(t, k) { if (typeof k === 'string') reads.push(k); return (t as any)[k]; } });
+    const h = build({ __prox: prox }, { rebuildSource: 'function rebuild() { return globalThis.__prox; }' });
+    h.set('P11', true, 'V00');
+    expect(h.fns().validateProvenance(prox, VALID_FILES, A40)).toBe(true);
+    const allowed = new Set(['executionSha', 'expectedSha', 'sourceFiles', 'environmentKeyNames', 'extraEnvironmentKeys']);
+    expect(reads.every(k => allowed.has(k))).toBe(true);
+    expect(reads).not.toContain('secret');
+    expect(reads).not.toContain('runId');
+    expect(reads).not.toContain('format');
+    expect(reads).toContain('executionSha');
+  });
+  it('original clone reads each enumerable getter exactly once, observer adds no further reads', () => {
+    let secretReads = 0;
+    const value = validProvenance();
+    Object.defineProperty(value, 'secret', { enumerable: true, get() { secretReads++; return 'S'; } });
+    const h = build();
+    h.set('P11', true, 'V00');
+    expect(h.fns().validateProvenance(value, VALID_FILES, A40)).toBe(true);
+    expect(secretReads).toBe(1); // the single original JSON clone read
+  });
+});
+
+describe('prepare dispatch: success silence/reset, old P00-P12 output and generic exit', () => {
+  it('successful prepare: zero stdout/stderr, no exit code, both sourceFiles passes, observer deactivated', async () => {
+    const h = build();
+    await h.dispatch();
+    expect(h.stderrText()).toBe('');
+    expect(h.stdoutText()).toBe('');
+    expect(h.sandbox.process.exitCode).toBe(undefined);
+    expect(h.state()).toEqual({ phase: null, active: false, reason: 'V17' });
+    expect(h.calls.sourceFiles).toBe(2); // both original passes retained
+    expect(h.calls.writeJson).toBe(1);
+    expect(h.calls.schema).toBe(1);
+  });
+  it('activation reset: a failed run leaves state, next --prepare arm resets V00 before prepare', async () => {
+    const h = build({ schemaResult: false });
+    await h.dispatch();
+    expect(h.state()).toEqual({ phase: 'P11', active: true, reason: 'V02' });
+    h.sandbox.schemaResult = true;
+    h.stderr.length = 0; h.stdout.length = 0; h.sandbox.process.exitCode = undefined;
+    await h.dispatch();
+    expect(h.state()).toEqual({ phase: null, active: false, reason: 'V17' });
+    expect(h.stderrText()).toBe(''); // successful rerun stays silent
+  });
+  it.each([
+    ['P01', { assertWindowsRunner: () => { throw new Error('x'); } }],
+    ['P02', { validateBindings: () => { throw new Error('x'); } }],
+    ['P03', { checkoutSha: () => { throw new Error('x'); } }],
+    ['P04', { checkoutSha: () => 'b'.repeat(40) }],
+    ['P05', { systemEnvironment: () => { throw new Error('x'); } }],
+    ['P06', { systemEnvironment: () => ({ SystemRoot: 'bad' }) }],
+    ['P07', { safeDirectory: () => { throw new Error('x'); } }],
+    ['P08', { original: { mkdirSync: () => { throw new Error('x'); } } }],
+    ['P09', { sourceFiles: () => { throw new Error('x'); } }],
+    ['P10', { sourceFiles: (() => { let n = 0; return () => { n++; if (n === 2) throw new Error('x'); return JSON.parse(JSON.stringify(VALID_FILES)); }; })() }],
+    ['P12', { writeJson: () => { throw new Error('x'); } }]
+  ])('failure at %s emits only generic+phase (80 bytes), no reason, exit 1', async (phase, overrides) => {
+    const h = build(overrides as any);
+    await h.dispatch();
+    expectTerminal(h, phase as string, null);
+    expect(Buffer.byteLength(h.stderrText())).toBe(80);
+    expect(h.stderr.length).toBe(2);
+    expect(h.state().phase).toBe(phase);
+  });
+  it('nonmember phase falls back to fixed P00 line; null phase emits generic only (51 bytes)', () => {
+    const h = build();
+    h.set('P99', false, 'V00');
+    h.terminal();
+    expectTerminal(h, 'P00', null);
+    const h2 = build();
+    h2.set(null, false, 'V00');
+    h2.terminal();
+    expectTerminal(h2, null, null);
+    expect(Buffer.byteLength(h2.stderrText())).toBe(51);
+  });
+  it('non-P11 phases with active observation never emit a reason (P12 writeJson/rebuild leave observer unchanged)', async () => {
+    const h = build({ writeJson: () => { throw new Error('x'); } });
+    await h.dispatch();
+    expect(h.state()).toEqual({ phase: 'P12', active: true, reason: 'V17' });
+    expectTerminal(h, 'P12', null);
+    expect(Buffer.byteLength(h.stderrText())).toBe(80);
+    const h2 = build();
+    h2.set('P12', true, 'V17');
+    expect(h2.fns().rebuild('provenance', validProvenance())).toEqual(validProvenance()); // P12 clone path identical
+    expect(h2.state().reason).toBe('V17'); // untouched by rebuild outside P11
+    h2.terminal();
+    expectTerminal(h2, 'P12', null);
+  });
+  it('other modes stay silent: --run, --seal, --verify-upload, unknown mode, probe success and probe failure', async () => {
+    for (const argv of [['node', 'cli', '--run'], ['node', 'cli', '--seal'], ['node', 'cli', '--verify-upload'], ['node', 'cli', '--probe', 'T1']]) {
+      const h = build();
+      h.sandbox.process.argv = argv;
+      await h.dispatch();
+      expect(h.stderrText()).toBe('');
+      expect(h.state()).toEqual({ phase: null, active: false, reason: 'V00' });
+      expect(h.sandbox.process.exitCode).toBe(undefined);
+    }
+    const unknown = build();
+    unknown.sandbox.process.argv = ['node', 'cli', '--bogus'];
+    await unknown.dispatch();
+    expectTerminal(unknown, null, null);
+    const probeFail = build({ runProbe: async () => { throw new Error('probe-x'); } });
+    probeFail.sandbox.process.argv = ['node', 'cli', '--probe', 'T1'];
+    await probeFail.dispatch();
+    expect(probeFail.stderrText()).toBe(''); // probe failure uses original stdout JSON, never the observer
+    expect(probeFail.stdoutText()).toContain('windows-p1-initial-probe-v1');
+    expect(probeFail.sandbox.process.exitCode).toBe(1);
+    expect(probeFail.state()).toEqual({ phase: null, active: false, reason: 'V00' });
+  });
+});

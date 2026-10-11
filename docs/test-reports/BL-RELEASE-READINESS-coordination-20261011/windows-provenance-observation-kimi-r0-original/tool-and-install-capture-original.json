@@ -1,0 +1,439 @@
+{
+  "captured_at": "2026-10-11T20:11:15.866Z",
+  "calls": [
+    {
+      "index": 1,
+      "id": "tool_jF26jOPegUDijz7Vnxq1FQ8E",
+      "name": "Bash",
+      "arguments": {
+        "command": "date +%s; date",
+        "description": "Record start time"
+      }
+    },
+    {
+      "index": 2,
+      "id": "tool_4aEJsn6wnBNCNwsllZTz38AV",
+      "name": "Bash",
+      "arguments": {
+        "command": "ls -la /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch 2>&1; file /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch 2>&1",
+        "description": "Check apply_patch availability"
+      }
+    },
+    {
+      "index": 3,
+      "id": "tool_EPAFiN4yIIIpvsczwV9nIaFS",
+      "name": "Bash",
+      "arguments": {
+        "command": "git rev-parse HEAD; git status --porcelain | head -50; git log --oneline -3",
+        "description": "Check worktree git state"
+      }
+    },
+    {
+      "index": 4,
+      "id": "tool_KxZtcZTzMENbQAfTYZHAqTqR",
+      "name": "Bash",
+      "arguments": {
+        "command": "mkdir -p /Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp /Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache && ls -la /Volumes/ORICO/project/.wp1provoe-r0-20261011",
+        "description": "Create owned HOME/TMPDIR/npmcache"
+      }
+    },
+    {
+      "index": 5,
+      "id": "tool_D7ausE2on12T8UBK7KVOwpEs",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; shasum -a 256 docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json tests/diagnostics/windows-p1-stages.test.ts; wc -c docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "description": "Verify pinned file hashes"
+      }
+    },
+    {
+      "index": 6,
+      "id": "tool_BeCogmbjQhtOIwooH81iScxe",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json"
+      }
+    },
+    {
+      "index": 7,
+      "id": "tool_mX5DbhHsp1j6MFbHiZOai6zr",
+      "name": "Read",
+      "arguments": {
+        "path": ".claude/autonomous/verdict-artifact.schema.json"
+      }
+    },
+    {
+      "index": 8,
+      "id": "tool_fYsU8H2j3Rei37ByrxWbUZRe",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npm ci --cache /Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache --no-audit --no-fund > /Volumes/ORICO/project/.wp1provoe-r0-20261011/npm-ci-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/npm-ci-stderr.log; echo \"npm ci exit: $?\"",
+        "description": "Fresh own npm ci with owned cache",
+        "run_in_background": true,
+        "timeout": 900
+      }
+    },
+    {
+      "index": 9,
+      "id": "tool_lc6cirn8n7R2fmI2flvb2YnC",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; git cat-file -t 712cf210b089dc71f3a6e6ed2e19e1de7fee57da && git diff --stat 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD -- docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs; git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD --stat | tail -20",
+        "description": "Check baseline commit and diff stats"
+      }
+    },
+    {
+      "index": 10,
+      "id": "tool_UzIIYlFsHO1QE4trehrVmObF",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD --name-status",
+        "description": "List all changed files vs baseline"
+      }
+    },
+    {
+      "index": 11,
+      "id": "tool_zDSaK2f9svvOP7f4DWlEIr4n",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD -- docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "description": "Exact CLI diff vs baseline"
+      }
+    },
+    {
+      "index": 12,
+      "id": "tool_5hFesBYaqGaIYd8gnYgy2c3I",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "line_offset": 30,
+        "n_lines": 90
+      }
+    },
+    {
+      "index": 13,
+      "id": "tool_b9bayRSkDmhXcofXdFiJ2AAx",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "line_offset": 700,
+        "n_lines": 100
+      }
+    },
+    {
+      "index": 14,
+      "id": "tool_IRdl156JApB3AGWMo2bPO5YA",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+        "line_offset": 1125,
+        "n_lines": 45
+      }
+    },
+    {
+      "index": 15,
+      "id": "tool_5IOqXswJYeiOJqocTtRmzStG",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; cat package.json | head -60; echo ---; cat progress.json 2>/dev/null | head -30",
+        "description": "Read package.json scripts and progress.json"
+      }
+    },
+    {
+      "index": 16,
+      "id": "tool_cEOXQybPhNBXjPk01uLn61pq",
+      "name": "Bash",
+      "arguments": {
+        "command": "cat /Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-sup_52d328ad9808/session_201f3b68-6cf3-4e87-9822-c2d12905a53e/agents/main/tasks/bash-l5xwwo13/output.log; echo ===STDOUT===; tail -5 /Volumes/ORICO/project/.wp1provoe-r0-20261011/npm-ci-stdout.log; echo ===STDERR===; tail -20 /Volumes/ORICO/project/.wp1provoe-r0-20261011/npm-ci-stderr.log",
+        "description": "Check npm ci exit and output"
+      }
+    },
+    {
+      "index": 17,
+      "id": "tool_llQXKm5Oc3we3ULr57nFCyOb",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; ls -la /Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache/_logs/ 2>&1; echo ===; realpath node_modules; echo ===; ls node_modules/.bin/ | head; echo ===; ls -la node_modules/vendor 2>/dev/null; realpath node_modules/braces 2>/dev/null; echo ===; ls node_modules/@prisma 2>/dev/null; ls node_modules/better-sqlite3/build/Release/ 2>/dev/null; ls node_modules/@swc 2>/dev/null",
+        "description": "Inspect npm cache logs and node_modules layout"
+      }
+    },
+    {
+      "index": 18,
+      "id": "tool_D2dr64K8kLuoj9mqE82HYhgb",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; L=/Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache/_logs; wc -l $L/*.log; grep -in 'swc\\|wasm\\|fallback' $L/2026-10-11T19_42_54_691Z-debug-0.log | head -40",
+        "description": "Scan npm debug log for swc/wasm/fallback"
+      }
+    },
+    {
+      "index": 19,
+      "id": "tool_8p8e86w3bNqjWZKgPaHpFK6r",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; L=/Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache/_logs; cat $L/2026-10-11T19_44_07_530Z-debug-0.log; echo ====; grep -in 'prisma\\|better-sqlite3\\|postinstall\\|prebuild\\|lifecycle\\|run-script' /Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache/_logs/2026-10-11T19_42_54_691Z-debug-0.log | head -40",
+        "description": "Read second log and scan lifecycle events"
+      }
+    },
+    {
+      "index": 20,
+      "id": "tool_ErjRy09CUW7N03PtyK9AIly3",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; L=/Volumes/ORICO/project/.wp1provoe-r0-20261011/npmcache/_logs/2026-10-11T19_42_54_691Z-debug-0.log; grep -oE 'https?://[^ /]+' $L | sort -u; echo ===LIFECYCLE===; grep -n 'info run' $L | tail -30; echo ===TAIL===; tail -15 $L",
+        "description": "Verify hosts and lifecycle completions in npm log"
+      }
+    },
+    {
+      "index": 21,
+      "id": "tool_SjsKTzfe2UezX2UOkSHzGAph",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npx vitest run tests/diagnostics/windows-p1-stages.test.ts --reporter=verbose > /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stderr.log; echo \"orig81 exit: $?\"",
+        "description": "Run original 81 diagnostics tests",
+        "run_in_background": true,
+        "timeout": 600
+      }
+    },
+    {
+      "index": 22,
+      "id": "tool_qu1ylJ8bvBZ2PMHDtgCrMJnV",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; ls tests/evaluator/ 2>/dev/null; cat vitest.config.ts 2>/dev/null || cat vitest.config.mts 2>/dev/null || grep -A15 '\"test\"' package.json | head -5; ls vitest* 2>/dev/null",
+        "description": "Check evaluator tests dir and vitest config"
+      }
+    },
+    {
+      "index": 23,
+      "id": "tool_95QSooFL8VkR4n7pmhEouBQ8",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; head -80 tests/diagnostics/windows-p1-stages.test.ts",
+        "description": "Read original test header for conventions"
+      }
+    },
+    {
+      "index": 24,
+      "id": "tool_6uhiLvXC4Yh33uhOrWsoFH5b",
+      "name": "Bash",
+      "arguments": {
+        "command": "cat /Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-sup_52d328ad9808/session_201f3b68-6cf3-4e87-9822-c2d12905a53e/agents/main/tasks/bash-9pm194lv/output.log; echo ===TAIL-STDOUT===; tail -25 /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stdout.log; echo ===TAIL-STDERR===; tail -10 /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stderr.log; echo ===COUNTS===; grep -cE '^\\s*(✓|×|✗)' /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stdout.log; grep -E 'Test Files|Tests ' /Volumes/ORICO/project/.wp1provoe-r0-20261011/orig81-stdout.log",
+        "description": "Check original 81 test results"
+      }
+    },
+    {
+      "index": 25,
+      "id": "tool_TZ1LBLX446xhgVeFJLbPP9D4",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; WT=/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_R0'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n+import { describe, expect, it } from 'vitest';\n+import { readFileSync } from 'node:fs';\n+import { createHash } from 'node:crypto';\n+import vm from 'node:vm';\n+import { join, resolve } from 'node:path';\n+\n+// Independent evaluator (kimi-r0): ACTUAL source slices of the pinned new CLI\n+// 62d419b evaluated in a test-local vm with fully stubbed pure mocks.\n+// No real fs/child/OS/worker/kill/native effects; the CLI is never spawned.\n+const repo = resolve('.');\n+const cliPath = join(repo, 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs');\n+const cliSource = readFileSync(cliPath, 'utf8');\n+const CLI_SHA256 = '411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1';\n+const ORIG_TEST_SHA256 = '7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132';\n+const PROPOSAL_SHA256 = 'f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92';\n+const GENERIC = 'windows-p1-initial diagnostic evidence unavailable\\n';\n+const P_LINE = (p: string) => `TW_P1_PREPARE_FAILURE_V1:${p}\\n`;\n+const sha = (s: string) => createHash('sha256').update(s).digest('hex');\n+\n+const grab = (start: string, end: string): string => {\n+  const i = cliSource.indexOf(start), j = cliSource.indexOf(end);\n+  if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);\n+  return cliSource.slice(i, j);\n+};\n+const declSlice = grab('let prepareFailurePhase = null;', 'export function schemaMatches');\n+const schemaSlice = grab('export function schemaMatches(schema, value) {', 'export function rebuild(name, value) {');\n+const rebuildSlice = grab('export function rebuild(name, value) {', 'export function validateBindings').replace(/^export /, '');\n+const validateSlice = grab('export function validateProvenance(value, files, executionSha) {', 'function assertWindowsRunner()').replace(/^export /, '');\n+const prepareSlice = grab('function prepare() {', 'export function checksSummary');\n+const dispatchSlice = grab('const args = process.argv.slice(2);', 'function assertWindowsRunnerForProbe').replace(/\\}\\s*$/, '');\n+const catchSlice = dispatchSlice.slice(dispatchSlice.indexOf('catch {'));\n+const provenanceSlice = grab('const provenance = {', \"prepareFailurePhase = 'P10';\");\n+\n+const A40 = 'a'.repeat(40);\n+const VALID_FILES = [\n+  { path: 'binding.json', sha256: 'hb' },\n+  { path: 'fr.ts', sha256: 'hfr' },\n+  { path: 'fut.ts', sha256: 'hf' }\n+];\n+const validProvenance = (): any => ({\n+  format: 'windows-p1-initial-provenance-v1', executionSha: A40, expectedSha: A40,\n+  sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SYS_A'],\n+  extraEnvironmentKeys: [], runId: '1', secret: 'CANARY-NEVER-READ'\n+});\n+\n+function build(overrides: Record<string, any> = {}, opts: { rebuildSource?: string } = {}) {\n+  const stderr: string[] = [], stdout: string[] = [];\n+  const calls: Record<string, number> = { schema: 0, stringify: 0, parse: 0, same: 0, sorted: 0, sourceFiles: 0, writeJson: 0 };\n+  const order: string[] = [];\n+  const sameArgs: any[][] = [];\n+  const realJson = JSON;\n+  const sandbox: Record<string, any> = {\n+    schemaResult: true,\n+    schemaMatches: (_s: any, _v: any) => { calls.schema++; order.push('schema'); return sandbox.schemaResult; },\n+    defs: { provenance: { stub: true } },\n+    JSON: {\n+      stringify: (v: any) => { calls.stringify++; order.push('stringify'); return realJson.stringify(v); },\n+      parse: (v: string) => { calls.parse++; order.push('parse'); return realJson.parse(v); }\n+    },\n+    same: (a: any, b: any) => { calls.same++; sameArgs.push([a, b]); return realJson.stringify(a) === realJson.stringify(b); },\n+    sorted: (vs: string[]) => { calls.sorted++; return [...new Set(vs)].sort(); },\n+    BINDINGS: {\n+      planning_base: 'base', future_added_source_paths: ['fut.ts'],\n+      frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }],\n+      environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] }\n+    },\n+    bindingPath: 'binding.json', bindingHash: 'hb',\n+    assert: Object.assign((cond: any) => { if (!cond) throw new Error('assertion'); }, {\n+      equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); }\n+    }),\n+    assertWindowsRunner: () => {}, validateBindings: () => {}, checkoutSha: () => A40,\n+    systemEnvironment: () => ({ SystemRoot: 'C:\\\\Windows' }), safeDirectory: () => {},\n+    original: { mkdirSync: () => {} },\n+    sourceFiles: () => { calls.sourceFiles++; return realJson.parse(realJson.stringify(VALID_FILES)); },\n+    writeJson: () => { calls.writeJson++; },\n+    release: () => '10.0.22631', scratch: 'scratch-dir',\n+    join: (...parts: string[]) => parts.join('/'), dirname: (p: string) => p,\n+    process: {\n+      argv: ['node', 'p1-stages.mjs', '--prepare'],\n+      env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF: 'refs/heads/main', GITHUB_SHA: A40, GITHUB_RUN_ID: '1', GITHUB_RUN_ATTEMPT: '1', ImageOS: 'win', ImageVersion: '1' },\n+      stderr: { write: (s: any) => { stderr.push(String(s)); return true; } },\n+      stdout: { write: (s: any) => { stdout.push(String(s)); return true; } },\n+      exitCode: undefined as any\n+    },\n+    runParent: async () => {}, runProbe: async () => {}, seal: () => {}, verifyUpload: () => {},\n+    assertWindowsRunnerForProbe: () => {},\n+    CASES: [{ variant: 'T1', caseId: 'case-t1', scriptSha256: 'sh', sequence: [] }],\n+    caseFor: (v: string) => sandbox.CASES.find((c: any) => c.variant === v),\n+    unknownNative: () => ({ unknown: true })\n+  };\n+  Object.assign(sandbox, overrides);\n+  const ctx = vm.createContext(sandbox);\n+  vm.runInContext(\n+    declSlice + (opts.rebuildSource ?? rebuildSlice) + validateSlice + prepareSlice +\n+    '\\nglobalThis.__dispatch = async () => { ' + dispatchSlice + '\\n};\\n' +\n+    'globalThis.__terminal = () => { const args = process.argv.slice(2); try { throw 0; } ' + catchSlice + '\\n};\\n' +\n+    'globalThis.__state = () => ({ phase: prepareFailurePhase, active: prepareProvenanceObservationActive, reason: prepareProvenanceReason });\\n' +\n+    'globalThis.__set = (p, a, r) => { prepareFailurePhase = p; prepareProvenanceObservationActive = a; prepareProvenanceReason = r; };\\n' +\n+    'globalThis.__fns = { rebuild, validateProvenance, prepare };',\n+    ctx);\n+  const run = (code: string) => vm.runInContext(code, ctx);\n+  return {\n+    sandbox, stderr, stdout, calls, order, sameArgs,\n+    dispatch: async () => { await run('__dispatch()'); },\n+    terminal: () => run('__terminal()'),\n+    state: () => run('__state()'),\n+    set: (p: any, a: boolean, r: string) => run(`__set(${realJson.stringify(p)},${a},${realJson.stringify(r)})`),\n+    fns: () => run('__fns'),\n+    stderrText: () => stderr.join(''),\n+    stdoutText: () => stdout.join('')\n+  };\n+}\n+type H = ReturnType<typeof build>;\n+\n+const expectTerminal = (h: H, phase: string | null, reason: string | null) => {\n+  const expected = GENERIC + (phase ? P_LINE(phase) : '') + (reason ? `${reason}\\n` : '');\n+  expect(h.stderrText()).toBe(expected);\n+  expect(h.stdoutText()).toBe('');\n+  expect(h.sandbox.process.exitCode).toBe(1);\n+};\n+const validateAtP11 = (h: H, value: any, files: any, sha: string) => {\n+  h.set('P11', true, 'V00');\n+  let thrown: any = null, result: any = null;\n+  try { result = h.fns().validateProvenance(value, files, sha); } catch (e) { thrown = e; }\n+  h.terminal();\n+  return { thrown, result };\n+};\n+\n+describe('pins and static negative controls', () => {\n+  it('pins the CLI, original 81-test file and proposal by sha256, size and LF-only bytes', () => {\n+    expect(sha(cliSource)).toBe(CLI_SHA256);\n+    expect(Buffer.byteLength(cliSource)).toBe(77285);\n+    expect(cliSource.includes('\\r')).toBe(false);\n+    expect(sha(readFileSync(join(repo, 'tests/diagnostics/windows-p1-stages.test.ts'), 'utf8'))).toBe(ORIG_TEST_SHA256);\n+    expect(sha(readFileSync(join(repo, 'docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json'), 'utf8'))).toBe(PROPOSAL_SHA256);\n+  });\n+  it('has exactly eighteen fixed four-byte LF reason lines V00-V17 and no dynamic reason text', () => {\n+    const table = grab('const prepareProvenanceReasonLines = {', '};');\n+    const entries = [...table.matchAll(/(V\\d{2}): '(V\\d{2}\\\\n)'/g)];\n+    expect(entries.map(e => e[1])).toEqual(Array.from({ length: 18 }, (_, i) => `V${String(i).padStart(2, '0')}`));\n+    for (const e of entries) { expect(e[1]).toBe(e[2].slice(0, 3)); expect(Buffer.byteLength(e[2].replace('\\\\n', '\\n'))).toBe(4); }\n+    expect(table).not.toContain('`');\n+    expect(table).not.toContain('\\r');\n+    expect(Buffer.byteLength(GENERIC)).toBe(51);\n+    for (let i = 0; i <= 12; i++) expect(Buffer.byteLength(P_LINE(`P${String(i).padStart(2, '0')}`))).toBe(29);\n+    expect(51 + 29 + 4).toBe(84);\n+    expect(84).toBeGreaterThan(80); // 84 is a new contract, never an old-80 claim\n+  });\n+  it('keeps emission order generic then phase then at most one reason, stderr only, exit 1 retained', () => {\n+    const g = cliSource.indexOf(`process.stderr.write('windows-p1-initial diagnostic evidence unavailable\\\\n')`);\n+    const p = cliSource.indexOf('process.stderr.write(Object.hasOwn(prepareFailureLines');\n+    const r = cliSource.indexOf('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines');\n+    expect(g).toBeGreaterThan(-1); expect(p).toBeGreaterThan(g); expect(r).toBeGreaterThan(p);\n+    expect(cliSource.split('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines').length - 1).toBe(1);\n+    expect(cliSource.split('process.stdout.write(Object.hasOwn(prepareProvenanceReasonLines').length - 1).toBe(0);\n+    const emission = grab('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines', 'process.exitCode = 1;');\n+    expect(emission).not.toContain('stdout');\n+    expect(emission).toContain('prepareProvenanceReasonLines.V00'); // nonmember/invalid -> V00 unknown\n+    expect(cliSource.indexOf('process.exitCode = 1;')).toBeGreaterThan(r);\n+  });\n+  it('activates observation only in the exact --prepare arm with V00 reset and deactivates after success', () => {\n+    expect(cliSource.split('prepareProvenanceObservationActive = true').length - 1).toBe(1);\n+    const arm = cliSource.indexOf(\"same(args, ['--prepare'])\");\n+    const act = cliSource.indexOf('prepareProvenanceObservationActive = true');\n+    const reset = cliSource.indexOf(\"prepareProvenanceReason = 'V00';\", act);\n+    expect(act).toBeGreaterThan(arm);\n+    expect(reset).toBeGreaterThan(act);\n+    expect(reset).toBeLessThan(cliSource.indexOf('prepare();', arm));\n+    expect(cliSource.split('prepareProvenanceObservationActive = false').length - 1).toBe(2); // declaration + success\n+    const write = cliSource.indexOf(\"writeJson(join(scratch, 'provenance.json'), 'provenance', provenance);\");\n+    const deact = cliSource.indexOf('prepareProvenanceObservationActive = false;', write);\n+    expect(deact).toBeGreaterThan(write);\n+    expect(cliSource).toContain(\"searchParams.get('guard') === '1') installGuard()\");\n+  });\n+  it('latches fixed enums immediately before original operations and false returns, never after', () => {\n+    const at = (s: string) => validateSlice.indexOf(s);\n+    expect(at(\"prepareProvenanceReason = 'V01'\")).toBeLessThan(at('const v = rebuild'));\n+    expect(at(\"prepareProvenanceReason = 'V05'\")).toBeLessThan(at('if (!v ||'));\n+    expect(at(\"prepareProvenanceReason = 'V06'\")).toBeLessThan(at(\"prepareProvenanceReason = 'V06'\") + 1);\n+    expect(at(\"prepareProvenanceReason = 'V06'\")).toBeGreaterThan(at('if (!v ||'));\n+    expect(at(\"prepareProvenanceReason = 'V07'\")).toBeLessThan(at('const paths ='));\n+    expect(at(\"prepareProvenanceReason = 'V08'\")).toBeLessThan(at('if (!same(v.sourceFiles.map'));\n+    expect(at(\"prepareProvenanceReason = 'V10'\")).toBeLessThan(at('for (const frozen'));\n+    expect(at(\"prepareProvenanceReason = 'V12'\")).toBeLessThan(at('if (v.sourceFiles.find(s => s.path === bindingPath)'));\n+    expect(at(\"prepareProvenanceReason = 'V14'\")).toBeLessThan(at('const presentSystem'));\n+    expect(at(\"prepareProvenanceReason = 'V15'\")).toBeLessThan(at('const valid ='));\n+    expect(at(\"'V17' : 'V16'\")).toBeLessThan(at('return valid;'));\n+    for (const code of ['V06', 'V09', 'V11', 'V13']) {\n+      const latch = at(`prepareProvenanceReason = '${code}';`);\n+      expect(validateSlice.indexOf('return false;', latch)).toBe(latch + `prepareProvenanceReason = '${code}';`.length + '\\n    '.length);\n+    }\n+    expect(validateSlice).toContain(\"&& v) prepareProvenanceReason = 'V05'\");\n+    expect(validateSlice).toContain(\"&& v) prepareProvenanceReason = 'V06'\"); // V02/V03/V04 survive !v\n+  });\n+  it('preserves original call counts, catch semantics and adds no schema/env/error/property reads', () => {\n+    expect(rebuildSlice.split('schemaMatches(').length - 1).toBe(1);\n+    expect(rebuildSlice.split('JSON.stringify(').length - 1).toBe(1);\n+    expect(rebuildSlice.split('JSON.parse(').length - 1).toBe(1);\n+    expect(rebuildSlice).toContain('catch {'); // no caught error binding retained\n+    expect(rebuildSlice).not.toMatch(/catch \\(/);\n+    expect((rebuildSlice.match(/return null;/g) ?? []).length).toBe(3); // schema-false + caught nulls retained\n+    expect(validateSlice.split('same(').length - 1).toBe(3);\n+    expect(validateSlice.split('rebuild(').length - 1).toBe(1);\n+    expect(validateSlice.split('sorted(').length - 1).toBe(1);\n+    expect(validateSlice.split('.find(').length - 1).toBe(2);\n+    expect(validateSlice.split('.filter(').length - 1).toBe(1);\n+    for (const slice of [declSlice, rebuildSlice, validateSlice]) {\n+      expect(slice).not.toContain('process.env');\n+      expect(slice).not.toMatch(/\\.(message|stack|name|code)\\b/);\n+      expect(slice).not.toContain('\\r');\n+    }\n+    expect(schemaSlice).not.toContain('prepareProvenance'); // schema untouched\n+    expect(validateSlice).not.toContain('schemaMatches('); // no extra validator/schema call\n+    expect(provenanceSlice).not.toContain('Observation'); // no new persisted fields\n+    expect(declSlice + rebuildSlice + validateSlice).not.toContain('80'); // no old-80 claim\n+    expect(rebuildSlice).not.toContain('Object.hasOwn(prepareProvenanceReasonLines'); // reason text only at terminal\n+  });\n+});\n+\n+describe('rebuild slice: schema/clone stage classification with exact call order and counts', () => {\n+  it('schema true returns deep clone, calls schema then stringify then parse exactly once, no latch', () => {\n+    const h = build();\n+    h.set('P11', true, 'V00');\n+    const value = validProvenance();\n+    const out = h.fns().rebuild('provenance', value);\n+    expect(out).toEqual(value);\n+    expect(out).not.toBe(value);\n+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 1 });\n+    expect(h.order).toEqual(['schema', 'stringify', 'parse']);\n+    expect(h.state().reason).toBe('V00'); // rebuild alone never emits/latches success\n+  });\n+  it('schema false returns null and latches V02, clone never attempted', () => {\n+    const h = build({ schemaResult: false });\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);\n+    expect(h.state().reason).toBe('V02');\n+    expect(h.calls).toMatchObject({ schema: 1, stringify: 0, parse: 0 });\n+  });\n+  it('caught schema escape returns null and latches V03 without inspecting the thrown value', () => {\n+    const err = new Error('hidden');\n+    Object.defineProperty(err, 'message', { get() { throw new Error('MESSAGE-READ-CANARY'); } });\n+    const h = build({ schemaMatches: () => { throw err; } });\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);\n+    expect(h.state().reason).toBe('V03');\n+    expect(h.calls).toMatchObject({ schema: 1, stringify: 0, parse: 0 });\n+  });\n+  it('caught primitive escape also classifies V03 and never serializes the primitive', () => {\n+    const h = build({ schemaMatches: () => { throw 'PRIMITIVE-CANARY'; } });\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);\n+    expect(h.state().reason).toBe('V03');\n+  });\n+  it('caught clone escape returns null and latches V04, stringify attempted exactly once', () => {\n+    let toJson = 0;\n+    const value = { ...validProvenance(), toJSON() { toJson++; throw new Error('TOJSON-SECRET'); } };\n+    const h = build();\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().rebuild('provenance', value)).toBe(null);\n+    expect(h.state().reason).toBe('V04');\n+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 0 });\n+    expect(toJson).toBe(1); // original single stringify behaviour preserved, not suppressed/duplicated\n+  });\n+  it('inactive observer (not exact prepare P11, or non-provenance name) changes nothing and emits nothing', () => {\n+    for (const [phase, active, name] of [['P11', false, 'provenance'], ['P12', true, 'provenance'], [null, true, 'provenance'], ['P11', true, 'other']] as any[]) {\n+      const h = build({ schemaResult: false });\n+      h.set(phase, active, 'V00');\n+      expect(h.fns().rebuild(name, validProvenance())).toBe(null); // identical original behaviour\n+      expect(h.state().reason).toBe('V00');\n+      expect(h.calls.schema).toBe(1);\n+    }\n+  });\n+});\n+\n+describe('validateProvenance slice: all eighteen fixed codes distinguished', () => {\n+  it('V01: rebuild in flight external escape leaves the in-flight enum (anomalous interval, stubbed dependency)', () => {\n+    const h = build({}, { rebuildSource: \"function rebuild() { throw new Error('EXTERNAL-ESCAPE-CANARY'); }\" });\n+    const { thrown } = validateAtP11(h, validProvenance(), VALID_FILES, A40);\n+    expect(thrown).toBeTruthy();\n+    expect(h.state().reason).toBe('V01');\n+    expectTerminal(h, 'P11', 'V01');\n+    expect(h.stderrText()).not.toContain('EXTERNAL-ESCAPE-CANARY');\n+  });\n+  it('V02: schema false -> validator false, latch survives the !v guard, 84-byte terminal', async () => {\n+    const h = build({ schemaResult: false });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V02');\n+    expectTerminal(h, 'P11', 'V02');\n+    expect(Buffer.byteLength(h.stderrText())).toBe(84);\n+    expect(h.stderr.length).toBe(3); // generic + phase + at most one reason\n+  });\n+  it('V03: caught schema escape -> validator false, not overwritten by V06', async () => {\n+    const h = build({ schemaMatches: () => { throw new Error('schema-x'); } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V03');\n+    expectTerminal(h, 'P11', 'V03');\n+    expect(Buffer.byteLength(h.stderrText())).toBe(84);\n+  });\n+  it('V04: caught clone escape -> validator false, thrown toJSON value never inspected or emitted', () => {\n+    const value = { ...validProvenance(), toJSON() { throw new Error('TOJSON-SECRET'); } };\n+    const h = build();\n+    const { result } = validateAtP11(h, value, VALID_FILES, A40);\n+    expect(result).toBe(false);\n+    expect(h.state().reason).toBe('V04');\n+    expectTerminal(h, 'P11', 'V04');\n+    expect(h.stderrText()).not.toContain('TOJSON-SECRET');\n+  });\n+  it('V05: first aggregate guard escape interval stays distinct from latched false V06', async () => {\n+    const same = (a: any, b: any) => {\n+      if (Array.isArray(a) && a[0] && typeof a[0] === 'object') throw new Error('GUARD-ESCAPE-CANARY');\n+      return JSON.stringify(a) === JSON.stringify(b);\n+    };\n+    const h = build({ same });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V05');\n+    expectTerminal(h, 'P11', 'V05');\n+    expect(h.stderrText()).not.toContain('GUARD-ESCAPE-CANARY');\n+  });\n+  it('V06: first aggregate guard false after valid rebuild, schema false never reaches it', () => {\n+    const h = build();\n+    const bad = { ...validProvenance(), executionSha: 'b'.repeat(40), expectedSha: 'b'.repeat(40) };\n+    const { result } = validateAtP11(h, bad, VALID_FILES, A40);\n+    expect(result).toBe(false);\n+    expect(h.state().reason).toBe('V06');\n+    expectTerminal(h, 'P11', 'V06');\n+    expect(h.calls.same).toBe(0); // short-circuit: same() never called after SHA predicate failed\n+  });\n+  it('V07: paths construction escape interval', async () => {\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: 42, frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V07');\n+    expectTerminal(h, 'P11', 'V07');\n+  });\n+  it('V08: source path comparison escape interval', async () => {\n+    let n = 0;\n+    const same = (a: any, b: any) => { n++; if (n === 2) throw new Error('PATHS-ESCAPE-CANARY'); return JSON.stringify(a) === JSON.stringify(b); };\n+    const h = build({ same });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V08');\n+    expectTerminal(h, 'P11', 'V08');\n+    expect(h.stderrText()).not.toContain('PATHS-ESCAPE-CANARY');\n+  });\n+  it('V09: source path comparison false', async () => {\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'OTHER.ts', sha256: 'ho' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V09');\n+    expectTerminal(h, 'P11', 'V09');\n+  });\n+  it('V10: frozen source iteration escape interval', async () => {\n+    const frozen = { map: (fn: any) => [{ path: 'fr.ts', sha256: 'hfr' }].map(fn), [Symbol.iterator]: () => { throw new Error('ITER-ESCAPE-CANARY'); } };\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: frozen, environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V10');\n+    expectTerminal(h, 'P11', 'V10');\n+    expect(h.stderrText()).not.toContain('ITER-ESCAPE-CANARY');\n+  });\n+  it('V11: frozen source check false without path/hash disclosure', async () => {\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'DIFFERENT' }], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V11');\n+    expectTerminal(h, 'P11', 'V11');\n+    expect(h.stderrText()).not.toContain('DIFFERENT');\n+  });\n+  it('V12: binding source check escape interval (stubbed dependency for the plain-clone gap)', async () => {\n+    const real = JSON.stringify(validProvenance());\n+    const files = JSON.stringify(VALID_FILES);\n+    const rebuildSource = `function rebuild() { const v = JSON.parse(${JSON.stringify(real)});\n+      v.sourceFiles = { map: fn => ['binding.json','fr.ts','fut.ts'].map(p => fn({ path: p })),\n+        find: () => { throw new Error('FIND-ESCAPE-CANARY'); }, toJSON: () => JSON.parse(${JSON.stringify(files)}) };\n+      return v; }`;\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } }, { rebuildSource });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V12');\n+    expectTerminal(h, 'P11', 'V12');\n+    expect(h.stderrText()).not.toContain('FIND-ESCAPE-CANARY');\n+  });\n+  it('V13: binding source check false', async () => {\n+    const h = build({ bindingHash: 'DIFFERENT' });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V13');\n+    expectTerminal(h, 'P11', 'V13');\n+    expect(h.stderrText()).not.toContain('DIFFERENT');\n+  });\n+  it('V14: presentSystem filter escape interval', async () => {\n+    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [{ path: 'fr.ts', sha256: 'hfr' }], environment: { system_keys: { includes: () => { throw new Error('ENV-ESCAPE-CANARY'); } }, synthetic_keys: ['SYN_A'] } } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V14');\n+    expectTerminal(h, 'P11', 'V14');\n+    expect(h.stderrText()).not.toContain('ENV-ESCAPE-CANARY');\n+  });\n+  it('V15: final environment predicate escape interval', async () => {\n+    const h = build({ sorted: () => { throw new Error('SORT-ESCAPE-CANARY'); } });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V15');\n+    expectTerminal(h, 'P11', 'V15');\n+    expect(h.stderrText()).not.toContain('SORT-ESCAPE-CANARY');\n+  });\n+  it('V16: final environment predicate false without key/value disclosure', async () => {\n+    const h = build({ systemEnvironment: () => ({ SystemRoot: 'C:\\\\Windows', EXTRA_SYS: '1' }) });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V16');\n+    expectTerminal(h, 'P11', 'V16');\n+    expect(h.stderrText()).not.toContain('EXTRA_SYS');\n+  });\n+  it('V17: validator true but P11 operation does not complete; anomaly stays unknown', async () => {\n+    const h = build({ assert: Object.assign(() => { throw new Error('ASSERT-ANOMALY-CANARY'); }, { equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); } }) });\n+    await h.dispatch();\n+    expect(h.state().reason).toBe('V17');\n+    expectTerminal(h, 'P11', 'V17');\n+    expect(h.stderrText()).not.toContain('ASSERT-ANOMALY-CANARY');\n+  });\n+  it('V00: unassigned/invalid observation emits fixed V00 unknown, nonmember falls back to V00', () => {\n+    const h = build();\n+    h.set('P11', true, 'V00'); // phase reached P11 but no classification ever ran\n+    h.terminal();\n+    expectTerminal(h, 'P11', 'V00');\n+    expect(Buffer.byteLength(h.stderrText())).toBe(84);\n+    const h2 = build();\n+    h2.set('P11', true, 'V99'); // nonmember observation -> unknown, never a passing predicate\n+    h2.terminal();\n+    expectTerminal(h2, 'P11', 'V00');\n+    expect(h2.stderrText()).not.toContain('V99');\n+  });\n+});\n+\n+describe('validator call order, arguments, short-circuit and property reads', () => {\n+  it('happy path: true result, exact same() argument sequence, sorted once, no reason emission on success path', () => {\n+    const h = build();\n+    h.set('P11', true, 'V00');\n+    const value = validProvenance(), files = JSON.parse(JSON.stringify(VALID_FILES));\n+    expect(h.fns().validateProvenance(value, files, A40)).toBe(true);\n+    expect(h.state().reason).toBe('V17');\n+    expect(h.calls).toMatchObject({ schema: 1, stringify: 1, parse: 1, same: 3, sorted: 1 });\n+    expect(h.sameArgs[0]).toEqual([value.sourceFiles, files]);\n+    expect(h.sameArgs[1]).toEqual([['binding.json', 'fr.ts', 'fut.ts'], ['binding.json', 'fr.ts', 'fut.ts']]);\n+    expect(h.sameArgs[2]).toEqual([['SYN_A', 'SYS_A'], ['SYN_A', 'SYS_A']]);\n+  });\n+  it('short-circuit: second predicate true skips the third and same() entirely', () => {\n+    const h = build();\n+    const value = { ...validProvenance(), expectedSha: 'c'.repeat(40) };\n+    expect(h.fns().validateProvenance(value, VALID_FILES, A40)).toBe(false);\n+    expect(h.calls.same).toBe(0);\n+  });\n+  it('reads only the original five properties; canary members are never read', () => {\n+    const reads: string[] = [];\n+    const data = validProvenance();\n+    const prox = new Proxy(data, { get(t, k) { if (typeof k === 'string') reads.push(k); return (t as any)[k]; } });\n+    const h = build({ __prox: prox }, { rebuildSource: 'function rebuild() { return globalThis.__prox; }' });\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().validateProvenance(prox, VALID_FILES, A40)).toBe(true);\n+    const allowed = new Set(['executionSha', 'expectedSha', 'sourceFiles', 'environmentKeyNames', 'extraEnvironmentKeys']);\n+    expect(reads.every(k => allowed.has(k))).toBe(true);\n+    expect(reads).not.toContain('secret');\n+    expect(reads).not.toContain('runId');\n+    expect(reads).not.toContain('format');\n+    expect(reads).toContain('executionSha');\n+  });\n+  it('original clone reads each enumerable getter exactly once, observer adds no further reads', () => {\n+    let secretReads = 0;\n+    const value = validProvenance();\n+    Object.defineProperty(value, 'secret', { enumerable: true, get() { secretReads++; return 'S'; } });\n+    const h = build();\n+    h.set('P11', true, 'V00');\n+    expect(h.fns().validateProvenance(value, VALID_FILES, A40)).toBe(true);\n+    expect(secretReads).toBe(1); // the single original JSON clone read\n+  });\n+});\n+\n+describe('prepare dispatch: success silence/reset, old P00-P12 output and generic exit', () => {\n+  it('successful prepare: zero stdout/stderr, no exit code, both sourceFiles passes, observer deactivated', async () => {\n+    const h = build();\n+    await h.dispatch();\n+    expect(h.stderrText()).toBe('');\n+    expect(h.stdoutText()).toBe('');\n+    expect(h.sandbox.process.exitCode).toBe(undefined);\n+    expect(h.state()).toEqual({ phase: null, active: false, reason: 'V17' });\n+    expect(h.calls.sourceFiles).toBe(2); // both original passes retained\n+    expect(h.calls.writeJson).toBe(1);\n+    expect(h.calls.schema).toBe(1);\n+  });\n+  it('activation reset: a failed run leaves state, next --prepare arm resets V00 before prepare', async () => {\n+    const h = build({ schemaResult: false });\n+    await h.dispatch();\n+    expect(h.state()).toEqual({ phase: 'P11', active: true, reason: 'V02' });\n+    h.sandbox.schemaResult = true;\n+    h.stderr.length = 0; h.stdout.length = 0; h.sandbox.process.exitCode = undefined;\n+    await h.dispatch();\n+    expect(h.state()).toEqual({ phase: null, active: false, reason: 'V17' });\n+    expect(h.stderrText()).toBe(''); // successful rerun stays silent\n+  });\n+  it.each([\n+    ['P01', { assertWindowsRunner: () => { throw new Error('x'); } }],\n+    ['P02', { validateBindings: () => { throw new Error('x'); } }],\n+    ['P03', { checkoutSha: () => { throw new Error('x'); } }],\n+    ['P04', { checkoutSha: () => 'b'.repeat(40) }],\n+    ['P05', { systemEnvironment: () => { throw new Error('x'); } }],\n+    ['P06', { systemEnvironment: () => ({ SystemRoot: 'bad' }) }],\n+    ['P07', { safeDirectory: () => { throw new Error('x'); } }],\n+    ['P08', { original: { mkdirSync: () => { throw new Error('x'); } } }],\n+    ['P09', { sourceFiles: () => { throw new Error('x'); } }],\n+    ['P10', { sourceFiles: (() => { let n = 0; return () => { n++; if (n === 2) throw new Error('x'); return JSON.parse(JSON.stringify(VALID_FILES)); }; })() }],\n+    ['P12', { writeJson: () => { throw new Error('x'); } }]\n+  ])('failure at %s emits only generic+phase (80 bytes), no reason, exit 1', async (phase, overrides) => {\n+    const h = build(overrides as any);\n+    await h.dispatch();\n+    expectTerminal(h, phase as string, null);\n+    expect(Buffer.byteLength(h.stderrText())).toBe(80);\n+    expect(h.stderr.length).toBe(2);\n+    expect(h.state().phase).toBe(phase);\n+  });\n+  it('nonmember phase falls back to fixed P00 line; null phase emits generic only (51 bytes)', () => {\n+    const h = build();\n+    h.set('P99', false, 'V00');\n+    h.terminal();\n+    expectTerminal(h, 'P00', null);\n+    const h2 = build();\n+    h2.set(null, false, 'V00');\n+    h2.terminal();\n+    expectTerminal(h2, null, null);\n+    expect(Buffer.byteLength(h2.stderrText())).toBe(51);\n+  });\n+  it('non-P11 phases with active observation never emit a reason (P12 writeJson/rebuild leave observer unchanged)', async () => {\n+    const h = build({ writeJson: () => { throw new Error('x'); } });\n+    await h.dispatch();\n+    expect(h.state()).toEqual({ phase: 'P12', active: true, reason: 'V17' });\n+    expectTerminal(h, 'P12', null);\n+    expect(Buffer.byteLength(h.stderrText())).toBe(80);\n+    const h2 = build();\n+    h2.set('P12', true, 'V17');\n+    expect(h2.fns().rebuild('provenance', validProvenance())).toEqual(validProvenance()); // P12 clone path identical\n+    expect(h2.state().reason).toBe('V17'); // untouched by rebuild outside P11\n+    h2.terminal();\n+    expectTerminal(h2, 'P12', null);\n+  });\n+  it('other modes stay silent: --run, --seal, --verify-upload, unknown mode, probe success and probe failure', async () => {\n+    for (const argv of [['node', 'cli', '--run'], ['node', 'cli', '--seal'], ['node', 'cli', '--verify-upload'], ['node', 'cli', '--probe', 'T1']]) {\n+      const h = build();\n+      h.sandbox.process.argv = argv;\n+      await h.dispatch();\n+      expect(h.stderrText()).toBe('');\n+      expect(h.state()).toEqual({ phase: null, active: false, reason: 'V00' });\n+      expect(h.sandbox.process.exitCode).toBe(undefined);\n+    }\n+    const unknown = build();\n+    unknown.sandbox.process.argv = ['node', 'cli', '--bogus'];\n+    await unknown.dispatch();\n+    expectTerminal(unknown, null, null);\n+    const probeFail = build({ runProbe: async () => { throw new Error('probe-x'); } });\n+    probeFail.sandbox.process.argv = ['node', 'cli', '--probe', 'T1'];\n+    await probeFail.dispatch();\n+    expect(probeFail.stderrText()).toBe(''); // probe failure uses original stdout JSON, never the observer\n+    expect(probeFail.stdoutText()).toContain('windows-p1-initial-probe-v1');\n+    expect(probeFail.sandbox.process.exitCode).toBe(1);\n+    expect(probeFail.state()).toEqual({ phase: null, active: false, reason: 'V00' });\n+  });\n+});\n*** End Patch\nEOF_PATCH_R0\necho \"apply_patch exit: $?\"; ls -la $WT/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts",
+        "description": "Author evaluator test file via apply_patch",
+        "timeout": 120
+      }
+    },
+    {
+      "index": 26,
+      "id": "tool_LjWI11ifSejur4rvBmr4qbgA",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npx vitest run tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts --reporter=verbose > /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stderr.log; echo \"own test exit: $?\"; tail -60 /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log",
+        "description": "Run own evaluator test file",
+        "timeout": 300
+      }
+    },
+    {
+      "index": 27,
+      "id": "tool_CEfRyrVxcqIgHtUr5b7cGl7z",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_R0B'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n     process: {\n       argv: ['node', 'p1-stages.mjs', '--prepare'],\n       env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF: 'refs/heads/main', GITHUB_SHA: A40, GITHUB_RUN_ID: '1', GITHUB_RUN_ATTEMPT: '1', ImageOS: 'win', ImageVersion: '1' },\n+      version: 'v22.22.0', versions: { uv: '1.51.0' }, platform: 'win32', arch: 'x64',\n       stderr: { write: (s: any) => { stderr.push(String(s)); return true; } },\n*** End Patch\nEOF_PATCH_R0B\necho \"patch exit: $?\"; cp /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout-FIRST-FAIL-preserved.log",
+        "description": "Fix process stub via apply_patch, preserve first failure"
+      }
+    },
+    {
+      "index": 28,
+      "id": "tool_60nexYdmJMQfxJVQ5zrdcPHP",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npx vitest run tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts --reporter=verbose > /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stderr.log; echo \"own test exit: $?\"; grep -E '✓|×|Test Files|Tests ' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log | tail -60",
+        "description": "Re-run own evaluator tests after stub fix",
+        "timeout": 300
+      }
+    },
+    {
+      "index": 29,
+      "id": "tool_rAY30XOZuZf1VWLAMba8QetY",
+      "name": "Bash",
+      "arguments": {
+        "command": "grep -B2 -A12 'FAIL\\|→' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log | head -120",
+        "description": "Extract failure details"
+      }
+    },
+    {
+      "index": 30,
+      "id": "tool_HWedD7XsYgagu1NVevySwZB9",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; cp /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout-SECOND-FAIL-preserved.log; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_R0C'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n const grab = (start: string, end: string): string => {\n   const i = cliSource.indexOf(start), j = cliSource.indexOf(end);\n   if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);\n   return cliSource.slice(i, j);\n };\n+const grabFrom = (start: string, end: string): string => {\n+  const i = cliSource.indexOf(start), j = cliSource.indexOf(end, i + start.length);\n+  if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);\n+  return cliSource.slice(i, j);\n+};\n@@\n   environmentKeyNames: ['SYN_A', 'SYS_A'],\n*** End Patch\nEOF_PATCH_R0C\necho \"patch1 exit: $?\"",
+        "description": "Patch grab and start env fixes"
+      }
+    },
+    {
+      "index": 31,
+      "id": "tool_MdlGBwGPWVhtouYOesLCax12",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_1'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n const grab = (start: string, end: string): string => {\n   const i = cliSource.indexOf(start), j = cliSource.indexOf(end);\n   if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);\n   return cliSource.slice(i, j);\n };\n+const grabFrom = (start: string, end: string): string => {\n+  const i = cliSource.indexOf(start), j = cliSource.indexOf(end, i + start.length);\n+  if (i < 0 || j <= i) throw new Error(`slice anchor missing: ${start}`);\n+  return cliSource.slice(i, j);\n+};\n*** End Patch\nEOF_PATCH_1\necho \"patch grab exit: $?\"",
+        "description": "Add grabFrom helper"
+      }
+    },
+    {
+      "index": 32,
+      "id": "tool_mo2oiDLcXm7hcjG9DJZdwTaC",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_2'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n   sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SYS_A'],\n+  // stub BINDINGS.system_keys includes SystemRoot so the original final env predicate can pass\n*** End Patch\nEOF_PATCH_2\necho \"patch comment exit: $?\"",
+        "description": "Touch comment near validProvenance (verify anchor)"
+      }
+    },
+    {
+      "index": 33,
+      "id": "tool_TNskYCpsz4P6FrNU2qpHv58E",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_3'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n   sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SYS_A'],\n-  // stub BINDINGS.system_keys includes SystemRoot so the original final env predicate can pass\n+  // matches default stub system_keys (SystemRoot, SYS_A) + synthetic SYN_A so the original final env predicate passes\n*** End Patch\nEOF_PATCH_3\necho \"patch3 exit: $?\"",
+        "description": "Adjust comment placement"
+      }
+    },
+    {
+      "index": 34,
+      "id": "tool_B73EC2Fuogzst8qCdH6xgGpO",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_4'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n-  sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SYS_A'],\n+  sourceFiles: JSON.parse(JSON.stringify(VALID_FILES)), environmentKeyNames: ['SYN_A', 'SystemRoot'],\n*** End Patch\nEOF_PATCH_4\necho \"patch4 exit: $?\"",
+        "description": "Fix validProvenance env keys"
+      }
+    },
+    {
+      "index": 35,
+      "id": "tool_sV6IxmMta6LbiapqVEgJy70O",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_5'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n-      environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] }\n+      environment: { system_keys: ['SystemRoot', 'SYS_A'], synthetic_keys: ['SYN_A'] }\n@@\n-    const table = grab('const prepareProvenanceReasonLines = {', '};');\n+    const table = grabFrom('const prepareProvenanceReasonLines = {', '};');\n@@\n-    const emission = grab('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines', 'process.exitCode = 1;');\n+    const emission = grabFrom('process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines', 'process.exitCode = 1;');\n@@\n-    expect((rebuildSlice.match(/return null;/g) ?? []).length).toBe(3); // schema-false + caught nulls retained\n+    expect((rebuildSlice.match(/return null;/g) ?? []).length).toBe(2); // split-ternary schema-false null + caught null both retained\n@@\n   it('caught schema escape returns null and latches V03 without inspecting the thrown value', () => {\n     const err = new Error('hidden');\n     Object.defineProperty(err, 'message', { get() { throw new Error('MESSAGE-READ-CANARY'); } });\n-    const h = build({ schemaMatches: () => { throw err; } });\n+    let schemaCalls = 0;\n+    const h = build({ schemaMatches: () => { schemaCalls++; throw err; } });\n     h.set('P11', true, 'V00');\n     expect(h.fns().rebuild('provenance', validProvenance())).toBe(null);\n     expect(h.state().reason).toBe('V03');\n-    expect(h.calls).toMatchObject({ schema: 1, stringify: 0, parse: 0 });\n+    expect(schemaCalls).toBe(1);\n+    expect(h.calls).toMatchObject({ stringify: 0, parse: 0 });\n   });\n@@\n   it('V08: source path comparison escape interval', async () => {\n     let n = 0;\n-    const same = (a: any, b: any) => { n++; if (n === 2) throw new Error('PATHS-ESCAPE-CANARY'); return JSON.stringify(a) === JSON.stringify(b); };\n+    const same = (a: any, b: any) => {\n+      if (Array.isArray(a) && a[0] && typeof a[0] === 'object') { n++; if (n === 2) throw new Error('PATHS-ESCAPE-CANARY'); }\n+      return JSON.stringify(a) === JSON.stringify(b);\n+    };\n@@\n-    const rebuildSource = `function rebuild() { const v = JSON.parse(${JSON.stringify(real)});\n-      v.sourceFiles = { map: fn => ['binding.json','fr.ts','fut.ts'].map(p => fn({ path: p })),\n-        find: () => { throw new Error('FIND-ESCAPE-CANARY'); }, toJSON: () => JSON.parse(${JSON.stringify(files)}) };\n-      return v; }`;\n-    const h = build({ BINDINGS: { planning_base: 'base', future_added_source_paths: ['fut.ts'], frozen_runtime_sources: [], environment: { system_keys: ['SYS_A'], synthetic_keys: ['SYN_A'] } } }, { rebuildSource });\n+    const rebuildSource = `function rebuild() { const v = JSON.parse(${JSON.stringify(real)}); let findN = 0;\n+      v.sourceFiles = { map: fn => ['binding.json','fr.ts','fut.ts'].map(p => fn({ path: p })),\n+        find: fn => { findN++; if (findN === 2) throw new Error('FIND-ESCAPE-CANARY'); return JSON.parse(${JSON.stringify(files)}).find(fn); },\n+        toJSON: () => JSON.parse(${JSON.stringify(files)}) };\n+      return v; }`;\n+    const h = build({}, { rebuildSource });\n@@\n   it('V15: final environment predicate escape interval', async () => {\n-    const h = build({ sorted: () => { throw new Error('SORT-ESCAPE-CANARY'); } });\n+    let sortedCalls = 0;\n+    const h = build({ sorted: (vs: string[]) => { sortedCalls++; if (sortedCalls === 2) throw new Error('SORT-ESCAPE-CANARY'); return [...new Set(vs)].sort(); } });\n@@\n   it('V17: validator true but P11 operation does not complete; anomaly stays unknown', async () => {\n-    const h = build({ assert: Object.assign(() => { throw new Error('ASSERT-ANOMALY-CANARY'); }, { equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); } }) });\n+    let assertCalls = 0;\n+    const anomaly = Object.assign((cond: any) => { assertCalls++; if (assertCalls === 2) throw new Error('ASSERT-ANOMALY-CANARY'); if (!cond) throw new Error('assertion'); },\n+      { equal: (a: any, b: any) => { if (a !== b) throw new Error('assertion.equal'); } });\n+    const h = build({ assert: anomaly });\n@@\n-    expect(h.sameArgs[2]).toEqual([['SYN_A', 'SYS_A'], ['SYN_A', 'SYS_A']]);\n+    expect(h.sameArgs[2]).toEqual([['SYN_A', 'SystemRoot'], ['SYN_A', 'SystemRoot']]);\n*** End Patch\nEOF_PATCH_5\necho \"patch5 exit: $?\"",
+        "description": "Apply remaining harness corrections"
+      }
+    },
+    {
+      "index": 36,
+      "id": "tool_AGfMi0b6iIupBZX1ph7VMyJY",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npx vitest run tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts --reporter=verbose > /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stderr.log; echo \"own test exit: $?\"; grep -cE '✓' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log; grep -E '×|Test Files|Tests ' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log",
+        "description": "Re-run own tests after corrections",
+        "timeout": 300
+      }
+    },
+    {
+      "index": 37,
+      "id": "tool_vDqBbzJyxLKmgPHhBBdMf28Z",
+      "name": "Bash",
+      "arguments": {
+        "command": "grep -A4 '× tests/evaluator' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log",
+        "description": "Show remaining failure details"
+      }
+    },
+    {
+      "index": 38,
+      "id": "tool_aicapFubHroB3XSr8Yw0krkl",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; grep -n 'prepareFailureLines' docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs; echo ===; git show 712cf210b089dc71f3a6e6ed2e19e1de7fee57da:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs | grep -n 'prepareFailureLines\\|diagnostic evidence unavailable'",
+        "description": "Locate all prepareFailureLines writes in new and baseline"
+      }
+    },
+    {
+      "index": 39,
+      "id": "tool_XYET6FEkraNp7YcY27oEJykj",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; node -e '\nconst fs = require(\"fs\");\nconst s = fs.readFileSync(\"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs\", \"utf8\");\nconst a1 = \"process.stderr.write(\\x27windows-p1-initial diagnostic evidence unavailable\\\\n\\x27)\";\nconst a2 = \"process.stderr.write(Object.hasOwn(prepareFailureLines\";\nconst a3 = \"process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines\";\nconsole.log(\"generic:\", s.indexOf(a1), \"count:\", s.split(a1).length - 1);\nconsole.log(\"phase:\", s.indexOf(a2), \"count:\", s.split(a2).length - 1);\nconsole.log(\"reason:\", s.indexOf(a3), \"count:\", s.split(a3).length - 1);\nconsole.log(\"exitCode:\", s.indexOf(\"process.exitCode = 1;\"), \"count:\", s.split(\"process.exitCode = 1;\").length - 1);\nconsole.log(\"len:\", s.length);\n'",
+        "description": "Compute anchor positions empirically"
+      }
+    },
+    {
+      "index": 40,
+      "id": "tool_o7UwdlnoYNYVkRcLroUCirQ1",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_PATCH_6'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n@@\n-    expect(cliSource.indexOf('process.exitCode = 1;')).toBeGreaterThan(r);\n+    expect(cliSource.indexOf('process.exitCode = 1;', r)).toBeGreaterThan(r); // earlier original exitCode paths exist\n@@\n   it('V08: source path comparison escape interval', async () => {\n-    let n = 0;\n     const same = (a: any, b: any) => {\n-      if (Array.isArray(a) && a[0] && typeof a[0] === 'object') { n++; if (n === 2) throw new Error('PATHS-ESCAPE-CANARY'); }\n+      if (Array.isArray(b) && b.includes('fr.ts')) throw new Error('PATHS-ESCAPE-CANARY'); // exactly the paths comparison\n       return JSON.stringify(a) === JSON.stringify(b);\n     };\n*** End Patch\nEOF_PATCH_6\necho \"patch6 exit: $?\"",
+        "description": "Fix exitCode scoping and V08 predicate"
+      }
+    },
+    {
+      "index": 41,
+      "id": "tool_nOKcSd977STOZlU9wcYFKkVC",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; export HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r0-20261011/tmp; cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0 && npx vitest run tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts --reporter=verbose > /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stderr.log; echo \"own test exit: $?\"; grep -E 'Test Files|Tests |×' /Volumes/ORICO/project/.wp1provoe-r0-20261011/own-test-stdout.log",
+        "description": "Re-run own tests",
+        "timeout": 300
+      }
+    },
+    {
+      "index": 42,
+      "id": "tool_syXZ8VmvjYZH0OgDIXlZv8W8",
+      "name": "Bash",
+      "arguments": {
+        "command": "date +%s; date -u +%Y-%m-%dT%H:%M:%SZ; export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; shasum -a 256 docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs tests/diagnostics/windows-p1-stages.test.ts docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json; git status --porcelain",
+        "description": "Time check, hash re-verify, git status"
+      }
+    },
+    {
+      "index": 43,
+      "id": "tool_JrLt60oXvfE6svo1BgRjuAV1",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; WT=/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0; R=$WT/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-kimi-r0-20261011; mkdir -p $R/evidence $R/npm-cache-logs; H=/Volumes/ORICO/project/.wp1provoe-r0-20261011; cp $H/npm-ci-stdout.log $H/npm-ci-stderr.log $H/orig81-stdout.log $H/orig81-stderr.log $H/own-test-stdout.log $H/own-test-stderr.log $H/own-test-stdout-FIRST-FAIL-preserved.log $H/own-test-stdout-SECOND-FAIL-preserved.log $R/evidence/; cp $H/npmcache/_logs/*.log $R/npm-cache-logs/; cd $WT && git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD --name-status > $R/evidence/git-name-status-vs-712cf210.txt && git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD -- docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs > $R/evidence/cli-diff-vs-712cf210.patch && git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD --stat > $R/evidence/git-stat-vs-712cf210.txt && ls -la $R $R/evidence $R/npm-cache-logs",
+        "description": "Archive evidence captures into report dir"
+      }
+    },
+    {
+      "index": 44,
+      "id": "tool_AW9QcJHCKhwWPH5jsRZ8ikYZ",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_VERDICT'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-verdict.json\n+{\n+  \"batch_id\": \"BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT\",\n+  \"fix_round\": 0,\n+  \"created_at\": \"2026-10-11T20:08:00Z\",\n+  \"waiting\": null,\n+  \"verdicts\": [\n+    {\n+      \"feature_id\": \"F004\",\n+      \"result\": \"PASS\",\n+      \"evidence\": \"OFFLINE SUPPORTING evaluation only (not formal F004/F005, not native Windows, not full release, not a dependency-security claim; mock/static support is not Windows/native feasibility; original prepare cause stays unknown until a separately approved single new-source CI). New source 62d419b2a419b685542efaaf047b8a749839d493, parent 10470c1b, runtime baseline 712cf210. Pinned inputs re-verified byte-exact by this evaluator: CLI docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs sha256 411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1 / 77285B / LF-only; proposal.json f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92; original 81-test file 7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132 unchanged before and after all runs. Tree/raw diff vs 712cf210: exactly one modified file (the CLI, +53/-7, no mode changes) plus 23 declared plan/pre-scope doc additions; nothing else (evidence/git-name-status-vs-712cf210.txt, cli-diff-vs-712cf210.patch). Diff implements only finite slots S1-S6: 18 fixed 4-byte V00-V17 LF literals; rebuild split into local schema result + equivalent branch with schemaMatches/JSON.stringify/JSON.parse once each and catch returning null with no error binding; validateProvenance in-flight/false latches before original operation groups with compound predicates, order, arguments and short-circuit intact (V02/V03/V04 survive !v via &&v guards); activation+V00 reset only in the exact --prepare arm; deactivation after successful write; terminal catch appends at most one allowlisted reason after unchanged generic+phase output, exit 1 retained. One fresh own npm ci (owned HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011, owned cache/TMPDIR, mandated PATH): exit 0, 670 packages; all fetches registry.npmjs.org only; locked package-owned lifecycle all code 0 (prisma preinstall, @prisma/client+engines postinstall, better-sqlite3 prebuild-install, @parcel/watcher, esbuild, unrs-resolver); @swc/core postinstall performed its package-owned @swc/wasm@1.16.13 registry fallback, explicitly read and archived (npm-cache-logs/2026-10-11T19_44_07_530Z-debug-0.log) alongside the full main debug log; better_sqlite3.node present; node_modules and vendor/braces realpath inside own worktree; no security claim is made from exit 0. Original 81 diagnostics tests after fresh deps: 81/81 passed, exit 0, 1.30s (evidence/orig81-stdout.log). Own independent additive test tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts (50 tests, exit 0, evidence/own-test-stdout.log; two earlier harness-side false starts preserved unedited in evidence/own-test-stdout-FIRST-FAIL-preserved.log and SECOND-FAIL-preserved.log, corrections were test-stub-only and justified): actual pinned source slices (declarations/rebuild/validateProvenance/prepare/terminal dispatch) evaluated in a test-local vm with fully stubbed pure mocks, no real fs/child/OS/worker/kill/native effects, CLI never spawned. All 18 fixed codes exercised and distinguished: false V02 vs caught schema V03 vs caught clone V04 (both caught paths return null, thrown Error with throwing message getter, primitive throw and throwing toJSON never read/serialized/inspected beyond original validator/clone behaviour, canaries never appear in output) vs escaping validator intervals V05/V07/V08/V10/V12/V14/V15 vs latched false V06/V09/V11/V13/V16 vs V17 true anomaly vs V00 unassigned/invalid/nonmember fallback; V01 covered as anomalous external-escape interval with a stubbed rebuild dependency (real rebuild catches everything). Verified null/false/true semantics; schema call once, stringify+parse once and only on schema-true; exact call order schema->stringify->parse; same() argument sequence and short-circuit skip counts; only the original five properties read (proxy read-log), enumerable getter read exactly once by the original clone; both sourceFiles passes (count 2); unchanged P11 assert; success = zero stdout/stderr, no exit code, observer deactivated, activation V00 reset on re-entry; P01-P10 and P12 failures emit generic+phase only = 80 bytes, no reason; P11 failure emits generic 51 + P11 29 + one reason 4 = exactly 84 bytes (84-not-80), exit 1, stdout empty; nonmember phase falls back to P00, null phase emits 51-byte generic only; --run/--seal/--verify-upload/unknown/probe success+failure produce no observer change or emission; probe failure keeps original stdout JSON. Static negative controls: emission once, stderr only, after generic+phase; no CRLF; no dynamic reason text; exactly one activation site; latches never after operations; no added schema/env/error/property reads; schemaMatches body untouched; no new persisted provenance fields; no old-80 claim; no removed reset. No source/spec/original-test/workflow/state/registry/harness/memory changes; no commit/push; no pending_gate writes. Raw captures: docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-kimi-r0-20261011/.\",\n+      \"steps_to_reproduce\": \"In a fresh evaluator worktree at 62d419b2a419b685542efaaf047b8a749839d493: (1) export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin HOME=/Volumes/ORICO/project/.wp1provoe-r0-20261011 USERPROFILE=same TMPDIR=$HOME/tmp; (2) shasum -a 256 docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs tests/diagnostics/windows-p1-stages.test.ts docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json (expect 411c9e10.../7718f1e6.../f6b28719...); (3) git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da HEAD --name-status and -- docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs (expect 23 doc additions + CLI +53/-7 only); (4) npm ci --cache $HOME/npmcache --no-audit --no-fund (exit 0; read npmcache/_logs both files); (5) npx vitest run tests/diagnostics/windows-p1-stages.test.ts (expect 81/81 passed exit 0); (6) npx vitest run tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts (expect 50/50 passed exit 0); (7) re-run step (2) to confirm hashes unchanged. All manual files were authored exclusively via the mandated apply_patch with absolute paths; no actualCLI prepare/run/probe/seal/verify-upload, no guard-query import, no native/OS/PID/kill effects were performed by this evaluator.\"\n+    }\n+  ]\n+}\n*** End Patch\nEOF_VERDICT\necho \"verdict patch exit: $?\"",
+        "description": "Write verdict JSON via apply_patch",
+        "timeout": 60
+      }
+    },
+    {
+      "index": 45,
+      "id": "tool_KfUCJI0YhVVeer7ALSvqtXMF",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; node -e '\nconst v = JSON.parse(require(\"fs\").readFileSync(\"docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-verdict.json\", \"utf8\"));\nconst s = JSON.parse(require(\"fs\").readFileSync(\".claude/autonomous/verdict-artifact.schema.json\", \"utf8\"));\nconst req = [\"batch_id\", \"fix_round\", \"created_at\", \"verdicts\"];\nfor (const k of req) if (!(k in v)) throw new Error(\"missing \" + k);\nconst allowed = [\"batch_id\", \"fix_round\", \"created_at\", \"waiting\", \"waiting_detail\", \"verdicts\"];\nfor (const k of Object.keys(v)) if (!allowed.includes(k)) throw new Error(\"extra \" + k);\nif (!Array.isArray(v.verdicts) || v.verdicts.length < 1) throw new Error(\"verdicts empty\");\nfor (const x of v.verdicts) {\n  for (const k of [\"feature_id\", \"result\", \"evidence\", \"steps_to_reproduce\"]) if (!x[k] || typeof x[k] !== \"string\" && k !== \"feature_id\") throw new Error(\"bad \" + k);\n  if (![\"PASS\", \"PARTIAL\", \"FAIL\"].includes(x.result)) throw new Error(\"bad result\");\n  if (Object.keys(x).length !== 4) throw new Error(\"verdict extra keys \" + Object.keys(x));\n  if (!x.evidence.length || !x.steps_to_reproduce.length) throw new Error(\"empty evidence/steps\");\n}\nif (v.waiting !== null && !v.waiting_detail) throw new Error(\"waiting_detail required\");\nconsole.log(\"verdict schema-shape OK:\", v.verdicts.length, \"verdict(s), result:\", v.verdicts.map(x => x.result).join());\n'",
+        "description": "Validate verdict structure against schema"
+      }
+    },
+    {
+      "index": 46,
+      "id": "tool_cTmreCO5q3BAoFtLwf8MFUdp",
+      "name": "Bash",
+      "arguments": {
+        "command": "export PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin; /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'EOF_README'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-kimi-r0/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-kimi-r0-20261011/README.md\n+# BL-WINDOWS-P1-PROVENANCE-OBSERVATION-kimi-r0 (OFFLINE supporting evaluation)\n+\n+Fresh independent Kimi-family evaluator r0 for new provenance-reason source\n+`62d419b2a419b685542efaaf047b8a749839d493` (parent `10470c1b`, runtime baseline\n+`712cf210b089dc71f3a6e6ed2e19e1de7fee57da`). Not a source712 retry/supplement;\n+no previous evaluator results reused. Verdict:\n+`../BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-verdict.json` (F004 PASS,\n+offline supporting only).\n+\n+## Result summary\n+\n+- Pins re-verified: CLI `p1-stages.mjs` sha256 `411c9e10…760b1` / 77285B / LF-only;\n+  original 81-test file `7718f1e6…9132`; proposal `f6b28719…5f92` — unchanged after all runs.\n+- Tree diff vs 712cf210: CLI only (+53/−7, slots S1–S6) + 23 declared doc additions.\n+- Fresh own `npm ci` (owned HOME/cache/TMPDIR, mandated PATH): exit 0, 670 pkgs,\n+  registry.npmjs.org only; locked package-owned lifecycle all code 0; `@swc/core`\n+  package-owned `@swc/wasm@1.16.13` registry fallback read + archived\n+  (`npm-cache-logs/`); no security claim from exit 0.\n+- Original 81 diagnostics tests: 81/81 PASS, exit 0 (`evidence/orig81-stdout.log`).\n+- Own additive stubbed-VM test `tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts`:\n+  50/50 PASS, exit 0 (`evidence/own-test-stdout.log`). All 18 V00–V17 codes distinguished\n+  (false vs caught schema/clone vs escaping intervals vs true anomaly vs unknown/nonmember),\n+  call counts/order/arguments/short-circuit/property reads, both sourceFiles passes,\n+  unchanged P11 assert, 84=51+29+4 byte accounting (80 for other phases, 51 generic-only,\n+  0 on success), success reset/silence, non-P11/P12 and other-mode silence, privacy canaries,\n+  static negative controls. Two earlier harness-side false starts preserved unedited\n+  (`evidence/own-test-stdout-FIRST-FAIL-preserved.log`, `…-SECOND-FAIL-preserved.log`);\n+  corrections were test-stub-only (process.versions/env-key stubs satisfying original reads,\n+  anchor scoping) and never touched the source under test.\n+\n+## Scope limits\n+\n+Offline supporting only: not formal F004/F005 acceptance, no native Windows feasibility\n+claim, no full-release or dependency-security claim, no CI/publication authorization.\n+Original prepare failure cause remains unknown until a separately approved single\n+new-source CI. No source/spec/original-test/workflow/state/registry/harness/memory\n+changes, no commit/push, no pending_gate writes by this evaluator.\n*** End Patch\nEOF_README\necho \"readme patch exit: $?\"; shasum -a 256 docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs tests/diagnostics/windows-p1-stages.test.ts; git status --porcelain; date +%s",
+        "description": "Write report README and final verification",
+        "timeout": 60
+      }
+    }
+  ],
+  "debug_files": [
+    "2026-10-11T19_42_54_691Z-debug-0.log",
+    "2026-10-11T19_44_07_530Z-debug-0.log"
+  ],
+  "status": "?? docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-SUPPORT-verdict.json\n?? docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-kimi-r0-20261011/\n?? tests/evaluator/windows-p1-provenance-observation-r0-support.test.ts\n",
+  "wasm_version": "1.16.13",
+  "root_lock_has_wasm": false,
+  "installed_lock_has_wasm": false
+}

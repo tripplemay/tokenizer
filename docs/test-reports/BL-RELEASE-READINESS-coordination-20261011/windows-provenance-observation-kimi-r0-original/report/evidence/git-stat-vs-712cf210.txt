@@ -1,0 +1,25 @@
+ .../README.md                                      |  52 ++
+ .../SHA256SUMS                                     |  19 +
+ .../evidence/failure-ledger.json                   |  39 ++
+ .../evidence/git-readonly-record.json              |  19 +
+ .../evidence/input-ledger.json                     | 311 +++++++++++
+ .../evidence/manifest-before-ignore-repair.json    |  85 +++
+ .../evidence/original-copy-map.json                |  27 +
+ ...n-native-run38165950837-artifacts-original.json |   1 +
+ ...ve-run38165950837-coordinator-adjudication.json |  63 +++
+ ...ation-native-run38165950837-final-original.json |   1 +
+ ...rvation-native-run38165950837-full-original.txt | 168 ++++++
+ ...vation-native-run38165950837-jobs-original.json |   1 +
+ ...n-native-run38165950837-transport-manifest.json |  61 +++
+ ...vation-native-run38165950837-watch-original.txt |   1 +
+ ...ws-prepare-observation-publication-original.txt |   2 +
+ ...dows-prepare-observation-run-list-original.json |   1 +
+ .../evidence/passive-audit-command-output.json     |  80 +++
+ .../manifest.json                                  | 101 ++++
+ .../proposal.json                                  | 104 ++++
+ .../verdict.json                                   |  29 +
+ .../README.md                                      | 143 +++++
+ .../raw-ledger.json                                | 581 +++++++++++++++++++++
+ .../verdict.json                                   | 156 ++++++
+ .../windows-p1-stages-20261010/p1-stages.mjs       |  60 ++-
+ 24 files changed, 2098 insertions(+), 7 deletions(-)

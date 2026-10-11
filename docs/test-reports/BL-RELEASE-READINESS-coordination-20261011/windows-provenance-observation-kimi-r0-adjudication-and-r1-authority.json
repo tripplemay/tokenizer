@@ -1,0 +1,41 @@
+{
+  "kind": "COORDINATOR_TRANSPORT_AND_CONTRACT_ADJUDICATION_ONLY",
+  "source_ref": "62d419b2a419b685542efaaf047b8a749839d493",
+  "r0_task": "windows-p1-provenance-observation-62d419b-kimi-r0",
+  "r0_duration_s": 1675,
+  "r0_hard_cap_s": 1800,
+  "r0_original_result": "PASS_OFFLINE_SUPPORT_ONLY_UNMODIFIED",
+  "r0_receipt_validation": "COMPLETED_MECHANICAL_ONLY",
+  "transport_count": 37,
+  "transport_bytes": 1698196,
+  "transport_manifest_sha256": "9cbaeb8f8251181996798edd6d9e7871a5b7c3bd17643debfbfba49f93dcd9a9",
+  "publication": "HOLD",
+  "contract_gaps": [
+    "No independent npm run verify execution/capture in the 46 recorded tool calls.",
+    "CLI diff/hash inspection is present, but no independent whole-CLI byte-exact inverse transformation proof was delivered.",
+    "The original report describes two earlier own-test false starts. Runtime calls 26,28,36,41 show four own-test executions: 23/12/2 failures, then 50 passes. First and second stdout captures are retained; the third full stdout and all separately identified earlier stderr captures were not retained. Full runtime preserves returned tool content, not missing full-file bytes. Do not reconstruct or claim those missing originals.",
+    "No separately saved provisional PARTIAL by 900s; returned duration 1675s is authoritative, not the manually set verdict timestamp.",
+    "SWC wasm fallback was correctly disclosed. Coordinator additionally transported core package/postinstall, wasm package and both lock originals: wasm 1.16.13 is absent from root and installed lock. Original evaluator did not supply all mandated installed-reference captures or exhaustive internal-link/raw vendor proof.",
+    "Registry host extraction from npm debug output is not proof that all package lifecycle network traffic used that host. Narrow such prose to recorded registry requests."
+  ],
+  "preserved_positive_transport_facts": [
+    "Original diagnostics 81-test execution returned exit 0; last own additive 50-test execution returned exit 0. These are evaluator reports, not Coordinator functional signoff.",
+    "Tool inventory: Bash 41, Read 5, no Native Write/Edit. Recorded manual patch paths are absolute and limited to own test/report/verdict paths.",
+    "Tracked source/state remained unchanged in the evaluator worktree; its only additions are its own report/verdict/test. Parent receives the test only as inert docs *.original.txt, never tests/.",
+    "No third-party verdict, original report, runtime, initial retained captures, Generator source or prior manifests have been rewritten."
+  ],
+  "r1_authority": {
+    "task": "windows-p1-provenance-observation-62d419b-evidence-kimi-r1",
+    "scope": "ONE_FRESH_REGISTERED_KIMI_BOUNDED_EVIDENCE_SUPPLEMENT_AND_OWN_FRESH_TYPECHECK",
+    "hard_cap_s": 900,
+    "new_own_install_max": 1,
+    "allowed": "Passive exact-byte/tree/transport/provenance audit and independently npm run verify after one fresh own installation; transport the immutable r0 own test only for independent type checking, not a functional rerun. No previous tests/results substituted for new proof. Kimi must independently judge whether r0 actual test-only changes and raw evidence suffice for narrow offline support; preserve unresolved limitations and missing bytes.",
+    "forbidden": "No product/CLI/spec/workflow/original-test/state changes, no native effects or diagnostic CLI runs, no rerun of r0 or old81 suites, no extra own functional test run, no acceptance relaxation, no previous source712 retry, no Compose dispatch, no cap extension or family fallback, no push/CI/deploy/key/backup/restore/baseline/password work.",
+    "on_timeout_or_incomplete": "STOP_AND_HOLD_NO_SECOND_SUPPLEMENT",
+    "does_not_authorize_publication": true
+  },
+  "release_ready": false,
+  "main_and_production_unchanged": true,
+  "compose_hard_stop": true,
+  "keys_and_restore_deferred_by_user": true
+}
