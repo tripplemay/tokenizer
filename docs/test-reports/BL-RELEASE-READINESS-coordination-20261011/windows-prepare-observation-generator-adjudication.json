@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T17:55:00Z",
+  "role": "Coordinator fresh scope transport and narrow Generator commission, not functional acceptance",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "planner": "22946b380fdf43109a30d7e69e87d5a9ab1dbd10",
+  "fresh_pre_scope": {
+    "commit": "27dd6bcec281fa7bd0c8ca14fce9749b40be1735",
+    "verdict": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "952f0b040b2255361d7fc40b192ffa028191170692779c372254f5afdd7ca836",
+    "readme_sha256": "f96f8ca7e24ce81ffd0737714ef6b81f4ab10622b3cfea197be76eb83eed4319",
+    "original_byte_transport": true,
+    "runtime_cause": "Still unknown, no individual prepare phase passed proven"
+  },
+  "generator": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-observation-generator-20261011",
+    "start_commit": "27dd6bcec281fa7bd0c8ca14fce9749b40be1735",
+    "one_existing_runtime_path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+    "scope_exception": "Only the Planner permitted_projection_if_separately_approved slots: non-exported inactive prepare state/fixed literal map, exact prepare activation/reset, before-operation P01-P12 assignments, second sourceFiles local split, terminal catch one safe29-byte lookup line. This explicitly supersedes C002 CLI-only-two-literals freeze solely for these observation slots; both binding identity literals/specs/workflow and all other CLI bytes remain unchanged",
+    "success_and_nonprepare_import_guard_probe_behavior": "No additional output or persisted state; original generic51 bytes/exit1 retained, max80 parentstderr bytes; no error binding/raw data or new files/uploads",
+    "development": "One fresh owned npmci with existing public package lifecycle allowance, full original npm logs/provenance; unchanged81/verify/syntax/pure import, no diagnostic CLI/native/VM evaluation",
+    "dependency_boundary": "Normal npm-created own internal braces/.bin links allowed; no borrowed deps/caches. Capture SWC fallback/lock absence truthfully even if default stderr hides lifecycle output. Seven-high remains open",
+    "source_commit_before_separate_report_commit": true,
+    "all_manual_patch_file_paths_absolute": true,
+    "worker_push": false
+  },
+  "fresh_actual_diff_and_different_family_gate": "Still required, not replaced by scope PASS",
+  "publication_new_CI_source61_rerun_or_production_authorized": false,
+  "source_integrated_into_parent_runtime": false,
+  "state_or_memory_or_pending_gate_written": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "Deferred by user",
+  "release_ready": false
+}
