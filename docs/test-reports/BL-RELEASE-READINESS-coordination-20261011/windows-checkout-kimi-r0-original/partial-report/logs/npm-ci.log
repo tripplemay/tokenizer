@@ -1,0 +1,28 @@
+=== npm ci fresh run ===
+date: 2026-10-11T14:52:38Z
+node: v22.22.0 (/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node)
+npm: 10.9.4
+HOME=/Volumes/ORICO/project/.wp1ce-r0-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1ce-r0-20261011 TMPDIR=/Volumes/ORICO/project/.wp1ce-r0-20261011/tmp npm_config_cache=/Volumes/ORICO/project/.wp1ce-r0-20261011/npm-cache
+PWD=/Volumes/ORICO/project/.worktrees/tokenizer-wp1c-evaluation-20261011/BL-WINDOWS-P1-CHECKOUT-SUPPORT-local-cli--kimi--evaluator-windows-p1-checkout-221f2f8-kimi-r0
+HEAD=221f2f87d94db1656e3000662796d79621b696f5
+=== command: npm ci --no-audit=false (default audit) ===
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 670 packages, and audited 672 packages in 2m
+
+186 packages are looking for funding
+  run `npm fund` for details
+
+7 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm-ci-exit-code=0

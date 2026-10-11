@@ -1,0 +1,312 @@
+// Evaluator-owned (kimi r0) additive supporting controls for the C001
+// checkout-only candidate 221f2f87d94db1656e3000662796d79621b696f5.
+// Compact table-driven checks, derived independently from the locked C001
+// contract: checkout-env confinement, exact binding identity, unchanged
+// systemEnvironment rejection of the checkout keys, and an owned disposable
+// Git runtime-config fixture. Offline; no push, no native Windows claims.
+import { afterAll, describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import cp from 'node:child_process';
+import { join, resolve } from 'node:path';
+import * as p1 from '../../docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+
+const repo = resolve(__dirname, '../..');
+const WF_PATH = '.github/workflows/windows-p1-stages-diagnostic.yml';
+const CLI_PATH = 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+const BJ_PATH = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
+const BM_PATH = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
+const SRC = '888a5acd7a8a441c9ec4ad898453f149cf8d6b7c';
+const ENV_LINES = [
+  '        env:',
+  "          GIT_CONFIG_COUNT: '1'",
+  '          GIT_CONFIG_KEY_0: core.longpaths',
+  "          GIT_CONFIG_VALUE_0: 'true'",
+];
+const wfText = fs.readFileSync(join(repo, WF_PATH), 'utf8');
+
+// --- evaluator-owned restricted parser for exactly this workflow grammar ---
+// Fail-closed: any construct outside the known subset throws. Values keep
+// their raw source text so quoted/unquoted (YAML string vs non-string) is
+// distinguishable without a general YAML dependency.
+interface Step { uses?: string; name?: string; run?: string; envRaw?: string[]; withRaw: string[]; keys: string[] }
+interface Workflow { topKeys: string[]; jobKeys: string[]; jobs: string[]; steps: Step[]; }
+function parseWorkflow(text: string): Workflow {
+  const lines = text.split('\n');
+  const topKeys: string[] = [], jobKeys: string[] = [], jobs: string[] = [], steps: Step[] = [];
+  let inSteps = false, cur: Step | null = null, sub: 'env' | 'with' | 'path' | null = null;
+  for (const line of lines) {
+    if (line.trim() === '' || line.trim().startsWith('#')) continue;
+    const indent = line.length - line.trimStart().length;
+    if (/\t/.test(line)) throw new Error('tab forbidden');
+    if (indent === 0) {
+      inSteps = false; sub = null; cur = null;
+      const m = /^([a-z_]+):(.*)$/.exec(line);
+      if (!m) throw new Error('bad top-level line: ' + line);
+      topKeys.push(m[1]);
+    } else if (indent === 2 && /^ {2}[a-z0-9-]+:$/.test(line)) {
+      jobs.push(line.trim().slice(0, -1)); inSteps = false; sub = null;
+    } else if (indent === 4 && /^ {4}(if|runs-on|timeout-minutes|steps|env):/.test(line)) {
+      const key = line.trim().split(':')[0];
+      jobKeys.push(key);
+      if (key === 'env') throw new Error('job-level env forbidden');
+      inSteps = key === 'steps'; sub = null;
+    } else if (inSteps && indent === 6 && line.startsWith('      - ')) {
+      cur = { withRaw: [], keys: [] }; steps.push(cur); sub = null;
+      const rest = line.slice(8);
+      const m = /^(uses|name): (.+)$/.exec(rest);
+      if (!m) throw new Error('bad step opener: ' + line);
+      (cur as any)[m[1]] = m[2]; cur.keys.push(m[1]);
+    } else if (inSteps && cur && indent === 8 && !sub) {
+      const m = /^(uses|name|id|if|run|env|with): ?(.*)$/.exec(line.trim());
+      if (!m) throw new Error('bad step key: ' + line);
+      cur.keys.push(m[1]);
+      if (m[1] === 'env') { cur.envRaw = []; sub = 'env'; }
+      else if (m[1] === 'with') { sub = 'with'; }
+      else if (m[1] === 'run') { cur.run = m[2]; if (/[|>]/.test(m[2])) throw new Error('block run unsupported'); }
+      else (cur as any)[m[1]] = m[2] || (cur as any)[m[1]];
+    } else if (inSteps && cur && indent === 8 && sub === 'with' && /^(if|id):/.test(line.trim())) {
+      const m = /^(if|id): (.+)$/.exec(line.trim());
+      if (!m) throw new Error('bad step key: ' + line);
+      cur.keys.push(m[1]); (cur as any)[m[1]] = m[2]; sub = null;
+    } else if (inSteps && cur && sub === 'env' && indent === 10) {
+      if (!/^[A-Z0-9_]+: .+$/.test(line.trim())) throw new Error('bad env line: ' + line);
+      cur.envRaw!.push(line.trim());
+    } else if (inSteps && cur && sub === 'with' && indent === 10) {
+      if (line.trim() === 'path: |') { sub = 'path'; cur.withRaw.push('path: |'); }
+      else if (/^[a-z0-9-]+: .+$/.test(line.trim())) cur.withRaw.push(line.trim());
+      else throw new Error('bad with line: ' + line);
+    } else if (inSteps && cur && sub === 'path' && indent === 12) {
+      if (!/^docs\/\S+$/.test(line.trim())) throw new Error('bad upload path line: ' + line);
+    } else if (indent === 4 && /^ {4}(group|cancel-in-progress):/.test(line)) {
+      // concurrency map entries
+    } else if (indent === 4 && /^ {4}(branches): \[/.test(line)) {
+      // on.push.branches flow list
+    } else if (indent === 2 && /^ {2}(push):$/.test(line)) {
+      // on.push
+    } else if (indent === 4 && /^ {4}(contents): /.test(line)) {
+      // permissions map
+    } else {
+      throw new Error('line outside restricted grammar: ' + JSON.stringify(line));
+    }
+  }
+  return { topKeys, jobKeys, jobs, steps };
+}
+
+// The exact C001 checkout-env contract, evaluated on the restricted parse.
+function assertCheckoutScope(text: string): Workflow {
+  const w = parseWorkflow(text);
+  if (text.includes('GITHUB_ENV')) throw new Error('GITHUB_ENV leakage');
+  if (/git config( |$)/m.test(text)) throw new Error('git config write forbidden');
+  if (/secrets\.|secrets:|environment:|continue-on-error|retry|workflow_dispatch|pull_request/.test(text))
+    throw new Error('forbidden workflow mechanism');
+  if (w.topKeys.join(',') !== 'name,on,permissions,concurrency,jobs') throw new Error('top-level keys changed');
+  if (w.jobs.length !== 1 || w.jobs[0] !== 'p1-initial-diagnostic') throw new Error('job set changed');
+  if (w.jobKeys.join(',') !== 'if,runs-on,timeout-minutes,steps') throw new Error('job keys changed');
+  if (w.steps.length !== 9) throw new Error('step count changed: ' + w.steps.length);
+  const checkout = w.steps.filter(s => s.uses === 'actions/checkout@v4');
+  if (checkout.length !== 1 || w.steps[0] !== checkout[0]) throw new Error('exactly one leading checkout step required');
+  const co = checkout[0];
+  if (!co.envRaw) throw new Error('checkout env missing');
+  if (co.envRaw.join('\n') !== ENV_LINES.slice(1).join('\n')) throw new Error('checkout env not the exact ordered string triple');
+  if (co.withRaw.join('\n') !== 'ref: ${{ github.sha }}\nfetch-depth: 1\npersist-credentials: false')
+    throw new Error('checkout inputs changed');
+  for (const [i, s] of w.steps.entries()) {
+    if (i > 0 && s.envRaw) throw new Error('env leaked to later step ' + i);
+    if (s.withRaw.some(l => /^(path|sparse-checkout|sparse-checkout-cone-mode|filter|fetch-tags|set-safe-directory|submodules|clean|lfs|repository|token|ssh-/.test(l)))
+      throw new Error('forbidden checkout input');
+  }
+  for (const key of ['GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_0', 'GIT_CONFIG_VALUE_0']) {
+    if (text.split(key).length - 1 !== 1) throw new Error(key + ' must appear exactly once');
+  }
+  return w;
+}
+
+const mut = (from: string, to: string) => {
+  const i = wfText.indexOf(from);
+  if (i < 0) throw new Error('mutation anchor missing: ' + JSON.stringify(from));
+  return wfText.slice(0, i) + to + wfText.slice(i + from.length);
+};
+
+describe('r0-checkout-env-positive', () => {
+  it('accepts the exact candidate workflow with the confined env triple', () => {
+    const w = assertCheckoutScope(wfText);
+    expect(w.steps[0].envRaw).toEqual(ENV_LINES.slice(1));
+    expect(w.steps.map(s => s.uses ?? s.name)).toEqual([
+      'actions/checkout@v4', 'actions/setup-node@v4', 'Prepare exact-candidate provenance',
+      'Install locked dependencies', 'Synthetic checks only', 'INITIAL once',
+      'Seal safe evidence', 'Verify sealed files immediately', 'actions/upload-artifact@v4']);
+  });
+  it('matches the unchanged locked ordered commands and 16 upload paths', () => {
+    const w = assertCheckoutScope(wfText);
+    expect(w.steps.filter(s => s.run).map(s => s.run)).toEqual(p1.BINDINGS.workflow.ordered_commands);
+    expect(p1.BINDINGS.output.upload_files).toHaveLength(16);
+    const uploadLines = wfText.match(/^            docs\/\S+$/gm)!.map(l => l.trim());
+    expect(uploadLines).toEqual(p1.BINDINGS.output.upload_files.map(p => p1.BINDINGS.output.upload_root + p));
+  });
+  it('pins workflow and binding identities to the exact candidate hashes', () => {
+    expect(p1.sha256(fs.readFileSync(join(repo, WF_PATH)))).toBe('1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771');
+    expect(p1.sha256(fs.readFileSync(join(repo, BJ_PATH)))).toBe('652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d');
+    expect(p1.sha256(fs.readFileSync(join(repo, BM_PATH)))).toBe('fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6');
+    expect(p1.sha256(fs.readFileSync(join(repo, CLI_PATH)))).toBe('3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6');
+    expect(p1.validateBindings()).toBe(true);
+  });
+  it('declares exactly the three-string checkout_env static contract in revised bindings', () => {
+    expect(p1.BINDINGS.revision).toBe(2);
+    expect(p1.BINDINGS.existing_file_edits_allowed).toEqual([WF_PATH, BM_PATH, BJ_PATH, CLI_PATH]);
+    expect(p1.BINDINGS.workflow.checkout_env).toEqual({
+      GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true' });
+    expect(p1.BINDINGS.workflow.checkout_env_scope)
+      .toBe('checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation');
+    expect(p1.BINDINGS.workflow.checkout).toEqual({ ref: '${{ github.sha }}', 'fetch-depth': 1, 'persist-credentials': false });
+  });
+});
+
+describe('r0-checkout-env-negative-table', () => {
+  const envBlock = ENV_LINES.join('\n') + '\n';
+  const laterSteps: [string, string][] = [
+    ['setup-node', '      - uses: actions/setup-node@v4\n'],
+    ['prepare', '      - name: Prepare exact-candidate provenance\n'],
+    ['npm-ci', '      - name: Install locked dependencies\n'],
+    ['synthetic', '      - name: Synthetic checks only\n'],
+    ['initial', '      - name: INITIAL once\n'],
+    ['seal', '      - name: Seal safe evidence\n'],
+    ['verify', '      - name: Verify sealed files immediately\n'],
+    ['upload', '      - uses: actions/upload-artifact@v4\n'],
+  ];
+  const cases: [string, string][] = [
+    ['missing-env', mut(envBlock, '')],
+    ['count0', mut("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '0'")],
+    ['count2-one-pair', mut("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '2'")],
+    ['missing-key', mut('          GIT_CONFIG_KEY_0: core.longpaths\n', '')],
+    ['missing-value', mut("          GIT_CONFIG_VALUE_0: 'true'\n", '')],
+    ['false-value', mut("GIT_CONFIG_VALUE_0: 'true'", "GIT_CONFIG_VALUE_0: 'false'")],
+    ['nonstring-value', mut("GIT_CONFIG_VALUE_0: 'true'", 'GIT_CONFIG_VALUE_0: true')],
+    ['nonstring-count', mut("GIT_CONFIG_COUNT: '1'", 'GIT_CONFIG_COUNT: 1')],
+    ['extra-key', mut("          GIT_CONFIG_VALUE_0: 'true'\n", "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_EXTRA: '1'\n")],
+    ['second-pair', mut("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '2'")
+      .replace("          GIT_CONFIG_VALUE_0: 'true'\n", "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n")],
+    ['renamed-key', mut('GIT_CONFIG_KEY_0: core.longpaths', 'GIT_CONFIG_KEY_0: core.LongPaths')],
+    ['workflow-level-env', mut('concurrency:', envBlock.replace(/^ {8}/gm, '') + 'concurrency:')],
+    ['job-level-env', mut('    steps:\n', envBlock.replace(/^ {8}/gm, '    ') + '    steps:\n')],
+    ...laterSteps.map(([name, anchor]): [string, string] => ['env-at-' + name, mut(anchor, anchor + envBlock)]),
+    ['github-env-write', mut('run: npm ci', 'run: echo GIT_CONFIG_COUNT=1 >> $GITHUB_ENV && npm ci')],
+    ['config-write-global', mut('run: npm ci', 'run: git config --global core.longpaths true && npm ci')],
+    ['config-write-system', mut('run: npm ci', 'run: git config --system core.longpaths true && npm ci')],
+    ['config-write-local', mut('run: npm ci', 'run: git config --local core.longpaths true && npm ci')],
+    ['config-write-worktree', mut('run: npm ci', 'run: git config --worktree core.longpaths true && npm ci')],
+    ['sparse-input', mut('          persist-credentials: false\n', '          persist-credentials: false\n          sparse-checkout: docs\n')],
+    ['path-input', mut('          persist-credentials: false\n', '          persist-credentials: false\n          path: short\n')],
+    ['filter-input', mut('          persist-credentials: false\n', '          persist-credentials: false\n          filter: blob:none\n')],
+    ['new-command', mut('      - uses: actions/upload-artifact@v4\n', '      - name: probe\n        run: git --version\n      - uses: actions/upload-artifact@v4\n')],
+    ['secrets-usage', mut('permissions:\n  contents: read', 'permissions:\n  contents: read\n  secrets: write')],
+    ['permissions-widened', mut('contents: read', 'contents: write')],
+    ['continue-on-error', mut('        with:\n          ref:', '        continue-on-error: true\n        with:\n          ref:')],
+    ['retry-wrapper', mut('run: npm ci', 'run: npm ci || npm ci')],
+    ['extra-event', mut('    branches: [codex/windows-p1-stages-ci-20261010]', '    branches: [codex/windows-p1-stages-ci-20261010]\n  pull_request:')],
+  ];
+  it.each(cases)('rejects %s', (_name, text) => {
+    expect(() => assertCheckoutScope(text)).toThrow();
+  });
+});
+
+describe('r0-identity-and-provenance-negatives', () => {
+  const cliBytes = fs.readFileSync(join(repo, CLI_PATH));
+  const srcCli = cp.spawnSync('git', ['-c', 'core.fileMode=false', 'show', SRC + ':' + CLI_PATH],
+    { cwd: repo, encoding: null, maxBuffer: 4 * 1024 * 1024 });
+  const provenance = () => {
+    const files = [...p1.BINDINGS.future_added_source_paths, BJ_PATH,
+      ...p1.BINDINGS.frozen_runtime_sources.map(s => s.path)].sort()
+      .map(path => ({ path, sha256: p1.sha256(fs.readFileSync(join(repo, path))) }));
+    const value = { format: 'windows-p1-initial-provenance-v1', executionSha: 'c'.repeat(40), expectedSha: 'c'.repeat(40),
+      planningBase: p1.BINDINGS.planning_base, timestampUtc: '2026-10-11T00:00:00Z', runId: '1', runAttempt: 1,
+      ref: 'refs/heads/codex/windows-p1-stages-ci-20261010',
+      runtime: { node: 'v22.22.0', uv: '1.51.0', platform: 'win32', arch: 'x64', osRelease: '10.0.1', imageOS: 'win25', imageVersion: '20261011.1.0' },
+      sourceFiles: files, environmentKeyNames: [...p1.BINDINGS.environment.system_keys, ...p1.BINDINGS.environment.synthetic_keys].sort(),
+      extraEnvironmentKeys: [], provenanceUnknown: false, releaseReady: false, releaseAcceptance: false };
+    return { value, files };
+  };
+  it('real validateProvenance accepts an exact-C-shaped record and rejects stale bindings/old-source relabel', () => {
+    const { value, files } = provenance();
+    expect(p1.validateProvenance(value, files, 'c'.repeat(40))).toBe(true);
+    const stale = provenance();
+    stale.value.sourceFiles = stale.value.sourceFiles.map(s =>
+      s.path === BJ_PATH ? { path: s.path, sha256: 'ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc' } : s);
+    stale.files = stale.value.sourceFiles;
+    expect(p1.validateProvenance(stale.value, stale.files, 'c'.repeat(40))).toBe(false);
+    const relabel = provenance();
+    relabel.value.executionSha = relabel.value.expectedSha = SRC;
+    expect(p1.validateProvenance(relabel.value, relabel.files, SRC)).toBe(false);
+    const mismatchedSha = provenance();
+    expect(p1.validateProvenance(mismatchedSha.value, mismatchedSha.files, SRC)).toBe(false);
+  });
+  it('exact-scope control: masking only the two identity literals yields source888 bytes, and one extra byte fails', () => {
+    expect(srcCli.status).toBe(0);
+    const masked = Buffer.from(cliBytes.toString('utf8')
+      .replace('652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d', 'ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc')
+      .replace('fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6', 'bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c'), 'utf8');
+    expect(masked.equals(srcCli.stdout)).toBe(true);
+    expect(Buffer.concat([masked, Buffer.from('X')]).equals(srcCli.stdout)).toBe(false);
+    const oneSided = masked.toString('utf8')
+      .replace('ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc', '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d');
+    expect(oneSided).not.toBe(srcCli.stdout.toString('utf8'));
+  });
+  it('checksSummary binds the fresh unchanged-suite run to all required controls', () => {
+    const raw = JSON.parse(fs.readFileSync(
+      join(repo, 'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-kimi-r0-20261011/logs/original-81.raw.json'), 'utf8'));
+    const summary = p1.checksSummary(raw);
+    expect(summary?.allRequiredControlsPassed).toBe(true);
+    expect(summary?.passed).toBe(81);
+  });
+});
+
+describe('r0-systemEnvironment-discards-checkout-keys', () => {
+  it('unchanged systemEnvironment admits only the five case-insensitive system keys', () => {
+    const base = {
+      Path: 'owned-path', SYSTEMROOT: 'C:\\Windows', 'windir': 'C:\\Windows', ComSpec: 'C:\\Windows\\system32\\cmd.exe',
+      PATHEXT: '.COM;.EXE', GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true',
+      git_config_count: '1', APPDATA: 'forbidden', LOCALAPPDATA: 'forbidden', SystemDrive: 'C:', PSModulePath: 'forbidden',
+    };
+    expect(p1.systemEnvironment(base)).toEqual({
+      PATH: 'owned-path', SystemRoot: 'C:\\Windows', WINDIR: 'C:\\Windows',
+      ComSpec: 'C:\\Windows\\system32\\cmd.exe', PATHEXT: '.COM;.EXE' });
+    expect(p1.BINDINGS.environment.extra_keys).toEqual([]);
+    expect(() => p1.systemEnvironment({ PATH: 'a', Path: 'b' })).toThrow(/ambiguous/);
+  });
+});
+
+describe('r0-git-runtime-config-owned-fixture', () => {
+  const ownedTmp = process.env.TMPDIR ?? '';
+  const fixRoot = join(ownedTmp, 'r0-git-fixture');
+  const gitEnv = (extra: Record<string, string>) => ({
+    PATH: '/usr/bin:/bin', HOME: join(fixRoot, 'home'), USERPROFILE: join(fixRoot, 'home'),
+    XDG_CONFIG_HOME: join(fixRoot, 'xdg'), GIT_CONFIG_NOSYSTEM: '1',
+    GIT_CONFIG_GLOBAL: join(fixRoot, 'home', 'empty-gitconfig'), GIT_TERMINAL_PROMPT: '0', ...extra,
+  });
+  const git = (args: string[], env: Record<string, string>) =>
+    cp.spawnSync('git', args, { cwd: join(fixRoot, 'repo'), env, encoding: 'utf8', timeout: 30000 });
+  const CHECKOUT_KEYS = { GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true' };
+  it('uses only the owned disposable fixture root', () => {
+    expect(ownedTmp.startsWith('/Volumes/ORICO/project/.wp1ce-r0-20261011')).toBe(true);
+    fs.rmSync(fixRoot, { recursive: true, force: true });
+    fs.mkdirSync(join(fixRoot, 'home'), { recursive: true });
+    fs.mkdirSync(join(fixRoot, 'xdg'), { recursive: true });
+    fs.mkdirSync(join(fixRoot, 'repo'), { recursive: true });
+    fs.writeFileSync(join(fixRoot, 'home', 'empty-gitconfig'), '');
+    expect(git(['init', '-q', '.'], gitEnv({})).status).toBe(0);
+  });
+  it('command-scope env pair answers core.longpaths only in the armed child, with no persistence', () => {
+    const armed = git(['config', '--get', 'core.longpaths'], gitEnv(CHECKOUT_KEYS));
+    expect(armed.status).toBe(0);
+    expect(armed.stdout.trim()).toBe('true');
+    const scoped = git(['config', '--show-scope', '--get', 'core.longpaths'], gitEnv(CHECKOUT_KEYS));
+    expect(scoped.stdout.trim()).toBe('command\ttrue');
+    const sibling = git(['config', '--get', 'core.longpaths'], gitEnv({}));
+    expect(sibling.status).not.toBe(0);
+    expect(sibling.stdout ?? '').toBe('');
+    expect(git(['config', '--get', 'credential.helper'], gitEnv(CHECKOUT_KEYS)).status).not.toBe(0);
+    expect(git(['config', '--global', '--list'], gitEnv(CHECKOUT_KEYS)).stdout ?? '').toBe('');
+    expect(fs.readFileSync(join(fixRoot, 'home', 'empty-gitconfig'), 'utf8')).toBe('');
+    expect(fs.readFileSync(join(fixRoot, 'repo', '.git', 'config'), 'utf8')).not.toContain('longpaths');
+  });
+  afterAll(() => fs.rmSync(fixRoot, { recursive: true, force: true }));
+});

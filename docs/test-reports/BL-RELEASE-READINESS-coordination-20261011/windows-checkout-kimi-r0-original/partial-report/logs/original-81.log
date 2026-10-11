@@ -1,0 +1,7 @@
+=== unchanged scoped suite: tests/diagnostics/windows-p1-stages.test.ts ===
+date: 2026-10-11T14:55:40Z
+node: v22.22.0
+HEAD=221f2f87d94db1656e3000662796d79621b696f5
+=== command: node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=.../original-81.raw.json (plus default stdout) ===
+JSON report written to /Volumes/ORICO/project/.worktrees/tokenizer-wp1c-evaluation-20261011/BL-WINDOWS-P1-CHECKOUT-SUPPORT-local-cli--kimi--evaluator-windows-p1-checkout-221f2f8-kimi-r0/docs/test-reports/BL-WINDOWS-P1-CHECKOUT-kimi-r0-20261011/logs/original-81.raw.json
+scoped-tests-exit-code=0

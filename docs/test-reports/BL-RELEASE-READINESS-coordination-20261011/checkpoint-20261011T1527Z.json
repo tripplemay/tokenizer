@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T15:26:42.755Z",
+  "role": "Coordinator checkpoint, not functional acceptance or human gate decision",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "checkout_repair": {
+    "implementation_frozen": true,
+    "generator_existing_controls_passed": 81,
+    "generator_verify_exit_code": 0,
+    "fresh_actual_diff_scope": "PASS_SCOPE_ONLY",
+    "kimi_r0": "TIMEOUT124, 1803s, mechanical CANCELED, no verdict",
+    "partial_outputs": "17 byte-equal originals transported; not accepted",
+    "kimi_r1": "One same-source fresh redispatch authorized separately; not launched at this snapshot",
+    "publication": false,
+    "native_ci": false
+  },
+  "first_initial_native_run": {
+    "id": 38145284914,
+    "source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "conclusion": "failure at checkout, Filename too long; diagnostic skipped, artifacts0",
+    "rerun_requested": false
+  },
+  "main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "nonmain_ci_ref": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "remote_refs_original": "remote-refs-20261011T1527Z-original.txt",
+  "public_health": {
+    "original": "public-health-20261011T1527Z-original.json",
+    "ok": true,
+    "timestamp": "2026-10-11T15:26:42.755Z",
+    "reported_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "boundary": "Public health only, not authenticated image provenance or browser signoff"
+  },
+  "parent_runtime_diff_from_76d916b_exit_code": 0,
+  "compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no offline custody media",
+  "real_encrypted_backup_restore_baseline_password_rotation": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "production_mutation": false,
+  "release_ready": false
+}

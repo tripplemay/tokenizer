@@ -1,0 +1,1 @@
+[dispatch] ✓ 信封合法（task=windows-p1-checkout-221f2f8-kimi-r1 batch=BL-WINDOWS-P1-CHECKOUT-SUPPORT role=evaluator）
