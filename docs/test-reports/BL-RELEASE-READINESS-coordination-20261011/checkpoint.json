@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T06:00:06.773Z",
+  "role": "Coordinator evidence transport and scope adjudication; not an Evaluator verdict or human gate decision",
+  "main": {
+    "local_and_fetched_origin": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "pull_ff_only": "Already up to date",
+    "push_this_continuation": false,
+    "canonical_state_changed": false
+  },
+  "public_health": {
+    "original": "public-health-20261011-original.json",
+    "timestamp": "2026-10-11T06:00:06.773Z",
+    "ok": true,
+    "commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "boundary": "Public HTTP health claim only, not authenticated OCI provenance, browser acceptance or deployment signoff"
+  },
+  "windows_initial": {
+    "original_binding_commit": "c58434f9791b944c0414b83830bc1ea412aa1b2d",
+    "original_pre_scope_commit": "11c32d5806372ef3f7a7e9285d40f3b9c9e24a9b",
+    "original_pre_scope_verdict": "BLOCKED",
+    "blocking_issue": "B001: native return/throw/error/status and admitted native exit/close relation",
+    "narrow_revision_commit": "c05d6b4b2168ade9a66a3eacd337f766d68e5f70",
+    "revision_diff": "Only two existing binding documents; 60 insertions and 6 deletions",
+    "revision_pre_scope": "Fresh isolated scope critic commissioned; no verdict yet",
+    "original_verdict_preserved": true,
+    "implementation_authorized": false,
+    "native_execution": false,
+    "publication": false
+  },
+  "compose_shape": {
+    "source": "5c5c283b08d225b42d8db19abcbe5d3c1f562ac4",
+    "supporting_acceptance": false,
+    "dispatch_disposition": "HARD_STOP after the one allowed redispatch; no third attempt or deadline extension",
+    "independent_runner_findings_commit": "a7154786bfb650d03d27d4cf39ba55d35216821f",
+    "duration_overrun": "505 seconds unexplained; missing historical phase/PID timestamps prevent causal attribution",
+    "new_protected_host_run": false
+  },
+  "backup": {
+    "target": "dmitsvr",
+    "user_choice": "No offline media yet; first complete other work not involving keys",
+    "key_work": "deferred; no key generated, read, installed or uploaded",
+    "encrypted_real_backup_and_isolated_restore": "not performed",
+    "release_blocker": true
+  },
+  "production_protection": {
+    "selected_original": "production-protection-selected-original.json",
+    "required_reviewer": "tripplemay",
+    "admin_bypass": false,
+    "POSTGRES_PASSWORD_name_present": false,
+    "boundary": "Earlier Oct11 selected protection and Secret-name snapshot; no Secret values read or written"
+  },
+  "parent_runtime": {
+    "base": "76d916ba2e3a7147acda5ac9ef15fa70a9cd9958",
+    "scoped_diff_exit": 0,
+    "paths": ["app", "src", "scripts", ".github/workflows", "tests", "prisma", "package.json", "package-lock.json"]
+  },
+  "production_app_database_config_mutation": false,
+  "password_rotation": false,
+  "baseline_cutover": false,
+  "pending_gate_written": false,
+  "state_or_memory_written": false,
+  "release_ready": false
+}
