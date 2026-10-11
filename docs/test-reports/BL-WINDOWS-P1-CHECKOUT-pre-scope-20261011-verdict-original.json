@@ -1,0 +1,230 @@
+{
+  "format": "windows-p1-checkout-pre-scope-verdict-v1",
+  "created_at_utc": "2026-10-11T14:20:51Z",
+  "role": "fresh independent supporting scope critic; harness-rules.md section 1.5; not functional Evaluator",
+  "model_family": "codex",
+  "verdict": "PASS_SCOPE_ONLY",
+  "scope_closed": true,
+  "findings": [],
+  "reviewed_planner_commit": "3d5c249a144a752b276c27058a2ec9f8ef8e5027",
+  "source_sha": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "source_tree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-scope-20261011",
+  "branch": "docs/windows-p1-checkout-scope-20261011",
+  "delivery_paths": [
+    "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011/verdict.json",
+    "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011/README.md"
+  ],
+  "authority": {
+    "implementation_authorized": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "native_environment_repair_authorized": false,
+    "functional_acceptance": false,
+    "native_acceptance": false,
+    "release_ready": false,
+    "release_acceptance": false,
+    "formal_F005_claim": false,
+    "state_transition": false,
+    "worker_push_allowed": false
+  },
+  "runtime_status_read": {
+    "progress_status": "verifying",
+    "current_sprint": "BL-HOMEPAGE-FRESHNESS",
+    "role_assignments": null,
+    "pending_gate": null,
+    "interpretation": "section 1.5 supporting scope task; no state or human gate mutation"
+  },
+  "reviewed_plan": [
+    {"path":"docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/proposal.json","sha256":"43468f0252fde60a3eb4c6269e0deeaa841e00f831f19df6225cdfd200da2e7f"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/README.md","sha256":"7f113da7f1720a42efefc711c433eae8339c8edc4e5aebc37a3bcc839163fcff"}
+  ],
+  "planner_diff_from_source": {
+    "only_added_paths": [
+      "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/proposal.json"
+    ],
+    "existing_source_edits": [],
+    "all_other_mode_type_path_blob_records_unchanged": true
+  },
+  "original_failure_evidence": {
+    "root": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "run_id": 38145284914,
+    "run_attempt": 1,
+    "job_id": 114487223393,
+    "head_sha": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "event": "push",
+    "branch": "codex/windows-p1-stages-ci-20261010",
+    "status": "completed",
+    "conclusion": "failure",
+    "files": [
+      {"path":"windows-initial-native-run38145284914-final-original.json","bytes":12339,"sha256":"a801a6dbda7f2eed3cc7be6280830540b5cc20e3fae04472e0c0085a5666c3ad"},
+      {"path":"windows-initial-native-run38145284914-jobs-original.json","bytes":2944,"sha256":"4320e6204f4ea41da2aec74e436cb229c8d9793f6070306e6c576b1cd9a13d44"},
+      {"path":"windows-initial-native-run38145284914-artifacts-original.json","bytes":32,"sha256":"244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"},
+      {"path":"windows-initial-native-run38145284914-full-original.log","bytes":18378,"lines":137,"sha256":"725070982a434eb7421b339d6fc5886d76f7f7a631a4a381a9c95a79bcbdcd8e"}
+    ],
+    "first_failure": "actions/checkout@v4; checkout source888; Filename too long; exit 128",
+    "log_lines": {"checkout_command":89,"fatal":90,"exit128":101,"missing_module":110,"MODULE_NOT_FOUND":118},
+    "resolved_checkout_action": "11d5960a326750d5838078e36cf38b85af677262",
+    "observed_git_version": "2.55.0.windows.5",
+    "observed_workspace": "D:\\a\\tokenizer\\tokenizer",
+    "initial_step": "skipped",
+    "seal_step": "failure; MODULE_NOT_FOUND after incomplete checkout",
+    "verify_and_upload": "skipped",
+    "artifact_count": 0,
+    "interpretation": "checkout-layer failure only; no observed INITIAL admission or sealed native observation; not a whole-run process absence proof"
+  },
+  "verified_source_and_frozen_inputs": [
+    {"path":".github/workflows/windows-p1-stages-diagnostic.yml","bytes":3103,"sha256":"94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","bytes":19264,"sha256":"bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json","bytes":34330,"sha256":"ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","bytes":73022,"sha256":"3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","bytes":53608,"sha256":"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"},
+    {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","bytes":24862,"sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","bytes":11769,"sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json","bytes":10792,"sha256":"dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs","bytes":51907,"sha256":"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs","bytes":4921,"sha256":"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"},
+    {"path":"src/cli/bounded-subprocess.ts","bytes":5545,"sha256":"26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"},
+    {"path":"src/cli/bounded-subprocess-worker.mjs","bytes":3012,"sha256":"02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"},
+    {"path":"src/cli/replay.ts","bytes":16801,"sha256":"6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"},
+    {"path":".github/workflows/windows-release-diagnostics.yml","bytes":4389,"sha256":"34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"},
+    {"path":"package-lock.json","bytes":413776,"sha256":"7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"}
+  ],
+  "inventory": {
+    "source_tracked_paths": 2453,
+    "source_ls_tree_rz_sha256": "af29538927397b7ec48c261ca047616d9a18617a65f767165b61105d396d1a23",
+    "failed_subtree_paths": 55,
+    "failed_subtree_ls_tree_rz_sha256": "6cd55acce1fcd1a225edb9e96c2444c5f3a20f3ae38aaf3a6a2ffa1a78ac902f",
+    "failed_subtree_absolute_file_characters": [265,281],
+    "enclosing_archive_tracked_paths": 57,
+    "enclosing_archive_ls_tree_rz_sha256": "52ac3b835b45e6aa3c54ea72f57180421822c5719d2a9e9bca0d2abbbf0a0721",
+    "historical_inventory_reauthentication": false,
+    "archive_mutation": false
+  },
+  "independent_in_memory_render": {
+    "implementation_files_written": false,
+    "allowed_existing_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "allowed_new_implementation_paths": [],
+    "workflow_added_lines": 4,
+    "workflow_other_bytes_identical": true,
+    "json_unique_replacements": 5,
+    "json_unlisted_subtrees_identical": true,
+    "markdown_exact_append_prior_bytes_identical": true,
+    "cli_identity_literals_replaced": ["bindingHash","mdHash"],
+    "cli_after_masking_two_literals_byte_identical": true,
+    "projected_hashes": {
+      "workflow": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771",
+      "bindings_json": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+      "bindings_md": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+      "cli_hash_literals_only": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+    },
+    "all_four_projected_hashes_match_proposal": true,
+    "sourceFiles_paths_unchanged": true,
+    "sourceFiles_count": 11,
+    "prior_and_frozen_hashes_unchanged_count": 10,
+    "all_four_scripts_hashes_order_unchanged": true,
+    "schema_native_B001_E0_guard_API_worker_quotas_tests_unchanged": true
+  },
+  "workflow_environment_confinement": {
+    "parser": "reviewer-owned restricted fixed-workflow YAML subset; string on key; no product import or VM; not a general YAML parser",
+    "checkout_steps": 1,
+    "ordered_steps": 9,
+    "checkout_env": {"GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true"},
+    "env_value_types": "three strings",
+    "remove_only_checkout_env_ast_equals_source_ast": true,
+    "workflow_job_later_steps_GITHUB_ENV_propagation_in_proposal": false,
+    "native_child_added_config_keys": [],
+    "native_environment_static_chain": "runParent line 894 systemEnvironment(process.env) -> runCase line 825 fixedEnvironment -> runRoot line 767 explicit env -> preload guardConfiguration lines 330-338 strict key/value equality -> runProbe lines 599-605 guarded process.env",
+    "reviewer_environment_model_surviving_keys": ["PATH","SystemRoot","WINDIR","ComSpec","PATHEXT"],
+    "model_is_product_function_execution": false,
+    "supporting_future_confinement_acceptance_still_required": true
+  },
+  "static_counterexamples": {
+    "workflow_ast_positive": "PASS",
+    "workflow_ast_negative_rejected_count": 65,
+    "workflow_ast_negative_families": {
+      "missing_keys_count0_count2_empty_false_nonstrings_extra_pair": 15,
+      "three_keys_each_at_workflow_job_or_any_of_eight_later_steps": 30,
+      "global_system_local_worktree_config_writes": 4,
+      "GITHUB_ENV_version_native_probe_subst_added_command": 5,
+      "path_sparse_filter_defaults_permissions_event_ref_secret_continue_error_retry_upload": 11
+    },
+    "four_file_byte_positive": "PASS",
+    "four_file_byte_negative_rejected_count": 36,
+    "four_file_byte_negative_families": {
+      "four_files_not_revised_two_stale_literals_extra_cli_MD_bytes_or_prior_edit": 9,
+      "each_of_five_json_substitutions_missing": 5,
+      "environment_bounds_native_cases_selection_B001_schema_controls_frozen_sourceFiles_changes": 10,
+      "test_or_any_of_ten_frozen_prior_files_modified": 11,
+      "new_implementation_path": 1
+    },
+    "meaning": "finite in-memory exact scope equality counterexamples, not product validators or functional tests; no Git config query/write, child behavior, product import or VM was executed",
+    "errors": []
+  },
+  "unchanged_original_tests_static_closure": {
+    "test_path": "tests/diagnostics/windows-p1-stages.test.ts",
+    "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+    "nominal_static_cases": 81,
+    "control_groups": 14,
+    "cases_per_group_in_source_order": [2,2,6,12,2,8,9,2,12,3,3,1,16,3],
+    "group_names_equal_unchanged_required_future_controls": true,
+    "static_recount_is_new_candidate_test_result": false,
+    "suite_executed": false,
+    "closure": [
+      "CLI JSON identity asserted at module load lines 14-21; Markdown/frozen/case identities checked at lines 76-87; two literal replacements preserve checks.",
+      "Tests 495-503 require side-effect-free import. No import was executed in this review.",
+      "Tests 536-550 do not ban a checkout env map or hardcode these three keys, workflow hash, revision 1 or empty edit allowlist.",
+      "Tests 552-561 and CLI checksSummary 713-729 retain exactly the declared controls. Supporting checkout scope controls are separate, not a manufactured checks-summary PASS.",
+      "CLI 663-686 preserves eleven dynamic current hashes, strict bindingHash, exact execution identity, frozen hashes and E0 key-name equality. Markdown remains checked by validateBindings although not an added sourceFiles entry."
+    ]
+  },
+  "documented_candidate_feasibility_only": {
+    "official_urls_read": [
+      "https://git-scm.com/docs/git-config/2.55.0#Documentation/git-config.txt-GITCONFIGCOUNT",
+      "https://github.com/git-for-windows/git/blob/v2.55.0.windows.5/Documentation/config/core.adoc",
+      "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsenv",
+      "https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/src/git-command-manager.ts",
+      "https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/README.md"
+    ],
+    "inference": "documented runtime config, Git for Windows builtin long-path support and exact observed action environment copying support a narrow candidate for the observed checkout layer",
+    "windows_repair_demonstrated": false,
+    "runtime_env_behavior_tested": false,
+    "powerShell_OS_npm_toolchain_repair_claim": false,
+    "changed_future_resolved_action_requires_independent_review": true
+  },
+  "required_future_gates": [
+    "Explicit Coordinator pre-implementation scope ruling on exactly this four-path proposal; this scope-only verdict grants no implementation authority.",
+    "Generator isolated worktree candidate C, immutable full SHA, exact parent/diff/hashes; no worker push. Any extra byte/source change returns to fresh scope.",
+    "Fresh actual-diff supporting critic plus separate fresh different-model-family offline supporting Evaluator; unchanged suite and Git child-env behavior plus negative controls retain full raw outputs and original verdict.",
+    "Separate explicit Coordinator non-main publication authority and one new exact-C INITIAL workflow opportunity on the already-locked diagnostic branch; no machine human-gate decision, rerun, automatic retry or native environment repair.",
+    "Capture new original final/jobs/artifacts/full unshortened log and hashes, independently verify actual HEAD=C=GITHUB_SHA, eleven current hashes, clean scoped source and resolved action. New sealed native evidence, if any, is independently evaluated separately.",
+    "Checkout success, static PASS and historical 81 outcomes cannot close native INITIAL completeness, F004/F005, Compose HARD_STOP, backup/production or release gates."
+  ],
+  "performed": {
+    "fresh_disk_rules_and_status_read": true,
+    "isolated_worktree_from_exact_planner_commit": true,
+    "disk_original_hashes_and_JSON_log_reconciliation": true,
+    "source_frozen_tree_hash_verification": true,
+    "bindings_workflow_CLI_test_static_reads": true,
+    "in_memory_projection_schema_comparison_and_finite_counterexamples": true,
+    "allowlisted_official_link_body_reads_only": true,
+    "implementation": false,
+    "product_import": false,
+    "VM": false,
+    "test_execution": false,
+    "native_execution": false,
+    "git_config_query_or_write": false,
+    "dependency_install": false,
+    "CI_or_retry": false,
+    "push_deploy_production_keys": false,
+    "state_gate_registry_memory_changes": false,
+    "parent_index_write": false
+  },
+  "next_action": "Coordinator transports this verdict unchanged and separately adjudicates the bounded proposal; this critic stops after the two report files are locally committed and its worktree/index are clean."
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T14:27:08Z",
+  "role": "Coordinator transport and narrow Generator scope authorization; not functional Evaluator or human gate decision",
+  "failure_source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "original_run": 38145284914,
+  "planner": {
+    "commit": "3d5c249a144a752b276c27058a2ec9f8ef8e5027",
+    "proposal_original": "../BL-WINDOWS-P1-CHECKOUT-plan-20261011-proposal-original.json",
+    "readme_original": "../BL-WINDOWS-P1-CHECKOUT-plan-20261011-README-original.md",
+    "proposal_sha256": "43468f0252fde60a3eb4c6269e0deeaa841e00f831f19df6225cdfd200da2e7f",
+    "readme_sha256": "7f113da7f1720a42efefc711c433eae8339c8edc4e5aebc37a3bcc839163fcff",
+    "implementation_executed": false
+  },
+  "fresh_pre_scope": {
+    "commit": "54af183617ed06c18edd42632326dbfd09451456",
+    "verdict_original": "../BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011-verdict-original.json",
+    "readme_original": "../BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011-README-original.md",
+    "verdict_sha256": "d92db38f2cd495a7b6b1bed91c411509dac365d7b7c78c02b73945d717c1bef9",
+    "readme_sha256": "7f4b001fcfaabfaf9d5298e3691754134e276adc3ada005179ea8ed2815b8324",
+    "verdict": "PASS_SCOPE_ONLY",
+    "findings": [],
+    "static_negative_controls": 65,
+    "functional_or_native_acceptance": false
+  },
+  "generator_authority": {
+    "authorized": true,
+    "basis": "User asked Coordinator to continue non-key work; actual checkout-only failure, new narrow Planner proposal and fresh pre-scope PASS now recorded",
+    "base": "54af183617ed06c18edd42632326dbfd09451456",
+    "scope": "C001 only, exact Planner in-memory projection; no native environment repair",
+    "existing_paths": [".github/workflows/windows-p1-stages-diagnostic.yml", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json", "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"],
+    "workflow": "Exactly4 added checkout-step env lines, three string-valued GIT_CONFIG keys; no persistent Git configuration writes or other workflow bytes",
+    "bindings": "Exact5 JSON string replacements and exact Markdown appendix from proposal",
+    "cli": "Exactly2 identity hash string literals updated; all other bytes identical to source888",
+    "projected_sha256": {
+      "workflow": "1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771",
+      "bindings_json": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+      "bindings_md": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6",
+      "cli": "3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"
+    },
+    "new_implementation_paths": [],
+    "new_report_paths_only": "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-generator-20261011/",
+    "checks": "Owned fresh Node22 sandbox/npmci; unchanged81 synthetic controls, verify/syntax/import and exact source/frozen/archive inventories; immutable original logs including all failures",
+    "source_commit_then_separate_report_commit": true,
+    "source_mismatch_disposition": "Stop; return to Planner. No unlisted delta or test/validator weakening",
+    "publication_or_native_execution_authorized": false
+  },
+  "next_gates": ["Fresh exact-candidate actual-diff scope", "Fresh registered different-model-family offline supporting acceptance including checkout-env confinement and Git command-scope owned-fixture controls", "Separate Coordinator authorization for one new exact-source non-main INITIAL opportunity; not rerun of source888"],
+  "main_or_production_mutation": false,
+  "parent_runtime_integration": false,
+  "compose_chain": "HARD_STOP; no third attempt",
+  "keys": "deferred by user",
+  "pending_gate_written": false,
+  "state_or_memory_written": false,
+  "release_ready": false
+}
