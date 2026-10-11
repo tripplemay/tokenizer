@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T18:14:20Z",
+  "role": "Coordinator original-byte transport, authority and mechanical gates only",
+  "candidate_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "runtime_baseline": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "source_sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+  "generator": {
+    "source_commit": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "report_commit": "afcb16911fff74bc14e9233303a709ac9c36e000",
+    "original_report_files": 47,
+    "original_report_bytes": 1190784,
+    "handoff_sha256": "c6b43d2df065c728b50912b724d9e2c2cb90516717112aa899393caf4b4c89d0",
+    "final_manifest_sha256": "3214961c6ea7cc9dafcfb70c4da2002de79dec7ce97e1921b4c2a0704644fb02",
+    "development_claim": "One fresh own npmci exit0, unchanged81/81, verify/syntax/pure import exit0; claims and raw logs are not independent acceptance",
+    "provenance": "Seven high warnings remain; package-owned registry SWC wasm1.16.13 fallback absent original lock captured, not all-lock-only or native-installed",
+    "whitespace": "Original full staged diff-check exit2 from 05-verify.stdout.log:12 EOF blank line retained without trimming; non-raw-log-only check exit0, not full green"
+  },
+  "fresh_passive_post_scope": {
+    "commit": "6bae7868606b006235ea13085d5ec12438dd1c8b",
+    "result": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "efea9596490908910ecc785e3c612b4bcd04a5a7792eae345eed9e6a3df06bc8",
+    "readme_sha256": "d7a46bdacdac774c2226009fe18fceced21e5add3fcfe84815b6836784876eae",
+    "limit": "Static actual diff and byte freeze only; no functional/VM/native execution or publication authority"
+  },
+  "transport": {
+    "files": 49,
+    "bytes": 1225388,
+    "manifest_sha256": "3b73bd11ea687723c275cd5c892fff77e82980158d42448d8127f11c5da4b557",
+    "all_original_report_bytes_equal_commit_and_destination": true,
+    "no_product_runtime_source_integrated_into_parent": true
+  },
+  "fresh_different_family_supporting_evaluator": {
+    "authorized": true,
+    "task_id": "windows-p1-prepare-observation-712cf21-kimi-r0",
+    "target": "local-cli--kimi--evaluator",
+    "model_family": "kimi",
+    "envelope": "windows-prepare-observation-evaluation-envelope-r0.json",
+    "execution_provenance_sha256": "bf87fcda2da33def23c799ddf0d0c9a9626ef8ca7889a95fbe4d19313a1fb410",
+    "adapter_execution_contract_sha256": "113e802d56592c1327daee188c4ca44dbf3262dbd2a95585416412e781ce14dd",
+    "effective_deadline_s": 1800,
+    "descriptor_timeout_s": 2400,
+    "allowed": "One fresh owned install; unchanged81/verify; own compact fully-stubbed actual-source-slice VM/static/pure observation controls only; full original failures and provenance retained",
+    "not_a_retry": "NEW source712 observation acceptance; no old C002 output reuse, no Compose dispatch or native CI",
+    "redispatch": "None currently authorized; at most one may be separately adjudicated, never automatic, no family fallback or cap extension"
+  },
+  "coordinator_author_error_ledger": [
+    {
+      "tool_chunk": "f7c6bc",
+      "exit_code": 1,
+      "attempt": "Read nonexistent Generator verdict.json",
+      "original_error": "sed: docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/verdict.json: No such file or directory",
+      "correction": "Listed actual report paths and read handoff.json instead; original reports were not changed"
+    }
+  ],
+  "new_source_CI_or_source61_rerun_authorized": false,
+  "prepare_root_cause": "Still unknown",
+  "main_push_production_or_state_transition": false,
+  "formal_F004_F005_or_release_acceptance": false,
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred; no backup/restore/baseline/password work",
+  "release_ready": false
+}

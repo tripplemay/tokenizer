@@ -1,0 +1,75 @@
+{
+  "format": "windows-p1-prepare-observation-generator-author-ledger-v1",
+  "role": "fresh-supporting-Generator",
+  "source_frozen_first": {
+    "commit": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "commit_time_utc": "2026-10-11T17:59:21Z",
+    "source_path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+    "source_sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+    "one_path_only": true,
+    "before_development_or_reports_commit": true
+  },
+  "pre_install_stop": {
+    "reason": "Original81 suite has existing vm.createContext/runInContext synthetic slices, while initial commission also prohibited VM evaluation",
+    "npm_install_attempts_before_clarification": 0,
+    "test_or_VM_execution_before_clarification": false,
+    "source_changed_to_avoid_original_test": false,
+    "clarification_parent_commit": "7676ef4",
+    "clarification_exact_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-original81-vm-clarification.json",
+    "clarification": "Original immutable81 including its existing synthetic VM slices permitted; no new/extra target or proposed-code VM, CLI or native execution",
+    "clarification_read_before_install": true,
+    "first_and_only_install_started_utc": "2026-10-11T18:02:58.819Z",
+    "first_and_only_install_ended_utc": "2026-10-11T18:04:27.712Z"
+  },
+  "initial_author_errors_retained": [
+    {
+      "command": "rg -n '81|vitest|syntax|pure|import|npm ci|checks.raw|tests/diagnostics/windows-p1-stages' docs/test-reports/windows-p1-stages-20261010 .github/workflows/windows-p1-initial-diagnosis.yml",
+      "exit_code": 2,
+      "stderr": "rg: .github/workflows/windows-p1-initial-diagnosis.yml: No such file or directory (os error 2)\n",
+      "cause": "Guessed workflow basename rather than first listing exact paths",
+      "source_or_input_mutation": false
+    },
+    {
+      "command": "rg --files .github/workflows docs/test-reports/BL-WINDOWS-P1-STAGES-generator-20261010",
+      "exit_code": 2,
+      "stderr": "rg: docs/test-reports/BL-WINDOWS-P1-STAGES-generator-20261010: No such file or directory (os error 2)\n",
+      "correction": "The returned exact workflow path was .github/workflows/windows-p1-stages-diagnostic.yml; read that file directly, no additional guessed report path used",
+      "source_or_input_mutation": false
+    },
+    {
+      "command": "rg -n 'SWC|swc|wasm|postinstall|next@|better-sqlite3|prisma' docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "cause": "Repository ignored *.log files; absence of displayed matches was not evidence of absent fallback",
+      "correction": "Repeated passive read with --no-ignore, then read the exact full 2142-byte fallback debug file directly",
+      "no_install_or_test_retry": true
+    },
+    {
+      "type": "manual-report-formatting-apply_patch-verification-error",
+      "path": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-observation-generator-20261011/docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/README.md",
+      "error": "apply_patch verification failed: Failed to find expected lines: Why the native",
+      "cause": "Spacing-only report patch included an unnecessary one-line context fragment split differently in the file",
+      "correction": "Removed that needless hunk; applied exact spacing changes to the author README only",
+      "rejected_patch_mutation": false,
+      "source_or_input_mutation": false
+    }
+  ],
+  "display_limitations": [
+    "The corrected broad npm-debug match display exceeded output budget; no raw file was trimmed. Exact fallback file and focused provenance fields were read afterward",
+    "All command stdout/stderr captures and npm debug copies retain original bytes, including empty streams"
+  ],
+  "development_failures": [],
+  "one_owned_npm_ci_attempt": true,
+  "original81_verify_syntax_pure_import_attempts_each": 1,
+  "npm_swccore_owned_postinstall_child_is_not_generator_reinstall": true,
+  "source_specs_original_tests_workflows_original_reports_or_state_modified_after_source_freeze": false,
+  "all_exec_workdirs_own_worktree": true,
+  "all_Git_commands_core_fileMode_false": true,
+  "manual_apply_patch_paths_absolute": true,
+  "manual_dependency_links_or_borrowed_deps_or_caches": false,
+  "real_HOME_queues_sysTMP_keys_credentials_OSPID_or_production_access": false,
+  "target_CLI_native_or_new_VM_run": false,
+  "push_CI_deploy_state_memory_pending_gate_writes": false,
+  "commit_policy": "Per-command core.hooksPath=/dev/null and commit.gpgsign=false; no persistent Git/harness config change or signing-key/hook execution"
+}

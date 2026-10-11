@@ -1,0 +1,258 @@
+{
+  "format": "windows-p1-prepare-observation-passive-post-scope-verdict-v1",
+  "role": "fresh-supporting-passive-actual-diff-post-scope-critic",
+  "role_exclusions": ["Coordinator", "Generator", "Planner", "functional Evaluator"],
+  "harness_entry": "section 1.5 independent supporting task; no state-machine transition",
+  "result": "PASS_SCOPE_ONLY",
+  "blocking_findings": [],
+  "reviewed_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "reviewed_parent": "27dd6bcec281fa7bd0c8ca14fce9749b40be1735",
+  "runtime_baseline": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-observation-post-scope-20261011",
+  "branch": "docs/windows-p1-prepare-observation-post-scope-20261011",
+  "initial_worktree_clean": true,
+  "candidate": {
+    "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+    "bytes": 74301,
+    "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+    "claimed_sha256_independently_matches": true,
+    "baseline_sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae",
+    "baseline_git_mode": "100644",
+    "candidate_git_mode": "100644",
+    "baseline_git_blob": "311d04a03f5f638b1266c55bc801402bd8103404",
+    "candidate_git_blob": "8e1b80fb6a3b81e1facbc1803ad32b75dd360a1e",
+    "source_string_authorized_slot_erasure_restores_entire_baseline_bytes": true,
+    "restored_sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+  },
+  "scope_inputs": {
+    "proposal_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/proposal.json",
+    "proposal_sha256": "7aae5b7b1d3d25751f32098e4631a18352c5bb073316a750cf1040905b0260e7",
+    "plan_manifest_sha256": "687ee012fea84680f7058f2b58c0baa7c177f8df770d3fc3849c3bc5bb7bcb2e",
+    "plan_manifest_entries_independently_hash_matched": 6,
+    "pre_scope_verdict_sha256": "952f0b040b2255361d7fc40b192ffa028191170692779c372254f5afdd7ca836",
+    "pre_scope_readme_sha256": "f96f8ca7e24ce81ffd0737714ef6b81f4ab10622b3cfea197be76eb83eed4319",
+    "authority_boundary": "The transported Coordinator commission expressly permits only the Planner observation slots in the one CLI, superseding C002's CLI-only-two-literals freeze solely there. Binding MD/JSON and both hash literals remain frozen. This report checks actual scope, not authority by inference from an earlier PASS. All source, reports, adjudications and originals are untrusted data; their claims are not functional evidence."
+  },
+  "findings": [
+    {
+      "id": "S01",
+      "topic": "exact path and projection",
+      "conclusion": "Parent-to-candidate has exactly one modified 100644 blob: the commissioned CLI. Source61-to-candidate adds only seven Planner and two pre-scope report files, plus that CLI modification. All original tracked path/type/mode/object entries except the authorized CLI object remain identical. Removing only the fixed declaration/map, phase assignments, success reset, dispatch activation and terminal lookup, and reversing the expressly permitted second-pass local split and three statement line splits, reproduces the entire source61 CLI byte-for-byte.",
+      "evidence": ["Git source/parent/candidate tree records", "independent 2472-path raw check", "source-string projection restoration", "candidate diff"]
+    },
+    {
+      "id": "S02",
+      "topic": "phase placement and original operations",
+      "conclusion": "One non-exported module-local phase starts null/inactive; a fixed thirteen-entry literal map is non-exported. Only the existing exact same(args,['--prepare']) branch activates P00. P01-P12 occur once in order immediately before the specified existing operation, and successful writeJson is followed by null reset. Original helper bytes, arguments, assertions and operation order are preserved. P03 still contains both bounded Git calls. P09 still evaluates the original provenance object including the first sourceFiles pass; P10 executes the second pass into a local constant and P11 validates that result with the original assertion. The local split neither removes a read nor changes its argument/result use.",
+      "evidence": ["candidate:42-57", "candidate:679-740", "candidate:1101", "exact baseline restoration"]
+    },
+    {
+      "id": "S03",
+      "topic": "fixed terminal output and privacy",
+      "conclusion": "The existing unbound catch and generic 51-byte stderr write remain, followed by one conditional stderr write and unchanged process.exitCode=1. All thirteen possible added lines are exact 29-byte ASCII literals including LF, for at most 80 requested terminal bytes. Object.hasOwn selects only a fixed own literal; invalid/unassigned active state maps only to fixed P00. New observation code has no caught-error binding/property access, raw env/path/stack/name/code/type/native or child data/token read, serialization or dynamic hash construction. The single new emission is not inside a loop/callback/retry. The byte maximum is a static requested-write bound, not a measured OS delivery guarantee.",
+      "evidence": ["candidate:42-57", "candidate:1107-1115", "independent fixed literal byte counts", "new-reference inventory"]
+    },
+    {
+      "id": "S04",
+      "topic": "confinement and uncertainty",
+      "conclusion": "Ordinary import and guard import leave the phase inactive and never enter the new terminal write; non-prepare modes, invalid argv and probe paths cannot activate it. Successful prepare resets it without any added output or persisted field. No new file, upload, stdout, native launch or progress/success line is introduced. These are static control-flow conclusions, not runtime silence acceptance. P00, invalid, absent or truncated observations remain unknown; even an intact phase is an operation interval, not one uniquely identified root cause or a proved passed branch.",
+      "evidence": ["candidate exact diff", "candidate:1097-1118", "proposal output and uncertainty constraints", "new state-reference inventory"]
+    },
+    {
+      "id": "S05",
+      "topic": "frozen binding and native boundary",
+      "conclusion": "MD/JSON, bindingHash/mdHash, ten prior/frozen inputs, 57 tracked archive files, original test, every workflow and all remaining baseline paths preserve source61 bytes and tree records. The C002 five-entry/two-pair env map remains checkout-action-step-only; all commands, eleven sourceFiles paths, sixteen explicit upload paths, four T0-T3 ASCII scripts, E0/B001/native API/worker/EOF/cleanup/owned identity/atomic append/caps/budgets/selection remain unchanged. The finite parent observation exception does not relax any hash, schema, known control, guard or native budget.",
+      "evidence": ["all baseline tree records except CLI unchanged", "all 2472 HEAD raw files checked", "binding/workflow direct read", "ten input and four script hashes"]
+    }
+  ],
+  "phase_projection": [
+    {"id":"P00","candidate_lines":"1101","operation":"exact prepare dispatch activation; unknown/unassigned sentinel"},
+    {"id":"P01","candidate_lines":"710-711","operation":"assertWindowsRunner"},
+    {"id":"P02","candidate_lines":"712-713","operation":"validateBindings"},
+    {"id":"P03","candidate_lines":"714-715;683-692","operation":"checkoutSha with both unchanged bounded Git calls/assertions"},
+    {"id":"P04","candidate_lines":"716-717","operation":"executionSha equals GITHUB_SHA assertion"},
+    {"id":"P05","candidate_lines":"718-719","operation":"systemEnvironment"},
+    {"id":"P06","candidate_lines":"720-721","operation":"local-drive SystemRoot assertion"},
+    {"id":"P07","candidate_lines":"722-723","operation":"safeDirectory of scratch parent"},
+    {"id":"P08","candidate_lines":"724-725","operation":"existing scratch mkdir"},
+    {"id":"P09","candidate_lines":"726-733","operation":"original provenance construction including first sourceFiles pass"},
+    {"id":"P10","candidate_lines":"734-735","operation":"second sourceFiles pass into local constant"},
+    {"id":"P11","candidate_lines":"736-737","operation":"unchanged validateProvenance assertion using that second result"},
+    {"id":"P12","candidate_lines":"738-739","operation":"unchanged rebuild/cap/exclusive writeJson; success reset at740"}
+  ],
+  "output_static_bound": {
+    "phase_enum": ["P00","P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11","P12"],
+    "each_added_literal_ascii_bytes_including_LF": 29,
+    "added_line_write_sites": 1,
+    "maximum_added_lines_per_failing_exact_prepare_dispatch": 1,
+    "original_generic_bytes_including_LF": 51,
+    "maximum_requested_terminal_catch_bytes": 80,
+    "exit_code": 1,
+    "catch_error_binding": false,
+    "invalid_active_state_fallback": "fixed P00 only",
+    "inactive_state": "null; no additional emission",
+    "success_nonprepare_import_guard_probe_added_output_files_uploads": 0,
+    "measurement_kind": "literal lengths and static control flow only, not emitted runtime bytes"
+  },
+  "tree_and_raw_identity": {
+    "source61_tracked_paths": 2463,
+    "parent_tracked_paths": 2472,
+    "candidate_tracked_paths": 2472,
+    "parent_to_candidate_modified_paths": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"],
+    "source61_to_candidate_report_additions": [
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/SHA256SUMS",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/evidence.json",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/failure-ledger.json",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/proposal.json",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/static-raw.txt",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/verdict.json",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md",
+      "docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json"
+    ],
+    "all_baseline_path_type_mode_object_records_except_CLI_unchanged": true,
+    "raw_worktree_paths_checked_against_candidate_blobs": 2472,
+    "raw_worktree_bytes_checked": 23972776,
+    "raw_head_mismatches": [],
+    "raw_source61_mismatches_except_CLI": [],
+    "method": "Read-only git ls-tree -rz and git cat-file --batch, strict binary batch framing, safe lstat of worktree ancestors and files, byte comparison; symlink entries use readlink rather than following the link. Git tree modes are compared exactly, not inferred from core.fileMode=false status.",
+    "historical_archive": {
+      "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/",
+      "tracked_files": 57,
+      "source61_tree_rows_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+      "candidate_tree_rows_equal_source61": true,
+      "all_current_raw_archive_files_equal_source61": true,
+      "limit": "Tracked 57-file subtree preservation only; not re-authentication of the earlier 59-file native inventory"
+    }
+  },
+  "frozen_identity": {
+    "binding_json": {"bytes":34976,"sha256":"f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130","raw_equals_source61":true,"literal_unchanged":true},
+    "binding_md": {"bytes":25454,"sha256":"9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb","raw_equals_source61":true,"literal_unchanged":true},
+    "original_test": {"path":"tests/diagnostics/windows-p1-stages.test.ts","bytes":53608,"sha256":"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132","raw_equals_source61":true,"executed":false},
+    "workflow": {"bytes":3308,"sha256":"df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e","raw_equals_source61":true},
+    "ten_prior_and_frozen_input_hashes_equal_binding_and_source61": true,
+    "ten_inputs": [
+      {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+      {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+      {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json","sha256":"dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"},
+      {"path":"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs","sha256":"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"},
+      {"path":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs","sha256":"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"},
+      {"path":"src/cli/bounded-subprocess.ts","sha256":"26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"},
+      {"path":"src/cli/bounded-subprocess-worker.mjs","sha256":"02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"},
+      {"path":"src/cli/replay.ts","sha256":"6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"},
+      {"path":".github/workflows/windows-release-diagnostics.yml","sha256":"34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"},
+      {"path":"package-lock.json","sha256":"7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"}
+    ],
+    "C002_checkout_env": {"GIT_CONFIG_COUNT":"2","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true","GIT_CONFIG_KEY_1":"core.autocrlf","GIT_CONFIG_VALUE_1":"false"},
+    "C002_confinement": "Only checkout action step env; no workflow/job/GITHUB_ENV/later-step/owned-child propagation added",
+    "sourceFiles_paths_count": 11,
+    "sourceFiles_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      ".github/workflows/windows-release-diagnostics.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "package-lock.json",
+      "src/cli/bounded-subprocess-worker.mjs",
+      "src/cli/bounded-subprocess.ts",
+      "src/cli/replay.ts",
+      "tests/diagnostics/windows-p1-stages.test.ts"
+    ],
+    "upload_files_count": 16,
+    "upload_files": ["provenance.json","checks-summary.json","summary.json","T0.case.json","T1.case.json","T2.case.json","T3.case.json","T0.guard.jsonl","T1.guard.jsonl","T2.guard.jsonl","T3.guard.jsonl","T0.trace.jsonl","T1.trace.jsonl","T2.trace.jsonl","T3.trace.jsonl","manifest.json"],
+    "scripts": [
+      {"variant":"T0","ascii":true,"bytes":108,"sha256":"1e8f2a91c2b0f55d437927437d10578122b0fa0d7428f5c9cfcb56422104ad9e","matches_binding":true},
+      {"variant":"T1","ascii":true,"bytes":84,"sha256":"bf5ac3543468a01c9830a7d010aead5e46f80fdb2ce31750f03d672752c4b9f4","matches_binding":true},
+      {"variant":"T2","ascii":true,"bytes":241,"sha256":"ccea7ef7b73388f7bd45378e371ea78755ce035ffc5d95cce5eaabce8856bd98","matches_binding":true},
+      {"variant":"T3","ascii":true,"bytes":484,"sha256":"82276a40828e48dd7ffed24d1f2cd374ae82929bb6a342818115c9eee34d2550","matches_binding":true}
+    ],
+    "E0_B001_native_API_worker_EOF_cleanup_atomic_caps_budgets_selection_unchanged": true
+  },
+  "static_source_counterfactuals": {
+    "positive_candidate_accepted": true,
+    "negative_mutations_rejected": 21,
+    "names": ["phase-reorder","phase-omission","phase-after-operation","invalid-enum","CRLF-line","duplicate-emission","raw-error-binding","raw-error-selection","untrusted-env-output","dynamic-hash-output","changed-generic","changed-exit","success-output","nonprepare-activation","import-output","remove-second-pass","changed-assert-argument","missing-success-reset","invalid-state-dynamic-fallback","guard-relaxation","schema-widening"],
+    "checks": ["exact fixed declaration/map","exact existing prepare dispatch with activation","exact single catch lookup","each phase immediately before its specified operation","ordered unique P01-P12 assignments","reset after successful write","two sourceFiles passes","entire baseline-byte restoration"],
+    "method": "Independent analyst Node stdin script reads target bytes/text; mutates source strings in memory and checks structural predicates plus exact baseline reconstruction. It does not import, compile, evaluate, VM-run or call candidate/proposal code.",
+    "limit": "Static scope sanity counterexamples only, not behavioral controls, runtime silence/privacy/once acceptance, syntax execution, delivered-write proof or native/release evidence"
+  },
+  "authorized_external_captures": {
+    "root": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "entries": [
+      {"name":"windows-binding-identity-native-run38160000449-final-original.json","bytes":12298,"sha256":"13e64bc0d8d05ad4dbde18bc5bf0418758bb6c210c0d15e6b83892dc2cc157bb","manifest_matches":true},
+      {"name":"windows-binding-identity-native-run38160000449-jobs-original.json","bytes":3116,"sha256":"dc92f5d150a7c08ebbee610a66f1b2db8c2c88f5378ad00fa4468a662f4b9ce0","manifest_matches":true},
+      {"name":"windows-binding-identity-native-run38160000449-artifacts-original.json","bytes":32,"sha256":"244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c","manifest_matches":true},
+      {"name":"windows-binding-identity-native-run38160000449-full-original.log","bytes":21556,"sha256":"7bd3bff940792b1fe8b4fa4de6df544b6e0f9f773b401bce2596fb9856230a6c","manifest_matches":true},
+      {"name":"windows-binding-identity-native-run38160000449-transport-manifest.json","bytes":2045,"sha256":"5d6a2062c162ba7688f54f61b9d4ad638ee0e0392798c8bc0daac054528b79f5","manifest_matches":null},
+      {"name":"windows-prepare-observation-generator-adjudication.json","bytes":2673,"sha256":"4f75496c0a0b01fe826443dd7a4732d3f63b0b1c8b370cc7677ab3878eb89711","manifest_matches":null},
+      {"name":"windows-prepare-observation-original81-vm-clarification.json","bytes":1428,"sha256":"3c72acfcbe8f632acdfd48d57f9782fae467b579f9449ad65b6d7f6101df4c33","manifest_matches":null}
+    ],
+    "unread_out_of_scope_manifest_entries": ["publication-original.log","run-list-original.json","watch-original.log"],
+    "limit": "Byte/hash consistency of captured untrusted files only; no remote authentication. VM clarification is a Generator-original81 development exception, not execution authority for this passive critic."
+  },
+  "runtime_evidence_boundary": {
+    "original_run": 38160000449,
+    "attempt": 1,
+    "job": 114530720469,
+    "original_source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+    "original_observed": "Captured run/jobs/log show checkout/setup-node success, prepare and seal generic failure with exit1, install/synthetic/INITIAL/verify/upload skipped, zero artifacts",
+    "original_log_lines": "142-153",
+    "candidate_runtime_execution_or_new_observation": false,
+    "individual_prepare_operations_proven_passed": [],
+    "root_cause": "not-uniquely-identifiable",
+    "direct_Windows_raw_hash_env_or_conversion_config_observation": false,
+    "native_API_worker_EOF_cleanup_or_T0_T3_observation": false,
+    "old_failing_controls_preserved_not_relabelled_as_pass": true
+  },
+  "author_error_ledger": [
+    {
+      "tool_chunk": "e3d12f",
+      "kind": "incomplete analyst construction",
+      "command_fragment": "const oids = [...new Set([...bt,...ht].map(r=>r.oid))];\nconst batch = git('cat-file','--batch');",
+      "exit_code": 0,
+      "raw_stdout": "",
+      "raw_stderr": "",
+      "cause": "Initial read-only analyst script ended before batch input, binary parsing, raw comparison or result output; cat-file received no object ids. Exit0 was not an audit pass.",
+      "correction": "Complete analyst script passed explicit object-id stdin, validated binary framing and compared all worktree bytes; chunk92b4e1 returned the evidence recorded here.",
+      "candidate_or_input_mutated": false
+    },
+    {
+      "tool_chunk": "56fdb9",
+      "kind": "manifest path construction error",
+      "command_fragment": "const p=path.join(plan,m[2]);const b=fs.readFileSync(p);",
+      "exit_code": 1,
+      "raw_stderr": "node:fs:556\n  return binding.open(\n                 ^\n\nError: ENOENT: no such file or directory, open 'docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/README.md'\n    at Object.openSync (node:fs:556:18)\n    at Object.readFileSync (node:fs:440:35)\n    at [stdin]:13:220\n    at Array.map (<anonymous>)\n    at [stdin]:13:81\n    at runScriptInThisContext (node:internal/vm:219:10)\n    at node:internal/process/execution:451:12\n    at [stdin]-wrapper:6:24\n    at runScriptInContext (node:internal/process/execution:449:60)\n    at evalFunction (node:internal/process/execution:283:30) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: 'docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-plan-20261011/README.md'\n}\n\nNode.js v25.7.0\n",
+      "cause": "SHA256SUMS entries already contain repository-relative paths; prefixing the plan directory duplicated the path.",
+      "correction": "Read the exact entry path after checking its fixed report prefix and absence of '..'; chunk671cf0 verified six entries and the seven permitted external captures.",
+      "candidate_or_input_mutated": false,
+      "VM_boundary": "Node's own stdin error stack includes internal/vm; no candidate/proposal source was supplied to any VM or evaluated"
+    }
+  ],
+  "execution_limits": {
+    "passive_read_hash_Git_blob_staticparse_in_memory_source_counterfactual_only": true,
+    "candidate_proposal_import_VM_CLI_helper_test_probe_fixture_npm_native_execution": false,
+    "network_GH_push_OSPID_Secrets_SSH_Docker_DB_keys_real_HOME_enumeration": false,
+    "all_exec_workdirs_are_own_worktree": true,
+    "all_Git_commands_use_core_fileMode_false": true,
+    "all_manual_patch_file_paths_absolute": true,
+    "state_features_pending_gate_registry_harness_memory_source_specs_tests_workflows_originals_modified": false,
+    "startup_pull_auto_registration_and_state_memory_updates_skipped_under_explicit_scope": true,
+    "writes": ["docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-post-scope-20261011/verdict.json","docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-post-scope-20261011/README.md"],
+    "commit_policy": "Scoped two-report local commit only, per-command core.hooksPath=/dev/null and commit.gpgSign=false to prevent target/hook/state execution or key access; no persistent Git config change, no push"
+  },
+  "remaining_gates_not_granted": [
+    "Fresh independent different-model-family supporting exact-candidate gate, with its own narrowly authorized execution boundary if any",
+    "Separate Coordinator ruling for any one exact new-source non-main CI opportunity; no source61 rerun, automatic retry or follow-up",
+    "Windows/native and formal F004/F005/release gates remain open"
+  ],
+  "implementation_or_expanded_scope_authorized": false,
+  "functional_evaluation_performed": false,
+  "functional_verdict": null,
+  "publication_CI_rerun_native_or_production_authorized": false,
+  "formal_F004_F005_claim": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "Compose": "HARD_STOP/no third Compose unchanged",
+  "keys": "Deferred; no backup/restore/baseline/password/deploy work"
+}

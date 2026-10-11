@@ -1,0 +1,280 @@
+{
+  "role": "fresh-supporting-Generator",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "captured_utc": "2026-10-11T18:06:26.999Z",
+  "commands_exit0": [
+    "01-node-version",
+    "02-npm-version",
+    "03-npm-ci",
+    "04-original81",
+    "05-verify",
+    "06-syntax",
+    "07-pure-import"
+  ],
+  "original81": {
+    "total": 81,
+    "passed": 81,
+    "failed": 0,
+    "skipped": 0,
+    "original_raw_json_retained": true
+  },
+  "npm_ci_attempts": 1,
+  "npm_ci_retry": false,
+  "npm_ci_high_severity_count": 7,
+  "full_stdout_stderr_status_and_all_three_owned_npm_debug_originals_retained": true,
+  "swc_fallback": {
+    "package": "@swc/core",
+    "locked_version": "1.16.13",
+    "declared_postinstall": "node postinstall.js",
+    "raw_debug": {
+      "original": "/Volumes/ORICO/project/.wp1pog-20261011/npm-cache/_logs/2026-10-11T18_04_11_732Z-debug-0.log",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_04_11_732Z-debug-0.log",
+      "bytes": 2142,
+      "sha256": "0b74d90b4f6a72467c5feb3ee6114072ecbdd0b6e796da44a3a02f104b2ac990",
+      "exact_copy": true
+    },
+    "child_command": "npm install --no-save --loglevel=error --prefer-offline --no-audit --progress=false @swc/wasm@1.16.13",
+    "child_cwd": "node_modules/@swc/core/npm-install",
+    "child_exit": 0,
+    "observed_registry": "https://registry.npmjs.org/",
+    "installed_path": "node_modules/@swc/wasm",
+    "installed_version": "1.16.13",
+    "installed_package_absent_original_lock_and_npm_installed_lock": true,
+    "lifecycle_reference": "Installed postinstall.js lines125-128 launches fallback npm and moves its package into own root node_modules; passive read only",
+    "default_parent_stderr_does_not_show_fallback": true,
+    "root_cause_of_native_binding_failure": "Not diagnosed; original logs do not expose the hidden successful lifecycle warning",
+    "all_lock_only_or_native_pass": false
+  },
+  "lock_absent_package_json_entries": [
+    {
+      "path": "node_modules/.prisma/client",
+      "name": "prisma-client-75ab79403fff45090847b0aca5e2618b2022476d491e7ea39e1162f1fed5d414",
+      "version": "5.22.0"
+    },
+    {
+      "path": "node_modules/@swc/wasm",
+      "name": "@swc/wasm",
+      "version": "1.16.13"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/resolve/test/resolver/multirepo",
+      "name": "ljharb-monorepo-symlink-test",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/resolve/test/resolver/multirepo/packages/package-a",
+      "name": "@my-scope/package-a",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/resolve/test/resolver/multirepo/packages/package-b",
+      "name": "@my-scope/package-b",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/babel-plugin-macros/node_modules/resolve/test/resolver/nested_symlinks/mylib",
+      "name": "mylib",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/github-from-package/example",
+      "name": "beep-boop",
+      "version": "1.2.3"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/@babel/runtime",
+      "name": "@babel/runtime",
+      "version": "7.27.0"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/@edge-runtime/cookies",
+      "name": "@edge-runtime/cookies",
+      "version": "6.0.0"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/@edge-runtime/ponyfill",
+      "name": "@edge-runtime/ponyfill",
+      "version": "4.0.0"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/@edge-runtime/primitives",
+      "name": "@edge-runtime/primitives",
+      "version": "6.0.0"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/@vercel/og",
+      "name": "@vercel/og",
+      "version": "1.0.1"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/client-only",
+      "name": "client-only",
+      "version": "0.0.1"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/react-is",
+      "name": "react-is",
+      "version": "19.3.0-canary-278794d7-20261002"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/react-refresh",
+      "name": "react-refresh",
+      "version": "0.12.0"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/regenerator-runtime",
+      "name": "regenerator-runtime",
+      "version": "0.13.4"
+    },
+    {
+      "path": "node_modules/next/dist/compiled/server-only",
+      "name": "server-only",
+      "version": "0.0.1"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/resolve/test/resolver/multirepo",
+      "name": "ljharb-monorepo-symlink-test",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/resolve/test/resolver/multirepo/packages/package-a",
+      "name": "@my-scope/package-a",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/resolve/test/resolver/multirepo/packages/package-b",
+      "name": "@my-scope/package-b",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/postcss-import/node_modules/resolve/test/resolver/nested_symlinks/mylib",
+      "name": "mylib",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/preact/compat",
+      "name": "preact-compat",
+      "version": "4.0.0"
+    },
+    {
+      "path": "node_modules/preact/debug",
+      "name": "preact-debug",
+      "version": "1.0.0"
+    },
+    {
+      "path": "node_modules/preact/devtools",
+      "name": "preact-devtools",
+      "version": "1.0.0"
+    },
+    {
+      "path": "node_modules/preact/hooks",
+      "name": "preact-hooks",
+      "version": "0.1.0"
+    },
+    {
+      "path": "node_modules/preact/jsx-runtime",
+      "name": "jsx-runtime",
+      "version": "1.0.0"
+    },
+    {
+      "path": "node_modules/preact/test-utils",
+      "name": "test-utils",
+      "version": "0.1.0"
+    },
+    {
+      "path": "node_modules/prisma/prisma-client",
+      "name": "@prisma/client",
+      "version": "5.22.0"
+    },
+    {
+      "path": "node_modules/resolve/test/resolver/multirepo",
+      "name": "ljharb-monorepo-symlink-test",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/resolve/test/resolver/multirepo/packages/package-a",
+      "name": "@my-scope/package-a",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/resolve/test/resolver/multirepo/packages/package-b",
+      "name": "@my-scope/package-b",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/resolve/test/resolver/nested_symlinks/mylib",
+      "name": "mylib",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/resolve/test/resolver/multirepo",
+      "name": "ljharb-monorepo-symlink-test",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/resolve/test/resolver/multirepo/packages/package-a",
+      "name": "@my-scope/package-a",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/resolve/test/resolver/multirepo/packages/package-b",
+      "name": "@my-scope/package-b",
+      "version": "0.0.0"
+    },
+    {
+      "path": "node_modules/tailwindcss/node_modules/resolve/test/resolver/nested_symlinks/mylib",
+      "name": "mylib",
+      "version": "0.0.0"
+    }
+  ],
+  "installed_lifecycle_originals": [
+    {
+      "original_path": "node_modules/@swc/core/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/01-node_modules__@swc__core__package.json",
+      "bytes": 3285,
+      "sha256": "30f810ddf7edf85604db4ea5f577fcd4b506cbeb6065e31d35629ef6b17a1f65"
+    },
+    {
+      "original_path": "node_modules/@swc/core/postinstall.js",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/02-node_modules__@swc__core__postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    {
+      "original_path": "node_modules/@swc/wasm/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/03-node_modules__@swc__wasm__package.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+    },
+    {
+      "original_path": "node_modules/@prisma/client/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/04-node_modules__@prisma__client__package.json",
+      "bytes": 8156,
+      "sha256": "2efa3f7c0f05cf2bd4b681b71dd0e7a197006a3c29f2acdb5f88d5e7bc9bb2e3"
+    },
+    {
+      "original_path": "node_modules/@prisma/engines/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/05-node_modules__@prisma__engines__package.json",
+      "bytes": 1088,
+      "sha256": "eaa81442c1a545b8fb22720a6b50fb4d7e354608590ef0c9384f18755fdfc465"
+    },
+    {
+      "original_path": "node_modules/prisma/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/06-node_modules__prisma__package.json",
+      "bytes": 3520,
+      "sha256": "01c1aa746e5b0aebf01b38ec1aaffaebc098bacfe93b2f413fd4112de9251ae3"
+    },
+    {
+      "original_path": "node_modules/better-sqlite3/package.json",
+      "report_path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/07-node_modules__better-sqlite3__package.json",
+      "bytes": 1436,
+      "sha256": "d1db58a099dfdef5d10253e873e358eb1e9e2ebb01fa6ef0d40150e37cef6317"
+    }
+  ],
+  "all_47_dependency_link_realpaths_confined_to_own_worktree": true,
+  "borrowed_deps_cache_manual_links_global_install_or_audit_fix": false,
+  "Windows_native_CLI_prepare_run_probe_seal_verifyUpload_extra_VM_or_OSPID_execution": false,
+  "independent_acceptance": false,
+  "CI_or_push_or_production_authorized_or_performed": false,
+  "release_ready": false
+}

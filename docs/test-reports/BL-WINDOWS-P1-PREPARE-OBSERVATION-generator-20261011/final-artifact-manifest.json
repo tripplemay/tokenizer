@@ -1,0 +1,307 @@
+{
+  "format": "windows-p1-prepare-observation-generator-final-artifact-manifest-v1",
+  "source_commit": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "source_sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+  "scope": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/",
+  "self_excluded": true,
+  "entries": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/01-node-version.status.json",
+      "bytes": 1271,
+      "sha256": "0ae7a148198878be7bc8675b63aa43d305f422171eb470c6965065dbbb319c15",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/01-node-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/01-node-version.stdout.log",
+      "bytes": 9,
+      "sha256": "c414f17896fa3ddfbd81ec3e6037beef712f6ec9200decd2d47c9c1e1594385a",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/02-npm-version.status.json",
+      "bytes": 1267,
+      "sha256": "957563b06ddd8150d60b8e1b9a188cc2915eeac3ab8a50a4d250cc70db820c1f",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/02-npm-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/02-npm-version.stdout.log",
+      "bytes": 7,
+      "sha256": "1affb8f29ea203d9dc22f77b58c55ccff5317a28ca336aac0cd9a89aea9eb1fb",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.status.json",
+      "bytes": 1249,
+      "sha256": "69a13583421154fc70d9643640ff7d8ae19f6cc436c2a596a24c4a4f59607692",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stdout.log",
+      "bytes": 264,
+      "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.raw.json",
+      "bytes": 31013,
+      "sha256": "bfb01dc6fd2cb619ca21d4ba49f01de69ec6a8ebcff16599ac5508b40e847d5b",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.status.json",
+      "bytes": 1581,
+      "sha256": "a2e91dfdfc9e0622f4066ed873ada3b905cd173a58f0354f37c423e11091705c",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.stdout.log",
+      "bytes": 211,
+      "sha256": "37e260871bc5c23024971a7c67c4be38e28c12cae63951bbdb91fb0d95976871",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.status.json",
+      "bytes": 1262,
+      "sha256": "6595db89e4d9263955faccd6f7e27246aba821ab7aed5fb4cf2057327f277e84",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.stdout.log",
+      "bytes": 345,
+      "sha256": "92da09bb01112714e9890fd71b2f81a863d542cd5446b8422affbef9c496da96",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/06-syntax.status.json",
+      "bytes": 1317,
+      "sha256": "f30575f24035b16d20e0bc98ab04e347ea4737b145e20921ee727b37dfdcc6f5",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/06-syntax.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/06-syntax.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/07-pure-import.status.json",
+      "bytes": 1372,
+      "sha256": "3b315190cf2cc8c24b4b8cb389ed3d1ebf4d118b99e4202134bd3149f0013f8d",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/07-pure-import.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/07-pure-import.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/08-installed-package-lock.original.json",
+      "bytes": 336103,
+      "sha256": "0dca40c5127a35ed48d716b950033f013531c4ff6ec0509ebdbd926d69885a15",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/artifact-manifest.json",
+      "bytes": 14910,
+      "sha256": "38d4b8f23c1a65cb5d54cb342d9dfd9810132ffcbbb051428e9ed0aa90ff8f6d",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/artifact-manifest.mjs",
+      "bytes": 2198,
+      "sha256": "cb40eb94f6ce185487cdf3db7e3a18e7ad7040b314929b9a7d6bbaa1485be0ce",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/author-ledger.json",
+      "bytes": 4819,
+      "sha256": "e756d429a3381c052b1484e8fc50eb089adb8b33cf97664a7936a1e320a99b02",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/development-checks.mjs",
+      "bytes": 7313,
+      "sha256": "de2b29250946439715ac647314f9918625b4b69311eb7133ed059b3a1f6f6756",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/development-provenance.json",
+      "bytes": 306464,
+      "sha256": "d9453f458547d14565d11fe7fe2800c4872adb27075116ec836986cf8d602b52",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/development-summary.json",
+      "bytes": 10184,
+      "sha256": "f1b54b0f18d4d70f9c84ace596905a645320c94f39efc99282de78bb497ddbb4",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/finalize-evidence.mjs",
+      "bytes": 5450,
+      "sha256": "0943c2a1d8f1ed12803328945c2d55b15be4f0e2f25edad4795aa787553b87ee",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/handoff.json",
+      "bytes": 4652,
+      "sha256": "c6b43d2df065c728b50912b724d9e2c2cb90516717112aa899393caf4b4c89d0",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/01-node_modules__@swc__core__package.json",
+      "bytes": 3285,
+      "sha256": "30f810ddf7edf85604db4ea5f577fcd4b506cbeb6065e31d35629ef6b17a1f65",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/02-node_modules__@swc__core__postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/03-node_modules__@swc__wasm__package.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/04-node_modules__@prisma__client__package.json",
+      "bytes": 8156,
+      "sha256": "2efa3f7c0f05cf2bd4b681b71dd0e7a197006a3c29f2acdb5f88d5e7bc9bb2e3",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/05-node_modules__@prisma__engines__package.json",
+      "bytes": 1088,
+      "sha256": "eaa81442c1a545b8fb22720a6b50fb4d7e354608590ef0c9384f18755fdfc465",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/06-node_modules__prisma__package.json",
+      "bytes": 3520,
+      "sha256": "01c1aa746e5b0aebf01b38ec1aaffaebc098bacfe93b2f413fd4112de9251ae3",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/installed-lifecycle-originals/07-node_modules__better-sqlite3__package.json",
+      "bytes": 1436,
+      "sha256": "d1db58a099dfdef5d10253e873e358eb1e9e2ebb01fa6ef0d40150e37cef6317",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_02_58_857Z-debug-0.log",
+      "bytes": 385233,
+      "sha256": "d1fb70fce65cbc94927f55a96641932c1195a0e3dc314bf30951e85eba6858fd",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_04_11_732Z-debug-0.log",
+      "bytes": 2142,
+      "sha256": "0b74d90b4f6a72467c5feb3ee6114072ecbdd0b6e796da44a3a02f104b2ac990",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_04_29_258Z-debug-0.log",
+      "bytes": 1096,
+      "sha256": "5eb938a67b70a43309d2d763f694a2736f22c54693366f220c909d61dbb9c842",
+      "ignored_requires_exact_force_add": true
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/README.md",
+      "bytes": 6083,
+      "sha256": "1f6b47ce7312638bf358ea860a8b1b4e5dfa50af094cc50cc92296c0dc7b3c93",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/staging-ledger.json",
+      "bytes": 1983,
+      "sha256": "95c2237914e97012d528359ef787bf9c735f6329e90ab37b39d6a42abc9293dc",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/static-after-development-evidence.json",
+      "bytes": 5959,
+      "sha256": "2d90bad50e0d65eeb9d35b927b6b40be96925cf3abe4eca21375de5dd49e3070",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/static-evidence.json",
+      "bytes": 5959,
+      "sha256": "2d90bad50e0d65eeb9d35b927b6b40be96925cf3abe4eca21375de5dd49e3070",
+      "ignored_requires_exact_force_add": false
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/static-proof.mjs",
+      "bytes": 8364,
+      "sha256": "d0f97e2be4841e5582d32ab79fbed590ba328d87513d0268576e602777a04e5f",
+      "ignored_requires_exact_force_add": false
+    }
+  ],
+  "exact_ignored_force_add_paths": [
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/01-node-version.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/01-node-version.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/02-npm-version.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/02-npm-version.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/04-original81.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/06-syntax.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/06-syntax.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/07-pure-import.stderr.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/07-pure-import.stdout.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_02_58_857Z-debug-0.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_04_11_732Z-debug-0.log",
+    "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/npm-debug/2026-10-11T18_04_29_258Z-debug-0.log"
+  ],
+  "first_manifest_and_all_prior_bytes_unchanged": true,
+  "independent_acceptance": false,
+  "release_ready": false
+}

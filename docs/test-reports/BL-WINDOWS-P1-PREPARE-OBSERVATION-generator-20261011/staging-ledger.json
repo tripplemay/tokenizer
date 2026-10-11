@@ -1,0 +1,38 @@
+{
+  "format": "windows-p1-prepare-observation-generator-staging-ledger-v1",
+  "source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "initial_manifest": {
+    "path": "artifact-manifest.json",
+    "sha256": "38d4b8f23c1a65cb5d54cb342d9dfd9810132ffcbbb051428e9ed0aa90ff8f6d",
+    "entries_excluding_self": 44,
+    "exact_raw_log_force_add_paths": 17,
+    "all_first_manifest_entries_and_manifest_itself_remain_original_bytes": true
+  },
+  "initial_full_staged_whitespace_check_failure": {
+    "command": "git -c core.fileMode=false diff --cached --check",
+    "exit_code": 2,
+    "combined_output": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/05-verify.stdout.log:12: new blank line at EOF.\n",
+    "cause": "Original npm run verify stdout includes a trailing blank line; full raw stream must not be trimmed to satisfy Git whitespace checks",
+    "raw_log_or_source_modified": false,
+    "global_diff_check_green_claim": false
+  },
+  "separate_nonraw_whitespace_check": {
+    "command_projection": "git -c core.fileMode=false diff --cached --check -- . followed by one :(exclude,literal)<path> for each of the original manifest's 17 exact raw .log paths",
+    "raw_logs_not_normalized_or_removed_from_stage": true,
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "interpretation": "Only nonraw code/document whitespace check; does not replace or erase original full-check failure"
+  },
+  "final_index": {
+    "path": "final-artifact-manifest.json",
+    "purpose": "Authoritative full final directory index, adding only this staging ledger and the final index to the first immutable 45-file stage",
+    "first_manifest_or_any_prior_report_artifact_overwritten": false,
+    "final_report_files_including_final_index": 47,
+    "supersedes_initial_README_manifest_index_sentence_only": true
+  },
+  "npm_install_or_test_or_verify_retry": false,
+  "source_modified_after_freeze": false,
+  "independent_acceptance": false,
+  "release_ready": false
+}

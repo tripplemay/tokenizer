@@ -1,0 +1,31 @@
+{
+  "name": "03-npm-ci",
+  "executable": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/npm",
+  "args": [
+    "ci"
+  ],
+  "cwd": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-prepare-observation-generator-20261011",
+  "env": {
+    "HOME": "/Volumes/ORICO/project/.wp1pog-20261011",
+    "USERPROFILE": "/Volumes/ORICO/project/.wp1pog-20261011",
+    "TMPDIR": "/Volumes/ORICO/project/.wp1pog-20261011/tmp",
+    "PATH": "/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "npm_config_cache": "/Volumes/ORICO/project/.wp1pog-20261011/npm-cache",
+    "npm_config_registry": "https://registry.npmjs.org/"
+  },
+  "started_utc": "2026-10-11T18:02:58.819Z",
+  "ended_utc": "2026-10-11T18:04:27.712Z",
+  "status": 0,
+  "signal": null,
+  "launch_error": null,
+  "stdout": {
+    "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stdout.log",
+    "bytes": 264,
+    "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8"
+  },
+  "stderr": {
+    "path": "docs/test-reports/BL-WINDOWS-P1-PREPARE-OBSERVATION-generator-20261011/03-npm-ci.stderr.log",
+    "bytes": 495,
+    "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc"
+  }
+}
