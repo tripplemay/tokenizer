@@ -1,0 +1,15 @@
+{"event":"start","label":"01-node-version","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["--version"]}
+{"event":"complete","label":"01-node-version","status":0,"signal":null,"stdout_bytes":9,"stderr_bytes":0}
+{"event":"start","label":"02-npm-version","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js","--version"]}
+{"event":"complete","label":"02-npm-version","status":0,"signal":null,"stdout_bytes":7,"stderr_bytes":0}
+{"event":"start","label":"03-npm-ci","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js","ci","--foreground-scripts"]}
+{"event":"complete","label":"03-npm-ci","status":0,"signal":null,"stdout_bytes":1198,"stderr_bytes":6594}
+{"event":"start","label":"05-syntax","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["--check","docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"]}
+{"event":"complete","label":"05-syntax","status":0,"signal":null,"stdout_bytes":0,"stderr_bytes":0}
+{"event":"start","label":"06-pure-import","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/pure-import.mjs"]}
+{"event":"complete","label":"06-pure-import","status":0,"signal":null,"stdout_bytes":225,"stderr_bytes":0}
+{"event":"start","label":"07-original81","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["node_modules/vitest/vitest.mjs","run","tests/diagnostics/windows-p1-stages.test.ts","--reporter=json","--outputFile=/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-generator-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/07-original81.raw.json"]}
+{"event":"complete","label":"07-original81","status":0,"signal":null,"stdout_bytes":205,"stderr_bytes":0}
+{"event":"start","label":"08-verify","executable":"/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node","args":["/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/bin/npm-cli.js","run","verify"]}
+{"event":"complete","label":"08-verify","status":0,"signal":null,"stdout_bytes":402,"stderr_bytes":0}
+{"event":"finished","ok":true,"source":"61cf64e67a6fda231bb090e77c19d5ececb908af","install_attempts":1,"original81":{"path":"07-original81.raw.json","bytes":31053,"sha256":"453e2da76956c475a0ca19e4e056c16b59c78b15b7f081286239b42cbdcb6bf7","numTotalTests":81,"numPassedTests":81,"numFailedTests":0,"numPendingTests":0,"numTodoTests":0,"success":true,"unchanged_source_sha256":"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132","checkout_five_key_confinement_coverage_claimed":false}}

@@ -1,0 +1,9 @@
+{
+  "role": "Coordinator original-evidence transport correction only",
+  "first_transport_commit": "4484b04",
+  "finding": "Ordinary git add silently omitted21 copied original log files matched by repository ignore rules. All52 originals were already byte-identical on disk and listed in immutable transport manifest; first commit persisted only31 report files",
+  "correction": "Force-add exactly the21 original manifest paths, no broad force-add, no source/log edits or commit amendment. Verify every52 original against its manifest SHA and committed Git bytes after correction",
+  "supporting_dispatch_started_before_complete_transport": false,
+  "source_or_acceptance_changed": false,
+  "publication_or_native_authorized": false
+}

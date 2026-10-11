@@ -1,0 +1,56 @@
+
+> prisma@5.22.0 preinstall
+> node scripts/preinstall-entry.js
+
+
+> @parcel/watcher@2.6.0 install
+> node scripts/build-from-source.js
+
+
+> better-sqlite3@12.10.0 install
+> prebuild-install || node-gyp rebuild --release
+
+
+> @prisma/client@5.22.0 postinstall
+> node scripts/postinstall.js
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 101ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+
+
+> @prisma/engines@5.22.0 postinstall
+> node scripts/postinstall.js
+
+
+> @swc/core@1.16.13 postinstall
+> node postinstall.js
+
+
+> esbuild@0.28.2 postinstall
+> node install.js
+
+
+> unrs-resolver@1.11.1 postinstall
+> napi-postinstall unrs-resolver 1.11.1 check
+
+
+> esbuild@0.25.12 postinstall
+> node install.js
+
+
+added 670 packages, and audited 672 packages in 1m
+
+186 packages are looking for funding
+  run `npm fund` for details
+
+7 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
