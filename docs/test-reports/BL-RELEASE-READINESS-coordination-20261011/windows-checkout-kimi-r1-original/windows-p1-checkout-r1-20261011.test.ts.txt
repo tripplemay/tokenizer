@@ -1,0 +1,384 @@
+// Fresh independent OFFLINE supporting evaluation, batch BL-WINDOWS-P1-CHECKOUT-SUPPORT (kimi r1).
+// Additive checks only: the unchanged 81-control suite in tests/diagnostics/windows-p1-stages.test.ts
+// is run separately and unchanged; nothing here weakens, replaces or relabels it.
+// Exact-byte confinement oracles below are byte-identity checks against the declared candidate
+// hashes, not YAML/JSON semantic parsers; where a static source assertion is used it is labeled static.
+import { afterAll, describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import cp from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { dirname, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import * as p1 from '../../docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+
+const repo = resolve('.');
+const sha256 = (v: Buffer | string) => createHash('sha256').update(v).digest('hex');
+const SOURCE888 = '888a5acd7a8a441c9ec4ad898453f149cf8d6b7c';
+const EXPECTED_HEAD = '221f2f87d94db1656e3000662796d79621b696f5';
+const EXPECTED_PARENT = '54af183617ed06c18edd42632326dbfd09451456';
+const WORKFLOW = '.github/workflows/windows-p1-stages-diagnostic.yml';
+const BINDING_JSON = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json';
+const BINDING_MD = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md';
+const CLI = 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+const TEST_FILE = 'tests/diagnostics/windows-p1-stages.test.ts';
+const HASHES = {
+  [WORKFLOW]: '1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771',
+  [BINDING_JSON]: '652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d',
+  [BINDING_MD]: 'fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6',
+  [CLI]: '3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6',
+  [TEST_FILE]: '7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132'
+};
+const OLD_BINDING_HASH = 'ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc';
+const OLD_MD_HASH = 'bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c';
+const DECLARED_CHANGED = [
+  WORKFLOW, BINDING_JSON, BINDING_MD, CLI,
+  'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/README.md',
+  'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/proposal.json',
+  'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011/README.md',
+  'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-pre-scope-20261011/verdict.json'
+].sort();
+const CHECKOUT_ENV_BLOCK =
+  "        env:\n" +
+  "          GIT_CONFIG_COUNT: '1'\n" +
+  "          GIT_CONFIG_KEY_0: core.longpaths\n" +
+  "          GIT_CONFIG_VALUE_0: 'true'\n";
+
+const ownedBase = process.env.TMPDIR ?? process.env.TEMP;
+if (!ownedBase) throw new Error('owned TMPDIR required');
+const owned = fs.mkdtempSync(join(ownedBase, 'wp1c-r1-'));
+afterAll(() => fs.rmSync(owned, { recursive: true, force: true }));
+
+const gitEnv: NodeJS.ProcessEnv = { PATH: '/usr/bin:/bin:/usr/sbin:/sbin', HOME: owned, USERPROFILE: owned, TMPDIR: ownedBase, NODE_ENV: 'test' };
+function git(args: string[], cwd = repo, env: NodeJS.ProcessEnv = gitEnv) {
+  const r = cp.spawnSync('git', args, { cwd, env, encoding: 'buffer', timeout: 30000, maxBuffer: 64 * 1024 * 1024 });
+  if (r.error) throw r.error;
+  return r;
+}
+const gitShow = (ref: string, path: string) => {
+  const r = git(['-c', 'core.fileMode=false', 'show', `${ref}:${path}`]);
+  expect(r.status).toBe(0);
+  return r.stdout;
+};
+
+describe('r1-head-candidate-identity-and-tree-closure', () => {
+  it('HEAD and parent match the dispatched exact commits', () => {
+    expect(git(['rev-parse', 'HEAD']).stdout.toString().trim()).toBe(EXPECTED_HEAD);
+    expect(git(['rev-parse', 'HEAD^']).stdout.toString().trim()).toBe(EXPECTED_PARENT);
+  });
+  it('four candidate files and the unchanged test file hash to the declared values', () => {
+    for (const [path, expected] of Object.entries(HASHES))
+      expect(sha256(fs.readFileSync(join(repo, path))), path).toBe(expected);
+  });
+  it('diff vs source888 touches exactly the four candidates plus four declared report files', () => {
+    const r = git(['diff', '--name-only', `${SOURCE888}..HEAD`]);
+    expect(r.status).toBe(0);
+    expect(r.stdout.toString().trim().split('\n').sort()).toEqual(DECLARED_CHANGED);
+  });
+  it('every other tracked tree record (incl. frozen inputs and the 57-path archive tree) is identical', () => {
+    const filtered = (ref: string) => {
+      const r = git(['-c', 'core.fileMode=false', 'ls-tree', '-rz', '--full-tree', ref]);
+      expect(r.status).toBe(0);
+      return r.stdout.toString().split('\0').filter(e => e && !DECLARED_CHANGED.some(p => e.endsWith('\t' + p)));
+    };
+    expect(filtered('HEAD')).toEqual(filtered(SOURCE888));
+  });
+  it('all ten prior/frozen input hashes in the revised bindings match actual file bytes', () => {
+    for (const input of [...p1.BINDINGS.prior_inputs, ...p1.BINDINGS.frozen_runtime_sources])
+      expect(sha256(fs.readFileSync(join(repo, input.path))), input.path).toBe(input.sha256);
+  });
+  it('scoped candidate source status is clean', () => {
+    const r = git(['-c', 'core.fileMode=false', 'status', '--porcelain', '--untracked-files=all', '--',
+      ...p1.BINDINGS.future_added_source_paths, BINDING_JSON, ...p1.BINDINGS.frozen_runtime_sources.map((s: any) => s.path)]);
+    expect(r.status).toBe(0);
+    expect(r.stdout.toString()).toBe('');
+  });
+});
+
+describe('r1-exact-byte-projections-from-source888', () => {
+  const proposal = JSON.parse(fs.readFileSync(join(repo, 'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/proposal.json'), 'utf8'));
+  it('workflow = source888 plus exactly one replacement (four added env lines under checkout)', () => {
+    const before = gitShow(SOURCE888, WORKFLOW).toString();
+    const current = fs.readFileSync(join(repo, WORKFLOW), 'utf8');
+    const delta = proposal.selected_solution.workflow_delta;
+    expect(before.split(delta.before).length - 1).toBe(1);
+    expect(before.replace(delta.before, delta.after)).toBe(current);
+  });
+  it('bindings JSON = source888 with exactly the five declared unique replacements', () => {
+    let render = gitShow(SOURCE888, BINDING_JSON).toString();
+    const current = fs.readFileSync(join(repo, BINDING_JSON), 'utf8');
+    for (const rep of proposal.contract_revision_required.binding_json_replacements) {
+      expect(render.split(rep.before).length - 1, rep.before.slice(0, 40)).toBe(1);
+      expect(current.split(rep.after).length - 1, rep.after.slice(0, 40)).toBe(1);
+      render = render.replace(rep.before, rep.after);
+    }
+    expect(render).toBe(current);
+  });
+  it('bindings JSON partial application (stale revision) never reproduces the candidate', () => {
+    const old = gitShow(SOURCE888, BINDING_JSON).toString();
+    const reps = proposal.contract_revision_required.binding_json_replacements;
+    const current = fs.readFileSync(join(repo, BINDING_JSON), 'utf8');
+    for (let skip = 0; skip < reps.length; skip++) {
+      let render = old;
+      reps.forEach((rep: any, i: number) => { if (i !== skip) render = render.replace(rep.before, rep.after); });
+      expect(render).not.toBe(current);
+    }
+  });
+  it('bindings MD = source888 bytes plus exactly the declared appendix', () => {
+    const old = gitShow(SOURCE888, BINDING_MD);
+    const current = fs.readFileSync(join(repo, BINDING_MD));
+    expect(current.subarray(0, old.length).equals(old)).toBe(true);
+    expect(current.subarray(old.length).toString('utf8')).toBe(proposal.contract_revision_required.binding_md_append);
+  });
+  it('CLI masked for exactly the two identity literals is byte-identical to source888', () => {
+    const old = gitShow(SOURCE888, CLI).toString();
+    const current = fs.readFileSync(join(repo, CLI), 'utf8');
+    const masked = current.replace(HASHES[BINDING_JSON], OLD_BINDING_HASH).replace(HASHES[BINDING_MD], OLD_MD_HASH);
+    expect(masked).toBe(old);
+    expect(current.replace(HASHES[BINDING_JSON], OLD_BINDING_HASH)).not.toBe(old);
+    expect(current.replace(HASHES[BINDING_MD], OLD_MD_HASH)).not.toBe(old);
+    expect(masked + '\n').not.toBe(old);
+    expect(old).toContain(`'${OLD_BINDING_HASH}'`);
+    expect(old).toContain(`'${OLD_MD_HASH}'`);
+  });
+});
+
+describe('r1-checkout-env-exact-confinement', () => {
+  const candidate = fs.readFileSync(join(repo, WORKFLOW), 'utf8');
+  // Exact-byte confinement oracle: only the declared candidate bytes pass. This is byte identity,
+  // not a YAML parser; positives below add line-level structure assertions on the real file.
+  const confined = (text: string) => sha256(text) === HASHES[WORKFLOW];
+  it('positive: the real unchanged-scope candidate workflow passes its own oracle', () => {
+    expect(confined(candidate)).toBe(true);
+  });
+  it('positive structure: exactly three GIT_CONFIG lines, only inside the checkout step env block', () => {
+    const lines = candidate.split('\n');
+    expect(lines.filter(l => l.includes('GIT_CONFIG'))).toEqual([
+      "          GIT_CONFIG_COUNT: '1'", '          GIT_CONFIG_KEY_0: core.longpaths', "          GIT_CONFIG_VALUE_0: 'true'"]);
+    const checkout = lines.indexOf('      - uses: actions/checkout@v4');
+    expect(checkout).toBeGreaterThanOrEqual(0);
+    expect(lines.slice(checkout + 1, checkout + 5)).toEqual(CHECKOUT_ENV_BLOCK.trimEnd().split('\n'));
+    expect(lines[checkout + 5]).toBe('        with:');
+    expect(lines.filter(l => l.includes('actions/checkout@v4'))).toHaveLength(1);
+  });
+  it('positive structure: no GITHUB_ENV write, config write, sparse, path, retry or secret reference', () => {
+    for (const bad of ['GITHUB_ENV', 'git config', 'sparse', 'continue-on-error', 'secrets.', 'environment:'])
+      expect(candidate.includes(bad), bad).toBe(false);
+    expect(candidate).toContain('permissions:\n  contents: read\n');
+    expect(candidate.split('docs/test-reports/windows-p1-stages-20261010/upload/').length - 1).toBe(16);
+  });
+  const stepEnv = (anchor: string) => (w: string) => {
+    const i = w.indexOf(anchor);
+    expect(i).toBeGreaterThanOrEqual(0);
+    return w.slice(0, i + anchor.length) + CHECKOUT_ENV_BLOCK + w.slice(i + anchor.length);
+  };
+  const mutations: Array<[string, (w: string) => string]> = [
+    ['missing-env', w => w.replace(CHECKOUT_ENV_BLOCK, '')],
+    ['count-zero', w => w.replace("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '0'")],
+    ['count-two-second-pair', w => w.replace("GIT_CONFIG_COUNT: '1'", "GIT_CONFIG_COUNT: '2'")
+      .replace("          GIT_CONFIG_VALUE_0: 'true'\n", "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.quotepath\n          GIT_CONFIG_VALUE_1: 'false'\n")],
+    ['false-value', w => w.replace("GIT_CONFIG_VALUE_0: 'true'", "GIT_CONFIG_VALUE_0: 'false'")],
+    ['nonstring-count', w => w.replace("GIT_CONFIG_COUNT: '1'", 'GIT_CONFIG_COUNT: 1')],
+    ['nonstring-value', w => w.replace("GIT_CONFIG_VALUE_0: 'true'", 'GIT_CONFIG_VALUE_0: true')],
+    ['nonstring-key-scalar', w => w.replace('GIT_CONFIG_KEY_0: core.longpaths', 'GIT_CONFIG_KEY_0: 0')],
+    ['extra-env-key', w => w.replace("          GIT_CONFIG_VALUE_0: 'true'\n", "          GIT_CONFIG_VALUE_0: 'true'\n          GIT_TERMINAL_PROMPT: '0'\n")],
+    ['duplicate-key', w => w.replace('          GIT_CONFIG_KEY_0: core.longpaths\n', '          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_KEY_0: core.longpaths\n')],
+    ['workflow-scope-env', w => w.replace('    branches: [codex/windows-p1-stages-ci-20261010]\n', '    branches: [codex/windows-p1-stages-ci-20261010]\nenv:\n  GIT_CONFIG_COUNT: \'1\'\n')],
+    ['job-scope-env', w => w.replace('    timeout-minutes: 12\n', '    timeout-minutes: 12\n    env:\n      GIT_CONFIG_COUNT: \'1\'\n')],
+    ['later-step-setup-node', stepEnv('      - uses: actions/setup-node@v4\n')],
+    ['later-step-prepare', stepEnv('      - name: Prepare exact-candidate provenance\n')],
+    ['later-step-npm-ci', stepEnv('      - name: Install locked dependencies\n')],
+    ['later-step-synthetic', stepEnv('      - name: Synthetic checks only\n')],
+    ['later-step-initial', stepEnv('      - name: INITIAL once\n')],
+    ['later-step-seal', stepEnv('      - name: Seal safe evidence\n')],
+    ['later-step-verify', stepEnv('      - name: Verify sealed files immediately\n')],
+    ['later-step-upload', stepEnv('      - uses: actions/upload-artifact@v4\n')],
+    ['github-env-write', w => w.replace('      - uses: actions/setup-node@v4\n',
+      '      - name: Leak\n        run: echo GIT_CONFIG_COUNT=1 >> $GITHUB_ENV\n      - uses: actions/setup-node@v4\n')],
+    ['git-config-global-write', w => w.replace('      - uses: actions/setup-node@v4\n',
+      '      - name: Persistent config\n        run: git config --global core.longpaths true\n      - uses: actions/setup-node@v4\n')],
+    ['git-config-system-write', w => w.replace('      - uses: actions/setup-node@v4\n',
+      '      - name: System config\n        run: git config --system core.longpaths true\n      - uses: actions/setup-node@v4\n')],
+    ['sparse-checkout', w => w.replace('          persist-credentials: false\n', '          persist-credentials: false\n          sparse-checkout: docs\n')],
+    ['path-relocation', w => w.replace('          persist-credentials: false\n', '          persist-credentials: false\n          path: short\n')],
+    ['new-command-probe', w => w.replace('      - uses: actions/setup-node@v4\n',
+      '      - name: Probe\n        run: git --version\n      - uses: actions/setup-node@v4\n')],
+    ['secret-reference', w => w.replace('      - name: Install locked dependencies\n        run: npm ci\n',
+      '      - name: Install locked dependencies\n        env:\n          TOKEN: ${{ secrets.DEPLOY_TOKEN }}\n        run: npm ci\n')],
+    ['permissions-broadened', w => w.replace('  contents: read', '  contents: write')],
+    ['retry-continue-on-error', w => w.replace('      - uses: actions/checkout@v4\n', '      - uses: actions/checkout@v4\n        continue-on-error: true\n')],
+    ['event-ref-changed', w => w.replace('branches: [codex/windows-p1-stages-ci-20261010]', 'branches: [main]')],
+    ['upload-path-altered', w => w.replace('upload/manifest.json', 'upload/../manifest.json')]
+  ];
+  it.each(mutations)('negative %s breaks exact confinement', (_name, mutate) => {
+    const mutated = mutate(candidate);
+    expect(mutated).not.toBe(candidate);
+    expect(confined(mutated)).toBe(false);
+  });
+});
+
+describe('r1-binding-identity-and-stale-rejection', () => {
+  it('positive: the two CLI identity literals equal the on-disk JSON/MD SHA-256', () => {
+    const src = fs.readFileSync(join(repo, CLI), 'utf8');
+    expect(src).toContain(`const bindingHash = '${sha256(fs.readFileSync(join(repo, BINDING_JSON)))}';`);
+    expect(src).toContain(`const mdHash = '${sha256(fs.readFileSync(join(repo, BINDING_MD)))}';`);
+  });
+  it('stale literals bind only stale documents: old hashes do not match candidate documents', () => {
+    expect(sha256(fs.readFileSync(join(repo, BINDING_JSON)))).not.toBe(OLD_BINDING_HASH);
+    expect(sha256(fs.readFileSync(join(repo, BINDING_MD)))).not.toBe(OLD_MD_HASH);
+    expect(sha256(gitShow(SOURCE888, BINDING_JSON))).toBe(OLD_BINDING_HASH);
+    expect(sha256(gitShow(SOURCE888, BINDING_MD))).toBe(OLD_MD_HASH);
+  });
+  const mirrorFiles = [BINDING_JSON, BINDING_MD, CLI,
+    'docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs',
+    'docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs',
+    'docs/specs/BL-WINDOWS-P1-STAGES-20261009.md',
+    'docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json',
+    'docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json',
+    'src/cli/bounded-subprocess.ts', 'src/cli/bounded-subprocess-worker.mjs', 'src/cli/replay.ts',
+    '.github/workflows/windows-release-diagnostics.yml', 'package-lock.json'];
+  function makeMirror(mutate: (mirror: string) => void): string {
+    const mirror = fs.mkdtempSync(join(owned, 'mirror-'));
+    for (const rel of mirrorFiles) {
+      const dst = join(mirror, rel);
+      fs.mkdirSync(dirname(dst), { recursive: true });
+      fs.copyFileSync(join(repo, rel), dst);
+    }
+    mutate(mirror);
+    return mirror;
+  }
+  function importAndValidate(mirror: string) {
+    const url = pathToFileURL(join(mirror, CLI)).href;
+    const script = `const m = await import(${JSON.stringify(url)}); m.validateBindings(); console.log('VALIDATE_OK');`;
+    return cp.spawnSync(process.execPath, ['--input-type=module', '-e', script],
+      { env: { HOME: join(mirror, 'home'), TMPDIR: owned, PATH: '/usr/bin:/bin', NODE_ENV: 'test' }, encoding: 'utf8', timeout: 30000 });
+  }
+  it('baseline mirror of the real candidate imports and validateBindings passes', () => {
+    const r = importAndValidate(makeMirror(() => {}));
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('VALIDATE_OK');
+  });
+  const staleCases: Array<[string, (mirror: string) => void, string]> = [
+    ['json-one-byte-mutation', m => {
+      const p = join(m, BINDING_JSON);
+      fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace('"revision": 2', '"revision": 3'));
+    }, 'binding identity'],
+    ['stale-cli-old-source-relabelled', m => {
+      fs.writeFileSync(join(m, CLI), gitShow(SOURCE888, CLI));
+    }, 'binding identity'],
+    ['stale-json-literal-only', m => {
+      const p = join(m, CLI);
+      fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(HASHES[BINDING_JSON], OLD_BINDING_HASH));
+    }, 'binding identity'],
+    ['stale-md-literal-only', m => {
+      const p = join(m, CLI);
+      fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(HASHES[BINDING_MD], OLD_MD_HASH));
+    }, 'AssertionError'],
+    ['md-one-byte-mutation', m => {
+      const p = join(m, BINDING_MD);
+      fs.writeFileSync(p, fs.readFileSync(p, 'utf8') + ' ');
+    }, 'AssertionError']
+  ];
+  it.each(staleCases)('negative %s is rejected by unchanged import/validateBindings', (_name, mutate, marker) => {
+    const r = importAndValidate(makeMirror(mutate));
+    expect(r.status).not.toBe(0);
+    expect(r.stdout).not.toContain('VALIDATE_OK');
+    expect(r.stderr).toContain(marker);
+  });
+});
+
+describe('r1-system-env-admission-and-guard-closure', () => {
+  it('unchanged systemEnvironment admits only the five system keys, case-insensitively, discarding checkout keys', () => {
+    const sys = p1.systemEnvironment({
+      Path: '/usr/bin', SYSTEMROOT: 'C:\\Windows', windir: 'C:\\Windows', ComSpec: 'C:\\Windows\\cmd.exe', PATHEXT: '.EXE',
+      GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true',
+      HOME: '/x', GIT_CONFIG_NOSYSTEM: '1', ANYTHING: 'y'
+    } as any);
+    expect(Object.keys(sys).sort()).toEqual(['ComSpec', 'PATH', 'PATHEXT', 'SystemRoot', 'WINDIR']);
+    expect(sys.PATH).toBe('/usr/bin');
+    expect(sys.SystemRoot).toBe('C:\\Windows');
+  });
+  it('unchanged systemEnvironment rejects ambiguous case duplicates and non-string values', () => {
+    expect(() => p1.systemEnvironment({ PATH: 'a', path: 'b' } as any)).toThrow();
+    expect(() => p1.systemEnvironment({ PATH: 5 } as any)).toThrow();
+  });
+  it('bindings data: checkout keys are not admitted synthetic keys and extra_keys stays empty', () => {
+    expect(p1.BINDINGS.environment.extra_keys).toEqual([]);
+    for (const k of ['GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_0', 'GIT_CONFIG_VALUE_0'])
+      expect(p1.BINDINGS.environment.synthetic_keys).not.toContain(k);
+    expect(p1.BINDINGS.environment.synthetic_keys).toHaveLength(22);
+  });
+  it('static only: guardConfiguration keeps the exact extra-key closure assertion (source assertion, not a runtime check)', () => {
+    const src = fs.readFileSync(join(repo, CLI), 'utf8');
+    expect(src).toContain('assert.deepEqual(sorted(Object.keys(env)), sorted(Object.keys(expected)))');
+    expect(src).toContain('function fixedEnvironment(system, root, runRoot, deadline, totalDeadline)');
+  });
+  it('unchanged validateProvenance rejects checkout keys in environmentKeyNames and extraEnvironmentKeys', () => {
+    const files = [...p1.BINDINGS.future_added_source_paths, BINDING_JSON,
+      ...p1.BINDINGS.frozen_runtime_sources.map((s: any) => s.path)].sort()
+      .map(path => ({ path, sha256: sha256(fs.readFileSync(join(repo, path))) }));
+    const envNames = [...p1.BINDINGS.environment.system_keys, ...p1.BINDINGS.environment.synthetic_keys].sort();
+    const base = {
+      format: 'windows-p1-initial-provenance-v1', executionSha: EXPECTED_HEAD, expectedSha: EXPECTED_HEAD,
+      planningBase: p1.BINDINGS.planning_base, timestampUtc: '2026-10-11T00:00:00Z', runId: '38145284914', runAttempt: 1,
+      ref: 'refs/heads/codex/windows-p1-stages-ci-20261010',
+      runtime: { node: 'v22.22.0', uv: '1.0.0', platform: 'win32', arch: 'x64', osRelease: '10.0.0', imageOS: 'win22', imageVersion: '20261011.1.1' },
+      sourceFiles: files, environmentKeyNames: envNames, extraEnvironmentKeys: [],
+      provenanceUnknown: false, releaseReady: false, releaseAcceptance: false
+    };
+    expect(p1.validateProvenance(base, files, EXPECTED_HEAD)).toBe(true);
+    const swapped = { ...base, environmentKeyNames: envNames.filter(k => k !== 'WINDIR').concat('GIT_CONFIG_COUNT').sort() };
+    expect(p1.validateProvenance(swapped, files, EXPECTED_HEAD)).toBe(false);
+    const extra = { ...base, environmentKeyNames: [...envNames, 'GIT_CONFIG_KEY_0'].sort() };
+    expect(p1.validateProvenance(extra, files, EXPECTED_HEAD)).toBe(false);
+    const extraKeyList = { ...base, extraEnvironmentKeys: ['GIT_CONFIG_VALUE_0'] };
+    expect(p1.validateProvenance(extraKeyList, files, EXPECTED_HEAD)).toBe(false);
+    const staleSource = { ...base, sourceFiles: files.map(f => f.path === BINDING_JSON ? { ...f, sha256: OLD_BINDING_HASH } : f) };
+    expect(p1.validateProvenance(staleSource, files, EXPECTED_HEAD)).toBe(false);
+  });
+});
+
+describe('r1-git-command-scope-fixture', () => {
+  const fixture = fs.mkdtempSync(join(owned, 'gitfixture-'));
+  const globalConfig = join(fixture, 'empty-gitconfig');
+  const xdg = join(fixture, 'xdg');
+  fs.mkdirSync(xdg, { recursive: true });
+  fs.writeFileSync(globalConfig, '');
+  const childEnv: NodeJS.ProcessEnv = {
+    PATH: '/usr/bin:/bin:/usr/sbin:/sbin', HOME: fixture, USERPROFILE: fixture, TMPDIR: owned,
+    GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: globalConfig, XDG_CONFIG_HOME: xdg, GIT_TERMINAL_PROMPT: '0',
+    NODE_ENV: 'test'
+  };
+  const withCheckoutKeys = { ...childEnv, GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.longpaths', GIT_CONFIG_VALUE_0: 'true' };
+  const configBytes = () => fs.readFileSync(join(fixture, '.git', 'config'));
+  it('command-scope env injects core.longpaths=true for this Git child only, with no persistence', () => {
+    expect(git(['init', '-q'], fixture, childEnv).status).toBe(0);
+    const before = configBytes();
+    const injected = git(['config', '--get', 'core.longpaths'], fixture, withCheckoutKeys);
+    expect(injected.status).toBe(0);
+    expect(injected.stdout.toString()).toBe('true\n');
+    const origin = git(['config', '--show-origin', '--get', 'core.longpaths'], fixture, withCheckoutKeys);
+    expect(origin.status).toBe(0);
+    expect(origin.stdout.toString()).toContain('command line');
+    const sibling = git(['config', '--get', 'core.longpaths'], fixture, childEnv);
+    expect(sibling.status).not.toBe(0);
+    expect(sibling.stdout.toString()).toBe('');
+    expect(fs.readFileSync(globalConfig).toString()).toBe('');
+    expect(configBytes().equals(before)).toBe(true);
+    expect(configBytes().toString()).not.toContain('longpaths');
+    expect(fs.readdirSync(xdg)).toEqual([]);
+  });
+});
+
+describe('r1-own-run-binds-to-unchanged-validators', () => {
+  it('unchanged checksSummary validator accepts this evaluator real 81-control run report', () => {
+    const raw = JSON.parse(fs.readFileSync(
+      join(repo, 'docs/test-reports/BL-WINDOWS-P1-CHECKOUT-kimi-r1-20261011/raw/unchanged81.raw.json'), 'utf8'));
+    const summary = p1.checksSummary(raw);
+    expect(summary).not.toBeNull();
+    expect(summary!.passed).toBe(81);
+    expect(summary!.failed).toBe(0);
+    expect(summary!.skipped).toBe(0);
+    expect(summary!.allRequiredControlsPassed).toBe(true);
+    expect(summary!.releaseAcceptance).toBe(false);
+  });
+});

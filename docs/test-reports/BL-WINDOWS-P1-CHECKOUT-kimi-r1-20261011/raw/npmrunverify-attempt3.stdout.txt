@@ -1,0 +1,27 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 101ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+tests/evaluator/windows-p1-checkout-r1-20261011.test.ts(52,42): error TS2322: Type '{ PATH: string; HOME: string; USERPROFILE: string; TMPDIR: string; NODE_ENV: string; }' is not assignable to type 'ProcessEnv'.
+  Types of property 'NODE_ENV' are incompatible.
+    Type 'string' is not assignable to type '"test" | "development" | "production"'.
+tests/evaluator/windows-p1-checkout-r1-20261011.test.ts(354,41): error TS2345: Argument of type '{ PATH: string; HOME: string; USERPROFILE: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; XDG_CONFIG_HOME: string; GIT_TERMINAL_PROMPT: string; NODE_ENV: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Types of property 'NODE_ENV' are incompatible.
+    Type 'string' is not assignable to type '"test" | "development" | "production"'.
+tests/evaluator/windows-p1-checkout-r1-20261011.test.ts(356,74): error TS2345: Argument of type '{ GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; PATH: string; HOME: string; USERPROFILE: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; XDG_CONFIG_HOME: string; GIT_TERMINAL_PROMPT: string; NODE_ENV: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Types of property 'NODE_ENV' are incompatible.
+    Type 'string' is not assignable to type '"test" | "development" | "production"'.
+tests/evaluator/windows-p1-checkout-r1-20261011.test.ts(359,89): error TS2345: Argument of type '{ GIT_CONFIG_COUNT: string; GIT_CONFIG_KEY_0: string; GIT_CONFIG_VALUE_0: string; PATH: string; HOME: string; USERPROFILE: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; XDG_CONFIG_HOME: string; GIT_TERMINAL_PROMPT: string; NODE_ENV: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Types of property 'NODE_ENV' are incompatible.
+    Type 'string' is not assignable to type '"test" | "development" | "production"'.
+tests/evaluator/windows-p1-checkout-r1-20261011.test.ts(362,73): error TS2345: Argument of type '{ PATH: string; HOME: string; USERPROFILE: string; TMPDIR: string; GIT_CONFIG_NOSYSTEM: string; GIT_CONFIG_GLOBAL: string; XDG_CONFIG_HOME: string; GIT_TERMINAL_PROMPT: string; NODE_ENV: string; }' is not assignable to parameter of type 'ProcessEnv'.
+  Types of property 'NODE_ENV' are incompatible.
+    Type 'string' is not assignable to type '"test" | "development" | "production"'.
