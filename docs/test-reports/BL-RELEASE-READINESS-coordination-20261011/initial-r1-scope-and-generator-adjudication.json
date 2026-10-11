@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T12:08:52Z",
+  "role": "Coordinator artifact transport and bounded implementation adjudication; not Evaluator or human gate decision",
+  "binding_source": "c05d6b4b2168ade9a66a3eacd337f766d68e5f70",
+  "binding_hashes": {
+    "md": "bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c",
+    "json": "ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"
+  },
+  "original_blocked_pre_scope": "11c32d5806372ef3f7a7e9285d40f3b9c9e24a9b; preserved unchanged",
+  "fresh_r1_scope": {
+    "commit": "cb198045498bb5561d1465808365a78424839755",
+    "verdict": "PASS",
+    "scope": "B001 minimum written specification closure only",
+    "report_hashes": {
+      "verdict": "7eceec16fb8fa55529f87734099ea476825b65f92eba3dbf5c0ed6d567a925ee",
+      "readme": "b636ad343720f1ea0c60e82d0a3b51c983ba0caf40603c208189f6a313e72725"
+    },
+    "source_worktree_content_status": "clean",
+    "transport_directory_compare_exit": 0,
+    "functional_acceptance": false
+  },
+  "generator_scope": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-generator-20261011",
+    "base": "cb198045498bb5561d1465808365a78424839755",
+    "new_source_paths": [
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "tests/diagnostics/windows-p1-stages.test.ts",
+      ".github/workflows/windows-p1-stages-diagnostic.yml"
+    ],
+    "existing_source_edits": [],
+    "development_report_directory": "docs/test-reports/BL-WINDOWS-P1-INITIAL-generator-20261011/",
+    "runtime": "Verified installed Node v22.22.0; fresh own npm ci with owned external HOME/cache/TMPDIR",
+    "execution": "Synthetic/mocked controls and development lint/typecheck only; no native PowerShell/old diagnostics/CI or product-service execution",
+    "feasibility_failure": "Stop and return an artifact; no scope, file, dependency, deadline or guard relaxation"
+  },
+  "publication_prerequisites": "Independent actual-diff scope, declared synthetic controls and applicable different-model-family functional acceptance; Coordinator separately validates exact-candidate non-main publication",
+  "native_execution_authorized": false,
+  "publication_authorized_by_this_artifact": false,
+  "main_push_or_production_mutation": false,
+  "compose_third_attempt": false,
+  "key_work": "deferred by user",
+  "pending_gate_written": false,
+  "release_ready": false
+}

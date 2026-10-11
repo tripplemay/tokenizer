@@ -3,6 +3,7 @@
 Created 2026-10-11 UTC; the 20261010 filename is the agreed naming convention.
 Supporting Planner, `harness-rules.md` section 1.5. Base: `93a61ba69504d6e9c1eee803c5ee4e2750c54640`.
 This is a **proposal**, not implementation, publication, functional acceptance or a state transition. `release_ready=false`.
+Revision 1, 2026-10-11 UTC: proposes only the B001 native tuple/source closure requested after the fresh pre-scope BLOCKED verdict at `11c32d5806372ef3f7a7e9285d40f3b9c9e24a9b`. That verdict and the original c584 documents remain in git; this revision does not amend the critic's conclusion or authorize execution.
 
 ## 1. Authority and exact paths
 
@@ -44,7 +45,23 @@ Preserve live-owned-handle tree termination, watchdogs, observed-PID sampling, s
 
 ## 4. Locked selection and root protocols
 
-Apply the JSON table once, sequentially. `trustworthy` means strict root/probe/event identity and sequence, both EOFs, no stderr/overflow/abort, all expected guard/trace health complete, valid counter and known cleanup/provenance. A clean bounded refusal means worker `ok` with nonzero safe status and a permitted prefix, or worker `timeout` with the timeout error class and a permitted prefix. Launch/output/supervision/unknown are never clean refusal.
+Apply the JSON table once, sequentially. `trustworthy` means strict root/probe/event identity and sequence, both EOFs, no stderr/overflow/abort, all expected guard/trace health complete, valid counter and known cleanup/provenance, including the closed native tuple/source relations below. A clean bounded refusal means an actual API return with worker `ok`, nonzero safe status, null signal and null error fields plus a permitted prefix, or an actual API timeout throw with worker `timeout`, the timeout error class, null error code and null unavailable return status/signal plus a permitted prefix. Launch/output/supervision/unknown are never clean refusal.
+
+### B001: native return/throw closure (required before selection)
+
+`native.metadataSource` is `api-return`, `api-throw`, `not-started` or `unknown`. It identifies an actually observed `runBoundedSubprocess` return/catch, not a conclusion inferred from trace or marker text. Native `status/signal` are **API return fields only**, never values copied from a Node worker's spawn-sync result or filled from native close facts on a throw path.
+
+| Path/outcome | Required native tuple and source |
+|---|---|
+| Normal return / completed | `metadataSource=api-return,workerKind=ok,status=0,signal=null,errorName=null,errorCode=null`; exact full marker sequence. |
+| Normal return / clean refused | `metadataSource=api-return,workerKind=ok`, safe **nonzero** returned status, `signal=null,errorName=null,errorCode=null`; permitted clean prefix. |
+| API throw / timeout | `metadataSource=api-throw,workerKind=timeout,status=null,signal=null,errorName=BoundedSubprocessTimeoutError,errorCode=null`. No invented status 0, EIO or inferred signal. |
+| API throw / output, launch or supervision | `metadataSource=api-throw,status=null,signal=null`; respective actual API class. Output/supervision code is null; launch code is only the safe mapping of the actual `BoundedSubprocessLaunchError.code` (absent means null). Never clean refusal/progression. |
+| Not started / unknown source | No unavailable return/error fields: status/signal/errorName/errorCode null. Not-started also has workerKind/elapsedMs null. Missing or unsupported actual error source is unknown, not a diagnostic error renamed as a product API error. |
+
+For normal returns, require one uniquely admitted native childPid under the same owning worker PID, fixed case/root/script and spawn admission. Reconcile the returned native status/signal against **both** original guard and old-trace `child-exit` and `child-close` facts for that handle; all four facts must be present, unique and mutually equal to the returned tuple. `spawn-sync` status/signal refers to the Node worker and cannot satisfy this equality check. Native close/exit facts on a throw path are independent observations only; reconcile their ownership and mutual consistency, but do not copy them into unavailable return fields or guess what the API would have returned.
+
+Missing/duplicate/contradictory admission, API-source/error/worker relation or native exit/close tuple makes the observation unknown and blocks T1/T2 progression. Reject the conflicting raw protocol; rebuild only a safe unknown case, retaining independently observed facts/unknown flags rather than laundering a tuple into clean refusal. No worker partial-output change, extra native/host query or added surface is required or permitted. The existing EOF/health/cleanup/provenance requirements remain independent and unchanged.
 
 * T0 runs first; only exact writer success admits T1.
 * **T1 success stops immediately**; T2/T3 are skipped. This is a conservative INITIAL narrowing approved by Coordinator, not a claim about an executed run. Clean T1 timeout/refusal with empty prefix admits T2; anything else stops unknown.
@@ -68,7 +85,9 @@ Before upload require exactly the JSON-listed 16 files, no extras/symlinks, boun
 ## 6. Required future checks and remaining boundary
 
 Synthetic/mock checks: every token split/LF/CRLF/coalescing; timeout prefix persistence; missing EOF/end event/error/health; unknown/BOM/non-ASCII/blank/unterminated/canary/stderr; order/variant/handle/PID/script mismatch; exact cap and +1 for native/case/guard/trace/counter; concurrent append contention and aggregate append size; 38/76 counters/time admission; independent cleanup/trace/provenance unknown; all selection rows and zero skipped launches; strict extra-key rejection; no import side effects; exact source/workflow/upload path set. These are obligations, **not performed tests**.
+The B001 control must reject `refused/status=1/workerKind=ok` carrying launch error/EIO, timeout carrying invented status 0/EIO/signal, canonical returned refusal whose admitted native close says status 0, missing/duplicate/wrong-owned-child exit or close, and error fields without actual API source. Exercise these at both T1 and T2 boundaries: observation unknown, no next native launch. Canonical normal return and canonical timeout still require all unchanged independent safety conditions; this revision does not claim those controls have run.
 
 There is no unresolved *path/script/schema/selection binding* deferred to implementation in this proposal. Actual additive-listener/lock correctness, perturbation, runner provenance, clean EOF availability, PowerShell internals, whole-tree absence and all release gates remain unverified. Any feasibility failure or requirement for another file/delta blocks Generator and returns to Planner; it is not discretion to widen scope. No age/key/off-host-backup work is included. This delivery supplies only the two new documents, author-side static consistency checks and a local exact-path commit; no implementation, native test, CI, network, install, push or release claim.
 
 Author-side static result (2026-10-11 UTC): JSON parses; all four script hashes, ten referenced input hashes, frozen safe code/signal/abort enums, local schema references and exact required-key sets agree; three implementation paths and sixteen upload paths are distinct and consistent. These checks assess document consistency only, not functional correctness or independent scope acceptance.
+Revision-1 author-side schema-only check: canonical normal return/timeout tuples satisfy the written native definition; eight contradictory source/error/status/signal tuples do not. This is document counterexample evaluation, not execution of the future B001 functional controls or independent review of this revision.

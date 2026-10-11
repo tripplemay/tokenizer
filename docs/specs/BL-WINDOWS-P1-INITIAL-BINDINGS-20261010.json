@@ -1,6 +1,9 @@
 {
   "format": "windows-p1-initial-bindings-v1",
   "created_at_utc": "2026-10-11T03:43:34Z",
+  "revision": 1,
+  "updated_at_utc": "2026-10-11T05:49:43Z",
+  "revision_scope": "B001 native tuple/source closure only; original BLOCKED report preserved; fresh review still required",
   "role": "supporting Planner; harness-rules section 1.5",
   "status": "proposal-requires-fresh-independent-pre-scope",
   "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
@@ -59,6 +62,18 @@
     {"after":"any","when":"invalid-admission-or-counter-or-clock","action":"stop-unknown","skip_reason":"budget-admission-denied"},
     {"after":"start","when":"checks-failed","action":"do-not-run","skip_reason":"synthetic-checks-not-passed"}
   ],
+  "native_tuple_closure": {
+    "api_return": {"metadataSource":"api-return","workerKind":"ok","errorName":null,"errorCode":null,"completed":{"status":0,"signal":null},"clean_refused":{"status":"safe-nonzero-returned-integer","signal":null}},
+    "api_throw": {"metadataSource":"api-throw","status":null,"signal":null,"error_source":"actual runBoundedSubprocess thrown instance only","timeout":{"workerKind":"timeout","errorName":"BoundedSubprocessTimeoutError","errorCode":null},"output":{"errorName":"BoundedSubprocessOutputError","errorCode":null},"launch":{"errorName":"BoundedSubprocessLaunchError","errorCode":"safeCode(actual error.code); absent => null"},"supervision":{"errorName":"BoundedSubprocessSupervisionError","errorCode":null}},
+    "not_started_or_unknown_source": {"status":null,"signal":null,"errorName":null,"errorCode":null},
+    "normal_return_equality_sources":["guard child-exit","guard child-close","old-trace child-exit","old-trace child-close"],
+    "identity_binding":["unique admitted native childPid","owning worker pid","fixed caseId/root","exact script/argv admission"],
+    "native_exit_close_required":"all four present, unique, same owned handle and mutually equal; normal returns also equal API status/signal",
+    "node_worker_spawn_sync_status_is_native_status":false,
+    "throw_path_close_fields_copied_to_api_return_fields":false,
+    "missing_duplicate_contradictory_or_unavailable_source":"unknown; no progression; safe rebuild only",
+    "additional_worker_output_or_host_native_query":false
+  },
   "strict_append": {
     "lock_paths":["$OWNED/guard.jsonl.append-lock","$OWNED/trace.jsonl.append-lock","$RUN_ROOT/counter.jsonl.append-lock"],
     "wrapped_targets":["TW_PARITY_GUARD_LOG","TW_TRACE","TW_PARITY_COUNTER"],
@@ -107,11 +122,26 @@
       "nativeOutcome":{"enum":["completed","timeout","refused","output","launch","supervision","not-started","unknown"]},
       "skipReason":{"enum":[null,"writer-control-not-complete","original-p1-complete-no-reproduction","direct-invoke-complete-no-refinement","prior-observation-unknown","budget-admission-denied","synthetic-checks-not-passed","setup-or-outcome-unknown"]},
       "safeCode":{"enum":[null,"ENOENT","ENOTDIR","ELOOP","EACCES","EPERM","EIO","EBUSY","EINVAL","ENOSPC","EMFILE","ENFILE","EPIPE","ETIMEDOUT","EEXIST","EROFS","ENAMETOOLONG","ENODEV","ENOMEM","ESRCH","UNKNOWN","ERR_INVALID_ARG_TYPE","ERR_OUT_OF_RANGE","ERR_INVALID_ARG_VALUE","ERR_CHILD_PROCESS_STDIO_MAXBUFFER","TW_PARITY_BUDGET","TW_MARKER_MISMATCH","TW_GIT_SETUP","PROBE_SETUP_ERROR","DIAGNOSTIC_FAILURE","LAUNCH_ERROR","NATIVE_ERROR","UNRECOGNIZED_ERROR_CODE","GUARD_HEALTH_IO","GUARD_LOG_IO_OR_LIMIT","GUARD_COUNTER_IO","GUARD_UNSAFE_METADATA","GUARD_LOG_LIMIT","TRACE_STATUS_WRITE","TRACE_IO_OR_SERIALIZATION","TRACE_LIMIT"]},
-      "native": {"type":"object","additionalProperties":false,"required":["outcome","status","signal","errorName","errorCode","elapsedMs","workerKind"],"properties":{
+      "native": {"type":"object","additionalProperties":false,"required":["outcome","metadataSource","status","signal","errorName","errorCode","elapsedMs","workerKind"],"properties":{
         "outcome":{"$ref":"#/$defs/nativeOutcome"},"status":{"$ref":"#/$defs/status"},"signal":{"$ref":"#/$defs/signal"},
-        "errorName":{"enum":[null,"BoundedSubprocessTimeoutError","BoundedSubprocessOutputError","BoundedSubprocessLaunchError","BoundedSubprocessSupervisionError","DiagnosticEvidenceError"]},"errorCode":{"$ref":"#/$defs/safeCode"},
+        "metadataSource":{"enum":["api-return","api-throw","not-started","unknown"]},
+        "errorName":{"enum":[null,"BoundedSubprocessTimeoutError","BoundedSubprocessOutputError","BoundedSubprocessLaunchError","BoundedSubprocessSupervisionError"]},"errorCode":{"$ref":"#/$defs/safeCode"},
         "elapsedMs":{"anyOf":[{"type":"number","minimum":0,"maximum":43000},{"type":"null"}]},"workerKind":{"enum":[null,"ok","timeout","output","launch","supervision"]}
-      }},
+      },"allOf":[
+        {"if":{"properties":{"metadataSource":{"const":"api-return"}}},"then":{"properties":{"workerKind":{"const":"ok"},"errorName":{"const":null},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"metadataSource":{"const":"api-throw"}}},"then":{"properties":{"status":{"const":null},"signal":{"const":null},"errorName":{"enum":["BoundedSubprocessTimeoutError","BoundedSubprocessOutputError","BoundedSubprocessLaunchError","BoundedSubprocessSupervisionError"]}}}},
+        {"if":{"properties":{"metadataSource":{"enum":["not-started","unknown"]}}},"then":{"properties":{"status":{"const":null},"signal":{"const":null},"errorName":{"const":null},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"completed"}}},"then":{"properties":{"metadataSource":{"const":"api-return"},"workerKind":{"const":"ok"},"status":{"const":0},"signal":{"const":null},"errorName":{"const":null},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"refused"}}},"then":{"properties":{"metadataSource":{"const":"api-return"},"workerKind":{"const":"ok"},"status":{"type":"integer","minimum":-2147483648,"maximum":4294967295,"not":{"const":0}},"signal":{"const":null},"errorName":{"const":null},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"timeout"}}},"then":{"properties":{"metadataSource":{"const":"api-throw"},"workerKind":{"const":"timeout"},"status":{"const":null},"signal":{"const":null},"errorName":{"const":"BoundedSubprocessTimeoutError"},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"output"}}},"then":{"properties":{"metadataSource":{"const":"api-throw"},"errorName":{"const":"BoundedSubprocessOutputError"},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"launch"}}},"then":{"properties":{"metadataSource":{"const":"api-throw"},"errorName":{"const":"BoundedSubprocessLaunchError"}}}},
+        {"if":{"properties":{"outcome":{"const":"supervision"}}},"then":{"properties":{"metadataSource":{"const":"api-throw"},"errorName":{"const":"BoundedSubprocessSupervisionError"},"errorCode":{"const":null}}}},
+        {"if":{"properties":{"outcome":{"const":"not-started"}}},"then":{"properties":{"metadataSource":{"const":"not-started"},"status":{"const":null},"signal":{"const":null},"errorName":{"const":null},"errorCode":{"const":null},"workerKind":{"const":null},"elapsedMs":{"const":null}}}},
+        {"if":{"properties":{"metadataSource":{"const":"not-started"}}},"then":{"properties":{"outcome":{"const":"not-started"}}}},
+        {"if":{"properties":{"metadataSource":{"const":"unknown"}}},"then":{"properties":{"outcome":{"const":"unknown"}}}},
+        {"if":{"properties":{"errorName":{"enum":[null,"BoundedSubprocessTimeoutError","BoundedSubprocessOutputError","BoundedSubprocessSupervisionError"]}}},"then":{"properties":{"errorCode":{"const":null}}}}
+      ]},
       "stage": {"type":"object","additionalProperties":false,"required":["pid","sequence","at","event","childPid","variant","marker","ordinal","arrivalElapsedMs"],"properties":{
         "pid":{"$ref":"#/$defs/pid"},"sequence":{"type":"integer","minimum":0,"maximum":10000000},"at":{"$ref":"#/$defs/uint"},"event":{"const":"native-fixed-stage"},"childPid":{"$ref":"#/$defs/pid"},"variant":{"$ref":"#/$defs/variant"},"marker":{"$ref":"#/$defs/marker"},"ordinal":{"type":"integer","minimum":0,"maximum":4},"arrivalElapsedMs":{"type":"number","minimum":0,"maximum":40000}
       }},
@@ -159,7 +189,12 @@
     "stream eofObserved equals stdoutEofObserved && stderrEofObserved; combinedBytes is saturated at 16385; per-stream counts saturated at 16384; without overflow combinedBytes equals their sum",
     "Both EOF flags and no stream error/parser error/stderr are required for complete-prefix or complete-sequence; missing end event is unknown; reasons match state",
     "Root stdout/stderr counters are capped individually at65536; combined nonoverflow bytes never exceed65536; root stderr/nonempty canary/overflow/metadata unknown/stop/abort makes observation incomplete",
-    "native completed requires workerKind ok/status0/signalnull/noerror/exact complete-sequence; timeout requires timeout class and workerKind timeout; refused requires workerKind ok/nonzero safe status",
+    "native completed/refused require actual API-return metadataSource/workerKind ok/errorName null/errorCode null/signal null; completed status0/full sequence; clean refused safe nonzero returned status/permitted prefix",
+    "All normal API return status/signal must equal all four unique owned native guard/trace child-exit/child-close facts, identity-bound to admitted childPid/owning worker/case/root/script; Node worker spawn-sync status/signal cannot substitute",
+    "Throw/nonreturn API status/signal remain null; errorName/code derive only from actual runBoundedSubprocess thrown API instance; timeout/output/supervision code null, launch safeCode(actual code) or null when absent; no DiagnosticEvidenceError renamed as API error",
+    "Throw-path native exit/close ownership and consistency are independent facts only, never copied into unavailable API return fields; timeout cannot fabricate status0/EIO/signal from class or trace",
+    "Missing/duplicate/contradictory API source/error/worker/admitted native exit-close tuples make observation unknown and stop T1/T2 progression; reject raw contradictory tuple and safe-rebuild unknown, not clean refusal",
+    "native timeout requires actual API-throw metadataSource/timeout class/null return status and signal/null code/workerKind timeout, plus all unchanged EOF/health/cleanup/provenance conditions for clean observation",
     "probe workerKind is reconciled against old trace spawn-sync worker result, never inferred from error class alone",
     "diagnostic_observation_complete requires all original root/guard/trace/cleanup/provenance/counter conditions, valid prefix and clean native outcome; markers never override an unknown",
     "skipped case has rootProcessStarted false/nativeLaunches0/empty markers/null stream/root/health/native not-started; unknown count/start must remain null rather than fabricate skips",
@@ -174,7 +209,7 @@
     "Public guard/trace JSONL is strictly rebuilt; invalid/missing evidence is suppressed to empty safe file with case incompleteness preserved; never raw-copy fallback",
     "wholeTreeAbsenceProven and all release flags are always false; root retained when cleanup unknown; never signal historical PIDs"
   ],
-  "required_future_controls": ["all-token-chunk-splits-and-LF-CRLF","timeout-prefix-immediate-safe-persistence","missing-EOF-event-health-or-stream-error","unsafe-bytes-canaries-stderr-and-order","handle-pid-case-script-identity","all-inclusive-caps-and-plus-one","concurrent-append-and-lock-failure","counter-and-clock-admission-boundaries","cleanup-trace-provenance-independent-unknown","every-selection-row-zero-skipped-launches","strict-extra-key-rejection","import-without-side-effects","exact-source-workflow-and-upload-file-set"],
+  "required_future_controls": ["all-token-chunk-splits-and-LF-CRLF","timeout-prefix-immediate-safe-persistence","missing-EOF-event-health-or-stream-error","unsafe-bytes-canaries-stderr-and-order","handle-pid-case-script-identity","all-inclusive-caps-and-plus-one","concurrent-append-and-lock-failure","counter-and-clock-admission-boundaries","cleanup-trace-provenance-independent-unknown","every-selection-row-zero-skipped-launches","strict-extra-key-rejection","import-without-side-effects","exact-source-workflow-and-upload-file-set","B001-actual-API-source-return-throw-and-owned-native-exit-close-counterexamples-at-T1-T2"],
   "performed":{"author_static_consistency_checks":true,"native_tests":false,"functional_tests":false,"implementation":false,"ci":false,"network":false,"dependency_install":false,"push":false,"state_or_memory_edits":false},
   "unresolved_bindings": [],
   "unverified_obligations":["actual additive-listener and inclusive-lock implementation correctness","synthetic controls and independent cross-family functional acceptance","runner provenance and actual clean EOF availability","observer perturbation and original PowerShell internal cause","whole process-tree absence and outstanding release gates"],
