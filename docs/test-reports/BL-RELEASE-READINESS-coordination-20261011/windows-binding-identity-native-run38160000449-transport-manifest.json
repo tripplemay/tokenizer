@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-11T17:33:04.279Z",
+  "role": "Coordinator immutable exact-source native CI capture only",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "run_id": 38160000449,
+  "attempt": 1,
+  "entries": [
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-61cf64e-publication-original.log",
+      "bytes": 148,
+      "sha256": "835421488f34972e3aa45a24bfad59151e6d4648fadfecdb775a9c5abbc70bdd"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-61cf64e-run-list-original.json",
+      "bytes": 283,
+      "sha256": "dc0eb77c7159136449493826c3884f8193a047ca9cc6d267d45d8e830efeab45"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-native-run38160000449-watch-original.log",
+      "bytes": 85,
+      "sha256": "1bbc25b4dfbe300f8724ac5cf8fa624a6dca8642b64c1f2fc80ac2f5482d6f2d"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-native-run38160000449-final-original.json",
+      "bytes": 12298,
+      "sha256": "13e64bc0d8d05ad4dbde18bc5bf0418758bb6c210c0d15e6b83892dc2cc157bb"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-native-run38160000449-jobs-original.json",
+      "bytes": 3116,
+      "sha256": "dc92f5d150a7c08ebbee610a66f1b2db8c2c88f5378ad00fa4468a662f4b9ce0"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-native-run38160000449-artifacts-original.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-native-run38160000449-full-original.log",
+      "bytes": 21556,
+      "sha256": "7bd3bff940792b1fe8b4fa4de6df544b6e0f9f773b401bce2596fb9856230a6c"
+    }
+  ]
+}

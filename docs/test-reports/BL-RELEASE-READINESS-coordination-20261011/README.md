@@ -2,7 +2,14 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 17:19 UTC
+## Latest checkpoint: 17:33 UTC
+
+- Independent Kimi passive supplement confirms package-owned lock-absent SWC wasm fallback and rejects r0's contrary sentence; original81/own48/finalverify evidence remains intact, no new functional/security/native acceptance. Original supplement, all logs/hashes and the metadata50-vs51 count discrepancy remain separate artifacts.
+- Coordinator published exact C002 source61 only to approved non-main branch. [Run38160000449](https://github.com/tripplemay/tokenizer/actions/runs/38160000449), attempt1: checkout/setup-node **success**; prior binding assertion is absent, but **prepare fails with generic diagnostic evidence unavailable** and no underlying branch/error. npmci/synthetic/INITIAL skipped; seal fails with same generic message, artifacts0. No rerun. Direct Windows raw file hashes/config remain unobserved.
+- `windows-binding-identity-native-run38160000449-coordinator-adjudication.json` is the current detailed checkpoint; seven new CI originals are retained. Fresh supporting Planner is commissioned to passively locate reachable failure branches and propose minimal safe observability, not implement or run anything.
+- Fresh17:33 remote main207/non-main61; public health ok=true still production92. Parent runtime and canonical state unchanged, main clean/not pushed, production not deployed. Compose HARD_STOP, key deferral and all formal release/recovery gates remain open.
+
+## Historical checkpoint: 17:19 UTC
 
 - Fresh Kimi C002 r0 returned907s before1800s cap, mechanical COMPLETED and immutable original OFFLINE supporting PASS. Raw unchanged81, own48 and finalverify0 are retained with all initial projection/type-check failures in37 byte-equal originals; no source changes or CI.
 - Publication remains **HOLD**: the report says no lock-absent install/SWC fallback, but its own npm-debug proves package-owned wasm1.16.13 installation. The original report is not rewritten. `windows-binding-identity-kimi-r0-coordinator-adjudication.json` commissions the sole bounded fresh Kimi passive evidence supplement, not an install/test rerun or substitute functional acceptance. All package bytes and npm originals are retained.
