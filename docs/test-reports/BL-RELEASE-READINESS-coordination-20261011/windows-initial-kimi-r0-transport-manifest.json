@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-11T13:56:58.353Z",
+  "source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "receipt_meta_semantically_equal": true,
+  "original_directory_files": 25,
+  "evaluator_tracked_diff_empty": true,
+  "artifacts": [
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/REPORT.md",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/REPORT.md",
+      "bytes": 16218,
+      "sha256": "06b650ba57ceecd28c27573a026258d7a78713b4ee9952ebe1aa82b2499a4934"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.raw.json",
+      "bytes": 31121,
+      "sha256": "1abb9dc58833422d1ae6d55ec5b0bd972ee38107df4e56c67e7a44a835b8641e"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/existing-81.stdout.log",
+      "bytes": 276,
+      "sha256": "59835882e0e285287d6d2c2667df6418680931d889bc4138fb6f5f6ade757f0f"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.status.txt",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.status.txt",
+      "bytes": 14,
+      "sha256": "9fa634d2f4955003a200db128ff51ec9ae38ad27431388edddf0ab802ded798d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-ci.stdout.log",
+      "bytes": 264,
+      "sha256": "cc45108715be6c4c86f08ca1ed5eb3a2bf60ee366444304f88502ff225fdf35d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.status.txt",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.status.txt",
+      "bytes": 14,
+      "sha256": "7d2526be3a4d4d2669fffbed3747faf6bc550e1df57dd8f07400a9d244e3b5b3"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.stderr.log",
+      "bytes": 208,
+      "sha256": "7402a47041137a8c9dd4553698d55255fd0371f36d9aae3536855454931e917d"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run1-TYPE-ERROR.stdout.log",
+      "bytes": 871,
+      "sha256": "ee5ebcf0dfec1b01a32ebaa6c8cd6ba4db9a18decfcc595afd0a3794bdffef95"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.status.txt",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.status.txt",
+      "bytes": 14,
+      "sha256": "69d8013fbdb9e47a5bb583849d7745f6af72e65d181ca5f48a0c5577108bbc34"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.stderr.log",
+      "bytes": 868,
+      "sha256": "65ed862b7d81f7e78d0d7d99b1340f614f25a8022688a4f3b3508589a6121cc7"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/npm-run-verify.run2.stdout.log",
+      "bytes": 404,
+      "sha256": "a45174142e45406a66fa48d175c013ddd12f905a62867295c1f374c8ac806567"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.raw.json",
+      "bytes": 21983,
+      "sha256": "e947b44058d10c3980bbee61a201cb3389dbacd5b8bb3a7d2670c6ea24cfd5fe"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run1-PROBE-AUTHOR-ERROR.stdout.log",
+      "bytes": 275,
+      "sha256": "48515f8a115a6cc97cb9fbcedca96652137c3361521923c43c638067b06fc301"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.raw.json",
+      "bytes": 21940,
+      "sha256": "225a49e746fd9ea11c2afaa28a9a5ca78794a35267e9043ed618e9e9e2642a75"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run2.stdout.log",
+      "bytes": 280,
+      "sha256": "8634af61f3120d4d3fcbc8a8d7fc720664bde87b5eff5696f379cfd906fa0da0"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.raw.json",
+      "bytes": 19792,
+      "sha256": "b3c3aa54786bd1e205daf68feefc3df983cba3c1e5e08bee138a5a363a02a206"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run3.stdout.log",
+      "bytes": 280,
+      "sha256": "61a7b9c0b5f489ac4016458a6580c0f798dd594c01d880a7e6176481952d3a1b"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.raw.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.raw.json",
+      "bytes": 19790,
+      "sha256": "ffb24f6580f9b9a6a3d3b13e217f7437b89d561271d2ac8f5699777a882bce90"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.stderr.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.stdout.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-kimi-r0-20261011/own-probes.run4-final.stdout.log",
+      "bytes": 286,
+      "sha256": "cc94f76c7bb7013013725dfa48d98662eb96dd4355969273b517c0301c042c84"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-INITIAL-SUPPORT-verdict.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/docs/test-reports/BL-WINDOWS-P1-INITIAL-SUPPORT-verdict.json",
+      "bytes": 5264,
+      "sha256": "c669ff9c0a076cf64706b49144b7a2116c6fd497c3aecfaad31759ed4a30598a"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-runtime-original.log",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/run-windows-p1-initial-888a5ac-kimi-r0.log",
+      "bytes": 311269,
+      "sha256": "e5f25b6424be8083ec699b268da984069437b16d7bc6bd6f26faadffca9884bc"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-own-probes-original.ts.txt",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0/tests/evaluator/windows-p1-initial-r0-probes.test.ts",
+      "bytes": 32472,
+      "sha256": "545be5ac4dd9378b948c94e73f0c4cd9b9d468e4c103457bf94369de20d69e5c"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-durable-meta-original.json",
+      "original": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-dispatch-state-20261011/run-meta-windows-p1-initial-888a5ac-kimi-r0.json",
+      "bytes": 1488,
+      "sha256": "ab8b3934c389487f354dd3f77ea1f2616903a630b3618ae3b6c6a338ec596bd3"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-receipt-original.json",
+      "original": "coordinator captured dispatch output",
+      "bytes": 1429,
+      "sha256": "e3020f542e92a91ecdcc8260788aaf4cb0c541641c8a7426561e4bd6be990031"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-dispatch-original.log",
+      "original": "coordinator captured dispatch output",
+      "bytes": 1090,
+      "sha256": "8d004c3af4de5ddb7bdc77e78e9af617c6d0961e5050fdd21a4f962aa8c0ea5a"
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-initial-kimi-r0-validation-original.txt",
+      "original": "coordinator captured dispatch output",
+      "bytes": 1437,
+      "sha256": "cb75794848caa441d6f12ad62efa2991dc97551ff91b1b915f1893928f7b5b75"
+    }
+  ],
+  "stats": {
+    "existing-81": {
+      "passed": 81,
+      "failed": 0,
+      "pending": 0
+    },
+    "own-probes.run1-PROBE-AUTHOR-ERROR": {
+      "passed": 45,
+      "failed": 1,
+      "pending": 0
+    },
+    "own-probes.run2": {
+      "passed": 45,
+      "failed": 1,
+      "pending": 0
+    },
+    "own-probes.run3": {
+      "passed": 46,
+      "failed": 0,
+      "pending": 0
+    },
+    "own-probes.run4-final": {
+      "passed": 46,
+      "failed": 0,
+      "pending": 0
+    }
+  },
+  "observed_model_tool_calls": {
+    "Bash": 26,
+    "Read": 8,
+    "Write": 3,
+    "Edit": 4
+  }
+}

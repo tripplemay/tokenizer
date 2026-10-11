@@ -1,0 +1,15 @@
+
+> tokenizer@0.1.0 verify
+> prisma generate && tsc --noEmit
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 100ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+tests/evaluator/windows-p1-initial-r0-probes.test.ts(320,30): error TS2493: Tuple type '[_case: any, root: string]' of length '2' has no element at index '2'.
+tests/evaluator/windows-p1-initial-r0-probes.test.ts(320,38): error TS2493: Tuple type '[_case: any, root: string]' of length '2' has no element at index '3'.
+tests/evaluator/windows-p1-initial-r0-probes.test.ts(320,55): error TS2493: Tuple type '[_case: any, root: string]' of length '2' has no element at index '4'.

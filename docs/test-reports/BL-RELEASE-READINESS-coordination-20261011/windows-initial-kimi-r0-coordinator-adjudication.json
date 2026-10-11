@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-11",
+  "role": "Coordinator artifact transport and bounded diagnostic publication; not functional Evaluator or human gate decision",
+  "task_id": "windows-p1-initial-888a5ac-kimi-r0",
+  "source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "transport_manifest": "windows-initial-kimi-r0-transport-manifest.json",
+  "transport": {
+    "report_directory_files": 25,
+    "total_original_artifacts": 32,
+    "all_compared_original_bytes_equal": true,
+    "receipt_meta_semantically_equal": true,
+    "mechanical_receipt_validation": "COMPLETED, exit0",
+    "outcome": "RETURNED",
+    "duration_s": 1056,
+    "effective_timeout_s": 1800,
+    "evaluator_tracked_diff_from_source": "empty",
+    "own_probe_transport": "Archived as .ts.txt only; not integrated into executable parent tests"
+  },
+  "independent_verdict": {
+    "model_family": "kimi",
+    "generator_family": "codex",
+    "original_verdict": "PASS",
+    "scope": "New INITIAL diagnostic offline synthetic/mocked support only",
+    "existing_tests": "81 passed, 0 failed, 0 pending",
+    "own_final_tests": "46 passed, 0 failed, 0 pending",
+    "verify": "run2 exit0",
+    "initial_failures_retained": "Own runs1/2 each 45pass/1fail; verify run1 TS2493 exit2; originals remain unchanged",
+    "verdict_sha256": "c669ff9c0a076cf64706b49144b7a2116c6fd497c3aecfaad31759ed4a30598a",
+    "report_sha256": "06b650ba57ceecd28c27573a026258d7a78713b4ee9952ebe1aa82b2499a4934",
+    "parent_F004_F005_or_release_acceptance": false
+  },
+  "observed_deviations": [
+    {
+      "id": "KI001",
+      "evidence": "Original runtime log records 3 Write and 4 Edit calls for evaluator-owned probes and reports despite apply_patch instructions",
+      "disposition": "Process instruction deviation retained, not blanket contract compliance. Exact source inputs and existing tests were not changed. No evaluator probe code is integrated or published. This does not grant any production or full-release acceptance."
+    },
+    {
+      "id": "KI002",
+      "evidence": "REPORT.md section2 says deprecation warnings only; npm-ci.stdout.log line7 explicitly reports 7 high severity vulnerabilities",
+      "disposition": "Raw dependency audit warning takes precedence; original report/verdict remain unchanged. Dependency security remains open. No audit fix, dependency edit or full-release security clearance is authorized."
+    }
+  ],
+  "bounded_publication": {
+    "authorized": true,
+    "authority": "Retained explicit user approval for Coordinator non-main CI publication; independent actual-diff r1 scope PASS plus different-family offline supporting acceptance now returned",
+    "branch": "codex/windows-p1-stages-ci-20261010",
+    "exact_source": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "remote_branch_preflight": "Absent; git ls-remote exit0 with no matching ref",
+    "push": "Exact SHA to this ref only, non-force; no report-head or main push",
+    "workflow": ".github/workflows/windows-p1-stages-diagnostic.yml",
+    "run_limit": "One initial push-triggered run; no rerun-to-green, native variants or deadline expansion",
+    "isolation": "Read-only contents permission, no Secrets/environment/deploy; other workflow push filters exclude this ref",
+    "native_scope": "Locked T0-T3 sequential selection, max4 native launches; all bounds and unknown-stop rules unchanged",
+    "upload_scope": "Exactly16 sealed allowlisted files, 15-entry manifest; gated verification and no raw fallback",
+    "native_result": "Pending; local supporting PASS is not native evidence"
+  },
+  "source_integrated_into_parent_runtime": false,
+  "parent_runtime_diff_from_76d916b": "empty",
+  "main_push_or_production_mutation": false,
+  "compose_chain": "HARD_STOP; no third attempt",
+  "key_work": "deferred by user",
+  "pending_gate_written": false,
+  "state_machine_updates": false,
+  "release_ready": false
+}

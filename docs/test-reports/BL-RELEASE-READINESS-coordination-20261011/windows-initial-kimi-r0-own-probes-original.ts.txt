@@ -1,0 +1,447 @@
+// Independent Evaluator (kimi-r0) ADDITIVE probes for the Windows P1 INITIAL diagnostic.
+// Compact table-driven checks BEYOND the existing 81 controls in
+// tests/diagnostics/windows-p1-stages.test.ts. Offline synthetic/mocked only:
+// pure imports, test-local VM of the exact runCase source, mock FS/clock/PID data.
+// No live native/API/OS claims. Hash-locked implementation:
+// docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs
+//   sha256 3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b
+import { afterAll, describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import { join, resolve } from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import * as p1 from '../../docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs';
+
+type Row = Record<string, any>;
+const temporary = process.env.TMPDIR ?? process.env.TEMP;
+if (!temporary) throw new Error('owned test temporary base required');
+const owned = fs.mkdtempSync(join(temporary, 'wp1-kimi-r0-'));
+afterAll(() => fs.rmSync(owned, { recursive: true, force: true }));
+const repo = resolve('.');
+const jsonl = (rows: Row[]) => Buffer.from(rows.map(r => JSON.stringify(r) + '\n').join(''));
+const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v));
+const directory = () => fs.mkdtempSync(join(owned, 'case-'));
+const io = () => Object.fromEntries(['mkdirSync', 'rmdirSync', 'lstatSync', 'fstatSync', 'openSync', 'readFileSync', 'readSync',
+  'writeSync', 'writeFileSync', 'closeSync', 'appendFileSync', 'realpathSync', 'readdirSync', 'rmSync'].map(k => [k, (fs as any)[k].bind(fs)]));
+const admitted = () => ({ event: 'powershell-admission', kind: 'smoke' });
+const scriptBytes = (variant: string, count?: number, newline = '\n') => {
+  const c = p1.CASES.find(c => c.variant === variant)!;
+  return Buffer.from(c.sequence.slice(0, count ?? c.sequence.length).map(m => p1.BINDINGS.tokens[m] + newline).join(''));
+};
+
+// Minimal fixture builder (own, compact): consistent guard/trace/root/health for one variant.
+function fixture(variant = 'T1', outcome = 'completed', count?: number): any {
+  const c = p1.CASES.find(c => c.variant === variant)!;
+  const markers = c.sequence.slice(0, count ?? c.sequence.length);
+  const status = outcome === 'refused' ? 1 : outcome === 'timeout' ? null : 0;
+  const signal = outcome === 'timeout' ? 'SIGKILL' : null;
+  const bytes = scriptBytes(variant, markers.length).length;
+  const guard: Row[] = [
+    { pid: 100, sequence: 0, at: 1, event: 'guard-preload', commonBudgetGuardOn: true, oldTracePreloadOn: true },
+    { pid: 200, sequence: 0, at: 1, event: 'guard-preload', commonBudgetGuardOn: true, oldTracePreloadOn: true },
+    { pid: 200, sequence: 1, at: 1, event: 'spawn', executable: 'powershell.exe', childPid: 300, detached: false },
+    ...markers.map((marker, ordinal) => ({ pid: 200, sequence: 2 + ordinal, at: 1, event: 'native-fixed-stage', childPid: 300,
+      variant, marker, ordinal, arrivalElapsedMs: ordinal + 1 })),
+    { pid: 200, sequence: 2 + markers.length, at: 1, event: 'child-exit', executable: 'powershell.exe', childPid: 300, status, signal },
+    { pid: 200, sequence: 3 + markers.length, at: 1, event: 'native-fixed-stream-end', childPid: 300, variant, stdoutBytes: bytes, stderrBytes: 0,
+      combinedBytes: bytes, acceptedMarkers: markers.length, stdoutEofObserved: true, stderrEofObserved: true, eofObserved: true,
+      state: markers.length === c.sequence.length ? 'complete-sequence' : 'complete-prefix', reason: 'none' },
+    { pid: 200, sequence: 4 + markers.length, at: 1, event: 'child-close', executable: 'powershell.exe', childPid: 300, status, signal },
+    { pid: 100, sequence: 1, at: 1, event: 'spawn-sync', executable: 'node', childPid: 200, status: 0, signal: null, code: null }
+  ];
+  const trace: Row[] = [
+    { pid: 100, sequence: 0, at: 1, monotonicMs: 1, event: 'preload', node: 'v22.22.0', uv: '1.51.0' },
+    { pid: 200, sequence: 0, at: 1, monotonicMs: 1, event: 'preload', node: 'v22.22.0', uv: '1.51.0' },
+    { pid: 200, sequence: 1, at: 1, monotonicMs: 1, event: 'spawn', executable: 'powershell.exe', childPid: 300, detached: false },
+    { pid: 200, sequence: 2, at: 1, monotonicMs: 1, event: 'child-exit', executable: 'powershell.exe', childPid: 300, status, signal },
+    { pid: 200, sequence: 3, at: 1, monotonicMs: 1, event: 'child-close', executable: 'powershell.exe', childPid: 300, status, signal },
+    { pid: 100, sequence: 1, at: 1, monotonicMs: 1, event: 'spawn-sync', executable: 'node', childPid: 200, elapsedMs: 1,
+      status: 0, signal: null, code: null, workerKind: outcome === 'timeout' ? 'timeout' : outcome === 'launch' ? 'launch' : 'ok' }
+  ];
+  const native = outcome === 'launch'
+    ? { outcome: 'launch', metadataSource: 'api-throw', status: null, signal: null,
+        errorName: 'BoundedSubprocessLaunchError', errorCode: 'ENOENT', elapsedMs: 1, workerKind: 'launch' }
+    : { outcome, metadataSource: outcome === 'timeout' ? 'api-throw' : 'api-return', status: outcome === 'timeout' ? null : status,
+        signal: null, errorName: outcome === 'timeout' ? 'BoundedSubprocessTimeoutError' : null, errorCode: null,
+        elapsedMs: 1, workerKind: outcome === 'timeout' ? 'timeout' : 'ok' };
+  return { variant, guard, trace, launches: 1, counterKnown: true,
+    probe: { format: 'windows-p1-initial-probe-v1', variant, caseId: c.caseId, scriptSha256: c.scriptSha256,
+      probeSetupComplete: true, native, releaseAcceptance: false },
+    root: { pid: 100, status: 0, signal: null, metadataUnknown: false, stopped: false, stopReason: null, launchCode: null,
+      stdoutBytes: 256, stderrBytes: 0, outputBoundExceeded: false, canaryFound: false },
+    health: { expectedPids: [100, 200], guardComplete: true, traceComplete: true, guardInvalid: false, traceInvalid: false,
+      diagnosticAbortReasons: [], provenanceUnknown: false, cleanupUnknown: false, possibleLiveAtReturn: [], possibleLiveAfterOwnedCap: [],
+      rootRetained: false, historicalPidsSignalled: false, wholeTreeAbsenceProven: false } };
+}
+
+// Own copy of the sanctioned pattern: the ACTUAL runCase/expectedProcesses source evaluated in a
+// test-local VM with only mock data injected. One mocked launcher, signal-0 PID queries only.
+async function actualCaseWithMocks(f: any, errorFor: (pid: number, sample: number) => unknown) {
+  const output = directory(), runDirectory = join(output, 'run-root');
+  fs.mkdirSync(runDirectory); fs.writeFileSync(join(runDirectory, 'counter.jsonl'), '');
+  const c = p1.CASES.find(c => c.variant === f.variant)!;
+  const source = fs.readFileSync(join(repo, 'docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs'), 'utf8');
+  const start = source.indexOf('async function runCase('), end = source.indexOf('function retainedRoots(', start);
+  const processesStart = source.indexOf('function expectedProcesses('), processesEnd = source.indexOf('async function runRoot(', processesStart);
+  expect(start).toBeGreaterThanOrEqual(0); expect(end).toBeGreaterThan(start);
+  expect(processesStart).toBeGreaterThanOrEqual(0); expect(processesEnd).toBeGreaterThan(processesStart);
+  const query = vi.fn((pid: number, signal: number) => {
+    expect(signal).toBe(0);
+    const error = errorFor(pid, Math.floor((query.mock.calls.length - 1) / 3));
+    if (error) throw error;
+    return true;
+  });
+  const remove = vi.fn(fs.rmSync.bind(fs));
+  const launch = vi.fn(async (_case: any, root: string, _env?: any, _caseDeadline?: number, _deadline?: number) => {
+    fs.writeFileSync(join(root, 'guard.jsonl'), jsonl(f.guard)); fs.writeFileSync(join(root, 'trace.jsonl'), jsonl(f.trace));
+    fs.appendFileSync(join(runDirectory, 'counter.jsonl'), jsonl([admitted()]));
+    return { root: f.root, probe: f.probe };
+  });
+  const environment = vi.fn((_system: Row, _root: string, _runDirectory: string, _caseDeadline: number, _deadline: number) => ({}));
+  const context = vm.createContext({ join, assert, Date: { now: () => 1 }, Math, Boolean, performance: { now: () => 0 },
+    setTimeout: (done: () => void) => done(), BOUNDS: p1.BOUNDS, scratch: output,
+    original: { ...io(), rmSync: remove }, process: { kill: query }, runRoot: launch, fixedEnvironment: environment,
+    pid: (p: number) => Number.isSafeInteger(p) && p > 0 && p <= 0xffffffff,
+    readOwned: (path: string, cap: number) => { const bytes = fs.readFileSync(path); assert(bytes.length <= cap); return bytes; },
+    readRows: (path: string, family: string) => p1.parseRows(fs.readFileSync(path), family,
+      family === 'counter' ? p1.BOUNDS.counter_bytes : p1.BOUNDS.guard_bytes),
+    healthStates: () => ({ complete: true, invalid: false }), sorted: (values: string[]) => [...new Set(values)].sort(),
+    counterState: p1.counterState, caseAdmission: p1.caseAdmission, evaluateCase: p1.evaluateCase,
+    unknownCase: p1.unknownCase, skippedCase: p1.skippedCase,
+    writeText: (path: string, text: string) => fs.writeFileSync(path, text) });
+  vm.runInContext(source.slice(processesStart, processesEnd) + source.slice(start, end), context,
+    { filename: 'kimi-r0-unchanged-actual-runCase-test-vm.mjs' });
+  const record = await context.runCase(c, runDirectory, 600001, {});
+  return { record, query, launch, remove, environment, root: join(runDirectory, c.caseId), output, runDirectory, c };
+}
+
+describe('kimi-r0-additive parser pending-line and clock boundaries', () => {
+  it.each([
+    { bytes: 29, reason: 'unterminated-line', state: 'invalid' }, // exact pending_line_bytes fits, EOF ends it
+    { bytes: 30, reason: 'unexpected-bytes', state: 'invalid' },  // +1 byte overflows the bounded pending line
+  ])('distinguishes a $bytes-byte unterminated ASCII line by exact reason', ({ bytes, reason, state }) => {
+    const r = p1.createRecorder('T0', () => {}, () => 1);
+    r.feed('stdout', Buffer.alloc(bytes, 65)); r.end('stdout'); r.end('stderr');
+    const end = r.finish();
+    expect(end?.state).toBe(state); expect(end?.reason).toBe(reason); expect(end?.acceptedMarkers).toBe(0);
+  });
+  it('marks a marker arriving after the 40000ms case lifetime as stream-error unknown, never accepted', () => {
+    let time = 0;
+    const events: Row[] = [];
+    const r = p1.createRecorder('T0', e => events.push(e), () => time);
+    time = 40001; // observer monotonic clock jumps past the frozen case budget before the token
+    r.feed('stdout', scriptBytes('T0')); r.end('stdout'); r.end('stderr');
+    const end = r.finish();
+    expect(r.markers).toEqual([]); expect(events.filter(e => e.event === 'native-fixed-stage')).toHaveLength(0);
+    expect(end?.state).toBe('unknown'); expect(end?.reason).toBe('stream-error');
+  });
+  it('accepts both-stream EOF in either order and ignores feed after finalization', () => {
+    const r = p1.createRecorder('T1', () => {}, () => 1);
+    r.feed('stdout', scriptBytes('T1'));
+    r.end('stderr'); r.end('stdout'); // stderr EOF first: stream order must not matter
+    const end = r.finish();
+    expect(end?.state).toBe('complete-sequence'); expect(end?.eofObserved).toBe(true);
+    r.feed('stdout', Buffer.from('junk\n')); r.feed('stderr', Buffer.from('x'));
+    const again = r.finish();
+    expect(again).toBeNull(); // exactly one stream-end; post-finish bytes are dropped
+  });
+  it('reports a clean empty prefix with both true EOFs as complete-prefix, not success', () => {
+    const r = p1.createRecorder('T1', () => {}, () => 1);
+    r.end('stdout'); r.end('stderr');
+    const end = r.finish();
+    expect(end?.state).toBe('complete-prefix'); expect(end?.eofObserved).toBe(true);
+    expect(end?.acceptedMarkers).toBe(0); expect(end?.reason).toBe('none');
+  });
+});
+
+describe('kimi-r0-additive append-gate transaction atomicity', () => {
+  it('a throwing candidate build leaves file bytes unchanged and releases the mkdir lock', () => {
+    const dir = directory(), file = join(dir, 'guard.jsonl'); fs.writeFileSync(file, jsonl([fixture().guard[0]]));
+    const before = fs.readFileSync(file);
+    const gate = p1.createAppendGate([{ path: file, cap: 524288, family: 'guard' }]);
+    expect(() => gate.transaction(file, () => { throw new Error('mock candidate failure'); })).toThrow();
+    expect(fs.readFileSync(file)).toEqual(before);
+    expect(fs.existsSync(file + '.append-lock')).toBe(false); // no stale lock, no takeover needed
+  });
+  it.each([
+    ['trace.jsonl', 'TRACE_IO_OR_SERIALIZATION'],
+    ['guard.jsonl', 'GUARD_LOG_IO_OR_LIMIT'],
+    ['counter.jsonl', 'GUARD_LOG_IO_OR_LIMIT'],
+  ])('fails closed with the fixed safe code for %s and reports the exact path', (name, code) => {
+    const dir = directory(), file = join(dir, name); fs.writeFileSync(file, '');
+    const onFailure = vi.fn();
+    const family = name.startsWith('trace') ? 'trace' : name.startsWith('counter') ? 'counter' : 'guard';
+    const gate = p1.createAppendGate([{ path: file, cap: 16384, family }], io(), onFailure);
+    const methodsRow = family === 'counter' ? admitted() : fixture()[family === 'trace' ? 'trace' : 'guard'][0];
+    fs.mkdirSync(file + '.append-lock'); // contention forces acquisition failure
+    let thrown: any;
+    try { gate.transaction(file, () => jsonl([methodsRow])); } catch (error) { thrown = error; }
+    expect(thrown?.code).toBe(code);
+    expect(onFailure).toHaveBeenCalledWith(file);
+    fs.rmdirSync(file + '.append-lock');
+    expect(fs.statSync(file).size).toBe(0);
+  });
+  it('counter admission transaction honors the exact inclusive 16384-byte cap and refuses +1', () => {
+    const dir = directory(), file = join(dir, 'counter.jsonl'); fs.writeFileSync(file, '');
+    const gate = p1.createAppendGate([{ path: file, cap: 16384, family: 'counter' }]);
+    const row = jsonl([admitted()]);
+    const n = Math.floor(16384 / row.length); // whole rows that fit exactly under the cap
+    gate.transaction(file, () => Buffer.concat(Array.from({ length: n }, () => row)));
+    expect(fs.statSync(file).size).toBe(n * row.length);
+    const remainder = 16384 - n * row.length;
+    if (remainder > 0) {
+      // top up to the exact cap through the same transaction path with a pad-sized check:
+      // counter family forbids non-row bytes, so instead prove the +1 refusal at the boundary.
+    }
+    expect(() => gate.transaction(file, () => jsonl([admitted()]))).toThrow(); // would cross 16384
+    expect(fs.statSync(file).size).toBe(n * row.length);
+    expect(fs.existsSync(file + '.append-lock')).toBe(false);
+    expect(() => p1.counterState(Buffer.alloc(16385))).toThrow(); // oversized counter stays unavailable
+  });
+});
+
+describe('kimi-r0-additive frozen budgets and native admission edges', () => {
+  it('freezes every locked budget constant, launch shape and environment contract byte-for-byte', () => {
+    expect(p1.BINDINGS.bounds).toEqual({ job_minutes: 12, total_ms: 600000, case_ms: 40000, cleanup_ms: 3000,
+      operation_ms: 10000, native_ms: 7000, smoke_ps: 38, total_ps: 76, initial_max_ps: 4,
+      native_output_bytes: 16384, counter_bytes: 16384, case_output_bytes: 65536,
+      guard_bytes: 524288, trace_bytes: 524288, pending_line_bytes: 29 });
+    expect(p1.BINDINGS.native).toEqual({ command: 'powershell.exe',
+      argv_prefix: ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command'],
+      shell: false, windowsHide: true, max_launches_per_case: 1, kind: 'smoke', requiredPs: 1 });
+    expect(p1.BINDINGS.environment.fixed_values).toEqual({ TW_PARITY_KIND: 'smoke', TW_PARITY_CASE: 'smoke',
+      TW_PARITY_ARM: 'E0', TW_PARITY_TRACE: 'on', GIT_CONFIG_NOSYSTEM: '1', GIT_TERMINAL_PROMPT: '0' });
+    expect(p1.BINDINGS.environment.extra_keys).toEqual([]);
+  });
+  it.each([
+    { usedTotal: 3, usedSmoke: 3, expected: null },                                 // fourth INITIAL admission allowed
+    { usedTotal: 4, usedSmoke: 4, expected: 'total-powershell-budget-insufficient' }, // max4 INITIAL ceiling
+    { usedTotal: 3, usedSmoke: 39, expected: 'unknown-native-budget' },              // smoke>total corrupt clock/counter
+  ])('native admission at usedTotal=$usedTotal/usedSmoke=$usedSmoke is $expected', ({ usedTotal, usedSmoke, expected }) => {
+    expect(p1.nativeAdmission({ now: 1, deadline: 10001, timeoutMs: 7000, usedTotal, usedSmoke })).toBe(expected);
+  });
+  it('freezes 10000ms native remaining and 43000ms case remaining as strict inclusive boundaries', () => {
+    // Binding: native admission requires remaining >= 10000ms INCLUSIVE (7000 native + 3000 cleanup).
+    expect(p1.nativeAdmission({ now: 1, deadline: 10000, timeoutMs: 7000, usedTotal: 0, usedSmoke: 0 }))
+      .toBe('native-cleanup-output-allowance-insufficient'); // 9999 remaining: denied
+    expect(p1.nativeAdmission({ now: 0, deadline: 10000, timeoutMs: 7000, usedTotal: 0, usedSmoke: 0 })).toBeNull(); // exactly 10000: admitted
+    expect(p1.nativeAdmission({ now: 0, deadline: 10001, timeoutMs: 7000, usedTotal: 0, usedSmoke: 0 })).toBeNull();
+    expect(p1.caseAdmission({ now: 1, deadline: 43000, usedTotal: 0, usedSmoke: 0 })).toBe(false); // 42999 remaining: denied
+    expect(p1.caseAdmission({ now: 0, deadline: 43000, usedTotal: 0, usedSmoke: 0 })).toBe(true);  // exactly 43000: admitted
+    expect(p1.caseAdmission({ now: 0, deadline: 43001, usedTotal: 0, usedSmoke: 0 })).toBe(true);
+    expect(p1.caseAdmission({ now: 0, deadline: 600001, usedTotal: 0, usedSmoke: 0 })).toBe(false); // beyond total budget
+  });
+});
+
+describe('kimi-r0-additive B001 owning-worker and four-fact closure', () => {
+  it('a completed API return contradicting any one of the four owned exit/close facts is unknown, never progressed', () => {
+    for (const mutate of [
+      (f: any) => { f.guard.find((e: Row) => e.event === 'child-close').status = null; },
+      (f: any) => { f.guard.find((e: Row) => e.event === 'child-exit').signal = 'SIGTERM'; },
+      (f: any) => { f.trace.find((e: Row) => e.event === 'child-exit').status = 1; },
+      (f: any) => { f.guard.find((e: Row) => e.event === 'child-close').childPid = 300; f.guard.find((e: Row) => e.event === 'child-exit').sequence = 1; },
+    ]) {
+      const f = fixture('T1', 'completed'); mutate(f);
+      const r = p1.evaluateCase(f);
+      expect(r.native.outcome).not.toBe('completed');
+      expect(r.diagnostic_observation_complete).toBe(false);
+      expect(p1.selection(r).action).toBe('stop-unknown');
+    }
+  });
+  it('a canonical timeout keeps unavailable API return fields null while reconciling owned SIGKILL close facts', () => {
+    const r = p1.evaluateCase(fixture('T1', 'timeout', 0));
+    expect(r.native).toMatchObject({ outcome: 'timeout', metadataSource: 'api-throw', status: null, signal: null,
+      errorName: 'BoundedSubprocessTimeoutError', errorCode: null, workerKind: 'timeout' });
+    expect(r.diagnostic_observation_complete).toBe(true); // all independent conditions clean
+    expect(p1.selection(r).action).toBe('run-T2');
+  });
+  it('a consistent launch throw is preserved as launch and never laundered into refusal or progression', () => {
+    const f = fixture('T1', 'launch', 0);
+    const r = p1.evaluateCase(f);
+    expect(r.native).toMatchObject({ outcome: 'launch', metadataSource: 'api-throw', status: null, signal: null,
+      errorName: 'BoundedSubprocessLaunchError', errorCode: 'ENOENT', workerKind: 'launch' });
+    expect(r.diagnostic_observation_complete).toBe(false);
+    expect(p1.selection(r).action).toBe('stop-unknown'); // launch is never a clean refusal
+    expect(r.native_completed).toBe(false);
+  });
+  it.each([
+    (n: any) => { n.metadataSource = 'not-started'; n.status = 0; },
+    (n: any) => { n.metadataSource = 'not-started'; n.workerKind = 'ok'; },
+    (n: any) => { n.metadataSource = 'api-throw'; n.errorName = 'BoundedSubprocessOutputError'; n.errorCode = 'EIO'; },
+    (n: any) => { n.outcome = 'completed'; n.status = 3; },
+  ])('rejects an impossible native tuple variant %# at the strict schema boundary', mutate => {
+    const f = fixture('T1', 'completed'); mutate(f.probe.native);
+    const r = p1.evaluateCase(f);
+    expect(r.native.outcome).toBe('unknown');
+    expect(p1.selection(r).action).toBe('stop-unknown');
+  });
+  it('blocks the T2->T3 launch when the T2 clean-timeout prefix lacks both true EOFs', () => {
+    const f = fixture('T2', 'timeout', 1);
+    const stream = f.guard.find((e: Row) => e.event === 'native-fixed-stream-end');
+    Object.assign(stream, { state: 'unknown', reason: 'eof-not-observed', stderrEofObserved: false, eofObserved: false });
+    const r = p1.evaluateCase(f);
+    expect(r.prefix_protocol_valid).toBe(false);
+    expect(p1.selection(r).action).toBe('stop-unknown'); // no T3 launch on missing EOF
+    expect(r.health?.cleanupUnknown).toBe(true); expect(r.health?.rootRetained).toBe(true);
+  });
+});
+
+describe('kimi-r0-additive PS002 sampling uncertainty on the actual runCase body', () => {
+  it.each(['EPERM', 'EACCES', 'ENOSYS', 'UNKNOWN', undefined])('retains %s raised on the owning root PID at either sample', async code => {
+    for (const uncertainSample of [0, 1]) {
+      const f = fixture('T1', 'refused', 0);
+      const s = await actualCaseWithMocks(f, (pid, sample) => ({ code: pid === 100 && sample === uncertainSample ? code : 'ESRCH' }));
+      expect(s.query).toHaveBeenCalledTimes(6); // exactly two samples x three observed PIDs, signal 0 enforced by mock
+      expect(s.launch).toHaveBeenCalledOnce();
+      expect(s.record.health.cleanupUnknown).toBe(true);
+      expect(s.record.health.rootRetained).toBe(true);
+      expect(s.record.health.provenanceUnknown).toBe(false); // uncertainty stays cleanup-local
+      expect(s.record.diagnostic_observation_complete).toBe(false);
+      expect(p1.selection(s.record).action).toBe('stop-unknown');
+      expect(s.remove).not.toHaveBeenCalled();
+      expect(fs.existsSync(s.root)).toBe(true);
+    }
+  });
+  it('recognized ESRCH absence on every observed PID keeps cleanup known and removes the root', async () => {
+    const s = await actualCaseWithMocks(fixture('T2', 'timeout', 1), () => ({ code: 'ESRCH' }));
+    expect(s.record.health).toMatchObject({ cleanupUnknown: false, rootRetained: false,
+      possibleLiveAtReturn: [], possibleLiveAfterOwnedCap: [] });
+    expect(s.record.diagnostic_observation_complete).toBe(true);
+    expect(p1.selection(s.record).action).toBe('run-T3');
+    expect(s.remove).toHaveBeenCalledOnce();
+    expect(fs.existsSync(s.root)).toBe(false);
+  });
+});
+
+describe('kimi-r0-additive PS003 runRoot symbol path reaches the launcher', () => {
+  it('the actual runCase passes case, exact owned root path, fixed env and derived deadlines to runRoot', async () => {
+    const s = await actualCaseWithMocks(fixture('T1', 'refused', 0), () => ({ code: 'ESRCH' }));
+    expect(s.launch).toHaveBeenCalledOnce();
+    const [caseArg, rootArg, envArg, caseDeadlineArg, deadlineArg] = s.launch.mock.calls[0];
+    expect(caseArg).toBe(s.c);                                  // the fixed case row object itself
+    expect(rootArg).toBe(join(s.runDirectory, s.c.caseId));     // actual root-path symbol, not a fixture shortcut
+    expect(envArg).toEqual({});                                 // exactly what the fixedEnvironment mock returned
+    expect(caseDeadlineArg).toBe(Math.min(1 + 40000, 600001 - 3000)); // derived from frozen 40000/3000 budgets
+    expect(deadlineArg).toBe(600001);
+    // fixedEnvironment independently observes the same root/run-root pair (no shadowed symbol):
+    expect(s.environment.mock.calls[0][1]).toBe(join(s.runDirectory, s.c.caseId));
+    expect(s.environment.mock.calls[0][2]).toBe(s.runDirectory);
+  });
+  it.each(['stdout', 'stderr'])('retains unterminated-line invalidity plus missing %s EOF as separate kept facts', async missing => {
+    const f = fixture('T1', 'refused', 0);
+    const stream = f.guard.find((e: Row) => e.event === 'native-fixed-stream-end');
+    Object.assign(stream, { state: 'invalid', reason: 'unterminated-line', stdoutBytes: stream.stdoutBytes + 3,
+      combinedBytes: stream.combinedBytes + 3, stdoutEofObserved: missing !== 'stdout',
+      stderrEofObserved: missing !== 'stderr', eofObserved: false });
+    const originalStream = clone(stream);
+    const s = await actualCaseWithMocks(f, () => ({ code: 'ESRCH' }));
+    expect(s.record.stream).toEqual(originalStream); // parser facts not erased by the missing EOF
+    expect(s.record.stream.state).toBe('invalid');
+    expect(s.record.health.cleanupUnknown).toBe(true);
+    expect(s.record.health.rootRetained).toBe(true);
+    expect(s.record.diagnostic_observation_complete).toBe(false);
+    expect(p1.selection(s.record).action).toBe('stop-unknown');
+    expect(s.remove).not.toHaveBeenCalled();
+  });
+});
+
+describe('kimi-r0-additive PS001 sealed-stream rejection without rewriting', () => {
+  function sealed(skipAll = false): any {
+    const dir = directory(), executionSha = 'a'.repeat(40);
+    const files = [...p1.BINDINGS.future_added_source_paths, 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json',
+      ...p1.BINDINGS.frozen_runtime_sources.map(s => s.path)].sort().map(path => ({ path, sha256: p1.sha256(fs.readFileSync(join(repo, path))) }));
+    const provenance = { format: 'windows-p1-initial-provenance-v1', executionSha, expectedSha: executionSha,
+      planningBase: p1.BINDINGS.planning_base, timestampUtc: '2026-10-11T00:00:00Z', runId: '1', runAttempt: 1,
+      ref: 'refs/heads/codex/windows-p1-stages-ci-20261010', runtime: { node: 'v22.22.0', uv: '1.51.0', platform: 'win32', arch: 'x64',
+        osRelease: '10.0.1', imageOS: 'win25', imageVersion: '20261011.1.0' }, sourceFiles: clone(files),
+      environmentKeyNames: [...p1.BINDINGS.environment.system_keys, ...p1.BINDINGS.environment.synthetic_keys].sort(),
+      extraEnvironmentKeys: [], provenanceUnknown: false, releaseReady: false, releaseAcceptance: false };
+    const records = p1.CASES.map(c => p1.skippedCase(c.variant, 'synthetic-checks-not-passed'));
+    const summary = p1.makeSummary(provenance, records, [], 1, 'synthetic-checks-not-passed', true);
+    const checks = { format: 'windows-p1-initial-checks-v1', testPath: 'tests/diagnostics/windows-p1-stages.test.ts', exitCode: 0,
+      passed: 14, failed: 0, skipped: 0, allRequiredControlsPassed: true, rawReportSuppressed: true, releaseAcceptance: false };
+    fs.writeFileSync(join(dir, 'provenance.json'), JSON.stringify(provenance));
+    fs.writeFileSync(join(dir, 'summary.json'), JSON.stringify(summary));
+    fs.writeFileSync(join(dir, 'checks-summary.json'), JSON.stringify(checks));
+    for (const r of records) fs.writeFileSync(join(dir, r.variant + '.case.json'), JSON.stringify(r));
+    for (const c of p1.CASES) for (const family of ['guard', 'trace'])
+      fs.writeFileSync(join(dir, c.variant + '.' + family + '.jsonl'), skipAll ? '' : jsonl(fixture(c.variant)[family]));
+    const rehash = () => {
+      const entries = p1.BINDINGS.output.upload_files.filter(p => p !== 'manifest.json').sort().map(path => {
+        const bytes = fs.readFileSync(join(dir, path)); return { path, bytes: bytes.length, sha256: p1.sha256(bytes) };
+      });
+      fs.writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ format: 'windows-p1-initial-manifest-v1', executionSha, files: entries, releaseAcceptance: false }));
+    };
+    rehash(); return { dir, files, executionSha, rehash };
+  }
+  it.each(p1.CASES.map(c => [c.variant]))('rejects a CANONICAL valid row sealed into skipped %s streams under an updated valid manifest', variant => {
+    for (const family of ['guard', 'trace']) {
+      const s = sealed(true);
+      expect(p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toBe(true); // empty skipped streams are the only valid form
+      const canonical = jsonl([fixture(variant)[family][0]]); // schema-valid, canonical, non-canary bytes
+      expect(p1.parseRows(canonical, family).invalid).toBe(false);
+      fs.writeFileSync(join(s.dir, variant + '.' + family + '.jsonl'), canonical);
+      s.rehash(); // attacker refreshes a fully VALID 15-entry manifest over the substituted bytes
+      const before = p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)));
+      expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toThrow();
+      expect(p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)))).toEqual(before); // no sealed file rewritten
+    }
+  });
+  it('rejects noncanonical whitespace-wrapped skipped bytes while scratch suppression stays a distinct path', () => {
+    const s = sealed(true);
+    const row = JSON.stringify(fixture('T0').guard[0]);
+    fs.writeFileSync(join(s.dir, 'T0.guard.jsonl'), ' ' + row + '\n'); // valid JSON, noncanonical line
+    s.rehash();
+    const before = p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)));
+    expect(() => p1.verifySealedDirectory(s.dir, s.files, s.executionSha)).toThrow();
+    expect(p1.BINDINGS.output.upload_files.map(name => fs.readFileSync(join(s.dir, name)))).toEqual(before);
+    // scratch-side safe rebuild of the same bytes is empty-safe, NOT a parse of attacker bytes:
+    expect(p1.parseRows(Buffer.from(' ' + row + '\n'), 'guard').invalid).toBe(true);
+  });
+});
+
+describe('kimi-r0-additive provenance, summary and schema closure', () => {
+  const baseProvenance = (): any => ({ format: 'windows-p1-initial-provenance-v1', executionSha: 'a'.repeat(40), expectedSha: 'a'.repeat(40),
+    planningBase: p1.BINDINGS.planning_base, timestampUtc: '2026-10-11T00:00:00Z', runId: '1', runAttempt: 1,
+    ref: 'refs/heads/codex/windows-p1-stages-ci-20261010', runtime: { node: 'v22.22.0', uv: '1.51.0', platform: 'win32', arch: 'x64',
+      osRelease: '10.0.1', imageOS: 'win25', imageVersion: '20261011.1.0' },
+    sourceFiles: [...p1.BINDINGS.future_added_source_paths, 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json',
+      ...p1.BINDINGS.frozen_runtime_sources.map(s => s.path)].sort().map(path => ({ path, sha256: p1.sha256(fs.readFileSync(join(repo, path))) })),
+    environmentKeyNames: [...p1.BINDINGS.environment.system_keys, ...p1.BINDINGS.environment.synthetic_keys].sort(),
+    extraEnvironmentKeys: [], provenanceUnknown: false, releaseReady: false, releaseAcceptance: false });
+  it.each([
+    (p: any) => { p.environmentKeyNames.push('APPDATA'); },
+    (p: any) => { p.environmentKeyNames = p.environmentKeyNames.filter((k: string) => k !== 'TW_TRACE'); },
+    (p: any) => { p.sourceFiles = [...p.sourceFiles].reverse(); }, // sorted order is binding
+    (p: any) => { p.sourceFiles.find((s: Row) => s.path.endsWith('package-lock.json')).sha256 = 'b'.repeat(64); },
+    (p: any) => { p.executionSha = 'b'.repeat(40); },
+    (p: any) => { p.ref = 'refs/heads/other'; },
+  ])('validateProvenance refuses mutated provenance variant %#', mutate => {
+    const provenance = baseProvenance(); mutate(provenance);
+    expect(p1.validateProvenance(provenance, baseProvenance().sourceFiles, 'a'.repeat(40))).toBe(false);
+  });
+  it('accepts the canonical provenance and binds exactly eleven source files', () => {
+    const provenance = baseProvenance();
+    expect(provenance.sourceFiles).toHaveLength(11);
+    expect(p1.validateProvenance(provenance, provenance.sourceFiles, 'a'.repeat(40))).toBe(true);
+  });
+  it('keeps a fully unknown post-crash record set nullable with null exit code and no fabricated launches', () => {
+    const records = p1.CASES.map(c => p1.unknownCase(c.variant));
+    const summary = p1.makeSummary({ executionSha: 'a'.repeat(40) }, records, [], null, 'setup-or-outcome-unknown', false);
+    expect(summary.totalNativeLaunches).toBeNull();
+    expect(summary.smokeNativeLaunches).toBeNull();
+    expect(summary.diagnosticExitCode).toBeNull();
+    expect(summary.diagnostic_observation_complete).toBe(false);
+    expect(summary.releaseReady).toBe(false);
+    expect(summary.formalF005Claim).toBe(false);
+    expect(records.every(r => r.rootProcessStarted === null && r.nativeLaunches === null && r.decision === 'unknown')).toBe(true);
+  });
+  it('upload file set stays exactly sixteen explicit names with a fifteen-entry manifest and no self hash', () => {
+    expect(p1.BINDINGS.output.upload_files).toHaveLength(16);
+    expect(p1.BINDINGS.output.manifest_entries).toBe(15);
+    expect(p1.BINDINGS.output.upload_files.filter(p => p !== 'manifest.json')).toHaveLength(15);
+    expect(p1.BINDINGS.output.raw_copy_allowed).toBe(false);
+    expect(p1.BINDINGS.output.symlinks_allowed).toBe(false);
+    expect(p1.BINDINGS.output.additional_files_allowed).toBe(false);
+  });
+});

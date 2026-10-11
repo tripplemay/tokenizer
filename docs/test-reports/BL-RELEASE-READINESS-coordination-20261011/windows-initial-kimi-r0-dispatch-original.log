@@ -1,0 +1,8 @@
+[dispatch] ✓ 信封合法（task=windows-p1-initial-888a5ac-kimi-r0 batch=BL-WINDOWS-P1-INITIAL-SUPPORT role=evaluator）
+[dispatch] ✓ CLI integration 注册表合法（15 个角色能力）
+[dispatch-run] transport=local-cli → 本机沙箱
+[dispatch] ✓ 信封合法（task=windows-p1-initial-888a5ac-kimi-r0 batch=BL-WINDOWS-P1-INITIAL-SUPPORT role=evaluator）
+[sandbox] worktree: /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0 @ 888a5acd7a8a
+[sandbox] 专用 HOME: /Users/yixingzhou/.harness-sandbox/kimi（已确认无 shell 初始化文件）
+[sandbox] outcome=RETURNED exit=0 1056s · log=/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/run-windows-p1-initial-888a5ac-kimi-r0.log
+[sandbox] 取证后清理：git worktree remove --force '/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-evaluation-20261011/BL-WINDOWS-P1-INITIAL-SUPPORT-local-cli--kimi--evaluator-windows-p1-initial-888a5ac-kimi-r0'
