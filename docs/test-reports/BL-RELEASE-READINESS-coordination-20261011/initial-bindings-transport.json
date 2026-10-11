@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator transport and structural validation only",
+  "original_author_commit": "c58434f9791b944c0414b83830bc1ea412aa1b2d",
+  "original_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-stage-plan-20261009",
+  "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
+  "copied_originals": [
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","sha256":"db4c2ae0a7ff3b84460a8f0f13dbda413b4bfd053c40e31833b6f4122f0ff974","compare_exit":0},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json","sha256":"40791d18e27b95656d68968d716425ccfc1c26e4528a9cf532803ddb0f9cb643","compare_exit":0}
+  ],
+  "author_diff": "Only the two added documents; no product/runtime/tests/workflow/state/memory edits",
+  "proposal_initial_scope": "T0-T3 only; maximum four native PowerShell launches; T1 success stops; no T4/T5, arms, P2, downstream or command/environment repairs",
+  "fresh_pre_scope": {
+    "state": "commissioned, pending original verdict",
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-scope-20261011",
+    "review_source": "c58434f9791b944c0414b83830bc1ea412aa1b2d",
+    "boundary": "Scope review only, not functional acceptance"
+  },
+  "latest_user_backup_choice": "No offline media; complete other work not involving keys first",
+  "key_work": "deferred; none generated/read/uploaded",
+  "main_and_fetched_origin": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+  "main_content_status": "clean with pre-existing file-mode differences ignored",
+  "canonical_main_state": "BL-HOMEPAGE-FRESHNESS verifying5/6; untouched",
+  "parent_state": "building3/5; pending_gate null; release_ready false; untouched",
+  "parent_code_diff_from_76d916b": "empty",
+  "retained_evidence_hash_refresh": "12/12 r2 originals and6/6 independent dispatch report/metadata copies PASS",
+  "production_protection_and_secret_names_refresh": {
+    "observation_date_utc": "2026-10-11",
+    "selected_metadata_originals": ["production-protection-selected-original.json","repository-secret-names-original.json","production-secret-names-original.json"],
+    "required_reviewer": "tripplemay",
+    "admin_bypass": false,
+    "repository_secret_name_count": 11,
+    "production_environment_secret_name_count": 0,
+    "POSTGRES_PASSWORD_present": false,
+    "secret_values_read_or_written": false
+  },
+  "compose_supporting_evaluation_chain": "HARD_STOP after r2 TIMEOUT2305/effective1800; no third attempt",
+  "implementation_authorized_by_this_transport": false,
+  "publication_or_native_execution": false,
+  "main_push_or_production_mutation": false,
+  "release_ready": false
+}
