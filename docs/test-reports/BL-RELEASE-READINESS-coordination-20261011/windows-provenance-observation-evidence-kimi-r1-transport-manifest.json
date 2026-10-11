@@ -1,0 +1,278 @@
+{
+  "created_at": "2026-10-11T20:26:41.442Z",
+  "source_ref": "62d419b2a419b685542efaaf047b8a749839d493",
+  "count": 45,
+  "bytes": 2283734,
+  "entries": [
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/cli-reconstructed-from-candidate.mjs",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/cli-reconstructed-from-candidate.mjs",
+      "bytes": 74301,
+      "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/git-name-status-vs-712.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/git-name-status-vs-712.txt",
+      "bytes": 2706,
+      "sha256": "bb7d3e30c899b615020e9c2f0dff613be2d3aa454ea287ef22c1e73fb498a946"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/installed-package-lock.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/installed-package-lock.json",
+      "bytes": 336103,
+      "sha256": "0dca40c5127a35ed48d716b950033f013531c4ff6ec0509ebdbd926d69885a15"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/installed-swc-core-package.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/installed-swc-core-package.json",
+      "bytes": 3285,
+      "sha256": "30f810ddf7edf85604db4ea5f577fcd4b506cbeb6065e31d35629ef6b17a1f65"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/installed-swc-core-postinstall.js",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/installed-swc-core-postinstall.js",
+      "bytes": 6857,
+      "sha256": "5da0f556c5702eaf4c4b66283f03aeccbd8db3d4b730866741ca23c799614a87"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/installed-swc-wasm-package.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/installed-swc-wasm-package.json",
+      "bytes": 390,
+      "sha256": "d3f7fa726415890ae358bf00f7bf8e71038efb711547a1a6f565fbe056063afa"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/inverse-proof-result.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/inverse-proof-result.json",
+      "bytes": 875,
+      "sha256": "cd5b12a7e706a11833c3279d3ee9cf67289a0fcda7cf97ebb03714dc300c7437"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/npm-ci-stderr.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/npm-ci-stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/npm-ci-stdout.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/npm-ci-stdout.log",
+      "bytes": 264,
+      "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/npm-debug-logs/2026-10-11T20_18_43_768Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/npm-debug-logs/2026-10-11T20_18_43_768Z-debug-0.log",
+      "bytes": 423462,
+      "sha256": "b6371e5c9a85f4d66bbeac041b5071a62c18566ab5fee6daeabf35012b574e00"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/npm-debug-logs/2026-10-11T20_19_57_045Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/npm-debug-logs/2026-10-11T20_19_57_045Z-debug-0.log",
+      "bytes": 2416,
+      "sha256": "8569b64411cba9abc961ee534f0e461b72a08a77fae545c8024bd182cb8048eb"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/root-package-lock.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/root-package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/verify-stderr.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/verify-stderr.log",
+      "bytes": 208,
+      "sha256": "7402a47041137a8c9dd4553698d55255fd0371f36d9aae3536855454931e917d"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/verify-stdout.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/evidence/verify-stdout.log",
+      "bytes": 401,
+      "sha256": "eefb75739fbdcfa75321e1a04d2ec7fb3997dca741256e5d766eb2d887fbbf80"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/provisional-report.md",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/provisional-report.md",
+      "bytes": 2096,
+      "sha256": "bcbe3ca526960f5f2d19cb2ae53da7e4a4353b5b5fd9c873a28ac94f071cfa11"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/report.md",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/report.md",
+      "bytes": 6727,
+      "sha256": "c36d96497c716384806aa397d588915b9309f1926809074fa8d893f0cb6fa863"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/report/reverse-slots.mjs",
+      "bytes": 2545,
+      "sha256": "a0599ee89f91e9912246b672452fed8a1a4721963b989e5e059a3b32dcc29bd5"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-verdict.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/verdict-original.json",
+      "bytes": 4054,
+      "sha256": "1a64d008b42d0d4d8a97a2f4c0232d86486f3e732e266d767013918d4c50d785"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/typechecked-test-original.test.ts.original.txt",
+      "bytes": 33500,
+      "sha256": "068bc299e27458aefa61bb0e0266d8d9df8d4108fc569fb4c05545e8f9f6805f"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/run-windows-p1-provenance-observation-62d419b-evidence-kimi-r1.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/runtime-original.log",
+      "bytes": 218144,
+      "sha256": "ec6247aaf463af48d160bbf5848392fa589ec410fc09325063e135c67744e06f"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-dispatch-state-20261011/run-meta-windows-p1-provenance-observation-62d419b-evidence-kimi-r1.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/run-meta-original.json",
+      "bytes": 1723,
+      "sha256": "6f77ead5bf4b77cd26bce1bd0699d307eede7950d05b8c5cae52108c1e2727d0"
+    },
+    {
+      "source": "/tmp/r1-manifest-check.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-manifest-check.txt",
+      "bytes": 7954,
+      "sha256": "ef463e33461dfedd447c5bcd64b376bf5fbaf92d0b88620c0eb4ad1c258ecc5a"
+    },
+    {
+      "source": "/tmp/r1-treediff.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-treediff.txt",
+      "bytes": 2706,
+      "sha256": "bb7d3e30c899b615020e9c2f0dff613be2d3aa454ea287ef22c1e73fb498a946"
+    },
+    {
+      "source": "/tmp/r1-cli-baseline.mjs",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-cli-baseline.mjs",
+      "bytes": 74301,
+      "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f"
+    },
+    {
+      "source": "/tmp/r1-cli-candidate.mjs",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-cli-candidate.mjs",
+      "bytes": 77285,
+      "sha256": "411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1"
+    },
+    {
+      "source": "/tmp/r1-cli-diff.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-cli-diff.txt",
+      "bytes": 6862,
+      "sha256": "a7746a8f3c7a7bd36e0c5100d03b10b158e25a6a4e14ec89eb706cb18ec50b75"
+    },
+    {
+      "source": "/tmp/r1-gen-manifest-check.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-gen-manifest-check.txt",
+      "bytes": 21788,
+      "sha256": "5e61e1077db422e7aa4f7408646e158e9ec0588312f5c8061eebd07805c815e9"
+    },
+    {
+      "source": "/tmp/r1-planner-manifest-check.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-planner-manifest-check.txt",
+      "bytes": 3670,
+      "sha256": "75e0249c7a23dc3935d6417825d61f3f3bcb66a567ffc30684ca17d86b668b31"
+    },
+    {
+      "source": "/tmp/r1-cli-reconstructed.mjs",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/outside-own-tmp-originals/r1-cli-reconstructed.mjs",
+      "bytes": 74301,
+      "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f"
+    },
+    {
+      "source": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-aqgpx67x/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/task-output-originals/bash-aqgpx67x.log",
+      "bytes": 10,
+      "sha256": "5327185ef05d072d4f44568bd0a41dfe1bbeec511e46f9af21206c1ccb92f502"
+    },
+    {
+      "source": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-vifwwskh/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/task-output-originals/bash-vifwwskh.log",
+      "bytes": 28,
+      "sha256": "b75fb2a4d048319574ec20d21ed62ce3e8270517bebd825578d05aafc2a59509"
+    },
+    {
+      "source": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-v5vxsq7f/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/task-output-originals/bash-v5vxsq7f.log",
+      "bytes": 184,
+      "sha256": "8c1356d64ccfcb66095d5bc843199c52b043a7f05996496fe4e0351d76b58869"
+    },
+    {
+      "source": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-ej2cbacw/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/task-output-originals/bash-ej2cbacw.log",
+      "bytes": 14,
+      "sha256": "bf967417eb9a2d29371dc99a0bca0888845b4e27f75bf96c2763bf30d9180261"
+    },
+    {
+      "source": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-mzxsb7pk/output.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/task-output-originals/bash-mzxsb7pk.log",
+      "bytes": 14,
+      "sha256": "9ac94ad2b53bc9ef7bc4da9aafcb2e4ab3ae2738b9686337d3a642a3b867cbd2"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stderr.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/owned-home-captures/npm-ci-stderr.log",
+      "bytes": 495,
+      "sha256": "354d72fdba7ffc2c5112a7e9ce07d351e29f95ce603b8b54c4526077abf088cc"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stdout.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/owned-home-captures/npm-ci-stdout.log",
+      "bytes": 264,
+      "sha256": "6cd75dc793679cdfe0595d81b5ef2d256acb3f33432bc8ae41b47575766143c8"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stderr.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/owned-home-captures/verify-stderr.log",
+      "bytes": 208,
+      "sha256": "7402a47041137a8c9dd4553698d55255fd0371f36d9aae3536855454931e917d"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/owned-home-captures/verify-stdout.log",
+      "bytes": 401,
+      "sha256": "eefb75739fbdcfa75321e1a04d2ec7fb3997dca741256e5d766eb2d887fbbf80"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_18_43_768Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/all-owned-npm-debug-originals/npm-cache/_logs/2026-10-11T20_18_43_768Z-debug-0.log",
+      "bytes": 423462,
+      "sha256": "b6371e5c9a85f4d66bbeac041b5071a62c18566ab5fee6daeabf35012b574e00"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_19_57_045Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/all-owned-npm-debug-originals/npm-cache/_logs/2026-10-11T20_19_57_045Z-debug-0.log",
+      "bytes": 2416,
+      "sha256": "8569b64411cba9abc961ee534f0e461b72a08a77fae545c8024bd182cb8048eb"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.wp1provoe-r1-20261011/.npm/_logs/2026-10-11T20_20_30_448Z-debug-0.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/all-owned-npm-debug-originals/.npm/_logs/2026-10-11T20_20_30_448Z-debug-0.log",
+      "bytes": 1671,
+      "sha256": "e205471fc555c742ee618a02b4576827111f17c0dd3ef707a16504bbca3640ed"
+    },
+    {
+      "source": "mechanical runtime-tool and timeline extraction",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-original/tool-and-timeline-capture-original.json",
+      "bytes": 46675,
+      "sha256": "261bcd13531e831f4137a8a3204c3634a5abf2bdd083eaf5905ac37c112850d9"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-returned-receipt-original.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-returned-receipt-original.json",
+      "bytes": 1664,
+      "sha256": "293ff06f3ca670f60f09692679ece727a36b010a34384d9fe79f5227d49d1a97"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-launch-original.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-launch-original.log",
+      "bytes": 1302,
+      "sha256": "881263249f611bbf79e0f07c719fe166e86ef018fd0303c375155fe84fd49b8a"
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-receipt-validation-original.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-evidence-kimi-r1-receipt-validation-original.txt",
+      "bytes": 1731,
+      "sha256": "31217a20a08adc0568d4bf0618fd6fc8c54204505fc383bc8d3561f12bc7661f"
+    }
+  ]
+}

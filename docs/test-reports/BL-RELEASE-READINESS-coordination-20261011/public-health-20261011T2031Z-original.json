@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-11T20:27:48.982Z",
+  "url": "https://token.vpanel.cc/api/health",
+  "exit_code": 0,
+  "http_status": "200",
+  "response_body": "{\"ok\":true,\"timestamp\":\"2026-10-11T20:27:49.133Z\",\"commit\":\"92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1\"}",
+  "stderr": ""
+}

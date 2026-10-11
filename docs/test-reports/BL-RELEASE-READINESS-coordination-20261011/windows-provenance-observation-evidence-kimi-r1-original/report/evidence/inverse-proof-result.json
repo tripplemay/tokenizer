@@ -1,0 +1,46 @@
+{
+  "hunks": [
+    {
+      "oldStart": 40,
+      "newStart": 40,
+      "added": 7,
+      "removed": 0
+    },
+    {
+      "oldStart": 87,
+      "newStart": 94,
+      "added": 15,
+      "removed": 1
+    },
+    {
+      "oldStart": 692,
+      "newStart": 713,
+      "added": 28,
+      "removed": 6
+    },
+    {
+      "oldStart": 738,
+      "newStart": 781,
+      "added": 1,
+      "removed": 0
+    },
+    {
+      "oldStart": 1098,
+      "newStart": 1142,
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "oldStart": 1112,
+      "newStart": 1156,
+      "added": 2,
+      "removed": 0
+    }
+  ],
+  "hunkCount": 6,
+  "reconstructedBytes": 74301,
+  "baselineBytes": 74301,
+  "reconstructedSha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+  "baselineSha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+  "byteExact": true
+}

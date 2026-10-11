@@ -1,0 +1,30 @@
+0 verbose cli /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/npm
+1 info using npm@10.9.4
+2 info using node@v22.22.0
+3 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/node_modules/@swc/core/npm-install/.npmrc
+5 silly config load:file:/Volumes/ORICO/project/.wp1provoe-r1-20261011/.npmrc
+6 silly config load:file:/Users/yixingzhou/.nvm/versions/node/v22.22.0/etc/npmrc
+7 verbose title npm install @swc/wasm@1.16.13
+8 verbose argv "install" "--no-save" "--loglevel" "error" "--prefer-offline" "--no-audit" "--progress" "false" "@swc/wasm@1.16.13"
+9 verbose logfile logs-max:10 dir:/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_19_57_045Z-
+10 verbose logfile /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_19_57_045Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly idealTree buildDeps
+14 silly fetch manifest @swc/wasm@1.16.13
+15 silly packumentCache full:https://registry.npmjs.org/@swc%2fwasm cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/@swc%2fwasm 1443ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/@swc%2fwasm set size:undefined disposed:false
+18 silly placeDep ROOT @swc/wasm@1.16.13 OK for:  want: 1.16.13
+19 silly reify moves {}
+20 http cache @swc/wasm@https://registry.npmjs.org/@swc/wasm/-/wasm-1.16.13.tgz 0ms (cache hit)
+21 silly tarball no local data for @swc/wasm@https://registry.npmjs.org/@swc/wasm/-/wasm-1.16.13.tgz. Extracting by manifest.
+22 http fetch GET 200 https://registry.npmjs.org/@swc/wasm/-/wasm-1.16.13.tgz 11355ms (cache miss)
+23 silly ADD node_modules/@swc/wasm
+24 verbose cwd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/node_modules/@swc/core/npm-install
+25 verbose os Darwin 25.6.0
+26 verbose node v22.22.0
+27 verbose npm  v10.9.4
+28 verbose exit 0
+29 info ok

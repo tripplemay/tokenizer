@@ -1,0 +1,108 @@
+--- /tmp/r1-cli-baseline.mjs	2026-10-12 03:18:43
++++ /tmp/r1-cli-candidate.mjs	2026-10-12 03:18:43
+@@ -40,6 +40,13 @@
+   'readFileSync', 'readSync', 'writeSync', 'writeFileSync', 'closeSync', 'appendFileSync', 'realpathSync',
+   'readdirSync', 'rmSync'].map(k => [k, fs[k].bind(fs)]));
+ let prepareFailurePhase = null;
++let prepareProvenanceObservationActive = false;
++let prepareProvenanceReason = 'V00';
++const prepareProvenanceReasonLines = {
++  V00: 'V00\n', V01: 'V01\n', V02: 'V02\n', V03: 'V03\n', V04: 'V04\n', V05: 'V05\n',
++  V06: 'V06\n', V07: 'V07\n', V08: 'V08\n', V09: 'V09\n', V10: 'V10\n', V11: 'V11\n',
++  V12: 'V12\n', V13: 'V13\n', V14: 'V14\n', V15: 'V15\n', V16: 'V16\n', V17: 'V17\n'
++};
+ const prepareFailureLines = {
+   P00: 'TW_P1_PREPARE_FAILURE_V1:P00\n',
+   P01: 'TW_P1_PREPARE_FAILURE_V1:P01\n',
+@@ -87,7 +94,21 @@
+   return true;
+ }
+ export function rebuild(name, value) {
+-  try { return schemaMatches(defs[name], value) ? JSON.parse(JSON.stringify(value)) : null; } catch { return null; }
++  let observationStage;
++  try {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && name === 'provenance') observationStage = 'schema';
++    const matched = schemaMatches(defs[name], value);
++    if (!matched) {
++      if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && name === 'provenance') prepareProvenanceReason = 'V02';
++      return null;
++    }
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && name === 'provenance') observationStage = 'clone';
++    return JSON.parse(JSON.stringify(value));
++  } catch {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && name === 'provenance')
++      prepareProvenanceReason = observationStage === 'schema' ? 'V03' : observationStage === 'clone' ? 'V04' : 'V00';
++    return null;
++  }
+ }
+ export function validateBindings() {
+   assert.equal(sha256(original.readFileSync(join(repo, mdPath))), mdHash);
+@@ -692,14 +713,36 @@
+   return sha;
+ }
+ export function validateProvenance(value, files, executionSha) {
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V01';
+   const v = rebuild('provenance', value);
+-  if (!v || v.executionSha !== v.expectedSha || v.executionSha !== executionSha || !same(v.sourceFiles, files)) return false;
+-  const paths = [...BINDINGS.future_added_source_paths, bindingPath, ...BINDINGS.frozen_runtime_sources.map(s => s.path)].sort();
+-  if (!same(v.sourceFiles.map(s => s.path), paths)) return false;
+-  for (const frozen of BINDINGS.frozen_runtime_sources) if (v.sourceFiles.find(s => s.path === frozen.path)?.sha256 !== frozen.sha256) return false;
+-  if (v.sourceFiles.find(s => s.path === bindingPath)?.sha256 !== bindingHash) return false;
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && v) prepareProvenanceReason = 'V05';
++  if (!v || v.executionSha !== v.expectedSha || v.executionSha !== executionSha || !same(v.sourceFiles, files)) {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11' && v) prepareProvenanceReason = 'V06';
++    return false;
++  }
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V07';
++  const paths = [...BINDINGS.future_added_source_paths, bindingPath, ...BINDINGS.frozen_runtime_sources.map(s => s.path)].sort();
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V08';
++  if (!same(v.sourceFiles.map(s => s.path), paths)) {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V09';
++    return false;
++  }
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V10';
++  for (const frozen of BINDINGS.frozen_runtime_sources) if (v.sourceFiles.find(s => s.path === frozen.path)?.sha256 !== frozen.sha256) {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V11';
++    return false;
++  }
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V12';
++  if (v.sourceFiles.find(s => s.path === bindingPath)?.sha256 !== bindingHash) {
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V13';
++    return false;
++  }
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V14';
+   const presentSystem = v.environmentKeyNames.filter(k => BINDINGS.environment.system_keys.includes(k));
+-  return same(v.environmentKeyNames, sorted([...presentSystem, ...BINDINGS.environment.synthetic_keys])) && v.extraEnvironmentKeys.length === 0;
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = 'V15';
++  const valid = same(v.environmentKeyNames, sorted([...presentSystem, ...BINDINGS.environment.synthetic_keys])) && v.extraEnvironmentKeys.length === 0;
++  if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') prepareProvenanceReason = valid ? 'V17' : 'V16';
++  return valid;
+ }
+ function assertWindowsRunner() {
+   assert(process.platform === 'win32' && process.arch === 'x64' && /^v22\./.test(process.version), 'native Windows Node22 x64 required');
+@@ -738,6 +781,7 @@
+   prepareFailurePhase = 'P12';
+   writeJson(join(scratch, 'provenance.json'), 'provenance', provenance);
+   prepareFailurePhase = null;
++  prepareProvenanceObservationActive = false;
+ }
+ export function checksSummary(raw) {
+   try {
+@@ -1098,7 +1142,7 @@
+ else if (process.argv[1] && resolve(process.argv[1]) === self) {
+   const args = process.argv.slice(2);
+   try {
+-    if (same(args, ['--prepare'])) { prepareFailurePhase = 'P00'; prepare(); }
++    if (same(args, ['--prepare'])) { prepareFailurePhase = 'P00'; prepareProvenanceObservationActive = true; prepareProvenanceReason = 'V00'; prepare(); }
+     else if (same(args, ['--run'])) await runParent();
+     else if (args.length === 2 && args[0] === '--probe' && CASES.some(c => c.variant === args[1])) { assertWindowsRunnerForProbe(); await runProbe(args[1]); }
+     else if (same(args, ['--seal'])) seal();
+@@ -1112,6 +1156,8 @@
+     } else process.stderr.write('windows-p1-initial diagnostic evidence unavailable\n');
+     if (prepareFailurePhase !== null) process.stderr.write(Object.hasOwn(prepareFailureLines, prepareFailurePhase) ?
+       prepareFailureLines[prepareFailurePhase] : prepareFailureLines.P00);
++    if (prepareProvenanceObservationActive && prepareFailurePhase === 'P11') process.stderr.write(Object.hasOwn(prepareProvenanceReasonLines, prepareProvenanceReason) ?
++      prepareProvenanceReasonLines[prepareProvenanceReason] : prepareProvenanceReasonLines.V00);
+     process.exitCode = 1;
+   }
+ }

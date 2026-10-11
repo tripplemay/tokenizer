@@ -1,0 +1,478 @@
+{
+  "created_at": "2026-10-11T20:26:41.419Z",
+  "calls": [
+    {
+      "index": 1,
+      "id": "tool_zhjwGhzURHZ8McdhptWZ43wK",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json"
+      }
+    },
+    {
+      "index": 2,
+      "id": "tool_31NsxFUZrWMtflFOG0QwtxsY",
+      "name": "Read",
+      "arguments": {
+        "path": ".claude/autonomous/verdict-artifact.schema.json"
+      }
+    },
+    {
+      "index": 3,
+      "id": "tool_qD4j7n0rTaIS6fU6WG0lGG4z",
+      "name": "Bash",
+      "arguments": {
+        "command": "date +%s; git rev-parse HEAD; git status --short | head -20"
+      }
+    },
+    {
+      "index": 4,
+      "id": "tool_5FhHoFIpXPAshcq9G2F6LX41",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-adjudication-and-r1-authority.json"
+      }
+    },
+    {
+      "index": 5,
+      "id": "tool_xLvPAYVtF6Cth5i8YfhMZocV",
+      "name": "Read",
+      "arguments": {
+        "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-transport-manifest.json"
+      }
+    },
+    {
+      "index": 6,
+      "id": "tool_xB5vtYPHOtAjINvoWw7Oh6nm",
+      "name": "Bash",
+      "arguments": {
+        "command": "ls docs/test-reports/ | head -40; echo ---; ls docs/test-reports/ | wc -l"
+      }
+    },
+    {
+      "index": 7,
+      "id": "tool_YpMdWtGcRQkfmdPPmFmPwpwf",
+      "name": "Bash",
+      "arguments": {
+        "command": "ls /Volumes/ORICO/project/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/ 2>/dev/null | head -50; echo \"---generator WT---\"; ls /Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/ 2>/dev/null | head -50"
+      }
+    },
+    {
+      "index": 8,
+      "id": "tool_E2FJfISwEmlSWP2Yq1cTd7u2",
+      "name": "Bash",
+      "arguments": {
+        "command": "ls docs/test-reports/ | grep -i -E \"coordination|PROVENANCE\" ; echo ---; ls /Volumes/ORICO/project/docs/test-reports/ 2>/dev/null | grep -i -E \"coordination|PROVENANCE\"; echo ---; ls /Volumes/ORICO/project/.worktrees/ 2>/dev/null | head"
+      }
+    },
+    {
+      "index": 9,
+      "id": "tool_CFVJulsDmxODVgO7SuY8kSQc",
+      "name": "Bash",
+      "arguments": {
+        "command": "find /Volumes/ORICO/project -maxdepth 4 -type d -name \"BL-RELEASE-READINESS-coordination-20261011\" 2>/dev/null; echo \"---\"; ls /Volumes/ORICO/project/.worktrees/ | grep -i -E \"provenance|coordination|62d419\"",
+        "timeout": 60
+      }
+    },
+    {
+      "index": 10,
+      "id": "tool_I7GWkh0Ngqp7NR3dH3Of391j",
+      "name": "Bash",
+      "arguments": {
+        "command": "for wt in tokenizer-windows-p1-provenance-observation-generator-20261011 tokenizer-windows-p1-provenance-observation-post-scope-20261011 tokenizer-wp1cb-provenance-evaluation-20261011 tokenizer-wp1cb-provenance-dispatch-state-20261011; do echo \"== $wt\"; find /Volumes/ORICO/project/.worktrees/$wt -maxdepth 4 -name \"*windows-provenance*\" 2>/dev/null | head -20; done",
+        "timeout": 60
+      }
+    },
+    {
+      "index": 11,
+      "id": "tool_RiobzJ1yuGXPCdwyk8bMp4Hf",
+      "name": "Bash",
+      "arguments": {
+        "command": "find /Volumes/ORICO/project -maxdepth 6 -name \"*windows-provenance-observation*\" -not -path \"*/node_modules/*\" 2>/dev/null | head -30; echo \"---r0 dirs---\"; find /Volumes/ORICO/project -maxdepth 5 -type d -name \"*kimi-r0*\" -not -path \"*/node_modules/*\" 2>/dev/null | head",
+        "timeout": 90
+      }
+    },
+    {
+      "index": 12,
+      "id": "tool_4lTVTMEJP0bDZW22LascgSfW",
+      "name": "Read",
+      "arguments": {
+        "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-adjudication-and-r1-authority.json"
+      }
+    },
+    {
+      "index": 13,
+      "id": "tool_fXBjjh66nhQMth9iPmwVpqFw",
+      "name": "Read",
+      "arguments": {
+        "path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-transport-manifest.json"
+      }
+    },
+    {
+      "index": 14,
+      "id": "tool_WoLla6iZFfwcpOhBtXVPsVEL",
+      "name": "Bash",
+      "arguments": {
+        "command": "date +%s"
+      }
+    },
+    {
+      "index": 15,
+      "id": "tool_YPQcFUJoo7D387jRA4HgFKx5",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008 && jq -r '.entries[] | \"\\(.sha256)  \\(.path)\"' docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-transport-manifest.json > /tmp/r1-manifest-check.txt && shasum -a 256 -c /tmp/r1-manifest-check.txt 2>&1 | grep -v \": OK$\" | head; echo \"EXIT:$?\"; shasum -a 256 -c /tmp/r1-manifest-check.txt 2>/dev/null | grep -c \": OK$\"",
+        "run_in_background": true,
+        "description": "Verify 37 transported r0 files sha256"
+      }
+    },
+    {
+      "index": 16,
+      "id": "tool_dwXovog7vrXeKSNnDgJoOuIm",
+      "name": "Bash",
+      "arguments": {
+        "command": "git diff --name-status 712cf210b089dc71f3a6e6ed2e19e1de7fee57da..HEAD | tee /tmp/r1-treediff.txt | wc -l; git diff --stat 712cf210b089dc71f3a6e6ed2e19e1de7fee57da..HEAD | tail -3"
+      }
+    },
+    {
+      "index": 17,
+      "id": "tool_03QUmXleLmqxaCsKNYk7rPtQ",
+      "name": "Bash",
+      "arguments": {
+        "command": "ls -la /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch && git cat-file -s 712cf210b089dc71f3a6e6ed2e19e1de7fee57da:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs && git cat-file -s HEAD:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+      }
+    },
+    {
+      "index": 18,
+      "id": "tool_oJnQXS8rZpqIsX54Gfqm30uJ",
+      "name": "Read",
+      "arguments": {
+        "path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-aqgpx67x/output.log"
+      }
+    },
+    {
+      "index": 19,
+      "id": "tool_F923921uDdFkK8dDzuaIa7LK",
+      "name": "Bash",
+      "arguments": {
+        "command": "cat /tmp/r1-treediff.txt; echo ---; git cat-file blob 712cf210b089dc71f3a6e6ed2e19e1de7fee57da:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs | shasum -a 256; git cat-file blob HEAD:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs | shasum -a 256"
+      }
+    },
+    {
+      "index": 20,
+      "id": "tool_QNba73RdUXgP1sE36tMFroZX",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'PATCH'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/provisional-report.md\n+# PROVISIONAL PARTIAL — windows-p1-provenance-observation-62d419b-evidence-kimi-r1\n+\n+Status: PROVISIONAL PARTIAL (written within 300s of dispatch; final verdict pending).\n+\n+Task: ONE fresh registered Kimi bounded section1.5 evidence supplement for source 62d419b2a419b685542efaaf047b8a749839d493 (runtime baseline 712cf210b089dc71f3a6e6ed2e19e1de7fee57da). Narrow OFFLINE supporting-evidence sufficiency judgment only. Not F004/F005 formal acceptance, not Windows/native/full-release/security acceptance, no publication granted, original Windows prepare cause remains unknown.\n+\n+Independently proved so far (this evaluator's own commands, not r0 assertions):\n+- HEAD == 62d419b2a419b685542efaaf047b8a749839d493 in this evaluator worktree; git status clean.\n+- Tracked tree diff 712cf210..62d419b: exactly 24 paths = 23 declared plan/pre-scope doc additions + 1 modified CLI (docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs). No workflow/bindings/spec/state/registry/harness changes observed in name-status.\n+- CLI git blob bytes: baseline 74301 B sha256 c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f; candidate 77285 B sha256 411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1 — both match contract values exactly.\n+- r0 transport: all 37 manifest entries re-hashed sha256 OK against coordinator manifest in parent worktree.\n+\n+Pending: whole-CLI finite S1-S6 inverse byte-exact reconstruction proof; r0 own-test patch/tool-history justification review; fresh own npm ci + single npm run verify with byte-exact copied inert r0 own test (typecheck only, no execution); archival of install/verify originals.\n+\n+r0-reported (not yet independently re-proved here): own additive 50-test final PASS; original 81-test exit 0; these remain evaluator reports, not functional signoff.\n+\n+Honest limits carried forward: third false-start full stdout and earlier stderr captures are unrecoverable and will NOT be reconstructed; r0 had no independent verify, no provisional-by-900 file, no whole-byte inverse proof — this r1 supplements only what is listed pending above.\n*** End Patch\nPATCH\necho \"APPLY_EXIT:$?\""
+      }
+    },
+    {
+      "index": 21,
+      "id": "tool_kNAfh6rB4u9R4kf5BBWUfD5V",
+      "name": "Bash",
+      "arguments": {
+        "command": "grep -E '\"verify\"|\"scripts\"' -A8 package.json | head -20; cat .npmrc 2>/dev/null; /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node --version"
+      }
+    },
+    {
+      "index": 22,
+      "id": "tool_mZvw6b3kpOOPtQ1W9OuBpnol",
+      "name": "Bash",
+      "arguments": {
+        "command": "mkdir -p /Volumes/ORICO/project/.wp1provoe-r1-20261011/tmp /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache && cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && env -i PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin HOME=/Volumes/ORICO/project/.wp1provoe-r1-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r1-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r1-20261011/tmp npm ci --cache /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache > /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stderr.log; echo \"NPM_CI_EXIT:$?\"",
+        "description": "Fresh own npm ci in isolated HOME",
+        "run_in_background": true,
+        "timeout": 480
+      }
+    },
+    {
+      "index": 23,
+      "id": "tool_hCctGkOvEsGLECJhpbxsbGTy",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && git cat-file blob 712cf210b089dc71f3a6e6ed2e19e1de7fee57da:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs > /tmp/r1-cli-baseline.mjs && git cat-file blob HEAD:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs > /tmp/r1-cli-candidate.mjs && diff -u /tmp/r1-cli-baseline.mjs /tmp/r1-cli-candidate.mjs > /tmp/r1-cli-diff.txt; wc -l /tmp/r1-cli-diff.txt; grep -c '^+' /tmp/r1-cli-diff.txt; grep -c '^-' /tmp/r1-cli-diff.txt"
+      }
+    },
+    {
+      "index": 24,
+      "id": "tool_xivVZLawfP750QnXtV4VXT8u",
+      "name": "Read",
+      "arguments": {
+        "path": "/tmp/r1-cli-diff.txt"
+      }
+    },
+    {
+      "index": 25,
+      "id": "tool_EPsZZxOWEm04yLY7WN78Mu4Q",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008 && jq -r '.entries[] | \"\\(.sha256)  \\(.path)\"' docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-generator-and-postscope-transport-manifest.json > /tmp/r1-gen-manifest-check.txt && wc -l < /tmp/r1-gen-manifest-check.txt && shasum -a 256 -c /tmp/r1-gen-manifest-check.txt 2>&1 | grep -v \": OK$\" | head; echo \"GEN_BAD_EXIT:$?\"; shasum -a 256 -c /tmp/r1-gen-manifest-check.txt 2>/dev/null | grep -c \": OK$\"",
+        "description": "Verify generator/postscope manifest 126 entries",
+        "run_in_background": true,
+        "timeout": 300
+      }
+    },
+    {
+      "index": 26,
+      "id": "tool_ONMZ9jcLJuWQ9fXbFo5Wx5RD",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008 && ls docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/ | grep -i planner; jq -r '.entries[] | \"\\(.sha256)  \\(.path)\"' docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-failure-planner-transport-manifest.json 2>/dev/null > /tmp/r1-planner-manifest-check.txt; wc -l < /tmp/r1-planner-manifest-check.txt; shasum -a 256 -c /tmp/r1-planner-manifest-check.txt 2>&1 | grep -v \": OK$\" | head; shasum -a 256 -c /tmp/r1-planner-manifest-check.txt 2>/dev/null | grep -c \": OK$\"",
+        "description": "Verify planner manifest entries",
+        "run_in_background": true,
+        "timeout": 300
+      }
+    },
+    {
+      "index": 27,
+      "id": "tool_wn0Ie2BAZ2w3stpydSAW7diQ",
+      "name": "Bash",
+      "arguments": {
+        "command": "cp /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/own-test-original.test.ts.original.txt /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts && shasum -a 256 tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts && wc -c < tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts"
+      }
+    },
+    {
+      "index": 28,
+      "id": "tool_5CQXRs6SDowW11wIhwNo4XQT",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'PATCH'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs\n+// r1 analyst script: reverse the exact candidate slot edits (S1-S6) line-by-line and\n+// prove the result is byte-exact the 712 baseline git blob. No git apply, no whitespace\n+// normalization: hunks are parsed for exact positions; '+' lines dropped, '-' lines restored.\n+import { readFileSync, writeFileSync } from 'node:fs';\n+import { createHash } from 'node:crypto';\n+\n+const [candidatePath, diffPath, baselinePath, outPath] = process.argv.slice(2);\n+const candidate = readFileSync(candidatePath, 'utf8').split('\\n');\n+const baseline = readFileSync(baselinePath);\n+const diffLines = readFileSync(diffPath, 'utf8').split('\\n');\n+\n+const hunks = [];\n+let cur = null;\n+for (const line of diffLines) {\n+  const m = line.match(/^@@ -(\\d+)(?:,(\\d+))? \\+(\\d+)(?:,(\\d+))? @@/);\n+  if (m) {\n+    cur = { oldStart: +m[1], newStart: +m[3], body: [] };\n+    hunks.push(cur);\n+    continue;\n+  }\n+  if (cur && (line.startsWith('+') || line.startsWith('-') || line.startsWith(' '))) {\n+    cur.body.push(line);\n+  } else if (cur && line.startsWith('\\\\')) {\n+    // \"\\ No newline at end of file\" marker: ignore, no such case expected here\n+  }\n+}\n+\n+// Reverse-apply: rebuild the original file content from the candidate by replacing each\n+// hunk's new-file range with its old-file content (lines prefixed '-' or ' ', in order).\n+const out = [];\n+let cursor = 1; // 1-based line number into candidate\n+const hunkReport = [];\n+for (const h of hunks) {\n+  while (cursor < h.newStart) out.push(candidate[cursor++ - 1]);\n+  let added = 0, removed = 0;\n+  const oldContent = [];\n+  for (const b of h.body) {\n+    if (b[0] === '+') { added++; cursor++; }\n+    else if (b[0] === '-') { removed++; oldContent.push(b.slice(1)); }\n+    else { oldContent.push(b.slice(1)); cursor++; }\n+  }\n+  for (const l of oldContent) out.push(l);\n+  hunkReport.push({ oldStart: h.oldStart, newStart: h.newStart, added, removed });\n+}\n+while (cursor <= candidate.length - 1) out.push(candidate[cursor++ - 1]);\n+// candidate ends with trailing newline -> split produces final empty string; keep join symmetric\n+const reconstructed = Buffer.from(out.join('\\n'), 'utf8');\n+writeFileSync(outPath, reconstructed);\n+\n+const sha = b => createHash('sha256').update(b).digest('hex');\n+const result = {\n+  hunks: hunkReport,\n+  hunkCount: hunks.length,\n+  reconstructedBytes: reconstructed.length,\n+  baselineBytes: baseline.length,\n+  reconstructedSha256: sha(reconstructed),\n+  baselineSha256: sha(baseline),\n+  byteExact: reconstructed.equals(baseline),\n+};\n+console.log(JSON.stringify(result, null, 2));\n+if (!result.byteExact) process.exitCode = 1;\n*** End Patch\nPATCH\necho \"APPLY_EXIT:$?\" && /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs /tmp/r1-cli-candidate.mjs /tmp/r1-cli-diff.txt /tmp/r1-cli-baseline.mjs /tmp/r1-cli-reconstructed.mjs"
+      }
+    },
+    {
+      "index": 29,
+      "id": "tool_CE0wto15BU1mZQcL8KAXnh47",
+      "name": "Read",
+      "arguments": {
+        "path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-vifwwskh/output.log"
+      }
+    },
+    {
+      "index": 30,
+      "id": "tool_DqphdCUnNICeERPrM9kOu4Ty",
+      "name": "Read",
+      "arguments": {
+        "path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-v5vxsq7f/output.log"
+      }
+    },
+    {
+      "index": 31,
+      "id": "tool_OWs7No2EEwberpGVg1qQkIRU",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'PATCH'\n*** Begin Patch\n*** Update File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs\n@@\n-while (cursor <= candidate.length - 1) out.push(candidate[cursor++ - 1]);\n+while (cursor <= candidate.length) out.push(candidate[cursor++ - 1]);\n*** End Patch\nPATCH\necho \"APPLY_EXIT:$?\" && /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs /tmp/r1-cli-candidate.mjs /tmp/r1-cli-diff.txt /tmp/r1-cli-baseline.mjs /tmp/r1-cli-reconstructed.mjs"
+      }
+    },
+    {
+      "index": 32,
+      "id": "tool_ZJBFycLbeQYJkl5M50SYsdNU",
+      "name": "Read",
+      "arguments": {
+        "path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-ej2cbacw/output.log"
+      }
+    },
+    {
+      "index": 33,
+      "id": "tool_ReO1e6JVch46GBpzMmQlUCsS",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && env -i PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin HOME=/Volumes/ORICO/project/.wp1provoe-r1-20261011 USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r1-20261011 TMPDIR=/Volumes/ORICO/project/.wp1provoe-r1-20261011/tmp npm run verify > /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log 2> /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stderr.log; echo \"VERIFY_EXIT:$?\"",
+        "description": "Single npm run verify (prisma generate + tsc)",
+        "run_in_background": true,
+        "timeout": 420
+      }
+    },
+    {
+      "index": 34,
+      "id": "tool_0dLQWsoaac2evzejKIUU1JXg",
+      "name": "Bash",
+      "arguments": {
+        "command": "head -120 tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts"
+      }
+    },
+    {
+      "index": 35,
+      "id": "tool_LAjLQjgCQyerRNYrXltYTQVo",
+      "name": "Bash",
+      "arguments": {
+        "command": "sed -n '120,400p' tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts"
+      }
+    },
+    {
+      "index": 36,
+      "id": "tool_56H2EHrEeepDgV30nVx1NPwL",
+      "name": "Read",
+      "arguments": {
+        "path": "/Users/yixingzhou/.kimi-code/sessions/wd_bl-windows-p1-provenance-observation-evi_afc2cfb043f7/session_d7b1ebb7-6acc-48f1-bde1-41ddbabb4fc9/agents/main/tasks/bash-mzxsb7pk/output.log"
+      }
+    },
+    {
+      "index": 37,
+      "id": "tool_zmMYCD71dFmREpnoVqkw798E",
+      "name": "Bash",
+      "arguments": {
+        "command": "tail -5 /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log; echo \"---stderr tail---\"; tail -5 /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stderr.log; echo \"---sizes---\"; wc -c /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stderr.log"
+      }
+    },
+    {
+      "index": 38,
+      "id": "tool_0GPfzw7H2MZXDjpWD76eliGb",
+      "name": "Bash",
+      "arguments": {
+        "command": "cat /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log; echo \"===tsconfig===\"; cat tsconfig.json | head -40"
+      }
+    },
+    {
+      "index": 39,
+      "id": "tool_SXoGhxzN3f6alMisK4zyGq6U",
+      "name": "Bash",
+      "arguments": {
+        "command": "date +%s; sed -n '400,560p' tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts; grep -c \"it(\" tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts"
+      }
+    },
+    {
+      "index": 40,
+      "id": "tool_cmHWuNy3gVjdR9mCOC1N5y6X",
+      "name": "Bash",
+      "arguments": {
+        "command": "shasum -a 256 tests/diagnostics/windows-p1-stages.test.ts; git diff 712cf210b089dc71f3a6e6ed2e19e1de7fee57da..HEAD --stat -- .github prisma src app package.json package-lock.json messages bin scripts | tail -2; echo \"---runtime log checks---\"; R=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/runtime-original.log; wc -c \"$R\"; grep -c '\"name\": \"Bash\"' \"$R\" 2>/dev/null || grep -c 'Bash' \"$R\""
+      }
+    },
+    {
+      "index": 41,
+      "id": "tool_Vm8CRkxqZF02kangSytxyMcr",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && ls node_modules/@swc/ 2>/dev/null; ls /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/ 2>/dev/null; grep -m2 '\"@swc/wasm\"' package-lock.json node_modules/.package-lock.json 2>/dev/null | head -4; echo \"---vendor---\"; git status --short vendor/ | head -3; shasum -a 256 vendor/braces/package.json 2>/dev/null"
+      }
+    },
+    {
+      "index": 42,
+      "id": "tool_nIiZYNfSDgMrMBWFVSFytNJA",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1; jq -r '.version' node_modules/@swc/wasm/package.json; grep -c 'swc/wasm' package-lock.json node_modules/.package-lock.json; echo \"---registry hosts in own debug logs---\"; grep -hoE 'https?://[a-zA-Z0-9.-]+/' /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/*.log | sort | uniq -c | sort -rn | head; echo \"---internal links---\"; find node_modules -maxdepth 2 -type l | head -5; find node_modules -maxdepth 2 -type l | wc -l"
+      }
+    },
+    {
+      "index": 43,
+      "id": "tool_IRAd8OxNcVP1M2s5FS0rMnMg",
+      "name": "Bash",
+      "arguments": {
+        "command": "C=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/tool-and-install-capture-original.json; jq 'keys' \"$C\" 2>/dev/null | head; jq '.tool_inventory // .tools // .summary' \"$C\" 2>/dev/null | head -40"
+      }
+    },
+    {
+      "index": 44,
+      "id": "tool_fj7Yjreqe5UHP2IJWCLhCfxh",
+      "name": "Bash",
+      "arguments": {
+        "command": "C=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/tool-and-install-capture-original.json; jq '.calls | length' \"$C\"; jq -r '.calls[] | .tool // .name' \"$C\" | sort | uniq -c; jq '{installed_lock_has_wasm, root_lock_has_wasm, wasm_version, status}' \"$C\""
+      }
+    },
+    {
+      "index": 45,
+      "id": "tool_y5aZ9yuXGklY9sfGxuT0sSqy",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && bad=0; for l in $(find node_modules -type l); do rp=$(realpath \"$l\"); case \"$rp\" in \"$PWD\"/*) ;; *) bad=$((bad+1)); echo \"OUTSIDE: $l -> $rp\";; esac; done; echo \"LINKS_OUTSIDE_OWN_WT:$bad\"; find node_modules -type l | wc -l",
+        "timeout": 120
+      }
+    },
+    {
+      "index": 46,
+      "id": "tool_wX4KPS5BsvGbgh8H4FfCXiLn",
+      "name": "Bash",
+      "arguments": {
+        "command": "C=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/tool-and-install-capture-original.json; jq -r '.calls[25], .calls[27], .calls[35], .calls[40] | {n: (.index // .n // \"?\"), tool, cmd: (.command // .cmd // \"\" | .[0:160]), summary: (.summary // .result_summary // \"\" | .[0:200])}' \"$C\" 2>/dev/null | head -60; echo ===; jq -r '.calls[25] | keys' \"$C\""
+      }
+    },
+    {
+      "index": 47,
+      "id": "tool_eaRUs9Z2IeToqXj9SEZNCBJl",
+      "name": "Bash",
+      "arguments": {
+        "command": "C=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/tool-and-install-capture-original.json; jq -r '.calls[] | select(.index==26 or .index==28 or .index==36 or .index==41) | \"[\\(.index)] \\(.name): \\(.arguments | tojson | .[0:300])\"' \"$C\""
+      }
+    },
+    {
+      "index": 48,
+      "id": "tool_cqq1W0ZKcWg3gvK9Y9lSRgmB",
+      "name": "Bash",
+      "arguments": {
+        "command": "R=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/runtime-original.log; grep -oE 'Tests[^\"]{0,80}' \"$R\" | head -12; echo ---; grep -oE '[0-9]+ failed' \"$R\" | sort | uniq -c"
+      }
+    },
+    {
+      "index": 49,
+      "id": "tool_dFTNi1SjLij3AVDzrQtQeQ6y",
+      "name": "Bash",
+      "arguments": {
+        "command": "R=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/runtime-original.log; grep -oE 'Tests  +(50 passed|[0-9]+ failed \\| [0-9]+ passed) \\(50\\)' \"$R\" | sort | uniq -c; echo ---; grep -oE '2 failed \\| 48 passed' \"$R\" | head -2"
+      }
+    },
+    {
+      "index": 50,
+      "id": "tool_1UdguNU07LfBS59DwFXtDjk6",
+      "name": "Bash",
+      "arguments": {
+        "command": "D=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/report/evidence; grep -E 'FAIL|AssertionError|slice anchor' \"$D/own-test-stdout-FIRST-FAIL-preserved.log\" | head -8; echo ===SECOND===; grep -E 'FAIL|AssertionError|slice anchor' \"$D/own-test-stdout-SECOND-FAIL-preserved.log\" | head -6"
+      }
+    },
+    {
+      "index": 51,
+      "id": "tool_Putv398lBpeH529OTqdAEZRo",
+      "name": "Bash",
+      "arguments": {
+        "command": "D=/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/report/evidence; grep -oE '→ .{0,90}' \"$D/own-test-stdout-FIRST-FAIL-preserved.log\" | sort | uniq -c | sort -rn | head -8; echo ===; grep -oE '→ .{0,90}' \"$D/own-test-stdout-SECOND-FAIL-preserved.log\" | sort | uniq -c | sort -rn | head -8; echo ===THIRD-MISSING-CHECK===; ls \"$D\" | grep -i third || echo \"no third capture (consistent with unrecoverable)\""
+      }
+    },
+    {
+      "index": 52,
+      "id": "tool_1ueYpILo08X7G1zG1uSqAeRV",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && E=docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence && mkdir -p \"$E/npm-debug-logs\" && cp /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stdout.log /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stderr.log /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stdout.log /Volumes/ORICO/project/.wp1provoe-r1-20261011/verify-stderr.log \"$E/\" && cp /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/*.log \"$E/npm-debug-logs/\" && cp node_modules/@swc/core/package.json \"$E/installed-swc-core-package.json\" && cp node_modules/@swc/core/postinstall.js \"$E/installed-swc-core-postinstall.js\" && cp node_modules/@swc/wasm/package.json \"$E/installed-swc-wasm-package.json\" && cp node_modules/.package-lock.json \"$E/installed-package-lock.json\" && cp package-lock.json \"$E/root-package-lock.json\" && cp /tmp/r1-cli-reconstructed.mjs \"$E/cli-reconstructed-from-candidate.mjs\" && cp /tmp/r1-treediff.txt \"$E/git-name-status-vs-712.txt\" && /Users/yixingzhou/.nvm/versions/node/v22.22.0/bin/node docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs /tmp/r1-cli-candidate.mjs /tmp/r1-cli-diff.txt /tmp/r1-cli-baseline.mjs /tmp/r1-cli-reconstructed.mjs > \"$E/inverse-proof-result.json\" && shasum -a 256 \"$E/cli-reconstructed-from-candidate.mjs\" && wc -c /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stdout.log /Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-ci-stderr.log && ls \"$E\" | wc -l"
+      }
+    },
+    {
+      "index": 53,
+      "id": "tool_HQAVgWo4QYmyghLJhyW6Zny3",
+      "name": "Bash",
+      "arguments": {
+        "command": "jq -r '.current_sprint // .status' progress.json 2>/dev/null; git status --short; date -u +%Y-%m-%dT%H:%M:%SZ; date +%s"
+      }
+    },
+    {
+      "index": 54,
+      "id": "tool_mDCdmSbT2Z59fgam4YXekGiw",
+      "name": "Bash",
+      "arguments": {
+        "command": "jq '{batch_id, fix_round, waiting, verdicts: [.verdicts[] | {feature_id, result}]}' /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-original/verdict-original.json"
+      }
+    },
+    {
+      "index": 55,
+      "id": "tool_ZKkSo3p2Db3XHjk0Z6AO0Jlj",
+      "name": "Bash",
+      "arguments": {
+        "command": "shasum -a 256 /Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-observation-kimi-r0-transport-manifest.json; ls docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/evidence/"
+      }
+    },
+    {
+      "index": 56,
+      "id": "tool_pWJONPtPremXRJjpQxk3TQ9K",
+      "name": "Bash",
+      "arguments": {
+        "command": "cd /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1 && /Users/yixingzhou/.codex/tmp/arg0/codex-arg0Jky2ll/apply_patch <<'PATCH'\n*** Begin Patch\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/report.md\n+# FINAL — windows-p1-provenance-observation-62d419b-evidence-kimi-r1 (bounded offline evidence supplement)\n+\n+Scope: narrow OFFLINE supporting-evidence sufficiency for source 62d419b2a419b685542efaaf047b8a749839d493 (baseline 712cf210b089dc71f3a6e6ed2e19e1de7fee57da). NOT formal F004/F005 acceptance, NOT Windows/native/full-release/security acceptance. No publication granted. Original Windows prepare cause remains UNKNOWN. release_ready stays false. Compose hard stop honored; no source712 retry; no further supplement after this.\n+\n+## A. Independently proved supplementary facts (this r1's own commands)\n+1. Tree provenance: `git diff --name-status 712cf210..62d419b` = exactly 24 paths — 23 declared plan/pre-scope doc additions (BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/*, -pre-scope-20261011/*) + 1 modified CLI `docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs`. `.github prisma src app package.json package-lock.json messages bin scripts` diff empty. (evidence/git-name-status-vs-712.txt)\n+2. CLI blob pins: baseline 74301 B sha256 c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f; candidate 77285 B sha256 411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1 — both raw git blobs re-hashed here, exact contract match. old81 test file tests/diagnostics/windows-p1-stages.test.ts sha256 7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132, unchanged.\n+3. Whole-CLI finite S1-S6 inverse BYTE-EXACT proof: own analyst script reverse-slots.mjs parses the 6 diff hunks (positions 40/87/692/738/1098/1112 baseline-side), drops exactly the added lines and restores exactly the removed lines at exact positions — no git apply, no whitespace normalization, no general deletion. Reconstruction = 74301 B sha256 c245a528… byte-equal to the 712 git blob (evidence/inverse-proof-result.json, evidence/cli-reconstructed-from-candidate.mjs). Hunks map 1:1 to slots: S1 inactive module-local state + eighteen literal 4-byte V00-V17 lines; S2 rebuild split ternary, schema/clone once each, bare catch null; S3 latch assignments before original groups/false returns, final local result, compound predicates and short-circuit untouched; S4 activation only in exact --prepare arm before unchanged prepare(); S5 deactivation after unchanged successful write; S6 one allowlisted 4-byte reason after unchanged generic(51)+phase(29) output, exit 1 retained. All writes guarded by active && phase===P11 (&& name==='provenance' in rebuild); V02/03/04 survive !v via `&& v` guards; P12 rebuild path untouched; no import-guard/probe/other-mode/stdout/persisted additions; no old-80 compliance claim.\n+4. Transport integrity: r0 manifest itself sha256 9cbaeb8f8251181996798edd6d9e7871a5b7c3bd17643debfbfba49f93dcd9a9 (matches adjudication); all 37 r0 entries re-hashed OK; generator+postscope manifest 126/126 OK; planner manifest 20/20 OK.\n+5. Fresh own install + single verify: env -i with PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin, HOME=USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r1-20261011, TMPDIR/cache beneath; ONE `npm ci` exit 0 (stdout 264 B / stderr 495 B archived); r0 immutable own test copied BYTE-EXACT (sha256 068bc299e27458aefa61bb0e0266d8d9df8d4108fc569fb4c05545e8f9f6805f, 33500 B) to tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts (typecheck inclusion only, never executed — tsconfig `**/*.ts` includes tests/, excludes only node_modules and docs/test-reports); ONE `npm run verify` (prisma generate && tsc --noEmit) exit 0 with the copied test in the program. No retry/auditfix/extra install. Full stdout/stderr archived under evidence/.\n+6. Install facts (own): @swc/wasm 1.16.13 present in node_modules, ABSENT from root package-lock.json and node_modules/.package-lock.json (0 matches) — package-owned SWC wasm registry fallback occurred; installed @swc/core package.json/postinstall.js, wasm package.json, both locks archived. Own npm debug logs (2, archived) record registry requests overwhelmingly to https://registry.npmjs.org/ (2048 refs; 2 github.com + 1 eslint.org notice/changelog URLs). Narrow claim only: these are recorded registry requests in debug logs, NOT proof that all package lifecycle traffic used that host. 47 node_modules symlinks all realpath inside this own worktree; vendor/braces tracked and clean; no borrowed node_modules/cache/HOME.\n+7. r0 tool/patch history from raw runtime + tool-and-install-capture-original.json: 46 calls = 41 Bash + 5 Read, no Native Write/Edit; own-test executions at calls 26/28/36/41 show `Tests 23 failed | 27 passed (50)` → `12 failed | 38 passed` → `2 failed | 48 passed` → `50 passed (50)`; original diagnostics suite `Tests 81 passed (81)`. Retained FIRST/SECOND fail captures show anchor-miss (`slice anchor missing`) and mock-wiring/count mismatches — i.e. original-read mock/anchor fixes to the evaluator's own test only; r0 worktree status shows only its own report/verdict/test additions; source is proven untouched by fact A3. No product or acceptance relaxation found: the final test asserts exact 51/80/84-byte terminals, exact call counts/order, canary non-reads, short-circuit preservation.\n+\n+## B. r0-reported assertions (NOT re-executed here — rerun forbidden)\n+- Final own additive 50-test PASS and original 81-test exit 0 remain r0 evaluator reports recorded in raw runtime; they are not this evaluator's functional signoff and not Coordinator signoff.\n+- r0 prose claimed \"two earlier false starts\"; raw runtime proves THREE (23/12/2). Prose inaccuracy noted; runtime facts stand.\n+\n+## C. Unrecoverable artifact limits (honestly missing, NOT reconstructed)\n+- Third false-start full stdout and all separately identified earlier stderr captures were never retained; verified absent from transport; cannot be recovered or reconstructed. No post-hoc provisional timestamp or initial-error reconstruction attempted.\n+- r0 itself had no independent verify, no provisional-by-900 file, no whole-byte inverse proof; this r1 supplements the first and third and adds a fresh typecheck, within its own single-install/single-verify bounds.\n+\n+## Conclusion\n+For the narrow question commissioned — are r0's test-only mock/anchor fixes justified without product/acceptance relaxation, and is the offline supporting evidence sufficient for the new source's provenance-only observation contract — the answer is YES on the evidence above: PASS (offline support only). All load-bearing static claims are independently re-proven; dynamic suite outcomes remain r0-reported as bounded in B; permanent artifact gaps disclosed in C. Nothing here grants publication, formal F004/F005, Windows/native, security, or release acceptance.\n*** Add File: /Volumes/ORICO/project/.worktrees/tokenizer-wp1provo-evidence-evaluation-20261011/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-provenance-observation-62d419b-evidence-kimi-r1/docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-verdict.json\n+{\n+  \"batch_id\": \"BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT\",\n+  \"fix_round\": 0,\n+  \"created_at\": \"2026-10-11T20:23:40Z\",\n+  \"waiting\": null,\n+  \"verdicts\": [\n+    {\n+      \"feature_id\": \"F004\",\n+      \"result\": \"PASS\",\n+      \"evidence\": \"Narrow OFFLINE supporting-evidence sufficiency ONLY (not formal F004/F005, not Windows/native/release/security acceptance; publication not granted; original Windows prepare cause unknown; release_ready=false). INDEPENDENTLY PROVED by this r1: (1) tree 712cf210..62d419b = 23 declared doc additions + 1 CLI, nothing else; (2) CLI blobs exact: baseline 74301B sha256 c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f, candidate 77285B sha256 411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1, old81 7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132 unchanged; (3) whole-CLI finite S1-S6 inverse reconstruction BYTE-EXACT to the 712 git blob (74301B, c245a528...) via explicit per-slot line reversal (6 hunks, no git apply/normalization) — evidence/inverse-proof-result.json; static slot review confirms eighteen 4-byte V00-V17 literals, active&&P11(&&name==='provenance') guards on all writes, V02/03/04 !v preservation, P12 untouched, emission generic51+P11line29+one4=84 only at prepare-P11, other phases<=80, success/other-mode/import-guard/probe 0 new bytes, stdout 0, exit 1, no old-80 claim; (4) transports: r0 manifest sha256 9cbaeb8f... matches adjudication, 37/37 entries OK, generator+postscope 126/126 OK, planner 20/20 OK; (5) ONE fresh own npm ci (exit 0) + ONE npm run verify (prisma generate && tsc --noEmit, exit 0) in isolated HOME/PATH/TMPDIR with the r0 own test copied byte-exact (068bc299..., 33500B) as tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts for typecheck only (included via tsconfig **/*.ts; never executed); full install/verify stdout/stderr + 2 own npm debug logs + installed @swc core/wasm package originals + both locks archived; @swc/wasm 1.16.13 installed but absent from both locks (package-owned SWC wasm fallback, disclosed; recorded debug-log registry requests chiefly registry.npmjs.org — not a lifecycle-host proof); 47 node_modules symlinks all realpath inside own worktree. R0-REPORTED (not re-executed, rerun forbidden): final own 50-test PASS and original 81-test exit 0 recorded in raw runtime; 46-call inventory 41 Bash+5 Read; own-test calls 26/28/36/41 show failures 23/12/2 then 50 PASS — THREE false starts, correcting r0 prose saying two; retained failure captures show only original-read mock/anchor fixes to r0's own test, no product/acceptance relaxation. UNRECOVERABLE LIMITS: third false-start full stdout and earlier stderr captures permanently missing, verified absent, NOT reconstructed; r0 had no independent verify/provisional-file/inverse-proof — supplemented here within single-install/single-verify bounds.\",\n+      \"steps_to_reproduce\": \"1) git diff --name-status 712cf210b089dc71f3a6e6ed2e19e1de7fee57da..62d419b2a419b685542efaaf047b8a749839d493 (24 paths; evidence/git-name-status-vs-712.txt). 2) git cat-file blob <ref>:docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs | shasum -a 256 for both refs. 3) node docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/reverse-slots.mjs candidate diff baseline out (byte-exact true). 4) shasum -a 256 -c against the three coordinator manifests (37/126/20 OK). 5) env -i PATH=/Users/yixingzhou/.nvm/versions/node/v22.22.0/bin:/usr/sbin:/sbin:/usr/bin:/bin HOME=USERPROFILE=/Volumes/ORICO/project/.wp1provoe-r1-20261011 TMPDIR=<home>/tmp npm ci --cache <home>/npm-cache (exit 0, once). 6) cp coordinator-transported own-test-original.test.ts.original.txt tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts (sha256 068bc299e27458aefa61bb0e0266d8d9df8d4108fc569fb4c05545e8f9f6805f). 7) npm run verify once (exit 0; captures archived under evidence/). Full details: docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/report.md.\"\n+    }\n+  ]\n+}\n*** End Patch\nPATCH\necho \"APPLY_EXIT:$?\"; jq -e . docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-verdict.json > /dev/null && echo VERDICT_JSON_VALID; git status --short"
+      }
+    }
+  ],
+  "status": "?? docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-EVIDENCE-SUPPORT-verdict.json\n?? docs/test-reports/BL-WINDOWS-P1-PROVENANCE-OBSERVATION-evidence-kimi-r1-20261011/\n?? tests/evaluator/windows-p1-provenance-observation-r1-typecheck.test.ts\n",
+  "provisional_stat": "2026-10-11T20:18:17.161Z",
+  "all_owned_npm_debug_files": [
+    "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_18_43_768Z-debug-0.log",
+    "/Volumes/ORICO/project/.wp1provoe-r1-20261011/npm-cache/_logs/2026-10-11T20_19_57_045Z-debug-0.log",
+    "/Volumes/ORICO/project/.wp1provoe-r1-20261011/.npm/_logs/2026-10-11T20_20_30_448Z-debug-0.log"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "COORDINATOR_TRANSPORT_AND_CONTRACT_ADJUDICATION_ONLY",
+  "checkpoint_actual_utc": "2026-10-11T20:27:48.983Z",
+  "source_ref": "62d419b2a419b685542efaaf047b8a749839d493",
+  "source_sha256": "411c9e10fe35bfe231d0c5daf0b01ead77f18464688d67a910c103e433d760b1",
+  "source_bytes": 77285,
+  "runtime_baseline_ref": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "r0_original_verdict": "PASS_OFFLINE_SUPPORT_ONLY_UNMODIFIED",
+  "r1_original_verdict": "PASS_OFFLINE_EVIDENCE_SUPPORT_ONLY_UNMODIFIED",
+  "r1_task": "windows-p1-provenance-observation-62d419b-evidence-kimi-r1",
+  "r1_duration_s": 623,
+  "r1_hard_cap_s": 900,
+  "r1_receipt_validation": "COMPLETED_MECHANICAL_ONLY",
+  "r1_transport_count": 45,
+  "r1_transport_bytes": 2283734,
+  "r1_transport_manifest_sha256": "2d1e04c2caac915943cb0554e17c19cdf69ef866a85fd0a767c761caec58a17e",
+  "outcome": "HOLD_CONTRACT_GAPS_NO_FURTHER_SUPPLEMENT",
+  "publication_authorized": false,
+  "native_ci_authorized": false,
+  "no_further_source62_evaluator_supplement": true,
+  "load_bearing_contract_gap": {
+    "required": "Independently reverse only explicit finite S1-S6 edits to the whole baseline CLI, without general deletion or diff-apply as proof.",
+    "observed_original": "The r1 reverse-slots.mjs accepts an arbitrary candidate/diff/baseline, parses all @@ hunks generically, drops every '+' line and restores every '-' line. It neither pins the six permitted slot contents/counts/positions nor verifies consumed candidate hunk bytes. It is a generic reverse-apply implementation, even though no git apply command is invoked.",
+    "consequence": "The final reconstructed bytes truly match c245a528... and are retained, but this does not meet the commissioned finite-slot proof method. Original report's 'no general deletion'/'explicit per-slot' interpretation is not accepted. Coordinator does not repair or execute a replacement analyst proof and does not substitute its own functional acceptance or Codex scope review for this Kimi obligation.",
+    "first_failure_retained": "r1 runtime call28 originally returned reconstructed74300B sha d2b253b1... and byteExact=false/exit1. Its script-only trailing-newline correction in call31 returned74301B/byteExact=true. Both complete returned tool contents remain in the original runtime; final file bytes do not reconstruct the earlier output file."
+  },
+  "additional_disclosed_contract_and_evidence_limits": [
+    "r1 wrote eight task-derived captures under absolute /tmp rather than its owned TMPDIR; exact files referenced by active task commands are archived byte-identically without reading unrelated /tmp files or removing originals.",
+    "r1 report archived two npm-cache/_logs originals but omitted the npm run verify log in its owned HOME/.npm/_logs. Coordinator captured all three separately, preserving both report and missing-log fact rather than rewriting report.",
+    "r1 shows manifest hash checks and a name-status diff, not the complete independently archived raw/mode ledger for all tracked files/current committed transport blobs required by its envelope. Previously passed Codex scope originals remain distinct and are not substituted as Kimi functional signoff.",
+    "r0's three test false starts and unrecoverable third full stdout/earlier stderr/provisional gaps remain as recorded in the immutable r0 adjudication. r1 correctly disclosed those limits; no post-hoc originals were fabricated.",
+    "All package-owned SWC wasm1.16.13 lock-absent fallback facts and raw seven-high installation warnings remain open; no dependency-security/native-install/all-lock-only claim.",
+    "Coordinator own read-only inspection errors are disclosed: tool2b0dd9 referenced nonexistent integration-catalog.py (exit2); toolbd5cf5 had an extra trailing brace SyntaxError (exit1); tool8b208a then encountered a literal null log line TypeError (exit1). Tool2e284c corrected syntax/null handling and captured the inventory. These are tool-stream references, not reconstructed original logfile bytes. No target/state/manual file was written by the failed inspections."
+  ],
+  "positive_facts_not_release_signoff": [
+    "r1 completed before its900s cap and produced an actual retained provisional artifact: mtime20:18:17.161Z, launch receipt birthtime20:13:50.193Z, approximately267s. This is a filesystem/tool-supported timeline, not proof from a prose timestamp alone.",
+    "r1 independently performed one fresh owned npmci and one npm run verify, each reported exit0; the unmodified33500B r0 test was transported only for type checking, not executed. Full raw stdout/stderr and task exit outputs are retained.",
+    "r1 recorded 56 tools:44 Bash/12 Read, no Native Write/Edit. Manual authored paths are absolute and limited to own report/verdict/analyst script. Product/CLI/workflow/oldtests/state/registry/harness/memory remained unchanged.",
+    "Original r0 diagnostics81 and final own50 results, original Kimi PASS verdicts, Generator development and passive scope results remain separately attributed; Coordinator has not declared candidate functional PASS/FAIL."
+  ],
+  "current_live_boundary": {
+    "remote_main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "local_main": "2074991717abaf3cb34d9aad894bcd4357fefbc3",
+    "main_worktree_clean": true,
+    "remote_non_main_diagnostic": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "new_source62_published": false,
+    "public_health_http_status": 200,
+    "public_health_ok": true,
+    "public_health_commit": "92d410c6d0bd7fbb9ca4bdb0d984936c0a1db2a1",
+    "parent_product_diff_vs_76d916b": "EMPTY",
+    "main_status": "verifying",
+    "parent_status": "building",
+    "pending_gate_both": null,
+    "production_deployed_this_continuation": false,
+    "fresh_capture_filename_token_2031": "LABEL_ONLY_ACTUAL_CAPTURE20:27_UTC"
+  },
+  "remaining_release_boundaries": [
+    "Windows latest published source712 run38165950837 attempt1 fails at prepare P11; cause remains unknown. INITIAL/nativeAPI/T0T3/E0B001 remain unexecuted; no old-run rerun.",
+    "New source62 observation-only candidate is HOLD; both registered evaluator opportunities are consumed. No third supplement, cap extension, model-family fallback or relabeling the same verification as a new retry.",
+    "Compose shape evaluation HARD_STOP after its sole redispatch; host protected diagnostic failed invalid_version before app/config/DB identity. No third Compose dispatch or protected production rerun.",
+    "Formal F004/F005/agent distribution/authenticated browser/full release/independent deployed commit and recovery gates remain open; conditional main-push permission never permits skipping them.",
+    "User deferred keys because offline custody media are not available. No key creation, real encrypted offsite backup, decrypt/restore, DB password rotation, app baseline switch or production database rebuild/restore."
+  ],
+  "release_ready": false
+}

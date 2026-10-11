@@ -2,7 +2,15 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 19:42 UTC
+## Latest checkpoint: 20:27 UTC
+
+- Source62 remains **HOLD and unpublished**. Registered Kimi r0 returned1675/1800 with immutable OFFLINE supporting PASS; its recorded unchanged81/final own50 results are retained, but independent verify/finite byte proof and some initial-error captures were missing. The single fresh bounded evidence supplement returned623/900 with its own fresh npmci/verify exit0 and unmodified r0 test included for typecheck only, never rerun. Both original verdicts remain untouched and are not Coordinator functional signoff.
+- `windows-provenance-observation-final-coordinator-hold.json` records the load-bearing contract mismatch: the supplement's analyst script is generic reverse-diff application, not the commissioned explicit finite S1-S6 proof. Its final baseline byte equality is real but does not satisfy that method. No new publication/CI or further same-source evaluator supplement is authorized; no third attempt, cap extension, family fallback or relabeling a retry.
+- R0 runtime proves THREE own-test false starts (23/12/2 failures), then50 passes, rather than its prose's two. Missing third full stdout/earlier stderr are honestly unrecoverable. R1's initial74300-byte inverse failure, eight task-derived absolute-/tmp captures, omitted owned npmverify debug log and root's read-only inspection errors remain disclosed; originals were neither repaired nor fabricated. All three r1 owned npm debug logs and all package/lock originals are preserved, with seven-high/SWC lock-absent fallback warnings open.
+- 37 r0 originals (1,698,196 bytes) are committed byte-identically in213ed02; 45 r1 originals (2,283,734 bytes) are transported byte-identically with a separate manifest. Both evaluator test copies are inert docs `*.original.txt`, not parent tests/runtime. No product source, state, pending gate, memory, registry or harness changes.
+- Fresh20:27 remote main207/non-main712, public HTTP200/ok=true still production92; main clean and parent product diff empty. Capture token2031 is only a filename label; actual original timestamps are authoritative. Production is not updated. Windows P11/INITIAL, Compose HARD_STOP, formal F004/F005/full release and encrypted backup/recovery gates remain open; user key/custody deferral is honored, `release_ready=false`.
+
+## Historical checkpoint: 19:42 UTC
 
 - Fresh Planner and pre-scope preserve source712's old80 contract; the separately commissioned NEW `PREPARE_P11_REASON_V1_84` adds one fixed4-byte V00-V17 line only after unchanged generic/P11 on exact prepare-P11 failure. No schema/environment/hash/guard/native-budget widening or root-cause claim.
 - Source `62d419b2a419b685542efaaf047b8a749839d493` is frozen, one CLI path only. Generator unchanged81/verify/syntax/pureimport passed; fresh passive actual-diff scope is PASS_SCOPE_ONLY and restores all baseline712 CLI bytes exactly. 123 Generator + 3 post-scope originals (1,686,610 bytes) are transported and independently rechecked against current parent Git blobs. Source CLI remains unintegrated and unpublished.
