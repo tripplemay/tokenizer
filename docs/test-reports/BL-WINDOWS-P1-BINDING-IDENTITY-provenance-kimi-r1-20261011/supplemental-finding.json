@@ -1,0 +1,83 @@
+{
+  "format": "windows-p1-binding-identity-provenance-kimi-r1-supplemental-finding-v1",
+  "task_id": "windows-p1-binding-identity-61cf64e-provenance-kimi-r1",
+  "batch_id": "BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT",
+  "created_at_utc": "2026-10-11T17:27:20Z",
+  "role": "fresh independent Kimi-family PASSIVE ORIGINAL-EVIDENCE audit only (harness section 1.5 supporting); not Generator/Coordinator; no functional/native acceptance authority",
+  "method": {
+    "performed": [
+      "passive filesystem reads of in-scope original artifacts only",
+      "SHA256/byte-size re-computation and join against recorded hashes (43 rows, 0 mismatches; see hash-verification.tsv)",
+      "passive Git object inspection (rev-parse/log/diff/show) of the generator repository at the locked ref",
+      "read-only JSON parsing of preserved raw test outputs for pass counts"
+    ],
+    "not_performed": [
+      "no execution of any target code, test, package postinstall, npm install/audit, diagnostic CLI, VM or import from the target",
+      "no network, SSH, Docker, DB, credential, state, memory or registry access",
+      "no rewrite of any original artifact or of the r0 verdict",
+      "no reuse of prior test results as new functional acceptance"
+    ],
+    "environment": "HOME=USERPROFILE=/Volumes/ORICO/project/.wp1cbpa-r1-20261011 with TMPDIR beneath; Node v22.22.0 used only for passive read/hash; writes only via absolute-path apply_patch plus machine-generated hash output in this own reportdir"
+  },
+  "source_lock": {
+    "locked_ref": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+    "commit_object_present_in_generator_repo": true,
+    "generator_repo_head_now": "358ac60f33fcc6d6a1d2865a50219a3ce04755d0",
+    "head_relationship": "358ac60 is a child of 61cf64e adding only 51 new files under docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-generator-20261011/ (all status A, zero modifications/deletions); content at the locked ref is unaffected",
+    "worktree_status": "clean",
+    "r0_binding": "run-meta-original.json ref and transport-manifest evaluator_head both equal 61cf64e67a6fda231bb090e77c19d5ececb908af"
+  },
+  "hash_verification": {
+    "transport_manifest_entries": "37/37 byte-size and SHA256 match recorded values",
+    "lifecycle_capture_entries": "3/3 match recorded values",
+    "manifest_self_sha256": "48401429a3075868fd8afb76df57d7b60ac22e156c4d57c9ee62548786614d80 matches the value recorded in the coordinator adjudication",
+    "original_r0_verdict_sha256": "0c6cb5f27fb9f4af566f5ca5ea2e31b4f44a37ad6e8a41a17f2b2edb0bab3f30 matches adjudication original_verdict_sha256; r0 report preserved verbatim, not rewritten",
+    "detail": "hash-verification.tsv (machine-generated, 43 rows, 0 mismatches)"
+  },
+  "npm_command_status_log_relationships": {
+    "npm_ci": "npm-ci.stdout.log start 2026-10-11T17:03:07Z, exit 0 at 17:04:37Z, 'added 670 packages, and audited 672 packages'; debug log 2026-10-11T17_03_07_814Z title 'npm ci', verbose exit 0; task-output bash-88fhhuen 'npm-ci-background-wrapper-exit:0'; all consistent",
+    "nested_lock_absent_install": "debug log 2026-10-11T17_04_21_017Z title 'npm install @swc/wasm@1.16.13', argv install --no-save --loglevel error --prefer-offline --no-audit --progress false @swc/wasm@1.16.13, cwd node_modules/@swc/core/npm-install inside the r0 evaluator worktree, registry GET 200 packument and GET 200 wasm-1.16.13.tgz, verbose exit 0; timestamp inside the npm ci window",
+    "verify_runs": "2026-10-11T17_05_48_278Z npm run verify exit 0 (initial, before own test); 17_13_44_957Z exit 2 and 17_14_21_300Z exit 2 (TS2741/TS2345 errors confined to the own evaluator test file, preserved in npm-verify-rerun/own-run2 logs); 17_14_50_162Z exit 0 (final); matches r0 disclosure of own-test-only typing fixes with failures preserved",
+    "wrappers": "original81-wrapper-exit:0 and verify-wrapper-exit:0 in preserved task-output originals",
+    "debug_log_set_complete": "exactly six npm debug logs preserved (1 ci + 1 nested install + 4 verify); no other npm invocation logs exist in the captured set"
+  },
+  "package_postinstall_behavior": {
+    "swc_core_package": "captured @swc/core package.json version 1.16.13 with postinstall 'node postinstall.js'",
+    "postinstall_logic_observed": "captured postinstall.js validates the native binding via require('./binding.js') target-triple/parseSync check; on failure it warns and runs exactly 'npm install --no-save --loglevel=error --prefer-offline --no-audit --progress=false @swc/wasm@<same version>' with cwd @swc/core/npm-install, then renames the installed package to INIT_CWD/node_modules/@swc/wasm and removes the npm-install directory",
+    "consistency": "the observed nested-install argv/cwd/version and the lifecycle-capture initial_capture_error note (ENOENT at npm-install path, wasm found at top level) both match this code path byte-for-byte behaviorally"
+  },
+  "installed_wasm_version": {
+    "captured_package": "package-lifecycle/swc-wasm-package-original.json name @swc/wasm version 1.16.13, main wasm.js",
+    "lockfile_at_locked_ref": "package-lock.json at 61cf64e contains zero '@swc/wasm' entries and zero 'node_modules/@swc/wasm' entries (grep count 0); package.json declares no @swc/wasm dependency; lifecycle capture lock_has_wasm=false independently confirmed",
+    "conclusion": "@swc/wasm@1.16.13 was installed lock-absent via the @swc/core postinstall fallback, matching @swc/core's own version 1.16.13"
+  },
+  "observed_lifecycle_downloads": {
+    "npm_ci_log": "681 http fetch GET 200 responses (packuments and tarballs), including @swc/core-darwin-arm64-1.16.13.tgz and napi-postinstall-0.3.4.tgz; 0 GET 304",
+    "nested_install_log": "2 GET 200: registry packument @swc%2fwasm and tarball wasm-1.16.13.tgz",
+    "other_logs": "the four npm run verify debug logs contain no fetches",
+    "limitation": "child-process downloads of other postinstalls (prisma engines, esbuild, unrs-resolver/napi-postinstall) are not captured in npm logs; only npm-visible traffic is enumerated here"
+  },
+  "conflict_adjudication": {
+    "r0_claim_under_audit": "No lock-absent installs were needed; no SWC/wasm fallback observed.",
+    "finding": "NOT SUPPORTED. The r0-owned npm debug original 2026-10-11T17_04_21_017Z-debug-0.log proves a package-owned (not agent-run) lock-absent install of @swc/wasm@1.16.13 with registry download and exit 0 during the npm ci window, and the captured top-level @swc/wasm package proves the fallback completed. The coordinator claim_conflict statement is independently verified as accurate.",
+    "why_r0_did_not_observe_it": "the nested npm ran with --loglevel=error and the postinstall pipes child stdio, so the fallback warning never reached the captured npm-ci stdout/stderr; runtime-original.log contains zero '@swc/wasm' mentions. The absence of the fallback in r0's console output is explained by log suppression, not by its absence.",
+    "observed_vs_inference": "OBSERVED: nested npm install exit 0, installed @swc/wasm@1.16.13 bytes at top level, @swc/core-darwin-arm64 tarball also fetched and added during ci, postinstall exit code 0. NOT OBSERVED (do not adopt as fact): the reason the native binding check failed at postinstall time (no captured stderr from the piped child), whether the native binding was loadable afterwards, and any native-cache state. The seven-high audit warning is raw-recorded and was never fixed (zero audit-fix mentions)."
+  },
+  "dependency_provenance_statement": "Final installed dependency set was NOT entirely lock-only: @swc/wasm@1.16.13 entered via a lock-absent, --no-save, package-owned install. npm reported 'added 670 packages, and audited 672 packages'. Whether the final runtime used the native binding or the wasm fallback cannot be determined from the captured evidence; no native-accepted claim is made.",
+  "behavioral_evidence_impact": {
+    "unchanged81": "original81.raw.json re-read passively: numTotalTests 81, numPassedTests 81, numFailedTests 0, success true; file hash byte-exact",
+    "own48": "own-tests-run1/2/3.raw.json each 48/48 passed success true; hashes byte-exact",
+    "final_verify": "final npm run verify exit 0 at 17:14:52Z preserved",
+    "affected": false,
+    "note": "the conflict is confined to one interpretive sentence in the r0 evidence text; the raw behavioral artifacts are authentic and unaltered. This audit does not re-execute or re-accept them and confers no new functional acceptance"
+  },
+  "unresolved_ambiguity": [
+    "The trigger cause of the @swc/core native-binding validation failure (timing vs environment) is not captured in any preserved log; any statement beyond 'validation failed and fallback ran' would be speculation.",
+    "Post-audit state of the r0 node_modules (whether wasm or native was actually exercised by the test runs) is indeterminate from the captured bytes alone."
+  ],
+  "boundaries": "This finding adjudicates only the recorded evidence conflict. It is not a C002 functional PASS, not dependency security acceptance, not native/Windows acceptance, and no publication/CI/release authority. Original r0 verdict preserved verbatim; Compose HARD_STOP, parent release gates and user key deferral unchanged.",
+  "artifacts": {
+    "hash_verification": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-provenance-kimi-r1-20261011/hash-verification.tsv",
+    "verdict": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-verdict.json"
+  }
+}

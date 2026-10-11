@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T17:30:28Z",
+  "role": "Coordinator original transport and bounded non-main diagnostic authorization, not functional Evaluator/human gate decision",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "different_family_support": {
+    "generator_family": "codex",
+    "evaluator_family": "kimi",
+    "r0_original_verdict": "OFFLINE supporting PASS, unchanged81 + own48 + finalverify0, original unchanged",
+    "r0_original_report_claim_rejected": "No lock-absent install/no SWC fallback",
+    "supplemental_task": "windows-p1-binding-identity-61cf64e-provenance-kimi-r1",
+    "supplemental_original_verdict": "PASS: passive evidence conflict adjudicated ONLY, not a new functional/native/security acceptance",
+    "supplemental_verdict_sha256": "d6ae55f20abea34fc1e82cfd4debb29365e904a1a92af22b90c85aadd84f082b",
+    "mechanical_state": "COMPLETED",
+    "exit_code": 0,
+    "duration_s": 457,
+    "effective_timeout_s": 900,
+    "observations": "Independently confirms package-owned SWC wasm1.16.13 install, original-lock absence, raw seven-high warning and original test/finalverify evidence unaffected by incorrect interpretive sentence",
+    "unresolved": "Exact fallback trigger/native-cache reason and post-hoc native-versus-wasm resolution were not observed; no all-lock-only/native-install claim",
+    "count_claim_not_adopted": "Supplement repeats51 Generator report additions; live Git records independently show exactly50. Original kept verbatim; this metadata error does not alter source tree/hash or lifecycle finding",
+    "further_C002_redispatch_authorized": false
+  },
+  "transport": {
+    "supplemental_originals": 8,
+    "bytes": 285017,
+    "manifest": "windows-binding-identity-provenance-transport-manifest.json",
+    "manifest_sha256": "51f4fd110c4dac049505fcafa4834f6969e043af0ed49ee06767057fe185e93b",
+    "all_prior52_and37_originals_unchanged": true,
+    "tools": "Bash17 Read12, no native Write/Edit; no target/test/install/lifecycle execution",
+    "network_isolation_claim": false
+  },
+  "source_and_scope": {
+    "fresh_post_scope_commit": "23c97c15fed90b993713650af085006297a0bd5c",
+    "scope_verdict": "PASS_SCOPE_ONLY",
+    "frozen_five_materialized_file_hashes_match": true,
+    "generator_worktree_clean": true,
+    "source_integrated_into_parent_runtime": false,
+    "prepublication_observation": "windows-binding-identity-prepublication-observation-original.json",
+    "fast_forward_from_source221": true
+  },
+  "bounded_publication": {
+    "authorized": true,
+    "prior_user_approval": "Coordinator may publish non-main CI branch; main/deployment only after release gates",
+    "remote": "origin",
+    "exact_source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+    "expected_previous_ref": "221f2f87d94db1656e3000662796d79621b696f5",
+    "destination": "refs/heads/codex/windows-p1-stages-ci-20261010",
+    "report_commit_publication": false,
+    "force_push": false,
+    "executions": "One new exact-source Windows P1 INITIAL push-triggered diagnostic opportunity; NOT rerun of source221 failure",
+    "no_rerun_or_branch_retry": true,
+    "trigger_review": "Only Windows P1 fixed non-main push branch matches; deploy/contract push only main, old Windows diagnostics different fixed branch, protected host inventory workflow_dispatch only",
+    "permissions": "contents:read; no Secrets/environment/deploy, unchanged diagnostic/native contracts",
+    "formal_native_or_release_gate_closed": false
+  },
+  "main_push_authorized_by_this_artifact": false,
+  "production_mutation_authorized_by_this_artifact": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "compose": "HARD_STOP unchanged, no third attempt",
+  "keys": "Deferred by user",
+  "release_ready": false
+}

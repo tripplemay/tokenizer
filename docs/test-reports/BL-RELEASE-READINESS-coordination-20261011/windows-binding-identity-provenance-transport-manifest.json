@@ -1,0 +1,64 @@
+{
+  "observed_at": "2026-10-11T17:30:26.594Z",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "role": "Coordinator byte transport/passive metadata verification only",
+  "count": 8,
+  "total_bytes": 285017,
+  "entries": [
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-provenance-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-provenance-kimi-r1/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-provenance-kimi-r1-20261011/hash-verification.tsv",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-provenance-kimi-r1-20261011/hash-verification.tsv",
+      "bytes": 11539,
+      "sha256": "78c367a0438fbace35c741394e3204ed21b6d11ef1b06da9d7989f6ca51ca6f8"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-provenance-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-provenance-kimi-r1/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-provenance-kimi-r1-20261011/supplemental-finding.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-provenance-kimi-r1-20261011/supplemental-finding.json",
+      "bytes": 9465,
+      "sha256": "9acda7a44aaa8b38e512bba5aab65c5fb954fa41554c626bd679a0fa081322e4"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-provenance-evaluation-20261011/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-local-cli--kimi--evaluator-windows-p1-binding-identity-61cf64e-provenance-kimi-r1/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-verdict.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-PROVENANCE-SUPPORT-verdict.json",
+      "bytes": 6243,
+      "sha256": "d6ae55f20abea34fc1e82cfd4debb29365e904a1a92af22b90c85aadd84f082b"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-provenance-evaluation-20261011/run-windows-p1-binding-identity-61cf64e-provenance-kimi-r1.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-kimi-r1-original/runtime-original.log",
+      "bytes": 251567,
+      "sha256": "e6e95eeece002c9af3cdd9c94f215b0c09c1959fc27dddc6ce2b595d94843b7f"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-wp1cb-provenance-dispatch-state-20261011/run-meta-windows-p1-binding-identity-61cf64e-provenance-kimi-r1.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-kimi-r1-original/run-meta-original.json",
+      "bytes": 1669,
+      "sha256": "44192e945e5f1d8ef44f254710cbc7a0a5d0fd6ce3ec54deb5d2b698d87bdf31"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-returned-receipt-original.json",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-returned-receipt-original.json",
+      "bytes": 1610,
+      "sha256": "1d68f29c57b659f5f95df18f6c6a315c49284bdf2e62c30010443d373e272bf8"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-launch-original.log",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-launch-original.log",
+      "bytes": 1263,
+      "sha256": "b11385368f3a023b4aac80d7832bd68a7678e1bad6353887984ba92fef18222e"
+    },
+    {
+      "source_path": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-validation-original.txt",
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-binding-identity-provenance-validation-original.txt",
+      "bytes": 1661,
+      "sha256": "3c913962382a939d52fa7583ef3bd73c3450480637503980cb1614bde8c9a645"
+    }
+  ],
+  "tools": {
+    "Bash": 17,
+    "Read": 12
+  },
+  "all_prior_52_and_37_originals_unchanged": true,
+  "tracked_diff": "",
+  "generator_report_count_observation": "Supplement repeats51 additions, actual git diff-tree of358ac has50 A report files. Original evidence preserved, count claim not adopted; no locked-source change"
+}

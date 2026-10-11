@@ -1,0 +1,40 @@
+{
+  "observed_at": "2026-10-11T17:30:28.478Z",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "worktree_clean": true,
+  "checks": [
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3308,
+      "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34976,
+      "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 25454,
+      "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"
+    },
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 73022,
+      "sha256": "6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"
+    }
+  ],
+  "fast_forward": true,
+  "report_commit_additions": 50,
+  "source_trigger_snapshots": {
+    "deploy-vps.yml": "name: Deploy VPS\n\non:\n  push:\n    branches:\n      - main\n    # harness 的状态类改动不触发部署/CI。装了 harness 之后，状态机每推进一个阶段就会\n    # 提交一次 progress.json —— 没有这张表的话，每一次状态推进都会重建镜像并部署生产。\n    paths-ignore:\n      - \".auto-memory/**\"\n      - \".claude/**\"\n      - \"framework/**\"\n      # docs/ 全目录豁免的成立前提：运行时代码不读取 docs/（已 grep 核实 src/ app/ 零命中，\n      # 引用见 docs/adr/0001）。若未来有运行时资产进 docs/，必须先收窄本行。\n      - \"docs/**\"\n      - \"progress.json\"\n      - \"features.json\"\n      - \"backlog.json\"\n      - \".agents-registry.json\"\n      - \"harness.json\"\n      - \"harness.lock\"\n      - \"harness-rules.md\"\n      - \"planner.md\"\n      - \"generator.md\"\n      - \"evaluator.md\"\n      - \"orchestration-patterns.md\"\n      - \"CLAUDE.md\"\n      - \"AGENTS.md\"\n  pull_request:\n    branches:\n      - main\n  workflow_dispatch:\n    inputs:\n      operation:\n        description: Release gates/deploy, or read-only scoped host inventory\n        required: true\n        type: choice\n        options: [release, host-preflight]\n        default: release\n      predecessor_sha:\n        description: Optional distinct prior source SHA; defaults to fetched origin/main\n        required: false\n        type: string\n      bootstrap_rehearsal:\n        description: Explicit first-baseline same-SHA rehearsal only; disables production deployment\n        required: false\n        type: boolean\n        default: false\n\nconcurrency:\n  group: deploy-vps\n  cancel-in-progress: false\n\njobs:\n  host-preflight:\n    name: Read-only tokenizer host inventory\n    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'host-preflight'\n    runs-on: ubuntu-latest\n    timeout-minutes: 5",
+    "contract-conformance.yml": "name: Contract Conformance\n\n# BL-REPO-MECH F002：双仓契约一致性守门。\n# checkout harness-template @ harness.json 钉住的框架 commit，对其 contract-fixtures\n# 跑双向契约测试（tests/contract/）。协议改动的 Deploy VPS verify 也会跑\n# 相同的锁定契约测试并阻止失败部署；本工作流保留独立可观察的契约结果。\n\non:\n  push:\n    branches: [main]\n    paths:\n      - src/server/harness-*\n      - src/cli/harness*\n      - src/shared/harness*\n      - app/api/harness/**\n      - .claude/console/**\n      - harness.json\n      - prisma/schema.prisma\n      - prisma/migrations/**\n      - tests/contract/**\n      - scripts/ci/assert-vitest-results.mjs\n      - .github/workflows/contract-conformance.yml\n  pull_request:\n    branches: [main]\n    paths:\n      - src/server/harness-*\n      - src/cli/harness*\n      - src/shared/harness*\n      - app/api/harness/**\n      - .claude/console/**\n      - harness.json\n      - prisma/schema.prisma\n      - prisma/migrations/**\n      - tests/contract/**\n      - scripts/ci/assert-vitest-results.mjs\n      - .github/workflows/contract-conformance.yml\n  workflow_dispatch: {}\n",
+    "windows-release-diagnostics.yml": "name: Windows release diagnostics\n\n'on':\n  workflow_dispatch:\n  push:\n    branches:\n      - codex/windows-native-diagnostic-ci-20261008\n\npermissions:\n  contents: read\n\nconcurrency:\n  group: windows-release-diagnostics-${{ github.ref }}\n  cancel-in-progress: false\n\njobs:\n  native-diagnostics:\n    name: Read-only native Windows diagnosis\n    if: github.ref == 'refs/heads/codex/windows-native-diagnostic-ci-20261008'\n    runs-on: windows-latest\n    timeout-minutes: 12\n    steps:\n      - name: Checkout immutable diagnostic commit\n        uses: actions/checkout@v4\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 1\n          persist-credentials: false\n\n      - name: Setup Node.js 22\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n\n      - name: Record minimal native provenance\n        shell: pwsh\n        run: |\n          $ErrorActionPreference = 'Stop'",
+    "windows-p1-stages-diagnostic.yml": "name: Windows P1 INITIAL diagnostic\n\non:\n  push:\n    branches: [codex/windows-p1-stages-ci-20261010]\n\npermissions:\n  contents: read\n\nconcurrency:\n  group: windows-p1-initial-${{ github.ref }}\n  cancel-in-progress: false\n\njobs:\n  p1-initial-diagnostic:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/windows-p1-stages-ci-20261010'\n    runs-on: windows-latest\n    timeout-minutes: 12\n    steps:\n      - uses: actions/checkout@v4\n        env:\n          GIT_CONFIG_COUNT: '2'\n          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_VALUE_0: 'true'\n          GIT_CONFIG_KEY_1: core.autocrlf\n          GIT_CONFIG_VALUE_1: 'false'\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 1\n          persist-credentials: false\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n      - name: Prepare exact-candidate provenance\n        run: node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare\n      - name: Install locked dependencies\n        run: npm ci\n      - name: Synthetic checks only"
+  }
+}
