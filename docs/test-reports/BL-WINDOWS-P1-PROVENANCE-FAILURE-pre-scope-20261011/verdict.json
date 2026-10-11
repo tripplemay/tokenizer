@@ -1,0 +1,156 @@
+{
+  "format": "windows-p1-provenance-failure-pre-scope-verdict-v1",
+  "observed_at_utc": "2026-10-11T19:18:00Z",
+  "role": "fresh supporting passive pre-scope/spec critic; harness-rules section 1.5",
+  "outcome": "PASS_SCOPE_ONLY",
+  "blocking_findings": [],
+  "start_commit": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+  "analysis_source": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "reviewed_proposal": {
+    "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json",
+    "sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92",
+    "bytes": 9716,
+    "outcome": "PLAN_ONLY"
+  },
+  "scope_only_meaning": "The unapproved conditional S1-S6 projection is finite and internally coherent as an observation-only design. This is not approval or enactment of PREPARE_P11_REASON_V1_84, an implementation commission, functional verification, execution, publication, CI or release.",
+  "current_authorized_contract": {
+    "maximum_bytes": 80,
+    "generic_lf_bytes": 51,
+    "original_phase_lf_bytes": 29,
+    "free_bytes": 0,
+    "disposition": "Source712 unchanged; no reason line or shortened/reused/reinterpreted marker under old authority."
+  },
+  "proposed_unapproved_contract": {
+    "name": "PREPARE_P11_REASON_V1_84",
+    "maximum_bytes": 84,
+    "reason_lf_bytes": 4,
+    "literal_members": 18,
+    "only": "Exact existing --prepare terminal caught failure at P11",
+    "success_other_phase_other_mode_import_guard_probe_added_bytes": 0,
+    "stdout_added_bytes": 0,
+    "new_storage_files_fields_uploads": 0
+  },
+  "findings": [
+    {
+      "id": "SCOPE-01",
+      "topic": "Authority/output bytes",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "proposal.json:preferred_existing_contract",
+        "proposal.json:optional_independent_contract_requiring_new_authorization",
+        "p1-stages.mjs:43-57,1112-1115"
+      ],
+      "conclusion": "51 + 29 = 80; adding one unchanged LF-only V00-V17 literal gives 84, not 80. The new maximum needs separate approval. Original generic and every P00-P12 marker and interpretation remain unchanged."
+    },
+    {
+      "id": "SCOPE-02",
+      "topic": "Rebuild/caught exceptions",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "p1-stages.mjs:59-91",
+        "proposal.json:finite_allowed_slots S1-S2",
+        "proposal.json:classification_rules"
+      ],
+      "conclusion": "S2 confines observation to active exact prepare P11 and name === provenance, permits only stage/state assignments and an equivalent schema-result branch. The original schema call remains once; JSON stringify then parse remain conditional on true and once each. Original catch remains unbound and returns null. Schema false V02 and caught-schema/clone V03/V04 must survive !v, without error inspection, retry or a second validation."
+    },
+    {
+      "id": "SCOPE-03",
+      "topic": "Validator compound predicates and false/in-flight distinction",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "p1-stages.mjs:694-703",
+        "proposal.json:finite_allowed_slots S3",
+        "proposal.json:reason_codebook",
+        "proposal.json:classification_rules"
+      ],
+      "conclusion": "Existing compound predicates remain textually grouped with their original short-circuit, property reads, calls, arguments and order. Stage-before-operation and latch-before-original-false-return distinguish false from escaping exceptions without splitting predicates. The final Boolean expression may be bound once, then return its unchanged result. V06 stays aggregate; V01/in-flight intervals, V00 unknown, and V17 true-then-P11-anomaly do not identify an error class or a unique cause."
+    },
+    {
+      "id": "SCOPE-04",
+      "topic": "Lifetime and V17/P12 isolation",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "p1-stages.mjs:672-677,736-740,1097-1116",
+        "proposal.json:finite_allowed_slots S1-S6"
+      ],
+      "conclusion": "S1 P11-only and S2 active exact prepare P11 are joint hard constraints, not merely an activated latch. Every observer write must be phase-qualified, including S3; P12 writeJson calls rebuild(provenance) before S5 deactivation and must remain inactive for observation. V17 is a latched unknown P11 anomaly only if the unchanged P11 assertion escapes before P12; it cannot cause observer writes in later helpers, reason emission at P12, or success output. S4 only activates the already-matched prepare arm; S5 deactivates after unchanged successful write; S6 emits only the fixed literal after existing outputs and retains exit1."
+    },
+    {
+      "id": "SCOPE-05",
+      "topic": "Original semantics and frozen closure",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "p1-stages.mjs:694-740,1097-1116",
+        "BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json:17-38,66-108,170-176",
+        "raw-ledger.json:source_closure,old_archive,static_contract"
+      ],
+      "conclusion": "No observer call may alter the unchanged P11 assert, both separate sourceFiles passes, P00-P12 positions, write/guard/other modes, owned identity, E0, B001 actual API/owned-native tuple, worker, EOF, cleanup, atomic append, caps, budgets, selection or T0-T3. No new schema/source/env/data/error read or validator call is permitted. All 15 inspected closure files and 57 tracked historical archive files equal source712; tests bytes are frozen, not a rerun or renewed old81 acceptance."
+    },
+    {
+      "id": "SCOPE-06",
+      "topic": "Original run and unknown cause",
+      "result": "PASS_SCOPE_ONLY",
+      "evidence": [
+        "captured full original log:145-154",
+        "captured final/jobs/artifacts JSON",
+        "raw-ledger.json:manifests,runtime_captured"
+      ],
+      "conclusion": "Original run38165950837 attempt1/job114548428887 binds source712 and one P11 log payload. Prepare failed; install, synthetic checks and INITIAL were skipped; seal failed separately; verify/upload skipped; artifacts0. P11 covers validator escape or false followed by assert, not validator-false-only. Displayed runner image is not process.env.ImageOS/ImageVersion evidence. No unique runtime field, error, repair, native or release success is established."
+    }
+  ],
+  "independent_integrity": {
+    "planner_manifest_sha256": "ff3b4d2c5922201fe34ccc0aadcd0e768f7c1f435bd2049045955f519935ab23",
+    "planner_entries": 20,
+    "planner_bytes": 97696,
+    "planner_entries_all_raw_local_committed_equal": true,
+    "planner_committed_modes": "20 of 20 are 100644",
+    "planner_current_permissions": "20 of 20 independently stat as 644",
+    "runtime_manifest_sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+    "runtime_entries": 7,
+    "runtime_bytes": 37590,
+    "runtime_entries_all_match": true,
+    "source_closure_entries": 15,
+    "source_closure_all_raw_equal_source712": true,
+    "prior_frozen_binding_hashes_matched": 10,
+    "old_archive_files": 57,
+    "old_archive_all_raw_equal_source712": true,
+    "old_archive_tree_rows_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+    "original_test_sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+    "sourceFiles_paths": 11,
+    "sourceFiles_passes_in_prepare": 2,
+    "upload_paths": 16,
+    "checkout_environment_keys": 5
+  },
+  "future_mandatory_negative_controls_not_executed": [
+    "Schema false emits V02; caught schema emits V03; caught stringify or parse emits V04; all remain null/false as originally and are never overwritten by V06.",
+    "Escaping validator throws keep preceding in-flight enum; ordinary false returns latch corresponding false enum; unknown/unassigned/invalid state emits V00 without claiming pass.",
+    "V17 true followed by unchanged P11 assertion anomaly remains unknown. Reaching P12, its provenance rebuild, and successful write cannot mutate observer state as P11, emit reason or leak V17 into another helper.",
+    "Check actual throwing getters/toJSON and thrown primitive/object/Error canaries with zero additional getter/property/error reads; original validator/clone reads are preserved, not suppressed or duplicated.",
+    "Reject any extra/repeated/reordered original call, changed argument or compound short-circuit expression, revalidation, merged/cached/retried/removed sourceFiles pass, or observer exports.",
+    "Exact failing prepare P11 is generic51 + original P11line29 + one allowlisted reason4 = 84. Reject old80 claims for84, over84 bytes, CRLF reason, duplicate/dynamic/nonmember/truncated reason, changed generic/marker/exit, raw error/env/path/hash/content output.",
+    "Wrong modes/extra argv, success, non-P11 prepare phases, import, guard and probe add zero output and no new state/files/fields/uploads. Missing success deactivation and activation outside the existing exact prepare arm are failures.",
+    "Reject binding/md/hash literal/schema/env allowlist/SystemRoot/runner/Node/checkout-five-key/workflow/test/old diagnostic/native/product/state/memory/registry/harness deltas; reject all cap/budget/selection/owned identity/E0/B001/API/worker/EOF/cleanup/atomic append changes."
+  ],
+  "execution_boundary": {
+    "candidate_or_proposal_or_analyst_script_executed": false,
+    "import_compile_eval_VM_fixture_probe_tests": false,
+    "native_OS_PID_process_kill": false,
+    "network_GH_SSH_Docker_DB_install": false,
+    "only": "Fresh inline Node builtin reads, JSON-as-data, byte/hash calculation and static git; shell focused reads. No existing analyst script was run.",
+    "readonly_errors": 2,
+    "errors": "raw-ledger.json errors retains full failed inline command/output/status and labeled complete first rg output reconstruction; neither changed candidate data."
+  },
+  "implementation_authorized": false,
+  "new_84_contract_accepted": false,
+  "publication_authorized": false,
+  "CI_authorized": false,
+  "native_authorized": false,
+  "source712_rerun_authorized": false,
+  "further_Kimi_authorized": false,
+  "release_ready": false,
+  "release_acceptance": false,
+  "formal_F004_F005_acceptance": false,
+  "Compose": "HARD_STOP; no third attempt",
+  "keys": "deferred; no backup/restore/baseline/password work",
+  "next_step": "Separate Coordinator ruling may keep old80 unchanged or independently authorize a precisely scoped new84 Generator commission. A later exact-diff fresh post-scope and separately commissioned different-family supporting gate remain required; this critic grants none."
+}

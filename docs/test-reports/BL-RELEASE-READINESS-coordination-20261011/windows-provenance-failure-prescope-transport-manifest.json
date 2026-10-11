@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-11T19:22:02.381Z",
+  "files": 3,
+  "total_bytes": 68899,
+  "entries": [
+    {
+      "source_commit": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-pre-scope-20261011/README.md",
+      "bytes": 7909,
+      "sha256": "f5d182aa5b292138de8c5b06ee598f97db8ead54873672c341672dac51e6b7f0",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "source_commit": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-pre-scope-20261011/raw-ledger.json",
+      "bytes": 50491,
+      "sha256": "3379f204d1248977cd1f5b07cff943e9a379531fbd82871da78a816a53e954e2",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    },
+    {
+      "source_commit": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+      "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-pre-scope-20261011/verdict.json",
+      "bytes": 10499,
+      "sha256": "8e32f61b315feab4a182a4e415a9a78e7b2e46a04b11bf3ccf663219181c05b2",
+      "raw_equals_commit": true,
+      "destination_byte_equal": true
+    }
+  ],
+  "scope": "Original byte transport only, PASS_SCOPE_ONLY not functional acceptance,84byte contract not accepted yet"
+}

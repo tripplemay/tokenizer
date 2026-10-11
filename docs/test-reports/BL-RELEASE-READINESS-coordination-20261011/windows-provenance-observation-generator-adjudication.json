@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator fresh passive-scope transport and narrow Generator authority, not implementation or functional acceptance",
+  "runtime_baseline": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+  "planner_final": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+  "proposal_sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92",
+  "fresh_pre_scope": {
+    "commit": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+    "verdict": "PASS_SCOPE_ONLY",
+    "blocking_findings": [],
+    "verdict_sha256": "8e32f61b315feab4a182a4e415a9a78e7b2e46a04b11bf3ccf663219181c05b2",
+    "originals": 3,
+    "bytes": 68899,
+    "transport_manifest_sha256": "f132e4f1949ac9cd9b0cfdd1341c7e55ef6d5f8be6e56fc16f6b3035486f61c9",
+    "limits": "Scope/spec only, no functional/native acceptance or authority. Critic's first failed rg output is labeled full same-command reconstruction, not original first-call bytes; original report/ledger retained without relabeling"
+  },
+  "new_independent_observation_contract": {
+    "name": "PREPARE_P11_REASON_V1_84",
+    "explicitly_authorized_for_new_Generator_candidate_only": true,
+    "not_old_80_compliant": true,
+    "one_terminal_exact_prepare_P11_failure": "Unchanged generic51 + unchanged existingP11line29 + one allowlisted V00-V17 literal4, maximum84 bytes. Other phases remain80 or less, success/nonprepare/import/guard/probe add0",
+    "reason_meaning": "Fixed schema/clone/validator-operation interval or false/unknown, never raw predicate data, environment values, paths, errors, properties, stack, hash or a unique root cause",
+    "native_artifact_schema_or_budget_not_changed": true
+  },
+  "generator": {
+    "authorized": true,
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-provenance-observation-generator-20261011",
+    "branch": "codex/windows-p1-provenance-observation-generator-20261011",
+    "start": "10470c1b6064c83bd0a6712106e3009fe355e7f3",
+    "one_runtime_path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+    "finite_projection": "Only locked proposal S1-S6 and joint critic conditions. This supersedes source712 CLI byte freeze only for those finite observation slots; MD/JSON/binding hash literals/tests/workflows/all other bytes remain frozen",
+    "joint_lifetime_constraint": "EVERY observer write in S2/S3 must be exact prepare and current prepareFailurePhase P11-qualified, not merely activated. Preserve V02/V03/V04 through existing !v. P12 writeJson/rebuild cannot mutate the observer despite active latch until success reset; V17 is P11 anomaly unknown only",
+    "semantics": "Original call counts/order/arguments/property reads/compound short-circuit, schema false/clone/catch-null behavior, unchanged P11 assert, both sourceFiles passes, oldP00-P12, generic/exit and all native guard/schema/env/hash/identity/cap/budget/selection constraints",
+    "development": "One fresh owned npmci with existing public package lifecycle allowance; original immutable81 including its frozen synthetic VM slices, verify/syntax/normal pure import after own deps only; no new target VM/diagnostic/native/probe. Full stdout/stderr/status/debug and initial failures kept. Internal npm-created own vendor/.bin links only; SWC fallback/lockabsence/seven-high explicitly captured",
+    "manual_edit": "Absolute apply_patch paths only; no HOME author probes or shell-cat edits. No source borrowing/deps/cache/realhome. Source commit separated from report-only commit, no amend/push",
+    "artifact_transport": "Own report namespace only. Evaluator tests later copied into inert docs namespace, never parent tests/",
+    "worker_push": false
+  },
+  "fresh_postscope_and_different_family_gate": "Required on exact new source; scope PASS/development cannot replace acceptance",
+  "new_source_CI_or_publication_authorized": false,
+  "source712_rerun_or_further_Kimi_source712_dispatch": false,
+  "parent_runtime_source_integrated": false,
+  "main_production_or_state_transition": false,
+  "prepare_root_cause": "P11 interval only; still not uniquely identified",
+  "Compose": "HARD_STOP, no third attempt",
+  "keys": "User deferred, no backup/restore/baseline/password work",
+  "formal_F004_F005_or_release_acceptance": false,
+  "release_ready": false
+}

@@ -1,0 +1,581 @@
+{
+  "format": "fresh-passive-pre-scope-byte-ledger-v1",
+  "candidate_execution": false,
+  "head": "719660c10805b5ab0d4e56e6b8317283c95c37b2",
+  "branch": "docs/windows-p1-provenance-failure-pre-scope-20261011",
+  "status_before": "",
+  "manifests": [
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-provenance-failure-planner-transport-manifest.json",
+      "bytes": 8327,
+      "sha256": "ff3b4d2c5922201fe34ccc0aadcd0e768f7c1f435bd2049045955f519935ab23",
+      "files": 20,
+      "total_bytes": 97696,
+      "all_match": true,
+      "entries": [
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/README.md",
+          "bytes": 8521,
+          "sha256": "cd817b301c84c0672b8bcb596d34b27f80116df3ff22cfb35a677fdbc179bdff",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob e82405d9e13e32c3c1350c4ff0e7bacc5dfe3e04\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/README.md"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/SHA256SUMS",
+          "bytes": 2293,
+          "sha256": "8f7b99169a60f2a676f67a41f7e240a77e9f7463d9f9647098eb9b1d454a50a7",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 779ec786f386844c0ba98c420df3ce5ba54f725d\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/SHA256SUMS"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/failure-ledger.json",
+          "bytes": 3084,
+          "sha256": "54e02f8a4d4fc564e9b01756a67ebe33df919967743a87e1320da99e14dad39f",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob f6d00ad18bc37bb7facc1984d5d0c00b1fbe0b4e\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/failure-ledger.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/git-readonly-record.json",
+          "bytes": 1056,
+          "sha256": "a7b71478c93fd641c1f1df7fb816cafe0cd38fb0a7ef8f129f9df7fcc72d0953",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 19d4536b6d927f65d15b90bba1dfce763b32eba9\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/git-readonly-record.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/input-ledger.json",
+          "bytes": 12123,
+          "sha256": "cf4dd54b0eb634253012d4487e7c449cbd7fb7324447b81d735b5009c8b77863",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 18ccdbe90508d48f0d9978d8d2db8caea1df03c7\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/input-ledger.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/manifest-before-ignore-repair.json",
+          "bytes": 3136,
+          "sha256": "d7ee863dd3c85b48bbc2846f205d34a962cc5a59445dd46de59a9902c13f2294",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 21e82380c18bdeb94eba695ba4c9568a00549dca\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/manifest-before-ignore-repair.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/original-copy-map.json",
+          "bytes": 1055,
+          "sha256": "05f254f93f9eb19838ff7ccd7c2594e8a81e5d1a968a7d376ef0b4a08d496781",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob d6b0ca5954d0974c3a55d14082d7b2876cdeae5c\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/original-copy-map.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+          "bytes": 32,
+          "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob ccd036f15290ec2e42695f742d9edf63354be932\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-artifacts-original.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-coordinator-adjudication.json",
+          "bytes": 4154,
+          "sha256": "ad75c9bcc132bed54a8d4ba252bb4976132bdbe44dd1dd29ce259a92ba1ba9a1",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 3c440ec299ee0fec92e1cb1165257c75daa0046a\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-coordinator-adjudication.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-final-original.json",
+          "bytes": 12271,
+          "sha256": "763f71b3ae2d2efc1ac9c41503698597442ac2832a85d95f7c0cb19e30203e31",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 1763597c7f872b624916d548e7669c07dd8345e0\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-final-original.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-full-original.txt",
+          "bytes": 21659,
+          "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob b82edec658a2859da25ecdd848128fc4f54ee989\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-full-original.txt"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-jobs-original.json",
+          "bytes": 3116,
+          "sha256": "89c6aa8889abe2bed7b9bc25731d0f294602e749cba3d902998b46cc837c63a7",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob c72344d5d0b81adaf2f42d4ac548b1d308ab5329\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-jobs-original.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-transport-manifest.json",
+          "bytes": 2678,
+          "sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 3c8bcd4ef69ebb3c90ee8c98e1ec6b1accd37e48\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-transport-manifest.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.txt",
+          "bytes": 85,
+          "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob d2d406afbe014784a3c27501e93bb4fc8a4aa653\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-native-run38165950837-watch-original.txt"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-publication-original.txt",
+          "bytes": 148,
+          "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 7a795f520efdb53b21a1ba290993cb74ee4e18e4\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-publication-original.txt"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-run-list-original.json",
+          "bytes": 279,
+          "sha256": "3a1e0e5098f52471525781e1fad296861a3cbf3f38ae0087ce3cbc5231fa8b9a",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 3e3056624a263926f54561c5e8a3fbbd2e9983f2\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/originals/windows-prepare-observation-run-list-original.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/passive-audit-command-output.json",
+          "bytes": 7079,
+          "sha256": "3c080707e606ed013bc8f1dd4f4befd2aa0b95483c96e46268206ac6095da2bd",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob 571e3155017514cab93133a3092b1d19088be26a\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/evidence/passive-audit-command-output.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/manifest.json",
+          "bytes": 3706,
+          "sha256": "e56238264aa944bb69229ccef5a493524ccd7fd534f85813b0ec5eb7dc4fbdf2",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob e13a30315f26f65e64f9fe702d4c58a0855d2d8b\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/manifest.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json",
+          "bytes": 9716,
+          "sha256": "f6b28719bc9cfc77aa8b80bba98d9de4791265d3a3cd0246eff3e7ab338c5f92",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob a7f0e268adf2283b4d035e4f38c6e3563beb3cf6\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/proposal.json"
+        },
+        {
+          "path": "docs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/verdict.json",
+          "bytes": 1505,
+          "sha256": "3eac8293e6f8d687356d758de3efba6fe7f3ab2c93e3d9c60b06058c616fb5d6",
+          "matches": true,
+          "local_equal": true,
+          "commit_equal": true,
+          "tree": "100644 blob cf64632693d7d4e231a7d06bcfa0c4b4a41e6964\tdocs/test-reports/BL-WINDOWS-P1-PROVENANCE-FAILURE-plan-20261011/verdict.json"
+        }
+      ]
+    },
+    {
+      "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-transport-manifest.json",
+      "bytes": 2678,
+      "sha256": "038bf22a6be697c6cf5eb62885c29919e7d181e0627e8c8fcd96cbfe0def93ea",
+      "files": 7,
+      "total_bytes": 37590,
+      "all_match": true,
+      "entries": [
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-publication-original.log",
+          "bytes": 148,
+          "sha256": "799e885cead06b0ffadcb22fcdf007b7fdb3eee937ce9d353cafcd4c16e39564",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-run-list-original.json",
+          "bytes": 279,
+          "sha256": "3a1e0e5098f52471525781e1fad296861a3cbf3f38ae0087ce3cbc5231fa8b9a",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-watch-original.log",
+          "bytes": 85,
+          "sha256": "3e72e88131010446315170b247f9180d2f90e9e9047fde6519417d71fa6b303b",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-final-original.json",
+          "bytes": 12271,
+          "sha256": "763f71b3ae2d2efc1ac9c41503698597442ac2832a85d95f7c0cb19e30203e31",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-jobs-original.json",
+          "bytes": 3116,
+          "sha256": "89c6aa8889abe2bed7b9bc25731d0f294602e749cba3d902998b46cc837c63a7",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-artifacts-original.json",
+          "bytes": 32,
+          "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+          "matches": true
+        },
+        {
+          "path": "docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/windows-prepare-observation-native-run38165950837-full-original.log",
+          "bytes": 21659,
+          "sha256": "6deab0c899990ba1bbf64065a088d9511acc40ca1d6e77fb8e160ac498821954",
+          "matches": true
+        }
+      ]
+    }
+  ],
+  "source_closure": [
+    {
+      "path": "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs",
+      "bytes": 74301,
+      "sha256": "c245a528fb8549915396b5f052bf3841f35b03d88d6b7b5e91982b6f0f07dc4f",
+      "raw_equals_source712": true,
+      "binding_hash_matches": null,
+      "tree": "100644 blob 8e1b80fb6a3b81e1facbc1803ad32b75dd360a1e\tdocs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    },
+    {
+      "path": "tests/diagnostics/windows-p1-stages.test.ts",
+      "bytes": 53608,
+      "sha256": "7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132",
+      "raw_equals_source712": true,
+      "binding_hash_matches": null,
+      "tree": "100644 blob 6accf2c875bc1e85e454c1931b05e0ef807aa39f\ttests/diagnostics/windows-p1-stages.test.ts"
+    },
+    {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "bytes": 3308,
+      "sha256": "df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e",
+      "raw_equals_source712": true,
+      "binding_hash_matches": null,
+      "tree": "100644 blob 5de61013fff92aa41618f0cd39d1329398b929e8\t.github/workflows/windows-p1-stages-diagnostic.yml"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 34976,
+      "sha256": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130",
+      "raw_equals_source712": true,
+      "binding_hash_matches": null,
+      "tree": "100644 blob 172e33a11a56ed6d606ee50356e76b9c4028b847\tdocs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 25454,
+      "sha256": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb",
+      "raw_equals_source712": true,
+      "binding_hash_matches": null,
+      "tree": "100644 blob e913631a8caadd8acacfb5254248cefe4203c7e8\tdocs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-STAGES-20261009.md",
+      "bytes": 24862,
+      "sha256": "6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob 3cd616311b43c955399423a39188633486cefd42\tdocs/specs/BL-WINDOWS-P1-STAGES-20261009.md"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json",
+      "bytes": 11769,
+      "sha256": "c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob 63c7ebd6d729c4c59df99d32b2a261a21dd9fc32\tdocs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json"
+    },
+    {
+      "path": "docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json",
+      "bytes": 10792,
+      "sha256": "dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob 3b29f1d7001f877fd548a9e57b97d9b921bc4ab1\tdocs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs",
+      "bytes": 51907,
+      "sha256": "1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob 06ce7b63e78735a9da75c800ccf91bd9cb9c679e\tdocs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs"
+    },
+    {
+      "path": "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+      "bytes": 4921,
+      "sha256": "76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob d654d16301fcd9b0367c346ebc46ae383ffb2269\tdocs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs"
+    },
+    {
+      "path": "src/cli/bounded-subprocess.ts",
+      "bytes": 5545,
+      "sha256": "26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob bbd299acac8567db2f41c1cede3126361eb8cc58\tsrc/cli/bounded-subprocess.ts"
+    },
+    {
+      "path": "src/cli/bounded-subprocess-worker.mjs",
+      "bytes": 3012,
+      "sha256": "02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob bce773e8023eb542f25d97723e2b3a13279bd3bd\tsrc/cli/bounded-subprocess-worker.mjs"
+    },
+    {
+      "path": "src/cli/replay.ts",
+      "bytes": 16801,
+      "sha256": "6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob bd09024aebc33bda5d848ffe48556abd3f7b00b8\tsrc/cli/replay.ts"
+    },
+    {
+      "path": ".github/workflows/windows-release-diagnostics.yml",
+      "bytes": 4389,
+      "sha256": "34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob 0c033eea08bb19e9c7c69826621786d6480477f4\t.github/workflows/windows-release-diagnostics.yml"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 413776,
+      "sha256": "7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8",
+      "raw_equals_source712": true,
+      "binding_hash_matches": true,
+      "tree": "100644 blob e524b93cf30dbf840aa10aab81f1cbdf7866cfd8\tpackage-lock.json"
+    }
+  ],
+  "old_archive": {
+    "root": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/",
+    "tracked_files": 57,
+    "tree_rows_sha256": "cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3",
+    "all_raw_equal_source712": true
+  },
+  "static_contract": {
+    "generic_lf_bytes": 51,
+    "p11_lf_bytes": 29,
+    "reason_lf_bytes": 4,
+    "old_total": 80,
+    "new_total": 84,
+    "source_files_paths": 11,
+    "upload_files": 16,
+    "checkout_keys": [
+      "GIT_CONFIG_COUNT",
+      "GIT_CONFIG_KEY_0",
+      "GIT_CONFIG_VALUE_0",
+      "GIT_CONFIG_KEY_1",
+      "GIT_CONFIG_VALUE_1"
+    ],
+    "sourceFiles_calls_in_prepare": 2,
+    "bounds": {
+      "job_minutes": 12,
+      "total_ms": 600000,
+      "case_ms": 40000,
+      "cleanup_ms": 3000,
+      "operation_ms": 10000,
+      "native_ms": 7000,
+      "smoke_ps": 38,
+      "total_ps": 76,
+      "initial_max_ps": 4,
+      "native_output_bytes": 16384,
+      "counter_bytes": 16384,
+      "case_output_bytes": 65536,
+      "guard_bytes": 524288,
+      "trace_bytes": 524288,
+      "pending_line_bytes": 29
+    }
+  },
+  "runtime_captured": {
+    "run": 38165950837,
+    "attempt": 1,
+    "head_sha": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+    "event": "push",
+    "conclusion": "failure",
+    "jobs": {
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 114548428887,
+          "run_id": 38165950837,
+          "workflow_name": "Windows P1 INITIAL diagnostic",
+          "head_branch": "codex/windows-p1-stages-ci-20261010",
+          "run_url": "https://api.github.com/repos/tripplemay/tokenizer/actions/runs/38165950837",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOSeNmS88AAAAaq55QVw",
+          "head_sha": "712cf210b089dc71f3a6e6ed2e19e1de7fee57da",
+          "url": "https://api.github.com/repos/tripplemay/tokenizer/actions/jobs/114548428887",
+          "html_url": "https://github.com/tripplemay/tokenizer/actions/runs/38165950837/job/114548428887",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-10-11T18:57:02Z",
+          "started_at": "2026-10-11T18:57:03Z",
+          "completed_at": "2026-10-11T18:57:27Z",
+          "name": "p1-initial-diagnostic",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-11T18:57:04Z",
+              "completed_at": "2026-10-11T18:57:05Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-11T18:57:06Z",
+              "completed_at": "2026-10-11T18:57:17Z"
+            },
+            {
+              "name": "Run actions/setup-node@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-11T18:57:17Z",
+              "completed_at": "2026-10-11T18:57:22Z"
+            },
+            {
+              "name": "Prepare exact-candidate provenance",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 4,
+              "started_at": "2026-10-11T18:57:22Z",
+              "completed_at": "2026-10-11T18:57:23Z"
+            },
+            {
+              "name": "Install locked dependencies",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 5,
+              "started_at": "2026-10-11T18:57:23Z",
+              "completed_at": "2026-10-11T18:57:23Z"
+            },
+            {
+              "name": "Synthetic checks only",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 6,
+              "started_at": "2026-10-11T18:57:23Z",
+              "completed_at": "2026-10-11T18:57:23Z"
+            },
+            {
+              "name": "INITIAL once",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7,
+              "started_at": "2026-10-11T18:57:23Z",
+              "completed_at": "2026-10-11T18:57:23Z"
+            },
+            {
+              "name": "Seal safe evidence",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 8,
+              "started_at": "2026-10-11T18:57:23Z",
+              "completed_at": "2026-10-11T18:57:24Z"
+            },
+            {
+              "name": "Verify sealed files immediately",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9,
+              "started_at": "2026-10-11T18:57:24Z",
+              "completed_at": "2026-10-11T18:57:24Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@v4",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 10,
+              "started_at": "2026-10-11T18:57:24Z",
+              "completed_at": "2026-10-11T18:57:24Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v4",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 19,
+              "started_at": "2026-10-11T18:57:24Z",
+              "completed_at": "2026-10-11T18:57:24Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20,
+              "started_at": "2026-10-11T18:57:24Z",
+              "completed_at": "2026-10-11T18:57:26Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21,
+              "started_at": "2026-10-11T18:57:26Z",
+              "completed_at": "2026-10-11T18:57:26Z"
+            }
+          ],
+          "check_run_url": "https://api.github.com/repos/tripplemay/tokenizer/check-runs/114548428887",
+          "labels": [
+            "windows-latest"
+          ],
+          "runner_id": 1000013834,
+          "runner_name": "GitHub Actions 1000013834",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions"
+        }
+      ]
+    }
+  },
+  "read_only_command": "node <<'NODE'\nconst fs = require('node:fs'), crypto = require('node:crypto'), cp = require('node:child_process');\nconst parent = '/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008';\nconst source = '712cf210b089dc71f3a6e6ed2e19e1de7fee57da';\nconst start = '719660c10805b5ab0d4e56e6b8317283c95c37b2';\nconst coord = 'docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/';\nconst hash = b => crypto.createHash('sha256').update(b).digest('hex');\nconst git = args => cp.execFileSync('git', ['-c', 'core.fileMode=false', ...args]);\nconst manifests = ['windows-provenance-failure-planner-transport-manifest.json','windows-prepare-observation-native-run38165950837-transport-manifest.json'];\nconst ledger = { format: 'fresh-passive-pre-scope-byte-ledger-v1', candidate_execution: false, head: git(['rev-parse','HEAD']).toString().trim(), branch: git(['branch','--show-current']).toString().trim(), status_before: git(['status','--porcelain','--untracked-files=all']).toString(), manifests: [] };\nfor (const name of manifests) {\n const bytes = fs.readFileSync(parent + '/' + coord + name), m = JSON.parse(bytes);\n const entries = m.entries.map(e => {\n  const external = fs.readFileSync(parent + '/' + e.path);\n  const r = { path: e.path, bytes: external.length, sha256: hash(external), matches: external.length === e.bytes && hash(external) === e.sha256 };\n  if (e.source_commit) {\n   const local = fs.readFileSync(e.path), blob = git(['show', e.source_commit + ':' + e.path]);\n   const tree = git(['ls-tree', e.source_commit, '--', e.path]).toString().trim();\n   Object.assign(r, { local_equal: local.equals(external), commit_equal: blob.equals(external), tree });\n  }\n  return r;\n });\n ledger.manifests.push({ path: coord + name, bytes: bytes.length, sha256: hash(bytes), files: entries.length, total_bytes: entries.reduce((a,e)=>a+e.bytes,0), all_match: entries.every(e=>e.matches && e.local_equal!==false && e.commit_equal!==false), entries });\n}\nconst bpath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json', b = JSON.parse(fs.readFileSync(bpath));\nconst sourcePaths = [...new Set([...b.future_added_source_paths,bpath,'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md',...b.prior_inputs.map(e=>e.path),...b.frozen_runtime_sources.map(e=>e.path)])];\nledger.source_closure = sourcePaths.map(path => {\n const raw = fs.readFileSync(path), blob = git(['show',source + ':' + path]), expected = [...b.prior_inputs,...b.frozen_runtime_sources].find(e=>e.path===path);\n return { path, bytes: raw.length, sha256: hash(raw), raw_equals_source712: raw.equals(blob), binding_hash_matches: expected ? hash(raw)===expected.sha256 : null, tree:git(['ls-tree',source,'--',path]).toString().trim() };\n});\nconst archive = 'docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/';\nconst tree = git(['ls-tree','-r',source,'--',archive]).toString();\nconst paths = tree.trim().split('\\n').map(line=>line.split('\\t')[1]);\nledger.old_archive = {root:archive,tracked_files:paths.length,tree_rows_sha256:hash(Buffer.from(tree)),all_raw_equal_source712:paths.every(path=>fs.readFileSync(path).equals(git(['show',source+':'+path])))};\nconst text = fs.readFileSync(b.future_added_source_paths[0],'utf8');\nledger.static_contract = { generic_lf_bytes:Buffer.byteLength('windows-p1-initial diagnostic evidence unavailable\\n'),p11_lf_bytes:Buffer.byteLength('TW_P1_PREPARE_FAILURE_V1:P11\\n'),reason_lf_bytes:Buffer.byteLength('V00\\n'),old_total:80,new_total:84,source_files_paths:[...b.future_added_source_paths,bpath,...b.frozen_runtime_sources.map(e=>e.path)].length,upload_files:b.output.upload_files.length,checkout_keys:Object.keys(b.workflow.checkout_env),sourceFiles_calls_in_prepare:(text.slice(text.indexOf('function prepare()'),text.indexOf('export function checksSummary')).match(/sourceFiles\\(\\)/g)||[]).length,bounds:b.bounds};\nconst jobs = JSON.parse(fs.readFileSync(parent+'/'+coord+'windows-prepare-observation-native-run38165950837-jobs-original.json'));\nconst final = JSON.parse(fs.readFileSync(parent+'/'+coord+'windows-prepare-observation-native-run38165950837-final-original.json'));\nledger.runtime_captured = { final, jobs };\nconsole.log(JSON.stringify(ledger,null,2));\nNODE",
+  "command_exit_code": 0,
+  "errors": [
+    {
+      "sequence": 1,
+      "command": "rg -n '57|archive|81|frozen|manifest' docs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/{README.md,verdict.json} docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/{README.md,verdict.json} docs/test-reports/BL-WINDOWS-P1-INITIAL-plan-20261010/{README.md,verdict.json}",
+      "exit_code": 2,
+      "output": "rg: docs/test-reports/BL-WINDOWS-P1-INITIAL-plan-20261010/README.md: No such file or directory (os error 2)\nrg: docs/test-reports/BL-WINDOWS-P1-INITIAL-plan-20261010/verdict.json: No such file or directory (os error 2)\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:33:        \"src/cli/bounded-subprocess-worker.mjs:52-57,70-93\",\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:42:        \"The frozen API returns native status/signal only at line111; its worker constructs the ok status/signal from native close at lines84-89. Guard and trace attach exit/close callbacks to the same returned ChildProcess handle and serialize those callback status/signal fields.\",\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:44:        \"Throw-path exit/close facts remain independently observed ownership/consistency facts; they cannot fill unavailable API return fields. A frozen API watchdog timeout without matching workerKind=timeout cannot qualify as clean timeout.\",\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:55:    \"unchanged\": [\"script strings/hashes/T0-T3\", \"tokens\", \"selection_table\", \"prior and frozen input hashes\", \"E0 system/synthetic environment keys\", \"bounds/caps\", \"native command/argv\", \"three future source paths\", \"strict append mechanism\", \"CLI modes\", \"workflow event/ref/permissions/checkout/commands\", \"sealing/output/manifest\", \"all authority flags/exclusions\"],\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:61:    {\"path\":\"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md\",\"bytes\":19264,\"sha256\":\"bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:63:    {\"path\":\"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md\",\"bytes\":24862,\"sha256\":\"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:66:    {\"path\":\"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs\",\"bytes\":51907,\"sha256\":\"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:67:    {\"path\":\"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs\",\"bytes\":4921,\"sha256\":\"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:73:    {\"path\":\"docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/verdict.json\",\"bytes\":14478,\"sha256\":\"33e1da3a7a239aa8ab8c63e26537257befcd87b0c875dfe32ae82ec1da64c604\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:83:    {\"id\":\"C03\",\"method\":\"Read harness-rules.md, CLAUDE.md, AGENTS.md, progress.json/features.json, project T0, both binding docs, original BLOCKED reports and frozen API/worker/guard/trace source using cat/sed/nl/rg.\",\"result\":\"PASS-supporting-boundary\",\"observed\":\"progress.status=building; release_ready=false; F004/F005 pending. .agent-id absent. No state-machine role transition or main update; offline assignment supersedes pull.\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:84:    {\"id\":\"C04\",\"method\":\"node <<'NODE' builtins-only fs/crypto/assert/child_process inline JSON comparison/hash checker; git show invocations use -c core.fileMode=false\",\"result\":\"PASS-static-only\",\"observed\":{\"referenced_hashes_matched\":10,\"script_hashes_matched\":4,\"local_schema_refs_resolved\":49,\"exact_object_schemas\":15,\"future_paths_absent\":3,\"unchanged_other_schema_defs\":26,\"upload_files\":16,\"manifest_entries\":15,\"parent_bindings_equal_original\":true,\"original_report_preserved\":true}},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:85:    {\"id\":\"C05\",\"method\":\"node <<'NODE' builtins-only native-schema keyword evaluator with reachable-keyword audit; canonical, named contradiction and Cartesian evaluation; no product imports/subprocess probes\",\"result\":\"PASS-schema-only\",\"observed\":{\"allOf_branches\":13,\"canonical_tuples_accepted\":14,\"named_contradictions_rejected\":15,\"cartesian_tuples_checked\":72576,\"schema_accepted\":75,\"clean_outcome_schema_tuples\":5},\"limit\":\"Complete evaluator for keywords reachable from native definition, not a general-purpose schema engine, implemented product validator or functional selection test.\"},\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/verdict.json:101:    \"read_only_specification_and_frozen_source_review\": true,\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md:20:- The actual frozen API throws without return status/signal\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md:81:   manifest entries verified. Both historical binding blobs independently\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md:86:   fifteen named contradictions rejected. Independently enumerated 72,576\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md:94:   possible because the frozen API can throw during response decoding.\ndocs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-r1-20261011/README.md:100:| bindings MD | 19264 | `bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c` |\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:14:- Proposal SHA-256: `7aae5b7b1d3d25751f32098e4631a18352c5bb073316a750cf1040905b0260e7`.\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:27:MD/JSON, both hash literals, workflow and all other files remain frozen.\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:37:success deactivation; one fixed terminal lookup; everything else frozen.\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:58:| P12 | Unchanged rebuild/cap/exclusive `writeJson` | 707; 653-657 |\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:98:- All ten prior/frozen input raw hashes equal the binding and source61\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:102:  `7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132`.\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:103:- All 57 tracked raw files in the historical\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:104:  `windows-native-ci-20261008/runtime-parity-run-37822555762-original/`\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:106:  `cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3`.\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:110:  upload paths remain frozen. Native E0/B001/API/worker/EOF/cleanup/atomic\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:112:- Six Planner manifest entries verify. Four authorized runtime original\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:114:  manifest in bytes and SHA-256. Manifest and two adjudication hashes were\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/README.md:118:Original run JSON/log records source61, run 38160000449 attempt 1, job\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:14:    \"sha256\": \"7aae5b7b1d3d25751f32098e4631a18352c5bb073316a750cf1040905b0260e7\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:15:    \"plan_manifest_sha256\": \"687ee012fea84680f7058f2b58c0baa7c177f8df770d3fc3849c3bc5bb7bcb2e\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:16:    \"plan_manifest_entries_verified\": 6,\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:23:      \"conclusion\": \"C001/C002 authorize only their historical checkout/hash projections, not new observation bytes. The proposal explicitly denies inherited authority and requires separate approval of the exact path/slots. Conditional successor scope is coherent without editing the frozen binding MD/JSON, workflow or hash literals. This PASS does not enact that exception.\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:52:      \"topic\": \"frozen contracts\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:53:      \"conclusion\": \"C002 five-entry checkout-step map, raw hash guards/literals, E0/B001/native API/worker/EOF/cleanup/owned identity/atomic append, caps/budgets/selection/T0-T3, ten prior/frozen inputs, eleven source paths, sixteen uploads, old tests/workflows and all originals stay frozen. The new parent failure line is not a native parser/log/output-budget increase or a new sealed-file protocol.\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:70:    {\"id\":\"P12\",\"source\":\"707;653-657\",\"meaning\":\"unchanged writeJson\"}\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:78:    \"prior_plus_frozen_input_count\": 10,\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:81:    \"original_test_sha256\": \"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:82:    \"historical_archive\": {\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:83:      \"root\": \"docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:84:      \"tracked_files\": 57,\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:85:      \"source61_git_ls_tree_r_lf_rows_sha256\": \"cb15965730dad49aa8d1f138ef0014eff975b96447c93f2e866e9e39721548b3\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:87:      \"all_57_current_raw_files_equal_source61_blobs\": true,\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:88:      \"limit\": \"This 57-file tracked subtree check does not replace or re-authenticate the prior 59-file historical run inventory\"\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:92:    \"binding_md_raw_sha256\": \"9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb\",\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:100:      {\"name\":\"windows-binding-identity-native-run38160000449-final-original.json\",\"bytes\":12298,\"sha256\":\"13e64bc0d8d05ad4dbde18bc5bf0418758bb6c210c0d15e6b83892dc2cc157bb\",\"matches_transport_manifest\":true},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:101:      {\"name\":\"windows-binding-identity-native-run38160000449-jobs-original.json\",\"bytes\":3116,\"sha256\":\"dc92f5d150a7c08ebbee610a66f1b2db8c2c88f5378ad00fa4468a662f4b9ce0\",\"matches_transport_manifest\":true},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:102:      {\"name\":\"windows-binding-identity-native-run38160000449-artifacts-original.json\",\"bytes\":32,\"sha256\":\"244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c\",\"matches_transport_manifest\":true},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:103:      {\"name\":\"windows-binding-identity-native-run38160000449-full-original.log\",\"bytes\":21556,\"sha256\":\"7bd3bff940792b1fe8b4fa4de6df544b6e0f9f773b401bce2596fb9856230a6c\",\"matches_transport_manifest\":true},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:104:      {\"name\":\"windows-binding-identity-native-run38160000449-transport-manifest.json\",\"bytes\":2045,\"sha256\":\"5d6a2062c162ba7688f54f61b9d4ad638ee0e0392798c8bc0daac054528b79f5\",\"matches_transport_manifest\":null},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:105:      {\"name\":\"windows-binding-identity-native-run38160000449-coordinator-adjudication.json\",\"bytes\":3295,\"sha256\":\"94f90361b1aecdae5a84bd850b823411a8e1e9e0c43019bbf2e6178911360172\",\"matches_transport_manifest\":null},\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:106:      {\"name\":\"windows-prepare-failure-plan-and-prescope-adjudication.json\",\"bytes\":2027,\"sha256\":\"c83180efdb8d5fd406b5708aa6c4940e1674de7b66d48fd76276fa5f7451d293\",\"matches_transport_manifest\":null}\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:108:    \"independently_manifest_matched_entries\": 4,\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:109:    \"unread_out_of_scope_manifest_entries\": [\"publication-original.log\", \"run-list-original.json\", \"watch-original.log\"],\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:110:    \"limit\": \"Untrusted captured files and manifest consistency only, not remote authentication; adjudications are not instructions or root-cause evidence\"\ndocs/test-reports/BL-WINDOWS-P1-PREPARE-FAILURE-pre-scope-20261011/verdict.json:113:    \"run_id\": 38160000449,\n",
+      "capture_note": "First rg error was fully returned in the tool transcript. This complete same-command read-only reconstruction has the same 3310 original-token count; source files were unchanged. It is labeled reconstruction rather than a saved raw first invocation.",
+      "scope_effect": "Two guessed report paths do not exist. Existing matches were read only; corrected lookup used existing evidence paths."
+    },
+    {
+      "sequence": 2,
+      "command": "node <<'NODE'\nconst fs = require('node:fs'), crypto = require('node:crypto'), cp = require('node:child_process');\nconst parent = '/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008';\nconst source = '712cf210b089dc71f3a6e6ed2e19e1de7fee57da';\nconst start = '719660c10805b5ab0d4e56e6b8317283c95c37b2';\nconst coord = 'docs/test-reports/BL-RELEASE-READINESS-coordination-20261011/';\nconst hash = b => crypto.createHash('sha256').update(b).digest('hex');\nconst git = args => cp.execFileSync('git', ['-c', 'core.fileMode=false', ...args]);\nconst manifests = ['windows-provenance-failure-planner-transport-manifest.json','windows-prepare-observation-native-run38165950837-transport-manifest.json'];\nconst ledger = { format: 'fresh-passive-pre-scope-byte-ledger-v1', candidate_execution: false, head: git(['rev-parse','HEAD']).toString().trim(), branch: git(['branch','--show-current']).toString().trim(), status_before: git(['status','--porcelain','--untracked-files=all']).toString(), manifests: [] };\nfor (const name of manifests) {\n const bytes = fs.readFileSync(parent + '/' + coord + name), m = JSON.parse(bytes);\n const entries = m.entries.map(e => {\n  const external = fs.readFileSync(parent + '/' + e.path);\n  const r = { path: e.path, bytes: external.length, sha256: hash(external), matches: external.length === e.bytes && hash(external) === e.sha256 };\n  if (e.source_commit) {\n   const local = fs.readFileSync(e.path), blob = git(['show', e.source_commit + ':' + e.path]);\n   const tree = git(['ls-tree', e.source_commit, '--', e.path]).toString().trim();\n   Object.assign(r, { local_equal: local.equals(external), commit_equal: blob.equals(external), tree });\n  }\n  return r;\n });\n ledger.manifests.push({ path: coord + name, bytes: bytes.length, sha256: hash(bytes), files: entries.length, total_bytes: entries.reduce((a,e)=>a+e.bytes,0), all_match: entries.every(e=>e.matches && e.local_equal!==false && e.commit_equal!==false), entries });\n}\nconst bpath = 'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json', b = JSON.parse(fs.readFileSync(bpath));\nconst sourcePaths = [...new Set([...b.future_added_source_paths,bpath,'docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md',...b.prior_inputs.map(e=>e.path),...b.frozen_runtime_sources.map(e=>e.path),'tests/diagnostics/native-runtime-parity.test.ts'])];\nledger.source_closure = sourcePaths.map(path => {\n const raw = fs.readFileSync(path), blob = git(['show',source + ':' + path]), expected = [...b.prior_inputs,...b.frozen_runtime_sources].find(e=>e.path===path);\n return { path, bytes: raw.length, sha256: hash(raw), raw_equals_source712: raw.equals(blob), binding_hash_matches: expected ? hash(raw)===expected.sha256 : null, tree:git(['ls-tree',source,'--',path]).toString().trim() };\n});\nconst archive = 'docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/';\nconst tree = git(['ls-tree','-r',source,'--',archive]).toString();\nconst paths = tree.trim().split('\\n').map(line=>line.split('\\t')[1]);\nledger.old_archive = {root:archive,tracked_files:paths.length,tree_rows_sha256:hash(Buffer.from(tree)),all_raw_equal_source712:paths.every(path=>fs.readFileSync(path).equals(git(['show',source+':'+path])))};\nconst text = fs.readFileSync(b.future_added_source_paths[0],'utf8');\nledger.static_contract = { generic_lf_bytes:Buffer.byteLength('windows-p1-initial diagnostic evidence unavailable\\n'),p11_lf_bytes:Buffer.byteLength('TW_P1_PREPARE_FAILURE_V1:P11\\n'),reason_lf_bytes:Buffer.byteLength('V00\\n'),old_total:80,new_total:84,source_files_paths:[...b.future_added_source_paths,bpath,...b.frozen_runtime_sources.map(e=>e.path)].length,upload_files:b.output.upload_files.length,checkout_keys:Object.keys(b.workflow.checkout_env),sourceFiles_calls_in_prepare:(text.slice(text.indexOf('function prepare()'),text.indexOf('export function checksSummary')).match(/sourceFiles\\(\\)/g)||[]).length,bounds:b.bounds};\nconst jobs = JSON.parse(fs.readFileSync(parent+'/'+coord+'windows-prepare-observation-native-run38165950837-jobs-original.json'));\nconst final = JSON.parse(fs.readFileSync(parent+'/'+coord+'windows-prepare-observation-native-run38165950837-final-original.json'));\nledger.runtime_captured = { final, jobs };\nconsole.log(JSON.stringify(ledger,null,2));\nNODE",
+      "result": {
+        "chunk_id": "f2fb2d",
+        "wall_time_seconds": 0.602742666,
+        "exit_code": 1,
+        "original_token_count": 174,
+        "output": "node:fs:556\n  return binding.open(\n                 ^\n\nError: ENOENT: no such file or directory, open 'tests/diagnostics/native-runtime-parity.test.ts'\n    at Object.openSync (node:fs:556:18)\n    at Object.readFileSync (node:fs:440:35)\n    at [stdin]:27:17\n    at Array.map (<anonymous>)\n    at [stdin]:26:37\n    at runScriptInThisContext (node:internal/vm:219:10)\n    at node:internal/process/execution:451:12\n    at [stdin]-wrapper:6:24\n    at runScriptInContext (node:internal/process/execution:449:60)\n    at evalFunction (node:internal/process/execution:283:30) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: 'tests/diagnostics/native-runtime-parity.test.ts'\n}\n\nNode.js v25.7.0\n"
+      },
+      "scope_effect": "Guessed optional test path did not exist. Removed only that nonexistent path from the new read-only inline checker; all candidate code remained data."
+    }
+  ]
+}
