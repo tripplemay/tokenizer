@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T16:46:16Z",
+  "role": "Coordinator narrow dependency boundary clarification, not source/spec repair or functional acceptance",
+  "source": "61cf64e67a6fda231bb090e77c19d5ececb908af",
+  "locked_local_dependency": {
+    "path": "node_modules/braces",
+    "package_lock_resolved": "vendor/braces",
+    "package_lock_link": true,
+    "version": "3.0.3",
+    "source_files": 12,
+    "source221_to_source61_dependency_diff_exit_code": 0,
+    "lifecycle_scripts": "Only test and benchmark scripts in vendor/braces package; no install lifecycle observed in its package.json"
+  },
+  "allowed": "A fresh owned npmci may itself create the exact lockfile-declared node_modules/braces link to the same worktree's immutable vendor/braces, and normal npm-managed .bin links. Verify target realpath is inside this owned worktree, vendor raw bytes equal source61 and dependencies were not prepopulated",
+  "forbidden": "Manual/precreated node_modules links, links to another worktree, user/global/system caches or borrowed dependency trees, vendor or lockfile edits, extra local-link exceptions, global installation or auditfix",
+  "network": "No added endpoint authorization; prior package-owned public lifecycle clarification remains unchanged",
+  "initial_failure": "Generator's development report driver incorrectly rejected the one lockfile local dependency before any npm/import/test; reported install_attempts=0. Preserve initial driver/capture/output/status; correct report preflight only in separately named capture, not original lockfile or product assertions",
+  "original_anti_borrowing_and_fresh_dependency_gate": "Remains required. This clarifies npm-managed internal source links, not symlink reuse or filesystem isolation",
+  "candidate_changes": false,
+  "source_publication_or_native_execution": false,
+  "main_or_production_mutation": false,
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "release_ready": false
+}
