@@ -1,0 +1,182 @@
+{
+  "format": "windows-p1-initial-bindings-v1",
+  "created_at_utc": "2026-10-11T03:43:34Z",
+  "role": "supporting Planner; harness-rules section 1.5",
+  "status": "proposal-requires-fresh-independent-pre-scope",
+  "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
+  "release_ready": false,
+  "implementation_authorized": false,
+  "publication_authorized": false,
+  "native_execution_authorized": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "delivery_paths": ["docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"],
+  "future_added_source_paths": ["docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs", "tests/diagnostics/windows-p1-stages.test.ts", ".github/workflows/windows-p1-stages-diagnostic.yml"],
+  "existing_file_edits_allowed": [],
+  "prior_inputs": [
+    {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json","sha256":"dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"}
+  ],
+  "frozen_runtime_sources": [
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs","sha256":"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs","sha256":"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"},
+    {"path":"src/cli/bounded-subprocess.ts","sha256":"26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"},
+    {"path":"src/cli/bounded-subprocess-worker.mjs","sha256":"02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"},
+    {"path":"src/cli/replay.ts","sha256":"6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"},
+    {"path":".github/workflows/windows-release-diagnostics.yml","sha256":"34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"},
+    {"path":"package-lock.json","sha256":"7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"}
+  ],
+  "bounds": {"job_minutes":12,"total_ms":600000,"case_ms":40000,"cleanup_ms":3000,"operation_ms":10000,"native_ms":7000,"smoke_ps":38,"total_ps":76,"initial_max_ps":4,"native_output_bytes":16384,"counter_bytes":16384,"case_output_bytes":65536,"guard_bytes":524288,"trace_bytes":524288,"pending_line_bytes":29},
+  "environment": {
+    "system_keys":["PATH","SystemRoot","WINDIR","ComSpec","PATHEXT"],
+    "synthetic_keys":["HOME","USERPROFILE","TEMP","TMP","TMPDIR","GIT_CONFIG_NOSYSTEM","GIT_CONFIG_GLOBAL","GIT_TERMINAL_PROMPT","TW_ROOT","TW_TRACE","TW_TRACE_HEALTH","TW_PARITY_RUN_ROOT","TW_PARITY_COUNTER","TW_PARITY_GUARD_LOG","TW_PARITY_GUARD_HEALTH","TW_PARITY_CASE_DEADLINE","TW_PARITY_TOTAL_DEADLINE","TW_PARITY_KIND","TW_PARITY_ARM","TW_PARITY_TRACE","TW_PARITY_CASE","NODE_OPTIONS"],
+    "fixed_values":{"TW_PARITY_KIND":"smoke","TW_PARITY_CASE":"smoke","TW_PARITY_ARM":"E0","TW_PARITY_TRACE":"on","GIT_CONFIG_NOSYSTEM":"1","GIT_TERMINAL_PROMPT":"0"},
+    "extra_keys":[],
+    "guard_import":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs?guard=1",
+    "old_trace_import":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs",
+    "import_order":["guard","old-trace"]
+  },
+  "native":{"command":"powershell.exe","argv_prefix":["-NoLogo","-NoProfile","-NonInteractive","-Command"],"shell":false,"windowsHide":true,"max_launches_per_case":1,"kind":"smoke","requiredPs":1},
+  "cases": [
+    {"variant":"T0","caseId":"p1-initial-T0-writer-control","script":"$ErrorActionPreference='Stop'; [Console]::Out.WriteLine('TW_P1_STAGE_V1_WRITER_OK'); [Console]::Out.Flush();","scriptSha256":"1e8f2a91c2b0f55d437927437d10578122b0fa0d7428f5c9cfcb56422104ad9e","sequence":["writer-ok"]},
+    {"variant":"T1","caseId":"p1-initial-T1-original-p1-control","script":"$ErrorActionPreference='Stop'; [void](ConvertFrom-Json '[1,2]'); 'TW_PARITY_JSON_V1'","scriptSha256":"bf5ac3543468a01c9830a7d010aead5e46f80fdb2ce31750f03d672752c4b9f4","sequence":["terminal-json"]},
+    {"variant":"T2","caseId":"p1-initial-T2-direct-invoke","script":"$ErrorActionPreference='Stop'; [Console]::Out.WriteLine('TW_P1_STAGE_V1_JSON_ENTER'); [Console]::Out.Flush(); [void](ConvertFrom-Json '[1,2]'); [Console]::Out.WriteLine('TW_P1_STAGE_V1_JSON_DONE'); [Console]::Out.Flush(); 'TW_PARITY_JSON_V1'","scriptSha256":"ccea7ef7b73388f7bd45378e371ea78755ce035ffc5d95cce5eaabce8856bd98","sequence":["json-enter","json-done","terminal-json"]},
+    {"variant":"T3","caseId":"p1-initial-T3-lookup-refinement","script":"$ErrorActionPreference='Stop'; [Console]::Out.WriteLine('TW_P1_STAGE_V1_LOOKUP_ENTER'); [Console]::Out.Flush(); [void](Get-Command -Name ConvertFrom-Json -CommandType Cmdlet -ErrorAction Stop); [Console]::Out.WriteLine('TW_P1_STAGE_V1_LOOKUP_DONE'); [Console]::Out.Flush(); [Console]::Out.WriteLine('TW_P1_STAGE_V1_JSON_ENTER'); [Console]::Out.Flush(); [void](ConvertFrom-Json '[1,2]'); [Console]::Out.WriteLine('TW_P1_STAGE_V1_JSON_DONE'); [Console]::Out.Flush(); 'TW_PARITY_JSON_V1'","scriptSha256":"82276a40828e48dd7ffed24d1f2cd374ae82929bb6a342818115c9eee34d2550","sequence":["lookup-enter","lookup-done","json-enter","json-done","terminal-json"]}
+  ],
+  "tokens":{"writer-ok":"TW_P1_STAGE_V1_WRITER_OK","json-enter":"TW_P1_STAGE_V1_JSON_ENTER","json-done":"TW_P1_STAGE_V1_JSON_DONE","lookup-enter":"TW_P1_STAGE_V1_LOOKUP_ENTER","lookup-done":"TW_P1_STAGE_V1_LOOKUP_DONE","terminal-json":"TW_PARITY_JSON_V1"},
+  "selection_table": [
+    {"after":"start","when":"preconditions-and-admission-valid","action":"run-T0"},
+    {"after":"T0","when":"trustworthy-exact-writer-success","action":"run-T1"},
+    {"after":"T0","when":"otherwise","action":"stop-unknown","skip_reason":"writer-control-not-complete"},
+    {"after":"T1","when":"trustworthy-native-success","action":"stop","skip_reason":"original-p1-complete-no-reproduction"},
+    {"after":"T1","when":"trustworthy-clean-timeout-or-refusal-empty-prefix","action":"run-T2"},
+    {"after":"T1","when":"otherwise","action":"stop-unknown","skip_reason":"prior-observation-unknown"},
+    {"after":"T2","when":"trustworthy-native-success","action":"stop","skip_reason":"direct-invoke-complete-no-refinement"},
+    {"after":"T2","when":"trustworthy-clean-timeout-or-refusal-json-enter-only","action":"run-T3"},
+    {"after":"T2","when":"otherwise","action":"stop-unknown","skip_reason":"prior-observation-unknown"},
+    {"after":"T3","when":"any","action":"stop"},
+    {"after":"any","when":"invalid-admission-or-counter-or-clock","action":"stop-unknown","skip_reason":"budget-admission-denied"},
+    {"after":"start","when":"checks-failed","action":"do-not-run","skip_reason":"synthetic-checks-not-passed"}
+  ],
+  "strict_append": {
+    "lock_paths":["$OWNED/guard.jsonl.append-lock","$OWNED/trace.jsonl.append-lock","$RUN_ROOT/counter.jsonl.append-lock"],
+    "wrapped_targets":["TW_PARITY_GUARD_LOG","TW_TRACE","TW_PARITY_COUNTER"],
+    "acquisition":"atomic-mkdir-no-wait-no-retry",
+    "transaction":["acquire","verify-owned-regular-file-identity","validate-current-bytes-and-candidate","check-inclusive-cap","append-complete-buffer","verify-size-and-identity","release"],
+    "counter_read_check_append_one_transaction":true,
+    "all_failures_fail_closed":true,
+    "old_trace_captures_gated_append_after_guard":true,
+    "additional_log_allowance":false
+  },
+  "cli_modes": ["--prepare","--run","--probe T0","--probe T1","--probe T2","--probe T3","--seal","--verify-upload"],
+  "workflow": {
+    "path":".github/workflows/windows-p1-stages-diagnostic.yml",
+    "events":{"push":{"branches":["codex/windows-p1-stages-ci-20261010"]}},
+    "job_id":"p1-initial-diagnostic",
+    "job_if":"github.event_name == 'push' && github.ref == 'refs/heads/codex/windows-p1-stages-ci-20261010'",
+    "permissions":{"contents":"read"},"concurrency_cancel_in_progress":false,"runs_on":"windows-latest","node_version":"22","timeout_minutes":12,
+    "checkout":{"ref":"${{ github.sha }}","fetch-depth":1,"persist-credentials":false},
+    "secrets":[],"environment":null,
+    "ordered_commands":["node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --prepare","npm ci","node node_modules/vitest/vitest.mjs run tests/diagnostics/windows-p1-stages.test.ts --reporter=json --outputFile=docs/test-reports/windows-p1-stages-20261010/.scratch/checks.raw.json","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --run","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --seal","node docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs --verify-upload"],
+    "seal_if":"always()","upload_if":"always() && steps.seal.outcome == 'success' && steps.verify_upload.outcome == 'success'",
+    "artifact_name":"windows-p1-initial-${{ github.sha }}","retention_days":7,"if_no_files_found":"error"
+  },
+  "output": {
+    "scratch_root":"docs/test-reports/windows-p1-stages-20261010/.scratch/",
+    "upload_root":"docs/test-reports/windows-p1-stages-20261010/upload/",
+    "owned_root_template":"$RUN_ROOT/<exact-caseId>",
+    "upload_files":["provenance.json","checks-summary.json","summary.json","T0.case.json","T1.case.json","T2.case.json","T3.case.json","T0.guard.jsonl","T1.guard.jsonl","T2.guard.jsonl","T3.guard.jsonl","T0.trace.jsonl","T1.trace.jsonl","T2.trace.jsonl","T3.trace.jsonl","manifest.json"],
+    "json_max_bytes":65536,"jsonl_max_bytes":524288,"manifest_entries":15,"manifest_self_hash":false,
+    "raw_copy_allowed":false,"symlinks_allowed":false,"additional_files_allowed":false
+  },
+  "schemas": {
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "uint":{"type":"integer","minimum":0,"maximum":9007199254740991},
+      "pid":{"type":"integer","minimum":1,"maximum":4294967295},
+      "nullablePid":{"anyOf":[{"$ref":"#/$defs/pid"},{"type":"null"}]},
+      "status":{"anyOf":[{"type":"integer","minimum":-2147483648,"maximum":4294967295},{"type":"null"}]},
+      "signal":{"anyOf":[{"type":"string","enum":["SIGHUP","SIGINT","SIGQUIT","SIGILL","SIGTRAP","SIGABRT","SIGIOT","SIGBUS","SIGFPE","SIGKILL","SIGUSR1","SIGSEGV","SIGUSR2","SIGPIPE","SIGALRM","SIGTERM","SIGCHLD","SIGCONT","SIGSTOP","SIGTSTP","SIGTTIN","SIGTTOU","SIGBREAK","SIGWINCH"]},{"type":"null"}]},
+      "hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+      "sha":{"type":"string","pattern":"^[a-f0-9]{40}$"},
+      "variant":{"enum":["T0","T1","T2","T3"]},
+      "caseId":{"enum":["p1-initial-T0-writer-control","p1-initial-T1-original-p1-control","p1-initial-T2-direct-invoke","p1-initial-T3-lookup-refinement"]},
+      "marker":{"enum":["writer-ok","json-enter","json-done","lookup-enter","lookup-done","terminal-json"]},
+      "markers":{"type":"array","maxItems":5,"uniqueItems":true,"items":{"$ref":"#/$defs/marker"}},
+      "nativeOutcome":{"enum":["completed","timeout","refused","output","launch","supervision","not-started","unknown"]},
+      "skipReason":{"enum":[null,"writer-control-not-complete","original-p1-complete-no-reproduction","direct-invoke-complete-no-refinement","prior-observation-unknown","budget-admission-denied","synthetic-checks-not-passed","setup-or-outcome-unknown"]},
+      "safeCode":{"enum":[null,"ENOENT","ENOTDIR","ELOOP","EACCES","EPERM","EIO","EBUSY","EINVAL","ENOSPC","EMFILE","ENFILE","EPIPE","ETIMEDOUT","EEXIST","EROFS","ENAMETOOLONG","ENODEV","ENOMEM","ESRCH","UNKNOWN","ERR_INVALID_ARG_TYPE","ERR_OUT_OF_RANGE","ERR_INVALID_ARG_VALUE","ERR_CHILD_PROCESS_STDIO_MAXBUFFER","TW_PARITY_BUDGET","TW_MARKER_MISMATCH","TW_GIT_SETUP","PROBE_SETUP_ERROR","DIAGNOSTIC_FAILURE","LAUNCH_ERROR","NATIVE_ERROR","UNRECOGNIZED_ERROR_CODE","GUARD_HEALTH_IO","GUARD_LOG_IO_OR_LIMIT","GUARD_COUNTER_IO","GUARD_UNSAFE_METADATA","GUARD_LOG_LIMIT","TRACE_STATUS_WRITE","TRACE_IO_OR_SERIALIZATION","TRACE_LIMIT"]},
+      "native": {"type":"object","additionalProperties":false,"required":["outcome","status","signal","errorName","errorCode","elapsedMs","workerKind"],"properties":{
+        "outcome":{"$ref":"#/$defs/nativeOutcome"},"status":{"$ref":"#/$defs/status"},"signal":{"$ref":"#/$defs/signal"},
+        "errorName":{"enum":[null,"BoundedSubprocessTimeoutError","BoundedSubprocessOutputError","BoundedSubprocessLaunchError","BoundedSubprocessSupervisionError","DiagnosticEvidenceError"]},"errorCode":{"$ref":"#/$defs/safeCode"},
+        "elapsedMs":{"anyOf":[{"type":"number","minimum":0,"maximum":43000},{"type":"null"}]},"workerKind":{"enum":[null,"ok","timeout","output","launch","supervision"]}
+      }},
+      "stage": {"type":"object","additionalProperties":false,"required":["pid","sequence","at","event","childPid","variant","marker","ordinal","arrivalElapsedMs"],"properties":{
+        "pid":{"$ref":"#/$defs/pid"},"sequence":{"type":"integer","minimum":0,"maximum":10000000},"at":{"$ref":"#/$defs/uint"},"event":{"const":"native-fixed-stage"},"childPid":{"$ref":"#/$defs/pid"},"variant":{"$ref":"#/$defs/variant"},"marker":{"$ref":"#/$defs/marker"},"ordinal":{"type":"integer","minimum":0,"maximum":4},"arrivalElapsedMs":{"type":"number","minimum":0,"maximum":40000}
+      }},
+      "streamEnd": {"type":"object","additionalProperties":false,"required":["pid","sequence","at","event","childPid","variant","stdoutBytes","stderrBytes","combinedBytes","acceptedMarkers","stdoutEofObserved","stderrEofObserved","eofObserved","state","reason"],"properties":{
+        "pid":{"$ref":"#/$defs/pid"},"sequence":{"type":"integer","minimum":0,"maximum":10000000},"at":{"$ref":"#/$defs/uint"},"event":{"const":"native-fixed-stream-end"},"childPid":{"$ref":"#/$defs/pid"},"variant":{"$ref":"#/$defs/variant"},
+        "stdoutBytes":{"type":"integer","minimum":0,"maximum":16384},"stderrBytes":{"type":"integer","minimum":0,"maximum":16384},"combinedBytes":{"type":"integer","minimum":0,"maximum":16385},"acceptedMarkers":{"type":"integer","minimum":0,"maximum":5},"stdoutEofObserved":{"type":"boolean"},"stderrEofObserved":{"type":"boolean"},"eofObserved":{"type":"boolean"},
+        "state":{"enum":["complete-sequence","complete-prefix","invalid","unknown"]},"reason":{"enum":["none","unexpected-bytes","order-or-duplicate","unterminated-line","native-output-cap","stream-error","eof-not-observed"]}
+      }},
+      "probe": {"type":"object","additionalProperties":false,"required":["format","variant","caseId","scriptSha256","probeSetupComplete","native","releaseAcceptance"],"properties":{
+        "format":{"const":"windows-p1-initial-probe-v1"},"variant":{"$ref":"#/$defs/variant"},"caseId":{"$ref":"#/$defs/caseId"},"scriptSha256":{"$ref":"#/$defs/hash"},"probeSetupComplete":{"type":"boolean"},"native":{"$ref":"#/$defs/native"},"releaseAcceptance":{"const":false}
+      }},
+      "root": {"type":"object","additionalProperties":false,"required":["pid","status","signal","metadataUnknown","stopped","stopReason","launchCode","stdoutBytes","stderrBytes","outputBoundExceeded","canaryFound"],"properties":{
+        "pid":{"$ref":"#/$defs/nullablePid"},"status":{"$ref":"#/$defs/status"},"signal":{"$ref":"#/$defs/signal"},"metadataUnknown":{"type":"boolean"},"stopped":{"type":"boolean"},"stopReason":{"enum":[null,"owned-case-watchdog-expired","diagnostic-output-limit-exceeded","owned-lifetime-expired"]},"launchCode":{"$ref":"#/$defs/safeCode"},"stdoutBytes":{"type":"integer","minimum":0,"maximum":65536},"stderrBytes":{"type":"integer","minimum":0,"maximum":65536},"outputBoundExceeded":{"type":"boolean"},"canaryFound":{"type":"boolean"}
+      }},
+      "health": {"type":"object","additionalProperties":false,"required":["expectedPids","guardComplete","traceComplete","guardInvalid","traceInvalid","diagnosticAbortReasons","provenanceUnknown","cleanupUnknown","possibleLiveAtReturn","possibleLiveAfterOwnedCap","rootRetained","historicalPidsSignalled","wholeTreeAbsenceProven"],"properties":{
+        "expectedPids":{"type":"array","maxItems":16,"uniqueItems":true,"items":{"$ref":"#/$defs/pid"}},"guardComplete":{"type":"boolean"},"traceComplete":{"type":"boolean"},"guardInvalid":{"type":"boolean"},"traceInvalid":{"type":"boolean"},"diagnosticAbortReasons":{"type":"array","uniqueItems":true,"maxItems":9,"items":{"enum":["unknown-native-budget","native-cleanup-output-allowance-insufficient","total-powershell-budget-insufficient","smoke-powershell-budget-insufficient","native-budget-counter-unavailable","unexpected-synchronous-powershell","owned-lifetime-expired","owned-case-watchdog-expired","diagnostic-output-limit-exceeded"]}},"provenanceUnknown":{"type":"boolean"},"cleanupUnknown":{"type":"boolean"},"possibleLiveAtReturn":{"type":"array","maxItems":16,"uniqueItems":true,"items":{"$ref":"#/$defs/pid"}},"possibleLiveAfterOwnedCap":{"type":"array","maxItems":16,"uniqueItems":true,"items":{"$ref":"#/$defs/pid"}},"rootRetained":{"type":"boolean"},"historicalPidsSignalled":{"const":false},"wholeTreeAbsenceProven":{"const":false}
+      }},
+      "caseRecord": {"type":"object","additionalProperties":false,"required":["format","variant","caseId","scriptSha256","decision","reason","rootProcessStarted","nativeLaunches","markers","notObserved","stream","native","root","health","prefix_protocol_valid","native_completed","diagnostic_observation_complete","releaseReady","releaseAcceptance"],"properties":{
+        "format":{"const":"windows-p1-initial-case-v1"},"variant":{"$ref":"#/$defs/variant"},"caseId":{"$ref":"#/$defs/caseId"},"scriptSha256":{"$ref":"#/$defs/hash"},"decision":{"enum":["run","skipped","unknown"]},"reason":{"$ref":"#/$defs/skipReason"},"rootProcessStarted":{"type":["boolean","null"]},"nativeLaunches":{"enum":[0,1,null]},"markers":{"$ref":"#/$defs/markers"},"notObserved":{"$ref":"#/$defs/markers"},"stream":{"anyOf":[{"$ref":"#/$defs/streamEnd"},{"type":"null"}]},"native":{"$ref":"#/$defs/native"},"root":{"anyOf":[{"$ref":"#/$defs/root"},{"type":"null"}]},"health":{"anyOf":[{"$ref":"#/$defs/health"},{"type":"null"}]},"prefix_protocol_valid":{"type":"boolean"},"native_completed":{"type":"boolean"},"diagnostic_observation_complete":{"type":"boolean"},"releaseReady":{"const":false},"releaseAcceptance":{"const":false}
+      }},
+      "summary": {"type":"object","additionalProperties":false,"required":["format","executionSha","planningBase","variantOrder","caseFiles","admissions","totalNativeLaunches","smokeNativeLaunches","diagnosticExitCode","diagnostic_observation_complete","stopReason","retainedCases","releaseReady","releaseAcceptance","formalF005Claim"],"properties":{
+        "format":{"const":"windows-p1-initial-summary-v1"},"executionSha":{"$ref":"#/$defs/sha"},"planningBase":{"const":"93a61ba69504d6e9c1eee803c5ee4e2750c54640"},"variantOrder":{"const":["T0","T1","T2","T3"]},"caseFiles":{"const":["T0.case.json","T1.case.json","T2.case.json","T3.case.json"]},"admissions":{"type":"array","maxItems":4,"items":{"type":"object","additionalProperties":false,"required":["event","kind"],"properties":{"event":{"const":"powershell-admission"},"kind":{"const":"smoke"}}}},"totalNativeLaunches":{"enum":[0,1,2,3,4,null]},"smokeNativeLaunches":{"enum":[0,1,2,3,4,null]},"diagnosticExitCode":{"enum":[0,1,null]},"diagnostic_observation_complete":{"type":"boolean"},"stopReason":{"$ref":"#/$defs/skipReason"},"retainedCases":{"type":"array","maxItems":4,"uniqueItems":true,"items":{"$ref":"#/$defs/caseId"}},"releaseReady":{"const":false},"releaseAcceptance":{"const":false},"formalF005Claim":{"const":false}
+      }},
+      "sourceFile":{"type":"object","additionalProperties":false,"required":["path","sha256"],"properties":{"path":{"type":"string","maxLength":200},"sha256":{"$ref":"#/$defs/hash"}}},
+      "runtime":{"type":"object","additionalProperties":false,"required":["node","uv","platform","arch","osRelease","imageOS","imageVersion"],"properties":{
+        "node":{"type":"string","pattern":"^v22\\.[0-9]{1,3}\\.[0-9]{1,3}$"},"uv":{"type":"string","pattern":"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"},"platform":{"const":"win32"},"arch":{"const":"x64"},"osRelease":{"type":"string","pattern":"^[0-9]{1,5}(\\.[0-9]{1,5}){1,3}$"},"imageOS":{"type":"string","pattern":"^win[0-9]{2}$"},"imageVersion":{"type":"string","pattern":"^[0-9]{8}\\.[0-9]{1,8}\\.[0-9]{1,8}$"}
+      }},
+      "provenance":{"type":"object","additionalProperties":false,"required":["format","executionSha","expectedSha","planningBase","timestampUtc","runId","runAttempt","ref","runtime","sourceFiles","environmentKeyNames","extraEnvironmentKeys","provenanceUnknown","releaseReady","releaseAcceptance"],"properties":{
+        "format":{"const":"windows-p1-initial-provenance-v1"},"executionSha":{"$ref":"#/$defs/sha"},"expectedSha":{"$ref":"#/$defs/sha"},"planningBase":{"const":"93a61ba69504d6e9c1eee803c5ee4e2750c54640"},"timestampUtc":{"type":"string","pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{3})?Z$"},"runId":{"type":"string","pattern":"^[1-9][0-9]{0,19}$"},"runAttempt":{"type":"integer","minimum":1,"maximum":1000000},"ref":{"const":"refs/heads/codex/windows-p1-stages-ci-20261010"},"runtime":{"$ref":"#/$defs/runtime"},"sourceFiles":{"type":"array","minItems":11,"maxItems":11,"items":{"$ref":"#/$defs/sourceFile"}},"environmentKeyNames":{"type":"array","uniqueItems":true,"maxItems":27,"items":{"type":"string","maxLength":32}},"extraEnvironmentKeys":{"const":[]},"provenanceUnknown":{"const":false},"releaseReady":{"const":false},"releaseAcceptance":{"const":false}
+      }},
+      "checksSummary":{"type":"object","additionalProperties":false,"required":["format","testPath","exitCode","passed","failed","skipped","allRequiredControlsPassed","rawReportSuppressed","releaseAcceptance"],"properties":{
+        "format":{"const":"windows-p1-initial-checks-v1"},"testPath":{"const":"tests/diagnostics/windows-p1-stages.test.ts"},"exitCode":{"enum":[0,1,null]},"passed":{"$ref":"#/$defs/uint"},"failed":{"$ref":"#/$defs/uint"},"skipped":{"$ref":"#/$defs/uint"},"allRequiredControlsPassed":{"type":"boolean"},"rawReportSuppressed":{"const":true},"releaseAcceptance":{"const":false}
+      }},
+      "manifest":{"type":"object","additionalProperties":false,"required":["format","executionSha","files","releaseAcceptance"],"properties":{
+        "format":{"const":"windows-p1-initial-manifest-v1"},"executionSha":{"$ref":"#/$defs/sha"},"files":{"type":"array","minItems":15,"maxItems":15,"items":{"type":"object","additionalProperties":false,"required":["path","bytes","sha256"],"properties":{"path":{"enum":["provenance.json","checks-summary.json","summary.json","T0.case.json","T1.case.json","T2.case.json","T3.case.json","T0.guard.jsonl","T1.guard.jsonl","T2.guard.jsonl","T3.guard.jsonl","T0.trace.jsonl","T1.trace.jsonl","T2.trace.jsonl","T3.trace.jsonl"]},"bytes":{"type":"integer","minimum":0,"maximum":524288},"sha256":{"$ref":"#/$defs/hash"}}}},"releaseAcceptance":{"const":false}
+      }}
+    }
+  },
+  "schema_resolution":"Treat schemas as its own JSON Schema document; all #/$defs references are local to schemas, with no network resolver. Validators must also enforce cross_field_invariants.",
+  "cross_field_invariants": [
+    "variant/caseId/scriptSha256/root basename/worker payload agree with exactly one cases row; no extra executable script or variant",
+    "Guard baseline and old-trace events use frozen native-runtime-parity.mjs evidenceEvent family schemas and SAFE_CODES/SAFE_SIGNALS/ABORT_REASONS unchanged; new stage/end events are guard-only",
+    "Guard base pid is the owning worker pid; childPid is the admitted owned live PowerShell handle; event sequence remains per-pid ordered and complete",
+    "markers is an exact prefix of variant sequence; ordinal starts at zero; notObserved is exactly its remaining suffix; stream acceptedMarkers equals accepted stage count",
+    "stream eofObserved equals stdoutEofObserved && stderrEofObserved; combinedBytes is saturated at 16385; per-stream counts saturated at 16384; without overflow combinedBytes equals their sum",
+    "Both EOF flags and no stream error/parser error/stderr are required for complete-prefix or complete-sequence; missing end event is unknown; reasons match state",
+    "Root stdout/stderr counters are capped individually at65536; combined nonoverflow bytes never exceed65536; root stderr/nonempty canary/overflow/metadata unknown/stop/abort makes observation incomplete",
+    "native completed requires workerKind ok/status0/signalnull/noerror/exact complete-sequence; timeout requires timeout class and workerKind timeout; refused requires workerKind ok/nonzero safe status",
+    "probe workerKind is reconciled against old trace spawn-sync worker result, never inferred from error class alone",
+    "diagnostic_observation_complete requires all original root/guard/trace/cleanup/provenance/counter conditions, valid prefix and clean native outcome; markers never override an unknown",
+    "skipped case has rootProcessStarted false/nativeLaunches0/empty markers/null stream/root/health/native not-started; unknown count/start must remain null rather than fabricate skips",
+    "Exactly four case records in T0-T3 order; selection table applies once; no launch after stop; each started case at most one native admission",
+    "Native admissions sum to total/smoke counts and per-case known counts; counter uses unchanged counter schema; no reset or extra allowance; missing counter makes counts null and observation incomplete",
+    "summary diagnosticExitCode0 means complete diagnostic observation, not native/product/release success; incomplete exits1 or remainsnull if outcome unknown",
+    "sourceFiles contains exactly future_added_source_paths plus delivery JSON path plus frozen_runtime_sources paths (11), no others; hashes bind exact candidate bytes",
+    "provenance executionSha equals expectedSha, actual git HEAD and summary/manifest executionSha; frozen hashes and planning base must match; source commits are not historical run identity",
+    "environmentKeyNames equals the sorted set of admitted present E0 system keys plus exactly synthetic_keys; values are never exported; no extra key",
+    "checksSummary allRequiredControlsPassed requires scoped report valid/exit0/failed0/skipped0 and every declared control checked; never upload raw Vitest report",
+    "manifest has exactly one entry per other upload file, sorted by path, SHA256 and bytes match; JSON cap65536 and JSONL cap524288 apply inclusively; no extra files or symlinks",
+    "Public guard/trace JSONL is strictly rebuilt; invalid/missing evidence is suppressed to empty safe file with case incompleteness preserved; never raw-copy fallback",
+    "wholeTreeAbsenceProven and all release flags are always false; root retained when cleanup unknown; never signal historical PIDs"
+  ],
+  "required_future_controls": ["all-token-chunk-splits-and-LF-CRLF","timeout-prefix-immediate-safe-persistence","missing-EOF-event-health-or-stream-error","unsafe-bytes-canaries-stderr-and-order","handle-pid-case-script-identity","all-inclusive-caps-and-plus-one","concurrent-append-and-lock-failure","counter-and-clock-admission-boundaries","cleanup-trace-provenance-independent-unknown","every-selection-row-zero-skipped-launches","strict-extra-key-rejection","import-without-side-effects","exact-source-workflow-and-upload-file-set"],
+  "performed":{"author_static_consistency_checks":true,"native_tests":false,"functional_tests":false,"implementation":false,"ci":false,"network":false,"dependency_install":false,"push":false,"state_or_memory_edits":false},
+  "unresolved_bindings": [],
+  "unverified_obligations":["actual additive-listener and inclusive-lock implementation correctness","synthetic controls and independent cross-family functional acceptance","runner provenance and actual clean EOF availability","observer perturbation and original PowerShell internal cause","whole process-tree absence and outstanding release gates"],
+  "exclusions":["T4/T5 scripts or executable selectors","module probes","environment arms or command repair","timeout extensions","native retries","P2/downstream/product repair","original source/test/workflow/state/memory edits","keys-age-or-off-host-backup","worker publication or pending_gate decision"]
+}
