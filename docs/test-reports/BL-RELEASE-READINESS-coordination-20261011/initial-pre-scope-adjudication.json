@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "role": "Coordinator transport and narrow Planner adjudication; not a human gate decision or Evaluator verdict",
+  "reviewed_source": "c58434f9791b944c0414b83830bc1ea412aa1b2d",
+  "original_pre_scope_commit": "11c32d5806372ef3f7a7e9285d40f3b9c9e24a9b",
+  "original_pre_scope_verdict": "BLOCKED",
+  "issue": "B001: normal native outcome/error/status/signal and admitted child-close relations not explicitly closed",
+  "copied_report_directory": "docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/",
+  "report_directory_compare_exit": 0,
+  "original_verdict_rewritten": false,
+  "authorized_work": "Supporting Planner may tighten only B001 in the two existing INITIAL binding documents; fresh exact-document pre-scope required afterward",
+  "planner_edit_allowlist": [
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+    "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"
+  ],
+  "minimum_closure": [
+    "Normal kind=ok completed/refused must have null errorName/errorCode; clean refusal has nonzero safe returned status and null signal.",
+    "Normal returned status/signal must reconcile with uniquely admitted native handle child-exit/child-close, bound to childPid, worker ownership, fixed case and script. Node worker spawn-sync status is not native status.",
+    "Throw/non-return paths keep unavailable returned status/signal null and use only actual safe API error fields. No invented timeout status0/EIO or signal inference.",
+    "Missing or contradictory return/error/worker/close relation is unknown and cannot advance T1/T2 selection. Require synthetic negative controls."
+  ],
+  "frozen_boundaries": "Three future added source paths, four INITIAL scripts, no extra query/env/arm/module/retry, unchanged original worker/trace/cleanup/time/count/byte caps and safe artifact boundary",
+  "forbidden": "No product/code/old-report/original/state/memory edits, worker output change, extra native or host query, publication or execution",
+  "implementation_authorized": false,
+  "publication_authorized": false,
+  "native_execution_authorized": false,
+  "backup_key_work": "deferred by user",
+  "compose_evaluation_chain": "HARD_STOP; no third dispatch",
+  "main_push_or_production_mutation": false,
+  "release_ready": false
+}

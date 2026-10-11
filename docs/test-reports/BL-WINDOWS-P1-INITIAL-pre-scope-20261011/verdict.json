@@ -1,0 +1,189 @@
+{
+  "format": "independent-initial-bindings-pre-scope-review-v1",
+  "generated_at_utc": "2026-10-11T05:44:48Z",
+  "role": "fresh independent supporting pre-scope critic; harness-rules section 1.5",
+  "review_kind": "specification structure and safety only; not a functional Evaluator or release signoff",
+  "source_commit": "c58434f9791b944c0414b83830bc1ea412aa1b2d",
+  "planning_base": "93a61ba69504d6e9c1eee803c5ee4e2750c54640",
+  "review_worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-initial-scope-20261011",
+  "verdict": "BLOCKED",
+  "blocked": true,
+  "scope_only_pass": false,
+  "source_diff_scope_violation": false,
+  "blocking_issue_count": 1,
+  "implementation_status": "not supplied; absence is not a code failure",
+  "product_functional_failure_claim": false,
+  "release_ready": false,
+  "implementation_authorized": false,
+  "publication_authorized": false,
+  "native_execution_authorized": false,
+  "release_acceptance": false,
+  "formal_F005_claim": false,
+  "reviewed_documents": [
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "bytes": 15055,
+      "sha256": "db4c2ae0a7ff3b84460a8f0f13dbda413b4bfd053c40e31833b6f4122f0ff974"
+    },
+    {
+      "path": "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "bytes": 28326,
+      "sha256": "40791d18e27b95656d68968d716425ccfc1c26e4528a9cf532803ddb0f9cb643"
+    }
+  ],
+  "issues": [
+    {
+      "id": "B001",
+      "severity": "blocking",
+      "classification": "unclosed native outcome cross-field and return-metadata binding",
+      "finding": "The strict native schema and written cross-fields do not close contradictory ok/refused/error tuples. The refused condition requires only workerKind=ok and nonzero safe status; it does not require null errorName/errorCode or bind the returned native status/signal to the admitted native child exit/close. The timeout condition also leaves unavailable product return metadata unbound. This contradicts the assertion that no schema/selection binding is deferred to implementation. A Generator must not choose how to interpret these conflicts at a progression boundary.",
+      "evidence": [
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json:107-114,155-168,179",
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:9,47,50-56,72",
+        "src/cli/bounded-subprocess.ts:83-111",
+        "src/cli/bounded-subprocess-worker.mjs:52-57,84-89",
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:84-110,238-245",
+        "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs:69-70,75-85"
+      ],
+      "static_counterexample": {
+        "outcome": "refused",
+        "status": 1,
+        "signal": null,
+        "errorName": "BoundedSubprocessLaunchError",
+        "errorCode": "EIO",
+        "elapsedMs": 1,
+        "workerKind": "ok"
+      },
+      "counterexample_result": "Accepted by all native schema constraints and satisfies the explicit refused workerKind/status antecedent. A real normal kind=ok return does not simultaneously throw BoundedSubprocessLaunchError. With a clean T1 empty prefix or T2 json-enter-only prefix, the written clean-refusal antecedent is otherwise satisfied. The prose phrase 'Launch ... never clean refusal' does not explicitly bind an errorName/outcome disagreement; that interpretation is the missing rule. No implemented validator or native probe was executed.",
+      "additional_unclosed_relation": "Even an otherwise canonical ok/refused tuple with status=1 and null error fields has no written status/signal equality check against the admitted PowerShell child-close status=0/signal=null. Reconciliation of workerKind alone cannot detect this: the old trace spawn-sync status/signal belongs to the Node worker, not the native PowerShell child.",
+      "throw_path_static_example": {
+        "outcome": "timeout",
+        "status": 0,
+        "signal": null,
+        "errorName": "BoundedSubprocessTimeoutError",
+        "errorCode": "EIO",
+        "elapsedMs": 1,
+        "workerKind": "timeout"
+      },
+      "throw_path_limit": "The example satisfies the native schema and explicit timeout class/workerKind antecedent, but the unchanged timeout API returns no status/signal or error code. Independent native close facts must not be fabricated as product return fields. Do not require the frozen worker to expose additional timeout output or infer a signal from an error class.",
+      "minimum_explicit_closure_required_from_planner": [
+        "For a normal worker kind=ok return used as completed or clean refused, explicitly require errorName=null and errorCode=null; clean refusal must have a nonzero safe return status and signal=null. Preserve unknown classification when these conditions cannot be established.",
+        "For normal ok native return status/signal, explicitly reconcile them with the uniquely admitted native handle's guard/trace child-exit/child-close facts. Use childPid/worker ownership and the same fixed case/script identity; a Node worker spawn-sync status is not a native status.",
+        "For throw/non-return paths, explicitly bind unavailable product return status/signal to null/unknown and the observed safe error fields to their actual product source. Only independently observable native close/EOF/health facts may be cross-checked; no new worker output, host query or error-class inference is permitted.",
+        "Bind contradictory or missing return/error/worker/close relations to unknown and no progression, including synthetic counterexamples at T1/T2 selection boundaries. This report identifies the missing relation; it does not edit the specification or approve a replacement table."
+      ],
+      "resolution_owner": "supporting Planner specification revision, then fresh independent pre-scope review; Coordinator retains all authority"
+    }
+  ],
+  "nonblocking_observations": [
+    {
+      "id": "O001",
+      "topic": "strict append feasibility",
+      "finding": "Implementable in principle within the three new paths: a guard installed before old trace can gate the exact append targets captured at trace-preload.mjs:7, while the copied guard performs counter read/check/append under the same run-root lock. The locked inclusive size+candidate check closes the old unlocked pre-check race. Saved pre-trace filesystem primitives, owned regular-file identity, no retry/takeover and per-process failed health are necessary. Actual diff must prove all permitted writers use the gate and that lock/partial-write/release failures cannot leave apparently complete evidence. No lock implementation, contention control or perturbation test was run.",
+      "evidence": [
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:41-43,70-72",
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json:62-70",
+        "docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs:7,17-35,41-57",
+        "docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs:178-195,224-234"
+      ]
+    },
+    {
+      "id": "O002",
+      "topic": "unknown synthetic check counts and sealing",
+      "finding": "checksSummary passed/failed/skipped are non-null uints. A missing or crashed raw Vitest report cannot be represented by fabricated zero counts. Under the existing core-schema/fail-closed prose, seal must refuse that artifact unless those counts are independently known; exitCode=null and allRequiredControlsPassed=false do not justify invented counts. This is an actual-diff/negative-control obligation, not a finding that an absent implementation already violates it.",
+      "evidence": [
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json:145-146,172",
+        "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md:54,64-66"
+      ]
+    }
+  ],
+  "coherent_non_authorizing_bindings": [
+    "Exactly three new source paths; no existing source, worker, old trace, test, workflow, dependency, original, state or memory edits.",
+    "Only four executable T0-T3 cases; T1 byte-exact old P1; T2 writer pair only; T3 one bracketed lookup-or-autoload call; no T4/T5 constant/selector, module, P2, downstream, arm, environment repair or retry.",
+    "E0 five system keys plus exact existing 22 synthetic keys, guard before old trace, one native admission per case, maximum four smoke admissions, unchanged ceilings and cleanup/watchdogs.",
+    "A pre-return additive Buffer listener on the admitted owned native handle can persist stages in the worker before timeout discards stdout. No read/pipe/encoding/listener/worker-protocol change is proposed.",
+    "Exact ASCII/LF/CRLF parser, 29-byte pending line, combined native sentinel 16385, per-stream saturation 16384, strict EOF/error uncertainty, and no marker override of independent health/cleanup/provenance.",
+    "T0 exact success before T1; T1 success stops; only clean empty-prefix T1 refusal/timeout admits T2; only clean json-enter-only T2 refusal/timeout admits T3; T3 is terminal.",
+    "Known skips have zero admissions and no root; missing post-crash start/count remains nullable unknown, not a fabricated skip.",
+    "Fixed non-main push/event/ref, contents:read, github.sha checkout/HEAD equality, no persisted checkout credentials, Secrets or environment; only scoped synthetic checks and a single future INITIAL run.",
+    "Explicit 16 sealed artifacts, 15 manifest entries, 11 source hash bindings, validated rebuild only, no raw/directory/glob/scratch upload fallback; candidate SHA remains distinct from historical run identity."
+  ],
+  "actual_checks": [
+    {
+      "id": "C01",
+      "method": "git status --short --branch; git rev-parse HEAD; git show --format=fuller --stat --summary c58434f9791b944c0414b83830bc1ea412aa1b2d",
+      "result": "PASS",
+      "observed": "Started clean on codex/windows-p1-initial-scope-20261011, at the exact source SHA; commit adds only the two reviewed binding documents."
+    },
+    {
+      "id": "C02",
+      "method": "git diff --name-status and git diff --check 93a61ba69504d6e9c1eee803c5ee4e2750c54640 c58434f9791b944c0414b83830bc1ea412aa1b2d",
+      "result": "PASS",
+      "observed": "Exactly two added documents; whitespace check exit 0; no protected source diff."
+    },
+    {
+      "id": "C03",
+      "method": "Read AGENTS.md, harness-rules.md, CLAUDE.md, progress.json, features.json, project T0 and evaluator T1; read prior proposal/plan/scope and frozen guard/trace/bounded worker/API.",
+      "result": "PASS-supporting-boundary",
+      "observed": "progress.status=building for BL-RELEASE-READINESS with pending F004/F005 and release_ready=false. No .agent-id exists. Explicit supporting assignment uses section 1.5 rather than becoming Generator/Evaluator. No state or memory change was made."
+    },
+    {
+      "id": "C04",
+      "method": "Offline Node builtins-only JSON/hash/static assertion snippet; no product imports or subprocess probes.",
+      "result": "PASS-static-consistency-only",
+      "observed": {
+        "referenced_input_hashes_matched": 10,
+        "historical_metadata_hashes_matched": 3,
+        "historical_native_files_rehashed": 0,
+        "script_hashes_matched": 4,
+        "T1_byte_exact": true,
+        "T2_single_writer_delta": true,
+        "T3_single_lookup_delta": true,
+        "pending_line_bytes": 29,
+        "schema_local_references_resolved": 49,
+        "exact_object_schemas": 15,
+        "frozen_safe_enum_sets_matched": 3,
+        "synthetic_key_set_matched": 22,
+        "future_source_paths_absent": 3,
+        "source_binding_set": 11,
+        "upload_file_set": 16,
+        "manifest_file_set": 15
+      }
+    },
+    {
+      "id": "C05",
+      "method": "Offline Node builtins-only fixed-path/environment/native/budget/workflow/lock/upload/authority assertion snippet.",
+      "result": "PASS-static-contract-binding",
+      "observed": "All listed fixed constants matched; E0 only, no extra keys; no module/P2 script operand; push-only fixed non-main ref, exact SHA, no credentials/Secrets/environment; unchanged bounds; atomic no-retry lock and no extra/raw artifacts; all authority flags false."
+    },
+    {
+      "id": "C06",
+      "method": "Offline pure JSON schema subset evaluation over the native definition and local refs; manually compare the written native cross-field antecedents with frozen source.",
+      "result": "BLOCKING-specification-counterexample",
+      "observed": "Both native tuples recorded in B001 satisfy the actual schema and stated refused/timeout antecedents. The normal-return/error and normal-return/admitted-child-close relations are not explicitly closed. This checks document structure, not implementation behavior."
+    },
+    {
+      "id": "C07",
+      "method": "Static evaluation of checksSummary passed/failed/skipped property definitions.",
+      "result": "PASS-with-retention-obligation",
+      "observed": "All three reject null. Missing test outcome therefore must fail sealing rather than create zero-count evidence; no raw-report or sealing implementation was run."
+    }
+  ],
+  "historical_evidence_limit": "Only hashes of the three existing findings metadata files and the ten directly referenced inputs were rechecked. The prior 59-file original inventory and its prior independent review remain references, not newly authenticated native-run evidence. No historical process, downloaded-byte signature or remote run was re-observed.",
+  "performed": {
+    "read_only_specification_and_frozen_source_review": true,
+    "static_json_script_hash_schema_and_diff_checks": true,
+    "product_or_new_probe_functional_tests": false,
+    "native_execution": false,
+    "dependency_install": false,
+    "network_ci_github_ssh_secrets_or_production": false,
+    "push": false,
+    "source_original_test_workflow_state_harness_or_memory_edits": false,
+    "pending_gate_decision_write": false
+  },
+  "required_next_step": "Return B001 to Planner for explicit cross-field/source closure, then obtain a fresh exact-document pre-scope verdict and Coordinator scope approval. Do not dispatch implementation or publish from this BLOCKED report. Actual diff, mocked controls and applicable independent different-family functional acceptance still remain future requirements.",
+  "reviewer_only_outputs": [
+    "docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/verdict.json",
+    "docs/test-reports/BL-WINDOWS-P1-INITIAL-pre-scope-20261011/README.md"
+  ]
+}
