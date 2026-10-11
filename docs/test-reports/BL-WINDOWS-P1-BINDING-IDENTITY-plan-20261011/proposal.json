@@ -1,0 +1,161 @@
+{
+  "format": "windows-p1-binding-identity-supporting-planner-proposal-v1",
+  "created_at_utc": "2026-10-11T16:11:16Z",
+  "role": "fresh supporting Planner; harness-rules.md section 1.5; not Generator/Evaluator/Coordinator",
+  "outcome": "PROPOSE_C002_REQUIRES_FRESH_PRE_SCOPE",
+  "authority": {
+    "implementation_authorized": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "functional_acceptance": false,
+    "release_ready": false,
+    "state_transition": false,
+    "worker_push": false
+  },
+  "freeze": {
+    "source221": "221f2f87d94db1656e3000662796d79621b696f5",
+    "source221_tree": "e29bf76487ec8dc7cca5e18392b2eaed3b1c1223",
+    "predecessor888": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "predecessor888_tree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+    "branch": "docs/windows-p1-binding-identity-plan-20261011",
+    "progress_status_read": "building",
+    "progress_release_ready_read": false,
+    "C001": {
+      "binding_revision": 2,
+      "already_frozen_fix_not_this_proposal": true,
+      "checkout_env": {"GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true"},
+      "scope": "checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation",
+      "json_sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+      "md_sha256": "fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6"
+    },
+    "ten_prior_and_frozen_inputs": "probes.raw.json#/frozenInputs; hashes match source221, source888 and current working bytes",
+    "source_and_predecessor_critical_hashes": "probes.raw.json#/sourceHashes"
+  },
+  "live_trace": {
+    "classification": "captured immutable CI trace, not a newly executed native probe",
+    "run_id": 38153928452,
+    "run_attempt": 1,
+    "job_id": 114512876414,
+    "source": "221f2f87d94db1656e3000662796d79621b696f5",
+    "branch": "codex/windows-p1-stages-ci-20261010",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout": "success",
+    "setup_node": "success",
+    "first_failure": "Prepare exact-candidate provenance: top-level module assertion p1-stages.mjs:20:8, raw binding JSON identity",
+    "actual_sha256": "481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e",
+    "expected_sha256": "652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d",
+    "npm_ci": "skipped",
+    "synthetic_checks": "skipped; no executed 81-test result from this run",
+    "INITIAL": "skipped",
+    "seal": "failure at the same import-time assertion",
+    "verify_upload": "skipped",
+    "artifact_count": 0,
+    "git_version_observed_in_log": "2.55.0.windows.5",
+    "node_version_observed_in_log": "22.23.3",
+    "npm_version_observed_in_log": "10.9.9",
+    "checkout_action_resolved_sha_observed_in_log": "11d5960a326750d5838078e36cf38b85af677262",
+    "workspace_observed_in_log": "D:\\a\\tokenizer\\tokenizer",
+    "earliest_module_path": "p1-stages.mjs lines 14-21: fs.readFileSync -> SHA256 Buffer -> assert.equal -> JSON.parse; failure precedes prepare(), Windows assertions, validateBindings(), scratch/provenance creation and INITIAL",
+    "later_unreached_guards": "Markdown and ten frozen inputs at validateBindings(); exact HEAD/scoped-clean source, eleven raw source hashes, provenance, sealed-file identities remain unchanged and unverified by this run"
+  },
+  "original_receipts": {
+    "directory": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "entries": [
+      {"path":"windows-checkout-native-run38153928452-final-original.json","bytes":12289,"sha256":"3405b586c018591761432b9af713c16ce4d01aafd30cec429fec2391a9e0bafd"},
+      {"path":"windows-checkout-native-run38153928452-jobs-original.json","bytes":3116,"sha256":"60e2e1486a62afd778af32b8cc5a2ab5c37ce942ea227a72de32fb01412c554d"},
+      {"path":"windows-checkout-native-run38153928452-artifacts-original.json","bytes":32,"sha256":"244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"},
+      {"path":"windows-checkout-native-run38153928452-full-original.log","bytes":25522,"sha256":"e59bc74666038fe982cdcacf64e8cbc398f43bd42d9795e7c54fb272542141d4"},
+      {"path":"windows-checkout-native-run38153928452-transport-manifest.json","bytes":1564,"sha256":"1410006509d2f41ad9865223b42beda72d026d04e6538b1f76da86a2e5387961"}
+    ],
+    "checks": "The four run receipt entries match the provided transport manifest byte size and SHA256; the manifest itself was hashed independently. Its three other publication/list entries were not re-authenticated in this task.",
+    "originals_modified_or_copied": false
+  },
+  "recalculation": {
+    "classification": "one-variable pure Buffer transform and a single owned local Git fixture, not Windows file capture",
+    "raw_json": {"bytes":34853,"lf":219,"cr":0,"utf8_bom":false,"sha256":"652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d"},
+    "LF_to_CRLF_only": {"bytes":35072,"sha256":"481e1496c5342216ff6fba7f3e6e0980395d7ff1b0a2094a595f5b0490659c0e","matches_ci_actual":true},
+    "prepend_BOM_only_matches": false,
+    "remove_final_LF_only_matches": false,
+    "local_fixture": {
+      "root": "/Volumes/ORICO/project/.wp1cb-plan-20261011/git-fixture-1",
+      "files": 16,
+      "inputs": "Only the four projected files, unchanged synthetic test, tracked .gitattributes, three prior inputs and seven frozen runtime inputs from exact source221 blobs",
+      "control": "Command-scope count2: core.longpaths=true held constant; only core.autocrlf true -> false changes between checkout-index controls",
+      "autocrlf_true_matches_ci_actual_json": true,
+      "autocrlf_false_all_16_files_raw_byte_equal_source": true,
+      "HOME_TMP_XDG_globalGit": "All point inside the owned .wp1cb-plan-20261011 root; no real global/system Git config queried or modified",
+      "native_acceptance": false
+    },
+    "attributes": "Exact tracked tree contains only root .gitattributes; /docs/test-reports/** is -text, while docs/specs bindings are not covered. This does not observe runner global/system/info attributes.",
+    "raw_probe": {"path":"probes.raw.json","bytes":72541,"sha256":"d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4"},
+    "probe_source": {"path":"probe.mjs","sha256":"58ac7237c757bee331017a7dc1065ae85931115d20be331c381b36a5aefd25e1"}
+  },
+  "inference": {
+    "supported": "Checkout text conversion is a narrow explanation consistent with the exact observed digest: LF->CRLF alone reproduces it, and the same digest is produced by owned local Git with autocrlf=true.",
+    "not_observed": ["Windows binding file bytes/BOM/line counts", "Windows core.autocrlf value or its configuration source", "runner global/system/info attributes or filters", "Windows Markdown/frozen-input bytes", "native PowerShell internal cause or entire process-tree absence"],
+    "not_claimed": "Hash equality for a candidate transform does not directly capture the Windows file or prove the runner setting. A local fixture is neither Windows acceptance nor full INITIAL observation."
+  },
+  "minimal_followup_option": {
+    "id": "C002",
+    "type": "new checkout-only contract; not a C001-compliant change",
+    "description": "Retain checkout-only core.longpaths=true; add only command-scope core.autocrlf=false so raw source bytes, not normalized hash inputs, are read after checkout.",
+    "proposed_binding_revision": 3,
+    "checkout_env": {"GIT_CONFIG_COUNT":"2","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true","GIT_CONFIG_KEY_1":"core.autocrlf","GIT_CONFIG_VALUE_1":"false"},
+    "env_scope": "Checkout action step and its Git subprocesses only. No workflow/job scope, GITHUB_ENV, later step or diagnostic owned child.",
+    "exact_four_file_projection": "probes.raw.json#/projection; SHA-bound exact before/after strings, exact MD append and two literal substitutions. Calculated only in memory; no projected file written.",
+    "allowed_source_paths": [".github/workflows/windows-p1-stages-diagnostic.yml", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json", "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md", "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"],
+    "projection_rules": [
+      "Workflow: count1 -> count2 and exactly KEY_1=core.autocrlf/VALUE_1=false additions inside existing checkout env; preserve every other byte.",
+      "JSON: revision2 -> revision3, updated timestamp, exact C002 revision_scope and workflow.checkout_env only; all other bytes unchanged, including existing_file_edits_allowed and checkout_env_scope.",
+      "Markdown: append exact section8 from raw projection only; preserve every prior byte; explicitly supersede only old C001 count1/three-key and revision wording.",
+      "CLI: only bindingHash/mdHash 64-character literal replacements derived from revised raw JSON/MD; after masking those two literals, byte-identical to source221."
+    ],
+    "in_memory_projected_hashes": [
+      {"path":".github/workflows/windows-p1-stages-diagnostic.yml","bytes":3308,"sha256":"df3fb58c31bfbd50eed0b833926b9389d0e60673e4df905f05d883dcb7892e2e"},
+      {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json","bytes":34976,"sha256":"f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130"},
+      {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","bytes":25454,"sha256":"9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb"},
+      {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","bytes":73022,"sha256":"6548ea1cbf7584873f61b4cb396bc9d4ce8567c672d23313b56a38e8ce0d3bae"}
+    ],
+    "new_bindingHash": "f022d586a2968ce67b24512631c7d8ab128d1e85cb483e70934e43d8bfe0a130",
+    "new_mdHash": "9ba4ddf4529c0f4ba89fc79a6378e6614c99e62600eee974dd6d57e4a36a6eeb",
+    "fallback": "If this exact projection is rejected, ineffective on Windows, or requires another key/path/delta, HARD_STOP and return to fresh Planner; do not broaden, normalize hashes, remove guards or automatically retry."
+  },
+  "fresh_supporting_controls_required_not_executed": [
+    "Accept only the exact five-key/count2 checkout-step map; reject wrong count, missing/extra key, wrong key/value or propagation outside checkout.",
+    "Reject missing/one-sided bindings revision, MD rewriting rather than append, stale hash, only one literal change or any extra CLI byte after masking.",
+    "Reject any fifth source edit, test/assertion change, hash normalization, added accepted digest or raw hash guard bypass.",
+    "Check exact source221->candidate four-file projection; all other tracked files/modes, ten frozen inputs, original artifacts and historical archive inventories remain byte/object-identical.",
+    "Check native E0 env/eleven-source/selection/caps/bounds/uploads/commands/contracts remain identical; do not count unchanged synthetic suite as checkout-env confinement coverage."
+  ],
+  "next_step_boundaries": [
+    "Fresh independent supporting pre-scope review of this new C002 proposal before Generator work.",
+    "Generator applies only the approved exact four-file projection in an isolated workspace; no worker push.",
+    "Fresh independent actual-diff/post-scope review and a different-model-family Kimi supporting gate; preserve original verdicts and failures.",
+    "Only after gates and a separate ruling may Coordinator publish one new exact source on the locked non-main diagnostic branch and allow one CI opportunity; no source221 retry or automatic follow-up run.",
+    "No conclusion here closes functional/native acceptance, F004/F005 or release readiness."
+  ],
+  "unchanged_hard_stops": [
+    "Original tests/assertions, raw-byte identity/hash guards and hash normalization policy",
+    "Whole-tree proof; native env allowlist; B001/E0; API/worker; selection; caps/bounds; upload/archive/permissions/Secrets/commands/retry",
+    "Public Actions v4 versions and Node22 selection",
+    "Compose HARD_STOP; no third Compose",
+    "User-postponed key work; no backup/restore/baseline/password/deployment",
+    "No progress/features/pending_gate/memory/registry/harness writes; no main or branch push"
+  ],
+  "performed": {
+    "passive_original_hash_and_source_reads": true,
+    "pure_buffer_transform_recalculation": true,
+    "single_owned_disposable_git_fixture": true,
+    "in_memory_four_file_projection": true,
+    "diagnostic_module_import_or_cli_mode": false,
+    "existing_evaluator_tests_reused_or_run": false,
+    "npm_or_dependency_work": false,
+    "native_PowerShell_live_pid_kill": false,
+    "network_CI_SSH_DB_configstore": false,
+    "running_source_edits": false,
+    "functional_acceptance": false,
+    "push": false
+  },
+  "operational_note": "A report apply_patch briefly targeted an empty README at the own worktree root by mistake. Only that accidental doc change was immediately restored with apply_patch from exact source221; git diff --exit-code -- README.md returned 0. No running source, CI original or state file was changed. Final diff and commit must contain only the four newly added report files."
+}

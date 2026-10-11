@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-11T16:21:47.223Z",
+  "role": "Coordinator original Planner report transport; no implementation authority",
+  "planner_commit": "13f750933f9917e147c0df9d930ed043b2ec374f",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "originals": 4,
+  "all_equal": true,
+  "entries": [
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/proposal.json",
+      "bytes": 13149,
+      "sha256": "9b5e0b20d9aec8fa39ff794661fbcb76d19933575ca78655f574b02660a66f6d",
+      "equal": true
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/README.md",
+      "bytes": 8014,
+      "sha256": "98e65d55a81f6ba5b8f78d9929290af743295384d9f1cebf82fa310d9274cf0f",
+      "equal": true
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probe.mjs",
+      "bytes": 15916,
+      "sha256": "58ac7237c757bee331017a7dc1065ae85931115d20be331c381b36a5aefd25e1",
+      "equal": true
+    },
+    {
+      "source": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-plan-20261011/docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "path": "docs/test-reports/BL-WINDOWS-P1-BINDING-IDENTITY-plan-20261011/probes.raw.json",
+      "bytes": 72541,
+      "sha256": "d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4",
+      "equal": true
+    }
+  ]
+}

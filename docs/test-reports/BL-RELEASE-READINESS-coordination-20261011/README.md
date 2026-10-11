@@ -2,7 +2,14 @@
 
 Coordinator checkpoint only. No functional acceptance or production release.
 
-## Latest checkpoint: 16:08 UTC
+## Latest checkpoint: 16:22 UTC
+
+- Fresh supporting Planner commit `13f750933f9917e147c0df9d930ed043b2ec374f` independently traced the module-load hash failure. Source221 JSON LF-to-CRLF alone exactly reproduces the CI actual digest; one owned Git fixture confirms that transform and that disabling conversion preserves 16 selected source blobs. This is narrow local inference, not observed Windows file bytes or runner configuration.
+- A new C002 proposal freezes an exact four-file projection: retain checkout longpaths, add checkout-only autocrlf false with count2/five string keys, explicit new JSON/MD contract and only the two CLI identity literals. It is not compliant with old C001 count1/three keys. Raw identity guards, original tests and diagnostic limits may not be relaxed.
+- Four original Planner report/probe files are transported byte-identically. `windows-binding-identity-plan-and-prescope-adjudication.json` commissions fresh static pre-scope only; verdict pending. No new implementation, source publication or CI is authorized at this snapshot.
+- Last fresh public/remote checks remain the 16:08 originals below. Main and production unchanged; only non-main diagnostic source221 was published. Compose HARD_STOP, user key deferral and all formal release gates remain open.
+
+## Historical checkpoint: 16:08 UTC
 
 - Fresh Kimi r1 returned before the hard deadline (1790/1800 seconds), mechanical COMPLETED, original **OFFLINE supporting PASS**: unchanged81 + own59, final verify exit0. The 35 byte-equal originals include complete runtime/npm/status logs and both original own-test type failures. Commit `71893b5` preserves the verdict and bounded publication authority; this is not formal F004/F005/native/release acceptance.
 - Coordinator published only frozen `221f2f87d94db1656e3000662796d79621b696f5` by fast-forward to the approved non-main diagnostic branch. [Run 38153928452](https://github.com/tripplemay/tokenizer/actions/runs/38153928452), attempt1: **checkout and setup-node succeeded**; the earlier long-path barrier did not recur. Earliest new failure is module-load `binding identity` at `p1-stages.mjs:20:8` (actual JSON hash `481e1496...659c0e`, expected `652a1117...ed1922d`). npmci, synthetic checks and INITIAL were skipped; seal failed at the same assertion, artifacts0. No rerun.

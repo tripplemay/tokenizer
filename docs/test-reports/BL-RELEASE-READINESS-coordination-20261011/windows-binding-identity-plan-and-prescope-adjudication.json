@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T16:21:47Z",
+  "role": "Coordinator original Planner transport and fresh supporting pre-scope commission, not functional acceptance or human gate decision",
+  "planner_commit": "13f750933f9917e147c0df9d930ed043b2ec374f",
+  "source": "221f2f87d94db1656e3000662796d79621b696f5",
+  "original_transport": {
+    "manifest": "windows-binding-identity-planner-transport-manifest.json",
+    "files": 4,
+    "all_bytes_equal_to_commit_and_worktree": true,
+    "proposal_sha256": "9b5e0b20d9aec8fa39ff794661fbcb76d19933575ca78655f574b02660a66f6d",
+    "raw_probe_sha256": "d445ff00e28ed8529234264559df3128e9b1be81dc5856ea7cf5579a8af502f4",
+    "frozen_source_and_state_diff_exit_code": 0
+  },
+  "planner_evidence": {
+    "original_ci": "run38153928452 checkout succeeded, then module-top-level raw JSON identity failed; INITIAL not reached",
+    "buffer_counterfactual": "Changing only LF to CRLF reproduces observed actual481e1496...659c0e exactly; BOM-only and removed-final-LF controls do not",
+    "owned_git_fixture": "Sixteen source221 blobs only, longpaths true held constant; autocrlf true reproduces actual JSON digest, false preserves all16 source bytes",
+    "classification": "Independent narrow transform inference, not captured Windows bytes or observed runner autocrlf configuration",
+    "operational_note": "Planner's transient own-root README patch mistake was restored from source221 and disclosed; committed diff contains only four new report files"
+  },
+  "proposed_followup": {
+    "id": "C002",
+    "new_contract_required": true,
+    "not_old_C001_compliance": true,
+    "checkout_scope": "Retain longpaths true; count2/five-string-key map adds only core.autocrlf false; no later-step/native propagation",
+    "source_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "projection": "Planner raw proposal locks every replacement, exact MD append, two CLI identity literals and all four projected hashes; calculated only in memory",
+    "raw_identity_or_original_test_relaxation": false
+  },
+  "fresh_pre_scope": {
+    "commissioned": true,
+    "agent": "windows_binding_identity_pre_scope",
+    "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-binding-identity-pre-scope-20261011",
+    "start_commit": "13f750933f9917e147c0df9d930ed043b2ec374f",
+    "scope": "Static source/contract/original-hash/byte-projection and counterfactual confinement only; no imports or executing probes/diagnostics/tests/VM/npm/network",
+    "verdict": "pending"
+  },
+  "ci_original_format_note": "git diff --cached --check flagged only original CI log trailing whitespace, retained unchanged. Scoped check of new authored README/adjudication/manifest returned0; no cleanup of evidence",
+  "generator_authorized": false,
+  "new_publication_or_native_run_authorized": false,
+  "source_integrated_into_parent_runtime": false,
+  "compose": "HARD_STOP unchanged",
+  "keys": "User-deferred, no key/backup/restore/baseline/password work",
+  "state_or_memory_written": false,
+  "pending_gate_written": false,
+  "main_or_production_mutation": false,
+  "release_ready": false
+}
