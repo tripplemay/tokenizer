@@ -1,0 +1,237 @@
+{
+  "format": "windows-p1-checkout-plan-v1",
+  "created_at_utc": "2026-10-11T14:04:39Z",
+  "role": "fresh supporting Planner; harness-rules.md section 1.5",
+  "model_family": "codex",
+  "status": "proposal-only-requires-fresh-scope-and-explicit-Coordinator-ruling",
+  "source_sha": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+  "source_tree": "19186fe317bce76857dc273a9c21b3e940da9e41",
+  "worktree": "/Volumes/ORICO/project/.worktrees/tokenizer-windows-p1-checkout-plan-20261011",
+  "branch": "docs/windows-p1-checkout-plan-20261011",
+  "delivery_paths": [
+    "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/proposal.json",
+    "docs/test-reports/BL-WINDOWS-P1-CHECKOUT-plan-20261011/README.md"
+  ],
+  "authority": {
+    "implementation_authorized": false,
+    "publication_authorized": false,
+    "native_execution_authorized": false,
+    "native_environment_repair_authorized": false,
+    "release_ready": false,
+    "release_acceptance": false,
+    "formal_F005_claim": false,
+    "state_transition": false,
+    "worker_push_allowed": false
+  },
+  "runtime_status_read": {
+    "progress_status": "verifying",
+    "current_sprint": "BL-HOMEPAGE-FRESHNESS",
+    "role_assignments": null,
+    "pending_gate": null,
+    "interpretation": "independent supporting planning; no state, gate, registry or memory edits"
+  },
+  "failure_evidence": {
+    "root": "/Volumes/ORICO/project/.worktrees/tokenizer-release-readiness-20261008/docs/test-reports/BL-RELEASE-READINESS-coordination-20261011",
+    "run_id": 38145284914,
+    "run_attempt": 1,
+    "job_id": 114487223393,
+    "event": "push",
+    "branch": "codex/windows-p1-stages-ci-20261010",
+    "head_sha": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "status": "completed",
+    "conclusion": "failure",
+    "files": [
+      {"path":"windows-initial-native-run38145284914-final-original.json","bytes":12339,"sha256":"a801a6dbda7f2eed3cc7be6280830540b5cc20e3fae04472e0c0085a5666c3ad"},
+      {"path":"windows-initial-native-run38145284914-jobs-original.json","bytes":2944,"sha256":"4320e6204f4ea41da2aec74e436cb229c8d9793f6070306e6c576b1cd9a13d44"},
+      {"path":"windows-initial-native-run38145284914-artifacts-original.json","bytes":32,"sha256":"244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"},
+      {"path":"windows-initial-native-run38145284914-full-original.log","bytes":18378,"lines":137,"sha256":"725070982a434eb7421b339d6fc5886d76f7f7a631a4a381a9c95a79bcbdcd8e"}
+    ],
+    "first_failed_step": "Run actions/checkout@v4",
+    "checkout_exit_code": 128,
+    "checkout_fatal": "Filename too long",
+    "failed_directory": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698",
+    "log_lines": {"resolved_checkout_action":30,"workspace":54,"git_version":56,"checkout_command":89,"fatal":90,"checkout_exit":101,"seal_module_missing":110,"seal_code":118,"seal_exit":123},
+    "resolved_checkout_action": "11d5960a326750d5838078e36cf38b85af677262",
+    "observed_git_version": "2.55.0.windows.5",
+    "observed_workspace": "D:\\a\\tokenizer\\tokenizer",
+    "skipped_steps": ["Run actions/setup-node@v4","Prepare exact-candidate provenance","Install locked dependencies","Synthetic checks only","INITIAL once","Verify sealed files immediately","Run actions/upload-artifact@v4"],
+    "secondary_failure": {"step":"Seal safe evidence","code":"MODULE_NOT_FOUND","module":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","interpretation":"secondary consequence of incomplete checkout; no sealed diagnostic artifact"},
+    "artifact_count": 0,
+    "diagnostic_native_admissions": "INITIAL step skipped; no INITIAL admission observed; not a fabricated typed summary or whole-run process absence proof",
+    "boundary": "This run supplies checkout-layer failure evidence, not T0/T1/PowerShell cause, native acceptance or a release result."
+  },
+  "source_hashes": [
+    {"path":".github/workflows/windows-p1-stages-diagnostic.yml","sha256":"94aa4fa7b31c49dacb71e2643976314351b7a9ad770b51a6e7d982a344bd962b"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md","sha256":"bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c"},
+    {"path":"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json","sha256":"ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","sha256":"3a2d4174c1b2ac3b0caddb4b10c2ba9146c1569247dc6bd6084be01070a4346b"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","sha256":"7718f1e6553f1f9bccca0520571727f2a712493ce789bb8a3f0898a75e289132"}
+  ],
+  "verified_frozen_inputs": [
+    {"path":"docs/specs/BL-WINDOWS-P1-STAGES-20261009.md","sha256":"6df7819977e950fe2fa8f682110defc6ced7767651c8887f11e326c26bb35790"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-plan-20261009/plan.json","sha256":"c9ae43fba212226518719dfde14336f4ebdc85fb7f072b88a686c2fe315fee8f"},
+    {"path":"docs/test-reports/BL-WINDOWS-P1-STAGES-scope-20261009/verdict.json","sha256":"dded8038ca0715518b7086400c1f6e564fb0460416feb9254d0baabbe386b052"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/native-runtime-parity.mjs","sha256":"1030e91a2ea4dc2a9e81e876aa391ad19e401fb42c07d91435804d2da6f2603c"},
+    {"path":"docs/test-reports/windows-release-diagnosis-20261008/trace-preload.mjs","sha256":"76a820f66957bf34fb1b2064e673ffc7c2d666fc53e788fd1c6c5fb6ed999552"},
+    {"path":"src/cli/bounded-subprocess.ts","sha256":"26e8eef91284f151841fde3b6de50b90b218dfff38379d9acbda97c34caa7df7"},
+    {"path":"src/cli/bounded-subprocess-worker.mjs","sha256":"02a9f2701aa37a2b0fd02a195f1135c4f3e52aacc02aa0bf4c6356866f62efe3"},
+    {"path":"src/cli/replay.ts","sha256":"6fec39601d729bfe6c06c0d02d4d146bddbe80beeab92d1450b95db9d979cce8"},
+    {"path":".github/workflows/windows-release-diagnostics.yml","sha256":"34915b1c93e8ee6bae6b7c55e682aeb2b41d36e544970a5d1e7a7df013d3bd0e"},
+    {"path":"package-lock.json","sha256":"7c0b9fcf3ae2a259f490bd754c0ee8871f01d2c120e731b5512629ad901a48e8"}
+  ],
+  "path_inventory": {
+    "command": "git -c core.fileMode=false ls-tree -rz --full-tree 888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "raw_nul_sha256": "af29538927397b7ec48c261ca047616d9a18617a65f767165b61105d396d1a23",
+    "tracked_paths": 2453,
+    "windows_root_prefix_characters_including_separator": 25,
+    "tracked_paths_above_260_at_observed_workspace": 55,
+    "failed_directory_relative_characters": 223,
+    "failed_directory_absolute_characters": 248,
+    "failed_subtree_tracked_paths": 55,
+    "failed_subtree_ls_tree_nul_sha256": "6cd55acce1fcd1a225edb9e96c2444c5f3a20f3ae38aaf3a6a2ffa1a78ac902f",
+    "failed_subtree_absolute_file_range": [265,281],
+    "longest_path": "docs/test-reports/windows-native-ci-20261008/runtime-parity-run-37822555762-original/windows-release-diagnostics-719c2df0d54f62b1b3b3e711a2045ffd8ea5e711/windows-release-diagnosis-20261008/native-output-parity-1791483248698/downstream-off-confirmation.json",
+    "longest_path_blob": "a3d877dca98202f202013de02e6731f026432da8",
+    "historical_archive_root_tracked_paths": 57,
+    "historical_archive_root_ls_tree_nul_sha256": "52ac3b835b45e6aa3c54ea72f57180421822c5719d2a9e9bca0d2abbbf0a0721",
+    "caveat": "Current git tree counts are not the old 59-file runtime filesystem inventory. No old inventory is rewritten, shortened or re-authenticated. Directory-level fatal does not imply that directory itself exceeds 260 characters."
+  },
+  "selected_solution": {
+    "id": "C001",
+    "name": "checkout-action-step-only command-scope core.longpaths",
+    "configuration_scope": "GIT_CONFIG_COUNT runtime configuration in the actions/checkout step and its action-owned Git children; no persistent config writes introduced",
+    "step_env": {"GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"core.longpaths","GIT_CONFIG_VALUE_0":"true"},
+    "workflow_delta": {
+      "path": ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "before": "      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 1\n          persist-credentials: false\n",
+      "after": "      - uses: actions/checkout@v4\n        env:\n          GIT_CONFIG_COUNT: '1'\n          GIT_CONFIG_KEY_0: core.longpaths\n          GIT_CONFIG_VALUE_0: 'true'\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 1\n          persist-credentials: false\n",
+      "replacement_count": 1,
+      "all_other_workflow_bytes_unchanged": true
+    },
+    "no_effect_claimed_on": ["PowerShell cmdlets or module loading","Windows OS long-path policy","diagnostic E0 child environment","npm/toolchain long-path support","native cleanup/whole-tree absence","any release gate"],
+    "feasibility": "Official documented mechanism and observed path failure make this a narrow candidate. Actual Windows checkout and subsequent exact-candidate provenance remain unrun and unproved."
+  },
+  "alternatives_not_selected": [
+    {"name":"git -c core.longpaths=true directly","reason":"command-scope is narrow, but checkout owns its Git argv; replacing the action or wrapping Git is larger than the three documented step environment keys"},
+    {"name":"git config --global core.longpaths true","reason":"persistent runner-user scope, new shell command and HOME sensitivity; observed checkout replaces HOME for its own global config operations; not selected and not authorized"},
+    {"name":"git config --system core.longpaths true","reason":"machine-wide configuration and possible privilege requirement are unnecessarily broad; not selected and not authorized"},
+    {"name":"git config --local or --worktree core.longpaths true","reason":"repository does not yet exist before checkout; checkout initializes/cleans it, while setting afterward is too late; adds orchestration/config state; not selected"},
+    {"name":"short actions/checkout path","reason":"action path is relative under the already-long GITHUB_WORKSPACE, so a small child path does not shorten that prefix; custom clone/root/defaults/upload rewrites are broader and perturb path provenance"},
+    {"name":"sparse checkout or exclusion of old archives","reason":"changes materialized evidence/source coverage and exact-source assumptions, unlike full checkout; not selected; do not omit/delete/rename archives"},
+    {"name":"OS registry long-path switch, subst or retries","reason":"changes host state/path identity or repeats native opportunity; no need for the proposed Git-only checkout mechanism; not authorized"}
+  ],
+  "contract_revision_required": {
+    "reason": "Current bindings expressly allow additions only and existing_file_edits_allowed=[]; silently modifying the workflow would contradict them. Both documents are identity-pinned in p1-stages.mjs, so changing the bindings without two new identity hashes would fail before INITIAL.",
+    "later_generator_allowed_existing_paths": [
+      ".github/workflows/windows-p1-stages-diagnostic.yml",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md",
+      "docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json",
+      "docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs"
+    ],
+    "allowed_new_implementation_paths": [],
+    "binding_json_replacements": [
+      {"before":"  \"revision\": 1,\n","after":"  \"revision\": 2,\n"},
+      {"before":"  \"updated_at_utc\": \"2026-10-11T05:49:43Z\",\n","after":"  \"updated_at_utc\": \"2026-10-11T14:04:39Z\",\n"},
+      {"before":"  \"revision_scope\": \"B001 native tuple/source closure only; original BLOCKED report preserved; fresh review still required\",\n","after":"  \"revision_scope\": \"C001 checkout-step-only long-path compatibility; explicit four-path exception and two CLI identity hashes only; B001 unchanged; fresh scope and Coordinator ruling required\",\n"},
+      {"before":"  \"existing_file_edits_allowed\": [],\n","after":"  \"existing_file_edits_allowed\": [\".github/workflows/windows-p1-stages-diagnostic.yml\", \"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md\", \"docs/specs/BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json\", \"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs\"],\n"},
+      {"before":"    \"checkout\":{\"ref\":\"${{ github.sha }}\",\"fetch-depth\":1,\"persist-credentials\":false},\n","after":"    \"checkout\":{\"ref\":\"${{ github.sha }}\",\"fetch-depth\":1,\"persist-credentials\":false},\n    \"checkout_env\":{\"GIT_CONFIG_COUNT\":\"1\",\"GIT_CONFIG_KEY_0\":\"core.longpaths\",\"GIT_CONFIG_VALUE_0\":\"true\"},\n    \"checkout_env_scope\":\"checkout-action-step-only; no workflow/job/GITHUB_ENV or diagnostic-child propagation\",\n"}
+    ],
+    "binding_json_each_replacement_count": 1,
+    "binding_json_other_bytes_unchanged": true,
+    "binding_md_append": "\n## 7. C001 checkout-only successor scope (proposed 2026-10-11 UTC)\n\nRevision 2 is a proposal only. It does not grant implementation, publication, native execution, native environment repair or release authority. All earlier B001, E0, guard, API, worker, selection, budget, schema, output, source-provenance and release constraints remain unchanged.\n\nThis section explicitly supersedes section 1's additions-only and no-existing-file-edit wording solely for the following four existing paths and exact restrictions. No other existing path and no new implementation path is admitted:\n\n1. `.github/workflows/windows-p1-stages-diagnostic.yml`: add only the checkout action step's `env` map, exactly `GIT_CONFIG_COUNT: '1'`, `GIT_CONFIG_KEY_0: core.longpaths`, `GIT_CONFIG_VALUE_0: 'true'`; every other workflow byte stays unchanged.\n2. This Markdown: append this C001 section only; preserve all prior text.\n3. Adjacent JSON: revision 1 to 2, updated timestamp to `2026-10-11T14:04:39Z`, C001 revision scope, the four-path `existing_file_edits_allowed` exception, and `workflow.checkout_env` plus `workflow.checkout_env_scope` only. All other bytes and native contracts stay unchanged.\n4. `docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs`: replace only the two `bindingHash` and `mdHash` string literals with SHA-256 of the revised JSON and Markdown. Preserve every other byte, all assertion/validator/guard/CLI behavior and all imported frozen sources. Do not remove, bypass or broaden an identity check.\n\nCheckout configuration is process command-scope only. The three keys are forbidden at workflow/job scope, in `GITHUB_ENV`, in later step env maps, and in any diagnostic owned child. No global/system/local/worktree config write, extra command, short-path relocation, sparse checkout, omitted archive, permission/Secrets change, retry, native probe or version query is admitted. The JSON checkout input map, ordered commands, required synthetic controls and all upload/schema/provenance rules remain unchanged. Existing sourceFiles still contains exactly eleven paths; its current hashes and the strict bindingHash check must match the new exact candidate.\n\nFresh independent supporting pre-scope and actual-diff reviews must inspect both binding documents and the two identity literals. Checkout env confinement requires separate static positive/negative supporting controls: the existing synthetic suite does not itself lock this env map. Do not change its source or required_future_controls to manufacture coverage. Independent different-model-family supporting acceptance and an explicit Coordinator publication/execution ruling are required before one new exact-source INITIAL workflow opportunity on the already-locked non-main branch; no automatic retries or native environment repair. Preserve the original failure run, all old originals, historical inventories and frozen files. Checkout success alone is not INITIAL observation completeness, product acceptance, F005 or release readiness.\n",
+    "cli_identity_replacements": [
+      {"constant":"bindingHash","old":"ed24ebf3b4b1890f84f09ba82edd0d71f75a12e35504a84a3fb0f9d8300455fc","new_rule":"SHA-256 of revised BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.json"},
+      {"constant":"mdHash","old":"bf60ca426602d00b76515091cc30abd37badea21731b6ad21fe54cd323d7577c","new_rule":"SHA-256 of revised BL-WINDOWS-P1-INITIAL-BINDINGS-20261010.md"}
+    ],
+    "cli_rule": "After masking precisely those two 64-character string literals, the candidate CLI bytes must be byte-identical to source888. No assertion, validator, import, schema, env construction, CLI mode, guard or other logic changes.",
+    "tests_must_remain_byte_identical": "tests/diagnostics/windows-p1-stages.test.ts and all other tests/fixtures",
+    "binding_fields_not_changed": ["format","planning_base","prior_inputs","frozen_runtime_sources","future_added_source_paths","environment","bounds","native","cases","tokens","selection_table","native_tuple_closure","strict_append","cli_modes","schemas","cross_field_invariants","required_future_controls","output","exclusions","release_ready","implementation_authorized","publication_authorized","native_execution_authorized","release_acceptance","formal_F005_claim"],
+    "new_json_metadata_is_static_scope_contract_not_new_runtime_validation": true,
+    "proposed_byte_hashes": {"workflow":"1ab508fc704fe8ceb1aecbdb9b630ea748add97dc5a17a960940ab4e9a83a771","bindings_json":"652a11170499b8c03bcd70d65ba4f8cdd1476a318e119b267d33cbf90ed1922d","bindings_md":"fc7f4d09915d7200177bf0b4d7c6fc76e95e0423d4e1e2f3f2bc3a1986025ec6","cli_hash_literals_only":"3028d77985e965d3de58c965b526bfe6adf7ddebced8b9173c89a5fb6c56e4f6"},
+    "hash_caveat": "Projected hashes bind the exact in-memory substitutions and appendix in this proposal, not files changed or executed. Fresh reviewer must independently render them; any delta requires a new scope decision."
+  },
+  "validator_and_test_closure": [
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","lines":"14-21","fact":"binding JSON is checked against bindingHash before import completes","change":"bindingHash literal only; keep strict equality"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","lines":"76-87","fact":"validateBindings checks mdHash, ten frozen/prior hashes, four case hashes/order and pending-line bound","change":"mdHash literal only; every rule and frozen hash unchanged"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","lines":"313-338","fact":"fixedEnvironment creates synthetic keys from five admitted system keys; guardConfiguration rejects extra keys case-sensitively against that rebuilt set","change":"none; checkout-only GIT_CONFIG_COUNT/KEY_0/VALUE_0 must not be admitted"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","lines":"663-686","fact":"eleven dynamic source hashes; actual HEAD and clean scoped source status; validateProvenance strictly checks execution identity, frozen hashes, bindingHash and unchanged env key names","change":"no rule/schema/path-count change; dynamic hashes update only because the four authorized files have new bytes"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","lines":"495-503","fact":"fresh import must have no spawn, append, mkdir, guard or main execution","change":"none"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","lines":"536-550","fact":"validateBindings/four scripts/E0 extra_keys=[]; job/ref/concurrency/timeout/checkout inputs/ordered commands/16 uploads; no hardcoded ban on checkout step env or GIT_CONFIG_*","change":"none; unchanged tests are necessary regression but insufficient checkout-env confinement evidence"},
+    {"path":"tests/diagnostics/windows-p1-stages.test.ts","lines":"552-561","fact":"checksSummary requires every original required_future_controls entry to be present and passing","change":"none; do not append a new declared control without implementation or mislabel supporting checks as the original suite"},
+    {"path":"docs/test-reports/windows-p1-stages-20261010/p1-stages.mjs","lines":"1064-1088","fact":"guard install only for ?guard=1; CLI execution only for self argv with fixed modes","change":"none"}
+  ],
+  "future_checks": {
+    "fresh_scope_positive": [
+      "Re-read source888 plus both proposal files; verify four original run hashes, all source/frozen hashes and unchanged historical tree inventories.",
+      "Independently apply only the five JSON replacements, exact Markdown appendix, exact workflow replacement and two identity literals in memory; verify projected hashes and identical JSON subtrees elsewhere.",
+      "Parse workflow AST with no on-key coercion: one checkout step, exactly three string-valued env keys only there, unchanged with map, steps/order, ref/event, permissions, concurrency, timeout and explicit upload set.",
+      "Compare actual diff against exactly four allowed paths. Mask only CLI identity literal values and require full byte equality; no tests/lockfiles/original/frozen/state edits or new implementation paths.",
+      "Compare complete git ls-tree mode/type/path/blob inventories excluding the four authorized paths and separately report-only transport files; all historic archives are byte-identical full checkout inputs."
+    ],
+    "static_negative_controls": [
+      "Missing/count0/count2/missing key/missing value/false value/extra key/second pair must fail exact checkout-env contract.",
+      "Move or copy any added key to workflow env, job env, setup-node, prepare, npm ci, tests, INITIAL, seal, verify, upload or GITHUB_ENV; each must fail supporting scope.",
+      "Add Git config writes, path/defaults/sparse/filter/subst, shell command/probe/version query, retry, continue-on-error, new event/ref/permissions/Secrets or altered upload paths; each must fail.",
+      "Revise bindings without either identity literal, revise only one document/hash, or change one additional CLI byte; import/validateBindings or exact scope must fail rather than weaken validation.",
+      "Mutate one frozen hash, native script, env key, guard flag, tuple/schema, selection row, budget/quota, test or required control; fail exact scope even if the existing synthetic suite passes.",
+      "Candidate/execution/GITHUB_SHA/HEAD mismatch, old source888 artifact relabelled as new candidate, dirty scoped source, archive omission or unsafe upload must remain rejected."
+    ],
+    "offline_supporting_checks": [
+      "Use owned disposable sandbox/fixtures only, no network/native PowerShell: exercise Git runtime config in child env with NOSYSTEM=1 and an owned empty global config, verify command-scope override via Git config query, no persisted core.longpaths and no env in a sibling child; no credential/config-store inspection.",
+      "On proposed candidate, run unchanged tests/diagnostics/windows-p1-stages.test.ts with Node22/Vitest and preserve full scoped output and every test outcome. Do not use old 64/81 counts or parent narration as execution evidence.",
+      "Use unchanged systemEnvironment with case-insensitive system keys plus the three checkout keys: only the five admitted system keys may survive. Review fixedEnvironment and guard extra-key rejection without launching a native child.",
+      "Exercise existing import-without-side-effects, binding identity, source-provenance, B001 tuple, EOF/cleanup, caps/selection and sealed-file negative controls unchanged. Supporting env checks are a separate artifact, not a new allRequiredControlsPassed claim."
+    ],
+    "native_after_separate_gate_only": [
+      "Coordinator publishes exact accepted candidate C once to the already-locked diagnostic branch only; source888 rerun cannot execute the repaired workflow and is not a substitute.",
+      "Capture new run final/jobs/artifacts/full log bytes without trimming, plus SHA-256 and resolved action SHA. At observed action version, Git source preserves step process.env; if v4 resolves differently, independently inspect it rather than auto-upgrading/pinning or asserting old behavior.",
+      "Checkout success requires logged checkout of C, existing prepare verifying actual HEAD=C=GITHUB_SHA, unchanged eleven-source provenance and no checkout-only config in diagnostic env; checkout green alone is insufficient.",
+      "Existing workflow may then run its locked prepare/npm ci/synthetic checks/one INITIAL opportunity. Maximum four INITIAL native admissions and all old guards remain; no additional checkout experiment, native retry, probe or repair is authorized.",
+      "If checkout or later provenance fails, preserve first failure and artifacts as-is; stop and return to Planner. If INITIAL yields unknown/refusal/incomplete, preserve it and do not use checkout repair as authority to change native environment.",
+      "Independently run existing offline verifier on exactly the new 16 sealed files if present; empty/missing artifact means no sealed observation and cannot be fabricated."
+    ]
+  },
+  "exact_source_and_gates": {
+    "planning_base": "888a5acd7a8a441c9ec4ad898453f149cf8d6b7c",
+    "later_candidate_sha": null,
+    "scope_review_sha": null,
+    "functional_supporting_verdict": null,
+    "publication_gate": null,
+    "native_execution_gate": null,
+    "candidate_requirement": "C must be a real full 40-character immutable commit on source888 descendants with only the four bounded implementation-path changes (plus separately listed report-only files). Any rebasing, integration, further source commit or unexpected file needs fresh exact-source actual-diff review; no moving branch or inferred SHA.",
+    "stages": [
+      "Fresh independent supporting pre-scope review -> raw verdict.json; Coordinator explicitly rules on this proposal and four-path/identity exception before Generator work.",
+      "Later Generator creates minimal candidate in its isolated workspace without push or production/state work, with exact paths, parent SHA, diff and hashes.",
+      "Fresh independent actual-diff scope critic accepts exact C and revised bindings. A separate fresh supporting Evaluator from a different model_family than Generator executes offline/negative and existing synthetic acceptance, writing original full outputs/verdict; Planner/Generator/Coordinator do not rewrite it.",
+      "Only after accepted exact C, Coordinator obtains and records separate explicit non-main publication plus one INITIAL execution authority; worker never pushes and machine never writes pending_gate.decision.",
+      "New native run is independently evaluated on captured bytes and exact C; report release_ready=false and formal_F005_claim=false regardless of checkout success. No auto-release or native environment repair."
+    ],
+    "null_is_not_authority": true
+  },
+  "performed_by_this_planner": {
+    "disk_original_hashes_and_json_log_reconciliation": true,
+    "source_and_frozen_hash_checks": true,
+    "git_tree_path_inventory": true,
+    "validator_and_env_test_static_read": true,
+    "official_primary_documentation_browse": true,
+    "in_memory_delta_consistency_check": true,
+    "source_implementation": false,
+    "test_suite_execution": false,
+    "dependency_install": false,
+    "native_execution": false,
+    "ci_trigger_or_rerun": false,
+    "push_or_deploy": false,
+    "main_prod_or_backup_keys_access": false,
+    "state_gate_or_memory_edits": false,
+    "parent_worktree_index_write": false,
+    "git_config_write": false
+  },
+  "remaining_boundaries": ["checkout Windows feasibility unverified","native INITIAL execution/provenance/environment cause unverified","native environment repair not authorized","main/production untouched","backup keys/off-host backup gates unresolved","Compose HARD_STOP unresolved","F004/F005/release gates unresolved","whole-process-tree absence unproved"],
+  "primary_references": [
+    {"url":"https://git-scm.com/docs/git-config/2.55.0#Documentation/git-config.txt-GITCONFIGCOUNT","supports":"zero-indexed GIT_CONFIG_COUNT/KEY_n/VALUE_n runtime config; file overrides and explicit -c precedence; missing key/value errors"},
+    {"url":"https://github.com/git-for-windows/git/blob/v2.55.0.windows.5/Documentation/config/core.adoc","supports":"core.longpaths supports Git for Windows builtins; not a general Windows/npm/PowerShell repair"},
+    {"url":"https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsenv","supports":"step environment scope, distinct from job/workflow scope"},
+    {"url":"https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/src/git-command-manager.ts","supports":"execGit copies process.env into Git child env before action-owned overrides; observed action source has no GIT_CONFIG_COUNT/KEY_0/VALUE_0 overwrite"},
+    {"url":"https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/README.md","supports":"path relative under GITHUB_WORKSPACE; sparse materialization; persist-credentials input"}
+  ]
+}
